@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 132F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93698C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236714AbiERM2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47930 "EHLO
+        id S236720AbiERM2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236554AbiERM1c (ORCPT
+        with ESMTP id S236587AbiERM1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:27:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499FA111BBA;
-        Wed, 18 May 2022 05:27:28 -0700 (PDT)
+        Wed, 18 May 2022 08:27:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D70BA9B5;
+        Wed, 18 May 2022 05:27:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0DB3B81F40;
-        Wed, 18 May 2022 12:27:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43623C34117;
-        Wed, 18 May 2022 12:27:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5CC06147D;
+        Wed, 18 May 2022 12:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5161AC34100;
+        Wed, 18 May 2022 12:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876845;
-        bh=m80PVdEZX1lH4vWt6edcuHR6RqQ39qIO0Eig5ttw22Y=;
+        s=k20201202; t=1652876852;
+        bh=CjDagl7s1yUewHYXWMFrzcpaB6LIIM2ZSZMxbuBP6VU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mYPQmPHzLGui8T3MJo2wjId5UWBDdl5Jceo1HBaBBzw2yBVaCNpzYzTpIENWOPTR4
-         h8AYbLmNAW/ZIOxSTGgZhrsH7y2WeFD/cPDFLJNa+Rqe04lyXX4OUk9BpvrWKjMlTn
-         cHtRuLlBKwz5UPL3LzbR7UpJoiiT+tKv6+myxuCKy9JobSQYxrQ44NedoWjQc7JjMO
-         sfJoPMewIViw9LdU3/EN6RuPhHW+riF7REzvN6xIgHBXcpoZacMY9dTvFdPoCC1+aj
-         65EkVPbMAAmTTaLvxCqCB3efYOr+ztIGSyflIV14KrGLtwXA+cZfURP33XpBxnTNFC
-         8CI58uBGUgxAQ==
+        b=hnC4SkjNnasn60+AMYnP+GabZRdRbbhXyBiudAEKnIT3Il/cnGrVK7x76SD6EuDAb
+         kAM1/hxRcUNDEvAMNMdAb/X54hC6qgHTCEIUmfVbo8M3bJvnWeqotAk6xMB6NXDmex
+         Apu2alnli9TMqn/ZIWIrMOSc1t65XfkRT6rtZ5CpDpI444/prtbAiHMxRx329PgWZL
+         tbLqHmBOv5tTRJ8z26tYJ3ZSFPl/UFOnp3KaiihLJbexYdSvhySNcfEomnWxNEdctH
+         XXF07ivaBJ6HC/11fQ1y+gyS1g4qQAa3ubNcKAb7F1T6WO7Y+X5SOo2UhaGiQcoYjJ
+         ghaB7t7WzeJKQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 15/23] nl80211: fix locking in nl80211_set_tx_bitrate_mask()
-Date:   Wed, 18 May 2022 08:26:28 -0400
-Message-Id: <20220518122641.342120-15-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 17/23] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
+Date:   Wed, 18 May 2022 08:26:30 -0400
+Message-Id: <20220518122641.342120-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122641.342120-1-sashal@kernel.org>
 References: <20220518122641.342120-1-sashal@kernel.org>
@@ -53,51 +57,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit f971e1887fdb3ab500c9bebf4b98f62d49a20655 ]
+[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
 
-This accesses the wdev's chandef etc., so cannot safely
-be used without holding the lock.
+Switch to using pcim_enable_device() to avoid missing pci_disable_device().
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220506102136.06b7205419e6.I2a87c05fbd8bc5e565e84d190d4cfd2e92695a90@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 06a35f1bec23..0c20df052db3 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -11573,18 +11573,23 @@ static int nl80211_set_tx_bitrate_mask(struct sk_buff *skb,
- 	struct cfg80211_bitrate_mask mask;
- 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
- 	struct net_device *dev = info->user_ptr[1];
-+	struct wireless_dev *wdev = dev->ieee80211_ptr;
- 	int err;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index fcf17d8a0494..644bb54f5f02 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -181,7 +181,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
+ 		return -ENOMEM;
  
- 	if (!rdev->ops->set_bitrate_mask)
- 		return -EOPNOTSUPP;
- 
-+	wdev_lock(wdev);
- 	err = nl80211_parse_tx_bitrate_mask(info, info->attrs,
- 					    NL80211_ATTR_TX_RATES, &mask,
- 					    dev, true);
- 	if (err)
--		return err;
-+		goto out;
- 
--	return rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
-+	err = rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
-+out:
-+	wdev_unlock(wdev);
-+	return err;
+ 	/* Enable pci device */
+-	ret = pci_enable_device(pdev);
++	ret = pcim_enable_device(pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
+ 			__func__);
+@@ -241,8 +241,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
+ 		pcim_iounmap_regions(pdev, BIT(i));
+ 		break;
+ 	}
+-
+-	pci_disable_device(pdev);
  }
  
- static int nl80211_register_mgmt(struct sk_buff *skb, struct genl_info *info)
+ static int __maybe_unused stmmac_pci_suspend(struct device *dev)
 -- 
 2.35.1
 
