@@ -2,75 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67104C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 171D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232132AbiERHVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        id S232083AbiERHYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232214AbiERHVW (ORCPT
+        with ESMTP id S232051AbiERHYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:21:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5686811A31;
-        Wed, 18 May 2022 00:21:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E81816125B;
-        Wed, 18 May 2022 07:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FAD9C385A5;
-        Wed, 18 May 2022 07:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652858480;
-        bh=Z2Hthqp8KamMwaRyOnQgeWg8sKO8QHlR39SF4zKnXc4=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=nGZxLw/nb7pTaCGz5xDXtFkANXc7mb2cwz2A7XO0Wy57+RabREGGiM5RRSn5mLl/J
-         FL+7390d9tF1niOyIMVnO3S8rB9I1xoYzw/p+58sQttVtFWeZFaMDWKrpa2J0nyhFq
-         cPbpQLBnk/zwGOovIjiw0jyWz2f1IwOBciTzWJA59VJOk+VJyhxYhckmYGshhwChMG
-         mitv8g8ayQhIdlF7tMX3MGcRg+DfaJkZGuakcdP6sgDNSOyyCNwrGLFdj5aSA7qioq
-         vg376YiDQvlIceWdTPYs/Pa4rNP8dqMWqN5kAApXUH5SrVzSVArM+WE6o7vsI2jWKm
-         JgMTyUmiQXc7Q==
-Content-Type: text/plain; charset="utf-8"
+        Wed, 18 May 2022 03:24:00 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4BB4D9CF
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:23:59 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id u27so515196wru.8
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:23:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tF/YGASfOyaH8iI5vv3uSJNrq2Gg87HO0wZHDFyPngk=;
+        b=RG9tkY0SlpJCC4fUyPDBYyPxc1bnRxdq9yhw1UbK4P0ZWnyS49MbdRzXriqpHINzhg
+         QB1s8sAKM5MrBJ2M+GOs8vTMSMfcTia4GuWHEjdPj+lj83iWaGO686JHHKdsEu+moN/S
+         MoDOlYHmHlEuU18sVUuboGdeJJQsihjlQSoYroG8sVf4fJKqMLfhnmpksK1oFzMHCNtr
+         wAvYxKXJR5Hs5sJoG3HHUsOJ5klf7Na/hNv8+QVci/I/C/FcdBB6Jr7Jfrj6uRYVfXr1
+         D3YBFwtWVHjsvv6EYzSBbn6vNgzhLCtKReBZvWyNCNi7sYGyKHl1Tq29PhaTYEZaCDxf
+         XeOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tF/YGASfOyaH8iI5vv3uSJNrq2Gg87HO0wZHDFyPngk=;
+        b=rV+XRJGUJZJp69p13UoF+8QAJk9rauYZeznzx4wQ0as0gaxgcp2KhQU/jbjW45cztq
+         I76fM2vAB37iAEcgmxA4E7uF4/epdXQDgS5q827/awvHkqTmRAPmnWB2QUbt8doVQRJp
+         p8KlEdK7UiSHy0ioLsg24no3hAx40lT0aTdNMuqD2z5oSkS2uOw2ukNsWPkzPZpexDGl
+         v74rIU36WBl3gOjPheO8ykwkzKb8rgvEjP4LJDO5Sq4rFujJiPlJ93Tb/sfrE1BvmQUp
+         8zYEQxnC8bkDFjomlYB7MzGULNqaasNMgHQmP1z/LmTNrezi7HzmjjUzRYZ1o1JILEg2
+         1HVg==
+X-Gm-Message-State: AOAM531ajJQ4CdCj+wyzJg7PMwbL48aJnjEFDhVdxI5XXsKfRhrSKQaB
+        zMc8tyw2URRTg0Fevv6q0HwgI6Aei5wUKMZV
+X-Google-Smtp-Source: ABdhPJwD/OM2Sk3G/iloBGcUeXj5wnTIB9bygC4e5ck1U/lgfHV5xDqpe3z/o37CfegDOS5NY6oiMA==
+X-Received: by 2002:a05:6000:1d90:b0:20c:9efd:bd6b with SMTP id bk16-20020a0560001d9000b0020c9efdbd6bmr22300308wrb.605.1652858637676;
+        Wed, 18 May 2022 00:23:57 -0700 (PDT)
+Received: from localhost.localdomain ([2001:861:44c0:66c0:dea9:338d:d500:c574])
+        by smtp.gmail.com with ESMTPSA id e2-20020adfa742000000b0020d0b2de858sm1112113wrd.33.2022.05.18.00.23.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 00:23:57 -0700 (PDT)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     linux-amlogic@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        Dongjin Kim <tobetter@gmail.com>,
+        Furkan Kardame <f.kardame@manjaro.org>
+Subject: Re: [PATCH] drm/meson: add YUV422 output support
+Date:   Wed, 18 May 2022 09:23:53 +0200
+Message-Id: <165285860562.1281822.12934298648827697620.b4-ty@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220516072245.10745-1-christianshewitt@gmail.com>
+References: <20220516072245.10745-1-christianshewitt@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: Fix pointer dereferenced before checking
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <1652671437-20235-1-git-send-email-baihaowen@meizu.com>
-References: <1652671437-20235-1-git-send-email-baihaowen@meizu.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Haowen Bai <baihaowen@meizu.com>, <ath11k@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165285847598.17755.2700505085056283549.kvalo@kernel.org>
-Date:   Wed, 18 May 2022 07:21:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Haowen Bai <baihaowen@meizu.com> wrote:
+Hi,
 
-> The pointer sspec is dereferencing pointer sar before sar is being
-> null checked. Fix this by assigning sar->sub_specs to sspec only if
-> sar is not NULL, otherwise just NULL. The code has checked sar whether
-> it is NULL or not as below, but use before checking.
+On Mon, 16 May 2022 07:22:45 +0000, Christian Hewitt wrote:
+> From: Dongjin Kim <tobetter@gmail.com>
 > 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> Support YUV422 output from the Amlogic Meson SoC VPU to the HDMI
+> controller. Without this YUV422 format out of the HDMI encoder
+> leads to using the dw-hdmi YUV444 to YUV422 color conversion which
+> gives wrong colors and a green line on the left edge of the screen.
+> 
+> [...]
 
-I prefer Baochen's version:
+Thanks, Applied to https://anongit.freedesktop.org/git/drm/drm-misc.git (drm-misc-next)
 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220517004844.2412660-1-quic_bqiang@quicinc.com/
-
-Patch set to Superseded.
+[1/1] drm/meson: add YUV422 output support
+      https://cgit.freedesktop.org/drm/drm-misc/commit/?id=c193a003dc46ae601f46908b41d6f485b87db1ad
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/1652671437-20235-1-git-send-email-baihaowen@meizu.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Neil
