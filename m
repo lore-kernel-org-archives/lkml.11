@@ -2,127 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C94C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE39CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241659AbiERSsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39228 "EHLO
+        id S241652AbiERSs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241612AbiERSsg (ORCPT
+        with ESMTP id S241624AbiERSso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:48:36 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE07229FE8;
-        Wed, 18 May 2022 11:48:35 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id kq17so5544461ejb.4;
-        Wed, 18 May 2022 11:48:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=V4xR0AH3E5rQf6McW3p2A8uOfbIfUKeQrN91C/yMV50=;
-        b=bu0INzU1N8Nq8qn8T3l6q6vvb7+NFEg8a/ZYrgXd8RUy0a+s7qDzenAV9LWfhiCJ29
-         rl1dwChQVQAea9HEFPR/j3YRj797Onghk/jZYeVlzn0iBhBp6GFbh3pB+UJEoGvzIE2i
-         iG3Ry46uUgg8baoYHi1pHQdwmPEUqmlvu2RJfupuApI/MMH8hkSJ6sw04QlzxTz1tT89
-         E+RAiova/yzsw5g86Cz9XexD8pJs6+osHjAWyqg5bjTbPdKElADeaHOPn0AboFX1THS3
-         kUfqHWE49sc1hu8WVZhWBLEWWFWbvKVpOuq87LPjpDlC/Wna37OO32MNqho4el8nw021
-         pH1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=V4xR0AH3E5rQf6McW3p2A8uOfbIfUKeQrN91C/yMV50=;
-        b=7qQ2DK3kFfUriLIeQYCKcF6LcErSmX5ZGaipMZ5sbGTxyJCwzgwHfYgwPCEFKjfbwG
-         /4vV6P0Mm/MpLIbFYCIHJFh5AN80Ye4kLYZQvc+IZw6b/bxU/9DYnZpzgj/0VcQr1Awo
-         B0EJ5xezPVgeO8pxXLLVpAYs3A3NIj9h+sw9V5GNrIyHraa3QeCgGwrzZp8qS2j91hMV
-         Py9U7zuW5gl7BshYfx4xGjSuwbT+cWjE1juSC33f3VnIp+rVpbQFG1eJ8pOfugUTgS4o
-         2w/tP5VLjd91sDwK9wQOu/jZQle2YJAcyuu6tfLZcEfZtmkMuCKD75+o4mD7GutAf06I
-         uP8g==
-X-Gm-Message-State: AOAM530YtKWALLTsih3aXkIhnOkyXyVGaR7xkuOEGe1koJnaF9lYVqJk
-        3tw1psYPu6CaPleYYlGqLUc=
-X-Google-Smtp-Source: ABdhPJz7WZDSsUusvhmfV4oySw45GZQAcTr6VqaiHZ2OKoZOxLiykjHjD1FCAa0jg84KstFaBa9NJg==
-X-Received: by 2002:a17:907:7e85:b0:6f4:78f1:75b5 with SMTP id qb5-20020a1709077e8500b006f478f175b5mr913202ejc.54.1652899713856;
-        Wed, 18 May 2022 11:48:33 -0700 (PDT)
-Received: from fedora.robimarko.hr ([188.252.220.143])
-        by smtp.googlemail.com with ESMTPSA id q18-20020aa7cc12000000b0042aa40e76cbsm1702662edt.80.2022.05.18.11.48.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 11:48:33 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        konrad.dybcio@somainline.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v4 6/6] arm64: dts: qcom: Add PMP8074 DTSI
-Date:   Wed, 18 May 2022 20:48:25 +0200
-Message-Id: <20220518184825.1034976-6-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518184825.1034976-1-robimarko@gmail.com>
-References: <20220518184825.1034976-1-robimarko@gmail.com>
+        Wed, 18 May 2022 14:48:44 -0400
+Received: from na01-obe.outbound.protection.outlook.com (unknown [52.101.57.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2A1229FC4;
+        Wed, 18 May 2022 11:48:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ORjIX3K9KvGpNb9+kDvkOPfyh2ECipH8uYWV2bdLeugCjTtt/xXRmdr2yqeT3x/Lzk4s886zOSnbKpVbLdjF9PYSo+rXrBWnnWqklHE5UsjnXTLya98daZ2KI8Y5qDhKNHFNng1eW2Z4oloMmuzQo+TarKzDJIwY98W/WtsJTXr+fmB2Ce7n5fPs/92RNh5J/Jo/7MSdZFky6dYuKY0xkZMBFbbED26A+/XO+Gr/ANd3NIO4Xk9QOIgD3/oK5MFhj6U6rhNsIx2mzDFhL2VZOvhX8HGaYN4+M9J0hE/REuk3NEbLvdy55dEQdxxCNT8KwX+vN6xAPRlrAAF4QCh+kA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oQw6Jzetz1t2EDL5xkzmn+pB87CgLVc8HHTholg8nLo=;
+ b=Km9MZneBZogEeys6dvQyXYIG1u65+pJdPayeNs2cOL13UPlki2J7VmTwsPRx5zX7P+7axnAfluUIeDZ5LJoOrtlWCgnzjQjOzIiUDToOuELzqdrovwY9aITm4a3vP/A8DKQbz9diNrbsGVhQmcTpJP+DHxGh+8ZWLnbEXbLZRj7e8dFpXOmdm9SQ99Idm2PbZ+IsJ09tG2M8lRsVSYbUPcU3E6Vn1HPJEglkInQ3PIapxJFaGUfrbXvADEtNRGCOlVSwWUbe2QwrWoqq0aulqzYKLRxWDpFyjaFHfqQmV75BsArfKaHOYPki8ODbEg2RRxx/aH6go1K4TohfTL9gCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oQw6Jzetz1t2EDL5xkzmn+pB87CgLVc8HHTholg8nLo=;
+ b=SHya0iQRI1mVmZRLuetlXyqRtFkY6//K0DjZ4ERvbpfLGSkZpn/ha5hrsTAkUgxSiWvHyOMVa2A2U0vDX1+By8v+ls9Mg7szDc7HcicFzFTrpXu4IBXwTrw5LwWIMiIyZZF/tkLGC4X/ylaM8O1pvlzzZV89Z9QnE6JQdxItySw=
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com (2603:10b6:a03:105::15)
+ by CH2PR21MB1399.namprd21.prod.outlook.com (2603:10b6:610:8e::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.7; Wed, 18 May
+ 2022 18:48:39 +0000
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::942c:e0f2:568:5335]) by BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::942c:e0f2:568:5335%7]) with mapi id 15.20.5293.004; Wed, 18 May 2022
+ 18:48:39 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Dexuan Cui <decui@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+CC:     Saurabh Singh Sengar <ssengar@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "deller@gmx.de" <deller@gmx.de>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] video: hyperv_fb: Allow resolutions with size > 64 MB for
+ Gen1
+Thread-Topic: [PATCH] video: hyperv_fb: Allow resolutions with size > 64 MB
+ for Gen1
+Thread-Index: AQHYX9YSthbGf8K4qEaTeH9fJ7H5Eq0O8UBQgBYbEhA=
+Date:   Wed, 18 May 2022 18:48:39 +0000
+Message-ID: <BYAPR21MB1270E4CBA78869748D28C81BBFD19@BYAPR21MB1270.namprd21.prod.outlook.com>
+References: <1651067273-6635-1-git-send-email-ssengar@linux.microsoft.com>
+ <20220428143746.sya775ro5zi3kgm3@liuwe-devbox-debian-v2>
+ <DM5PR21MB1749EE7458996FF22AAA9AF8CAC39@DM5PR21MB1749.namprd21.prod.outlook.com>
+ <BYAPR21MB12702855D53B456E898ED5E0BFC39@BYAPR21MB1270.namprd21.prod.outlook.com>
+In-Reply-To: <BYAPR21MB12702855D53B456E898ED5E0BFC39@BYAPR21MB1270.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=ea6efad5-303e-4efd-b054-9cb15ed3afe4;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-04T16:37:53Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e5551556-c117-4d63-d185-08da38ff05e8
+x-ms-traffictypediagnostic: CH2PR21MB1399:EE_
+x-microsoft-antispam-prvs: <CH2PR21MB13997861355A31055BB1DD38BFD19@CH2PR21MB1399.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: blZLNtbc7VNI8xE47iOvBSTdWLq2z0cfNLYn3D7KIBApDCyz4MkxToAA8WeArEpxOsMTWAdb5MGco/7IFULbKkHwTSHOBAYNOuDA1VERHhS23PojBwy1JF4D6eSpdRg3u31+uuCIbU96KA1lbFa2LeJ8pHkyOzkXlZkoJqLrkyCYKiHpSVDD6FngsKIFuUss0vkhS83vbvi4cMGHtWNfTRvJK/vlp7b4R4hbxwzKEx09Lty2y3D2MuP2aUjqu5LcUKFlYv7D2QspooN74E2eoLVAOHSqBiYBTMh0X16tXy9V7rrpFbd7EVrhxJOtmfU5K/KDnn5IN6+hg6MYnKNU99FrvAclgUnI97M4cdVflzHNCVIvc1muKZqCgmFr12L03M2XhshZUjrH6rrIX4WQ+2kxlLgNoayuU6TFEeGss7Dj1J7zZlgHjErrT8sIICFn4Pwa86gUOBVgPIsHPKstu5+PZL1fmFtIzKOXj1SubCI3xpiXytcz0lNxLwcd3JJTOfyfR//a0dZp0KO59w7om6/lkGKGPtMAuMnbE1Uef3CNL2p3EeRa/CYDauNCZv/HvSuCvBKPX0PmPuxaQajN3uzCrNyZ/nNKxKncYInY6UBJ/rxNUUIXfj9HO77bPatY7KvicnX9U/VNpZyuL7aq9BWOd/XSTGwPcXJOdMlmHJZNtHdPkPObeOuNYLB11tRJlzDcoSWgW+2KLKnL9mQ6BskJC5XIpGmeT4E7Dv8IXJovMxzmieQfIpSHDqKkNDJP
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1270.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(82950400001)(10290500003)(82960400001)(55016003)(8936002)(83380400001)(2906002)(7696005)(122000001)(186003)(38070700005)(52536014)(508600001)(5660300002)(8990500004)(86362001)(71200400001)(38100700002)(64756008)(66446008)(66946007)(66556008)(66476007)(33656002)(110136005)(54906003)(6636002)(9686003)(8676002)(4326008)(76116006)(26005)(53546011)(6506007)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?U88ijy1eueUT6J02ke14aBlUvVeBrBbf4TntqSmdve2LBxT0Zr8nJmK+celB?=
+ =?us-ascii?Q?l98XBiDPY0hEtlLaqFZCpIJBm99T1bfrEKSO0bgWIrk691rHE4shPm6nLcQo?=
+ =?us-ascii?Q?mlZhLhMW0/FtZJ81D46pzjH4dnFcOiGwZuVjG7t3qBW2UZbZaTPT6jeRwrJk?=
+ =?us-ascii?Q?+ulJZEPSy22B+vvROGxSx3ooonNREQrdTrHW4+iUYDyqoa3XefeEbVGcuUmR?=
+ =?us-ascii?Q?bMWSYWVEZg8eJTyO9B3FgPLP0q5xIyxDYcQuIRoOsXwuq8QEJYc3wJ8ZuYeR?=
+ =?us-ascii?Q?d9jqAgaE/WEMjdsGLfwDlkMcCzXOO3GhMclU190OOQgjJfO1/8rzCcxgG3sC?=
+ =?us-ascii?Q?A/olLdxHKebkLnlCPT6Hxd2Kfh+Cyz8r6benl33oCrw7inRsNoBQK9qG2jx6?=
+ =?us-ascii?Q?c1Y9Z0sgVyYgkyaAW6c5S1276pOekHp2QdXUqbrlrzH3UXWoPL1Wo7a1qoNi?=
+ =?us-ascii?Q?xL+BzmZyS488Ri9QjmS1Mav49VHPF6GlVrOAaavbSSzSVekctm6RU5zwcKc4?=
+ =?us-ascii?Q?3WPYWAkwixQ0hGLyd2EGR0igLpKDK1OmrvuvzAJN3Tl4Jof0/OxjLmDJvTRK?=
+ =?us-ascii?Q?U87OhFcCzNn4PbGr2vsW3PGmaNVZjirNa7yMu8QgvAHQcCLFgMPOPE2riz1M?=
+ =?us-ascii?Q?z+ppDSqVbac76j/0Ub6JxL2aR2TDvVqVMhoDi63QWRbAd5LOlJfu6Xtogrhw?=
+ =?us-ascii?Q?nQqAhH+mvFOD2gpv3b818cval2/bEQNsV+DytoaaSxJprn1ns2w5nTm2ycgH?=
+ =?us-ascii?Q?cuE4yK7woDJ+jbeVrc7OG6jMtAia+iAQs96czwhS4mh6VPZtu+/k27ZD8wUk?=
+ =?us-ascii?Q?QofIr7SoPHOw4fXK1jgRsMhYh+Bbpp93CYH9cRg+JpFB37k7aoTyUr8veMqL?=
+ =?us-ascii?Q?OnUYbCeWgMvN2eJKeJmBacEYg+lQZQutgQ9VIekd2+OiyvakxSM6J8S4u0g0?=
+ =?us-ascii?Q?DJkQFitqkiIxei01vCmv+xaRBXWn2coa5qZbLA3L3Vhk0WDYqeuEHouHtTGb?=
+ =?us-ascii?Q?BXDg/ffzKaqqdvZuXxZAa+pplVnDB2EAXKg8C2d/1N+6EurBzThjdmVyYf/Z?=
+ =?us-ascii?Q?CgdfTDJIZ3WArvGE66REDYpnRHfdKc+Yw2V7pL5FGVi160z/bNVhtmjXZQRI?=
+ =?us-ascii?Q?XWbuN/PzwzqkY45RFY6b+Cbd1zCy2wKIPjxvzWgZJ5+OwjMOp9+N+0sTfzo4?=
+ =?us-ascii?Q?jKcnff7VNJMxlQQlgkdETC30mZ1gHmuyVAfnlO25Svi+uqFAfcEbZlcQmahc?=
+ =?us-ascii?Q?2ubSYLn+IxDB+b4pwtTusEuaaMgep8tbeTUFdtqN0YflX5utIoaydslnmNCN?=
+ =?us-ascii?Q?v5phP3/B/36IgnJfkyZnTSPAon39eEMjwD9NoL0GuUTK5qad11kIqMVNxRDi?=
+ =?us-ascii?Q?oLgiDAAE0JiC6gAwT8wd8vtDJo1CuKA2MqpnrDdU3fC4oQhqSeQFQepkHisi?=
+ =?us-ascii?Q?nE7rc/vq60LA7Qdoqvf1HPJha5sKVVRIvaxxoq5MxO5x0Dd6d8YWomjF0K8X?=
+ =?us-ascii?Q?bfjWZbWxiq/bbQQYdQOf/19JR5AkXsliJ3LinIxr0rgEo9YVzakwrbsR3T6/?=
+ =?us-ascii?Q?4j8OAWnX0GWkMWhwGYdcgSyHhY33b46FDpD8175AjlCjogr9uo5cMJiuPjiG?=
+ =?us-ascii?Q?Z8KdHN9JwMFUzEa0GMxbpyg4TqaLQa89ymFtJlrUJEdScjtx/9UHnqEFuu6t?=
+ =?us-ascii?Q?SE2D4d6/sYshtOe1ObLirw3oRzK765P34zqQIheEIDa3vT3edORlfMxWV4jT?=
+ =?us-ascii?Q?U+YyPu/PGg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1270.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5551556-c117-4d63-d185-08da38ff05e8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2022 18:48:39.2606
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eEeiATNxx1co9MMGH2G9zC78j7/Ng/9OKeQfZ971BGnuqKgWQlrcIS72eCKWhSRnYCJ9+JLacsJJMF9D3GuoFQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR21MB1399
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PMP8074 is a companion PMIC to the Qualcomm IPQ8074 series that is
-controlled via SPMI.
+> From: Dexuan Cui <decui@microsoft.com>
+> Sent: Wednesday, May 4, 2022 10:05 AM
+> To: Haiyang Zhang <haiyangz@microsoft.com>; Wei Liu <wei.liu@kernel.org>;
+> > ...
+> > When I initially implemented this driver 10 years ago, I believe there
+> > was smaller limit for the fb... But I think this patch is good for the
+> > newer MMIO alloc scheme. I hope to see reviews also from
+> >  @Dexuan Cui @Michael Kelley (LINUX) who are more familiar with
+> > the PCI/BAR/MMIO area.
+> >
+> > Thanks,
+> > - Haiyang
+>=20
+> The patch looks good to me but I suggest we check with the Hyper-V
+> team to figure out how a Gen1 Windows VM supports a higher
+> resolution that needs a VRAM size of more than 64MB. Just in case we
+> miss something..
+>=20
+> Thanks,
+> -- Dexuan
 
-Since we now have support for the regulators inside of it add DTSI
-for it.
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- arch/arm64/boot/dts/qcom/pmp8074.dtsi | 38 +++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/pmp8074.dtsi
+Saurabh checked this with Hyper-V team, who said there is no
+Generation 1-specific block for larger VRAM sizes in Windows VM.
 
-diff --git a/arch/arm64/boot/dts/qcom/pmp8074.dtsi b/arch/arm64/boot/dts/qcom/pmp8074.dtsi
-new file mode 100644
-index 000000000000..0bda4997720b
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/pmp8074.dtsi
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <dt-bindings/spmi/spmi.h>
-+
-+&spmi_bus {
-+	pmic@1 {
-+		compatible ="qcom,spmi-pmic";
-+		reg = <0x1 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		regulators {
-+			compatible = "qcom,pmp8074-regulators";
-+
-+			s3: s3 {
-+				regulator-name = "vdd_s3";
-+				regulator-min-microvolt = <592000>;
-+				regulator-max-microvolt = <1064000>;
-+				regulator-always-on;
-+				regulator-boot-on;
-+			};
-+
-+			s4: s4 {
-+				regulator-name = "vdd_s4";
-+				regulator-min-microvolt = <712000>;
-+				regulator-max-microvolt = <992000>;
-+				regulator-always-on;
-+				regulator-boot-on;
-+			};
-+
-+			l11: l11 {
-+				regulator-name = "l11";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3300000>;
-+			};
-+		};
-+	};
-+};
--- 
-2.36.1
+When the driver was originally developed, we didn't have the API
+vmbus_allocate_mmio(), and I guess we just used the PCI device's BAR
+address for simplicity, and didn't realize the restriction with very high
+resolutions that require >64 MB VRAM. It looks like the synthetic
+VMBus framebuffer device doesn't have to use the same MMIO range
+used by the Hyper-V legacy PCI framebuffer device, so the patch
+looks good to me.
 
+BTW, please check the hyperv-drm driver as well:
+drivers/gpu/drm/hyperv/hyperv_drm_drv.c
+I think we should make the same change there to support 7680x4320
+for Gen1 VMs.
+
+Thanks,
+Dexuan
