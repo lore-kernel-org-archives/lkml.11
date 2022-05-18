@@ -2,160 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CA5C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A55C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbiERGdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
+        id S231431AbiERGbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiERGc7 (ORCPT
+        with ESMTP id S230512AbiERGb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:32:59 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6B3DE335;
-        Tue, 17 May 2022 23:32:47 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id n10so851259qvi.5;
-        Tue, 17 May 2022 23:32:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iNLG0SMc9nRqW0DoCoki52GgrxJLjTRCAhq9TQJlP3I=;
-        b=J57mevt0lm333o3WqDhpUZ6lu35lzwxo4U0axQIyYIu8/Ub51orLPP+oVWcZ+7yuRO
-         7TgzHWGchDJ2BfOfg2xsmx/0ebQ1NGbkQe8FjGp/g/MKi+IFcu3yF/KRfPVty1Ry2Xos
-         Azoqc/NogRtoS6SJQsW8j0ixrA+Ttqw/Bv6pfmQ+CLAa4d/ycHb3YVx/lOOvCkvz4PLU
-         /TWjhO3bn5hnPHQI95OdjDJHdxtkOrg+cg9VX7tWBXPGRqRTvbcmMOE92d+8NSfhSh4z
-         Ji7EiBr4ktQIMgbpiWksFR2fN0eGkUW5r+1n2obxF3oJYxUwOQD2huxNxwLehof3hyfF
-         dyew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iNLG0SMc9nRqW0DoCoki52GgrxJLjTRCAhq9TQJlP3I=;
-        b=jl3nv35/vg3g7hXWPGwiffAYumLcaRnvXtixY/ooZsumB4X9O07AOP3uoA/JQjabSz
-         gKz92LTCgfhAdV5+Z0mgt1XhJmG4PXEi8aPXHpxU29Cq+Ift2dYQNTD3EzUtkldF9u77
-         VxGGMqtSRQ9+PIklcETjJYGlNbDXFm9BIr0RNO+M4ZLloKfqQ7ewLRqhXIVKCR0R/SnE
-         EH0zWIkzglPhN1QrrBmHdxqQzi+wHwj3gBzMRxZX5+TlWPFED6VQbgoAiLE41C8cs2ZP
-         FxbsYGNzngaClPee6CIalnVYrETkXLXyNOrGgu2uYHg1Fyo5QGczVy0rCjxKsg2wd5xq
-         LmBg==
-X-Gm-Message-State: AOAM531kWdSzohGGZKI/pN6Yn+q4RJ6+lwKPyq3FINWUD9+QyEtQnBMu
-        JuHUey7gQtBnYEVomV7Q+l9WcONmX7f5ap4N5+E=
-X-Google-Smtp-Source: ABdhPJxbXZu2paoKEwxHX2Ersl25ZBBKIYIkmfDysk93JrGCsEzCBur7wOwPucdBX+7P9RLfRUAPFLmShF08g1cRR4k=
-X-Received: by 2002:ad4:5c6e:0:b0:45a:aefd:f551 with SMTP id
- i14-20020ad45c6e000000b0045aaefdf551mr23591604qvh.95.1652855566388; Tue, 17
- May 2022 23:32:46 -0700 (PDT)
+        Wed, 18 May 2022 02:31:28 -0400
+Received: from esa7.hc1455-7.c3s2.iphmx.com (esa7.hc1455-7.c3s2.iphmx.com [139.138.61.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FAA65DF
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:31:24 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="51998538"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647270000"; 
+   d="scan'208";a="51998538"
+Received: from unknown (HELO oym-r1.gw.nic.fujitsu.com) ([210.162.30.89])
+  by esa7.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 15:31:21 +0900
+Received: from oym-m4.gw.nic.fujitsu.com (oym-nat-oym-m4.gw.nic.fujitsu.com [192.168.87.61])
+        by oym-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 19A296C969
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:21 +0900 (JST)
+Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
+        by oym-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 3B2E5E0CDB
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:20 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om4.fujitsu.com (Postfix) with ESMTP id AC5054007E8A3;
+        Wed, 18 May 2022 15:31:19 +0900 (JST)
+From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, gregkh@linuxfoundation.org,
+        rafael@kernel.org, mchehab+huawei@kernel.org, eugenis@google.com,
+        tony.luck@intel.com, pcc@google.com, peterz@infradead.org,
+        marcos@orca.pet, conor.dooley@microchip.com,
+        nicolas.ferre@microchip.com, marcan@marcan.st,
+        linus.walleij@linaro.org, arnd@arndb.de,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     tarumizu.kohei@fujitsu.com
+Subject: [PATCH v4 0/8] Add hardware prefetch control driver for A64FX and x86
+Date:   Wed, 18 May 2022 15:30:24 +0900
+Message-Id: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
-In-Reply-To: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 17 May 2022 23:32:35 -0700
-Message-ID: <CAADnVQ+x-A87Z9_c+3vuRJOYm=gCOBXmyCJQ64CiCNukHS6FpA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: avoid grabbing spin_locks of all cpus when no free elems
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 11:27 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
->
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->
-> We encountered bad case on big system with 96 CPUs that
-> alloc_htab_elem() would last for 1ms. The reason is that after the
-> prealloc hashtab has no free elems, when trying to update, it will still
-> grab spin_locks of all cpus. If there are multiple update users, the
-> competition is very serious.
->
-> So this patch add is_empty in pcpu_freelist_head to check freelist
-> having free or not. If having, grab spin_lock, or check next cpu's
-> freelist.
->
-> Before patch: hash_map performance
-> ./map_perf_test 1
-> 0:hash_map_perf pre-alloc 975345 events per sec
-> 4:hash_map_perf pre-alloc 855367 events per sec
-> 12:hash_map_perf pre-alloc 860862 events per sec
-> 8:hash_map_perf pre-alloc 849561 events per sec
-> 3:hash_map_perf pre-alloc 849074 events per sec
-> 6:hash_map_perf pre-alloc 847120 events per sec
-> 10:hash_map_perf pre-alloc 845047 events per sec
-> 5:hash_map_perf pre-alloc 841266 events per sec
-> 14:hash_map_perf pre-alloc 849740 events per sec
-> 2:hash_map_perf pre-alloc 839598 events per sec
-> 9:hash_map_perf pre-alloc 838695 events per sec
-> 11:hash_map_perf pre-alloc 845390 events per sec
-> 7:hash_map_perf pre-alloc 834865 events per sec
-> 13:hash_map_perf pre-alloc 842619 events per sec
-> 1:hash_map_perf pre-alloc 804231 events per sec
-> 15:hash_map_perf pre-alloc 795314 events per sec
->
-> hash_map the worst: no free
-> ./map_perf_test 2048
-> 6:worse hash_map_perf pre-alloc 28628 events per sec
-> 5:worse hash_map_perf pre-alloc 28553 events per sec
-> 11:worse hash_map_perf pre-alloc 28543 events per sec
-> 3:worse hash_map_perf pre-alloc 28444 events per sec
-> 1:worse hash_map_perf pre-alloc 28418 events per sec
-> 7:worse hash_map_perf pre-alloc 28427 events per sec
-> 13:worse hash_map_perf pre-alloc 28330 events per sec
-> 14:worse hash_map_perf pre-alloc 28263 events per sec
-> 9:worse hash_map_perf pre-alloc 28211 events per sec
-> 15:worse hash_map_perf pre-alloc 28193 events per sec
-> 12:worse hash_map_perf pre-alloc 28190 events per sec
-> 10:worse hash_map_perf pre-alloc 28129 events per sec
-> 8:worse hash_map_perf pre-alloc 28116 events per sec
-> 4:worse hash_map_perf pre-alloc 27906 events per sec
-> 2:worse hash_map_perf pre-alloc 27801 events per sec
-> 0:worse hash_map_perf pre-alloc 27416 events per sec
-> 3:worse hash_map_perf pre-alloc 28188 events per sec
->
-> ftrace trace
->
-> 0)               |  htab_map_update_elem() {
-> 0)   0.198 us    |    migrate_disable();
-> 0)               |    _raw_spin_lock_irqsave() {
-> 0)   0.157 us    |      preempt_count_add();
-> 0)   0.538 us    |    }
-> 0)   0.260 us    |    lookup_elem_raw();
-> 0)               |    alloc_htab_elem() {
-> 0)               |      __pcpu_freelist_pop() {
-> 0)               |        _raw_spin_lock() {
-> 0)   0.152 us    |          preempt_count_add();
-> 0)   0.352 us    |          native_queued_spin_lock_slowpath();
-> 0)   1.065 us    |        }
->                  |        ...
-> 0)               |        _raw_spin_unlock() {
-> 0)   0.254 us    |          preempt_count_sub();
-> 0)   0.555 us    |        }
-> 0) + 25.188 us   |      }
-> 0) + 25.486 us   |    }
-> 0)               |    _raw_spin_unlock_irqrestore() {
-> 0)   0.155 us    |      preempt_count_sub();
-> 0)   0.454 us    |    }
-> 0)   0.148 us    |    migrate_enable();
-> 0) + 28.439 us   |  }
->
-> The test machine is 16C, trying to get spin_lock 17 times, in addition
-> to 16c, there is an extralist.
+This patch series add sysfs interface to control CPU's hardware
+prefetch behavior for performance tuning from userspace for the
+processor A64FX and x86 (on supported CPU).
 
-Is this with small max_entries and a large number of cpus?
+Changes from v3: https://lore.kernel.org/lkml/20220420030223.689259-1-tarumizu.kohei@fujitsu.com/
+  - remove hardware-dependent code from core driver
+    (driver/base/pfctl.c)
+  - simplifies implementation of register bit operations
+  - extract the pseudo_lock patch as a separate patch
+    https://lore.kernel.org/lkml/20220518045517.2066518-1-tarumizu.kohei@fujitsu.com/
 
-If so, probably better to fix would be to artificially
-bump max_entries to be 4x of num_cpus.
-Racy is_empty check still wastes the loop.
+[Background]
+============
+A64FX and some Intel processors have implementation-dependent register
+for controlling CPU's hardware prefetch behavior. A64FX has
+IMP_PF_STREAM_DETECT_CTRL_EL0[1], and Intel processors have MSR 0x1a4
+(MSR_MISC_FEATURE_CONTROL)[2]. These registers cannot be accessed from
+userspace.
+
+[1]https://github.com/fujitsu/A64FX/tree/master/doc/
+   A64FX_Specification_HPC_Extension_v1_EN.pdf
+
+[2]https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    Volume 4
+
+The advantage of using this is improved performance. As an example of
+performance improvements, the results of running the Stream benchmark
+on the A64FX are described in section [Merit].
+
+For MSR 0x1a4, it is also possible to change the value from userspace
+via the MSR driver. However, using MSR driver is not recommended, so
+it needs a proper kernel interface[3].
+
+[3]https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/about/
+
+For these reasons, we provide a new proper kernel interface to control
+both IMP_PF_STREAM_DETECT_CTRL_EL0 and MSR 0x1a4.
+
+[Overall design]
+================
+The source code for this driver is divided into common parts
+(driver/base/pfctl.c) and hardware dependent parts
+(arch/x86/kernel/cpu/x86-pfctl.c and drivers/soc/fujitsu/a64fx-pfctl.c).
+Architecture parts is described hardware-dependent processing. It must
+create attributes for a specific cache level/type.
+Common part is described hardware-independent processing. It create
+sysfs using the attributes from architecture part.
+
+This driver creates "prefetch_control" directory and some attributes
+in every CPU's cache/indexX directory, if CPU supports hardware
+prefetch control behavior.
+
+Detailed description of this sysfs interface is in
+Documentation/ABI/testing/sysfs-devices-system-cpu (patch8).
+
+This driver needs cache sysfs directory and cache level/type
+information. In ARM processor, these information can be obtained
+from registers even without ACPI PPTT.
+We add processing to create a cache/index directory using only the
+information from the register if the machine does not support ACPI
+PPTT and Kconfig for hardware prefetch control (CONFIG_HWPF_CONTROL)
+is true in patch5.
+This action caused a problem and is described in [Known problem].
+
+[Examples]
+==========
+This section provides an example of using this sysfs interface at the
+x86's model of INTEL_FAM6_BROADWELL_X.
+
+This model has the following register specifications:
+
+[0]    L2 Hardware Prefetcher Disable (R/W)
+[1]    L2 Adjacent Cache Line Prefetcher Disable (R/W)
+[2]    DCU Hardware Prefetcher Disable (R/W)
+[3]    DCU IP Prefetcher Disable (R/W)
+[63:4] Reserved
+
+In this case, index0 (L1d cache) corresponds to bit[2,3] and index2
+(L2 cache) corresponds to bit [0,1]. A list of attribute files of
+index0 and index2 in CPU1 at BROADWELL_X is following:
+
+```
+# ls /sys/devices/system/cpu/cpu1/cache/index0/prefetch_control/
+
+hardware_prefetcher_enable
+ip_prefetcher_enable
+
+# ls /sys/devices/system/cpu/cpu1/cache/index2/prefetch_control/
+
+adjacent_cache_line_prefetcher_enable
+hardware_prefetcher_enable
+```
+
+If user would like to disable the setting of "L2 Adjacent Cache Line
+Prefetcher Disable (R/W)" in CPU1, do the following:
+
+```
+# echo 0 >
+# /sys/devices/system/cpu/cpu1/cache/index2/prefetch_control/adjacent_cache_line_prefetcher_enable
+```
+
+In another example, a list of index0 at A64FX is following:
+
+```
+# ls /sys/devices/system/cpu/cpu1/cache/index0/prefetch_control/
+
+stream_detect_prefetcher_dist
+stream_detect_prefetcher_enable
+stream_detect_prefetcher_strength
+stream_detect_prefetcher_strength_available
+```
+
+[Patch organizations]
+=====================
+This patch series add hardware prefetch control core driver for A64FX
+and x86. Also, we add support for A64FX and BROADWELL_X at x86.
+
+- patch1: Add hardware prefetch core driver
+
+  Adds a register/unregister function to provide sysfs interface to
+  control CPU's hardware prefetch behavior. It creates the
+  "prefetch_control" sysfs directory and some attributes.
+
+- patch2: Add Kconfig/Makefile to build hardware prefetch control core
+  driver
+
+- patch3: Add support for A64FX
+
+  Adds module init/exit code to create sysfs attributes for A64FX with
+  "stream_detect_prefetcher_enable", "stream_detect_prefetcher_strong"
+  and "stream_detect_prefetcher_dist".
+
+- patch4: Add Kconfig/Makefile to build driver for A64FX
+
+- patch5: Create cache sysfs directory without ACPI PPTT for hardware
+  prefetch control
+
+  Hardware Prefetch control driver needs cache sysfs directory and cache
+  level/type information. In ARM processor, these information can be
+  obtained from register(CLIDR_EL1) even without PPTT. Therefore, we
+  set the cpu_map_populated to true to create cache sysfs directory, if
+  the machine doesn't have PPTT.
+
+- patch6: Add support for x86
+
+  Adds module init/exit code to create sysfs attributes for x86 with
+  "hardware_prefetcher_enable", "ip_prefetcher_enable" and
+  "adjacent_cache_line_prefetcher_enable".
+
+- patch7: Add Kconfig/Makefile to build driver for x86
+
+- patch8: Add documentation for the new sysfs interface
+
+[Known problem]
+===============
+- `lscpu` command terminates with -ENOENT because cache/index directory
+  is exists but shared_cpu_map file does not exist. This is due to
+  patch5, which creates a cache/index directory containing only level
+  and type without ACPI PPTT.
+
+[Merit]
+=======
+For reference, here is the result of STREAM Triad when tuning with
+the "s file in L1 and L2 cache on A64FX.
+
+| dist combination  | Pattern A   | Pattern B   |
+|-------------------|-------------|-------------|
+| L1:256,  L2:1024  | 234505.2144 | 114600.0801 |
+| L1:1536, L2:1024  | 279172.8742 | 118979.4542 |
+| L1:256,  L2:10240 | 247716.7757 | 127364.1533 |
+| L1:1536, L2:10240 | 283675.6625 | 125950.6847 |
+
+In pattern A, we set the size of the array to 174720, which is about
+half the size of the L1d cache. In pattern B, we set the size of the
+array to 10485120, which is about twice the size of the L2 cache.
+
+In pattern A, a change of dist at L1 has a larger effect. On the other
+hand, in pattern B, the change of dist at L2 has a larger effect.
+As described above, the optimal dist combination depends on the
+characteristics of the application. Therefore, such a sysfs interface
+is useful for performance tuning.
+
+Best regards,
+Kohei Tarumizu
+
+Kohei Tarumizu (8):
+  drivers: base: Add hardware prefetch control core driver
+  drivers: base: Add Kconfig/Makefile to build hardware prefetch control
+    core driver
+  soc: fujitsu: Add hardware prefetch control support for A64FX
+  soc: fujitsu: Add Kconfig/Makefile to build hardware prefetch control
+    driver
+  arm64: Create cache sysfs directory without ACPI PPTT for hardware
+    prefetch control
+  x86: Add hardware prefetch control support for x86
+  x86: Add Kconfig/Makefile to build hardware prefetch control driver
+  docs: ABI: Add sysfs documentation interface of hardware prefetch
+    control driver
+
+ .../ABI/testing/sysfs-devices-system-cpu      |  98 +++++
+ MAINTAINERS                                   |   8 +
+ arch/arm64/kernel/cacheinfo.c                 |  29 ++
+ arch/x86/Kconfig                              |   6 +
+ arch/x86/kernel/cpu/Makefile                  |   2 +
+ arch/x86/kernel/cpu/x86-pfctl.c               | 258 ++++++++++++
+ drivers/base/Kconfig                          |   9 +
+ drivers/base/Makefile                         |   1 +
+ drivers/base/pfctl.c                          | 180 +++++++++
+ drivers/soc/Kconfig                           |   1 +
+ drivers/soc/Makefile                          |   1 +
+ drivers/soc/fujitsu/Kconfig                   |  11 +
+ drivers/soc/fujitsu/Makefile                  |   2 +
+ drivers/soc/fujitsu/a64fx-pfctl.c             | 373 ++++++++++++++++++
+ include/linux/pfctl.h                         |  14 +
+ 15 files changed, 993 insertions(+)
+ create mode 100644 arch/x86/kernel/cpu/x86-pfctl.c
+ create mode 100644 drivers/base/pfctl.c
+ create mode 100644 drivers/soc/fujitsu/Kconfig
+ create mode 100644 drivers/soc/fujitsu/Makefile
+ create mode 100644 drivers/soc/fujitsu/a64fx-pfctl.c
+ create mode 100644 include/linux/pfctl.h
+
+-- 
+2.27.0
+
