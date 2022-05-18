@@ -2,169 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A779C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F89AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236529AbiERM0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
+        id S236573AbiERM0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236532AbiERM0H (ORCPT
+        with ESMTP id S236532AbiERM0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:26:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C522A1180E
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:26:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652876762;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ag47svcSletw0D4Eogws0bEKxZvRytmFQIh9SFkLfx4=;
-        b=QCkJApX+Q5QgZBI8RGvYMzgbJBh9PYz5FKOjS96wCFNvQIT0iRq0MWOMXrdOa+kNZFLsiL
-        nZhEpS7eAzawdzdTk/MVBF1vRmOq+jEO4oTXTpHMQe4Zff7a9q9HTLzeLuaA8+IZiRFYFo
-        7mtbH5CRydG875vVxv+nFTx/RQ7T14w=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623-xy30N_oqOX63Plw2T9GrUQ-1; Wed, 18 May 2022 08:26:02 -0400
-X-MC-Unique: xy30N_oqOX63Plw2T9GrUQ-1
-Received: by mail-wr1-f69.google.com with SMTP id bv12-20020a0560001f0c00b0020e359b3852so532012wrb.14
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:26:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=ag47svcSletw0D4Eogws0bEKxZvRytmFQIh9SFkLfx4=;
-        b=ca8Wja65uATYwaNfE+XHBMROOa3MbC8uauMh1wZ+T/Z+oQ83uYeJcyN0/A1DfoMJAk
-         gX7kh39L9x2xgHEQlKC2TLEG5E0bXMkJPV1+isor+hQuKsyR4CiffWsUPr/9IpJNUHjn
-         TcwudQgyw/BR7eTRHJ8nN4u7rvGb+l4cWqrkqYT/hK2RmsA3Ghrnv0dY8xNctDldXzfa
-         9y1QaVZKBCPjvKfoQjFXMyGZQGNylG9Wwj7pXgAAFjWHn7rp4sYILbWjzLjHlC6K+qxa
-         KBECWx6hvSrsGk0aygDhvon7roSzEGi976HlYud68VYS7255nT9RSTxhwI3oo9UqpCYo
-         LNnQ==
-X-Gm-Message-State: AOAM532hh2CCmcVypWhvUKFVx95o+PK5THNqDFvXobEw+hmLYb50dG+0
-        VeSuoosJ7i5n2XcexRoEjyotWkO876Qdcn971zR7041h8Ci4NTqb9C0Ie/+CqlACPHBWX+0qQ9p
-        Hnp3iFYp/Jrqs7a63fuDjbkM1kjkgmMFk1tqsOungigHiYuYNKHHV4SA9krNqFO/2MiYXEOBdpK
-        qZ
-X-Received: by 2002:adf:a3c2:0:b0:20c:fecc:8885 with SMTP id m2-20020adfa3c2000000b0020cfecc8885mr17227574wrb.463.1652876760725;
-        Wed, 18 May 2022 05:26:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxyFe+DsM9kcPagpIFfjB+7zvo4FOC76fHVKjk0i0QZnOytmXb9D8WdrAJ15H8IDDhLd4O/kw==
-X-Received: by 2002:adf:a3c2:0:b0:20c:fecc:8885 with SMTP id m2-20020adfa3c2000000b0020cfecc8885mr17227532wrb.463.1652876760300;
-        Wed, 18 May 2022 05:26:00 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id c13-20020adfc04d000000b0020d0351dbb6sm1964394wrf.80.2022.05.18.05.25.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 05:25:59 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 13/34] KVM: nSVM: Keep track of Hyper-V
- hv_vm_id/hv_vp_id
-In-Reply-To: <30b0e63c0a2d3c3c40edb47af6d80e452f1e69fa.camel@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
- <20220414132013.1588929-14-vkuznets@redhat.com>
- <30b0e63c0a2d3c3c40edb47af6d80e452f1e69fa.camel@redhat.com>
-Date:   Wed, 18 May 2022 14:25:59 +0200
-Message-ID: <874k1nuiw8.fsf@redhat.com>
+        Wed, 18 May 2022 08:26:14 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146B523158
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:26:12 -0700 (PDT)
+Received: from mail-yb1-f176.google.com ([209.85.219.176]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MqK2d-1nVyQT2pzn-00nUHC; Wed, 18 May 2022 14:26:10 +0200
+Received: by mail-yb1-f176.google.com with SMTP id i11so3333506ybq.9;
+        Wed, 18 May 2022 05:26:10 -0700 (PDT)
+X-Gm-Message-State: AOAM532zG8E9QxeoYTjizOUDigvxGU9HqUSHGI1jRTih85ajn3BHMHGI
+        rQaScaRoTZF6W4B1Tmy1TWo6QeP0dssL3tGArYY=
+X-Google-Smtp-Source: ABdhPJzmVlopyCfoOGgm87Os5G3QW/G9c0usDcCbEYvhYj8aqb9XG0oZHtflqu+F8nKb6UZfd6bLOqHBJIobSYwhMHY=
+X-Received: by 2002:a25:5e09:0:b0:64d:8543:627d with SMTP id
+ s9-20020a255e09000000b0064d8543627dmr16981158ybb.394.1652876769340; Wed, 18
+ May 2022 05:26:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220518065639.2432213-1-gerg@linux-m68k.org> <20220518065639.2432213-2-gerg@linux-m68k.org>
+In-Reply-To: <20220518065639.2432213-2-gerg@linux-m68k.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 18 May 2022 13:26:12 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1gd6ggDgKu66bQ-qQ-K4g60uLo5VOuO5gOKsO99Bi0dw@mail.gmail.com>
+Message-ID: <CAK8P3a1gd6ggDgKu66bQ-qQ-K4g60uLo5VOuO5gOKsO99Bi0dw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] m68knommu: fix undefined reference to `mach_get_rtc_pll'
+To:     Greg Ungerer <gerg@linux-m68k.org>
+Cc:     "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:YNRhJGh9ToQapzUXgx/DrsuWRXMLxTSWN594wMBabhiJEIaIoeS
+ JbVnnNCMNLEfckiqGecFNadSlbPCCyil7i90xj/Ayg/wvjd9DnNZByNqkwqcF+78UZvfp+A
+ hLt0dPABrkdEMHvsT8NuRiJSbCPhdJqFhjA9MbCFzDpc2muSQeDdkYL0K9ECfL0FwRh9zu5
+ +NHv+1iNt7lKbOGCSTyeA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:m388vcAbaoA=:kPUqBJp/V1dAvNOh2cwLo3
+ 3DqU9MK3vhP0prNuzaGr+zso7z16bMQ6qbRDYRGXw5sGoVfstBckcR1Mk25TzgODrQgHmCX5i
+ eAbVKI1PRklHay72FzRSRRh37x37IQ9MQ/31zV3lN2M5zefdOqYStwgfiASAmq114MG7NiNWl
+ 3/j5G6jdYx/72DR1i2nbTVULyAYq+Bpbn0ujya0uJsV+PDDF3xquBu6tthstos0FGXzAokfKe
+ aQnz2xbYB7FEyjMy8OMy4tL6jOMm/yOuYCE1NKUUCl3ML6go/yDeajjrmMkBZtjOmIxEeaRqJ
+ YhldK4my9kLUzp7wPbyNUANEY6pR1BbheFaOSWzu3/y8gc6qoxkuHeyTI4+O1CoKmdStefTac
+ F3UCbVIWH5wxM2O8Wr489yaCx8UHtzQRCZfKsX772VbprgnK/pVp5fIw6LJgLapSyR/nV4ghR
+ Ihtm4xPwz9lp5iZSsA7wEOPWiv6TBxcRv1zc9M4xf3XTAiqYhAdJ0OfqjIYFy43k/s5XbIQSg
+ JFncuPvIdLTB1F15tEr2pVyz1SmqmFg31Zx+kogj/MzyOXxWzOhXJl99GVLGFCfmP8r19WVMV
+ fizGd94sKrr3S241aDiVvhl8UQjWZd9Gk7kh1NjHsGXdX/O2ymuIHuuzkK1KJL3K9dsVxQ2b8
+ Oi0GQ0VOlPhXkFXYUM4apgHGqycICP+IU5DdIHYoRkoGmumrIjncAUT277AcboMaywAW2z5X7
+ SdwO4dKKOYzxMx6DNIwRhDPHhBsdcl3r5EsvLstzUDG0TIr0Y0Ljkf/wuDMAhH9JeaMthR+1w
+ k4EiiAB6V5NbNswnucISuulS4VA3D1wXyU/puliY1h3Q1V8pQLp5Q1QOo0aOxUGOePWMiotq5
+ HVGW0JB+T2tM1Vz5aQvNVuFl1JWlyGINgcL3196N4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maxim Levitsky <mlevitsk@redhat.com> writes:
+On Wed, May 18, 2022 at 7:56 AM Greg Ungerer <gerg@linux-m68k.org> wrote:
+>
+> Configuring for a nommu classic m68k target and enabling the generic rtc
+> driver (CONFIG_RTC_DRV_GENERIC) will result in the following compile
+> error:
+>
+>    m68k-linux-ld: arch/m68k/kernel/time.o: in function `rtc_ioctl':
+>    time.c:(.text+0x82): undefined reference to `mach_get_rtc_pll'
+>    m68k-linux-ld: time.c:(.text+0xbc): undefined reference to `mach_set_rtc_pll'
+>    m68k-linux-ld: time.c:(.text+0xf4): undefined reference to `mach_set_rtc_pll'
+>
+> There is no definitions of "mach_set_rtc_pll" and "mach_get_rtc_pll" in the
+> nommu code paths. Move these definitions and the associated "mach_hwclk",
+> so that they are around their use case in time.c. This means they will
+> always be defined on the builds that require them, and not on those that
+> cannot use them - such as ColdFire (both with and without MMU enabled).
+>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 
-> On Thu, 2022-04-14 at 15:19 +0200, Vitaly Kuznetsov wrote:
->> Similar to nSVM, KVM needs to know L2's VM_ID/VP_ID and Partition
->> assist page address to handle L2 TLB flush requests.
->> 
->> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
->> ---
->>  arch/x86/kvm/svm/hyperv.h | 16 ++++++++++++++++
->>  arch/x86/kvm/svm/nested.c |  2 ++
->>  2 files changed, 18 insertions(+)
->> 
->> diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
->> index 7d6d97968fb9..8cf702fed7e5 100644
->> --- a/arch/x86/kvm/svm/hyperv.h
->> +++ b/arch/x86/kvm/svm/hyperv.h
->> @@ -9,6 +9,7 @@
->>  #include <asm/mshyperv.h>
->>  
->>  #include "../hyperv.h"
->> +#include "svm.h"
->>  
->>  /*
->>   * Hyper-V uses the software reserved 32 bytes in VMCB
->> @@ -32,4 +33,19 @@ struct hv_enlightenments {
->>   */
->>  #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
->>  
->> +static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
->> +{
->> +	struct vcpu_svm *svm = to_svm(vcpu);
->> +	struct hv_enlightenments *hve =
->> +		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
->
-> Small nitpick:
->
-> Can we use this as an opportunity to rename the 'reserved_sw' to \
-> 'hv_enlightenments' or something, because that is what it is?
->
-> Also the reserved_sw is an array, which is confusing, since from first look,
-> it looks like we have a pointer dereference here.
->
+Right, this seems to be the best solution
 
-Well, that's what it is in Hyper-V world and so far we didn't give it
-another meaning in KVM but in theory it is not impossible, e.g. we can
-use this area to speed up nested KVM on KVM.
-
-AMD calls this "Reserved for Host usage" so we can probably rename it to 
-'reserved_host' but I'm not sure it's worth the hassle...
-
->
->
->> +	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
->> +
->> +	if (!hv_vcpu)
->> +		return;
->> +
->> +	hv_vcpu->nested.pa_page_gpa = hve->partition_assist_page;
->> +	hv_vcpu->nested.vm_id = hve->hv_vm_id;
->> +	hv_vcpu->nested.vp_id = hve->hv_vp_id;
->> +}
->> +
->>  #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
->> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
->> index bed5e1692cef..2d1a76343404 100644
->> --- a/arch/x86/kvm/svm/nested.c
->> +++ b/arch/x86/kvm/svm/nested.c
->> @@ -826,6 +826,8 @@ int nested_svm_vmrun(struct kvm_vcpu *vcpu)
->>  
->>  	svm->nested.nested_run_pending = 1;
->>  
->> +	nested_svm_hv_update_vm_vp_ids(vcpu);
->> +
->>  	if (enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, true))
->>  		goto out_exit_err;
->>  
->
-> That won't work after migration, since this won't be called
-> if we migrate with nested guest running.
->
->
-> I think that nested_svm_hv_update_vm_vp_ids should be called 
-> from enter_svm_guest_mode.
->
-
-Oh that's a good one, thanks! This could've been a hard to debug issue.
-
--- 
-Vitaly
-
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
