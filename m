@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 337FAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75955C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236789AbiERMdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
+        id S236690AbiERMds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236901AbiERMct (ORCPT
+        with ESMTP id S236949AbiERMcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:32:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21BD5F8CB;
-        Wed, 18 May 2022 05:29:14 -0700 (PDT)
+        Wed, 18 May 2022 08:32:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DE514D787;
+        Wed, 18 May 2022 05:29:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB66AB81FBA;
-        Wed, 18 May 2022 12:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE314C34100;
-        Wed, 18 May 2022 12:29:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2627B6147D;
+        Wed, 18 May 2022 12:28:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5974AC385A5;
+        Wed, 18 May 2022 12:28:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876949;
-        bh=QthLUezj51OHIH/d94GCmVVj5dFJwmK1Ae4LYtY9Z2E=;
+        s=k20201202; t=1652876923;
+        bh=0/NFO8cYx8eV49vuYrkyZNzByuqpxYe0Qj+VfRawypc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L7NZRIjammru5Nzsj74RanplxE/6Y3JqszqztuUcflTeARHcqLF+TjCssTUyBOEhr
-         slnmbyT2WPph4qz3sSwFDGCjiVJ9TAtScTm5pJryhw6CTFX9f9r8JeYFD4JqL/3GDH
-         5xaRfpWZwGsYVSbUVH+wi5sF3TbM/tO4WiaPLWCpbmzQvWgYf/Ls3uPlTF9coqRxED
-         oBnoBE0tLhR/BA0mj+NwGnCjHt8D0Y1AgFjQG/m+LnBb2/nP5bhcjl35QOLjgIHE4k
-         4dxS1jUiCksX404d9B3qmne0dIwfsJJ16PfJx87aI+Rp4toelvv+o2my3uM09kj3H9
-         pbBBP7DbxEZlw==
+        b=gqhK8r7lcjyA0MePeJhLpFkUuJ8oPXlegUQg/QxZQCyW+RnBFaXsuBybAPYzphF6+
+         3rcDlO6ZMttfQAi3wWohkn2Hvtobixnu1Iao4ilrXnDDN4fwlNPNIaFR0sqJ/BxyWN
+         wuJb3H7PJp8z7aaUF07TQY5RjSPehF/BZqPaqVTAVQkBICKEiFlLDF+XUKKBeleLih
+         uN7FNbvdieTKFgH+oQZMedfwnhAxi1e5Xba6/afHMfamIUBb9P2XpNu/d/Do2n6azf
+         Pv1Qrd3UNdTlmYQdeiuQUF9qUW3NbcxiPzv8YQbitnP+FztHiDsLHYxzKrFaFuqNCL
+         YX+pmcJl9lQRw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 08/13] net: atlantic: fix "frag[0] not initialized"
-Date:   Wed, 18 May 2022 08:28:39 -0400
-Message-Id: <20220518122844.343220-8-sashal@kernel.org>
+Cc:     Schspa Shi <schspa@gmail.com>,
+        syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        jannh@google.com, Julia.Lawall@inria.fr, jj251510319013@gmail.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 17/17] usb: gadget: fix race when gadget driver register via ioctl
+Date:   Wed, 18 May 2022 08:27:51 -0400
+Message-Id: <20220518122753.342758-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
-References: <20220518122844.343220-1-sashal@kernel.org>
+In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
+References: <20220518122753.342758-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,51 +55,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grant Grundler <grundler@chromium.org>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 62e0ae0f4020250f961cf8d0103a4621be74e077 ]
+[ Upstream commit 5f0b5f4d50fa0faa8c76ef9d42a42e8d43f98b44 ]
 
-In aq_ring_rx_clean(), if buff->is_eop is not set AND
-buff->len < AQ_CFG_RX_HDR_SIZE, then hdr_len remains equal to
-buff->len and skb_add_rx_frag(xxx, *0*, ...) is not called.
+The usb_gadget_register_driver can be called multi time by to
+threads via USB_RAW_IOCTL_RUN ioctl syscall, which will lead
+to multiple registrations.
 
-The loop following this code starts calling skb_add_rx_frag() starting
-with i=1 and thus frag[0] is never initialized. Since i is initialized
-to zero at the top of the primary loop, we can just reference and
-post-increment i instead of hardcoding the 0 when calling
-skb_add_rx_frag() the first time.
+Call trace:
+  driver_register+0x220/0x3a0 drivers/base/driver.c:171
+  usb_gadget_register_driver_owner+0xfb/0x1e0
+    drivers/usb/gadget/udc/core.c:1546
+  raw_ioctl_run drivers/usb/gadget/legacy/raw_gadget.c:513 [inline]
+  raw_ioctl+0x1883/0x2730 drivers/usb/gadget/legacy/raw_gadget.c:1220
+  ioctl USB_RAW_IOCTL_RUN
 
-Reported-by: Aashay Shringarpure <aashay@google.com>
-Reported-by: Yi Chou <yich@google.com>
-Reported-by: Shervin Oloumi <enlightened@google.com>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This routine allows two processes to register the same driver instance
+via ioctl syscall. which lead to a race condition.
+
+Please refer to the following scenarios.
+
+           T1                                  T2
+------------------------------------------------------------------
+usb_gadget_register_driver_owner
+  driver_register                    driver_register
+    driver_find                       driver_find
+    bus_add_driver                    bus_add_driver
+      priv alloced                     <context switch>
+      drv->p = priv;
+      <schedule out>
+      kobject_init_and_add // refcount = 1;
+   //couldn't find an available UDC or it's busy
+   <context switch>
+                                       priv alloced
+                                       drv->priv = priv;
+                                       kobject_init_and_add
+                                         ---> refcount = 1 <------
+                                       // register success
+                                       <context switch>
+===================== another ioctl/process ======================
+                                      driver_register
+                                       driver_find
+                                        k = kset_find_obj()
+                                         ---> refcount = 2 <------
+                                        <context out>
+   driver_unregister
+   // drv->p become T2's priv
+   ---> refcount = 1 <------
+   <context switch>
+                                        kobject_put(k)
+                                         ---> refcount = 0 <------
+                                        return priv->driver;
+                                        --------UAF here----------
+
+There will be UAF in this scenario.
+
+We can fix it by adding a new STATE_DEV_REGISTERING device state to
+avoid double register.
+
+Reported-by: syzbot+dc7c3ca638e773db07f6@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/all/000000000000e66c2805de55b15a@google.com/
+Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Link: https://lore.kernel.org/r/20220508150247.38204-1-schspa@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/usb/gadget/legacy/raw_gadget.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 72f8751784c3..7cf5a48e9a7d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -445,7 +445,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		       ALIGN(hdr_len, sizeof(long)));
+diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
+index d86c3a36441e..3427ce37a5c5 100644
+--- a/drivers/usb/gadget/legacy/raw_gadget.c
++++ b/drivers/usb/gadget/legacy/raw_gadget.c
+@@ -145,6 +145,7 @@ enum dev_state {
+ 	STATE_DEV_INVALID = 0,
+ 	STATE_DEV_OPENED,
+ 	STATE_DEV_INITIALIZED,
++	STATE_DEV_REGISTERING,
+ 	STATE_DEV_RUNNING,
+ 	STATE_DEV_CLOSED,
+ 	STATE_DEV_FAILED
+@@ -508,6 +509,7 @@ static int raw_ioctl_run(struct raw_dev *dev, unsigned long value)
+ 		ret = -EINVAL;
+ 		goto out_unlock;
+ 	}
++	dev->state = STATE_DEV_REGISTERING;
+ 	spin_unlock_irqrestore(&dev->lock, flags);
  
- 		if (buff->len - hdr_len > 0) {
--			skb_add_rx_frag(skb, 0, buff->rxdata.page,
-+			skb_add_rx_frag(skb, i++, buff->rxdata.page,
- 					buff->rxdata.pg_off + hdr_len,
- 					buff->len - hdr_len,
- 					AQ_CFG_RX_FRAME_MAX);
-@@ -454,7 +454,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 
- 		if (!buff->is_eop) {
- 			buff_ = buff;
--			i = 1U;
- 			do {
- 				next_ = buff_->next;
- 				buff_ = &self->buff_ring[next_];
+ 	ret = usb_gadget_probe_driver(&dev->driver);
 -- 
 2.35.1
 
