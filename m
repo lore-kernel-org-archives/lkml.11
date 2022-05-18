@@ -2,170 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A4EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3EE1C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237945AbiERNZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S237988AbiERN0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237864AbiERNZm (ORCPT
+        with ESMTP id S237870AbiERNZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:25:42 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E609C1BB98D;
-        Wed, 18 May 2022 06:25:33 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id x143so2112768pfc.11;
-        Wed, 18 May 2022 06:25:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iGkM7zUZyNWulbks1XJcMQ2LSpgiie/fhoc/MtFlX9o=;
-        b=cF/XiRy74wYu5lz/Dni+EhUhHJBswgr9RMmobHZfZEKjlBesOH04xehd+2BBm/J9TU
-         n2sHNRnAc0KL/jo0zWnPS3HX2VuRvtIWZhnHg92iKmCKhj0tfzZZpz0fxw4+aXLIFf1W
-         Vh9GKcfwxRNhfhItZTLpse+sWSMQhqmVUHTQsgip4rswdWAwLXJCCiWkwdjaPeUfAf+O
-         TgLv6i19EWAZTuELYajfyXEMCqVGBXdYw8FinKGs6QESlAKIvV7F8t24a+Jk5G0UA8Yy
-         S/xW8sgLecBdrf23fx5PcY/fbD8WUX6T+0klo0wvDJu2XQHiTigc0mlOtZdcglbOBCHy
-         c1CQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iGkM7zUZyNWulbks1XJcMQ2LSpgiie/fhoc/MtFlX9o=;
-        b=Cro/ofcF9ajEn3Ry9hl0jRhXmh00xKFrRAPhHgI492epzK36bPzcyOfOOAi3Bqa//U
-         ZH4rOCSa9mKin48FLPey+JQo3U9k7GwjOMmX57IJszPjI/4vod+TukjGHNxpugNzcfBx
-         mIbCkRRlKd70e+UhLsGvSvlFSNt1Jwx04vIM75goUQZM+557tdNIZtjC7wP1uMrI/SzN
-         0fZzBgKtrmJNrWHwq88GlDEgbFWq9smOCkCm1KJOzFRPv5sDU9ekAt0G2r8DHlvLIlvy
-         9zPxQfz47ohPXOgz4XIDF/R7ZlCXzrEt+amDRoPGpbF6LMnyJm4bn/Qn5zLn7HsHsyRK
-         gJzg==
-X-Gm-Message-State: AOAM531j+peO2zZc8gEU0HBKs8vdA+VIdLyhHJiAljig6NIZQIDkYEu7
-        SbFC8m4R73flJRKadPq1Cug=
-X-Google-Smtp-Source: ABdhPJzSXdtQtLfVYHMbN9XtxWkaFDm7YQhKqYNRpw01GYLVHrDYpluSBpy2zPFzFPU6yfFKFZtVgA==
-X-Received: by 2002:a63:2023:0:b0:3f5:e1e7:74e3 with SMTP id g35-20020a632023000000b003f5e1e774e3mr4890315pgg.377.1652880333318;
-        Wed, 18 May 2022 06:25:33 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.117])
-        by smtp.gmail.com with ESMTPSA id s13-20020a17090302cd00b0015e8d4eb244sm1625549plk.142.2022.05.18.06.25.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 06:25:33 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH RESEND v3 06/11] KVM: x86/pmu: Drop "u8 ctrl, int idx" for reprogram_fixed_counter()
-Date:   Wed, 18 May 2022 21:25:07 +0800
-Message-Id: <20220518132512.37864-7-likexu@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518132512.37864-1-likexu@tencent.com>
-References: <20220518132512.37864-1-likexu@tencent.com>
+        Wed, 18 May 2022 09:25:46 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14D3D248F9;
+        Wed, 18 May 2022 06:25:43 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CB38223A;
+        Wed, 18 May 2022 06:25:42 -0700 (PDT)
+Received: from [10.57.4.200] (unknown [10.57.4.200])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6A3013F73D;
+        Wed, 18 May 2022 06:25:40 -0700 (PDT)
+Message-ID: <8f48b4d3-b463-a858-c0fc-0d503eee42dd@arm.com>
+Date:   Wed, 18 May 2022 14:25:38 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 2/4] perf tools: Use dynamic register set for Dwarf
+ unwind
+Content-Language: en-US
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        broonie@kernel.org, acme@kernel.org, german.gomez@arm.com,
+        mathieu.poirier@linaro.org, john.garry@huawei.com,
+        Will Deacon <will@kernel.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+References: <20220517102005.3022017-1-james.clark@arm.com>
+ <20220517102005.3022017-3-james.clark@arm.com>
+ <20220517110322.GC153558@leoy-ThinkPad-X240s>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <20220517110322.GC153558@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
 
-Since afrer reprogram_fixed_counter() is called, it's bound to assign
-the requested fixed_ctr_ctrl to pmu->fixed_ctr_ctrl, this assignment step
-can be moved forward (the stale value for diff is saved extra early),
-thus simplifying the passing of parameters.
 
-No functional change intended.
+On 17/05/2022 12:03, Leo Yan wrote:
+> On Tue, May 17, 2022 at 11:20:03AM +0100, James Clark wrote:
+>> Architectures can detect availability of extra registers at
+>> runtime so use this more complete set for unwinding. This
+>> will include the VG register on arm64 in a later commit.
+>>
+>> If the function isn't implemented then PERF_REGS_MASK is
+>> returned and there is no change.
+>>
+>> Signed-off-by: James Clark <james.clark@arm.com>
+> 
+> This patch looks good to me:
+> Reviewed-by: Leo Yan <leo.yan@linaro.org>
+> 
+> Just curious, do you think should update the test (e.g.
+> arch/arm64/tests/dwarf-unwind.c) to use arch__user_reg_mask()?
 
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/kvm/pmu.c           | 13 ++++++-------
- arch/x86/kvm/pmu.h           |  2 +-
- arch/x86/kvm/vmx/pmu_intel.c | 16 ++++++++--------
- 3 files changed, 15 insertions(+), 16 deletions(-)
+I don't think so because the normal set of registers is manually
+loaded in tools/perf/arch/arm64/tests/regs_load.S so it wouldn't
+include this pseudo register. Also there is no SVE in the call
+chain of the test so it would never have an effect.
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index cbffa060976e..131fbab612ca 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -319,8 +319,11 @@ void reprogram_gp_counter(struct kvm_pmc *pmc)
- }
- EXPORT_SYMBOL_GPL(reprogram_gp_counter);
- 
--void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int idx)
-+void reprogram_fixed_counter(struct kvm_pmc *pmc)
- {
-+	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
-+	int idx = pmc->idx - INTEL_PMC_IDX_FIXED;
-+	u8 ctrl = fixed_ctrl_field(pmu->fixed_ctr_ctrl, idx);
- 	unsigned en_field = ctrl & 0x3;
- 	bool pmi = ctrl & 0x8;
- 
-@@ -350,12 +353,8 @@ void reprogram_counter(struct kvm_pmc *pmc)
- {
- 	if (pmc_is_gp(pmc))
- 		reprogram_gp_counter(pmc);
--	else {
--		int idx = pmc->idx - INTEL_PMC_IDX_FIXED;
--		u8 ctrl = fixed_ctrl_field(pmc_to_pmu(pmc)->fixed_ctr_ctrl, idx);
--
--		reprogram_fixed_counter(pmc, ctrl, idx);
--	}
-+	else
-+		reprogram_fixed_counter(pmc);
- }
- EXPORT_SYMBOL_GPL(reprogram_counter);
- 
-diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
-index 56204f5a545d..8d7912978249 100644
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -173,7 +173,7 @@ static inline void kvm_init_pmu_capability(void)
- }
- 
- void reprogram_gp_counter(struct kvm_pmc *pmc);
--void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int fixed_idx);
-+void reprogram_fixed_counter(struct kvm_pmc *pmc);
- void reprogram_counter(struct kvm_pmc *pmc);
- 
- void kvm_pmu_deliver_pmi(struct kvm_vcpu *vcpu);
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 2bfca470d5fd..5e10a1ef435d 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -37,23 +37,23 @@ static int fixed_pmc_events[] = {1, 0, 7};
- 
- static void reprogram_fixed_counters(struct kvm_pmu *pmu, u64 data)
- {
-+	struct kvm_pmc *pmc;
-+	u8 old_fixed_ctr_ctrl = pmu->fixed_ctr_ctrl;
- 	int i;
- 
-+	pmu->fixed_ctr_ctrl = data;
- 	for (i = 0; i < pmu->nr_arch_fixed_counters; i++) {
- 		u8 new_ctrl = fixed_ctrl_field(data, i);
--		u8 old_ctrl = fixed_ctrl_field(pmu->fixed_ctr_ctrl, i);
--		struct kvm_pmc *pmc;
--
--		pmc = get_fixed_pmc(pmu, MSR_CORE_PERF_FIXED_CTR0 + i);
-+		u8 old_ctrl = fixed_ctrl_field(old_fixed_ctr_ctrl, i);
- 
- 		if (old_ctrl == new_ctrl)
- 			continue;
- 
--		__set_bit(INTEL_PMC_IDX_FIXED + i, pmu->pmc_in_use);
--		reprogram_fixed_counter(pmc, new_ctrl, i);
--	}
-+		pmc = get_fixed_pmc(pmu, MSR_CORE_PERF_FIXED_CTR0 + i);
- 
--	pmu->fixed_ctr_ctrl = data;
-+		__set_bit(INTEL_PMC_IDX_FIXED + i, pmu->pmc_in_use);
-+		reprogram_fixed_counter(pmc);
-+	}
- }
- 
- static struct kvm_pmc *intel_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
--- 
-2.36.1
+I could add a new test for SVE, but it depends on getting the
+libunwind changes through first so will have to come later.
 
+Thanks,
+James
+
+> 
+> Thanks,
+> Leo
+> 
+>> ---
+>>  tools/perf/util/evsel.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+>> index 5fd7924f8eb3..787bbcbcd2ae 100644
+>> --- a/tools/perf/util/evsel.c
+>> +++ b/tools/perf/util/evsel.c
+>> @@ -896,7 +896,7 @@ static void __evsel__config_callchain(struct evsel *evsel, struct record_opts *o
+>>  					   "specifying a subset with --user-regs may render DWARF unwinding unreliable, "
+>>  					   "so the minimal registers set (IP, SP) is explicitly forced.\n");
+>>  			} else {
+>> -				attr->sample_regs_user |= PERF_REGS_MASK;
+>> +				attr->sample_regs_user |= arch__user_reg_mask();
+>>  			}
+>>  			attr->sample_stack_user = param->dump_size;
+>>  			attr->exclude_callchain_user = 1;
+>> -- 
+>> 2.28.0
+>>
