@@ -2,108 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE97C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC14C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232199AbiERHbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
+        id S232167AbiERHcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232127AbiERHbl (ORCPT
+        with ESMTP id S232115AbiERHcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:31:41 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64FF286D6
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:31:39 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L34QJ4WkLzgYNL;
-        Wed, 18 May 2022 15:30:16 +0800 (CST)
-Received: from localhost.localdomain (10.175.127.227) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 15:31:36 +0800
-From:   Zhang Wensheng <zhangwensheng5@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <rafael@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>
-Subject: [PATCH -next] driver core: fix deadlock in __device_attach
-Date:   Wed, 18 May 2022 15:45:16 +0800
-Message-ID: <20220518074516.1225580-1-zhangwensheng5@huawei.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500016.china.huawei.com (7.221.188.220)
-X-CFilter-Loop: Reflected
+        Wed, 18 May 2022 03:32:51 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF2F612BE
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:32:51 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id s18-20020a17090aa11200b001d92f7609e8so621931pjp.3
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=iQ99kfljfaTYAW2ip5rvwd86TKnP6A3rksjwxYstBo4=;
+        b=ETFp28WBtIw6zb/DJo7OGxpWaRVPCwEwQt9Z2hKeNmR/PJKNghF1UGsbkeHcvdUDJn
+         T3wCFW937vAzCH71CfXie9HSan7MicV1ubc2z928O1NfYC573yFGkTLcetWL9usAYSfE
+         ZF3bXnDxVkPd8KmzaKepQtytaxixa2yQKQ6wKkRr/wK3u2S0rqiyI+rtSnjtQI31VfBA
+         y6U2mbADctk6jti3nOtYQ1Vhi7dSVW9NE9Ba4jFfu20gFzOkjym6Ui/GYWZnSzd8amsB
+         lcMBvit9jCohmiTRQfhmjbwnoFc39D8JRRyOA1y3iQqcvbK7KQJ5rj2vMwtkbNb/vmEC
+         522g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=iQ99kfljfaTYAW2ip5rvwd86TKnP6A3rksjwxYstBo4=;
+        b=RjubtNMotpzxuuHFFMiunHLmNNihMnJ2+UtQc5KOaX7Nvvz1mXuz4lTwcuM1vZzE/m
+         /Nar01OjQlo/GRLmQ1D84Go7evco6QRp8gVIjAmtmtKJoetvk0c6qNY7R3Ry41SeLDod
+         hs33BN2WG/4Ig7EXHTYUIq26p940fAzZE0AuN35IXKszoB2rUOb4jOlo6SDB7DnMXljS
+         8D2JpmZ3OA9A/Meex7ipJ7hc7gp4lq62hocHH3IBS+UFAgMKhKb8z2wygcuRNY/94MwC
+         RIMeUldT9vpfmSKgc2DMMtPOWb43KoyPm7hX3RpGJZ71FwlKW5mBMprPcJt5eLOrKBHU
+         xc0w==
+X-Gm-Message-State: AOAM530cYC6vN8CjSLvdLHfhD1XybxOi4EatptgMa6rW+OaikX9ITlJG
+        LMtCxpNnoGl905pxsRcEvTlwUltGyfpTBQ==
+X-Google-Smtp-Source: ABdhPJzYuK9WCyWsUpBLz7QPszl6IDdlhu2s0sQHA/ptFulSvFsKkAlDK/HkIvTDFn7wZyynWOx9yXPeagmfpw==
+X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
+ (user=davidgow job=sendgmr) by 2002:a05:6a00:b4f:b0:518:161a:ed40 with SMTP
+ id p15-20020a056a000b4f00b00518161aed40mr3418498pfo.19.1652859170621; Wed, 18
+ May 2022 00:32:50 -0700 (PDT)
+Date:   Wed, 18 May 2022 15:32:31 +0800
+Message-Id: <20220518073232.526443-1-davidgow@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+Subject: [PATCH 1/2] kunit: tool: Add x86_64-smp architecture for SMP testing
+From:   David Gow <davidgow@google.com>
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Marco Elver <elver@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     David Gow <davidgow@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>, kunit-dev@googlegroups.com,
+        kasan-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In __device_attach function, The lock holding logic is as follows:
-...
-__device_attach
-device_lock(dev)      // get lock dev
-  async_schedule_dev(__device_attach_async_helper, dev); // func
-    async_schedule_node
-      async_schedule_node_domain(func)
-        entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
-	/* when fail or work limit, sync to execute func, but
-	   __device_attach_async_helper will get lock dev as
-	   well, which will lead to A-A deadlock.  */
-	if (!entry || atomic_read(&entry_count) > MAX_WORK) {
-	  func;
-	else
-	  queue_work_node(node, system_unbound_wq, &entry->work)
-  device_unlock(dev)
+Add a new QEMU config for kunit_tool, x86_64-smp, which provides an
+8-cpu SMP setup. No other kunit_tool configurations provide an SMP
+setup, so this is the best bet for testing things like KCSAN, which
+require a multicore/multi-cpu system.
 
-As shown above, when it is allowed to do async probes, because of
-out of memory or work limit, async work is not allowed, to do
-sync execute instead. it will lead to A-A deadlock because of
-__device_attach_async_helper getting lock dev.
+The choice of 8 CPUs is pretty arbitrary: it's enough to get tests like
+KCSAN to run with a nontrivial number of worker threads, while still
+working relatively quickly on older machines.
 
-To fix the deadlock, move the async_schedule_dev outside device_lock,
-as we can see, in async_schedule_node_domain, the parameter of
-queue_work_node is system_unbound_wq, so it can accept concurrent
-operations. which will also not change the code logic, and will
-not lead to deadlock.
-
-Fixes: 765230b5f084 ("driver-core: add asynchronous probing support for drivers")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+Signed-off-by: David Gow <davidgow@google.com>
 ---
- drivers/base/dd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 3fc3b5940bb3..ed02a529a896 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -941,6 +941,7 @@ static void __device_attach_async_helper(void *_dev, async_cookie_t cookie)
- static int __device_attach(struct device *dev, bool allow_async)
- {
- 	int ret = 0;
-+	bool async = false;
- 
- 	device_lock(dev);
- 	if (dev->p->dead) {
-@@ -979,7 +980,7 @@ static int __device_attach(struct device *dev, bool allow_async)
- 			 */
- 			dev_dbg(dev, "scheduling asynchronous probe\n");
- 			get_device(dev);
--			async_schedule_dev(__device_attach_async_helper, dev);
-+			async = true;
- 		} else {
- 			pm_request_idle(dev);
- 		}
-@@ -989,6 +990,8 @@ static int __device_attach(struct device *dev, bool allow_async)
- 	}
- out_unlock:
- 	device_unlock(dev);
-+	if (async)
-+		async_schedule_dev(__device_attach_async_helper, dev);
- 	return ret;
- }
- 
+This is based off the discussion in:
+https://groups.google.com/g/kasan-dev/c/A7XzC2pXRC8
+
+---
+ tools/testing/kunit/qemu_configs/x86_64-smp.py | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+ create mode 100644 tools/testing/kunit/qemu_configs/x86_64-smp.py
+
+diff --git a/tools/testing/kunit/qemu_configs/x86_64-smp.py b/tools/testing/kunit/qemu_configs/x86_64-smp.py
+new file mode 100644
+index 000000000000..a95623f5f8b7
+--- /dev/null
++++ b/tools/testing/kunit/qemu_configs/x86_64-smp.py
+@@ -0,0 +1,13 @@
++# SPDX-License-Identifier: GPL-2.0
++from ..qemu_config import QemuArchParams
++
++QEMU_ARCH = QemuArchParams(linux_arch='x86_64',
++			   kconfig='''
++CONFIG_SERIAL_8250=y
++CONFIG_SERIAL_8250_CONSOLE=y
++CONFIG_SMP=y
++			   ''',
++			   qemu_arch='x86_64',
++			   kernel_path='arch/x86/boot/bzImage',
++			   kernel_command_line='console=ttyS0',
++			   extra_qemu_params=['-smp', '8'])
 -- 
-2.31.1
+2.36.0.550.gb090851708-goog
 
