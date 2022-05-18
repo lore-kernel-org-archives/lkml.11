@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C65C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A12EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236539AbiERM1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        id S236675AbiERM1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236483AbiERM1O (ORCPT
+        with ESMTP id S236476AbiERM1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:27:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BE18DDCE;
-        Wed, 18 May 2022 05:27:07 -0700 (PDT)
+        Wed, 18 May 2022 08:27:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F70CB042C;
+        Wed, 18 May 2022 05:27:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C923DB81FB6;
-        Wed, 18 May 2022 12:27:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 407DDC385AA;
-        Wed, 18 May 2022 12:27:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0892B81F43;
+        Wed, 18 May 2022 12:27:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D00FC385AA;
+        Wed, 18 May 2022 12:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876824;
-        bh=doQRzfdvKQcqj96z7UMVJeMF3Ya4m94Bf6rITo95dKE=;
+        s=k20201202; t=1652876829;
+        bh=3KXaNdVrYk/EFhR1Fb+di4Uk5jeldvRSpV8whhTzXI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTE9CK8kHOpcgsW4skP3AYCrsPD5jlqZA0wckV3P8PejKR4zOlKKGzHWZS1FbzR6d
-         i6rw8Q0s5fvovFzBH+P+ogzFuK76axYa9CM9w7UZkMnK3374bF2Twj0cjhmwVW4fBR
-         sYvIzl03GN+qGkesa7AAcVs+0LdN9I3QdswiICZeR4/FxsZizn5JglmrGyxqiPi1tS
-         ad7MePLICIj31QyMzo/fikfftOfRD5FZ9alhCGkCnW/twrbk7hmKyRFEMwtXw5zk9B
-         b08PWiqCW6erupdG1sT7kz5ttZLDR+YAD1zbmgXJsgovqJ7ktepS6J4rAks8RSBXmy
-         WSt5Vvlet+E6w==
+        b=Jojmq3VmctB7noT++uireC0mrhq9loboeq8GtOPJ0vOyyQZqt5KJvEOKmVHXJ9mRr
+         M92+VFD2loF4qURoODqWrbbQCdIloGtNpSpSNVF7XpTFyrsy5uTelFgiljgxaYH7qc
+         iFaHNpEe7ckHI2EMJUBkbSGDdLJtf+QA0hTysvQtogxuC0KbrlYxZx7wOQ//7qb9WE
+         ti02ilDyCTD9kzpDc60v4hbwpq6kRvkRP9GJxYSt1pQSHcN5lF+L4qi5j3NdvHYvnr
+         f8UKyMBNxbHTJSL/wxkA+j4uOZ9Tn0PGa0bq6tQeIHYdk+6epsgH0KyO2LZyuDe6fJ
+         8n4oCciebSsDw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>, daniel@ffwll.ch,
-        deller@gmx.de, sam@ravnborg.org, wangqing@vivo.com,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 08/23] fbdev: Prevent possible use-after-free in fb_release()
-Date:   Wed, 18 May 2022 08:26:21 -0400
-Message-Id: <20220518122641.342120-8-sashal@kernel.org>
+Cc:     Prarit Bhargava <prarit@redhat.com>,
+        "David E. Box" <david.e.box@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        platform-driver-x86@vger.kernel.org,
+        David Arcari <darcari@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 11/23] platform/x86/intel: Fix 'rmmod pmt_telemetry' panic
+Date:   Wed, 18 May 2022 08:26:24 -0400
+Message-Id: <20220518122641.342120-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122641.342120-1-sashal@kernel.org>
 References: <20220518122641.342120-1-sashal@kernel.org>
@@ -55,45 +55,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Prarit Bhargava <prarit@redhat.com>
 
-[ Upstream commit 89bfd4017e58faaf70411555e7f508495114e90b ]
+[ Upstream commit 2cdfa0c20d58da3757054797c2974c967035926a ]
 
-Most fbdev drivers have issues with the fb_info lifetime, because call to
-framebuffer_release() from their driver's .remove callback, rather than
-doing from fbops.fb_destroy callback.
+'rmmod pmt_telemetry' panics with:
 
-Doing that will destroy the fb_info too early, while references to it may
-still exist, leading to a use-after-free error.
+ BUG: kernel NULL pointer dereference, address: 0000000000000040
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 4 PID: 1697 Comm: rmmod Tainted: G S      W        --------  ---  5.18.0-rc4 #3
+ Hardware name: Intel Corporation Alder Lake Client Platform/AlderLake-P DDR5 RVP, BIOS ADLPFWI1.R00.3056.B00.2201310233 01/31/2022
+ RIP: 0010:device_del+0x1b/0x3d0
+ Code: e8 1a d9 e9 ff e9 58 ff ff ff 48 8b 08 eb dc 0f 1f 44 00 00 41 56 41 55 41 54 55 48 8d af 80 00 00 00 53 48 89 fb 48 83 ec 18 <4c> 8b 67 40 48 89 ef 65 48 8b 04 25 28 00 00 00 48 89 44 24 10 31
+ RSP: 0018:ffffb520415cfd60 EFLAGS: 00010286
+ RAX: 0000000000000070 RBX: 0000000000000000 RCX: 0000000000000000
+ RDX: 0000000000000001 RSI: 0000000000000000 RDI: 0000000000000000
+ RBP: 0000000000000080 R08: ffffffffffffffff R09: ffffb520415cfd78
+ R10: 0000000000000002 R11: ffffb520415cfd78 R12: 0000000000000000
+ R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ FS:  00007f7e198e5740(0000) GS:ffff905c9f700000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000040 CR3: 000000010782a005 CR4: 0000000000770ee0
+ PKRU: 55555554
+ Call Trace:
+  <TASK>
+  ? __xa_erase+0x53/0xb0
+  device_unregister+0x13/0x50
+  intel_pmt_dev_destroy+0x34/0x60 [pmt_class]
+  pmt_telem_remove+0x40/0x50 [pmt_telemetry]
+  auxiliary_bus_remove+0x18/0x30
+  device_release_driver_internal+0xc1/0x150
+  driver_detach+0x44/0x90
+  bus_remove_driver+0x74/0xd0
+  auxiliary_driver_unregister+0x12/0x20
+  pmt_telem_exit+0xc/0xe4a [pmt_telemetry]
+  __x64_sys_delete_module+0x13a/0x250
+  ? syscall_trace_enter.isra.19+0x11e/0x1a0
+  do_syscall_64+0x58/0x80
+  ? syscall_exit_to_user_mode+0x12/0x30
+  ? do_syscall_64+0x67/0x80
+  ? syscall_exit_to_user_mode+0x12/0x30
+  ? do_syscall_64+0x67/0x80
+  ? syscall_exit_to_user_mode+0x12/0x30
+  ? do_syscall_64+0x67/0x80
+  ? exc_page_fault+0x64/0x140
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f7e1803a05b
+ Code: 73 01 c3 48 8b 0d 2d 4e 38 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d fd 4d 38 00 f7 d8 64 89 01 48
 
-To prevent this, check the fb_info reference counter when attempting to
-kfree the data structure in framebuffer_release(). That will leak it but
-at least will prevent the mentioned error.
+The probe function, pmt_telem_probe(), adds an entry for devices even if
+they have not been initialized.  This results in the array of initialized
+devices containing both initialized and uninitialized entries.  This
+causes a panic in the remove function, pmt_telem_remove() which expects
+the array to only contain initialized entries.
 
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220413.365977-1-javierm@redhat.com
+Only use an entry when a device is initialized.
+
+Cc: "David E. Box" <david.e.box@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: Mark Gross <markgross@kernel.org>
+Cc: platform-driver-x86@vger.kernel.org
+Signed-off-by: David Arcari <darcari@redhat.com>
+Signed-off-by: Prarit Bhargava <prarit@redhat.com>
+Reviewed-by: David E. Box <david.e.box@linux.intel.com>
+Link: https://lore.kernel.org/r/20220429122322.2550003-1-prarit@redhat.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbsysfs.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/platform/x86/intel/pmt/telemetry.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
-index 26892940c213..82e31a2d845e 100644
---- a/drivers/video/fbdev/core/fbsysfs.c
-+++ b/drivers/video/fbdev/core/fbsysfs.c
-@@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
- {
- 	if (!info)
- 		return;
-+
-+	if (WARN_ON(refcount_read(&info->count)))
-+		return;
-+
- 	kfree(info->apertures);
- 	kfree(info);
- }
+diff --git a/drivers/platform/x86/intel/pmt/telemetry.c b/drivers/platform/x86/intel/pmt/telemetry.c
+index 6b6f3e2a617a..f73ecfd4a309 100644
+--- a/drivers/platform/x86/intel/pmt/telemetry.c
++++ b/drivers/platform/x86/intel/pmt/telemetry.c
+@@ -103,7 +103,7 @@ static int pmt_telem_probe(struct auxiliary_device *auxdev, const struct auxilia
+ 	auxiliary_set_drvdata(auxdev, priv);
+ 
+ 	for (i = 0; i < intel_vsec_dev->num_resources; i++) {
+-		struct intel_pmt_entry *entry = &priv->entry[i];
++		struct intel_pmt_entry *entry = &priv->entry[priv->num_entries];
+ 
+ 		ret = intel_pmt_dev_create(entry, &pmt_telem_ns, intel_vsec_dev, i);
+ 		if (ret < 0)
 -- 
 2.35.1
 
