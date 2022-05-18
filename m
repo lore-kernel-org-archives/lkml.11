@@ -2,421 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2FF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40389C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234874AbiERJ5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40784 "EHLO
+        id S234875AbiERJ53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234832AbiERJ5K (ORCPT
+        with ESMTP id S234858AbiERJ5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:57:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16D622B12;
-        Wed, 18 May 2022 02:57:08 -0700 (PDT)
+        Wed, 18 May 2022 05:57:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4F120BE6;
+        Wed, 18 May 2022 02:57:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C5E4B81EFA;
-        Wed, 18 May 2022 09:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19212C34100;
-        Wed, 18 May 2022 09:57:00 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        WANG Xuerui <git@xen0n.name>,
-        Jianmin Lv <lvjianmin@loongson.cn>
-Subject: [PATCH V11 18/22] LoongArch: Add PCI controller support
-Date:   Wed, 18 May 2022 17:57:05 +0800
-Message-Id: <20220518095709.1313120-2-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220518095709.1313120-1-chenhuacai@loongson.cn>
-References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
- <20220518095709.1313120-1-chenhuacai@loongson.cn>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A9E3617C7;
+        Wed, 18 May 2022 09:57:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41281C385A5;
+        Wed, 18 May 2022 09:57:08 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="bEWIXAiC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652867826;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=irO/Q9krw8wB4YwpfTM/2sS+w+cDgzawjgfM0Pt73wM=;
+        b=bEWIXAiCC6dK/PscC5XWUlHMiQzawLA0WzJpb8nfplIoo2dpoXRiHblVMYpHCosr3SIB27
+        lg8Xl+JOjw1fdNxa6t6hfnyXB5+CJvFe8h3IDLFd9y+t8dDST8sUjnULegcxAv0Jl1Yrq+
+        ya9ZtLOp5GS9y3GhywswLuyx+z+H8XI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 25be561b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 18 May 2022 09:57:06 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Petr Mladek <pmladek@suse.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject: [PATCH v2] random: remove mostly unused async readiness notifier
+Date:   Wed, 18 May 2022 11:56:58 +0200
+Message-Id: <20220518095658.24085-1-Jason@zx2c4.com>
+In-Reply-To: <YoTB2OlwQq4J4/2D@zx2c4.com>
+References: <YoTB2OlwQq4J4/2D@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Loongson64 based systems are PC-like systems which use PCI/PCIe as its
-I/O bus, This patch adds the PCI host controller support for LoongArch.
+The register_random_ready_notifier() notifier is somewhat complicated,
+and was already recently rewritten to use notifier blocks. It is only
+used now by one consumer in the kernel, vsprintf.c, for which the async
+mechanism is really overly complex for what it actually needs. This
+commit removes register_random_ready_notifier() and unregister_random_
+ready_notifier(), because it just adds complication with little utility,
+and changes vsprintf.c to just check on `!rng_is_initialized() &&
+!rng_has_arch_random()`, which will eventually be true. Performance-
+wise, that code was already using a static branch, so there's basically
+no overhead at all to this change.
 
-Reviewed-by: WANG Xuerui <git@xen0n.name>
-Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Acked-by: Petr Mladek <pmladek@suse.com> # for vsprintf.c
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- arch/loongarch/include/asm/dma.h |  13 +++
- arch/loongarch/include/asm/pci.h |  40 +++++++
- arch/loongarch/pci/acpi.c        | 172 +++++++++++++++++++++++++++++++
- arch/loongarch/pci/pci.c         |  98 ++++++++++++++++++
- 4 files changed, 323 insertions(+)
- create mode 100644 arch/loongarch/include/asm/dma.h
- create mode 100644 arch/loongarch/include/asm/pci.h
- create mode 100644 arch/loongarch/pci/acpi.c
- create mode 100644 arch/loongarch/pci/pci.c
+Changes v1->v2:
+- Use a trylock instead of a spinlock to be NMI safe.
 
-diff --git a/arch/loongarch/include/asm/dma.h b/arch/loongarch/include/asm/dma.h
-new file mode 100644
-index 000000000000..c61fc72483ff
---- /dev/null
-+++ b/arch/loongarch/include/asm/dma.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#ifndef __ASM_DMA_H
-+#define __ASM_DMA_H
+ drivers/char/random.c  | 48 ------------------------------
+ include/linux/random.h |  2 --
+ lib/vsprintf.c         | 66 ++++++++++++++----------------------------
+ 3 files changed, 22 insertions(+), 94 deletions(-)
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 5a0fbcf05e63..11abdc5004ec 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -84,8 +84,6 @@ static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+ /* Various types of waiters for crng_init->CRNG_READY transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+-static DEFINE_SPINLOCK(random_ready_chain_lock);
+-static RAW_NOTIFIER_HEAD(random_ready_chain);
+ 
+ /* Control how we warn userspace. */
+ static struct ratelimit_state urandom_warning =
+@@ -142,51 +140,6 @@ int wait_for_random_bytes(void)
+ }
+ EXPORT_SYMBOL(wait_for_random_bytes);
+ 
+-/*
+- * Add a callback function that will be invoked when the input
+- * pool is initialised.
+- *
+- * returns: 0 if callback is successfully added
+- *	    -EALREADY if pool is already initialised (callback not called)
+- */
+-int __cold register_random_ready_notifier(struct notifier_block *nb)
+-{
+-	unsigned long flags;
+-	int ret = -EALREADY;
+-
+-	if (crng_ready())
+-		return ret;
+-
+-	spin_lock_irqsave(&random_ready_chain_lock, flags);
+-	if (!crng_ready())
+-		ret = raw_notifier_chain_register(&random_ready_chain, nb);
+-	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
+-	return ret;
+-}
+-
+-/*
+- * Delete a previously registered readiness callback function.
+- */
+-int __cold unregister_random_ready_notifier(struct notifier_block *nb)
+-{
+-	unsigned long flags;
+-	int ret;
+-
+-	spin_lock_irqsave(&random_ready_chain_lock, flags);
+-	ret = raw_notifier_chain_unregister(&random_ready_chain, nb);
+-	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
+-	return ret;
+-}
+-
+-static void __cold process_random_ready_list(void)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&random_ready_chain_lock, flags);
+-	raw_notifier_call_chain(&random_ready_chain, 0, NULL);
+-	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
+-}
+-
+ #define warn_unseeded_randomness() \
+ 	if (IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) && !crng_ready()) \
+ 		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n", \
+@@ -775,7 +728,6 @@ static void __cold _credit_init_bits(size_t bits)
+ 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
+ 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
+ 		execute_in_process_context(crng_set_ready, &set_ready);
+-		process_random_ready_list();
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
+ 		pr_notice("crng init done\n");
+diff --git a/include/linux/random.h b/include/linux/random.h
+index 6af130c6edb9..d2360b2825b6 100644
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -78,8 +78,6 @@ int __init random_init(const char *command_line);
+ bool rng_is_initialized(void);
+ bool rng_has_arch_random(void);
+ int wait_for_random_bytes(void);
+-int register_random_ready_notifier(struct notifier_block *nb);
+-int unregister_random_ready_notifier(struct notifier_block *nb);
+ 
+ /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
+  * Returns the result of the call to wait_for_random_bytes. */
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 20e9887faaaa..fb77f7bfd126 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -750,60 +750,38 @@ static int __init debug_boot_weak_hash_enable(char *str)
+ }
+ early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
+ 
+-static DEFINE_STATIC_KEY_TRUE(not_filled_random_ptr_key);
+-static siphash_key_t ptr_key __read_mostly;
++static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
+ 
+ static void enable_ptr_key_workfn(struct work_struct *work)
+ {
+-	get_random_bytes(&ptr_key, sizeof(ptr_key));
+-	/* Needs to run from preemptible context */
+-	static_branch_disable(&not_filled_random_ptr_key);
++	static_branch_enable(&filled_random_ptr_key);
+ }
+ 
+-static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
+-
+-static int fill_random_ptr_key(struct notifier_block *nb,
+-			       unsigned long action, void *data)
+-{
+-	/* This may be in an interrupt handler. */
+-	queue_work(system_unbound_wq, &enable_ptr_key_work);
+-	return 0;
+-}
+-
+-static struct notifier_block random_ready = {
+-	.notifier_call = fill_random_ptr_key
+-};
+-
+-static int __init initialize_ptr_random(void)
+-{
+-	int ret;
+-
+-	/* Don't bother waiting for RNG to be ready if RDRAND is mixed in already. */
+-	if (rng_has_arch_random()) {
+-		enable_ptr_key_workfn(&enable_ptr_key_work);
+-		return 0;
+-	}
+-
+-	ret = register_random_ready_notifier(&random_ready);
+-	if (!ret) {
+-		return 0;
+-	} else if (ret == -EALREADY) {
+-		/* This is in preemptible context */
+-		enable_ptr_key_workfn(&enable_ptr_key_work);
+-		return 0;
+-	}
+-
+-	return ret;
+-}
+-early_initcall(initialize_ptr_random);
+-
+ /* Maps a pointer to a 32 bit unique identifier. */
+ static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
+ {
++	static siphash_key_t ptr_key __read_mostly;
+ 	unsigned long hashval;
+ 
+-	if (static_branch_unlikely(&not_filled_random_ptr_key))
+-		return -EAGAIN;
++	if (!static_branch_likely(&filled_random_ptr_key)) {
++		static bool filled = false;
++		static DEFINE_SPINLOCK(filling);
++		static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
++		unsigned long flags;
 +
-+#define MAX_DMA_ADDRESS	PAGE_OFFSET
-+#define MAX_DMA32_PFN	(1UL << (32 - PAGE_SHIFT))
++		if (!system_unbound_wq ||
++		    (!rng_is_initialized() && !rng_has_arch_random()) ||
++		    !spin_trylock_irqsave(&filling, flags))
++			return -EAGAIN;
 +
-+extern int isa_dma_bridge_buggy;
-+
-+#endif
-diff --git a/arch/loongarch/include/asm/pci.h b/arch/loongarch/include/asm/pci.h
-new file mode 100644
-index 000000000000..5616ad2678ba
---- /dev/null
-+++ b/arch/loongarch/include/asm/pci.h
-@@ -0,0 +1,40 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#ifndef _ASM_PCI_H
-+#define _ASM_PCI_H
-+
-+#include <linux/ioport.h>
-+#include <linux/list.h>
-+#include <linux/types.h>
-+#include <asm/io.h>
-+
-+#define PCIBIOS_MIN_IO		0x4000
-+#define PCIBIOS_MIN_MEM		0x20000000
-+#define PCIBIOS_MIN_CARDBUS_IO	0x4000
-+
-+#define HAVE_PCI_MMAP
-+#define ARCH_GENERIC_PCI_MMAP_RESOURCE
-+
-+extern phys_addr_t mcfg_addr_init(int node);
-+
-+static inline int pci_proc_domain(struct pci_bus *bus)
-+{
-+	return 1; /* always show the domain in /proc */
-+}
-+
-+/*
-+ * Can be used to override the logic in pci_scan_bus for skipping
-+ * already-configured bus numbers - to be used for buggy BIOSes
-+ * or architectures with incomplete PCI setup by the loader
-+ */
-+static inline unsigned int pcibios_assign_all_busses(void)
-+{
-+	return 0;
-+}
-+
-+/* generic pci stuff */
-+#include <asm-generic/pci.h>
-+
-+#endif /* _ASM_PCI_H */
-diff --git a/arch/loongarch/pci/acpi.c b/arch/loongarch/pci/acpi.c
-new file mode 100644
-index 000000000000..7cabb8f37218
---- /dev/null
-+++ b/arch/loongarch/pci/acpi.c
-@@ -0,0 +1,172 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#include <linux/pci.h>
-+#include <linux/acpi.h>
-+#include <linux/init.h>
-+#include <linux/irq.h>
-+#include <linux/slab.h>
-+#include <linux/pci-acpi.h>
-+#include <linux/pci-ecam.h>
-+
-+#include <asm/pci.h>
-+#include <asm/loongson.h>
-+
-+struct pci_root_info {
-+	struct acpi_pci_root_info common;
-+	struct pci_config_window *cfg;
-+};
-+
-+void pcibios_add_bus(struct pci_bus *bus)
-+{
-+	acpi_pci_add_bus(bus);
-+}
-+
-+int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
-+{
-+	struct pci_config_window *cfg = bridge->bus->sysdata;
-+	struct acpi_device *adev = to_acpi_device(cfg->parent);
-+
-+	ACPI_COMPANION_SET(&bridge->dev, adev);
-+
-+	return 0;
-+}
-+
-+int acpi_pci_bus_find_domain_nr(struct pci_bus *bus)
-+{
-+	struct pci_config_window *cfg = bus->sysdata;
-+	struct acpi_device *adev = to_acpi_device(cfg->parent);
-+	struct acpi_pci_root *root = acpi_driver_data(adev);
-+
-+	return root->segment;
-+}
-+
-+static void acpi_release_root_info(struct acpi_pci_root_info *ci)
-+{
-+	struct pci_root_info *info;
-+
-+	info = container_of(ci, struct pci_root_info, common);
-+	pci_ecam_free(info->cfg);
-+	kfree(ci->ops);
-+	kfree(info);
-+}
-+
-+static int acpi_prepare_root_resources(struct acpi_pci_root_info *ci)
-+{
-+	int status;
-+	struct resource_entry *entry, *tmp;
-+	struct acpi_device *device = ci->bridge;
-+
-+	status = acpi_pci_probe_root_resources(ci);
-+	if (status > 0) {
-+		resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
-+			if (entry->res->flags & IORESOURCE_MEM) {
-+				entry->offset = ci->root->mcfg_addr & GENMASK_ULL(63, 40);
-+				entry->res->start |= entry->offset;
-+				entry->res->end   |= entry->offset;
-+			}
++		if (!filled) {
++			get_random_bytes(&ptr_key, sizeof(ptr_key));
++			queue_work(system_unbound_wq, &enable_ptr_key_work);
++			filled = true;
 +		}
-+		return status;
++		spin_unlock_irqrestore(&filling, flags);
 +	}
 +
-+	resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
-+		dev_dbg(&device->dev,
-+			   "host bridge window %pR (ignored)\n", entry->res);
-+		resource_list_destroy_entry(entry);
-+	}
-+
-+	return 0;
-+}
-+
-+/*
-+ * Lookup the bus range for the domain in MCFG, and set up config space
-+ * mapping.
-+ */
-+static struct pci_config_window *
-+pci_acpi_setup_ecam_mapping(struct acpi_pci_root *root)
-+{
-+	int ret, bus_shift;
-+	u16 seg = root->segment;
-+	struct device *dev = &root->device->dev;
-+	struct resource cfgres;
-+	struct resource *bus_res = &root->secondary;
-+	struct pci_config_window *cfg;
-+	const struct pci_ecam_ops *ecam_ops;
-+
-+	ret = pci_mcfg_lookup(root, &cfgres, &ecam_ops);
-+	if (ret < 0) {
-+		dev_err(dev, "%04x:%pR ECAM region not found, use default value\n", seg, bus_res);
-+		ecam_ops = &loongson_pci_ecam_ops;
-+		root->mcfg_addr = mcfg_addr_init(0);
-+	}
-+
-+	bus_shift = ecam_ops->bus_shift ? : 20;
-+
-+	cfgres.start = root->mcfg_addr + (bus_res->start << bus_shift);
-+	cfgres.end = cfgres.start + (resource_size(bus_res) << bus_shift) - 1;
-+	cfgres.flags = IORESOURCE_MEM;
-+
-+	cfg = pci_ecam_create(dev, &cfgres, bus_res, ecam_ops);
-+	if (IS_ERR(cfg)) {
-+		dev_err(dev, "%04x:%pR error %ld mapping ECAM\n", seg, bus_res, PTR_ERR(cfg));
-+		return NULL;
-+	}
-+
-+	return cfg;
-+}
-+
-+struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
-+{
-+	struct pci_bus *bus;
-+	struct pci_root_info *info;
-+	struct acpi_pci_root_ops *root_ops;
-+	int domain = root->segment;
-+	int busnum = root->secondary.start;
-+
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
-+	if (!info) {
-+		pr_warn("pci_bus %04x:%02x: ignored (out of memory)\n", domain, busnum);
-+		return NULL;
-+	}
-+
-+	root_ops = kzalloc(sizeof(*root_ops), GFP_KERNEL);
-+	if (!root_ops) {
-+		kfree(info);
-+		return NULL;
-+	}
-+
-+	info->cfg = pci_acpi_setup_ecam_mapping(root);
-+	if (!info->cfg) {
-+		kfree(info);
-+		kfree(root_ops);
-+		return NULL;
-+	}
-+
-+	root_ops->release_info = acpi_release_root_info;
-+	root_ops->prepare_resources = acpi_prepare_root_resources;
-+	root_ops->pci_ops = (struct pci_ops *)&info->cfg->ops->pci_ops;
-+
-+	bus = pci_find_bus(domain, busnum);
-+	if (bus) {
-+		memcpy(bus->sysdata, info->cfg, sizeof(struct pci_config_window));
-+		kfree(info);
-+	} else {
-+		struct pci_bus *child;
-+
-+		bus = acpi_pci_root_create(root, root_ops,
-+					   &info->common, info->cfg);
-+		if (!bus) {
-+			kfree(info);
-+			kfree(root_ops);
-+			return NULL;
-+		}
-+
-+		pci_bus_size_bridges(bus);
-+		pci_bus_assign_resources(bus);
-+		list_for_each_entry(child, &bus->children, node)
-+			pcie_bus_configure_settings(child);
-+	}
-+
-+	return bus;
-+}
-diff --git a/arch/loongarch/pci/pci.c b/arch/loongarch/pci/pci.c
-new file mode 100644
-index 000000000000..56dd7d982abf
---- /dev/null
-+++ b/arch/loongarch/pci/pci.c
-@@ -0,0 +1,98 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+#include <linux/kernel.h>
-+#include <linux/export.h>
-+#include <linux/init.h>
-+#include <linux/acpi.h>
-+#include <linux/types.h>
-+#include <linux/pci.h>
-+#include <linux/vgaarb.h>
-+#include <asm/loongson.h>
-+
-+#define PCI_DEVICE_ID_LOONGSON_HOST     0x7a00
-+#define PCI_DEVICE_ID_LOONGSON_DC1      0x7a06
-+#define PCI_DEVICE_ID_LOONGSON_DC2      0x7a36
-+
-+int raw_pci_read(unsigned int domain, unsigned int bus, unsigned int devfn,
-+						int reg, int len, u32 *val)
-+{
-+	struct pci_bus *bus_tmp = pci_find_bus(domain, bus);
-+
-+	if (bus_tmp)
-+		return bus_tmp->ops->read(bus_tmp, devfn, reg, len, val);
-+	return -EINVAL;
-+}
-+
-+int raw_pci_write(unsigned int domain, unsigned int bus, unsigned int devfn,
-+						int reg, int len, u32 val)
-+{
-+	struct pci_bus *bus_tmp = pci_find_bus(domain, bus);
-+
-+	if (bus_tmp)
-+		return bus_tmp->ops->write(bus_tmp, devfn, reg, len, val);
-+	return -EINVAL;
-+}
-+
-+phys_addr_t mcfg_addr_init(int node)
-+{
-+	return (((u64)node << 44) | MCFG_EXT_PCICFG_BASE);
-+}
-+
-+static int __init pcibios_init(void)
-+{
-+	unsigned int lsize;
-+
-+	/*
-+	 * Set PCI cacheline size to that of the highest level in the
-+	 * cache hierarchy.
-+	 */
-+	lsize = cpu_dcache_line_size();
-+	lsize = cpu_vcache_line_size() ? : lsize;
-+	lsize = cpu_scache_line_size() ? : lsize;
-+
-+	BUG_ON(!lsize);
-+
-+	pci_dfl_cache_line_size = lsize >> 2;
-+
-+	pr_debug("PCI: pci_cache_line_size set to %d bytes\n", lsize);
-+
-+	return 0;
-+}
-+
-+subsys_initcall(pcibios_init);
-+
-+int pcibios_device_add(struct pci_dev *dev)
-+{
-+	int id = pci_domain_nr(dev->bus);
-+
-+	dev_set_msi_domain(&dev->dev, pch_msi_domain[id]);
-+
-+	return 0;
-+}
-+
-+int pcibios_alloc_irq(struct pci_dev *dev)
-+{
-+	if (acpi_disabled)
-+		return 0;
-+	if (pci_dev_msi_enabled(dev))
-+		return 0;
-+	return acpi_pci_irq_enable(dev);
-+}
-+
-+static void pci_fixup_vgadev(struct pci_dev *pdev)
-+{
-+	struct pci_dev *devp = NULL;
-+
-+	while ((devp = pci_get_class(PCI_CLASS_DISPLAY_VGA << 8, devp))) {
-+		if (devp->vendor != PCI_VENDOR_ID_LOONGSON) {
-+			vga_set_default_device(devp);
-+			dev_info(&pdev->dev,
-+				"Overriding boot device as %X:%X\n",
-+				devp->vendor, devp->device);
-+		}
-+	}
-+}
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_LOONGSON, PCI_DEVICE_ID_LOONGSON_DC1, pci_fixup_vgadev);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_LOONGSON, PCI_DEVICE_ID_LOONGSON_DC2, pci_fixup_vgadev);
+ 
+ #ifdef CONFIG_64BIT
+ 	hashval = (unsigned long)siphash_1u64((u64)ptr, &ptr_key);
 -- 
-2.27.0
+2.35.1
 
