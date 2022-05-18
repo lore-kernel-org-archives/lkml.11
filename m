@@ -2,59 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D3CC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF06EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232701AbiERIIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39210 "EHLO
+        id S232730AbiERIKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232660AbiERIIr (ORCPT
+        with ESMTP id S232697AbiERIKQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:08:47 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65FE2CDD5;
-        Wed, 18 May 2022 01:08:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=mdeU/OBoZsa66bUz1IFOKaDDTSfpPDuGaocim/rl7HI=; b=mfRjpAdI5vkAnryw319sIBAE4u
-        PwvmShN8PR984Iy5Osaw4xlkH4BIUi90zaIyYRvmoZHEa98kfh2qeMwXrfQMbXW9a0Iq0TKbV2Edl
-        /BgduzF53HGN/EUN4XRG/Yw7xONhItulcrpo7EwBziCMxJWfwjhHW6XAJt+/vfdRl+/WjRNZU62RX
-        58EfjWNJ4s+esrs0h6twDPEtbgxhOjDdvbh9OMdM2aoKZPoW8cyzGuTVOxK8fJSYFamFsn7VorOpA
-        ziwLSLezeVQPctq98OGjupG392rCA2+wBQHBVRzrxVKAhxb/N5zStJhQt1KckXzszyMYMtFIEw1T4
-        PYzVnNtA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrEjU-000Oxi-5R; Wed, 18 May 2022 08:08:36 +0000
-Date:   Wed, 18 May 2022 01:08:36 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Vivek Kumar <quic_vivekuma@quicinc.com>
-Cc:     corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org,
-        tglx@linutronix.de, maz@kernel.org, axboe@kernel.dk,
-        rafael@kernel.org, akpm@linux-foundation.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-mm@kvack.org, len.brown@intel.com,
-        pavel@ucw.cz, paulmck@kernel.org, bp@suse.de,
-        keescook@chromium.org, songmuchun@bytedance.com,
-        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
-        pasha.tatashin@soleen.com, tabba@google.com, ardb@kernel.org,
-        tsoni@quicinc.com, quic_psodagud@quicinc.com,
-        quic_svaddagi@quicinc.com,
-        Prasanna Kumar <quic_kprasan@quicinc.com>
-Subject: Re: [RFC 3/6] block: gendisk: Add a new genhd capability flag
-Message-ID: <YoSphB1u4yIwb8rs@infradead.org>
-References: <1652860121-24092-1-git-send-email-quic_vivekuma@quicinc.com>
- <1652860121-24092-4-git-send-email-quic_vivekuma@quicinc.com>
+        Wed, 18 May 2022 04:10:16 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077BA25EBC;
+        Wed, 18 May 2022 01:10:15 -0700 (PDT)
+Received: from zn.tnic (p200300ea974657d0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:57d0:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 385BC1EC054C;
+        Wed, 18 May 2022 10:10:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652861410;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=OU2r3ndLVLZSWGk/2sjKDH+rpFBxg12x0Rgx+8y4HgM=;
+        b=e2FTJ+QaJQ8Ao+EsjaQTEozFWCOYTpSdLqG6Ll38gR7gX0/1ndoQiVGhQkF14aDsSTuSSe
+        8DijoeDr+Z3gw9rGRzvDrVuCk5cNfiThrHsOcwq//5JhUp0O/HMfetcRdWrfVIQPWQ4JUC
+        8ZiY3AmOMzTa+W4+KlV3XqqFgGaTBGY=
+Date:   Wed, 18 May 2022 10:10:05 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Yazen Ghannam <yazen.ghannam@amd.com>
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Smita.KoralahalliChannabasappa@amd.com, muralidhara.mk@amd.com,
+        naveenkrishna.chatradhi@amd.com
+Subject: Re: [PATCH 06/18] EDAC/amd64: Add prep_chip_selects() into pvt->ops
+Message-ID: <YoSp3cSoAo4SkkfQ@zn.tnic>
+References: <20220509145534.44912-1-yazen.ghannam@amd.com>
+ <20220509145534.44912-7-yazen.ghannam@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1652860121-24092-4-git-send-email-quic_vivekuma@quicinc.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220509145534.44912-7-yazen.ghannam@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This has abslutely nothing to do with the block layer, and should not
-abuse the gendisk.
+On Mon, May 09, 2022 at 02:55:22PM +0000, Yazen Ghannam wrote:
+> From: Muralidhara M K <muralidhara.mk@amd.com>
+> 
+> GPU Nodes will need to set the number of available Chip Selects, i.e.
+> Base and Mask values, differently than existing systems. A function
+> pointer should be used rather than introduce another branching condition.
+
+Yeah, it looks to me like all that detection logic should be split
+eventually. Looking at read_mc_regs(), it has
+
+        if (pvt->umc) {
+                __read_mc_regs_df(pvt);
+
+                goto skip;
+        }
+
+at the top, then a whole bunch of legacy stuff and then at the skip
+label some common stuff...
+
+Another thing you could consider is to have common functionality carved
+out into helpers with "common" in the name and then call those from both
+UMC and DCT paths. Perhaps that'll help keep the init paths sane. That
+is, short of splitting this driver.
+
+We did the splitting for Intel and there we have a common, librarized
+code which gets linked into a couple of drivers. You don't have to do
+this too - just putting it out there as an alternative.
+
+The per-family function pointers design could be good too, if done
+right. The advantage being, you have a single driver for all, yadda
+yadda...
+
+> Prepare for this by adding prep_chip_selects() to pvt->ops and set it
+> as needed based on currently supported systems.
+> 
+> Use a "umc" prefix for modern systems, since these use Unified Memory
+> Controllers (UMCs).
+> 
+> Use a "dct" prefix for newly-defined legacy functions, since these
+> systems use DRAM Controllers (DCTs).
+> 
+> Signed-off-by: Muralidhara M K <muralidhara.mk@amd.com>
+> Signed-off-by: Naveen Krishna Chatradhi <naveenkrishna.chatradhi@amd.com>
+
+What does Naveen's SOB mean here? Co-developed-by perhaps?
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
