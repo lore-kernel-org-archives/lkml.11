@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F96C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B34C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236699AbiERMaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
+        id S236912AbiERMao (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236867AbiERM3r (ORCPT
+        with ESMTP id S236638AbiERM3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:29:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F26E195795;
-        Wed, 18 May 2022 05:28:13 -0700 (PDT)
+        Wed, 18 May 2022 08:29:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3411A1966A3;
+        Wed, 18 May 2022 05:28:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 240FD6164C;
-        Wed, 18 May 2022 12:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44938C34119;
-        Wed, 18 May 2022 12:28:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80DBFB81F43;
+        Wed, 18 May 2022 12:28:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AFABC36AE2;
+        Wed, 18 May 2022 12:28:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876891;
-        bh=2G3O/BeuOB/LP+pXY8WjpNyQcb0iZ9J+DrQIeLIcGXY=;
+        s=k20201202; t=1652876901;
+        bh=4s6MoWKIS38F4xjo4r0vvrDQD7m6z8w1d0frx8yRIGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=boOUcq/+nlWQEoFW6WOugy+AXfoip8MtHPwSJ2jzQu5iucQZa6ZHqkvuUPd8gV1cv
-         SEIeJ9Rr5K6MXJ8AYXtRY740YD+OBB1AKHjjCSCRGzkxuOVw+8IXKTQIsUBe4T6SdW
-         YN9L02OCFTmew9kz+//gRD0qJca91EUxGD5p2k06Ztj43S1p0GMcN9psuQkQ8HNTzT
-         umPjyzoAWkQ+OOBODwIVGr/+aVG7mMVUJK8N90HciP2/CPjKQ6ycoE5vCU4nHtAzOX
-         jFycRdjAA40VGdSiLOdnHH0hrbvo1uesHAvTtvOAd1W9+ifVlF3BTTDB/zGLVUKw7H
-         HpEmhdlE2P89Q==
+        b=ZUmpeVkNXNx7MMh3buCsly5fWI3p0ReTL4u2WVdhdINAZ2TgwvEdwsTbTUKca1K3+
+         wU436vkObBccuWmmr7BaK4FBJAHRLUupCqHr/VwOJuH3mZtEwFFAYaP84oVLsJ/apK
+         AJ+27bh/uaewEJ+vs7hTy+WxRajV7u4pacK06Gw5wqC9z7Oy2zG42dGhmktGrhPiDy
+         cEw0nFdrHipts/saay6O7A6+xAM6WSmaDbmvelZZWCLjR8ovt8d38fMHX3w/pxLlHn
+         GJ1ge+TyeYJAJYIuO4xDfTV4BaIS51Otb8VfSjXCb23IGcHfvRj8zdPnN1gfNRhNz7
+         F/PDQPqA4Kppw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>, daniel@ffwll.ch,
-        deller@gmx.de, wangqing@vivo.com, sam@ravnborg.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 07/17] fbdev: Prevent possible use-after-free in fb_release()
-Date:   Wed, 18 May 2022 08:27:41 -0400
-Message-Id: <20220518122753.342758-7-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, jgg@ziepe.ca,
+        arnd@arndb.de, netdev@vger.kernel.org, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/17] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+Date:   Wed, 18 May 2022 08:27:44 -0400
+Message-Id: <20220518122753.342758-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
 References: <20220518122753.342758-1-sashal@kernel.org>
@@ -55,45 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 89bfd4017e58faaf70411555e7f508495114e90b ]
+[ Upstream commit 51ca86b4c9c7c75f5630fa0dbe5f8f0bd98e3c3e ]
 
-Most fbdev drivers have issues with the fb_info lifetime, because call to
-framebuffer_release() from their driver's .remove callback, rather than
-doing from fbops.fb_destroy callback.
+Fix the missing pci_disable_device() before return
+from tulip_init_one() in the error handling case.
 
-Doing that will destroy the fb_info too early, while references to it may
-still exist, leading to a use-after-free error.
-
-To prevent this, check the fb_info reference counter when attempting to
-kfree the data structure in framebuffer_release(). That will leak it but
-at least will prevent the mentioned error.
-
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220413.365977-1-javierm@redhat.com
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220506094250.3630615-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbsysfs.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
-index 65dae05fff8e..ce699396d6ba 100644
---- a/drivers/video/fbdev/core/fbsysfs.c
-+++ b/drivers/video/fbdev/core/fbsysfs.c
-@@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
- {
- 	if (!info)
- 		return;
-+
-+	if (WARN_ON(refcount_read(&info->count)))
-+		return;
-+
- 	kfree(info->apertures);
- 	kfree(info);
+diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
+index fcedd733bacb..834a3f8c80da 100644
+--- a/drivers/net/ethernet/dec/tulip/tulip_core.c
++++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
+@@ -1398,8 +1398,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	/* alloc_etherdev ensures aligned and zeroed private structures */
+ 	dev = alloc_etherdev (sizeof (*tp));
+-	if (!dev)
++	if (!dev) {
++		pci_disable_device(pdev);
+ 		return -ENOMEM;
++	}
+ 
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
+@@ -1778,6 +1780,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ err_out_free_netdev:
+ 	free_netdev (dev);
++	pci_disable_device(pdev);
+ 	return -ENODEV;
  }
+ 
 -- 
 2.35.1
 
