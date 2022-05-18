@@ -2,224 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5438AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07931C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241108AbiERRuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57350 "EHLO
+        id S241154AbiERRvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241006AbiERRuG (ORCPT
+        with ESMTP id S241132AbiERRvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 13:50:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEAF1FC2D1;
-        Wed, 18 May 2022 10:50:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F7A9617E9;
-        Wed, 18 May 2022 17:50:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A84DAC385A5;
-        Wed, 18 May 2022 17:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652896204;
-        bh=K00bz992tBRd/BGSj33PgLYmtpNF5xkjClI/j3Rqjp0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=UO5zkNXwKzGnoXZRI4EtNATHQzvLFfmmB+A/AsDHoJKcv6TFgNbjhUKzQ0E0M0ZU/
-         9Kk7eOD986APQOe4jIDBbF+7te2kCTjZp3TYiGpdElzi80MCnZAj3azMzpKqceOpqw
-         y+edCtDN4vbY7taSWRAsiq6FHOBVlKJtWRJZjYhsse3Pr5yz/NwdZcjeJ03btgwIJt
-         3qFszD6QokNG5/YtaN+trjj/ugPxIIkGRcFfmgpWYxOeQAZGbR3bvGGXjGeEAY3IJs
-         MoYmp7atofOEguS/DqkzFYfb8zm+pSYyeLTE84KxgFW8/ciKzpgI9P4BMKNwJp++qF
-         b1Hne3A/md3uw==
-Date:   Wed, 18 May 2022 12:50:02 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Tanjore Suresh <tansuresh@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme <linux-nvme@lists.infradead.org>,
-        Linux PCI <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH v3 1/3] driver core: Support asynchronous driver shutdown
-Message-ID: <20220518175002.GA1148748@bhelgaas>
+        Wed, 18 May 2022 13:51:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E93A622534
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:51:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652896274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=49hW2Lgkit3FFJ0TGEQAkc/9Izoyz7QsMkLjDXmi4AY=;
+        b=fzpt5aMYtzcQUknWNpFa6KdePQOcD7ZS5BqxJzhnhXL7ywqj9ZDUECE/qWLwVllipcz1yK
+        e8NJNFnN3FEOXyGDtZloOKf1QFXogkeHDKZCDULswOlT9adcQKvEJ3VIH9aik7v6myq4t7
+        hNZWAXNyvEWzTwbhiCjY7pgv8z63Rak=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-219-c-Hi_WEaMG-hMiKPX-hTbA-1; Wed, 18 May 2022 13:51:13 -0400
+X-MC-Unique: c-Hi_WEaMG-hMiKPX-hTbA-1
+Received: by mail-io1-f72.google.com with SMTP id n5-20020a056602340500b0065a9f426e7aso716153ioz.0
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:51:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=49hW2Lgkit3FFJ0TGEQAkc/9Izoyz7QsMkLjDXmi4AY=;
+        b=DwHowxCq5o2J96OVvN4FmDVmSxN1hEbBkMDzmlXXHaoO190AR+R9MhIfUJZmABRUTQ
+         dtgIh4rl0wpGDxlLVulQtjMrx410nLv9/Q03lEg9Gn47PGHRP+49qwwAPec76x+Wd4Z8
+         yag3rwBO1AStUD3FZOvcQb1uRp+fm+1OJ90wyHQF5a6x2wF8KJLNSfy3FyxJa4nYk5PA
+         uKRpR3QXGfQ3xRWMe+t98yhUg3lK2aVutKpjTvg8vsZ3Vfqj88T6LKGUKkG5KAVVOCE8
+         9e+YAhuj48YmyXbqJGKnuFc3QuKsNLhR2wrij9bkzHRRqDwGF1s8Trx/b8Cl7A87ZJ/X
+         ipVg==
+X-Gm-Message-State: AOAM530Yn7voCSBKfSfPpM7C8sYcw9VxNUEQd9KZNduNGXjzKbym1MV0
+        fE1nTSgg7MTBpErWdQO6SzXYt7neVBv6JQbp8x3JpgFYwTAUKnW+jEGI2bVvbrPD9vWrxlwc0Ux
+        ckrB7hpM2n0iT1hEz1QVb1Mo+
+X-Received: by 2002:a05:6638:dc7:b0:32b:a483:16b8 with SMTP id m7-20020a0566380dc700b0032ba48316b8mr423070jaj.66.1652896272819;
+        Wed, 18 May 2022 10:51:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy4yot0L8H1GFnxd+jBFDsw6Yt7jnmhEuw0qSATO4iI9tLeFnhC04lgVq81N4r1GIYOBFpfHg==
+X-Received: by 2002:a05:6638:dc7:b0:32b:a483:16b8 with SMTP id m7-20020a0566380dc700b0032ba48316b8mr423057jaj.66.1652896272606;
+        Wed, 18 May 2022 10:51:12 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id g15-20020a92dd8f000000b002cf5aae6645sm727757iln.2.2022.05.18.10.51.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 10:51:12 -0700 (PDT)
+Date:   Wed, 18 May 2022 11:51:10 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Yi Liu <yi.l.liu@intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kvm/vfio: Fix potential deadlock problem in vfio
+Message-ID: <20220518115110.23a0e929.alex.williamson@redhat.com>
+In-Reply-To: <20220517023441.4258-1-wanjiabing@vivo.com>
+References: <20220517023441.4258-1-wanjiabing@vivo.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0ibBw41YSfSWF1CtY7w9oLO+8bKNK2AK0grE0qabJ6QQA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 01:38:49PM +0200, Rafael J. Wysocki wrote:
-> On Wed, May 18, 2022 at 12:08 AM Tanjore Suresh <tansuresh@google.com> wrote:
-> >
-> > This changes the bus driver interface with additional entry points
-> > to enable devices to implement asynchronous shutdown. The existing
-> > synchronous interface to shutdown is unmodified and retained for
-> > backward compatibility.
-> >
-> > This changes the common device shutdown code to enable devices to
-> > participate in asynchronous shutdown implementation.
-> >
-> > Signed-off-by: Tanjore Suresh <tansuresh@google.com>
-> > ---
-> >  drivers/base/core.c        | 38 +++++++++++++++++++++++++++++++++++++-
-> >  include/linux/device/bus.h | 12 ++++++++++++
-> >  2 files changed, 49 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/base/core.c b/drivers/base/core.c
-> > index 3d6430eb0c6a..ba267ae70a22 100644
-> > --- a/drivers/base/core.c
-> > +++ b/drivers/base/core.c
-> > @@ -4479,6 +4479,7 @@ EXPORT_SYMBOL_GPL(device_change_owner);
-> >  void device_shutdown(void)
-> >  {
-> >         struct device *dev, *parent;
-> > +       LIST_HEAD(async_shutdown_list);
-> >
-> >         wait_for_device_probe();
-> >         device_block_probing();
-> > @@ -4523,7 +4524,13 @@ void device_shutdown(void)
-> >                                 dev_info(dev, "shutdown_pre\n");
-> >                         dev->class->shutdown_pre(dev);
-> >                 }
-> > -               if (dev->bus && dev->bus->shutdown) {
-> > +               if (dev->bus && dev->bus->async_shutdown_start) {
-> > +                       if (initcall_debug)
-> > +                               dev_info(dev, "async_shutdown_start\n");
-> > +                       dev->bus->async_shutdown_start(dev);
-> > +                       list_add_tail(&dev->kobj.entry,
-> > +                               &async_shutdown_list);
-> > +               } else if (dev->bus && dev->bus->shutdown) {
-> >                         if (initcall_debug)
-> >                                 dev_info(dev, "shutdown\n");
-> >                         dev->bus->shutdown(dev);
-> > @@ -4543,6 +4550,35 @@ void device_shutdown(void)
-> >                 spin_lock(&devices_kset->list_lock);
-> >         }
-> >         spin_unlock(&devices_kset->list_lock);
-> > +
-> > +       /*
-> > +        * Second pass spin for only devices, that have configured
-> > +        * Asynchronous shutdown.
-> > +        */
-> > +       while (!list_empty(&async_shutdown_list)) {
-> > +               dev = list_entry(async_shutdown_list.next, struct device,
-> > +                               kobj.entry);
-> > +               parent = get_device(dev->parent);
-> > +               get_device(dev);
-> > +               /*
-> > +                * Make sure the device is off the  list
-> > +                */
-> > +               list_del_init(&dev->kobj.entry);
-> > +               if (parent)
-> > +                       device_lock(parent);
-> > +               device_lock(dev);
-> > +               if (dev->bus && dev->bus->async_shutdown_end) {
-> > +                       if (initcall_debug)
-> > +                               dev_info(dev,
-> > +                               "async_shutdown_end called\n");
-> > +                       dev->bus->async_shutdown_end(dev);
-> > +               }
-> > +               device_unlock(dev);
-> > +               if (parent)
-> > +                       device_unlock(parent);
-> > +               put_device(dev);
-> > +               put_device(parent);
-> > +       }
-> >  }
-> >
-> >  /*
-> > diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
-> > index a039ab809753..f582c9d21515 100644
-> > --- a/include/linux/device/bus.h
-> > +++ b/include/linux/device/bus.h
-> > @@ -49,6 +49,16 @@ struct fwnode_handle;
-> >   *             will never get called until they do.
-> >   * @remove:    Called when a device removed from this bus.
-> >   * @shutdown:  Called at shut-down time to quiesce the device.
-> > + * @async_shutdown_start:      Called at the shutdown-time to start
-> > + *                             the shutdown process on the device.
-> > + *                             This entry point will be called only
-> > + *                             when the bus driver has indicated it would
-> > + *                             like to participate in asynchronous shutdown
-> > + *                             completion.
-> > + * @async_shutdown_end:        Called at shutdown-time  to complete the shutdown
-> > + *                     process of the device. This entry point will be called
-> > + *                     only when the bus drive has indicated it would like to
-> > + *                     participate in the asynchronous shutdown completion.
+On Tue, 17 May 2022 10:34:41 +0800
+Wan Jiabing <wanjiabing@vivo.com> wrote:
+
+> Fix following coccicheck warning:
+> ./virt/kvm/vfio.c:258:1-7: preceding lock on line 236
 > 
-> I'm going to repeat my point here, but only once.
+> If kvm_vfio_file_iommu_group() failed, code would goto err_fdput with
+> mutex_lock acquired and then return ret. It might cause potential
+> deadlock. Move mutex_unlock bellow err_fdput tag to fix it. 
 > 
-> I see no reason to do async shutdown this way, instead of adding a
-> flag for drivers to opt in for calling their existing shutdown
-> callbacks asynchronously, in analogy with the async suspend and resume
-> implementation.
+> Fixes: d55d9e7a45721 ("kvm/vfio: Store the struct file in the kvm_vfio_group")
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  virt/kvm/vfio.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/virt/kvm/vfio.c b/virt/kvm/vfio.c
+> index 8f9f7fffb96a..ce1b01d02c51 100644
+> --- a/virt/kvm/vfio.c
+> +++ b/virt/kvm/vfio.c
+> @@ -252,8 +252,8 @@ static int kvm_vfio_group_set_spapr_tce(struct kvm_device *dev,
+>  		break;
+>  	}
+>  
+> -	mutex_unlock(&kv->lock);
+>  err_fdput:
+> +	mutex_unlock(&kv->lock);
+>  	fdput(f);
+>  	return ret;
+>  }
 
-There's a lot of code here that mere mortals like myself don't
-understand very well, so here's my meager understanding of how
-async suspend works and what you're suggesting to make this a
-little more concrete.
+Applied to vfio next branch for v5.19.  Thanks!
 
-Devices have this async_suspend bit:
+Alex
 
-  struct device {
-    struct dev_pm_info {
-      unsigned int async_suspend:1;
-
-Drivers call device_enable_async_suspend() to set async_suspend if
-they want it.  The system suspend path is something like this:
-
-  suspend_enter
-    dpm_suspend_noirq(PMSG_SUSPEND)
-      dpm_noirq_suspend_devices(PMSG_SUSPEND)
-        pm_transition = PMSG_SUSPEND
-        while (!list_empty(&dpm_late_early_list))
-          device_suspend_noirq(dev)
-            dpm_async_fn(dev, async_suspend_noirq)
-              if (is_async(dev))
-                async_schedule_dev(async_suspend_noirq)       # async path
-
-                  async_suspend_noirq               # called asynchronously
-                  __device_suspend_noirq(dev, PMSG_SUSPEND, true)
-                    callback = pm_noirq_op(PMSG_SUSPEND) # .suspend_noirq()
-                    dpm_run_callback(callback)      # async call
-
-            __device_suspend_noirq(dev, pm_transition, false) # sync path
-              callback = pm_noirq_op(PMSG_SUSPEND)  # .suspend_noirq()
-              dpm_run_callback(callback)            # sync call
-
-        async_synchronize_full                                # wait
-
-If a driver has called device_enable_async_suspend(), we'll use the
-async_schedule_dev() path to schedule the appropriate .suspend_noirq()
-method.  After scheduling it via the async path or directly calling it
-via the sync path, the async_synchronize_full() waits for completion
-of all the async methods.
-
-I assume your suggestion is to do something like this:
-
-  struct device {
-    struct dev_pm_info {
-      unsigned int async_suspend:1;
- +    unsigned int async_shutdown:1;
-
- + void device_enable_async_shutdown(struct device *dev)
- +   dev->power.async_shutdown = true;
-
-    device_shutdown
-      while (!list_empty(&devices_kset->list))
- -      dev->...->shutdown()
- +      if (is_async_shutdown(dev))
- +        async_schedule_dev(async_shutdown)   # async path
- +
- +         async_shutdown               # called asynchronously
- +           dev->...->shutdown()
- +
- +      else
- +        dev->...->shutdown()                 # sync path
- +
- +    async_synchronize_full                   # wait
