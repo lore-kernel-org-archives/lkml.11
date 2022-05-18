@@ -2,101 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B73BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80ED2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236343AbiERMSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:18:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47596 "EHLO
+        id S236336AbiERMSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236268AbiERMSf (ORCPT
+        with ESMTP id S236300AbiERMSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 08:18:35 -0400
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EE650E0C;
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7251F51329;
         Wed, 18 May 2022 05:18:33 -0700 (PDT)
-Received: by mail-oo1-xc34.google.com with SMTP id q73-20020a4a334c000000b0035eb110dd0dso367738ooq.10;
-        Wed, 18 May 2022 05:18:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mQVkiR9K26Mjqv9w5+Bh3SJF7deBKHMCzHUnWBqakyM=;
-        b=ZUg1pZdOh4QKOj/mrQGrC/5LZOqSoVPwv+15oaQ+OZrY1ZHDz2r4Njys38Faodan93
-         kVqhivAGdKTSRf+QwSEKKxlOR7kF8nzfo6bX50R66+BncfrbKNopSkvptECqHNLSHZbt
-         bO69fOW8INae6HprEpucgN1XSNJ1sLcFxwV31QhUCH5fWVtUZzTgK1HZdbSJPjxH+kda
-         cq1OS4hbueKOoEnW4sAAQqZnl3rc/X2u55KDCnVIVvIVAoOBnare8QJpJyJY9z+zB54k
-         xtUnzw1mkFgWoBwo/JVMVL5WF0RixkHuefX43bcjhSyaAh5wP7lN0B7MZ2VcuJzr09VA
-         K1og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mQVkiR9K26Mjqv9w5+Bh3SJF7deBKHMCzHUnWBqakyM=;
-        b=Ar3YIBMdDe9XgQ2gHVTrF86MFYG1LvrtpIWbpfEyOorA/+DgYa9J0Jzt7tS9QIMW/Y
-         6NrFpAwpfbg44Y/DU3pQYJoD9pLjN1TAf/OR3nnGJlJ8aSoQzxpwt/ZLGRPCkPNzMhYw
-         yg5VCmu/FpTg6HynK+lq4NM+fCniE0iICLd/wSr9l3ezHEiGYh7M1noFESZJx2yfUyFg
-         u2WHtC1Lhu9VBqrTjr65L6YM4g0cpID+rt0i32wD+Sl5yI8s2W0YhUoVcnhlWsA66ie5
-         TR/x689fw/FVxua0vod9wKHn6l/dsq1CF4Lc0Pd0XcnMLT0sTMibg7Tn1/iGGiZHlfRA
-         xlsw==
-X-Gm-Message-State: AOAM533Z4Rp2TaY0B2WG9S1pqiOvErNGwVD9z8X/ZPaADQf2SVjBBnAV
-        64XTsdQvemSaVigfvnvEWmnXUiL8ZI+mBOYGZDo=
-X-Google-Smtp-Source: ABdhPJwoIZVHzgubTmduaSfWKij9jgMHdaixLU3LO3nn/8ycnPjnyKbzTNT5SHvdrGyT9o/x7Pexc/6wFvbcV83cKro=
-X-Received: by 2002:a4a:d88e:0:b0:35e:a637:be71 with SMTP id
- b14-20020a4ad88e000000b0035ea637be71mr9807579oov.10.1652876312413; Wed, 18
- May 2022 05:18:32 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id A7A801F45034
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652876312;
+        bh=PFgx984+FuMCxbDdd6hqK/nxYtdSH9hLGtbOymoK8NY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=RasqO0zP3KyeUtT66qDWuwaCJ1/Y0wy30WtrFygZfkptrGsCjxo7ZTOwFDi9KTBda
+         L67uEr5HdlT7PKBIodRG8JgKanA/4TGhOd9Yrti50h3rTn7MKfFuZ0KSfTKwnB7q1k
+         o5ZcddUKS334nPgssh/io9SNq8EVB4dPXZ2WABovKbt1yvHQJjxG7xGz1ZVPkdfp9f
+         2tPf7CnBM2qinxKhUhg5EGbXnS+XCOmBsAJXGPAPsZIKICHWpTgoaDPhdmWGyvoR3o
+         okLr5Cb97N8hOQHuXO3IiJg2txppFYC6Yi4ybz/c3zLYRzMo8ryyhKTfutowbWh0Q2
+         bB+tPbsVK4uCw==
+Message-ID: <e06b9256-3fb3-6ac4-9362-b23574f4da6e@collabora.com>
+Date:   Wed, 18 May 2022 14:18:29 +0200
 MIME-Version: 1.0
-References: <20220517110737.37148-1-ilpo.jarvinen@linux.intel.com> <20220517110737.37148-2-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220517110737.37148-2-ilpo.jarvinen@linux.intel.com>
-From:   Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
-Date:   Wed, 18 May 2022 17:48:21 +0530
-Message-ID: <CAKfKVtFO5z68JwFtGDoHAVVfwXvNnT0B_dGZutCLyu6Vo8tXOQ@mail.gmail.com>
-Subject: Re: [PATCH 1/9] serial: uartline: Fix BRKINT clearing
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Sean Anderson <sean.anderson@seco.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2] clk: mediatek: use en_mask as a pure div_en_mask
+Content-Language: en-US
+To:     Mandy Liu <mandyjh.liu@mediatek.com>, mturquette@baylibre.co,
+        sboyd@kernel.org
+Cc:     miles.chen@mediatek.com, wenst@chromium.org,
+        chun-jie.chen@mediatek.com, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220513073621.12923-1-mandyjh.liu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220513073621.12923-1-mandyjh.liu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 5:58 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> BRKINT is within c_iflag rather than c_cflag.
-Nit typo in the subject line.
+Il 13/05/22 09:36, Mandy Liu ha scritto:
+> From: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+> 
+> We no longer allow en_mask to be a combination of
+> pll_en_bit and div_en_mask, so remove pll_en_bit(bit0)
+> from en_mask to make en_mask a pure en_mask that only
+> used for pll dividers.
+> 
+> This commit continues the work done in commit 7cc4e1bbe300
+> ("clk: mediatek: Fix asymmetrical PLL enable and disable
+> control") and commit f384c44754b7 ("clk: mediatek:
+> Add configurable enable control to mtk_pll_data") to
+> clean up en_mask(bit0) default setting.
+> 
+> Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+> Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+> Signed-off-by: Mandy Liu <mandyjh.liu@mediatek.com>
 
 
->
-> Cc: Sean Anderson <sean.anderson@seco.com>
-> Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parame=
-ters)
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/serial/uartlite.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.=
-c
-> index 007db67292a2..880e2afbb97b 100644
-> --- a/drivers/tty/serial/uartlite.c
-> +++ b/drivers/tty/serial/uartlite.c
-> @@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port,=
- struct ktermios *termios,
->         struct uartlite_data *pdata =3D port->private_data;
->
->         /* Set termios to what the hardware supports */
-> -       termios->c_cflag &=3D ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE=
-);
-> +       termios->c_iflag &=3D ~BRKINT;
-> +       termios->c_cflag &=3D ~(CSTOPB | PARENB | PARODD | CSIZE);
->         termios->c_cflag |=3D pdata->cflags & (PARENB | PARODD | CSIZE);
->         tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
->
-> --
-> 2.30.2
->
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
