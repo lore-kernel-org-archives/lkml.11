@@ -2,120 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0854DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B73BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236295AbiERMSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47376 "EHLO
+        id S236343AbiERMSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232400AbiERMS1 (ORCPT
+        with ESMTP id S236268AbiERMSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:18:27 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B4C4A92E
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:18:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652876306; x=1684412306;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2nABVGMDBjJQn3wpWnl4igBSwF2dgP+uLdUJBkuxeuk=;
-  b=XjW6WQDq6Y4lKf9wcAZa274Mu5i1HQFCg+d7K0Wc3JMIwrQQNW0/S8qq
-   VlktU/plcCDcsz1t/nLIIzbiRBHjQ2DaAoUrF54b//NT68QVZzCRtdYqm
-   ilrjPjnQ6d2eXfsqYjss8oYis6F642ug/dLBxG+Om+DEgybjVs1xNU3J3
-   Q8vMSVWgt6kC8ovZQuz5FjXbAMezdQv8hit3xDOmGOuoVPZ0D096o9i/6
-   q/GCWGtW7UR4+o9g2OsRe/EZDqlt6K2nkK0Ks5d5jer8Szw2hyb2BseKz
-   oFbUvQr2nl6/IMuuXqjkAvhRHBKwv7WKob4nKbuFM0Z4hWAJok4f9KywL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="269224128"
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="269224128"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:18:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="605860787"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 18 May 2022 05:18:22 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 7B24E109; Wed, 18 May 2022 15:18:22 +0300 (EEST)
-Date:   Wed, 18 May 2022 15:18:22 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "david@redhat.com" <david@redhat.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a
- shared page
-Message-ID: <20220518121822.znaw5pwdsdxbjrlg@black.fi.intel.com>
-References: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
- <70df6e274d4a40e78f11ef93521edab6@AcuMS.aculab.com>
+        Wed, 18 May 2022 08:18:35 -0400
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EE650E0C;
+        Wed, 18 May 2022 05:18:33 -0700 (PDT)
+Received: by mail-oo1-xc34.google.com with SMTP id q73-20020a4a334c000000b0035eb110dd0dso367738ooq.10;
+        Wed, 18 May 2022 05:18:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mQVkiR9K26Mjqv9w5+Bh3SJF7deBKHMCzHUnWBqakyM=;
+        b=ZUg1pZdOh4QKOj/mrQGrC/5LZOqSoVPwv+15oaQ+OZrY1ZHDz2r4Njys38Faodan93
+         kVqhivAGdKTSRf+QwSEKKxlOR7kF8nzfo6bX50R66+BncfrbKNopSkvptECqHNLSHZbt
+         bO69fOW8INae6HprEpucgN1XSNJ1sLcFxwV31QhUCH5fWVtUZzTgK1HZdbSJPjxH+kda
+         cq1OS4hbueKOoEnW4sAAQqZnl3rc/X2u55KDCnVIVvIVAoOBnare8QJpJyJY9z+zB54k
+         xtUnzw1mkFgWoBwo/JVMVL5WF0RixkHuefX43bcjhSyaAh5wP7lN0B7MZ2VcuJzr09VA
+         K1og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mQVkiR9K26Mjqv9w5+Bh3SJF7deBKHMCzHUnWBqakyM=;
+        b=Ar3YIBMdDe9XgQ2gHVTrF86MFYG1LvrtpIWbpfEyOorA/+DgYa9J0Jzt7tS9QIMW/Y
+         6NrFpAwpfbg44Y/DU3pQYJoD9pLjN1TAf/OR3nnGJlJ8aSoQzxpwt/ZLGRPCkPNzMhYw
+         yg5VCmu/FpTg6HynK+lq4NM+fCniE0iICLd/wSr9l3ezHEiGYh7M1noFESZJx2yfUyFg
+         u2WHtC1Lhu9VBqrTjr65L6YM4g0cpID+rt0i32wD+Sl5yI8s2W0YhUoVcnhlWsA66ie5
+         TR/x689fw/FVxua0vod9wKHn6l/dsq1CF4Lc0Pd0XcnMLT0sTMibg7Tn1/iGGiZHlfRA
+         xlsw==
+X-Gm-Message-State: AOAM533Z4Rp2TaY0B2WG9S1pqiOvErNGwVD9z8X/ZPaADQf2SVjBBnAV
+        64XTsdQvemSaVigfvnvEWmnXUiL8ZI+mBOYGZDo=
+X-Google-Smtp-Source: ABdhPJwoIZVHzgubTmduaSfWKij9jgMHdaixLU3LO3nn/8ycnPjnyKbzTNT5SHvdrGyT9o/x7Pexc/6wFvbcV83cKro=
+X-Received: by 2002:a4a:d88e:0:b0:35e:a637:be71 with SMTP id
+ b14-20020a4ad88e000000b0035ea637be71mr9807579oov.10.1652876312413; Wed, 18
+ May 2022 05:18:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <70df6e274d4a40e78f11ef93521edab6@AcuMS.aculab.com>
+References: <20220517110737.37148-1-ilpo.jarvinen@linux.intel.com> <20220517110737.37148-2-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220517110737.37148-2-ilpo.jarvinen@linux.intel.com>
+From:   Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+Date:   Wed, 18 May 2022 17:48:21 +0530
+Message-ID: <CAKfKVtFO5z68JwFtGDoHAVVfwXvNnT0B_dGZutCLyu6Vo8tXOQ@mail.gmail.com>
+Subject: Re: [PATCH 1/9] serial: uartline: Fix BRKINT clearing
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Sean Anderson <sean.anderson@seco.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 08:39:45AM +0000, David Laight wrote:
-> From: Kirill A. Shutemov
-> > Sent: 17 May 2022 16:30
-> > 
-> > load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
-> > The unwanted loads are typically harmless. But, they might be made to
-> > totally unrelated or even unmapped memory. load_unaligned_zeropad()
-> > relies on exception fixup (#PF, #GP and now #VE) to recover from these
-> > unwanted loads.
-> > 
-> > In TDX guest the second page can be shared page and VMM may configure it
-> > to trigger #VE.
-> > 
-> > Kernel assumes that #VE on a shared page is MMIO access and tries to
-> > decode instruction to handle it. In case of load_unaligned_zeropad() it
-> > may result in confusion as it is not MMIO access.
-> > 
-> > Check fixup table before trying to handle MMIO.
-> 
-> Is it best to avoid that all happening by avoiding mapping
-> 'normal memory' below anything that isn't normal memory.
-> 
-> Even on a normal system it is potentially possibly that the
-> second page might be MMIO and reference a target that doesn't
-> want to see non-word sized reads.
-> (Or the first location might be a fifo and the read consumes
-> some data.)
-> 
-> In that case the cpu won't fault the access, but the hardware
-> access might have rather unexpected side effects.
-> 
-> Now the way MMIO pages are allocated probably makes that
-> impossible - but load_unaligned_zeropad() relies on
-> it not happening or not breaking anything.
+On Tue, May 17, 2022 at 5:58 PM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> BRKINT is within c_iflag rather than c_cflag.
+Nit typo in the subject line.
 
-Normally MMIO mappings comes from ioremap() and it does not land next to
-normal pages in virtual memory. So I don't think there's high risk of MMIO
-being a problem on normal machines.
 
-What makes TDX (and other confidential computing platforms) different is
-security model: host and VMM considered hostile and we need protect
-against it. In TDX case, VMM can make any shared memory (such as DMA
-buffers) to trigger #VE that kernel interprets as MMIO access. We need to
-make sure host cannot exploit it.
-
--- 
- Kirill A. Shutemov
+>
+> Cc: Sean Anderson <sean.anderson@seco.com>
+> Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parame=
+ters)
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/serial/uartlite.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.=
+c
+> index 007db67292a2..880e2afbb97b 100644
+> --- a/drivers/tty/serial/uartlite.c
+> +++ b/drivers/tty/serial/uartlite.c
+> @@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port,=
+ struct ktermios *termios,
+>         struct uartlite_data *pdata =3D port->private_data;
+>
+>         /* Set termios to what the hardware supports */
+> -       termios->c_cflag &=3D ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE=
+);
+> +       termios->c_iflag &=3D ~BRKINT;
+> +       termios->c_cflag &=3D ~(CSTOPB | PARENB | PARODD | CSIZE);
+>         termios->c_cflag |=3D pdata->cflags & (PARENB | PARODD | CSIZE);
+>         tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
+>
+> --
+> 2.30.2
+>
