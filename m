@@ -2,142 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E716C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED400C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235929AbiERLvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        id S235927AbiERLwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235891AbiERLvR (ORCPT
+        with ESMTP id S235939AbiERLwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:51:17 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9431055D;
-        Wed, 18 May 2022 04:51:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652874676; x=1684410676;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LsDlrEy/O3rSVlfRNcSoeekumU3aG2sLzMfu7YpuCuQ=;
-  b=YUgs7Xqf6fb6xwDrJmnHm50SEUM3uU8uSiUzrQLnCL0HYyf/gfXijtWU
-   GniBSFN2prL6b9HDfly5WOPiogHAv+o4NP5RtQiX51DNqb5wv8Dd/rbuQ
-   PJ8arD5QIuivBGjXf8Mm7Pf5+YbpQqQ9RPMBMe8dyrr30S5sfn9BHYeLo
-   fF+xIF46bH5GFrydOZDRCXauI7UWLs7fKW22IeT2GPmdrjnoJE4RWpr5R
-   eCDjDHmcke/tL6phWzS+nPuL0fvFXsADCxpbaWuEZ/kvc3Jz+GaG+loeQ
-   y+9Ycg1b3OwuZRb6l6Pq3fyLyHFCvxgU6NMnNYx2f4Kmci/bBfcwpYh+D
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="334679697"
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="334679697"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 04:51:16 -0700
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="597747941"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 04:51:10 -0700
-Date:   Wed, 18 May 2022 19:51:01 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        intel-gfx@lists.freedesktop.org,
-        Sean Christopherson <seanjc@google.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the guest
- and/or host changes apic id/base from the defaults.
-Message-ID: <20220518115056.GA18087@gao-cwp>
-References: <20220427200314.276673-1-mlevitsk@redhat.com>
- <20220427200314.276673-3-mlevitsk@redhat.com>
- <20220518082811.GA8765@gao-cwp>
- <8c78939bf01a98554696add10e17b07631d97a28.camel@redhat.com>
+        Wed, 18 May 2022 07:52:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFF83614D;
+        Wed, 18 May 2022 04:52:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4380B81F4C;
+        Wed, 18 May 2022 11:52:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8B5C385A5;
+        Wed, 18 May 2022 11:52:46 +0000 (UTC)
+Message-ID: <aaa42afe-2edc-cde9-c689-7df5f91dae09@xs4all.nl>
+Date:   Wed, 18 May 2022 13:52:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8c78939bf01a98554696add10e17b07631d97a28.camel@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3] media: Add P010 video format
+Content-Language: en-US
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        mchehab@kernel.org, nicolas.dufresne@collabora.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+References: <20220517091419.248265-1-benjamin.gaignard@collabora.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <20220517091419.248265-1-benjamin.gaignard@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 12:50:27PM +0300, Maxim Levitsky wrote:
->> > struct kvm_arch {
->> > @@ -1258,6 +1260,7 @@ struct kvm_arch {
->> > 	hpa_t	hv_root_tdp;
->> > 	spinlock_t hv_root_tdp_lock;
->> > #endif
->> > +	bool apic_id_changed;
->> 
->> What's the value of this boolean? No one reads it.
->
->I use it in later patches to kill the guest during nested VM entry 
->if it attempts to use nested AVIC after any vCPU changed APIC ID.
->
->I mentioned this boolean in the commit description.
->
->This boolean avoids the need to go over all vCPUs and checking
->if they still have the initial apic id.
+Hi Benjamin,
 
-Do you want to kill the guest if APIC base got changed? If yes,
-you can check if APICV_INHIBIT_REASON_RO_SETTINGS is set and save
-the boolean.
+On 5/17/22 11:14, Benjamin Gaignard wrote:
+> P010 is a YUV format with 16-bits per pixel with interleaved UV.
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> ---
+> version 3:
+> - remove LE suffix
+> - rebased on media_tree_master branch
+> 
+>  .../media/v4l/pixfmt-yuv-planar.rst           | 53 +++++++++++++++++++
+>  drivers/media/v4l2-core/v4l2-common.c         |  1 +
+>  drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
+>  include/uapi/linux/videodev2.h                |  1 +
+>  4 files changed, 56 insertions(+)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+> index 8dff5906639b..fc2fc17cb371 100644
+> --- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+> +++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
+> @@ -109,6 +109,13 @@ All components are stored with the same number of bits per component.
+>        - Cb, Cr
+>        - No
+>        - 16x16 tiles
+> +    * - V4L2_PIX_FMT_P010
+> +      - 'P010'
+> +      - 16
+> +      - 4:2:0
+> +      - Cb, Cr
+> +      - No
+> +      - Linear
+>      * - V4L2_PIX_FMT_NV16
+>        - 'NV16'
+>        - 8
+> @@ -171,6 +178,7 @@ horizontally.
+>  .. _V4L2-PIX-FMT-NV21:
+>  .. _V4L2-PIX-FMT-NV12M:
+>  .. _V4L2-PIX-FMT-NV21M:
+> +.. _V4L2-PIX-FMT-P010:
+>  
+>  NV12, NV21, NV12M and NV21M
+>  ---------------------------
+> @@ -519,6 +527,51 @@ number of lines as the luma plane.
+>        - Cb\ :sub:`33`
+>        - Cr\ :sub:`33`
+>  
+> +.. _V4L2_PIX_FMT_P010:
+> +
+> +P010
+> +----
+> +
+> +Like NV12 with 16 bits per component, data in the 10 high bits, zeros in the 6 low bits, arranged in little endian order
 
->
->In the future maybe we can introduce a more generic 'taint'
->bitmap with various flags like that, indicating that the guest
->did something unexpected.
->
->BTW, the other option in regard to the nested AVIC is just to ignore this issue completely.
->The code itself always uses vcpu_id's, thus regardless of when/how often the guest changes
->its apic ids, my code would just use the initial APIC ID values consistently.
->
->In this case I won't need this boolean.
->
->> 
->> > };
->> > 
->> > struct kvm_vm_stat {
->> > diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
->> > index 66b0eb0bda94e..8996675b3ef4c 100644
->> > --- a/arch/x86/kvm/lapic.c
->> > +++ b/arch/x86/kvm/lapic.c
->> > @@ -2038,6 +2038,19 @@ static void apic_manage_nmi_watchdog(struct kvm_lapic *apic, u32 lvt0_val)
->> > 	}
->> > }
->> > 
->> > +static void kvm_lapic_check_initial_apic_id(struct kvm_lapic *apic)
->> > +{
->> > +	if (kvm_apic_has_initial_apic_id(apic))
->> > +		return;
->> > +
->> > +	pr_warn_once("APIC ID change is unsupported by KVM");
->> 
->> It is misleading because changing xAPIC ID is supported by KVM; it just
->> isn't compatible with APICv. Probably this pr_warn_once() should be
->> removed.
->
->Honestly since nobody uses this feature, I am not sure if to call this supported,
->I am sure that KVM has more bugs in regard of using non standard APIC ID.
->This warning might hopefuly make someone complain about it if this
->feature is actually used somewhere.
+Missing period at the end of the sentence.
 
-Now I got you. It is fine to me.
+I would also say that this has 10 bits per component. The remainder is padding
+and it's just how it is stored, but precision-wise this format has just 10 bits.
+
+> +
+> +.. flat-table:: Sample 4x4 P010 Image
+> +    :header-rows:  0
+> +    :stub-columns: 0
+> +
+> +    * - start + 0:
+> +      - Y'\ :sub:`00`
+> +      - Y'\ :sub:`01`
+> +      - Y'\ :sub:`02`
+> +      - Y'\ :sub:`03`
+> +    * - start + 8:
+> +      - Y'\ :sub:`10`
+> +      - Y'\ :sub:`11`
+> +      - Y'\ :sub:`12`
+> +      - Y'\ :sub:`13`
+> +    * - start + 16:
+> +      - Y'\ :sub:`20`
+> +      - Y'\ :sub:`21`
+> +      - Y'\ :sub:`22`
+> +      - Y'\ :sub:`23`
+> +    * - start + 24:
+> +      - Y'\ :sub:`30`
+> +      - Y'\ :sub:`31`
+> +      - Y'\ :sub:`32`
+> +      - Y'\ :sub:`33`
+> +    * - start + 32:
+> +      - Cb\ :sub:`00`
+> +      - Cr\ :sub:`00`
+> +      - Cb\ :sub:`01`
+> +      - Cr\ :sub:`01`
+> +    * - start + 40:
+> +      - Cb\ :sub:`10`
+> +      - Cr\ :sub:`10`
+> +      - Cb\ :sub:`11`
+> +      - Cr\ :sub:`11`
+> +
+> +.. raw:: latex
+> +
+> +    \endgroup
+>  
+>  Fully Planar YUV Formats
+>  ========================
+> diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
+> index df34b2a283bc..1e38ad8906a2 100644
+> --- a/drivers/media/v4l2-core/v4l2-common.c
+> +++ b/drivers/media/v4l2-core/v4l2-common.c
+> @@ -266,6 +266,7 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
+>  		{ .format = V4L2_PIX_FMT_NV61,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+>  		{ .format = V4L2_PIX_FMT_NV24,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
+>  		{ .format = V4L2_PIX_FMT_NV42,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
+> +		{ .format = V4L2_PIX_FMT_P010,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 2, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
+>  
+>  		{ .format = V4L2_PIX_FMT_YUV410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
+>  		{ .format = V4L2_PIX_FMT_YVU410,  .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 3, .bpp = { 1, 1, 1, 0 }, .hdiv = 4, .vdiv = 4 },
+> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+> index e2636539c9db..857a4e0d74a1 100644
+> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+> @@ -1305,6 +1305,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+>  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
+>  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
+>  	case V4L2_PIX_FMT_NV42:		descr = "Y/CrCb 4:4:4"; break;
+> +	case V4L2_PIX_FMT_P010:		descr = "16-bit Y/CrCb 4:2:0"; break;
+
+So this becomes 10-bit as well (also conform a similar format like FMT_Y10).
+
+>  	case V4L2_PIX_FMT_NV12_4L4:	descr = "Y/CbCr 4:2:0 (4x4 Linear)"; break;
+>  	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
+>  	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
+> diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+> index 6d465dc443b7..311f106bbdf5 100644
+> --- a/include/uapi/linux/videodev2.h
+> +++ b/include/uapi/linux/videodev2.h
+> @@ -601,6 +601,7 @@ struct v4l2_pix_format {
+>  #define V4L2_PIX_FMT_NV61    v4l2_fourcc('N', 'V', '6', '1') /* 16  Y/CrCb 4:2:2  */
+>  #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+>  #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
+> +#define V4L2_PIX_FMT_P010    v4l2_fourcc('P', '0', '1', '0') /* 16  Y/CbCr 4:2:0 16-bit per pixel */
+
+Ditto.
+
+>  
+>  /* two non contiguous planes - one Y, one Cr + Cb interleaved  */
+>  #define V4L2_PIX_FMT_NV12M   v4l2_fourcc('N', 'M', '1', '2') /* 12  Y/CbCr 4:2:0  */
+
+Regards,
+
+	Hans
