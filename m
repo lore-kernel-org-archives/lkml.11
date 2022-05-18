@@ -2,452 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610E6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235867AbiERLtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
+        id S235865AbiERLub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiERLtO (ORCPT
+        with ESMTP id S235795AbiERLu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:49:14 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82DDD179C20;
-        Wed, 18 May 2022 04:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652874552; x=1684410552;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XoTcRvBEP7DM1Xn0CK6ikwtWQeUDutphMprr9lkGIho=;
-  b=IJtNxgPenMe/gQwbUulMjZYg1oE/0v8Zo8sXK27DKHB85FX1Q7wseHYg
-   9gyBGSXr86ZTw/YWi1av2SkrgxRaftU2XgvtDrDmTzGl0bERtZPQ8YqsD
-   TcnTJIkpVYfryuFnkKIwj5/i0mEhjML3W7t7ipIQ3YJ0e6T0vpXdx9pTA
-   Hnx4zok3F0zTHPZkCPNcFWsxQoM+c84UX0n8jQymwDzms1F/438Z2Ookb
-   lzJVoicm+uwlUUnqDX8VbNEx04dVTpz9UQwPL8N176IZzbI+NsPeEIJPv
-   LU6vfse6D7gX36poBjDHbi9giw/wnSzgj7X+epiLhAkLf4DPSxAHrxGKu
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="164583740"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 May 2022 04:49:11 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 18 May 2022 04:49:11 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 18 May 2022 04:49:09 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 2/2] nvmem: microchip-otpc: add support
-Date:   Wed, 18 May 2022 14:51:29 +0300
-Message-ID: <20220518115129.908787-3-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220518115129.908787-1-claudiu.beznea@microchip.com>
-References: <20220518115129.908787-1-claudiu.beznea@microchip.com>
+        Wed, 18 May 2022 07:50:26 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FB417B865;
+        Wed, 18 May 2022 04:50:24 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id B6EBA1F44EFE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652874623;
+        bh=v9BT4jY0LXkbBKEpNBl7A0GnoXGTuIN7ai0ivp4fxo0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MDHUAkFFlwdwoLrZiH6kWeRTcdEKGTPyapZ/YpbtlbTBTDYChw2zzczD8UNhaGaXX
+         c7ib5AqOU0w8q3zOjUiMSs1FtnDJpFtXZqk+d/3X8SHH6FzLuptdxWC2LtFmXzQlFI
+         2C3TbheXt2uFZTm7lhfp4QUqCYNFaOeDzqGhKqzhE3qunw3CiKJ+Rz4YmaSd8R3s9Y
+         gdvFBxVuBF2pQ7HdfWLPJgKH5r5u6oOfUbEqConajhIkeVbJagLiATav4M1jQm4kQe
+         Q3y5bhqwImy2ZiDVFg+OGnJUi5ZKo4Tz5ysJ9tSuRqOiW+t9V310+qCe36wgzVgC49
+         0gfZZDVLNP39w==
+Message-ID: <73f6ab7c-635e-1ff3-2d48-492c256ffcc9@collabora.com>
+Date:   Wed, 18 May 2022 13:50:20 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 2/2] dt-bindings: arm: mtk-clocks: Set #clock-cells as
+ required property
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sboyd@kernel.org, chun-jie.chen@mediatek.com,
+        rex-bc.chen@mediatek.com, wenst@chromium.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220518093631.25491-1-angelogioacchino.delregno@collabora.com>
+ <20220518093631.25491-3-angelogioacchino.delregno@collabora.com>
+ <81dcc83b-7ef0-779e-ad2b-8d0722b48ba4@linaro.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <81dcc83b-7ef0-779e-ad2b-8d0722b48ba4@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for Microchip OTP controller available on SAMA7G5. The OTPC
-controls the access to a non-volatile memory. The memory behind OTPC is
-organized into packets, packets are composed by a fixed length header
-(4 bytes long) and a variable length payload (payload length is available
-in the header). When software request the data at an offset in memory
-the OTPC will return (via header + data registers) the whole packet that
-has a word at that offset. For the OTP memory layout like below:
+Il 18/05/22 13:46, Krzysztof Kozlowski ha scritto:
+> On 18/05/2022 11:36, AngeloGioacchino Del Regno wrote:
+>> This is a clock-controller binding, so it needs #clock-cells, or
+>> it would be of no use: add that to the list of required properties.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> These I considered as somehow fixes so I did not ask to remove the Fixes
+> tag, so also not squashing. It's fine, though...
+> 
 
-offset  OTP Memory layout
+I'm sorry Krzysztof, for some reason I was sure that your comments were applicable
+on the entire series...
 
-         .           .
-         .    ...    .
-         .           .
-0x0E     +-----------+	<--- packet X
-         | header  X |
-0x12     +-----------+
-         | payload X |
-0x16     |           |
-         |           |
-0x1A     |           |
-         +-----------+
-         .           .
-         .    ...    .
-         .           .
+I'll pay more attention next time, and eventually I'll make one more question
+when/if needed. I take your last comment as "leave this series as it is", so
+I will not send a v3.
 
-if user requests data at address 0x16 the data started at 0x0E will be
-returned by controller. User will be able to fetch the whole packet
-starting at 0x0E (or parts of the packet) via proper registers. The same
-packet will be returned if software request the data at offset 0x0E or
-0x12 or 0x1A.
+Regards,
+Angelo
 
-The OTP will be populated by Microchip with at least 2 packets first one
-being boot configuration packet and the 2nd one being temperature
-calibration packet. The packet order will be preserved b/w different chip
-revisions but the packet sizes may change.
-
-For the above reasons and to keep the same software able to work on all
-chip variants the read function of the driver is working with a packet
-id instead of an offset in OTP memory.
-
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- MAINTAINERS                    |   8 +
- drivers/nvmem/Kconfig          |   7 +
- drivers/nvmem/Makefile         |   2 +
- drivers/nvmem/microchip-otpc.c | 288 +++++++++++++++++++++++++++++++++
- 4 files changed, 305 insertions(+)
- create mode 100644 drivers/nvmem/microchip-otpc.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1bf57fd937b5..cf3ae2025f20 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12953,6 +12953,14 @@ S:	Supported
- F:	Documentation/devicetree/bindings/mtd/atmel-nand.txt
- F:	drivers/mtd/nand/raw/atmel/*
- 
-+MICROCHIP OTPC DRIVER
-+M:	Claudiu Beznea <claudiu.beznea@microchip.com>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Supported
-+F:	Documentation/devicetree/bindings/nvmem/microchip,sama7g5-otpc.yaml
-+F:	drivers/nvmem/microchip-otpc.c
-+F:	dt-bindings/nvmem/microchip,sama7g5-otpc.h
-+
- MICROCHIP PWM DRIVER
- M:	Claudiu Beznea <claudiu.beznea@microchip.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
-index 967d0084800e..d72d879a6d34 100644
---- a/drivers/nvmem/Kconfig
-+++ b/drivers/nvmem/Kconfig
-@@ -107,6 +107,13 @@ config MTK_EFUSE
- 	  This driver can also be built as a module. If so, the module
- 	  will be called efuse-mtk.
- 
-+config MICROCHIP_OTPC
-+	tristate "Microchip OTPC support"
-+	depends on ARCH_AT91 || COMPILE_TEST
-+	help
-+	  This driver enable the OTP controller available on Microchip SAMA7G5
-+	  SoCs. It controlls the access to the OTP memory connected to it.
-+
- config NVMEM_NINTENDO_OTP
- 	tristate "Nintendo Wii and Wii U OTP Support"
- 	depends on WII || COMPILE_TEST
-diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
-index 00e136a0a123..c710b64f9fe4 100644
---- a/drivers/nvmem/Makefile
-+++ b/drivers/nvmem/Makefile
-@@ -67,3 +67,5 @@ obj-$(CONFIG_NVMEM_SUNPLUS_OCOTP)	+= nvmem_sunplus_ocotp.o
- nvmem_sunplus_ocotp-y		:= sunplus-ocotp.o
- obj-$(CONFIG_NVMEM_APPLE_EFUSES)	+= nvmem-apple-efuses.o
- nvmem-apple-efuses-y 		:= apple-efuses.o
-+obj-$(CONFIG_MICROCHIP_OTPC)	+= nvmem-microchip-otpc.o
-+nvmem-microchip-otpc-y		:= microchip-otpc.o
-diff --git a/drivers/nvmem/microchip-otpc.c b/drivers/nvmem/microchip-otpc.c
-new file mode 100644
-index 000000000000..436e0dc4f337
---- /dev/null
-+++ b/drivers/nvmem/microchip-otpc.c
-@@ -0,0 +1,288 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * OTP Memory controller
-+ *
-+ * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
-+ *
-+ * Author: Claudiu Beznea <claudiu.beznea@microchip.com>
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/nvmem-provider.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+#define MCHP_OTPC_CR			(0x0)
-+#define MCHP_OTPC_CR_READ		BIT(6)
-+#define MCHP_OTPC_MR			(0x4)
-+#define MCHP_OTPC_MR_ADDR		GENMASK(31, 16)
-+#define MCHP_OTPC_AR			(0x8)
-+#define MCHP_OTPC_SR			(0xc)
-+#define MCHP_OTPC_SR_READ		BIT(6)
-+#define MCHP_OTPC_HR			(0x20)
-+#define MCHP_OTPC_HR_SIZE		GENMASK(15, 8)
-+#define MCHP_OTPC_DR			(0x24)
-+
-+#define MCHP_OTPC_NAME			"mchp-otpc"
-+#define MCHP_OTPC_SIZE			(11 * 1024)
-+
-+/**
-+ * struct mchp_otpc - OTPC private data structure
-+ * @base: base address
-+ * @dev: struct device pointer
-+ * @packets: list of packets in OTP memory
-+ * @npackets: number of packets in OTP memory
-+ */
-+struct mchp_otpc {
-+	void __iomem *base;
-+	struct device *dev;
-+	struct list_head packets;
-+	u32 npackets;
-+};
-+
-+/**
-+ * struct mchp_otpc_packet - OTPC packet data structure
-+ * @list: list head
-+ * @id: packet ID
-+ * @offset: packet offset (in words) in OTP memory
-+ */
-+struct mchp_otpc_packet {
-+	struct list_head list;
-+	u32 id;
-+	u32 offset;
-+};
-+
-+static struct mchp_otpc_packet *mchp_otpc_id_to_packet(struct mchp_otpc *otpc,
-+						       u32 id)
-+{
-+	struct mchp_otpc_packet *packet;
-+
-+	if (id >= otpc->npackets)
-+		return NULL;
-+
-+	list_for_each_entry(packet, &otpc->packets, list) {
-+		if (packet->id == id)
-+			return packet;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int mchp_otpc_prepare_read(struct mchp_otpc *otpc,
-+				  unsigned int offset)
-+{
-+	u32 tmp;
-+
-+	/* Set address. */
-+	tmp = readl_relaxed(otpc->base + MCHP_OTPC_MR);
-+	tmp &= ~MCHP_OTPC_MR_ADDR;
-+	tmp |= FIELD_PREP(MCHP_OTPC_MR_ADDR, offset);
-+	writel_relaxed(tmp, otpc->base + MCHP_OTPC_MR);
-+
-+	/* Set read. */
-+	tmp = readl_relaxed(otpc->base + MCHP_OTPC_CR);
-+	tmp |= MCHP_OTPC_CR_READ;
-+	writel_relaxed(tmp, otpc->base + MCHP_OTPC_CR);
-+
-+	/* Wait for packet to be transferred into temporary buffers. */
-+	return read_poll_timeout(readl_relaxed, tmp, !(tmp & MCHP_OTPC_SR_READ),
-+				 10000, 2000, false, otpc->base + MCHP_OTPC_SR);
-+}
-+
-+/*
-+ * OTPC memory is organized into packets. Each packets contains a header and
-+ * a payload. Header is 4 bytes long and contains the size of the payload.
-+ * Payload size varies. The memory footprint is something as follows:
-+ *
-+ * Memory offset  Memory footprint     Packet ID
-+ * -------------  ----------------     ---------
-+ *
-+ * 0x0            +------------+   <-- packet 0
-+ *                | header  0  |
-+ * 0x4            +------------+
-+ *                | payload 0  |
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ * offset1        +------------+   <-- packet 1
-+ *                | header  1  |
-+ * offset1 + 0x4  +------------+
-+ *                | payload 1  |
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ * offset2        +------------+   <-- packet 2
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ * offsetN        +------------+   <-- packet N
-+ *                | header  N  |
-+ * offsetN + 0x4  +------------+
-+ *                | payload N  |
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ *                +------------+
-+ *
-+ * where offset1, offset2, offsetN depends on the size of payload 0, payload 1,
-+ * payload N-1.
-+ *
-+ * The access to memory is done on a per packet basis: the control registers
-+ * need to be updated with an offset address (within a packet range) and the
-+ * data registers will be update by controller with information contained by
-+ * that packet. E.g. if control registers are updated with any address within
-+ * the range [offset1, offset2) the data registers are updated by controller
-+ * with packet 1. Header data is accessible though MCHP_OTPC_HR register.
-+ * Payload data is accessible though MCHP_OTPC_DR and MCHP_OTPC_AR registers.
-+ * There is no direct mapping b/w the offset requested by software and the
-+ * offset returned by hardware.
-+ *
-+ * For this, the read function will return the first requested bytes in the
-+ * packet. The user will have to be aware of the memory footprint before doing
-+ * the read request.
-+ */
-+static int mchp_otpc_read(void *priv, unsigned int off, void *val,
-+			  size_t bytes)
-+{
-+	struct mchp_otpc *otpc = priv;
-+	struct mchp_otpc_packet *packet;
-+	u32 *buf = val;
-+	u32 offset;
-+	size_t len = 0;
-+	int ret, payload_size;
-+
-+	/*
-+	 * We reach this point with off being multiple of stride = 4 to
-+	 * be able to cross the subsystem. Inside the driver we use continuous
-+	 * unsigned integer numbers for packet id, thus devide off by 4
-+	 * before passing it to mchp_otpc_id_to_packet().
-+	 */
-+	packet = mchp_otpc_id_to_packet(otpc, off / 4);
-+	if (!packet)
-+		return -EINVAL;
-+	offset = packet->offset;
-+
-+	while (len < bytes) {
-+		ret = mchp_otpc_prepare_read(otpc, offset);
-+		if (ret)
-+			return ret;
-+
-+		/* Read and save header content. */
-+		*buf++ = readl_relaxed(otpc->base + MCHP_OTPC_HR);
-+		len += sizeof(*buf);
-+		offset++;
-+		if (len >= bytes)
-+			break;
-+
-+		/* Read and save payload content. */
-+		payload_size = FIELD_GET(MCHP_OTPC_HR_SIZE, *(buf - 1));
-+		writel_relaxed(0UL, otpc->base + MCHP_OTPC_AR);
-+		do {
-+			*buf++ = readl_relaxed(otpc->base + MCHP_OTPC_DR);
-+			len += sizeof(*buf);
-+			offset++;
-+			payload_size--;
-+		} while (payload_size >= 0 && len < bytes);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mchp_otpc_init_packets_list(struct mchp_otpc *otpc, u32 *size)
-+{
-+	struct mchp_otpc_packet *packet;
-+	u32 word, word_pos = 0, id = 0, npackets = 0, payload_size;
-+	int ret;
-+
-+	INIT_LIST_HEAD(&otpc->packets);
-+	*size = 0;
-+
-+	while (*size < MCHP_OTPC_SIZE) {
-+		ret = mchp_otpc_prepare_read(otpc, word_pos);
-+		if (ret)
-+			return ret;
-+
-+		word = readl_relaxed(otpc->base + MCHP_OTPC_HR);
-+		payload_size = FIELD_GET(MCHP_OTPC_HR_SIZE, word);
-+		if (!payload_size)
-+			break;
-+
-+		packet = devm_kzalloc(otpc->dev, sizeof(*packet), GFP_KERNEL);
-+		if (!packet)
-+			return -ENOMEM;
-+
-+		packet->id = id++;
-+		packet->offset = word_pos;
-+		INIT_LIST_HEAD(&packet->list);
-+		list_add_tail(&packet->list, &otpc->packets);
-+
-+		/* Count size by adding header and paload sizes. */
-+		*size += 4 * (payload_size + 1);
-+		/* Next word: this packet (header, payload) position + 1. */
-+		word_pos += payload_size + 2;
-+
-+		npackets++;
-+	}
-+
-+	otpc->npackets = npackets;
-+
-+	return 0;
-+}
-+
-+static struct nvmem_config mchp_nvmem_config = {
-+	.name = MCHP_OTPC_NAME,
-+	.type = NVMEM_TYPE_OTP,
-+	.read_only = true,
-+	.word_size = 4,
-+	.stride = 4,
-+	.reg_read = mchp_otpc_read,
-+};
-+
-+static int mchp_otpc_probe(struct platform_device *pdev)
-+{
-+	struct nvmem_device *nvmem;
-+	struct mchp_otpc *otpc;
-+	u32 size;
-+	int ret;
-+
-+	otpc = devm_kzalloc(&pdev->dev, sizeof(*otpc), GFP_KERNEL);
-+	if (!otpc)
-+		return -ENOMEM;
-+
-+	otpc->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(otpc->base))
-+		return PTR_ERR(otpc->base);
-+
-+	otpc->dev = &pdev->dev;
-+	ret = mchp_otpc_init_packets_list(otpc, &size);
-+	if (ret)
-+		return ret;
-+
-+	mchp_nvmem_config.dev = otpc->dev;
-+	mchp_nvmem_config.size = size;
-+	mchp_nvmem_config.priv = otpc;
-+	nvmem = devm_nvmem_register(&pdev->dev, &mchp_nvmem_config);
-+
-+	return PTR_ERR_OR_ZERO(nvmem);
-+}
-+
-+static const struct of_device_id __maybe_unused mchp_otpc_ids[] = {
-+	{ .compatible = "microchip,sama7g5-otpc", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, mchp_otpc_ids);
-+
-+static struct platform_driver mchp_otpc_driver = {
-+	.probe = mchp_otpc_probe,
-+	.driver = {
-+		.name = MCHP_OTPC_NAME,
-+		.of_match_table = of_match_ptr(mchp_otpc_ids),
-+	},
-+};
-+module_platform_driver(mchp_otpc_driver);
-+
-+MODULE_AUTHOR("Claudiu Beznea <claudiu.beznea@microchip.com>");
-+MODULE_DESCRIPTION("Microchip SAMA7G5 OTPC driver");
-+MODULE_LICENSE("GPL");
--- 
-2.34.1
 
