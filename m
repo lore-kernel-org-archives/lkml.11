@@ -2,255 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40389C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4646C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiERJ53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40916 "EHLO
+        id S234882AbiERJ5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234858AbiERJ5M (ORCPT
+        with ESMTP id S234860AbiERJ5O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:57:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4F120BE6;
+        Wed, 18 May 2022 05:57:14 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBAA21E23
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:57:10 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id bh5so1295441plb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:57:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LMWRi+RpI9EfHgaGzmTuiTtwswTwktoLVmDlPpJXLGU=;
+        b=SmxAwuuNLFsiav9NwR2VOJpmtshTgs5aNMEFFJZ8HerwonyaiDij7y0KGmWgsyUi8X
+         EUvzwoqx30XPI0/fzQzShC9WWLRAQQIvdkmPzLU32Wr8naGZaam1WFdZ9wQYMGFOCM3P
+         jgwooWAuyvvHjIsksux4ebr0J//bjQOWWL+K2jZmwwQEM0Nu4MvZPNoYm6rmYa6W+rJp
+         msoRwvH/cnc92HDQuzvE5kt1fXp8YbSS/a1PG6GnvAtqur1ZBKgtWaE15OPYcqFxdpnZ
+         JOYsl95QMBCLFMUxdAAscbDKHSEQI5IB79PACZfBGgKR76E4Y9B5Bwd1RWRrukx6s6zu
+         dorA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LMWRi+RpI9EfHgaGzmTuiTtwswTwktoLVmDlPpJXLGU=;
+        b=0aGE+gp6Oxji2Sg3hfFynKuQ/4Q7pQ5gweL6rNSEUvUJLcW9e6VfAJXVhF1lRsHvdB
+         GzL95DpIG1+pSJq1t/0K+VTzGsBiPqQDhYoJwFPUPThPBEHRsd8mTPVkBnQa6eoi01d/
+         LQmLnVgu9LWcfHExG2sOn5G29MplnsjqIc1RVPJHWTLFxroKwExJH0wXsVQFMRifOaCV
+         2Q4VcaQnrAMSltFRBtTFF7pWWMAAsIEKMCkNNxCX1pms3WmWKDbbzP72b0M7AvEFKwDm
+         t8B3QpOEmkYcvHeijzU+LSswwMuFh/fFEXpQ/pdYkAztxdVD2MT7iDmqITikvaufIFAK
+         cfhg==
+X-Gm-Message-State: AOAM531wmhD6Jp1Yrk4w/Sr2ovm8bT6mhmlNOpiOFEKE1ZHYu0jFAlee
+        PRurLwIpRePCgh2G6veBus6jxQ==
+X-Google-Smtp-Source: ABdhPJyWK9OF1+2sLxkdi1qFTTZkvoplqztdXWVshfSufuv9hZdvKNjmq6vjPPaR08Ib/BCSnHlFDw==
+X-Received: by 2002:a17:90a:aa8c:b0:1df:359a:1452 with SMTP id l12-20020a17090aaa8c00b001df359a1452mr18932511pjq.75.1652867829760;
         Wed, 18 May 2022 02:57:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A9E3617C7;
-        Wed, 18 May 2022 09:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41281C385A5;
-        Wed, 18 May 2022 09:57:08 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="bEWIXAiC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652867826;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=irO/Q9krw8wB4YwpfTM/2sS+w+cDgzawjgfM0Pt73wM=;
-        b=bEWIXAiCC6dK/PscC5XWUlHMiQzawLA0WzJpb8nfplIoo2dpoXRiHblVMYpHCosr3SIB27
-        lg8Xl+JOjw1fdNxa6t6hfnyXB5+CJvFe8h3IDLFd9y+t8dDST8sUjnULegcxAv0Jl1Yrq+
-        ya9ZtLOp5GS9y3GhywswLuyx+z+H8XI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 25be561b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 18 May 2022 09:57:06 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Petr Mladek <pmladek@suse.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>
-Subject: [PATCH v2] random: remove mostly unused async readiness notifier
-Date:   Wed, 18 May 2022 11:56:58 +0200
-Message-Id: <20220518095658.24085-1-Jason@zx2c4.com>
-In-Reply-To: <YoTB2OlwQq4J4/2D@zx2c4.com>
-References: <YoTB2OlwQq4J4/2D@zx2c4.com>
+Received: from kerodipc.Dlink ([49.206.7.17])
+        by smtp.gmail.com with ESMTPSA id u2-20020a1709026e0200b0015e8d4eb1b7sm1258252plk.1.2022.05.18.02.57.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 02:57:09 -0700 (PDT)
+From:   Sunil V L <sunilvl@ventanamicro.com>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Atish Patra <atishp@rivosinc.com>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Jessica Clarke <jrtc27@jrtc27.com>,
+        Abner Chang <abner.chang@hpe.com>, linux-efi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Sunil V L <sunilvl@ventanamicro.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH V4 0/1] RISCV_EFI_BOOT_PROTOCOL support in linux
+Date:   Wed, 18 May 2022 15:26:45 +0530
+Message-Id: <20220518095646.47548-1-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The register_random_ready_notifier() notifier is somewhat complicated,
-and was already recently rewritten to use notifier blocks. It is only
-used now by one consumer in the kernel, vsprintf.c, for which the async
-mechanism is really overly complex for what it actually needs. This
-commit removes register_random_ready_notifier() and unregister_random_
-ready_notifier(), because it just adds complication with little utility,
-and changes vsprintf.c to just check on `!rng_is_initialized() &&
-!rng_has_arch_random()`, which will eventually be true. Performance-
-wise, that code was already using a static branch, so there's basically
-no overhead at all to this change.
+This patch adds support for getting the boot hart ID using new
+RISCV_EFI_BOOT_PROTOCOL in linux efi stub. While there is an existing
+solution of passing the boot hart ID through Device Tree, it doesn't work for
+ACPI. Hence an EFI protocol protocol is recommended which works for both DT
+and ACPI based platforms.
 
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
-Acked-by: Petr Mladek <pmladek@suse.com> # for vsprintf.c
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v1->v2:
-- Use a trylock instead of a spinlock to be NMI safe.
+The spec of this new protocol post public review (Ratification-ready) is
+available at:
+https://github.com/riscv-non-isa/riscv-uefi/releases/download/1.0.0/RISCV_UEFI_PROTOCOL-spec.pdf
 
- drivers/char/random.c  | 48 ------------------------------
- include/linux/random.h |  2 --
- lib/vsprintf.c         | 66 ++++++++++++++----------------------------
- 3 files changed, 22 insertions(+), 94 deletions(-)
+This is tested in qemu with both u-boot and edk2.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 5a0fbcf05e63..11abdc5004ec 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -84,8 +84,6 @@ static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
- /* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
--static DEFINE_SPINLOCK(random_ready_chain_lock);
--static RAW_NOTIFIER_HEAD(random_ready_chain);
- 
- /* Control how we warn userspace. */
- static struct ratelimit_state urandom_warning =
-@@ -142,51 +140,6 @@ int wait_for_random_bytes(void)
- }
- EXPORT_SYMBOL(wait_for_random_bytes);
- 
--/*
-- * Add a callback function that will be invoked when the input
-- * pool is initialised.
-- *
-- * returns: 0 if callback is successfully added
-- *	    -EALREADY if pool is already initialised (callback not called)
-- */
--int __cold register_random_ready_notifier(struct notifier_block *nb)
--{
--	unsigned long flags;
--	int ret = -EALREADY;
--
--	if (crng_ready())
--		return ret;
--
--	spin_lock_irqsave(&random_ready_chain_lock, flags);
--	if (!crng_ready())
--		ret = raw_notifier_chain_register(&random_ready_chain, nb);
--	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
--	return ret;
--}
--
--/*
-- * Delete a previously registered readiness callback function.
-- */
--int __cold unregister_random_ready_notifier(struct notifier_block *nb)
--{
--	unsigned long flags;
--	int ret;
--
--	spin_lock_irqsave(&random_ready_chain_lock, flags);
--	ret = raw_notifier_chain_unregister(&random_ready_chain, nb);
--	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
--	return ret;
--}
--
--static void __cold process_random_ready_list(void)
--{
--	unsigned long flags;
--
--	spin_lock_irqsave(&random_ready_chain_lock, flags);
--	raw_notifier_call_chain(&random_ready_chain, 0, NULL);
--	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
--}
--
- #define warn_unseeded_randomness() \
- 	if (IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) && !crng_ready()) \
- 		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n", \
-@@ -775,7 +728,6 @@ static void __cold _credit_init_bits(size_t bits)
- 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
- 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
- 		execute_in_process_context(crng_set_ready, &set_ready);
--		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
- 		pr_notice("crng init done\n");
-diff --git a/include/linux/random.h b/include/linux/random.h
-index 6af130c6edb9..d2360b2825b6 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -78,8 +78,6 @@ int __init random_init(const char *command_line);
- bool rng_is_initialized(void);
- bool rng_has_arch_random(void);
- int wait_for_random_bytes(void);
--int register_random_ready_notifier(struct notifier_block *nb);
--int unregister_random_ready_notifier(struct notifier_block *nb);
- 
- /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
-  * Returns the result of the call to wait_for_random_bytes. */
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 20e9887faaaa..fb77f7bfd126 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -750,60 +750,38 @@ static int __init debug_boot_weak_hash_enable(char *str)
- }
- early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
- 
--static DEFINE_STATIC_KEY_TRUE(not_filled_random_ptr_key);
--static siphash_key_t ptr_key __read_mostly;
-+static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
- 
- static void enable_ptr_key_workfn(struct work_struct *work)
- {
--	get_random_bytes(&ptr_key, sizeof(ptr_key));
--	/* Needs to run from preemptible context */
--	static_branch_disable(&not_filled_random_ptr_key);
-+	static_branch_enable(&filled_random_ptr_key);
- }
- 
--static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
--
--static int fill_random_ptr_key(struct notifier_block *nb,
--			       unsigned long action, void *data)
--{
--	/* This may be in an interrupt handler. */
--	queue_work(system_unbound_wq, &enable_ptr_key_work);
--	return 0;
--}
--
--static struct notifier_block random_ready = {
--	.notifier_call = fill_random_ptr_key
--};
--
--static int __init initialize_ptr_random(void)
--{
--	int ret;
--
--	/* Don't bother waiting for RNG to be ready if RDRAND is mixed in already. */
--	if (rng_has_arch_random()) {
--		enable_ptr_key_workfn(&enable_ptr_key_work);
--		return 0;
--	}
--
--	ret = register_random_ready_notifier(&random_ready);
--	if (!ret) {
--		return 0;
--	} else if (ret == -EALREADY) {
--		/* This is in preemptible context */
--		enable_ptr_key_workfn(&enable_ptr_key_work);
--		return 0;
--	}
--
--	return ret;
--}
--early_initcall(initialize_ptr_random);
--
- /* Maps a pointer to a 32 bit unique identifier. */
- static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
- {
-+	static siphash_key_t ptr_key __read_mostly;
- 	unsigned long hashval;
- 
--	if (static_branch_unlikely(&not_filled_random_ptr_key))
--		return -EAGAIN;
-+	if (!static_branch_likely(&filled_random_ptr_key)) {
-+		static bool filled = false;
-+		static DEFINE_SPINLOCK(filling);
-+		static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
-+		unsigned long flags;
-+
-+		if (!system_unbound_wq ||
-+		    (!rng_is_initialized() && !rng_has_arch_random()) ||
-+		    !spin_trylock_irqsave(&filling, flags))
-+			return -EAGAIN;
-+
-+		if (!filled) {
-+			get_random_bytes(&ptr_key, sizeof(ptr_key));
-+			queue_work(system_unbound_wq, &enable_ptr_key_work);
-+			filled = true;
-+		}
-+		spin_unlock_irqrestore(&filling, flags);
-+	}
-+
- 
- #ifdef CONFIG_64BIT
- 	hashval = (unsigned long)siphash_1u64((u64)ptr, &ptr_key);
+Changes since V3:
+  - Rebased, no code changes.
+  - cover letter updated with link to spec version after public review
+
+Changes since V2:
+  - Updated error message
+
+Changes since V1:
+  - Rebased to get the "Fix get_boot_hartid_from_fdt() return value"
+    patch
+  - Removed mixed_mode member
+  - Separated return value and status.
+
+Sunil V L (1):
+  riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
+
+ drivers/firmware/efi/libstub/efistub.h    |  7 ++++++
+ drivers/firmware/efi/libstub/riscv-stub.c | 29 +++++++++++++++++++----
+ include/linux/efi.h                       |  1 +
+ 3 files changed, 32 insertions(+), 5 deletions(-)
+
 -- 
-2.35.1
+2.25.1
 
