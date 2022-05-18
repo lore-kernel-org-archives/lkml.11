@@ -2,76 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB9D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbiERBV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 21:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        id S233570AbiERBYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 21:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232630AbiERBV4 (ORCPT
+        with ESMTP id S232630AbiERBYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 21:21:56 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469651BEB4;
-        Tue, 17 May 2022 18:21:55 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2wDJ5ZrZzhZFD;
-        Wed, 18 May 2022 09:21:04 +0800 (CST)
-Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 09:21:53 +0800
-Received: from huawei.com (10.67.174.33) by dggpemm500016.china.huawei.com
- (7.185.36.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 09:21:53 +0800
-From:   "GONG, Ruiqi" <gongruiqi1@huawei.com>
-To:     Paul Moore <paul@paul-moore.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        "Kees Cook" <keescook@chromium.org>
-CC:     <selinux@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Wang Weiyang <wangweiyang2@huawei.com>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>, <gongruiqi1@huawei.com>
-Subject: [PATCH] selinux: add __randomize_layout to selinux_audit_data
-Date:   Wed, 18 May 2022 09:21:37 +0000
-Message-ID: <20220518092137.141626-1-gongruiqi1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 17 May 2022 21:24:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE30F54681
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 18:24:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 747AD61594
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F43C385B8;
+        Wed, 18 May 2022 01:24:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652837071;
+        bh=cZ2O9NOlY984cGIAsEwAguwouqwzPyw0CuWZHAKHjZg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i1QiMPVKBFCZ8e3aj6D0tG8+xMSDHs8voek5NGNvS5iDpQFufmL2/XBeI3qikGA2H
+         WYwHdHlKjwt3Gw+u22lUw1v3lRtmTa/UMyewtlNG8Wn7Vt2z8HKHpLDYJi15mdypDM
+         lgchQPCnn5VJ0CJ7gILieyU/OWyKc5OgYGAtNNAmP1+g1nhyM2RrE7/Iu/k+jkBM/E
+         0DdXysnwAy1do6ZHkLAWvgUlCg2OzgyntMhD0Bp2oHvda37FUkZDOELljZkhTLgqu/
+         g3856uLAF6pa8yoR83/FpcRP3KIcxxv0qWNJj/RYoR6Lmyuym0JGb3ViqzDyn5JzxK
+         ZGXIvcUJvJjbA==
+Date:   Tue, 17 May 2022 18:24:29 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: Re: objtool "no non-local symbols" error with tip of tree LLVM
+Message-ID: <20220518012429.4zqzarvwsraxivux@treble>
+References: <YoK4U9RgQ9N+HhXJ@dev-arch.thelio-3990X>
+ <20220516214005.GQ76023@worktop.programming.kicks-ass.net>
+ <YoPAZ6JfsF0LrQNc@hirez.programming.kicks-ass.net>
+ <YoPCTEYjoPqE4ZxB@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.33]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500016.china.huawei.com (7.185.36.25)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YoPCTEYjoPqE4ZxB@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Randomize the layout of struct selinux_audit_data as suggested in [1],
-since it contains a pointer to struct selinux_state, an already
-randomized strucure.
+On Tue, May 17, 2022 at 05:42:04PM +0200, Peter Zijlstra wrote:
+> +	for (;;) {
+> +		symtab_data = elf_getdata(s, symtab_data);
+> +		if (t)
+> +			shndx_data = elf_getdata(t, shndx_data);
+>  
+> -	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
+> -	elf_dirty_reloc_sym(elf, sym);
+> +		if (!symtab_data) {
+> +			if (!idx) {
+> +				void *buf;
 
-[1]: https://github.com/KSPP/linux/issues/188
+I'm confused by whatever this is doing, how is !symtab_data possible,
+i.e. why would symtab not have data?
 
-Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
----
- security/selinux/include/avc.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  elf_create_section_symbol(struct elf *elf, struct section *sec)
+>  {
+>  	struct section *symtab, *symtab_shndx;
+> -	Elf_Data *shndx_data = NULL;
+> -	struct symbol *sym;
+> -	Elf32_Word shndx;
+> +	Elf32_Word first_non_local, new;
+> +	struct symbol *sym, *old;
+> +	int size;
+> +
+> +	if (elf->ehdr.e_ident[EI_CLASS] == ELFCLASS32)
+> +		size = sizeof(Elf32_Sym);
+> +	else
+> +		size = sizeof(Elf64_Sym);
 
-diff --git a/security/selinux/include/avc.h b/security/selinux/include/avc.h
-index 2b372f98f2d7..5525b94fd266 100644
---- a/security/selinux/include/avc.h
-+++ b/security/selinux/include/avc.h
-@@ -53,7 +53,7 @@ struct selinux_audit_data {
- 	u32 denied;
- 	int result;
- 	struct selinux_state *state;
--};
-+} __randomize_layout;
- 
- /*
-  * AVC operations
+This should probably be called 'entsize' and I think you can just get it
+from symtab->sh.sh_entsize.
+
+> +	/*
+> +	 * Either way, we added a LOCAL symbol.
+> +	 */
+> +	symtab->sh.sh_info += 1;
+> +
+>  	elf_add_symbol(elf, sym);
+
+Not sure if it matters here, but elf_add_symbol() doesn't set sym->alias
+and sym->pv_target, and both of those are unconditionally initialized in
+read_symbols().  Should elf_add_symbol() be changed to initialize them?
+
 -- 
-2.17.1
-
+Josh
