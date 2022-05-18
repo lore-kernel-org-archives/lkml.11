@@ -2,97 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C13D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232814AbiERIPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
+        id S232833AbiERISP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbiERIP2 (ORCPT
+        with ESMTP id S232820AbiERISM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:15:28 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FCA81990;
-        Wed, 18 May 2022 01:15:25 -0700 (PDT)
-Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L35Ls2Fqlz6H7nv;
-        Wed, 18 May 2022 16:12:21 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
+        Wed, 18 May 2022 04:18:12 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB49798588
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:18:09 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 5D2ED206BF;
+        Wed, 18 May 2022 10:12:39 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id fIlEGlifOAuS; Wed, 18 May 2022 10:12:38 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E545A206B0;
+        Wed, 18 May 2022 10:12:38 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id DFD8C80004A;
+        Wed, 18 May 2022 10:12:38 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 10:15:23 +0200
-Received: from [10.47.24.102] (10.47.24.102) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ 15.1.2375.24; Wed, 18 May 2022 10:12:38 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 09:15:22 +0100
-Message-ID: <28509191-3a45-de6d-f5bc-a8e7331c0a9e@huawei.com>
-Date:   Wed, 18 May 2022 09:15:21 +0100
+ 2022 10:12:38 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 1466E3182D02; Wed, 18 May 2022 10:12:38 +0200 (CEST)
+Date:   Wed, 18 May 2022 10:12:38 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: af_key: add check for pfkey_broadcast in function
+ pfkey_process
+Message-ID: <20220518081238.GT680067@gauss3.secunet.de>
+References: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 00/20] perf vendors events arm64: Multiple Arm CPUs
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Nick Forrington <nick.forrington@arm.com>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <acme@kernel.org>
-CC:     Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>
-References: <20220510104758.64677-1-nick.forrington@arm.com>
- <f523b0fe-1262-c1e5-c587-15842ccf0fcf@arm.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <f523b0fe-1262-c1e5-c587-15842ccf0fcf@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.47.24.102]
-X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 15:32, Robin Murphy wrote:
+On Tue, May 17, 2022 at 05:42:31PM +0800, Jiasheng Jiang wrote:
+> If skb_clone() returns null pointer, pfkey_broadcast() will
+> return error.
+> Therefore, it should be better to check the return value of
+> pfkey_broadcast() and return error if fails.
 > 
-> On 2022-05-10 11:47, Nick Forrington wrote:
->> Add Performance Monitoring Unit event data for the Arm CPUs listed
->> below.
->>
->> Changesets are dependent due to incremental updates to the common events
->> file and mapfile.csv.
->>
->> Data is sourced from https://github.com/ARM-software/data
->>
->> Nick Forrington (20):
->>    perf vendors events arm64: Arm Cortex-A5
->>    perf vendors events arm64: Arm Cortex-A7
->>    perf vendors events arm64: Arm Cortex-A8
->>    perf vendors events arm64: Arm Cortex-A9
->>    perf vendors events arm64: Arm Cortex-A15
->>    perf vendors events arm64: Arm Cortex-A17
->>    perf vendors events arm64: Arm Cortex-A32
-> 
-> Obligatory question over anything relating to the above CPUs being in an 
-> "arch/arm64" directory... ;)
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-If we were to add to arm32/arm then the common event numbers and maybe 
-other JSONs in future would need to be duplicated.
-
-Would there be any reason to add to arm32/arm apart to from being 
-strictly proper? Maybe if lots of other 32b support for other vendors 
-came along then it could make sense (to separate them out).
-
-thanks,
-John
-
+Applied, thanks!
