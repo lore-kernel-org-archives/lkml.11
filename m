@@ -2,107 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 017E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B93C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234231AbiERJ3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
+        id S234241AbiERJ3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234239AbiERJ3H (ORCPT
+        with ESMTP id S234205AbiERJ3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:29:07 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB377980F
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:28:26 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id a23so1780336ljd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:28:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4iyJbssYNlPi+45f+NtThll+M9Lz9Ppn1K4R1sxXFY4=;
-        b=lrwDlx4vlJSZ304EbwWlxfiASSbB2MWLS1vq7d9jIEKpzYSfYfOzV3m8rUPL3LOeAG
-         22O1NXT3tRuXmQ99d1LbczVJFBZXYDkC87uUURbLdTLAuE9a32v7eawxXlSG6cxiZAda
-         e5oyiXmj8CswIQ9r4prkCHwQyDFbvqQY6xn0yjhZr7wo/yVSSXOyV2f9Bo8PZ4kQwu3F
-         B9sgQrGUNmtDxh1pLLYRYuYCQclCfsqNnivxMM8kEsw3aDulfwLNzBeymCLHtHriSLHH
-         Dn/tNP1emfMHReGrP3zYiGF7MDFQX78zp9NK1EDhoFJcohdzjU4G7Fc60wnG3VlpHZVB
-         UcAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4iyJbssYNlPi+45f+NtThll+M9Lz9Ppn1K4R1sxXFY4=;
-        b=saMLEMHCBXZxo5n+ADKVlIxG8fSA73D89OpiSMtu1JcOVqc6ILM5G58o/fnzmiYVYK
-         1LnhXyVKpUCCMw6qJS1B+aCqnrY84foVyWvgZnfFA/VZ84zW8bVorqUKbig5/RL56OTK
-         4+pq7HazFDpQG6g62dTWo69yiwqbjb3CJp+1U8512Xcx4kpxrtx6XCTzLldLXOnFWcBn
-         Zw9xVmdFdtcTsCtMcrLGkJMQGA/wiroByltGzkntigHN9KO0h5I7qd0DET7N1NAQv+yQ
-         z1FppCdU0etQrUt9HGB1ZSnSpeq+5HPxMtU0c/UUaB/flrPZkWIXsBUzJSCVuHcp2CR8
-         ov6Q==
-X-Gm-Message-State: AOAM531yxU0jnavI9f/b/bCD9XSMlqWrIMGk9ZVcZ3juXnrV/f9HO+TL
-        k7H1B/xBMncXKtepTZ9xN4a+hMjEDHjqIilQ8iOhow==
-X-Google-Smtp-Source: ABdhPJz2CkQgPCfvtX9fVD2yj+/wu/0+UOjIEd7iMSHzt0d0flR8zOqn3w8ny0OUB2jNis4/T445xAVbiwnPPEUTD8c=
-X-Received: by 2002:a2e:9d90:0:b0:24f:224:8dfa with SMTP id
- c16-20020a2e9d90000000b0024f02248dfamr16508885ljj.46.1652866102497; Wed, 18
- May 2022 02:28:22 -0700 (PDT)
+        Wed, 18 May 2022 05:29:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3327983C;
+        Wed, 18 May 2022 02:28:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9282261722;
+        Wed, 18 May 2022 09:28:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36407C34100;
+        Wed, 18 May 2022 09:28:52 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        WANG Xuerui <git@xen0n.name>
+Subject: [PATCH V11 03/22] LoongArch: Add ELF-related definitions
+Date:   Wed, 18 May 2022 17:26:00 +0800
+Message-Id: <20220518092619.1269111-4-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220518092619.1269111-1-chenhuacai@loongson.cn>
+References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-References: <20220511144601.2257870-1-james.clark@arm.com> <20220511144601.2257870-5-james.clark@arm.com>
-In-Reply-To: <20220511144601.2257870-5-james.clark@arm.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Wed, 18 May 2022 10:28:11 +0100
-Message-ID: <CAJ9a7VigLVCa+S=rmpBs9qrmzOtkmo-yzuJJDb_wfZ5coGJnRA@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] Documentation: coresight: Expand branch broadcast documentation
-To:     James Clark <james.clark@arm.com>
-Cc:     suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
-        coresight@lists.linaro.org, leo.yan@linaro.com,
-        Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 at 15:46, James Clark <james.clark@arm.com> wrote:
->
-> Now that there is a way of enabling branch broadcast via perf, mention
-> the possible use cases and known limitations.
->
-> Signed-off-by: James Clark <james.clark@arm.com>
-> ---
->  .../trace/coresight/coresight-etm4x-reference.rst   | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/trace/coresight/coresight-etm4x-reference.rst b/Documentation/trace/coresight/coresight-etm4x-reference.rst
-> index 0439b4006227..fb7578fd9372 100644
-> --- a/Documentation/trace/coresight/coresight-etm4x-reference.rst
-> +++ b/Documentation/trace/coresight/coresight-etm4x-reference.rst
-> @@ -656,7 +656,18 @@ Bit assignments shown below:-
->      ETM_MODE_BB
->
->  **description:**
-> -    Set to enable branch broadcast if supported in hardware [IDR0].
-> +    Set to enable branch broadcast if supported in hardware [IDR0]. The primary use for this feature
-> +    is when code is patched dynamically at run time and the full program flow may not be able to be
-> +    reconstructed using only conditional branches.
-> +
-> +    There is currently no support in Perf for supplying modified binaries to the decoder, so this
-> +    feature is only inteded to be used for debugging purposes or with a 3rd party tool.
-> +
-> +    Choosing this option will result in a significant increase in the amount of trace generated -
-> +    possible danger of overflows, or fewer instructions covered. Note, that this option also
-> +    overrides any setting of :ref:`ETM_MODE_RETURNSTACK <coresight-return-stack>`, so where a branch
-> +    broadcast range overlaps a return stack range, return stacks will not be available for that
-> +    range.
->
->  .. _coresight-cycle-accurate:
->
-> --
-> 2.28.0
->
+Add ELF-related definitions for LoongArch, including: EM_LOONGARCH,
+KEXEC_ARCH_LOONGARCH, AUDIT_ARCH_LOONGARCH32, AUDIT_ARCH_LOONGARCH64
+and NT_LOONGARCH_*.
 
-Reviewed-by: Mike Leach<mike.leach@linaro.org>
+Reviewed-by: WANG Xuerui <git@xen0n.name>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ include/uapi/linux/audit.h  | 2 ++
+ include/uapi/linux/elf-em.h | 1 +
+ include/uapi/linux/elf.h    | 5 +++++
+ include/uapi/linux/kexec.h  | 1 +
+ scripts/sorttable.c         | 5 +++++
+ 5 files changed, 14 insertions(+)
+
+diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+index 8eda133ca4c1..7c1dc818b1d5 100644
+--- a/include/uapi/linux/audit.h
++++ b/include/uapi/linux/audit.h
+@@ -439,6 +439,8 @@ enum {
+ #define AUDIT_ARCH_UNICORE	(EM_UNICORE|__AUDIT_ARCH_LE)
+ #define AUDIT_ARCH_X86_64	(EM_X86_64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
+ #define AUDIT_ARCH_XTENSA	(EM_XTENSA)
++#define AUDIT_ARCH_LOONGARCH32	(EM_LOONGARCH|__AUDIT_ARCH_LE)
++#define AUDIT_ARCH_LOONGARCH64	(EM_LOONGARCH|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
+ 
+ #define AUDIT_PERM_EXEC		1
+ #define AUDIT_PERM_WRITE	2
+diff --git a/include/uapi/linux/elf-em.h b/include/uapi/linux/elf-em.h
+index f47e853546fa..ef38c2bc5ab7 100644
+--- a/include/uapi/linux/elf-em.h
++++ b/include/uapi/linux/elf-em.h
+@@ -51,6 +51,7 @@
+ #define EM_RISCV	243	/* RISC-V */
+ #define EM_BPF		247	/* Linux BPF - in-kernel virtual machine */
+ #define EM_CSKY		252	/* C-SKY */
++#define EM_LOONGARCH	258	/* LoongArch */
+ #define EM_FRV		0x5441	/* Fujitsu FR-V */
+ 
+ /*
+diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
+index 787c657bfae8..d04ed21e0e38 100644
+--- a/include/uapi/linux/elf.h
++++ b/include/uapi/linux/elf.h
+@@ -436,6 +436,11 @@ typedef struct elf64_shdr {
+ #define NT_MIPS_DSP	0x800		/* MIPS DSP ASE registers */
+ #define NT_MIPS_FP_MODE	0x801		/* MIPS floating-point mode */
+ #define NT_MIPS_MSA	0x802		/* MIPS SIMD registers */
++#define NT_LOONGARCH_CPUCFG	0xa00	/* LoongArch CPU config registers */
++#define NT_LOONGARCH_CSR	0xa01	/* LoongArch control and status registers */
++#define NT_LOONGARCH_LSX	0xa02	/* LoongArch Loongson SIMD Extension registers */
++#define NT_LOONGARCH_LASX	0xa03	/* LoongArch Loongson Advanced SIMD Extension registers */
++#define NT_LOONGARCH_LBT	0xa04	/* LoongArch Loongson Binary Translation registers */
+ 
+ /* Note types with note name "GNU" */
+ #define NT_GNU_PROPERTY_TYPE_0	5
+diff --git a/include/uapi/linux/kexec.h b/include/uapi/linux/kexec.h
+index fb7e2ef60825..981016e05cfa 100644
+--- a/include/uapi/linux/kexec.h
++++ b/include/uapi/linux/kexec.h
+@@ -43,6 +43,7 @@
+ #define KEXEC_ARCH_MIPS    ( 8 << 16)
+ #define KEXEC_ARCH_AARCH64 (183 << 16)
+ #define KEXEC_ARCH_RISCV   (243 << 16)
++#define KEXEC_ARCH_LOONGARCH	(258 << 16)
+ 
+ /* The artificial cap on the number of segments passed to kexec_load. */
+ #define KEXEC_SEGMENT_MAX 16
+diff --git a/scripts/sorttable.c b/scripts/sorttable.c
+index d00504c5f530..fba40e99f354 100644
+--- a/scripts/sorttable.c
++++ b/scripts/sorttable.c
+@@ -60,6 +60,10 @@
+ #define EM_RISCV	243
+ #endif
+ 
++#ifndef EM_LOONGARCH
++#define EM_LOONGARCH	258
++#endif
++
+ static uint32_t (*r)(const uint32_t *);
+ static uint16_t (*r2)(const uint16_t *);
+ static uint64_t (*r8)(const uint64_t *);
+@@ -313,6 +317,7 @@ static int do_file(char const *const fname, void *addr)
+ 	case EM_ARCOMPACT:
+ 	case EM_ARCV2:
+ 	case EM_ARM:
++	case EM_LOONGARCH:
+ 	case EM_MICROBLAZE:
+ 	case EM_MIPS:
+ 	case EM_XTENSA:
 -- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+2.27.0
+
