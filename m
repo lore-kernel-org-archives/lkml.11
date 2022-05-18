@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E173C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF2B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231460AbiERGbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        id S231490AbiERGbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbiERGbb (ORCPT
+        with ESMTP id S231466AbiERGbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:31:31 -0400
-Received: from esa12.hc1455-7.c3s2.iphmx.com (esa12.hc1455-7.c3s2.iphmx.com [139.138.37.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE75AE59
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:31:30 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="52853254"
+        Wed, 18 May 2022 02:31:42 -0400
+Received: from esa10.hc1455-7.c3s2.iphmx.com (esa10.hc1455-7.c3s2.iphmx.com [139.138.36.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A76B1BE90
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:31:39 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="61015806"
 X-IronPort-AV: E=Sophos;i="5.91,234,1647270000"; 
-   d="scan'208";a="52853254"
+   d="scan'208";a="61015806"
 Received: from unknown (HELO yto-r1.gw.nic.fujitsu.com) ([218.44.52.217])
-  by esa12.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 15:31:23 +0900
-Received: from yto-m1.gw.nic.fujitsu.com (yto-nat-yto-m1.gw.nic.fujitsu.com [192.168.83.64])
-        by yto-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 3AC93E5B1E
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:23 +0900 (JST)
+  by esa10.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 15:31:37 +0900
+Received: from yto-m3.gw.nic.fujitsu.com (yto-nat-yto-m3.gw.nic.fujitsu.com [192.168.83.66])
+        by yto-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 09AD3E5B21
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:37 +0900 (JST)
 Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
-        by yto-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id 6CAF2D0434
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:22 +0900 (JST)
+        by yto-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 57D9AD96EA
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:36 +0900 (JST)
 Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om4.fujitsu.com (Postfix) with ESMTP id ECDB8400C1BB9;
-        Wed, 18 May 2022 15:31:21 +0900 (JST)
+        by yto-om4.fujitsu.com (Postfix) with ESMTP id DD109400F0887;
+        Wed, 18 May 2022 15:31:35 +0900 (JST)
 From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
@@ -40,9 +40,9 @@ To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
         linus.walleij@linaro.org, arnd@arndb.de,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH v4 1/8] drivers: base: Add hardware prefetch control core driver
-Date:   Wed, 18 May 2022 15:30:25 +0900
-Message-Id: <20220518063032.2377351-2-tarumizu.kohei@fujitsu.com>
+Subject: [PATCH v4 8/8] docs: ABI: Add sysfs documentation interface of hardware prefetch control driver
+Date:   Wed, 18 May 2022 15:30:32 +0900
+Message-Id: <20220518063032.2377351-9-tarumizu.kohei@fujitsu.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
 References: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
@@ -53,230 +53,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds a register/unregister function to provide sysfs interface to
-control CPU's hardware prefetch behavior. It creates the
-"prefetch_control" sysfs directory and some attributes.
-
-Attributes are hardware dependent, so it must be implemented for each
-hardware. If CPU has a hardware prefetch behavior, call this function
-to create sysfs.
-
-Following patches add support for A64FX and x86.
+This describes the sysfs interface implemented by the hardware prefetch
+control driver.
 
 Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 ---
- drivers/base/pfctl.c  | 180 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/pfctl.h |  14 ++++
- 2 files changed, 194 insertions(+)
- create mode 100644 drivers/base/pfctl.c
- create mode 100644 include/linux/pfctl.h
+ .../ABI/testing/sysfs-devices-system-cpu      | 98 +++++++++++++++++++
+ 1 file changed, 98 insertions(+)
 
-diff --git a/drivers/base/pfctl.c b/drivers/base/pfctl.c
-new file mode 100644
-index 000000000000..08ee8faaf277
---- /dev/null
-+++ b/drivers/base/pfctl.c
-@@ -0,0 +1,180 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Hardware prefetch control support via sysfs.
-+ *
-+ * Copyright 2022 FUJITSU LIMITED
-+ *
-+ * See Documentation/ABI/testing/sysfs-devices-system-cpu for more information.
-+ */
+diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
+index 2ad01cad7f1c..0da4c1bac51e 100644
+--- a/Documentation/ABI/testing/sysfs-devices-system-cpu
++++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+@@ -688,3 +688,101 @@ Description:
+ 		(RO) the list of CPUs that are isolated and don't
+ 		participate in load balancing. These CPUs are set by
+ 		boot parameter "isolcpus=".
 +
-+#include <linux/cacheinfo.h>
-+#include <linux/cpu.h>
-+#include <linux/device.h>
-+#include <linux/pfctl.h>
-+#include <linux/slab.h>
++What:		/sys/devices/system/cpu/cpu*/cache/index*/prefetch_control/hardware_prefetcher_enable
++		/sys/devices/system/cpu/cpu*/cache/index*/prefetch_control/ip_prefetcher_enable
++		/sys/devices/system/cpu/cpu*/cache/index*/prefetch_control/adjacent_cache_line_prefetcher_enable
++Date:		March 2022
++Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
++Description:	Parameters for some Intel CPU's hardware prefetch control
 +
-+#ifdef pr_fmt
-+#undef pr_fmt
-+#endif
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++		This sysfs interface provides Hardware Prefetch control
++		attribute for some Intel processors. Attributes are only
++		present if the particular cache implements the relevant
++		prefetcher controls.
 +
-+const struct pfctl_group *pgroups;
-+enum cpuhp_state hp_online;
++		*_prefetcher_enable:
++		    (RW) control this prefetcher's enablement state.
++		    Read returns current status:
++			0: this prefetcher is disabled
++			1: this prefetcher is enabled
 +
-+static struct device_attribute **
-+get_pfctl_attribute(unsigned int level, enum cache_type type)
-+{
-+	int i;
++		- Attribute mapping
 +
-+	for (i = 0; pgroups[i].attrs; i++)
-+		if ((level == pgroups[i].level) && (type == pgroups[i].type))
-+			return pgroups[i].attrs;
++		    Some Intel processors have MSR 0x1a4. This register has several
++		    specifications depending on the model. This interface provides
++		    a one-to-one attribute file to control all the tunable
++		    parameters the CPU provides of the following.
 +
-+	return NULL;
-+}
++			- "* Hardware Prefetcher Disable (R/W)"
++			    corresponds to the "hardware_prefetcher_enable"
 +
-+static int remove_pfctl_attr(struct device *index_dev, void *data)
-+{
-+	struct cacheinfo *leaf = dev_get_drvdata(index_dev);
-+	struct device_attribute **attrs;
-+	struct device *pfctl_dev;
-+	int i;
++			- "* Adjacent Cache Line Prefetcher Disable (R/W)"
++			    corresponds to the "adjacent_cache_line_prefetcher_enable"
 +
-+	attrs = get_pfctl_attribute(leaf->level, leaf->type);
-+	if (!attrs)
-+		return 0;
++			- "* IP Prefetcher Disable (R/W)"
++			    corresponds to the "ip_prefetcher_enable"
 +
-+	pfctl_dev = device_find_child_by_name(index_dev, "prefetch_control");
-+	if (!pfctl_dev)
-+		return 0;
++What:		/sys/devices/system/cpu/cpu*/cache/index*/prefetch_control/stream_detect_prefetcher_enable
++		/sys/devices/system/cpu/cpu*/cache/index*/prefetch_control/stream_detect_prefetcher_strength
++		/sys/devices/system/cpu/cpu*/cache/index*/prefetch_control/stream_detect_prefetcher_strength_available
++		/sys/devices/system/cpu/cpu*/cache/index*/prefetch_control/stream_detect_prefetcher_dist
++Date:		March 2022
++Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
++Description:	Parameters for A64FX's hardware prefetch control
 +
-+	for (i = 0; attrs[i]; i++)
-+		device_remove_file(pfctl_dev, attrs[i]);
++		This sysfs interface provides Hardware Prefetch control
++		attribute for the processor A64FX. Attributes are only
++		present if the particular cache implements the relevant
++		prefetcher controls.
 +
-+	device_unregister(pfctl_dev);
-+	put_device(pfctl_dev);
++		stream_detect_prefetcher_enable:
++		    (RW) control the prefetcher's enablement state.
++		    Read returns current status:
++			0: this prefetcher is disabled
++			1: this prefetcher is enabled
 +
-+	pfctl_dev = NULL;
++		stream_detect_prefetcher_strength:
++		    (RW) control the prefetcher operation's strongness state.
++		    Read returns current status:
++			weak: prefetch operation is weak
++			strong: prefetch operation is strong
 +
-+	return 0;
-+}
++		    Strong prefetch operation is surely executed, if there is
++		    no corresponding data in cache.
++		    Weak prefetch operation allows the hardware not to execute
++		    operation depending on hardware state.
 +
-+static int create_pfctl_attr(struct device *index_dev, void *data)
-+{
-+	struct cacheinfo *leaf = dev_get_drvdata(index_dev);
-+	struct device_attribute **attrs;
-+	struct device *pfctl_dev;
-+	int i, err;
 +
-+	attrs = get_pfctl_attribute(leaf->level, leaf->type);
-+	if (!attrs)
-+		return 0;
++		stream_detect_prefetcher_strength_available:
++		    (RO) displays a space separated list of available strongness
++		    state.
 +
-+	pfctl_dev = cpu_device_create(index_dev, NULL, NULL,
-+				      "prefetch_control");
-+	if (IS_ERR(pfctl_dev))
-+		return PTR_ERR(pfctl_dev);
++		stream_detect_prefetcher_dist:
++		    (RW) control the prefetcher distance value.
++		    Read return current prefetcher distance value in bytes
++		    or the string "auto".
 +
-+	for (i = 0; attrs[i]; i++) {
-+		err = device_create_file(pfctl_dev, attrs[i]);
-+		if (err) {
-+			while (--i >= 0)
-+				device_remove_file(pfctl_dev, attrs[i]);
++		    Write either a value in byte or the string "auto" to this
++		    parameter. If you write a value less than multiples of a
++		    specific value, it is rounded up.
 +
-+			device_unregister(pfctl_dev);
-+			pfctl_dev = NULL;
++		    The string "auto" have a special meaning. This means that
++		    instead of setting dist to a user-specified value, it
++		    operates using hardware-specific values.
 +
-+			return err;
-+		}
-+	}
++		- Attribute mapping
 +
-+	return 0;
-+}
++		    The processor A64FX has register IMP_PF_STREAM_DETECT_CTRL_EL0
++		    for Hardware Prefetch Control. This attribute maps each
++		    specification to the following.
 +
-+static int pfctl_online(unsigned int cpu)
-+{
-+	struct device *cpu_dev = get_cpu_device(cpu);
-+	struct device *cache_dev;
-+	int ret;
++			- "L*PF_DIS": enablement of hardware prefetcher
++			    corresponds to the "stream_detect_prefetcher_enable"
 +
-+	cache_dev = device_find_child_by_name(cpu_dev, "cache");
-+	if (!cache_dev)
-+		return -ENODEV;
++			- "L*W": strongness of hardware prefetcher
++			    corresponds to "stream_detect_prefetcher_strength"
++			    and "stream_detect_prefetcher_strength_available"
 +
-+	ret = device_for_each_child(cache_dev, NULL, create_pfctl_attr);
-+	if (ret < 0)
-+		device_for_each_child(cache_dev, NULL, remove_pfctl_attr);
-+
-+	put_device(cache_dev);
-+
-+	return ret;
-+}
-+
-+static int pfctl_prepare_down(unsigned int cpu)
-+{
-+	struct device *cpu_dev = get_cpu_device(cpu);
-+	struct device *cache_dev;
-+
-+	cache_dev = device_find_child_by_name(cpu_dev, "cache");
-+	if (!cache_dev)
-+		return 0;
-+
-+	device_for_each_child(cache_dev, NULL, remove_pfctl_attr);
-+
-+	put_device(cache_dev);
-+
-+	return 0;
-+}
-+
-+/**
-+ * pfctl_register_attrs - register a Hardware Prefetch Control attributes
-+ * @pfctl_groups: pfctl_groups contains device attribute group to control the
-+ *                hardware prefetch register.
-+ *
-+ * Note: Call this function after the cache device is initialized because it
-+ * requires access to the cache device. (e.g. Call at the late_initcall)
-+ *
-+ * Context: Any context.
-+ * Return: 0 on success, negative error code on failure.
-+ */
-+int pfctl_register_attrs(const struct pfctl_group *pfctl_groups)
-+{
-+	int ret;
-+
-+	if (pgroups)
-+		return -EEXIST;
-+
-+	pgroups = pfctl_groups;
-+
-+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "base/pfctl:online",
-+				pfctl_online, pfctl_prepare_down);
-+	if (ret < 0) {
-+		pr_err("failed to register hotplug callbacks\n");
-+		pgroups = NULL;
-+		return ret;
-+	}
-+
-+	hp_online = ret;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pfctl_register_attrs);
-+
-+/**
-+ * pfctl_unregister_attrs - unregister the Hardware Prefetch Control driver
-+ * @pfctl_groups: Used to verify that this function is called by the same driver
-+ *                that called pfctl_register_attrs.
-+ *
-+ * Context: Any context.
-+ * Return: nothing.
-+ */
-+void pfctl_unregister_attrs(const struct pfctl_group *pfctl_groups)
-+{
-+	if (!pgroups || (pfctl_groups != pgroups))
-+		return;
-+
-+	cpuhp_remove_state(hp_online);
-+
-+	pgroups = NULL;
-+}
-+EXPORT_SYMBOL_GPL(pfctl_unregister_attrs);
-diff --git a/include/linux/pfctl.h b/include/linux/pfctl.h
-new file mode 100644
-index 000000000000..ecdab78be09f
---- /dev/null
-+++ b/include/linux/pfctl.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_PFCTL_H
-+#define _LINUX_PFCTL_H
-+
-+struct pfctl_group {
-+	unsigned int		level;
-+	enum cache_type		type;
-+	struct device_attribute	**attrs;
-+};
-+
-+int pfctl_register_attrs(const struct pfctl_group *pfctl_groups);
-+void pfctl_unregister_attrs(const struct pfctl_group *pfctl_groups);
-+
-+#endif
++			- "L*_DIST": distance of hardware prefetcher
++			    corresponds to the "stream_detect_prefetcher_dist"
 -- 
 2.27.0
 
