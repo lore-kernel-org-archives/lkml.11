@@ -2,101 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C18B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFECDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238080AbiERNkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53762 "EHLO
+        id S238127AbiERNkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238056AbiERNj7 (ORCPT
+        with ESMTP id S238078AbiERNkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:39:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18171BE11D;
-        Wed, 18 May 2022 06:39:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 18 May 2022 09:40:37 -0400
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [IPv6:2001:4b7a:2000:18::163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7389A6353C
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 06:40:35 -0700 (PDT)
+Received: from [10.1.250.9] (riviera.nat.ds.pw.edu.pl [194.29.137.1])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5296DB820BF;
-        Wed, 18 May 2022 13:39:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9E96C385A5;
-        Wed, 18 May 2022 13:39:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652881195;
-        bh=YAGu07lD7nk9Sec8Z4RqDJGNVMRvtX91QuhoK9EteBM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qBhRzGBkhJ/WS21W8UymKR/Yj7C9/5Idf0bT5jKtz2m/7qX77Ydy3/D/Gxt8mpFAy
-         m7Gn+S6iy7zsm/GjIuSiU5gYw/mQHit5V4radJO3h6m0NTmPcjR+sxljfoKN/zCRsn
-         gLo0ACR7qA1u9iAjrB+Yw5DroprSEp96IOtSkJPmxN5JTuO2iTv7ki6DofkfRFdJss
-         DwK2WK13qd4UTb65ZRR13MQedDzJIYWleNj5RI/J7Cn9rJdMMwFprNq6gWogWl2HmX
-         dDjSgKkTOwo+xaOfo9hILAgFvEW9QbTfTvUxOLuca4HAMquqajnPjg4tIBzoIgIFQj
-         mZRdk6/KEVTvw==
-Date:   Wed, 18 May 2022 08:49:20 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Lin Yujun <linyujun809@huawei.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, tglx@linutronix.de,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org, johnny.chenyi@huawei.com,
-        chenjiahao16@huawei.com, chenlifu@huawei.com,
-        lizhengyu3@huawei.com, liaochang1@huawei.com, wangzhu9@huawei.com,
-        xuyihang@huawei.com, chris.zjh@huawei.com, zouyipeng@huawei.com
-Subject: Re: [PATCH -next] x86/events:Use struct_size() helper in kzalloc()
-Message-ID: <20220518134920.GA8361@embeddedor>
-References: <20220518131626.109123-1-linyujun809@huawei.com>
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id F3BBD2060E;
+        Wed, 18 May 2022 15:40:31 +0200 (CEST)
+Message-ID: <77726e82-eaef-4cce-514a-1df04e5c33ee@somainline.org>
+Date:   Wed, 18 May 2022 15:40:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518131626.109123-1-linyujun809@huawei.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v3 5/6] arm64: dts: ipq8074: add SPMI PMP8074 PMIC
+ regulators
+To:     Robert Marko <robimarko@gmail.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220517205341.536587-1-robimarko@gmail.com>
+ <20220517205341.536587-5-robimarko@gmail.com>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <20220517205341.536587-5-robimarko@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 09:16:26PM +0800, Lin Yujun wrote:
-> Replace sizeof() with struct_size() to avoid potential integer
-> or heap overflow.
 
-This is not exactly what the patch does.
-
-Your patch is replacing the open-coded calculation of the total amount
-of memory to be allocated for rapl_pmus with struct_size().
-
-> 
-> Also, address the following sparse warnings:
-> arch/x86/events/rapl.c:685:16: warning: using sizeof on a
-> flexible structure
-
-This does not address this warning because struct_size()
-still make use of sizeof on the struct-with-flex-array,
-internally.
-
-So, the mention to the sparse warning should be removed from
-this changelog text.
-
-> 
-> Signed-off-by: Lin Yujun <linyujun809@huawei.com>
+On 17/05/2022 22:53, Robert Marko wrote:
+> PMP8074 is used in IPQ8074 and provides S3 for cores,
+> S4 for UBI core and LDO11 for SDIO/eMMC.
+>
+> So, lets add the nodes in preparation for DVFS later.
+>
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
 > ---
->  arch/x86/events/rapl.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-> index 77e3a47af5ad..c7e79f0ac04f 100644
-> --- a/arch/x86/events/rapl.c
-> +++ b/arch/x86/events/rapl.c
-> @@ -685,7 +685,7 @@ static int __init init_rapl_pmus(void)
->  	int maxdie = topology_max_packages() * topology_max_die_per_package();
->  	size_t size;
->  
-> -	size = sizeof(*rapl_pmus) + maxdie * sizeof(struct rapl_pmu *);
-> +	size = struct_size(rapl_pmus, pmus, maxdie);
->  	rapl_pmus = kzalloc(size, GFP_KERNEL);
+>   arch/arm64/boot/dts/qcom/ipq8074.dtsi | 34 +++++++++++++++++++++++++++
+>   1 file changed, 34 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+> index 789fec7c6aa4..d1a0b77c38a4 100644
+> --- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+> @@ -5,6 +5,7 @@
+>   
+>   #include <dt-bindings/interrupt-controller/arm-gic.h>
+>   #include <dt-bindings/clock/qcom,gcc-ipq8074.h>
+> +#include <dt-bindings/spmi/spmi.h>
+>   
+>   / {
+>   	model = "Qualcomm Technologies, Inc. IPQ8074";
+> @@ -421,6 +422,39 @@ spmi_bus: spmi@200f000 {
+>   			interrupt-controller;
+>   			#interrupt-cells = <4>;
+>   			cell-index = <0>;
+> +
+> +			pmic@1 {
 
-It seems that in this case, size could be entirely replaced by
-struct_size().
+Hi!
 
-Thanks
---
-Gustavo
+
+These nodes belong in the PMIC DTSI (check pm8150.dtsi and others alike 
+for reference).
+
+
+Konrad
+
+> +				compatible ="qcom,spmi-pmic";
+> +				reg = <0x1 SPMI_USID>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				regulators {
+> +					compatible = "qcom,pmp8074-regulators";
+> +
+> +					s3: s3 {
+> +						regulator-name = "vdd_s3";
+> +						regulator-min-microvolt = <592000>;
+> +						regulator-max-microvolt = <1064000>;
+> +						regulator-always-on;
+> +						regulator-boot-on;
+> +					};
+> +
+> +					s4: s4 {
+> +						regulator-name = "vdd_s4";
+> +						regulator-min-microvolt = <712000>;
+> +						regulator-max-microvolt = <992000>;
+> +						regulator-always-on;
+> +						regulator-boot-on;
+> +					};
+> +
+> +					l11: l11 {
+> +						regulator-name = "l11";
+> +						regulator-min-microvolt = <1800000>;
+> +						regulator-max-microvolt = <3300000>;
+> +					};
+> +				};
+> +			};
+>   		};
+>   
+>   		sdhc_1: sdhci@7824900 {
+>
