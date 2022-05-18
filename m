@@ -2,173 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:47:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 404CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237522AbiERMrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        id S238513AbiERMrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238507AbiERMrR (ORCPT
+        with ESMTP id S237191AbiERMpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:47:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65E221BB9B4
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:45:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652877929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q7e2eynh2lki6aaMuNiuQ3yDCBpivZWLlTQmPRG6dxE=;
-        b=H8DHTdFWC9rGTS9ZgGqr1nc7pXrYD4vaJTwjamlpkxzN4i8QF2zElEvxqiM/P20Av/M+87
-        cu+qbRRSZFvnEEYY/f/VKFrPl0ci8nyF4vpeG6Wy+FmPOBBjo8oRJwaRWGq0/gV4ubdAQw
-        ePeScNyKzoGa68cedlRK27a7ztzhKWs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-656-cnRowkt-PIydbbyHKJWn5A-1; Wed, 18 May 2022 08:45:24 -0400
-X-MC-Unique: cnRowkt-PIydbbyHKJWn5A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 996B9100DDF4;
-        Wed, 18 May 2022 12:45:23 +0000 (UTC)
-Received: from starship (unknown [10.40.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 609EA4010E4E;
-        Wed, 18 May 2022 12:45:21 +0000 (UTC)
-Message-ID: <aabc24621b95f627d3f8a8875074c06097f4ec8e.camel@redhat.com>
-Subject: Re: [PATCH v3 13/34] KVM: nSVM: Keep track of Hyper-V
- hv_vm_id/hv_vp_id
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 18 May 2022 15:45:20 +0300
-In-Reply-To: <874k1nuiw8.fsf@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
-         <20220414132013.1588929-14-vkuznets@redhat.com>
-         <30b0e63c0a2d3c3c40edb47af6d80e452f1e69fa.camel@redhat.com>
-         <874k1nuiw8.fsf@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 18 May 2022 08:45:49 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92065E02;
+        Wed, 18 May 2022 05:42:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652877731; x=1684413731;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=g12NRS8alSxAMdjIZ7FyL80YifoKRkRmio1kwZZ1BfQ=;
+  b=BfbxW1gcSO24QVRvo6ssEedhk1lu9c77zNq8gfdaTQaftojY2dtHhTg5
+   IaqToqJnFaI/aQDUiEt8GqiWXx9zF8a86UN8P0+bY066Scx8rAAO11bIn
+   Ql0EngWZneimo9rfH5MwestFV48oHE6ZbXmJLP9PfVFCX6LKDPfuESc4Z
+   wNJnP3eaB9k5Qt5DQ6TlMmtccHFvztTs7ZLNAMgPzQwZKdzEIQcXTos2+
+   RHPIR8s7ElhyoNuoeVldnab9W7OFaI7XbeOnvrysotcqJ2LUVCz1lpkca
+   r5lkKcVsU4xgaNbr/UFj64e1RCQ6/aW93cLhu0iioE3hrC7BntSAaIe1D
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="332270387"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="332270387"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:41:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="639243416"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 18 May 2022 05:41:33 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrIzd-0002BR-4H;
+        Wed, 18 May 2022 12:41:33 +0000
+Date:   Wed, 18 May 2022 20:40:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>
+Cc:     kbuild-all@lists.01.org, linux-security-module@vger.kernel.org,
+        dm-devel@redhat.com, linux-kernel@vger.kernel.org,
+        linux-raid@vger.kernel.org, Song Liu <song@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: Re: [PATCH v4 2/3] LoadPin: Enable loading from trusted dm-verity
+ devices
+Message-ID: <202205182059.6QY3zspw-lkp@intel.com>
+References: <20220517163437.v4.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517163437.v4.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-18 at 14:25 +0200, Vitaly Kuznetsov wrote:
-> Maxim Levitsky <mlevitsk@redhat.com> writes:
-> 
-> > On Thu, 2022-04-14 at 15:19 +0200, Vitaly Kuznetsov wrote:
-> > > Similar to nSVM, KVM needs to know L2's VM_ID/VP_ID and Partition
-> > > assist page address to handle L2 TLB flush requests.
-> > > 
-> > > Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> > > ---
-> > >  arch/x86/kvm/svm/hyperv.h | 16 ++++++++++++++++
-> > >  arch/x86/kvm/svm/nested.c |  2 ++
-> > >  2 files changed, 18 insertions(+)
-> > > 
-> > > diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
-> > > index 7d6d97968fb9..8cf702fed7e5 100644
-> > > --- a/arch/x86/kvm/svm/hyperv.h
-> > > +++ b/arch/x86/kvm/svm/hyperv.h
-> > > @@ -9,6 +9,7 @@
-> > >  #include <asm/mshyperv.h>
-> > >  
-> > >  #include "../hyperv.h"
-> > > +#include "svm.h"
-> > >  
-> > >  /*
-> > >   * Hyper-V uses the software reserved 32 bytes in VMCB
-> > > @@ -32,4 +33,19 @@ struct hv_enlightenments {
-> > >   */
-> > >  #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
-> > >  
-> > > +static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
-> > > +{
-> > > +	struct vcpu_svm *svm = to_svm(vcpu);
-> > > +	struct hv_enlightenments *hve =
-> > > +		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
-> > 
-> > Small nitpick:
-> > 
-> > Can we use this as an opportunity to rename the 'reserved_sw' to \
-> > 'hv_enlightenments' or something, because that is what it is?
-> > 
-> > Also the reserved_sw is an array, which is confusing, since from first look,
-> > it looks like we have a pointer dereference here.
-> > 
-> 
-> Well, that's what it is in Hyper-V world and so far we didn't give it
-> another meaning in KVM but in theory it is not impossible, e.g. we can
-> use this area to speed up nested KVM on KVM.
-> 
-> AMD calls this "Reserved for Host usage" so we can probably rename it to 
-> 'reserved_host' but I'm not sure it's worth the hassle...
+Hi Matthias,
 
-This is a very good piece of information. If AMD calls it like that,
-than let it be.
+Thank you for the patch! Yet something to improve:
 
-It is probably not worth it to rename the field then, but I think it
-is might be worth it to add this info as a comment to the KVM.
+[auto build test ERROR on device-mapper-dm/for-next]
+[also build test ERROR on song-md/md-next kees/for-next/pstore linus/master v5.18-rc7 next-20220517]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Also it might be worth it to add some wrapper function for
-'struct hv_enlightenments *hve = (struct hv_enlightenments *)svm->nested.ctl.reserved_sw;'
-(+ check if this area is valid - currently it is copied only when 'kvm_hv_hypercall_enabled == true').
+url:    https://github.com/intel-lab-lkp/linux/commits/Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220518-073635
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/device-mapper/linux-dm.git for-next
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220518/202205182059.6QY3zspw-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/755e5d82e4d054b2b58a54c94681080cc8cb4582
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220518-073635
+        git checkout 755e5d82e4d054b2b58a54c94681080cc8cb4582
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash security/
 
-Both would be a very low priority items to be honest.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks,
-Best regards,
-	MaxiMm Levitsky
+All errors (new ones prefixed by >>):
+
+   In file included from security/loadpin/loadpin.c:21:
+>> include/linux/dm-verity-loadpin.h:22:1: error: expected identifier or '(' before '{' token
+      22 | {
+         | ^
+   include/linux/dm-verity-loadpin.h:21:20: warning: 'dm_verity_loadpin_is_sb_trusted' used but never defined
+      21 | static inline bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
+         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-> 
-> > 
-> > > +	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-> > > +
-> > > +	if (!hv_vcpu)
-> > > +		return;
-> > > +
-> > > +	hv_vcpu->nested.pa_page_gpa = hve->partition_assist_page;
-> > > +	hv_vcpu->nested.vm_id = hve->hv_vm_id;
-> > > +	hv_vcpu->nested.vp_id = hve->hv_vp_id;
-> > > +}
-> > > +
-> > >  #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
-> > > diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-> > > index bed5e1692cef..2d1a76343404 100644
-> > > --- a/arch/x86/kvm/svm/nested.c
-> > > +++ b/arch/x86/kvm/svm/nested.c
-> > > @@ -826,6 +826,8 @@ int nested_svm_vmrun(struct kvm_vcpu *vcpu)
-> > >  
-> > >  	svm->nested.nested_run_pending = 1;
-> > >  
-> > > +	nested_svm_hv_update_vm_vp_ids(vcpu);
-> > > +
-> > >  	if (enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, true))
-> > >  		goto out_exit_err;
-> > >  
-> > 
-> > That won't work after migration, since this won't be called
-> > if we migrate with nested guest running.
-> > 
-> > 
-> > I think that nested_svm_hv_update_vm_vp_ids should be called 
-> > from enter_svm_guest_mode.
-> > 
-> 
-> Oh that's a good one, thanks! This could've been a hard to debug issue.
-> 
+vim +22 include/linux/dm-verity-loadpin.h
 
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  17  
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  18  #if IS_ENABLED(CONFIG_SECURITY_LOADPIN) && IS_BUILTIN(CONFIG_DM_VERITY)
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  19  bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  20  #else
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  21  static inline bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
+afd03270f57b8c Matthias Kaehlcke 2022-05-17 @22  {
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  23  	return false;
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  24  }
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  25  #endif
+afd03270f57b8c Matthias Kaehlcke 2022-05-17  26  
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
