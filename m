@@ -2,65 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F634C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236536AbiERM17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        id S236687AbiERM2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236482AbiERM1Q (ORCPT
+        with ESMTP id S236486AbiERM1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:27:16 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38AE1AFAC7;
-        Wed, 18 May 2022 05:27:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=QJsVQym+xL0e9ZE8cs4o3sRq3C2RnAjl/FhXvupRFQ0=; b=D/Bh+Gmzw2BN6pBNp567gS2D0/
-        VKxeDUt7MYxt68TtoX3genmgLQ2oeiNNKiP0kGjaIGmiJfJjrDvbEDObjF99Cs6dMhZ6RnHqXVH7+
-        ssMEbATCPWp8/NOivDUP4Rv4NAL42rgZGvDejwV1CjptmTPve2x2GjNuMuzzwvPD0tOg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nrIld-003K4e-Dv; Wed, 18 May 2022 14:27:05 +0200
-Date:   Wed, 18 May 2022 14:27:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vivek Kumar <quic_vivekuma@quicinc.com>
-Cc:     corbet@lwn.net, catalin.marinas@arm.com, will@kernel.org,
-        tglx@linutronix.de, maz@kernel.org, axboe@kernel.dk,
-        rafael@kernel.org, akpm@linux-foundation.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-mm@kvack.org, len.brown@intel.com,
-        pavel@ucw.cz, paulmck@kernel.org, bp@suse.de,
-        keescook@chromium.org, songmuchun@bytedance.com,
-        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
-        pasha.tatashin@soleen.com, tabba@google.com, ardb@kernel.org,
-        tsoni@quicinc.com, quic_psodagud@quicinc.com,
-        quic_svaddagi@quicinc.com,
-        Prasanna Kumar <quic_kprasan@quicinc.com>
-Subject: Re: [RFC 4/6] mm: swap: Add randomization check for swapon/off calls
-Message-ID: <YoTmGREvHTpTeeUH@lunn.ch>
-References: <1652860121-24092-1-git-send-email-quic_vivekuma@quicinc.com>
- <1652860121-24092-5-git-send-email-quic_vivekuma@quicinc.com>
+        Wed, 18 May 2022 08:27:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1F2ABF55;
+        Wed, 18 May 2022 05:27:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4176BB81F40;
+        Wed, 18 May 2022 12:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A8E9C34115;
+        Wed, 18 May 2022 12:27:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652876830;
+        bh=CVclP0CVYd+Kst09m8hEBA7IByOo7/Fm5SO7C+br1ow=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fIexz4c6oJyzsH+PgPSNWPk0T2uPdJ5cTP9OXeWJa3SHbFZimE05TNzF1C0MvULr2
+         w+VKZlkpUB/NliEtFwYR/4X4C1bzxscmSBGZcA4c+aQkTQ/uIMBFfcSSBXbbQ7+tPb
+         m4fFgp5/XzKWLOqKk8vII4dblbgkRAiMc6nlmpkhxKVIpZ7B49IbRMXTGesEu9Jm+y
+         /BOxLKTTbUK2iNBpIIgNSTp8tPMBRxbb3eeKkWjKwWjM8tVeciySvhSztFLF1WYDA6
+         QhmHJk8cGIf367LWALSMosnb2FnKIg7V0pB4T2rjNCrLY+6aTs87oCtCAa43Jc+gPa
+         Sk2ReFgNxwrUw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 12/23] platform/surface: gpe: Add support for Surface Pro 8
+Date:   Wed, 18 May 2022 08:26:25 -0400
+Message-Id: <20220518122641.342120-12-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220518122641.342120-1-sashal@kernel.org>
+References: <20220518122641.342120-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1652860121-24092-5-git-send-email-quic_vivekuma@quicinc.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 01:18:39PM +0530, Vivek Kumar wrote:
-> Add addtional check on swapon/swapoff sycalls to disable
-> randomization of swap offsets if GENHD_FL_NO_RANDOMIZE
-> flag is passed.
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-Is there already a flag in the image header which tells you if the
-image is randomozied or not? I assume the bootloader needs to know,
-doing a linear read of a randomized image is not going to end well.
+[ Upstream commit ed13d4ac57474d959c40fd05d8860e2b1607becb ]
 
-      Andrew
+The new Surface Pro 8 uses GPEs for lid events as well. Add an entry for
+that so that the lid can be used to wake the device. Note that this is a
+device with a keyboard type-cover, where this acts as the "lid".
+
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Link: https://lore.kernel.org/r/20220429180049.1282447-1-luzmaximilian@gmail.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/platform/surface/surface_gpe.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/platform/surface/surface_gpe.c b/drivers/platform/surface/surface_gpe.c
+index c1775db29efb..ec66fde28e75 100644
+--- a/drivers/platform/surface/surface_gpe.c
++++ b/drivers/platform/surface/surface_gpe.c
+@@ -99,6 +99,14 @@ static const struct dmi_system_id dmi_lid_device_table[] = {
+ 		},
+ 		.driver_data = (void *)lid_device_props_l4D,
+ 	},
++	{
++		.ident = "Surface Pro 8",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 8"),
++		},
++		.driver_data = (void *)lid_device_props_l4B,
++	},
+ 	{
+ 		.ident = "Surface Book 1",
+ 		.matches = {
+-- 
+2.35.1
+
