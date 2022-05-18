@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236036AbiERL4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37194 "EHLO
+        id S236059AbiERL4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235965AbiERL4T (ORCPT
+        with ESMTP id S235878AbiERL4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:56:19 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39DB55BF;
-        Wed, 18 May 2022 04:56:16 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id i40so2661936eda.7;
-        Wed, 18 May 2022 04:56:16 -0700 (PDT)
+        Wed, 18 May 2022 07:56:20 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E47CF45
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 04:56:18 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id tk15so3319851ejc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 04:56:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+A/4woOo192qqTkRjLVbL7AmgutNUKDEYrhbPWSEIww=;
-        b=hBLSKEJTHtC3+1dEDg7GT1nUV/CKzTUjoKk2zRSn2QL3s+ZYozYyV8Qm9goHinditO
-         hOuJoM0D1UmXoosbZsi45uE7L8vFjD02riODsVQs09mvqP/xijtDIExjOi2hvWDPfbF0
-         C0lgEvp/VMB1UV9x2xlvSBPZgVQawsjavHsRFlSFZqwzmFPeBJjjJs8x3O31Y4kbgnhy
-         T/6xE7Zbob8c3d/tfogiJ/MNGVJnH5V1kZYPGXabj3l/cm2mVU2uObVGVaaZmDwvAKN2
-         MPYeqZNtwgNk4+M3jfSZwwfdRrpam+pdcaX26nBeCmqTPJmL7KCU8TvAO03QWxQWW7Us
-         Egpg==
+        bh=b1dlEPWVrVXPU9+OpPy+DjsXYyATJBO85j2ZJWlY2iE=;
+        b=TiI4GaMGCOCddV8HiwnOPd+gCJrAzBja0E8iUAqdeogfrF97bB9p2YgK5SmMjS+dHe
+         hULnBAFx1ZiHmqCIRYB/YCeauOMyPq6gkykmrA6TbbF6ThxF86HbBWx2PpLbwf6hr919
+         cMhrjO2ci5BLTIlmhJCQ/wgDkY31t+Av8D1Jm9PkwQ9AVrNR+OroorbOt0Ym0WBb/10t
+         Kxo8lIZrGU4MnUYhi0DTFrTkWEPCANMNwIroHtvKLrE94MUGt+DtPIy/3xQkQsWJMHlu
+         0BawCST4HeH4l7tjEgVLCJXDtVtEtSBDQg0xJLyEwEeb0x0qXtdeXNmw8T4qjtomgtFB
+         470A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+A/4woOo192qqTkRjLVbL7AmgutNUKDEYrhbPWSEIww=;
-        b=jbOz9q20SycpQ9xqh2aFNkCGllgn5/2tj2IJb4Jv/sIC9Z3Awvk8mmK7TNOSqqtar8
-         kgvh3n3vo2XxuKihf8mwaOieJdfBLji3jPk/s5WX1WEe0HMACGLYClP2ATd6oYxgkKCw
-         gKuV0I8vZpPEeHusg0LmAYejDKJqJ2USA5NING4yF8lXDpkL8czA0Tg1hIO4fGZLlorw
-         lPrn8dgg27KEQnSD8CEkZDpnc4AkhSlT1CyNIbe6Eq13vr1X050bPs8PFIuyVW0HWjbA
-         Uuijg7HIN55JSjvboahOeRxh4yWFpylMcfJkgKsSw5xEEmVYdX3O0Ipdxftmw3AbrSdS
-         Lasg==
-X-Gm-Message-State: AOAM533hnq338SlxawyDLZM5icGlVUxUvrN9XPkvt6ZacvujjpyYHrGf
-        6lBe0xN6WmJHX2dveqPkIpM=
-X-Google-Smtp-Source: ABdhPJw7EAfh/9Ch9Mnt9pi5tInayRrDWvKmcdnqjM7XPkDEyaDSMw1+dTgaaqvWbhBX7BcIeMNEaA==
-X-Received: by 2002:a05:6402:5108:b0:427:e323:4c67 with SMTP id m8-20020a056402510800b00427e3234c67mr23894739edd.326.1652874974666;
-        Wed, 18 May 2022 04:56:14 -0700 (PDT)
+        bh=b1dlEPWVrVXPU9+OpPy+DjsXYyATJBO85j2ZJWlY2iE=;
+        b=Prn6hCkhAYHmSo0DnX6JFok9RLJ9M8VcF7ZbW2wN9ezZ4K5wW+wsHMiTnMCi8IpmG2
+         EACCClpwYJ/Ck/eoEaMc7jGiIjmz4ouyVggDJcGNVDQL0yEa6uw52Jz1Zg6OMATKwe4S
+         NKA8gIxVKFWMHUlSPxq5lh6MPCIHMJuYKz0+V9QthFvnhWrSnVShITHFdcjELi+2wjbW
+         rQafTpeD7DVAD1OHILcH5CdBbGbYyCC3PBigUBe4GBMxeA5an64SPIqvMpXTtMigVPXM
+         WNzDIC6d8o9oNo2E10KJjtnYvUvp6MQbehcipFz6uPUlmFT2MRhytrKqUtbBjxJWwvll
+         gnsA==
+X-Gm-Message-State: AOAM533Y92ARysKjeqnEfruZqM2xgFTTF3J8iNfRhVyRmbaUrAUT/3TA
+        moWtbbwkg+NOAMind9rdLZ0=
+X-Google-Smtp-Source: ABdhPJwRW8Qy/kDVW3sedgwCmFrhZm2ha7NIB6DPX7bqZVmgNOIrDmk3X7+B9X5LnQadvHmbSyWwXA==
+X-Received: by 2002:a17:907:3d91:b0:6f5:2b6a:ef55 with SMTP id he17-20020a1709073d9100b006f52b6aef55mr24549365ejc.352.1652874976966;
+        Wed, 18 May 2022 04:56:16 -0700 (PDT)
 Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
-        by smtp.gmail.com with ESMTPSA id dq20-20020a170907735400b006f5294986besm873999ejc.111.2022.05.18.04.56.13
+        by smtp.gmail.com with ESMTPSA id dq20-20020a170907735400b006f5294986besm873999ejc.111.2022.05.18.04.56.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 04:56:14 -0700 (PDT)
+        Wed, 18 May 2022 04:56:16 -0700 (PDT)
 From:   Max Krummenacher <max.oss.09@gmail.com>
 To:     max.krummenacher@toradex.com
 Cc:     Marek Vasut <marex@denx.de>,
@@ -58,15 +58,12 @@ Cc:     Marek Vasut <marex@denx.de>,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
         Sam Ravnborg <sam@ravnborg.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/3] dt-bindings: display: add new bus-format property for panel-dpi
-Date:   Wed, 18 May 2022 13:55:38 +0200
-Message-Id: <20220518115541.38407-2-max.oss.09@gmail.com>
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/3] drm/panel: simple: add bus-format support for panel-dpi
+Date:   Wed, 18 May 2022 13:55:40 +0200
+Message-Id: <20220518115541.38407-4-max.oss.09@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220518115541.38407-1-max.oss.09@gmail.com>
 References: <20220518115541.38407-1-max.oss.09@gmail.com>
@@ -78,85 +75,94 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Max Krummenacher <max.krummenacher@toradex.com>
 
-The property is used to set the enum bus_format and infer the bpc
-for a panel defined by 'panel-dpi'.
-This specifies how the panel is connected to the display interface.
+Evaluate the device tree bus-format property to set bus_format for
+a 'panel-dpi' panel. Additionally infer the bpc value from the
+given bus-format.
+
+Valid values for bus-format are found in:
+<include/dt-bindings/display/dt-media-bus-format.h>
+
+This completes the addition of panel-dpi to completely specify
+a panel-simple panel from the device tree.
 
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 
 ---
 
 Changes in v2:
-    - Fix errors found by dt_binding_check
+    None
 
- .../bindings/display/panel/panel-dpi.yaml     | 11 +++++++++
- .../dt-bindings/display/dt-media-bus-format.h | 23 +++++++++++++++++++
- 2 files changed, 34 insertions(+)
- create mode 100644 include/dt-bindings/display/dt-media-bus-format.h
+ drivers/gpu/drm/panel/panel-simple.c | 43 ++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml b/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml
-index dae0676b5c6e..a20b5898941e 100644
---- a/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/panel-dpi.yaml
-@@ -21,6 +21,14 @@ properties:
-       - {}
-       - const: panel-dpi
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index a34f4198a534..090c60abb014 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -21,6 +21,7 @@
+  * DEALINGS IN THE SOFTWARE.
+  */
  
-+  bus-format:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      Describes how the display panel is connected to the display interface.
-+      Valid values are defined in <dt-bindings/display/dt-media-bus-format.h>.
-+      The mapping between the color/significance of the panel lines to the
-+      parallel data lines are defined in [1].
-+      [1] https://www.kernel.org/doc/html/v5.17/userspace-api/media/v4l/subdev-formats.html#packed-rgb-formats
-   backlight: true
-   enable-gpios: true
-   height-mm: true
-@@ -39,11 +47,14 @@ additionalProperties: false
++#include <dt-bindings/display/dt-media-bus-format.h>
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/module.h>
+@@ -453,6 +454,7 @@ static int panel_dpi_probe(struct device *dev,
+ 	struct panel_desc *desc;
+ 	unsigned int bus_flags;
+ 	struct videomode vm;
++	u32 bus_format;
+ 	int ret;
  
- examples:
-   - |
-+    #include <dt-bindings/display/dt-media-bus-format.h>
-+
-     panel {
-         compatible = "startek,startek-kd050c", "panel-dpi";
-         label = "osddisplay";
-         power-supply = <&vcc_supply>;
-         backlight = <&backlight>;
-+        bus-format = <DT_MEDIA_BUS_FMT_RGB888_1X24>;
+ 	np = dev->of_node;
+@@ -477,6 +479,47 @@ static int panel_dpi_probe(struct device *dev,
+ 	of_property_read_u32(np, "width-mm", &desc->size.width);
+ 	of_property_read_u32(np, "height-mm", &desc->size.height);
  
-         port {
-             lcd_in: endpoint {
-diff --git a/include/dt-bindings/display/dt-media-bus-format.h b/include/dt-bindings/display/dt-media-bus-format.h
-new file mode 100644
-index 000000000000..c0f2a7b59aa1
---- /dev/null
-+++ b/include/dt-bindings/display/dt-media-bus-format.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
-+/*
-+ * Copyright 2022 Max Krummenacher <max.krummenacher@toradex.com>
-+ */
++	if (!of_property_read_u32(np, "bus-format", &bus_format)) {
++		/* infer bpc from bus-format */
++		switch (bus_format) {
++		case DT_MEDIA_BUS_FMT_RGB565_1X16:
++			desc->bus_format = MEDIA_BUS_FMT_RGB565_1X16;
++			desc->bpc = 6;
++			break;
++		case DT_MEDIA_BUS_FMT_RGB666_1X18:
++			desc->bus_format = MEDIA_BUS_FMT_RGB666_1X18;
++			desc->bpc = 6;
++			break;
++		case DT_MEDIA_BUS_FMT_RGB666_1X24_CPADHI:
++			desc->bus_format = MEDIA_BUS_FMT_RGB666_1X24_CPADHI;
++			desc->bpc = 6;
++			break;
++		case DT_MEDIA_BUS_FMT_BGR888_1X24:
++			desc->bus_format = MEDIA_BUS_FMT_BGR888_1X24;
++			desc->bpc = 8;
++			break;
++		case DT_MEDIA_BUS_FMT_GBR888_1X24:
++			desc->bus_format = MEDIA_BUS_FMT_GBR888_1X24;
++			desc->bpc = 8;
++			break;
++		case DT_MEDIA_BUS_FMT_RBG888_1X24:
++			desc->bus_format = MEDIA_BUS_FMT_RBG888_1X24;
++			desc->bpc = 8;
++			break;
++		case DT_MEDIA_BUS_FMT_RGB888_1X24:
++			desc->bus_format = MEDIA_BUS_FMT_RGB888_1X24;
++			desc->bpc = 8;
++			break;
++		case DT_MEDIA_BUS_FMT_RGB888_1X32_PADHI:
++			desc->bus_format = MEDIA_BUS_FMT_RGB888_1X32_PADHI;
++			desc->bpc = 8;
++			break;
++		default:
++			dev_err(dev, "%pOF: unknown bus-format property\n", np);
++			return -EINVAL;
++		}
++	}
 +
-+#ifndef __DT_BINDINGS_DT_MEDIA_BUS_FORMAT_H
-+#define __DT_BINDINGS_DT_MEDIA_BUS_FORMAT_H
-+
-+/*
-+ * Attention: Keep these macro names in sync with
-+ * include/uapi/linux/media-bus-format.h
-+ */
-+
-+#define DT_MEDIA_BUS_FMT_RGB565_1X16		1
-+#define DT_MEDIA_BUS_FMT_RGB666_1X18		2
-+#define DT_MEDIA_BUS_FMT_RBG888_1X24		3
-+#define DT_MEDIA_BUS_FMT_RGB666_1X24_CPADHI	4
-+#define DT_MEDIA_BUS_FMT_BGR888_1X24		5
-+#define DT_MEDIA_BUS_FMT_GBR888_1X24		6
-+#define DT_MEDIA_BUS_FMT_RGB888_1X24		7
-+#define DT_MEDIA_BUS_FMT_RGB888_1X32_PADHI	8
-+
-+#endif /* __DT_BINDINGS_DT_MEDIA_BUS_FORMAT_H */
+ 	/* Extract bus_flags from display_timing */
+ 	bus_flags = 0;
+ 	vm.flags = timing->flags;
 -- 
 2.20.1
 
