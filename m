@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 905E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64113C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234490AbiERJhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
+        id S234586AbiERJhX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:37:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234393AbiERJgm (ORCPT
+        with ESMTP id S234487AbiERJg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:36:42 -0400
+        Wed, 18 May 2022 05:36:59 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40ADB82DF;
-        Wed, 18 May 2022 02:36:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780B3B41E7;
+        Wed, 18 May 2022 02:36:41 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 15D181F4245A
+        with ESMTPSA id 9F62B1F44CD6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652866598;
-        bh=w9vxsEMxP8ZOb1eaXm6eHhoM0t+W1qSfwTk8Rrym1/g=;
-        h=From:To:Cc:Subject:Date:From;
-        b=c12qUofxh1jcKvqyHR90xzkya+PqzExM/e5MgMle18x752R4y1/rC4ESRDslCQlwZ
-         SwhCSmFXQ4/IqXkTyfoAxCps9XzbvmOSWc2TxvDjntf34scgiliCXPNDbjak+o9CEb
-         6wSqHXthviknwmxGuCpKNpgzgxNgc7IlwYn5QU0otRY+Xrbfibs/OjVfBcT5kQ1AKv
-         TyQRNpbIY1F2RntBe8d+94OCR+rlyZ5lOUrt+S7xL7VhAP1NnFz6sG3remSt0MW4Q1
-         S/8Af3A6QYjs5wDyM7ZH0kQSn2G8wuUrprno3WAXk3vFM1XOoZa7xPyjdutKg99k7n
-         2GTp+7ttCH+vw==
+        s=mail; t=1652866600;
+        bh=3zGUrHnz1dbJuRpvdm88S9uEAq5/aWCIicZit1vC+BA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LaCL5F1tfcIElDLgjDjcgsw7cNvWuPXJkqbuuvQkfd8nnzshg8wU1T83zZky1NNPL
+         tu3GzqDQBn0D0Wbs3FjzSI7/kLq7M8fdIz2VRhIKDsT7ddZ2kQkqUj8a3xlY88T/xP
+         pgLzQoT4ZRXMeIlbFZt4nx6YgQxOC28LdD9O1jOOzEIGuN+l3ZD1ADq9dB91ik6PSl
+         O04u0/w9uK+TwbfZieze3jhWx5xGmThBlDsDAT2UJ53R4n4Xk3h7HEFcVkXq/+wNFP
+         O6L1ueQkSaHYswULIRQX2L7UoM5d+oXYnwDoYWOBAPSPy5M6Hw3zFiDZAsVS4102Hb
+         FTwnhYEkdzD9w==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     robh+dt@kernel.org
@@ -38,40 +38,105 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         krzysztof.kozlowski@linaro.org
-Subject: [PATCH v2 0/2] dt-bindings: arm: MediaTek: Fix clock bindings
-Date:   Wed, 18 May 2022 11:36:29 +0200
-Message-Id: <20220518093631.25491-1-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 2/2] dt-bindings: arm: mtk-clocks: Set #clock-cells as required property
+Date:   Wed, 18 May 2022 11:36:31 +0200
+Message-Id: <20220518093631.25491-3-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220518093631.25491-1-angelogioacchino.delregno@collabora.com>
+References: <20220518093631.25491-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As per Rob Herring's review [1] on my mt6795 clocks bindings patches, for
-which I've used the already upstreamed ones as a base, it was found that
-these bindings have some issues.
-This series is addressing the issues that were found by Rob on my series,
-which are present on all of the already merged bindings.
+This is a clock-controller binding, so it needs #clock-cells, or
+it would be of no use: add that to the list of required properties.
 
-[1]: https://patchwork.kernel.org/project/linux-mediatek/patch/20220513165050.500831-5-angelogioacchino.delregno@collabora.com/#24859953
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml  | 1 +
+ .../bindings/arm/mediatek/mediatek,mt8186-sys-clock.yaml         | 1 +
+ .../devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml  | 1 +
+ .../bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml         | 1 +
+ .../devicetree/bindings/arm/mediatek/mediatek,mt8195-clock.yaml  | 1 +
+ .../bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml         | 1 +
+ 6 files changed, 6 insertions(+)
 
-Changes in v2:
- - Squashed patches as suggested
-
-AngeloGioacchino Del Regno (2):
-  dt-bindings: arm: mtk-clock: Remove unnecessary 'items' and fix
-    formatting
-  dt-bindings: arm: mtk-clock: Set #clock-cells as required property
-
- .../arm/mediatek/mediatek,mt8186-clock.yaml   | 29 ++++-----
- .../mediatek/mediatek,mt8186-sys-clock.yaml   |  1 +
- .../arm/mediatek/mediatek,mt8192-clock.yaml   | 46 +++++++--------
- .../mediatek/mediatek,mt8192-sys-clock.yaml   |  1 +
- .../arm/mediatek/mediatek,mt8195-clock.yaml   | 59 ++++++++++---------
- .../mediatek/mediatek,mt8195-sys-clock.yaml   |  1 +
- 6 files changed, 71 insertions(+), 66 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml
+index 371eace6780b..70d7b393140e 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml
+@@ -44,6 +44,7 @@ properties:
+ required:
+   - compatible
+   - reg
++  - '#clock-cells'
+ 
+ additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-sys-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-sys-clock.yaml
+index 0886e2e335bb..48ebd2112789 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-sys-clock.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-sys-clock.yaml
+@@ -42,6 +42,7 @@ properties:
+ required:
+   - compatible
+   - reg
++  - '#clock-cells'
+ 
+ additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
+index bb410b178f33..b61d7635dfdd 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-clock.yaml
+@@ -46,6 +46,7 @@ properties:
+ required:
+   - compatible
+   - reg
++  - '#clock-cells'
+ 
+ additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml
+index 27f79175c678..580450e94c02 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml
+@@ -35,6 +35,7 @@ properties:
+ required:
+   - compatible
+   - reg
++  - '#clock-cells'
+ 
+ additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-clock.yaml
+index 0189aa0e34d4..aabd9f0df2de 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-clock.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-clock.yaml
+@@ -60,6 +60,7 @@ properties:
+ required:
+   - compatible
+   - reg
++  - '#clock-cells'
+ 
+ additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml
+index 95b6bdf99936..e2ba37830d4e 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml
+@@ -43,6 +43,7 @@ properties:
+ required:
+   - compatible
+   - reg
++  - '#clock-cells'
+ 
+ additionalProperties: false
+ 
 -- 
 2.35.1
 
