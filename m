@@ -2,145 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B93C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC534C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234241AbiERJ3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60422 "EHLO
+        id S234253AbiERJ3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234205AbiERJ3Q (ORCPT
+        with ESMTP id S234179AbiERJ3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:29:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3327983C;
-        Wed, 18 May 2022 02:28:59 -0700 (PDT)
+        Wed, 18 May 2022 05:29:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CAD939A4;
+        Wed, 18 May 2022 02:29:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9282261722;
-        Wed, 18 May 2022 09:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36407C34100;
-        Wed, 18 May 2022 09:28:52 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        WANG Xuerui <git@xen0n.name>
-Subject: [PATCH V11 03/22] LoongArch: Add ELF-related definitions
-Date:   Wed, 18 May 2022 17:26:00 +0800
-Message-Id: <20220518092619.1269111-4-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220518092619.1269111-1-chenhuacai@loongson.cn>
-References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB8D9B81EF6;
+        Wed, 18 May 2022 09:29:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3214C385A5;
+        Wed, 18 May 2022 09:29:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652866169;
+        bh=mxYfw+GinqAjrXTEOeZE9mJTILflufdqzdNKepyHGvs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WnuDNuac+vgJ5XGYkmYhG9vNk3/I6KnCpiWaFtwNmTHgasum5pAR9I1Ia8/AVt6DN
+         F3NuWnnkUTtKb9iOCd3/oC5u/Am6hb7Kg3DyrmvwrHrqkFFCcrYF1K62y+uJaM3Deg
+         rpfqlGmc4TCKfQaB7wVFZQqjMtEj8LqJWUrYIWrhoClQs6eTv/AGwqPTkCTM5NSHlb
+         cN8+C18E4CAWIF4nXhVX20/3ZV1YHMEzIXYds4gOYHvqg4joiG39+Kjp8tbbiglhX8
+         Cx/Mho/xgs/KvziMEuryCU+NLzLcbSlWPQvSyC0y/LHz17ajEWeXM9VDOT2qFu4yo1
+         euk6Iv9GMxRcg==
+Date:   Wed, 18 May 2022 14:59:24 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        daniel@ffwll.ch, airlied@linux.ie, agross@kernel.org,
+        dmitry.baryshkov@linaro.org, bjorn.andersson@linaro.org,
+        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] phy/qcom: add regulator_set_load to edp/dp phy
+Message-ID: <YoS8dMAhD9h+CtJa@matsya>
+References: <1652808360-9830-1-git-send-email-quic_khsieh@quicinc.com>
+ <1652808360-9830-2-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652808360-9830-2-git-send-email-quic_khsieh@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ELF-related definitions for LoongArch, including: EM_LOONGARCH,
-KEXEC_ARCH_LOONGARCH, AUDIT_ARCH_LOONGARCH32, AUDIT_ARCH_LOONGARCH64
-and NT_LOONGARCH_*.
+On 17-05-22, 10:25, Kuogee Hsieh wrote:
 
-Reviewed-by: WANG Xuerui <git@xen0n.name>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- include/uapi/linux/audit.h  | 2 ++
- include/uapi/linux/elf-em.h | 1 +
- include/uapi/linux/elf.h    | 5 +++++
- include/uapi/linux/kexec.h  | 1 +
- scripts/sorttable.c         | 5 +++++
- 5 files changed, 14 insertions(+)
+pls use the correct subsystem tag, "phy: xxx" in this case
 
-diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
-index 8eda133ca4c1..7c1dc818b1d5 100644
---- a/include/uapi/linux/audit.h
-+++ b/include/uapi/linux/audit.h
-@@ -439,6 +439,8 @@ enum {
- #define AUDIT_ARCH_UNICORE	(EM_UNICORE|__AUDIT_ARCH_LE)
- #define AUDIT_ARCH_X86_64	(EM_X86_64|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
- #define AUDIT_ARCH_XTENSA	(EM_XTENSA)
-+#define AUDIT_ARCH_LOONGARCH32	(EM_LOONGARCH|__AUDIT_ARCH_LE)
-+#define AUDIT_ARCH_LOONGARCH64	(EM_LOONGARCH|__AUDIT_ARCH_64BIT|__AUDIT_ARCH_LE)
+> This patch add regulator_set_load() to both eDP and DP phy driver
+> to have totally control regulators.
+
+Can you explain what is meant by "totally control regulators"
+
+> 
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> ---
+>  drivers/phy/qualcomm/phy-qcom-edp.c | 25 +++++++++++++++++++++----
+>  drivers/phy/qualcomm/phy-qcom-qmp.c | 24 ++++++++++++++++++++++++
+>  2 files changed, 45 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
+> index cacd32f..9b55095 100644
+> --- a/drivers/phy/qualcomm/phy-qcom-edp.c
+> +++ b/drivers/phy/qualcomm/phy-qcom-edp.c
+> @@ -87,17 +87,24 @@ struct qcom_edp {
+>  
+>  	struct clk_bulk_data clks[2];
+>  	struct regulator_bulk_data supplies[2];
+> +	int enable_load[2];
+> +	int disable_load[2];
+>  };
+>  
+>  static int qcom_edp_phy_init(struct phy *phy)
+>  {
+>  	struct qcom_edp *edp = phy_get_drvdata(phy);
+>  	int ret;
+> +	int num_consumers = ARRAY_SIZE(edp->supplies);
+> +	int i;
+>  
+> -	ret = regulator_bulk_enable(ARRAY_SIZE(edp->supplies), edp->supplies);
+> +	ret = regulator_bulk_enable(num_consumers, edp->supplies);
+>  	if (ret)
+>  		return ret;
+>  
+> +	for (i = num_consumers - 1; i >= 0; --i)
+> +		regulator_set_load(edp->supplies[i].consumer, edp->enable_load[i]);
+> +
+>  	ret = clk_bulk_prepare_enable(ARRAY_SIZE(edp->clks), edp->clks);
+>  	if (ret)
+>  		goto out_disable_supplies;
+> @@ -425,9 +432,15 @@ static int qcom_edp_phy_power_off(struct phy *phy)
+>  static int qcom_edp_phy_exit(struct phy *phy)
+>  {
+>  	struct qcom_edp *edp = phy_get_drvdata(phy);
+> +	int num_consumers = ARRAY_SIZE(edp->supplies);
+> +	int i;
+>  
+>  	clk_bulk_disable_unprepare(ARRAY_SIZE(edp->clks), edp->clks);
+> -	regulator_bulk_disable(ARRAY_SIZE(edp->supplies), edp->supplies);
+> +
+> +	for (i = num_consumers - 1; i >= 0; --i)
+> +		regulator_set_load(edp->supplies[i].consumer, edp->disable_load[i]);
+> +
+> +	regulator_bulk_disable(num_consumers, edp->supplies);
+>  
+>  	return 0;
+>  }
+> @@ -633,8 +646,12 @@ static int qcom_edp_phy_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	edp->supplies[0].supply = "vdda-phy";
+> -	edp->supplies[1].supply = "vdda-pll";
+> +	edp->supplies[0].supply = "vdda-1p2";
+> +	edp->supplies[1].supply = "vdda-0p9";
+
+These are documented in bindings, so cannot be removed, Reminder binding
+is an ABI
  
- #define AUDIT_PERM_EXEC		1
- #define AUDIT_PERM_WRITE	2
-diff --git a/include/uapi/linux/elf-em.h b/include/uapi/linux/elf-em.h
-index f47e853546fa..ef38c2bc5ab7 100644
---- a/include/uapi/linux/elf-em.h
-+++ b/include/uapi/linux/elf-em.h
-@@ -51,6 +51,7 @@
- #define EM_RISCV	243	/* RISC-V */
- #define EM_BPF		247	/* Linux BPF - in-kernel virtual machine */
- #define EM_CSKY		252	/* C-SKY */
-+#define EM_LOONGARCH	258	/* LoongArch */
- #define EM_FRV		0x5441	/* Fujitsu FR-V */
- 
- /*
-diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
-index 787c657bfae8..d04ed21e0e38 100644
---- a/include/uapi/linux/elf.h
-+++ b/include/uapi/linux/elf.h
-@@ -436,6 +436,11 @@ typedef struct elf64_shdr {
- #define NT_MIPS_DSP	0x800		/* MIPS DSP ASE registers */
- #define NT_MIPS_FP_MODE	0x801		/* MIPS floating-point mode */
- #define NT_MIPS_MSA	0x802		/* MIPS SIMD registers */
-+#define NT_LOONGARCH_CPUCFG	0xa00	/* LoongArch CPU config registers */
-+#define NT_LOONGARCH_CSR	0xa01	/* LoongArch control and status registers */
-+#define NT_LOONGARCH_LSX	0xa02	/* LoongArch Loongson SIMD Extension registers */
-+#define NT_LOONGARCH_LASX	0xa03	/* LoongArch Loongson Advanced SIMD Extension registers */
-+#define NT_LOONGARCH_LBT	0xa04	/* LoongArch Loongson Binary Translation registers */
- 
- /* Note types with note name "GNU" */
- #define NT_GNU_PROPERTY_TYPE_0	5
-diff --git a/include/uapi/linux/kexec.h b/include/uapi/linux/kexec.h
-index fb7e2ef60825..981016e05cfa 100644
---- a/include/uapi/linux/kexec.h
-+++ b/include/uapi/linux/kexec.h
-@@ -43,6 +43,7 @@
- #define KEXEC_ARCH_MIPS    ( 8 << 16)
- #define KEXEC_ARCH_AARCH64 (183 << 16)
- #define KEXEC_ARCH_RISCV   (243 << 16)
-+#define KEXEC_ARCH_LOONGARCH	(258 << 16)
- 
- /* The artificial cap on the number of segments passed to kexec_load. */
- #define KEXEC_SEGMENT_MAX 16
-diff --git a/scripts/sorttable.c b/scripts/sorttable.c
-index d00504c5f530..fba40e99f354 100644
---- a/scripts/sorttable.c
-+++ b/scripts/sorttable.c
-@@ -60,6 +60,10 @@
- #define EM_RISCV	243
- #endif
- 
-+#ifndef EM_LOONGARCH
-+#define EM_LOONGARCH	258
-+#endif
-+
- static uint32_t (*r)(const uint32_t *);
- static uint16_t (*r2)(const uint16_t *);
- static uint64_t (*r8)(const uint64_t *);
-@@ -313,6 +317,7 @@ static int do_file(char const *const fname, void *addr)
- 	case EM_ARCOMPACT:
- 	case EM_ARCV2:
- 	case EM_ARM:
-+	case EM_LOONGARCH:
- 	case EM_MICROBLAZE:
- 	case EM_MIPS:
- 	case EM_XTENSA:
+You have not documented the new names either...
+
+> +	edp->enable_load[0] = 21800;	/* 1.2 V */
+> +	edp->enable_load[1] = 36000;	/* 1.2 V */
+> +	edp->disable_load[0] = 4;	/* 0.9 V */
+> +	edp->disable_load[1] = 4;	/* 10.9V */
+
+is that correct, 10.9V?
+
+>  	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(edp->supplies), edp->supplies);
+>  	if (ret)
+>  		return ret;
+> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> index b144ae1..c589231 100644
+> --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
+> +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+
+This is a different driver, so should be a different patch!
+
+> @@ -3130,6 +3130,8 @@ struct qmp_phy_cfg {
+>  	int num_resets;
+>  	/* regulators to be requested */
+>  	const char * const *vreg_list;
+> +	const unsigned int *vreg_enable_load;
+> +	const unsigned int *vreg_disable_load;
+>  	int num_vregs;
+>  
+>  	/* array of registers with different offsets */
+> @@ -3346,6 +3348,14 @@ static const char * const qmp_phy_vreg_l[] = {
+>  	"vdda-phy", "vdda-pll",
+>  };
+>  
+> +static const unsigned int qmp_phy_vreg_enable_load[] = {
+> +	21800, 36000
+> +};
+> +
+> +static const unsigned int qmp_phy_vreg_disable_load[] = {
+> +	4, 32
+> +};
+> +
+>  static const struct qmp_phy_cfg ipq8074_usb3phy_cfg = {
+>  	.type			= PHY_TYPE_USB3,
+>  	.nlanes			= 1,
+> @@ -4072,6 +4082,8 @@ static const struct qmp_phy_cfg sm8250_usb3phy_cfg = {
+>  	.reset_list		= msm8996_usb3phy_reset_l,
+>  	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
+>  	.vreg_list		= qmp_phy_vreg_l,
+> +	.vreg_enable_load	= qmp_phy_vreg_enable_load,
+> +	.vreg_disable_load	= qmp_phy_vreg_disable_load,
+>  	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
+>  	.regs			= qmp_v4_usb3phy_regs_layout,
+>  
+> @@ -4139,6 +4151,8 @@ static const struct qmp_phy_cfg sm8250_dpphy_cfg = {
+>  	.reset_list		= msm8996_usb3phy_reset_l,
+>  	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
+>  	.vreg_list		= qmp_phy_vreg_l,
+> +	.vreg_enable_load	= qmp_phy_vreg_enable_load,
+> +	.vreg_disable_load	= qmp_phy_vreg_disable_load,
+>  	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
+>  	.regs			= qmp_v4_usb3phy_regs_layout,
+>  
+> @@ -5015,6 +5029,11 @@ static int qcom_qmp_phy_com_init(struct qmp_phy *qphy)
+>  		goto err_reg_enable;
+>  	}
+>  
+> +	if (cfg->vreg_enable_load) {
+> +		for (i = cfg->num_vregs - 1; i >= 0; --i)
+> +			regulator_set_load(qmp->vregs[i].consumer, cfg->vreg_enable_load[i]);
+> +	}
+> +
+>  	for (i = 0; i < cfg->num_resets; i++) {
+>  		ret = reset_control_assert(qmp->resets[i]);
+>  		if (ret) {
+> @@ -5116,6 +5135,11 @@ static int qcom_qmp_phy_com_exit(struct qmp_phy *qphy)
+>  
+>  	clk_bulk_disable_unprepare(cfg->num_clks, qmp->clks);
+>  
+> +	if (cfg->vreg_disable_load[i]) {
+> +		for (i = cfg->num_vregs - 1; i >= 0; --i)
+> +			regulator_set_load(qmp->vregs[i].consumer, cfg->vreg_disable_load[i]);
+> +	}
+> +
+>  	regulator_bulk_disable(cfg->num_vregs, qmp->vregs);
+>  
+>  	mutex_unlock(&qmp->phy_mutex);
+> -- 
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+> a Linux Foundation Collaborative Project
+
 -- 
-2.27.0
-
+~Vinod
