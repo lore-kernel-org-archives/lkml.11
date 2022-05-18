@@ -2,51 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA15C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233733AbiERJDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46284 "EHLO
+        id S233759AbiERJEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233682AbiERJDQ (ORCPT
+        with ESMTP id S233672AbiERJE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:03:16 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CC1134E2B
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:03:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=feM3pQlldI2orQ7XOsuamYkeeXGQMyYBNuTPV9AR2Cg=; b=GSi+57VMWVhEdVyeYEjBmKvYWn
-        nC6eZ5J/bQRxlCMiIYiIhSifxz0TLyHFSbc1+golGU099FvOC8kGfKywY77rP6Rh/CDFytx9XNugL
-        N8nh6d/C2LdT8sl6MiDTk0wi4OnflkIoLV4J5BH2FTWGEhJ9gjssfS8UuG8QsLGL81eHpIPBb9v62
-        kkQ31zVcnW73Qnz2L1NfgG4T+N8iAlbFjw2FTr+EqSZqQ32Bs+Fj3DFhjy3R4lg0vOl8f+QejXHTy
-        ww4LPCZrDMfWuTzKoQ5I9IrHGOF7+igEed0cpI8PyLpdbwVX3hpyEjKntx46f/2EBLWvUxP0MN5pW
-        zzjzS/Hw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrFa2-000ixL-9R; Wed, 18 May 2022 09:02:54 +0000
-Date:   Wed, 18 May 2022 02:02:54 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Donghai Qiao <dqiao@redhat.com>
-Cc:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
-        peterz@infradead.org, heying24@huawei.com,
-        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
-        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com,
-        donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 01/11] smp: consolidate the structure definitions to
- smp.h
-Message-ID: <YoS2Pr0StLIrueCE@infradead.org>
-References: <20220517180326.997129-1-dqiao@redhat.com>
- <20220517180326.997129-2-dqiao@redhat.com>
+        Wed, 18 May 2022 05:04:26 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9C513CA32
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:04:24 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:1425:89ca:2e9e:5fc1])
+        by laurent.telenet-ops.be with bizsmtp
+        id Y94M2700H10zdRX0194MBv; Wed, 18 May 2022 11:04:22 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nrFbR-000oUd-5V; Wed, 18 May 2022 11:04:21 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nrFbQ-00BX4e-Jh; Wed, 18 May 2022 11:04:20 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] net: smc911x: Fix min() use in debug code
+Date:   Wed, 18 May 2022 11:04:19 +0200
+Message-Id: <ca032d4122fc70d3a56a524e5944a8eff9a329e8.1652864652.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517180326.997129-2-dqiao@redhat.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This still makes things that were private public for no good reason.
+If ENABLE_SMC_DEBUG_PKTS=1:
+
+    drivers/net/ethernet/smsc/smc911x.c: In function ‘smc911x_hardware_send_pkt’:
+    include/linux/minmax.h:20:28: error: comparison of distinct pointer types lacks a cast [-Werror]
+       20 |  (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+	  |                            ^~
+    drivers/net/ethernet/smsc/smc911x.c:483:17: note: in expansion of macro ‘min’
+      483 |  PRINT_PKT(buf, min(len, 64));
+
+Fix this by making the constant unsigned, to match the type of "len".
+While at it, replace the other missed ternary operator by min(), too.
+
+Convert the dummy PRINT_PKT() from a macro to a static inline function,
+to catch mistakes like this without having to enable debug options
+manually.
+
+Fixes: 5ff0348b7f755aac ("net: smc911x: replace ternary operator with min()")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/net/ethernet/smsc/smc911x.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+index 2694287770e6cd8e..24d66af797d465ca 100644
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ b/drivers/net/ethernet/smsc/smc911x.c
+@@ -140,7 +140,7 @@ static void PRINT_PKT(u_char *buf, int length)
+ 	pr_cont("\n");
+ }
+ #else
+-#define PRINT_PKT(x...)  do { } while (0)
++static inline void PRINT_PKT(u_char *buf, int length) { }
+ #endif
+ 
+ 
+@@ -430,7 +430,7 @@ static inline void	 smc911x_rcv(struct net_device *dev)
+ 		SMC_PULL_DATA(lp, data, pkt_len+2+3);
+ 
+ 		DBG(SMC_DEBUG_PKTS, dev, "Received packet\n");
+-		PRINT_PKT(data, ((pkt_len - 4) <= 64) ? pkt_len - 4 : 64);
++		PRINT_PKT(data, min(pkt_len - 4, 64U));
+ 		skb->protocol = eth_type_trans(skb, dev);
+ 		netif_rx(skb);
+ 		dev->stats.rx_packets++;
+@@ -480,7 +480,7 @@ static void smc911x_hardware_send_pkt(struct net_device *dev)
+ 	SMC_SET_TX_FIFO(lp, cmdB);
+ 
+ 	DBG(SMC_DEBUG_PKTS, dev, "Transmitted packet\n");
+-	PRINT_PKT(buf, min(len, 64));
++	PRINT_PKT(buf, min(len, 64U));
+ 
+ 	/* Send pkt via PIO or DMA */
+ #ifdef SMC_USE_DMA
+-- 
+2.25.1
+
