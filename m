@@ -2,205 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 116DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 472D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235175AbiERKrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 06:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47294 "EHLO
+        id S235244AbiERKr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 06:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235146AbiERKrD (ORCPT
+        with ESMTP id S235146AbiERKrx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 06:47:03 -0400
-Received: from outbound-smtp22.blacknight.com (outbound-smtp22.blacknight.com [81.17.249.190])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F43793B1
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 03:46:56 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp22.blacknight.com (Postfix) with ESMTPS id 1D73CBAA9D
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:46:55 +0100 (IST)
-Received: (qmail 18669 invoked from network); 18 May 2022 10:46:55 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 18 May 2022 10:46:54 -0000
-Date:   Wed, 18 May 2022 11:46:52 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/4] sched/numa: Apply imbalance limitations consistently
-Message-ID: <20220518104652.GO3441@techsingularity.net>
-References: <20220511143038.4620-1-mgorman@techsingularity.net>
- <20220511143038.4620-4-mgorman@techsingularity.net>
- <20220518093156.GD10117@worktop.programming.kicks-ass.net>
+        Wed, 18 May 2022 06:47:53 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D477E90CCC;
+        Wed, 18 May 2022 03:47:51 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IAKZxj013497;
+        Wed, 18 May 2022 10:47:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=a6QBUi0AHQA+C2I98hT+CKa0i+amRKFGVmLjhD5CvTY=;
+ b=S46wlk35wfN8YRtmjz8DIYMBPr+TXFlJTxn0TzLAaUV2IHvi1yM5z8QmlyQxP0WJU3ZC
+ h/mPBrV7Ws5NpOk0KbWkXyAsSOZeU5HUaYqM6O5+AZT596cesGN2eFa6hc/2sfmYjYjB
+ r8vIXhX0sOAK+EggUpfGgYcnhfv84YqPSiSv2nQC9hb1VeKwRGEZJdM1iv7IY4ap/IEn
+ UWAH5ZecGDUSSN1+o4HONOGlTInWYdR82QPqnjqsQKSOJyyd1DtqNnuvG4ss15C3kntt
+ Wu7eRyWhU6s4/L7ZePtEron+3ytFh0iqY+md5qStAXMIF+3GSCw5DkRscMypgusqHWKV VA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4xybruem-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 10:47:51 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IALWAW019839;
+        Wed, 18 May 2022 10:47:50 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4xybrue5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 10:47:50 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IAlabt017562;
+        Wed, 18 May 2022 10:47:48 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3g2429djxk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 10:47:48 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IAlj3P46793088
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 10:47:45 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 47DC8A405B;
+        Wed, 18 May 2022 10:47:45 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 862C7A4054;
+        Wed, 18 May 2022 10:47:44 +0000 (GMT)
+Received: from [9.171.22.150] (unknown [9.171.22.150])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 18 May 2022 10:47:44 +0000 (GMT)
+Message-ID: <93c07dce-a64a-fa1a-f70c-9db22ca53f68@linux.ibm.com>
+Date:   Wed, 18 May 2022 12:51:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20220518093156.GD10117@worktop.programming.kicks-ass.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v9 3/3] s390x: KVM: resetting the Topology-Change-Report
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
+        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
+        nrb@linux.ibm.com
+References: <20220506092403.47406-1-pmorel@linux.ibm.com>
+ <20220506092403.47406-4-pmorel@linux.ibm.com>
+ <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: gWM6D2RUNeri6TMwnWSmYV-0XgbZd999
+X-Proofpoint-ORIG-GUID: pR25ogm1zAWtbYYs3loDU5iJEGD5d6Nv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_03,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 mlxlogscore=999 clxscore=1015 bulkscore=0
+ lowpriorityscore=0 malwarescore=0 mlxscore=0 impostorscore=0 spamscore=0
+ phishscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205180059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 11:31:56AM +0200, Peter Zijlstra wrote:
-> On Wed, May 11, 2022 at 03:30:37PM +0100, Mel Gorman wrote:
+
+
+On 5/12/22 11:31, David Hildenbrand wrote:
+> On 06.05.22 11:24, Pierre Morel wrote:
+>> During a subsystem reset the Topology-Change-Report is cleared.
+>> Let's give userland the possibility to clear the MTCR in the case
+>> of a subsystem reset.
+>>
+>> To migrate the MTCR, let's give userland the possibility to
+>> query the MTCR state.
+>>
+>> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+>> ---
+>>   arch/s390/include/uapi/asm/kvm.h |  5 ++
+>>   arch/s390/kvm/kvm-s390.c         | 79 ++++++++++++++++++++++++++++++++
+>>   2 files changed, 84 insertions(+)
+>>
+>> diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
+>> index 7a6b14874d65..abdcf4069343 100644
+>> --- a/arch/s390/include/uapi/asm/kvm.h
+>> +++ b/arch/s390/include/uapi/asm/kvm.h
+>> @@ -74,6 +74,7 @@ struct kvm_s390_io_adapter_req {
+>>   #define KVM_S390_VM_CRYPTO		2
+>>   #define KVM_S390_VM_CPU_MODEL		3
+>>   #define KVM_S390_VM_MIGRATION		4
+>> +#define KVM_S390_VM_CPU_TOPOLOGY	5
+>>   
+>>   /* kvm attributes for mem_ctrl */
+>>   #define KVM_S390_VM_MEM_ENABLE_CMMA	0
+>> @@ -171,6 +172,10 @@ struct kvm_s390_vm_cpu_subfunc {
+>>   #define KVM_S390_VM_MIGRATION_START	1
+>>   #define KVM_S390_VM_MIGRATION_STATUS	2
+>>   
+>> +/* kvm attributes for cpu topology */
+>> +#define KVM_S390_VM_CPU_TOPO_MTR_CLEAR	0
+>> +#define KVM_S390_VM_CPU_TOPO_MTR_SET	1
+>> +
+>>   /* for KVM_GET_REGS and KVM_SET_REGS */
+>>   struct kvm_regs {
+>>   	/* general purpose regs for s390 */
+>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>> index c8bdce31464f..80a1244f0ead 100644
+>> --- a/arch/s390/kvm/kvm-s390.c
+>> +++ b/arch/s390/kvm/kvm-s390.c
+>> @@ -1731,6 +1731,76 @@ static void kvm_s390_sca_set_mtcr(struct kvm *kvm)
+>>   	ipte_unlock(kvm);
+>>   }
+>>   
+>> +/**
+>> + * kvm_s390_sca_clear_mtcr
+>> + * @kvm: guest KVM description
+>> + *
+>> + * Is only relevant if the topology facility is present,
+>> + * the caller should check KVM facility 11
+>> + *
+>> + * Updates the Multiprocessor Topology-Change-Report to signal
+>> + * the guest with a topology change.
+>> + */
+>> +static void kvm_s390_sca_clear_mtcr(struct kvm *kvm)
+>> +{
+>> +	struct bsca_block *sca = kvm->arch.sca; /* SCA version doesn't matter */
+>> +
+>> +	ipte_lock(kvm);
+>> +	sca->utility  &= ~SCA_UTILITY_MTCR;
 > 
-> > @@ -9108,6 +9108,24 @@ static inline bool allow_numa_imbalance(int running, int imb_numa_nr)
-> >  	return running <= imb_numa_nr;
-> >  }
-> >  
-> > +#define NUMA_IMBALANCE_MIN 2
-> > +
-> > +static inline long adjust_numa_imbalance(int imbalance,
-> > +				int dst_running, int imb_numa_nr)
-> > +{
-> > +	if (!allow_numa_imbalance(dst_running, imb_numa_nr))
-> > +		return imbalance;
-> > +
-> > +	/*
-> > +	 * Allow a small imbalance based on a simple pair of communicating
-> > +	 * tasks that remain local when the destination is lightly loaded.
-> > +	 */
-> > +	if (imbalance <= NUMA_IMBALANCE_MIN)
-> > +		return 0;
-> > +
-> > +	return imbalance;
-> > +}
 > 
-> > @@ -9334,24 +9356,6 @@ static inline void update_sd_lb_stats(struct lb_env *env, struct sd_lb_stats *sd
-> >  	}
-> >  }
-> >  
-> > -#define NUMA_IMBALANCE_MIN 2
-> > -
-> > -static inline long adjust_numa_imbalance(int imbalance,
-> > -				int dst_running, int imb_numa_nr)
-> > -{
-> > -	if (!allow_numa_imbalance(dst_running, imb_numa_nr))
-> > -		return imbalance;
-> > -
-> > -	/*
-> > -	 * Allow a small imbalance based on a simple pair of communicating
-> > -	 * tasks that remain local when the destination is lightly loaded.
-> > -	 */
-> > -	if (imbalance <= NUMA_IMBALANCE_MIN)
-> > -		return 0;
-> > -
-> > -	return imbalance;
-> > -}
+> One space too much.
 > 
-> If we're going to move that one up and remove the only other caller of
-> allow_numa_imbalance() we might as well move it up further still and
-> fold the functions.
+> sca->utility &= ~SCA_UTILITY_MTCR;
 > 
-> Hmm?
+>> +	ipte_unlock(kvm);
+>> +}
+>> +
+>> +static int kvm_s390_set_topology(struct kvm *kvm, struct kvm_device_attr *attr)
+>> +{
+>> +	if (!test_kvm_facility(kvm, 11))
+>> +		return -ENXIO;
+>> +
+>> +	switch (attr->attr) {
+>> +	case KVM_S390_VM_CPU_TOPO_MTR_SET:
+>> +		kvm_s390_sca_set_mtcr(kvm);
+>> +		break;
+>> +	case KVM_S390_VM_CPU_TOPO_MTR_CLEAR:
+>> +		kvm_s390_sca_clear_mtcr(kvm);
+>> +		break;
+>> +	}
+>> +	return 0;
+>> +}
+>> +
+>> +/**
+>> + * kvm_s390_sca_get_mtcr
+>> + * @kvm: guest KVM description
+>> + *
+>> + * Is only relevant if the topology facility is present,
+>> + * the caller should check KVM facility 11
+>> + *
+>> + * reports to QEMU the Multiprocessor Topology-Change-Report.
+>> + */
+>> +static int kvm_s390_sca_get_mtcr(struct kvm *kvm)
+>> +{
+>> +	struct bsca_block *sca = kvm->arch.sca; /* SCA version doesn't matter */
+>> +	int val;
+>> +
+>> +	ipte_lock(kvm);
+>> +	val = !!(sca->utility & SCA_UTILITY_MTCR);
+>> +	ipte_unlock(kvm);
+>> +
+>> +	return val;
+>> +}
+>> +
+>> +static int kvm_s390_get_topology(struct kvm *kvm, struct kvm_device_attr *attr)
+>> +{
+>> +	int mtcr;
+> 
+> I think we prefer something like u16 when copying to user space.
+
+I come back here.
+I think I prefer to keep the int.
+
+the u16 is more than the MTCR but the entire utility field, so what 
+should I do:
+
+rename the function to kvm_s390_get_sca_utility() ?
+and then should I modify the KVM_S390_VM_CPU_TOPOLOGY
+to KVM_S390_VM_SCA_UTILITY ?
+
+I do not like that, I do not think we should report/handle more 
+information than expected/needed.
+
+I can mask the MTCR bit and return a u16 with bit 0 (0x8000) set
+but I find this a little weird
+
+I admit an int is may be not optimal.
+logically I should report a bool but I do not like to report a bool 
+through the UAPI.
+
+The more I think about it the more I think an int is OK.
+Or in the case we want to spare memory space I can create a flag in a 
+u16 but it should theoretically be different than the firmware MTCR bit. 
+Could be 0x0001.
+But still, it is only to leave during the copy_to_user where the copy of 
+an int may be as good or better than the copy of a u16.
+
+So any more opinion on this?
+
+Regards,
+Pierre
+
+> 
+>> +
+>> +	if (!test_kvm_facility(kvm, 11))
+>> +		return -ENXIO;
+>> +
+>> +	mtcr = kvm_s390_sca_get_mtcr(kvm);
+>> +	if (copy_to_user((void __user *)attr->addr, &mtcr, sizeof(mtcr)))
+>> +		return -EFAULT;
+>> +
+>> +	return 0;
+>> +}
+> 
+> You should probably add documentation, and document that only the last
+> bit (0x1) has a meaning.
+> 
+> Apart from that LGTM.
 > 
 
-Yes, that would be fine and makes sense. I remember thinking that they
-should be folded and then failed to follow through.
-
-> (Although I do wonder about that 25% figure in the comment; that doesn't
-> seem to relate to any actual code anymore)
-> 
-
-You're right, by the end of the series it's completely inaccurate and
-currently it's not accurate if there are multiple LLCs per node. I
-adjusted the wording to "Allow a NUMA imbalance if busy CPUs is less
-than the maximum threshold. Above this threshold, individual tasks may
-be contending for both memory bandwidth and any shared HT resources."
-
-Diff between v1 and v2 is now below
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 602c05b22805..51fde61ec756 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -1536,8 +1536,31 @@ struct task_numa_env {
- 
- static unsigned long cpu_load(struct rq *rq);
- static unsigned long cpu_runnable(struct rq *rq);
--static inline long adjust_numa_imbalance(int imbalance,
--					int dst_running, int imb_numa_nr);
-+
-+#define NUMA_IMBALANCE_MIN 2
-+
-+static inline long
-+adjust_numa_imbalance(int imbalance, int dst_running, int imb_numa_nr)
-+{
-+	/*
-+	 * Allow a NUMA imbalance if busy CPUs is less than the maximum
-+	 * threshold. Above this threshold, individual tasks may be contending
-+	 * for both memory bandwidth and any shared HT resources.  This is an
-+	 * approximation as the number of running tasks may not be related to
-+	 * the number of busy CPUs due to sched_setaffinity.
-+	 */
-+	if (dst_running > imb_numa_nr)
-+		return imbalance;
-+
-+	/*
-+	 * Allow a small imbalance based on a simple pair of communicating
-+	 * tasks that remain local when the destination is lightly loaded.
-+	 */
-+	if (imbalance <= NUMA_IMBALANCE_MIN)
-+		return 0;
-+
-+	return imbalance;
-+}
- 
- static inline enum
- numa_type numa_classify(unsigned int imbalance_pct,
-@@ -9098,34 +9121,6 @@ static bool update_pick_idlest(struct sched_group *idlest,
- 	return true;
- }
- 
--/*
-- * Allow a NUMA imbalance if busy CPUs is less than 25% of the domain.
-- * This is an approximation as the number of running tasks may not be
-- * related to the number of busy CPUs due to sched_setaffinity.
-- */
--static inline bool allow_numa_imbalance(int running, int imb_numa_nr)
--{
--	return running <= imb_numa_nr;
--}
--
--#define NUMA_IMBALANCE_MIN 2
--
--static inline long adjust_numa_imbalance(int imbalance,
--				int dst_running, int imb_numa_nr)
--{
--	if (!allow_numa_imbalance(dst_running, imb_numa_nr))
--		return imbalance;
--
--	/*
--	 * Allow a small imbalance based on a simple pair of communicating
--	 * tasks that remain local when the destination is lightly loaded.
--	 */
--	if (imbalance <= NUMA_IMBALANCE_MIN)
--		return 0;
--
--	return imbalance;
--}
--
- /*
-  * find_idlest_group() finds and returns the least busy CPU group within the
-  * domain.
-@@ -9448,14 +9443,15 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
- 			 * idle cpus.
- 			 */
- 			env->migration_type = migrate_task;
--			env->imbalance = max_t(long, 0, (local->idle_cpus -
--						 busiest->idle_cpus));
-+			env->imbalance = max_t(long, 0,
-+					       (local->idle_cpus - busiest->idle_cpus));
- 		}
- 
- 		/* Consider allowing a small imbalance between NUMA groups */
- 		if (env->sd->flags & SD_NUMA) {
- 			env->imbalance = adjust_numa_imbalance(env->imbalance,
--				local->sum_nr_running + 1, env->sd->imb_numa_nr);
-+							       local->sum_nr_running + 1,
-+							       env->sd->imb_numa_nr);
- 		}
- 
- 		/* Number of tasks to move to restore balance */
+-- 
+Pierre Morel
+IBM Lab Boeblingen
