@@ -2,101 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12930C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DBDC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbiERHja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
+        id S232362AbiERHkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232338AbiERHj1 (ORCPT
+        with ESMTP id S232348AbiERHjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:39:27 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71419115CA2;
-        Wed, 18 May 2022 00:39:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652859566; x=1684395566;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Daoi5XaegiVVBVBvMlk587j4GbG+Rc+fXkmJuyrCp4o=;
-  b=fCsHPXhVLyoPbIhrG4/t3grb6BoiU9rJ0iI+ky6AFlffyoqhq3JGFfui
-   fI+AQnYojhtn0HSKrjTmANc5JbAsSmmpeASgbgGmgo9+Uu8PepcLYXeE2
-   WAes+8h31NqO2AbRTgt2idCjaIsNHBC+7+hUa7LO0bfv1qd2jduIAXPaT
-   lIYx8DSwFzYeK1vnuw5gr1rkjVbKokzOVWsHE19hKdWUujl0/4cU0UAG1
-   GFjszjVgDSjYS8GdKC/s7DRTx7/6h92+sp5yOLXJ3EQbbha3H/Vx0AyZ2
-   c61F+FAci441ye2aJnIQz32AdwEuQSGuEEcgab/t68M97OFWrfRPFvIBn
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="270358808"
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="270358808"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 00:39:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="574939464"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.90])
-  by fmsmga007.fm.intel.com with ESMTP; 18 May 2022 00:39:12 -0700
-From:   tien.sung.ang@intel.com
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com
-Cc:     linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dinh Nguyen <dinh.nguyen@intel.com>,
-        Ang Tien Sung <tien.sung.ang@intel.com>
-Subject: [PATCH] fpga: altera-cvp: allow interrupt to continue next time
-Date:   Wed, 18 May 2022 15:38:44 +0800
-Message-Id: <20220518073844.2713722-1-tien.sung.ang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 18 May 2022 03:39:54 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9C0106A47;
+        Wed, 18 May 2022 00:39:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=P5UqBAHM0WQnE0g9GWkUw6qeNdkfJBe6hJymXR6R360=; b=zP2u3zx4Nqx82fjyBoNHLz6AOY
+        fHpXQJ24sWyjJtbHiAfCUHkKqWlu+/N5+S0QbL3dxp8min4ZnwWiMdlFcvfoW1l3rHL6lvSU8JyPu
+        tI3TV57NNnj4Bq/keqxZOTeeF9+9ZA4sWjS7BtUPWhT9DC+xFJLcsYPpuaji0p2/Oxwir7jvsuX/U
+        y9dpkmCJOjq2ER5XK5/faIeJxiQU9bZ+mnUsplo/ChCMm+unL1KWLS94bBjJDlzxjHqeD1l6dxzdJ
+        VudQgLy9jb8GOsrg3Fazw16gK5iNYGZFgwlNxo8CYGkPD+FAuZ8uZSZp9jKMhuX8XVLWsUSQokF10
+        K34xQl0g==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nrEHV-00084D-Sx; Wed, 18 May 2022 07:39:41 +0000
+Date:   Wed, 18 May 2022 00:39:41 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Matthew Rosato <mjrosato@linux.ibm.com>,
+        alex.williamson@redhat.com, cohuck@redhat.com,
+        borntraeger@linux.ibm.com, jjherne@linux.ibm.com,
+        akrowiak@linux.ibm.com, pasic@linux.ibm.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com, hch@infradead.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] vfio: remove VFIO_GROUP_NOTIFY_SET_KVM
+Message-ID: <YoSivTU7nivO9FMD@infradead.org>
+References: <20220517180851.166538-1-mjrosato@linux.ibm.com>
+ <20220517180851.166538-2-mjrosato@linux.ibm.com>
+ <20220517185643.GY1343366@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517185643.GY1343366@nvidia.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinh.nguyen@intel.com>
+>  	if (device->ops->flags & VFIO_DEVICE_NEEDS_KVM)
+>  	{
 
-CFG_READY signal/bit may time-out due to firmware not responding
-within the given time-out. This time varies due to numerous
-factors like size of bitstream and others.
-This time-out error does not impact the result of the CvP
-previous transactions. The CvP driver shall then, respond with
-EAGAIN instead Time out error.
+Nit: this is not the normal brace placement.
 
-Signed-off-by: Dinh Nguyen <dinh.nguyen@intel.com>
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
----
- drivers/fpga/altera-cvp.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+But what is you diff against anyway?  The one Matthew sent did away
+with the VFIO_DEVICE_NEEDS_KVM flags, which does the wrong thing for
+zpci, so it can't be that..
 
-diff --git a/drivers/fpga/altera-cvp.c b/drivers/fpga/altera-cvp.c
-index 4ffb9da537d8..d74ff63c61e8 100644
---- a/drivers/fpga/altera-cvp.c
-+++ b/drivers/fpga/altera-cvp.c
-@@ -309,10 +309,22 @@ static int altera_cvp_teardown(struct fpga_manager *mgr,
- 	/* STEP 15 - poll CVP_CONFIG_READY bit for 0 with 10us timeout */
- 	ret = altera_cvp_wait_status(conf, VSE_CVP_STATUS_CFG_RDY, 0,
- 				     conf->priv->poll_time_us);
--	if (ret)
-+	if (ret) {
- 		dev_err(&mgr->dev, "CFG_RDY == 0 timeout\n");
-+		goto error_path;
-+	}
- 
- 	return ret;
-+
-+error_path:
-+	/* reset CVP_MODE and HIP_CLK_SEL bit */
-+	altera_read_config_dword(conf, VSE_CVP_MODE_CTRL, &val);
-+	val &= ~VSE_CVP_MODE_CTRL_HIP_CLK_SEL;
-+	val &= ~VSE_CVP_MODE_CTRL_CVP_MODE;
-+	altera_write_config_dword(conf, VSE_CVP_MODE_CTRL, val);
-+
-+	return -EAGAIN;
-+
- }
- 
- static int altera_cvp_write_init(struct fpga_manager *mgr,
--- 
-2.25.1
-
+Also if we want to do major code movement, it really needs to go into
+a separate patch or patches, as the combinations of all these moves
+with actual code changes is almost unreadable.
