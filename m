@@ -2,90 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C254AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1141FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239642AbiERPyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        id S239661AbiERPyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239726AbiERPy1 (ORCPT
+        with ESMTP id S239648AbiERPyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:54:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F511CC9BB;
-        Wed, 18 May 2022 08:54:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8CA3B82162;
-        Wed, 18 May 2022 15:54:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6101AC385A5;
-        Wed, 18 May 2022 15:54:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652889260;
-        bh=prv+Ye/H1mstl526vAK0JQj51CiNh01NdvehTiX0OrY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KL54s7+jyxQ1hiSfnf2oJBJo9yCTsB/6fsZAVfj4vEhnGh3Xrgk2KolU/7mHh+Wmm
-         wEVJaX0REY2vi8KE/n1rATu92AKEJJEN0/F0NexNz5CeB1T725/pJ1LprH2RzTD1D5
-         6LLRQ2Ss3tbygJUEFd9Vl5GJllQwWvEnie3/YBRHIoru49Jdc7kJ5n/89E8AvSwUmZ
-         rg2248jMnVt4UoY3CefYw0HMoS8O57IdQoN6otO2a/ET1KYfh8MnmbAP4WUv/W0MIa
-         CEMaVF/6fYZiNSUJgTPVTi9ROseGQSvBa8a5wRsmhoQxRt7A7dIvpDGkfc1L7U4SQD
-         jThtgEZl2X5PA==
-Date:   Wed, 18 May 2022 11:03:45 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Lin Yujun <linyujun809@huawei.com>, mingo@redhat.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, tglx@linutronix.de, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        johnny.chenyi@huawei.com, chenjiahao16@huawei.com,
-        chenlifu@huawei.com, lizhengyu3@huawei.com, liaochang1@huawei.com,
-        wangzhu9@huawei.com, xuyihang@huawei.com, chris.zjh@huawei.com,
-        zouyipeng@huawei.com
-Subject: Re: [PATCH -next] x86/events:Use struct_size() helper in kzalloc()
-Message-ID: <20220518160345.GA43938@embeddedor>
-References: <20220518131626.109123-1-linyujun809@huawei.com>
- <20220518134920.GA8361@embeddedor>
- <YoT6tHWbBOchi29i@hirez.programming.kicks-ass.net>
+        Wed, 18 May 2022 11:54:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 037911CC99B
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:54:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652889272;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o+41K9LoDFefNHlN38q9XLtLo2Wd5hJ3TPpp2R0V7lQ=;
+        b=JXg58zPVw3w3ZLwnDu5Y/GmODu9STWakypD80xaOnzkqf9297WDFzxEcO8oe5c5xgNY5EM
+        fCShNGoNffJYFtefXTeb1Y7bMc0s+DvOa04w1OmuJ/rL1Q5p4ceFwTjMcYE+q3byTHOUS5
+        YyaSB84XG0SLO6sgRLlafQJKtNJY+J4=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-554-tCL5tJxSME6aEYmUispyhg-1; Wed, 18 May 2022 11:54:31 -0400
+X-MC-Unique: tCL5tJxSME6aEYmUispyhg-1
+Received: by mail-qk1-f200.google.com with SMTP id o18-20020a05620a2a1200b006a0cc3d8463so1883472qkp.4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:54:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=o+41K9LoDFefNHlN38q9XLtLo2Wd5hJ3TPpp2R0V7lQ=;
+        b=gHjWEaoVzZVAiGKv8uj7qwZcQKJUI6v2uADE3yEyzqcaWBiVAIelDejdewVK24pjUH
+         Q3AGVj/1SE8FFvTfZEcaKBUI1G9DMq6vyw64mxlkec5UV+3iEMbid0iKaATrZBctgf/9
+         HiOn0qEot85S27tjwg0LdIhGR7hg3paegS6AyYC84IRKI/40xBNR6ls4LojlHJd8apo/
+         HQxtplIOIM04otvhcB3BUU8nAMFXeDRbkdd+aTRCx0TojruIC9HbTwcEE/4gJJna9kcu
+         nDcQWMaoG2tel8+oJObWPr0RV0dNEqfkAwY2LerycdVymbpfEyViSRlVzpJbxaip/MCt
+         2c/A==
+X-Gm-Message-State: AOAM530L/3x3y9vKgzDNQz8++vWYvURepkhpIGRCwWbRYO/XN9ipUynK
+        47a3Z6TFfN2lI/VA/Z/HKfZt+Sqy/5vPLXbC1aYT6ghAE8jlMBWQtSEZaZuUlD24aOdG6eIoKkZ
+        nlRWwjGvvGGlcu4kaV0TZhos2
+X-Received: by 2002:a37:d245:0:b0:69b:f153:9c38 with SMTP id f66-20020a37d245000000b0069bf1539c38mr40657qkj.692.1652889271128;
+        Wed, 18 May 2022 08:54:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyzJmSYB+nUCTtpA5X7u3VijTdR+HPQ+dvCcudSZ2ylQNwAuYjLtHQEOx0PAErPgsRNeXt/Mw==
+X-Received: by 2002:a37:d245:0:b0:69b:f153:9c38 with SMTP id f66-20020a37d245000000b0069bf1539c38mr40644qkj.692.1652889270798;
+        Wed, 18 May 2022 08:54:30 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id h4-20020a376c04000000b0069fc13ce1d4sm1722361qkc.5.2022.05.18.08.54.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 08:54:30 -0700 (PDT)
+Message-ID: <55870b80-7297-f3f9-967c-d23c2b39fea4@redhat.com>
+Date:   Wed, 18 May 2022 11:54:27 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoT6tHWbBOchi29i@hirez.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCHv2 net] bonding: fix missed rcu protection
+Content-Language: en-US
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     andy@greyhouse.net, davem@davemloft.net, dsahern@gmail.com,
+        eric.dumazet@gmail.com, j.vosburgh@gmail.com, kuba@kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
+        vfalico@gmail.com, vladimir.oltean@nxp.com,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+References: <20220517082312.805824-1-liuhangbin@gmail.com>
+ <a4ed2a83d38a58b0984edb519382c867204b7ea2.1652804144.git.jtoppins@redhat.com>
+ <YoRXjeCR2bbr5qzF@Laptop-X1>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <YoRXjeCR2bbr5qzF@Laptop-X1>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 03:55:00PM +0200, Peter Zijlstra wrote:
-> On Wed, May 18, 2022 at 08:49:20AM -0500, Gustavo A. R. Silva wrote:
+On 5/17/22 22:18, Hangbin Liu wrote:
+> On Tue, May 17, 2022 at 01:32:58PM -0400, Jonathan Toppins wrote:
+>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>> ---
+>> RESEND, list still didn't receive my last version
+>>
+>> The diffstat is slightly larger but IMO a slightly more readable version.
+>> When I was reading v2 I found myself jumping around.
 > 
-> > > Signed-off-by: Lin Yujun <linyujun809@huawei.com>
-> > > ---
-> > >  arch/x86/events/rapl.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-> > > index 77e3a47af5ad..c7e79f0ac04f 100644
-> > > --- a/arch/x86/events/rapl.c
-> > > +++ b/arch/x86/events/rapl.c
-> > > @@ -685,7 +685,7 @@ static int __init init_rapl_pmus(void)
-> > >  	int maxdie = topology_max_packages() * topology_max_die_per_package();
-> > >  	size_t size;
-> > >  
-> > > -	size = sizeof(*rapl_pmus) + maxdie * sizeof(struct rapl_pmu *);
-> > > +	size = struct_size(rapl_pmus, pmus, maxdie);
-> > >  	rapl_pmus = kzalloc(size, GFP_KERNEL);
-> > 
-> > It seems that in this case, size could be entirely replaced by
-> > struct_size().
+> Hi Jon,
 > 
-> Except every time I look at struct_size() I go: WTF does that do; while
-> the code as-is is crystal clear, no de-obfucstaion required.
+> Thanks for the commit. But..
+> 
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> index 38e152548126..f9d27b63c454 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -5591,23 +5591,32 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+>>   	const struct ethtool_ops *ops;
+>>   	struct net_device *real_dev;
+>>   	struct phy_device *phydev;
+>> +	int ret = 0;
+>>   
+>> +	rcu_read_lock();
+>>   	real_dev = bond_option_active_slave_get_rcu(bond);
+>> -	if (real_dev) {
+>> -		ops = real_dev->ethtool_ops;
+>> -		phydev = real_dev->phydev;
+>> -
+>> -		if (phy_has_tsinfo(phydev)) {
+>> -			return phy_ts_info(phydev, info);
+>> -		} else if (ops->get_ts_info) {
+>> -			return ops->get_ts_info(real_dev, info);
+>> -		}
+>> -	}
+>> +	if (real_dev)
+>> +		dev_hold(real_dev);
+>> +	rcu_read_unlock();
+>> +
+>> +	if (!real_dev)
+>> +		goto software;
+>>   
+>> +	ops = real_dev->ethtool_ops;
+>> +	phydev = real_dev->phydev;
+>> +
+>> +	if (phy_has_tsinfo(phydev))
+>> +		ret = phy_ts_info(phydev, info);
+>> +	else if (ops->get_ts_info)
+>> +		ret = ops->get_ts_info(real_dev, info);
+> 	else {
+> 		dev_put(real_dev);
+> 		goto software;
+> 	}
+> 
+> Here we need another check and goto software if !phy_has_tsinfo() and
+> no ops->get_ts_info. With this change we also have 2 goto and dev_put().
 
-Naming it flex_struct_size() would be more informative?
+Ah yes. I cannot think of a way to make this simpler. The patch below 
+looks good.
 
---
-Gustavo
+> 
+>> +
+>> +	dev_put(real_dev);
+>> +	return ret;
+>> +
+>> +software:
+>>   	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
+>>   				SOF_TIMESTAMPING_SOFTWARE;
+>>   	info->phc_index = -1;
+>> -
+>>   	return 0;
+>>   }
+> 
+> As Jakub remind, dev_hold() and dev_put() can take NULL now. So how about
+> this new patch:
+> 
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 38e152548126..b5c5196e03ee 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -5591,16 +5591,23 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+>   	const struct ethtool_ops *ops;
+>   	struct net_device *real_dev;
+>   	struct phy_device *phydev;
+> +	int ret = 0;
+>   
+> +	rcu_read_lock();
+>   	real_dev = bond_option_active_slave_get_rcu(bond);
+> +	dev_hold(real_dev);
+> +	rcu_read_unlock();
+> +
+>   	if (real_dev) {
+>   		ops = real_dev->ethtool_ops;
+>   		phydev = real_dev->phydev;
+>   
+>   		if (phy_has_tsinfo(phydev)) {
+> -			return phy_ts_info(phydev, info);
+> +			ret = phy_ts_info(phydev, info);
+> +			goto out;
+>   		} else if (ops->get_ts_info) {
+> -			return ops->get_ts_info(real_dev, info);
+> +			ret = ops->get_ts_info(real_dev, info);
+> +			goto out;
+>   		}
+>   	}
+>   
+> @@ -5608,7 +5615,9 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+>   				SOF_TIMESTAMPING_SOFTWARE;
+>   	info->phc_index = -1;
+>   
+> -	return 0;
+> +out:
+> +	dev_put(real_dev);
+> +	return ret;
+>   }
+> 
+> Thanks
+> Hangbin
+> 
 
