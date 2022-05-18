@@ -2,85 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED60FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238990AbiEROuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48470 "EHLO
+        id S239077AbiEROv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 10:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238964AbiEROuZ (ORCPT
+        with ESMTP id S239071AbiEROvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:50:25 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE6E1966AB;
-        Wed, 18 May 2022 07:50:14 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id k126so1287924wme.2;
-        Wed, 18 May 2022 07:50:14 -0700 (PDT)
+        Wed, 18 May 2022 10:51:16 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3A8140DA
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:51:15 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id u23so4114517lfc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:51:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XxzsoVj48zOzOROlVdTIcCV40gZjRv+E/wRXittuHe4=;
-        b=M8keaq77DHaZACZ89t0WJ5aJXHNxjXr8DfdKgw5prDV/AJ6dGjCZ99LpbuxDJeGbwr
-         cT/5BIvXDpBeql6kqW5R9O26KrsjW31fGmHmGeSbfLuDsE3xbqltfrIApWXWyktbhF0t
-         QFMUtXIHl6AGxoOCIPHWJf/140lXzY+sQmLHE+OZwO2dXGeTOuBm2WuhCaQd6qUFCVqI
-         7U9JkBaJ8rAD5zUTpNsl+9hkl7EmF3KXXbbBgnygeV+eJwLG84sV5hZCJlbtg+dvMEqj
-         g3h7vtwny7vizcOKmaHLbykvDmaF4SZP+0nLE/iaD12cRqX6ZO3YTMy4b4zEqmrspws7
-         SOZA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=q2kVv7m8CBuZD1Spxccpokl1oQNMGRMweenLQqgX3NA=;
+        b=WSD5MDaGIePij6AavQX6fQeRh9N4oOjCJInF9gHOOt45EwT8ryHJ8ib0FXBTb0dR8C
+         qrgBXXutdSRgC+VztsX9MDEBexeOcTIjJoEUkgTX/SQ1gvltiPxa7T9h8p9iCZbG8a1p
+         cT+GU6GuhC21a4aJpyte/wHfhwlGcKWfy6I6dzbi6O8xC7zq3+6X8WDbZdBok45GbLNV
+         1pnlPnXUoJSeK3xr2mEDkJeJoc6fHum3jCHmw6PXfKdnf9YHI6+bfugt7gb0Jm1hTu5T
+         +GWJ1azbimpBoST1MQF0gPnZ+WrGROfnHAoKnQJktpVpoqeWdLGwFvBPaHIV4zWe5D7M
+         fuZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=XxzsoVj48zOzOROlVdTIcCV40gZjRv+E/wRXittuHe4=;
-        b=1G1aEn4G77hVeUr9k2QVA05Xo51WOwT1UTjDSbxwBeh72H+i5Q1ktIoSxkE+lviIZz
-         K9ZTmeCc96vaOq2u1ANobmpt5npVYzYPKVIvy+HIImZHCv7jOrfdC9QCpC3cZdg9ApYO
-         vnik1uDxQcI1j31Mg4KJls+gf+yP9E3EoU9cX+HisYVqa5U0bCDFR7CHj7sVzuHf7vvN
-         gMDI1C7lM2M0k2cH4IleWOtY+tk8bKGA6zWezGMPhEdZAd3DGF/8w87d2DQgRDe4EoIj
-         O/9o/5Nw3ltIN22BLe7hNcwukSF74xS0CVcu0/XoJNFBtNo2mUs/7/6kGukurZWlDrWD
-         0kTg==
-X-Gm-Message-State: AOAM5331rU1BEOuYsMXiSsD1tfJHHi7K/OC1UsiW7o/VaIIzButdr9CJ
-        IIxHdPYEMg8+oN12XryrZ2W+LUuMsfw=
-X-Google-Smtp-Source: ABdhPJyPeirV+O6ePckfRFQyYkdtF0Nqd0PjqudQTpn0z7oAoNaiuVbY8isEuFSg3lXQNXBgsV9vxg==
-X-Received: by 2002:a1c:7414:0:b0:394:1d5d:27f2 with SMTP id p20-20020a1c7414000000b003941d5d27f2mr293580wmc.37.1652885410670;
-        Wed, 18 May 2022 07:50:10 -0700 (PDT)
-Received: from DESKTOP-URN0IMF.localdomain (cpc78047-stav21-2-0-cust145.17-3.cable.virginm.net. [80.195.223.146])
-        by smtp.gmail.com with ESMTPSA id h15-20020adfa4cf000000b0020c5253d8d3sm2510356wrb.31.2022.05.18.07.50.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 07:50:09 -0700 (PDT)
-From:   Oliver Ford <ojford@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ojford@gmail.com, kernel-janitors@vger.kernel.org
-Subject: [PATCH] fs: inotify: Fix typo in inotify comment
-Date:   Wed, 18 May 2022 15:49:57 +0100
-Message-Id: <20220518144957.30761-1-ojford@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        bh=q2kVv7m8CBuZD1Spxccpokl1oQNMGRMweenLQqgX3NA=;
+        b=5W17/y2HWVS3DrqnYGBqrEL0xmNykrTFlMalm6Ag7ZhH2r5jznCOqJmfJrgCaVfnas
+         fTB42L4qCSdcwL4zYiBLRLpDNCoxiu3OALCh//BbYGAwyUELx2ypzOzhWjFCSfwANfu+
+         wmHRO9nLjlV3QrneB0ldClRDXenmP103hXTL/M6oN6Mz3WhP0T3GJ9aRif0Zg/lCyuFi
+         oDgcCfq0UBZmXTBCWbYUjvouO6Ht8vGxEpdFTpoP/aJygrOmZ6ZnhH2QO2i/BwlIhefM
+         Znz9yuJxILZqWob1fbfrvlXtGcDoElYobh+XUKnWQUISi1Ez2BJiopwKbKTVycO5LDSG
+         m8Xw==
+X-Gm-Message-State: AOAM532yl2rK1N+Krd5a8s+ibYAqJgJqo01cM0+NC53LLaBfdRZ3Qrcl
+        IwI1+fAWi73/5uFaukIP5Jf27w==
+X-Google-Smtp-Source: ABdhPJyDjM6ZjqmxjxZktytCmCb28biT+t612+tqSzXgR/FnJIzxhkFtch4kb/cOn/WT2k9tx583jA==
+X-Received: by 2002:a19:494b:0:b0:476:5917:b67 with SMTP id l11-20020a19494b000000b0047659170b67mr19048509lfj.452.1652885473701;
+        Wed, 18 May 2022 07:51:13 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id x11-20020ac25dcb000000b00477c0365b20sm59449lfq.188.2022.05.18.07.51.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 07:51:13 -0700 (PDT)
+Message-ID: <cdad0dbf-2712-5710-8bea-612f3de08036@linaro.org>
+Date:   Wed, 18 May 2022 16:51:12 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 1/6] dt-bindings: regulator: qcom,spmi-regulator:
+ Convert to dtschema
+Content-Language: en-US
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        lgirdwood@gmail.com, broonie@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Devicetree List <devicetree@vger.kernel.org>
+References: <20220517205341.536587-1-robimarko@gmail.com>
+ <2905b9ae-df66-eb12-60fd-306ea2d3d626@linaro.org>
+ <CAOX2RU4dH-iUMY8yebEEgdJRqm37AHBMH135YkNsnDJMPZCbPg@mail.gmail.com>
+ <bc13e57f-9701-80c9-8c7a-e491fbcfd181@linaro.org>
+ <CAOX2RU6sW5x-Ufbgz5pxWRnOMj=jrTXqHuba5USKgBnfc+KeJA@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAOX2RU6sW5x-Ufbgz5pxWRnOMj=jrTXqHuba5USKgBnfc+KeJA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct spelling in comment.
+On 18/05/2022 16:00, Robert Marko wrote:
+> 
+> Yeah, that was my intention with not having interrupts as the generic property.
+> I will remove them as generic property and only allow them per
+> compatible, cause I tested
+> adding interrupts to a PMIC DTS that does not allow them and make
+> dtbs_check will
+> warn about those being unevaluated.
 
-Signed-off-by: Oliver Ford <ojford@gmail.com>
----
- fs/notify/inotify/inotify_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks, apologies for the confusion.
 
-diff --git a/fs/notify/inotify/inotify_user.c b/fs/notify/inotify/inotify_user.c
-index 54583f62dc44..bdd8436c4a7a 100644
---- a/fs/notify/inotify/inotify_user.c
-+++ b/fs/notify/inotify/inotify_user.c
-@@ -121,7 +121,7 @@ static inline u32 inotify_mask_to_arg(__u32 mask)
- 		       IN_Q_OVERFLOW);
- }
- 
--/* intofiy userspace file descriptor functions */
-+/* inotify userspace file descriptor functions */
- static __poll_t inotify_poll(struct file *file, poll_table *wait)
- {
- 	struct fsnotify_group *group = file->private_data;
--- 
-2.35.1
 
+Best regards,
+Krzysztof
