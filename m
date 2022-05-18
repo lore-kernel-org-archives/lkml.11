@@ -2,129 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5097CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D55C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238982AbiERPAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
+        id S239003AbiERPB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238862AbiERPAk (ORCPT
+        with ESMTP id S239000AbiERPAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:00:40 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9031A0AFE;
-        Wed, 18 May 2022 08:00:39 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IEgr6V017549;
-        Wed, 18 May 2022 15:00:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=xW1COiFlwf0PL00R4GkXtkJN3M/L1hWKr4zjOB9Yp9M=;
- b=pPZD/yxVLcy5VnDo5Jgh0tk0ovOcQbNqZ4LsoKnycLW3vfseSiMBUPwbrdCh3XYkBa3S
- DgyFVqTWd5g0nrN7qw+VokS94G2YSTFqMANSmq4yIjq1wEGkkD8sZLyluuqf7Ue2Xuqe
- kl/D3aV8yyOWgd3vWln/+e2hE53zPIedtzRhfg2lEgfHFpFKZh2LY1i0XqGLs4ob+dA/
- O1lZb3Q649ODOCRETCAXcpb58oExMIG07klJQSGFLiRy+BUse1iyqnDV0953MQyCAFpS
- PMU+PZ2Aw5ieGsVXdW+8SymNrZTZJVCbzoUDPNxTcZf19HekuYV1phtJXQKnAnxjtPnf Ng== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g52t70e0r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 15:00:21 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IEhUDl019538;
-        Wed, 18 May 2022 15:00:19 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g52t70dwk-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 15:00:19 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IEbXS0011511;
-        Wed, 18 May 2022 14:37:53 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma02wdc.us.ibm.com with ESMTP id 3g2429w3t2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 14:37:53 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IEbrW721561800
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 14:37:53 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 172B3124058;
-        Wed, 18 May 2022 14:37:53 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7D0B0124052;
-        Wed, 18 May 2022 14:37:49 +0000 (GMT)
-Received: from [9.211.37.97] (unknown [9.211.37.97])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 18 May 2022 14:37:49 +0000 (GMT)
-Message-ID: <2e51b388-48d0-4689-07f4-65f607dbce59@linux.ibm.com>
-Date:   Wed, 18 May 2022 10:37:48 -0400
+        Wed, 18 May 2022 11:00:48 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F031CB60;
+        Wed, 18 May 2022 08:00:45 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-edf3b6b0f2so3009081fac.9;
+        Wed, 18 May 2022 08:00:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tNv/PU3tpajgz+UZuLUwR95zZoInh5OzZr+nVYDtcCU=;
+        b=ds+RP170LBJB6cBzfH0le5srnFUAOViYRgbiOh3iZsH5Z2wlGebTpIiEQH4lN8DF4y
+         L5/EMgytiho8x0PpzBRt8PxzKNU/1FZxJBpTV/iFy7Ximyq50hgVkLgcQCYDwz2aAKJ1
+         02JEdwpcQwtv146TI6hwK1eyCwgCCBVWsV5mN4g3CrXt1X/Ml7fEirilZw+w0liChCHK
+         MpNS2zEuwhBPM7/vvRQUIaqyQblTd11RDOOOackCNTp8JMNDWx7SmqkCODkZwksVisWD
+         drhvQ7XNrQMwLIWhwsl6duY5AUr1FCQtZpq4/k3UUGbZ8bm8xVM6BMhRHq7Fk+IWCPj+
+         /m+Q==
+X-Gm-Message-State: AOAM531OzdF52Lw/S+4ePIgy+QuJMyKsyPoO++DkOwjA8UhB10vvmYa0
+        riOoajlY4aGMdJZxefPpkg==
+X-Google-Smtp-Source: ABdhPJyRe4CU5O9j0kpuzpFKOPgxid6P7iM041ZOnMA/NGI/Vn3rvf2JlToxgf4DKzpy0RyfOOjBMQ==
+X-Received: by 2002:a05:6870:ab0b:b0:ee:1ce2:82a0 with SMTP id gu11-20020a056870ab0b00b000ee1ce282a0mr283434oab.94.1652886044776;
+        Wed, 18 May 2022 08:00:44 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r39-20020a05687108a700b000f1bc45ba21sm999317oaq.14.2022.05.18.08.00.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 08:00:44 -0700 (PDT)
+Received: (nullmailer pid 3306455 invoked by uid 1000);
+        Wed, 18 May 2022 15:00:43 -0000
+Date:   Wed, 18 May 2022 10:00:43 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     matthew.gerlach@linux.intel.com
+Cc:     dinguyen@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: soc: add bindings for Intel HPS Copy
+ Engine
+Message-ID: <20220518150043.GA3302100-robh@kernel.org>
+References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
+ <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
+ <Ynq52E93mcTXcw9H@robh.at.kernel.org>
+ <alpine.DEB.2.22.394.2205101452530.885823@rhweight-WRK1>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/1] vfio: remove VFIO_GROUP_NOTIFY_SET_KVM
-Content-Language: en-US
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     jgg@nvidia.com, alex.williamson@redhat.com
-Cc:     cohuck@redhat.com, borntraeger@linux.ibm.com,
-        jjherne@linux.ibm.com, akrowiak@linux.ibm.com, pasic@linux.ibm.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com, hch@infradead.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220517180851.166538-1-mjrosato@linux.ibm.com>
- <20220517180851.166538-2-mjrosato@linux.ibm.com>
-In-Reply-To: <20220517180851.166538-2-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: XQrM_ApcMDR7ZDvn9Jz1fR-tTzTwQMqx
-X-Proofpoint-ORIG-GUID: OXJa_RJ2BtWJbsJAxvOQSjAKl28F0lCB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_05,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- lowpriorityscore=0 clxscore=1015 priorityscore=1501 spamscore=0
- suspectscore=0 mlxscore=0 malwarescore=0 phishscore=0 bulkscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205180087
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2205101452530.885823@rhweight-WRK1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/22 2:08 PM, Matthew Rosato wrote:
-> Rather than relying on a notifier for associating the KVM with
-> the group, let's assume that the association has already been
-> made prior to device_open.  The first time a device is opened
-> associate the group KVM with the device.
+On Tue, May 10, 2022 at 03:23:23PM -0700, matthew.gerlach@linux.intel.com wrote:
 > 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> 
+> On Tue, 10 May 2022, Rob Herring wrote:
+> 
+> > On Sun, May 08, 2022 at 07:26:22AM -0700, matthew.gerlach@linux.intel.com wrote:
+> > > From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > 
+> > > Add device tree bindings documentation for the Intel Hard
+> > > Processor System (HPS) Copy Engine.
+> > > 
+> > > Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > ---
+> > > v4:
+> > >   - move from soc to soc/intel/
+> > > 
+> > > v3:
+> > >   - remove unused label
+> > >   - move from misc to soc
+> > >   - remove 0x from #address-cells/#size-cells values
+> > >   - change hps_cp_eng@0 to dma-controller@0
+> > >   - remote inaccurate 'items:' tag
+> > > ---
+> > >  .../soc/intel/intel,hps-copy-engine.yaml      | 51 +++++++++++++++++++
+> > >  1 file changed, 51 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+> > > new file mode 100644
+> > > index 000000000000..8634865015cd
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+> > > @@ -0,0 +1,51 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > +# Copyright (C) 2022, Intel Corporation
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: "http://devicetree.org/schemas/soc/intel/intel,hps-copy-engine.yaml#"
+> > > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> > > +
+> > > +title: Intel HPS Copy Engine
+> > > +
+> > > +maintainers:
+> > > +  - Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > +
+> > > +description: |
+> > > +  The Intel Hard Processor System (HPS) Copy Engine is an IP block used to copy
+> > > +  a bootable image from host memory to HPS DDR.  Additionally, there is a
+> > > +  register the HPS can use to indicate the state of booting the copied image as
+> > > +  well as a keep-a-live indication to the host.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    const: intel,hps-copy-engine
+> > > +
+> > > +  '#dma-cells':
+> > > +    const: 1
+> > > +
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - reg
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    bus@80000000 {
+> > > +        compatible = "simple-bus";
+> > > +        reg = <0x80000000 0x60000000>,
+> > > +              <0xf9000000 0x00100000>;
+> > > +        reg-names = "axi_h2f", "axi_h2f_lw";
+> > 
+> > A simple-bus doesn't have regs because it is simple. If you have
+> > registers, then you need a specific compatible. You can have
+> > 'simple-bus' as a fallback if the bus is completely setup by firmware
+> > and the OS never needs to configure/manage it.
+> 
+> The hardware I'm trying to describe above is the connection from the HPS/SOC
+> to the FPGA.  There are two ranges of physical addresses with this
+> connection referred to as the "HPS to FPGA bridge" and the "Lightweight HPS
+> to FPGA bridge".  Device tree subnodes of bus@80000000 are IP blocks in the
+> FPGA.  The IP blocks may be connected to one or both of the
+> physical address ranges.  Since these physical address ranges are not registers
+> of the bus@80000000, the field names, reg and reg-names, are probably wrong.
+> Should the reg field above really be ranges?
 
-...
+Yes, sound likes it should be.
 
-> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-> index cfcff7764403..c5d421eda275 100644
-> --- a/drivers/vfio/vfio.c
-> +++ b/drivers/vfio/vfio.c
-> @@ -10,6 +10,7 @@
->    * Author: Tom Lyon, pugs@cisco.com
->    */
->   
-> +#include "linux/kvm_host.h"
->   #include <linux/cdev.h>
->   #include <linux/compat.h>
->   #include <linux/device.h>
-> @@ -1083,6 +1084,13 @@ static struct file *vfio_device_open(struct vfio_device *device)
->   
->   	mutex_lock(&device->dev_set->lock);
->   	device->open_count++;
-> +	down_write(&device->group->group_rwsem);
-> +	if (device->open_count == 1 && device->group->kvm) {
-> +		device->kvm = device->group->kvm;
-> +		kvm_get_kvm(device->kvm);
-
-Did some more compile testing, since vfio has no hard kvm dependency, 
-kvm_get_kvm and kvm_put_kvm are an issue if KVM is a module while vfio 
-is built-in...
+Rob
