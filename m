@@ -2,75 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EED3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C739C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238160AbiERNpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
+        id S238280AbiERNqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238078AbiERNpp (ORCPT
+        with ESMTP id S238227AbiERNqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:45:45 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE80C7B
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 06:45:44 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24I5xw9k005166;
-        Wed, 18 May 2022 08:45:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=/v+nztOH8pMiCldPuv2onTZr9sRDaO7ZE4i23WJ4K5o=;
- b=jJqGPkOUdeC/L4ZyYUnC6X9sEc6RTnXH/TCZUrzLpo10aLccXsSaQ5Gh7PWNyyTk9an4
- mLFfI6Vm4S1nGIDnnCnH+5UfcP+yZ0M+OXu35f4oFe99XWmmdA2m1TYIO9Wx4oc48EyB
- E+PwooMR8Mw9YVvGtUcQdWFGmlqCFOio1JhIexHAnTWUQh8EC5H4uIW/xePkvXF3R2UE
- nJJW++M+txPsTxeHfikhosSeWl01oawvw19rL8GgnKy+2+eUVrLrA17lRGIVoyoYTWBl
- mSBZVGDyaPatwAoYd1iH4vZ3o4JuSn+J0G5JKkT21y6DDAg9BvWVP7kNuIlACTq+NUGC Rg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3g28updkk6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 18 May 2022 08:45:17 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 14:45:15 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Wed, 18 May 2022 14:45:15 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 94983B16;
-        Wed, 18 May 2022 13:45:15 +0000 (UTC)
-Date:   Wed, 18 May 2022 13:45:15 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-CC:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <broonie@kernel.org>, <lgirdwood@gmail.com>
-Subject: Re: [PATCH -next] ASoC: wm2000: fix missing clk_disable_unprepare()
- on error in wm2000_anc_transition()
-Message-ID: <20220518134515.GJ38351@ediswmail.ad.cirrus.com>
-References: <20220514091053.686416-1-yangyingliang@huawei.com>
+        Wed, 18 May 2022 09:46:15 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CEB1660A0;
+        Wed, 18 May 2022 06:46:13 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id p26so3092091eds.5;
+        Wed, 18 May 2022 06:46:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=emRjXefipDOzrwdl8ti4tobydfrsmYJDX4jGfv6NVQ0=;
+        b=pIHdu6fIeKCNQmUl5G4GpNW9g6jdq0neC47gphBI7RbN6tDJkRsGWSJN4ghLXVdfDm
+         5TMUze5gPB2RFYUZaFjmDzWkR6qoZxfSSUs2vtGQGujllsd2i70kdsDNdI9uK1zKffR+
+         0Wgxh20ZP1WoX0V6tvTXvS70XhbCqhJEXuKp6I6kMTwXnaqfP2a19GVEnxk487rIBKrp
+         ciz1ml30BB9zUq9Us3VLPWe5tZNRI19qmgVaDCUCCUBaafQ9oR0DCFxyu0d+rptskH2r
+         TD3k21IgN0HEYs9tpIx/vOXUsSfqnRqJvHobRs3t90NwnoPa4aq36Fy1rLlJQNzdo1VP
+         x+UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=emRjXefipDOzrwdl8ti4tobydfrsmYJDX4jGfv6NVQ0=;
+        b=Nf1YCn/v1P5ryMYFEirgnfs8NvtjM8ugRGcZ2qeDXo9nAMFH/OLvH3iCB4MNdDQhOY
+         CuP/UJmeq/I7wIeBVYNxVoA2xB5gbJDFouR5UGjPLlNTu3VgLcwH6lUhwGHpVKzVIMxM
+         Njg2483p7n3porTr4xrmWfv5jqGU0rT9eC6n9bVGXGiamFjLqV/PPhNxI3RZ+tDw4uzf
+         6lXq2BD1yvBPeGIFuzIgNhGmiZOOAu4EQhUiIE2OqrnGwkrfuvE1cZGHcWT+CXRuo8ZP
+         6U41reCl/rXMIG7miUuPU1dX15jHouqHR3kCA/vWAzDGfuZVyiVdyKm4Pu1o9/as93FJ
+         YNcQ==
+X-Gm-Message-State: AOAM533148pjJPwLeaOgKds2voUGhUU1/JixTDL4jMKV78HlbMJP220V
+        LLWum9CLeaXhCSNwHeuKMDqoFCRrvSY=
+X-Google-Smtp-Source: ABdhPJyyhd52GApSXiohLZHMyt262d3u6jppghaYnQsCjdUgo1MQlHiw7S6Qqjm/uv8D1EfEf5H//A==
+X-Received: by 2002:a05:6402:26ca:b0:427:c181:b0ed with SMTP id x10-20020a05640226ca00b00427c181b0edmr24670287edd.400.1652881571541;
+        Wed, 18 May 2022 06:46:11 -0700 (PDT)
+Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
+        by smtp.gmail.com with ESMTPSA id s27-20020a170906221b00b006f3ef214e73sm954490ejs.217.2022.05.18.06.46.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 06:46:10 -0700 (PDT)
+From:   Uros Bizjak <ubizjak@gmail.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Uros Bizjak <ubizjak@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: [PATCH] KVM: VMX: Use try_cmpxchg64 in pi_try_set_control
+Date:   Wed, 18 May 2022 15:45:50 +0200
+Message-Id: <20220518134550.2358-1-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220514091053.686416-1-yangyingliang@huawei.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-GUID: F0-9IuOAChH6CS56puNXd2LLsGwWYKkN
-X-Proofpoint-ORIG-GUID: F0-9IuOAChH6CS56puNXd2LLsGwWYKkN
-X-Proofpoint-Spam-Reason: safe
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 05:10:53PM +0800, Yang Yingliang wrote:
-> Fix the missing clk_disable_unprepare() before return
-> from wm2000_anc_transition() in the error handling case.
-> 
-> Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
+Use try_cmpxchg64 instead of cmpxchg64 (*ptr, old, new) != old
+in pi_try_set_control.  cmpxchg returns success in ZF flag, so this
+change saves a compare after cmpxchg (and related move instruction
+in front of cmpxchg):
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+  b9:   88 44 24 60             mov    %al,0x60(%rsp)
+  bd:   48 89 c8                mov    %rcx,%rax
+  c0:   c6 44 24 62 f2          movb   $0xf2,0x62(%rsp)
+  c5:   48 8b 74 24 60          mov    0x60(%rsp),%rsi
+  ca:   f0 49 0f b1 34 24       lock cmpxchg %rsi,(%r12)
+  d0:   48 39 c1                cmp    %rax,%rcx
+  d3:   75 cf                   jne    a4 <vmx_vcpu_pi_load+0xa4>
 
-Thanks,
-Charles
+patched:
+
+  c1:   88 54 24 60             mov    %dl,0x60(%rsp)
+  c5:   c6 44 24 62 f2          movb   $0xf2,0x62(%rsp)
+  ca:   48 8b 54 24 60          mov    0x60(%rsp),%rdx
+  cf:   f0 48 0f b1 13          lock cmpxchg %rdx,(%rbx)
+  d4:   75 d5                   jne    ab <vmx_vcpu_pi_load+0xab>
+
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+---
+Patch requires commits 0aa7be05d83cc584da0782405e8007e351dfb6cc
+and c2df0a6af177b6c06a859806a876f92b072dc624 from tip.git
+---
+ arch/x86/kvm/vmx/posted_intr.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
+index 3834bb30ce54..4d41d5994a26 100644
+--- a/arch/x86/kvm/vmx/posted_intr.c
++++ b/arch/x86/kvm/vmx/posted_intr.c
+@@ -34,7 +34,7 @@ static inline struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
+ 	return &(to_vmx(vcpu)->pi_desc);
+ }
+ 
+-static int pi_try_set_control(struct pi_desc *pi_desc, u64 old, u64 new)
++static int pi_try_set_control(struct pi_desc *pi_desc, u64 *pold, u64 new)
+ {
+ 	/*
+ 	 * PID.ON can be set at any time by a different vCPU or by hardware,
+@@ -42,7 +42,7 @@ static int pi_try_set_control(struct pi_desc *pi_desc, u64 old, u64 new)
+ 	 * update must be retried with a fresh snapshot an ON change causes
+ 	 * the cmpxchg to fail.
+ 	 */
+-	if (cmpxchg64(&pi_desc->control, old, new) != old)
++	if (!try_cmpxchg64(&pi_desc->control, pold, new))
+ 		return -EBUSY;
+ 
+ 	return 0;
+@@ -111,7 +111,7 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
+ 		 * descriptor was modified on "put" to use the wakeup vector.
+ 		 */
+ 		new.nv = POSTED_INTR_VECTOR;
+-	} while (pi_try_set_control(pi_desc, old.control, new.control));
++	} while (pi_try_set_control(pi_desc, &old.control, new.control));
+ 
+ 	local_irq_restore(flags);
+ 
+@@ -161,7 +161,7 @@ static void pi_enable_wakeup_handler(struct kvm_vcpu *vcpu)
+ 
+ 		/* set 'NV' to 'wakeup vector' */
+ 		new.nv = POSTED_INTR_WAKEUP_VECTOR;
+-	} while (pi_try_set_control(pi_desc, old.control, new.control));
++	} while (pi_try_set_control(pi_desc, &old.control, new.control));
+ 
+ 	/*
+ 	 * Send a wakeup IPI to this CPU if an interrupt may have been posted
+-- 
+2.35.1
+
