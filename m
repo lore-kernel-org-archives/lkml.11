@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237014AbiERMet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        id S237253AbiERMew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236972AbiERMdX (ORCPT
+        with ESMTP id S237096AbiERMdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:33:23 -0400
+        Wed, 18 May 2022 08:33:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFA612817E;
-        Wed, 18 May 2022 05:29:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B16C170642;
+        Wed, 18 May 2022 05:29:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 297CFB81FB6;
-        Wed, 18 May 2022 12:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65670C385A5;
-        Wed, 18 May 2022 12:29:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD149B81F43;
+        Wed, 18 May 2022 12:29:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24E6EC385A5;
+        Wed, 18 May 2022 12:29:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876944;
-        bh=8om2/fhiG8TXweqUp72Yv+T68LoNLXS196P2AH48xG8=;
+        s=k20201202; t=1652876985;
+        bh=Bn5iKQ4JY22ozgqp12txf8GMnQ2eSsU/MfN2HFCD7Ew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zd4NkuCygGR1hIAOxTX9Opv0MZ70e0GmXaf7h3UY1z2rTFrKPEtQu4zqmP0M9zZoe
-         X/ir8JftiHLVrGFDrK4ErRVlzmTGqZPIPgAx2uPmtIr1tPFqxlq0IxGfTWXP9gJxtD
-         Grr0YkN9O5x4POB5ORwP2dGmgfaV0ussHZq0ZILx0jvnfVCYyFpaLn58viapnbXofB
-         wPF21/D/9ZrgIzV+ULFmOr7Y4h4FuzBbFYG/d1uz7G2bDphHXqBTmRKefpEKX3tHgU
-         d5y492bKY7qHXfsOuZo9CuNGWu8hg7IMLPIShljNlt7XuRQCzvSGxjDDu8anfmgVqO
-         X0oZ7BrXQaSAQ==
+        b=rkoFEp3sxZT2ywPXL5myDInYItF3QPkfOPF4O4oZhVWbJo9teaVVKq8M5EQ33b0Vn
+         FsDQfeSEFKjriYb1cr4/tq2k2Siq7ebONAWCjD/1jB/o6cgPJE3ffQFw1XRsJ1C+14
+         AliGXew3bo9c1OOOjExkMhaGee0sA6L/YiyV5VQ+V1N+Z7X5XEvNGAoZa5z6BenvLh
+         l0VoHZ9fMT3zdjQuJsWysSBSoUeQBj4mmGQoHLN4k8eXFMvgiz5Rn8aj/o1LCfEk5O
+         2FpmFP/aTwUjaQ90toDk4eqsgLyaQBZr3KUYOHFc60tPAzQeWNJXHU5hwkiXvaE32A
+         TSURlUO4voqmQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, jgg@ziepe.ca,
-        arnd@arndb.de, netdev@vger.kernel.org, linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 06/13] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
-Date:   Wed, 18 May 2022 08:28:37 -0400
-Message-Id: <20220518122844.343220-6-sashal@kernel.org>
+Cc:     Grant Grundler <grundler@chromium.org>,
+        Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 6/6] net: atlantic: verify hw_head_ lies within TX buffer ring
+Date:   Wed, 18 May 2022 08:29:29 -0400
+Message-Id: <20220518122929.343615-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
-References: <20220518122844.343220-1-sashal@kernel.org>
+In-Reply-To: <20220518122929.343615-1-sashal@kernel.org>
+References: <20220518122929.343615-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,45 +56,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 51ca86b4c9c7c75f5630fa0dbe5f8f0bd98e3c3e ]
+[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
 
-Fix the missing pci_disable_device() before return
-from tulip_init_one() in the error handling case.
+Bounds check hw_head index provided by NIC to verify it lies
+within the TX buffer ring.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220506094250.3630615-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Aashay Shringarpure <aashay@google.com>
+Reported-by: Yi Chou <yich@google.com>
+Reported-by: Shervin Oloumi <enlightened@google.com>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
-index e7b0d7de40fd..c22d945a79fd 100644
---- a/drivers/net/ethernet/dec/tulip/tulip_core.c
-+++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
-@@ -1396,8 +1396,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	/* alloc_etherdev ensures aligned and zeroed private structures */
- 	dev = alloc_etherdev (sizeof (*tp));
--	if (!dev)
-+	if (!dev) {
-+		pci_disable_device(pdev);
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index 2ad3fa6316ce..cb5954eeb409 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -674,6 +674,13 @@ static int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
+ 		err = -ENXIO;
+ 		goto err_exit;
+ 	}
++
++	/* Validate that the new hw_head_ is reasonable. */
++	if (hw_head_ >= ring->size) {
++		err = -ENXIO;
++		goto err_exit;
 +	}
- 
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
-@@ -1774,6 +1776,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- err_out_free_netdev:
- 	free_netdev (dev);
-+	pci_disable_device(pdev);
- 	return -ENODEV;
- }
++
+ 	ring->hw_head = hw_head_;
+ 	err = aq_hw_err_from_flags(self);
  
 -- 
 2.35.1
