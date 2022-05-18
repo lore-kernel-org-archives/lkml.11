@@ -2,102 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4994C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B72C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241513AbiERSmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40594 "EHLO
+        id S241527AbiERSnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241498AbiERSmU (ORCPT
+        with ESMTP id S241498AbiERSm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:42:20 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A960E195BEA
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:42:18 -0700 (PDT)
-Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IHeIYV031831;
-        Wed, 18 May 2022 18:41:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pps0720; bh=JkdAJp6/nFA0fMkh73Q6AHAhW3P+czhEF0OIA1t5HCg=;
- b=Qg2AhnHrd3KBRi0DM+Bb3C5HbTo+NMkyfHHtmg++jWG9ug+/mnlUut0DeIcgWTWtI//2
- HI6OjGG/DUrRPlT32fATsiDynZSEP+I3w0v6l2juXvPIUAPpeADtplpUS+ptlXAG3tFI
- d+t4fePOEIgxlDSGArqM8HgF2nYdi2nUvcC2nqJrCqM0ypC9/4655ZTL2f9YPksE/jl9
- Pk3xAGjSmX8pnhrRgS8KClB67yDFV7hx7UFCHMQdsGNdGQJ/6nj1PWHFv/lgNkyS2s5D
- Y/H7skS6+Wn3n5hPvTuDy+i9B1Wm4vBh0lEx/9u2lMfxgj8ZWjloLXNVjOBm7tCsCmxE fQ== 
-Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com [15.241.140.73])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3g52ynjr3w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 18:41:29 +0000
-Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net [16.208.49.245])
-        by g4t3427.houston.hpe.com (Postfix) with ESMTP id A42CD57;
-        Wed, 18 May 2022 18:41:28 +0000 (UTC)
-Received: from swahl-home.5wahls.com (unknown [10.207.216.251])
-        by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id CAE565B;
-        Wed, 18 May 2022 18:41:25 +0000 (UTC)
-Date:   Wed, 18 May 2022 13:41:25 -0500
-From:   Steve Wahl <steve.wahl@hpe.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ning Sun <ning.sun@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Steve Wahl <steve.wahl@hpe.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/7] iommu/vt-d: Make intel-iommu.h private
-Message-ID: <YoU91f2ncSkJP27T@swahl-home.5wahls.com>
-References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
+        Wed, 18 May 2022 14:42:59 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A09561EEE3D
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:42:58 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id l14so2918659pjk.2
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:42:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=x+g2rI3f9oK4A/om4OOZJvYEp73ECKayN/tR0aYxCMw=;
+        b=Q80G3RnbtpvRJA63+uR6stq540RtUi4AagkeurUmvxepwPIQRsgp8o8jj08wIst1hG
+         Is278rav3tXRlFrJPNWNIYazK7OwAx1d+JizqaI/U52yB9Qm0owpfsRqfmufiglC9cYQ
+         Gj+rx6J7czR8BwSWk8T0JAG/gJb91ETDVGKSIqRGgT6GMFXKTXl2AIrwYI8jdY5kQxPQ
+         A+q/cpwzEV7Jx8xNAVgc3fp3WC3JuxaWaLvdOTtuCcuhkRDHQDnUKUHjVFaFj0CNVOgB
+         o5Q/HMMhKHjghY8zWmQ4LGaaWIf72CR/NmoIUb1DjrSbnc+HKod2Go3FGxUpy3YUEK//
+         zBXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=x+g2rI3f9oK4A/om4OOZJvYEp73ECKayN/tR0aYxCMw=;
+        b=LlGZLIT8yPFPxOxKXAjJHDmlCuGPdZe8SlE3HTkhhhMEdQugAnE+0VOLZ5DDdjBwF2
+         fYzs08n9tV/uIb/f/zzFZOnndwOPs5sZ8Rx88rfjWKJQwlnfXibvsBL+kAf7XNw/5jE+
+         Mdc4oFH9+j1B+7kU+EfKYJzDY++v7NFruvvXmn3aNGJoNn6GKQ6ZQ9qJy+ReK+r7TLqF
+         hY7MQ0wGDtkb9shoIMidtzrVWQeFCnDjgiNDlW0JAlXtbrunf22sp+KyBjBRLGSRQnbd
+         2UMeUwcFVTuWr2CaiZmBIY/s7q4ZG52PhxMYmkWHIVzjSufxuJEFpJNVrAMjRG+CFVVk
+         E1og==
+X-Gm-Message-State: AOAM531Q7tnBm7pgobqzioABgvSDlPUs9lhs+2r5ePvD8WHiUEnOPuG6
+        17YVlJyFy/8CjiHZ0oBRzJ5JWQ==
+X-Google-Smtp-Source: ABdhPJyRrDGCtxh9RJlRWdSxB1pWuIzfZFdraxOUaO2zUZx3ip0YIZGag6vXuR9V8JKYHtmC6BxhKg==
+X-Received: by 2002:a17:902:e745:b0:15e:c057:d452 with SMTP id p5-20020a170902e74500b0015ec057d452mr896003plf.69.1652899377950;
+        Wed, 18 May 2022 11:42:57 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id b19-20020a17090a991300b001df4a0e9357sm1957705pjp.12.2022.05.18.11.42.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 11:42:57 -0700 (PDT)
+Date:   Wed, 18 May 2022 18:42:54 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chenyi Qiang <chenyi.qiang@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 1/3] KVM: X86: Save&restore the triple fault request
+Message-ID: <YoU+LgHbeiYNbDJ8@google.com>
+References: <20220421072958.16375-1-chenyi.qiang@intel.com>
+ <20220421072958.16375-2-chenyi.qiang@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
-X-Proofpoint-GUID: eeDz9k6Fyio9EZLTXEQmcX-SiAr354e5
-X-Proofpoint-ORIG-GUID: eeDz9k6Fyio9EZLTXEQmcX-SiAr354e5
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- bulkscore=0 mlxlogscore=648 lowpriorityscore=0 spamscore=0 adultscore=0
- mlxscore=0 impostorscore=0 clxscore=1011 suspectscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205180108
+In-Reply-To: <20220421072958.16375-2-chenyi.qiang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 14, 2022 at 09:43:15AM +0800, Lu Baolu wrote:
-> Hi folks,
-> 
-> The include/linux/intel-iommu.h should be private to the Intel IOMMU
-> driver. Other drivers or components should interact with the IOMMU
-> drivers through the kAPIs provided by the iommu core.
-> 
-> This series cleanups all includes of intel-iommu.h outside of the Intel
-> IOMMU driver and move this header from include/linux to
-> drivers/iommu/intel/.
-> 
-> No functional changes intended. Please help to review and suggest.
+Nits on the shortlog...
 
-I went through and examined the changes as well.  These changes make the
-robots complaint against my patch go away, which is great by me!
+Please don't capitalize x86, spell out "and" instead of using an ampersand (though
+I think it can be omitted entirely), and since there are plenty of chars left, call
+out that this is adding/extending KVM's ABI, e.g. it's not obvious from the shortlog
+where/when the save+restore happens.
 
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+  KVM: x86: Extend KVM_{G,S}ET_VCPU_EVENTS to support pending triple fault
 
--- 
-Steve Wahl, Hewlett Packard Enterprise
+On Thu, Apr 21, 2022, Chenyi Qiang wrote:
+> For the triple fault sythesized by KVM, e.g. the RSM path or
+> nested_vmx_abort(), if KVM exits to userspace before the request is
+> serviced, userspace could migrate the VM and lose the triple fault.
+> 
+> Add the support to save and restore the triple fault event from
+> userspace. Introduce a new event KVM_VCPUEVENT_VALID_TRIPLE_FAULT in
+> get/set_vcpu_events to track the triple fault request.
+> 
+> Note that in the set_vcpu_events path, userspace is able to set/clear
+> the triple fault request through triple_fault_pending field.
+> 
+> Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
+> ---
+>  Documentation/virt/kvm/api.rst  |  7 +++++++
+>  arch/x86/include/uapi/asm/kvm.h |  4 +++-
+>  arch/x86/kvm/x86.c              | 15 +++++++++++++--
+>  3 files changed, 23 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> index 72183ae628f7..e09ce3cb49c5 100644
+> --- a/Documentation/virt/kvm/api.rst
+> +++ b/Documentation/virt/kvm/api.rst
+> @@ -1150,6 +1150,9 @@ The following bits are defined in the flags field:
+>    fields contain a valid state. This bit will be set whenever
+>    KVM_CAP_EXCEPTION_PAYLOAD is enabled.
+>  
+> +- KVM_VCPUEVENT_VALID_TRIPLE_FAULT may be set to signal that the
+> +  triple_fault_pending field contains a valid state.
+> +
+>  ARM64:
+>  ^^^^^^
+>  
+> @@ -1245,6 +1248,10 @@ can be set in the flags field to signal that the
+>  exception_has_payload, exception_payload, and exception.pending fields
+>  contain a valid state and shall be written into the VCPU.
+>  
+> +KVM_VCPUEVENT_VALID_TRIPLE_FAULT can be set in flags field to signal that
+> +the triple_fault_pending field contains a valid state and shall be written
+> +into the VCPU.
+> +
+>  ARM64:
+>  ^^^^^^
+>  
+> diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
+> index 21614807a2cb..fd083f6337af 100644
+> --- a/arch/x86/include/uapi/asm/kvm.h
+> +++ b/arch/x86/include/uapi/asm/kvm.h
+> @@ -325,6 +325,7 @@ struct kvm_reinject_control {
+>  #define KVM_VCPUEVENT_VALID_SHADOW	0x00000004
+>  #define KVM_VCPUEVENT_VALID_SMM		0x00000008
+>  #define KVM_VCPUEVENT_VALID_PAYLOAD	0x00000010
+> +#define KVM_VCPUEVENT_VALID_TRIPLE_FAULT	0x00000020
+>  
+>  /* Interrupt shadow states */
+>  #define KVM_X86_SHADOW_INT_MOV_SS	0x01
+> @@ -359,7 +360,8 @@ struct kvm_vcpu_events {
+>  		__u8 smm_inside_nmi;
+>  		__u8 latched_init;
+>  	} smi;
+> -	__u8 reserved[27];
+> +	__u8 triple_fault_pending;
+
+What about writing this as
+
+	struct {
+		__u8 pending;
+	} triple_fault;
+
+to match the other events?  It's kinda silly, but I find it easier to visually
+identify the various events that are handled by kvm_vcpu_events.
+
+> +	__u8 reserved[26];
+>  	__u8 exception_has_payload;
+>  	__u64 exception_payload;
+>  };
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index ab336f7c82e4..c8b9b0bc42aa 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -4911,9 +4911,12 @@ static void kvm_vcpu_ioctl_x86_get_vcpu_events(struct kvm_vcpu *vcpu,
+>  		!!(vcpu->arch.hflags & HF_SMM_INSIDE_NMI_MASK);
+>  	events->smi.latched_init = kvm_lapic_latched_init(vcpu);
+>  
+> +	events->triple_fault_pending = kvm_test_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+> +
+>  	events->flags = (KVM_VCPUEVENT_VALID_NMI_PENDING
+>  			 | KVM_VCPUEVENT_VALID_SHADOW
+> -			 | KVM_VCPUEVENT_VALID_SMM);
+> +			 | KVM_VCPUEVENT_VALID_SMM
+> +			 | KVM_VCPUEVENT_VALID_TRIPLE_FAULT);
+
+Does setting KVM_VCPUEVENT_VALID_TRIPLE_FAULT need to be guarded with a capability,
+a la KVM_CAP_EXCEPTION_PAYLOAD, so that migrating from a new KVM to an old KVM doesn't
+fail?  Seems rather pointless since the VM is likely hosed either way...
+
+>  	if (vcpu->kvm->arch.exception_payload_enabled)
+>  		events->flags |= KVM_VCPUEVENT_VALID_PAYLOAD;
