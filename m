@@ -2,145 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D496BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240554AbiERQvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47946 "EHLO
+        id S240542AbiERQy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240551AbiERQvp (ORCPT
+        with ESMTP id S240464AbiERQyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:51:45 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCEF9E9F2;
-        Wed, 18 May 2022 09:51:44 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IGO5D7019721;
-        Wed, 18 May 2022 16:51:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=kZmuOQk3nB0k0QQUHtuVyv6VXcOPkjCgoM1V8L0+TvY=;
- b=PrksPn0W3hOiWQTtNYA6q3tuCzNvWy5D0jfh5fXMu7Lw3RdQI5p8BxL5W8Xq7isn0B5O
- 8xWPymE9J0ZU81db+pokLEG6ZLRSoep41GmDsvD0eGHw3DVdzLt7ukj+YKMRlhh5EqJ7
- 7hGjOrhH8mE3oc1OzuJB+M5URxLWSt/GwA2fuS/jRbnYCFtn5zxYFG9PHlZd3XsZxhqH
- qS1Pp7hQOTuyXXqv6RGQ3v1rd3dbI2RbATgPVTDksouB2k2zotnr0q3I1pR9X7PNxHwg
- 43QUrXe9LcfbDE2lpDJCQfbd/ShyPIPRGxROmU2tVMFJWrYY1+47+otEO4sEnJF8xUXq xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrrxt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 16:51:43 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IGSPfm008382;
-        Wed, 18 May 2022 16:51:43 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrrx9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 16:51:43 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IGXFdl022179;
-        Wed, 18 May 2022 16:51:41 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3g2428vv5n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 16:51:41 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IGpbSS46858650
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 16:51:38 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E476542041;
-        Wed, 18 May 2022 16:51:37 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 30A314203F;
-        Wed, 18 May 2022 16:51:37 +0000 (GMT)
-Received: from [9.171.6.188] (unknown [9.171.6.188])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 18 May 2022 16:51:37 +0000 (GMT)
-Message-ID: <5de8d8c2-100d-f935-667c-1090ee31277d@linux.ibm.com>
-Date:   Wed, 18 May 2022 18:55:26 +0200
+        Wed, 18 May 2022 12:54:25 -0400
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2DC201339;
+        Wed, 18 May 2022 09:54:24 -0700 (PDT)
+Received: by mail-oo1-f45.google.com with SMTP id q73-20020a4a334c000000b0035eb110dd0dso516595ooq.10;
+        Wed, 18 May 2022 09:54:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LtkWw6fSMloB5/PDUQGj9Fdz71VUuBNVm04fOD0zRWU=;
+        b=xe+cpXTDIB/gVIQhZlok/rYgQg8PjyTp/BewG14AMf1EoVX+t3dL2fBC9MfNeKqYm/
+         lZItObf+r686lf4JSbKQhTtlY+Y4Cc2YbU2VEI2wiy2OB5Luf4GzpKsE2kziUx1mjSU3
+         5bvBDe/OXTQLAiKlHn9nQ+oNZvgFFoMVSK3ASPq/JUETfue6NsFBsjz5mkEy4OzYpkAg
+         T21JK+sttSTAVxHSmyBl6Luc8upg6IQwOUbqk5W+/QA8yEnpSdroYeNH4TK9xXgK9+bH
+         5h8+kCFl8WYzqJ6NrtsKotnMYmmXQO24Wd281UIXG2imS78b5IfIaJSwZihPjGjbk6XP
+         J5uA==
+X-Gm-Message-State: AOAM533WFvZpcci9S4nrEvwEMpIwY2OKFuS5HP7X5MnCLB30newKYJBh
+        WOWA2V2lDCWkcfDmc07aig==
+X-Google-Smtp-Source: ABdhPJywLKeAaJqcZXkFmnZxmhvPb8KJmZF/4AP/8kXOBXaQ9XEpghDsect82HnXuwtczswZegMMkQ==
+X-Received: by 2002:a4a:a50d:0:b0:35e:d7d1:c7dc with SMTP id v13-20020a4aa50d000000b0035ed7d1c7dcmr252191ook.27.1652892863324;
+        Wed, 18 May 2022 09:54:23 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id o82-20020aca4155000000b00326e2284976sm950613oia.15.2022.05.18.09.54.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 09:54:22 -0700 (PDT)
+Received: (nullmailer pid 3489723 invoked by uid 1000);
+        Wed, 18 May 2022 16:54:21 -0000
+Date:   Wed, 18 May 2022 11:54:21 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Peter Maydell <peter.maydell@linaro.org>
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ross Burton <ross.burton@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH] of/fdt: Ignore disabled memory nodes
+Message-ID: <20220518165421.GF3302100-robh@kernel.org>
+References: <20220517101410.3493781-1-andre.przywara@arm.com>
+ <20220517153444.GA1057027-robh@kernel.org>
+ <CAFEAcA8sE8Rj0GmF71ox4BdDr0UcaS4QwiLUVUUFH5oj+hDhfA@mail.gmail.com>
+ <CAL_JsqLRvEn2E7cpTzQJRCJ=aeLjUtKhDimWat=nPtm3QP+cfA@mail.gmail.com>
+ <CAFEAcA_DRoJmnFdyEEcSvCxtPYignZFqQFnHyWkcpyijCBSrCg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 3/3] s390x: KVM: resetting the Topology-Change-Report
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, borntraeger@de.ibm.com,
-        frankja@linux.ibm.com, cohuck@redhat.com, thuth@redhat.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
-        seiden@linux.ibm.com, nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <20220506092403.47406-4-pmorel@linux.ibm.com>
- <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
- <20220512115250.2e20bfdf@p-imbrenda>
- <70a7d93c-c1b1-fa72-0eb4-02e3e2235f94@redhat.com>
- <bae4e416-b0e9-31c6-c9d0-df6b5a5fd46f@linux.ibm.com>
- <cfe448f7-0b4e-680d-46a7-33ad25a4c09b@redhat.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <cfe448f7-0b4e-680d-46a7-33ad25a4c09b@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: W5fS3N71cLrX1I_e6-quxj7Z0L_xZDmt
-X-Proofpoint-GUID: uu-AwpmzG2aQew89jZnaju95wJ-pORKx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 malwarescore=0 phishscore=0 suspectscore=0 spamscore=0
- mlxscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=792 adultscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205180099
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFEAcA_DRoJmnFdyEEcSvCxtPYignZFqQFnHyWkcpyijCBSrCg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/18/22 16:33, David Hildenbrand wrote:
-> On 16.05.22 16:21, Pierre Morel wrote:
->>
->>
->> On 5/12/22 12:01, David Hildenbrand wrote:
->>>>>
->>>>> I think we prefer something like u16 when copying to user space.
->>>>
->>>> but then userspace also has to expect a u16, right?
->>>
->>> Yep.
->>>
->>
->> Yes but in fact, inspired by previous discussion I had on the VFIO
->> interface, that is the reason why I did prefer an int.
->> It is much simpler than a u16 and the definition of a bit.
->>
->> Despite a bit in a u16 is what the s3990 achitecture proposes I thought
->> we could make it easier on the KVM/QEMU interface.
->>
->> But if the discussion stops here, I will do as you both propose change
->> to u16 in KVM and userland and add the documentation for the interface.
+On Tue, May 17, 2022 at 08:19:47PM +0100, Peter Maydell wrote:
+> On Tue, 17 May 2022 at 18:48, Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Tue, May 17, 2022 at 11:54 AM Peter Maydell <peter.maydell@linaro.org> wrote:
+> > >
+> > > On Tue, 17 May 2022 at 16:34, Rob Herring <robh@kernel.org> wrote:
+> > > >
+> > > > On Tue, May 17, 2022 at 11:14:10AM +0100, Andre Przywara wrote:
+> > > > > When we boot a machine using a devicetree, the generic DT code goes
+> > > > > through all nodes with a 'device_type = "memory"' property, and collects
+> > > > > all memory banks mentioned there. However it does not check for the
+> > > > > status property, so any nodes which are explicitly "disabled" will still
+> > > > > be added as a memblock.
+> > > > > This ends up badly for QEMU, when booting with secure firmware on
+> > > > > arm/arm64 machines, because QEMU adds a node describing secure-only
+> > > > > memory:
+> > > > > ===================
+> > > > >       secram@e000000 {
+> > > >
+> > > > BTW, 'memory' is the correct node name.
+> > >
+> > > We already have a 'memory' node, which is for the NS
+> > > memory. This one's for the secure-only RAM block,
+> > > which is why I gave it a name that hopefully helps in
+> > > spotting that when a human is reading the DT.
+> >
+> > You can do: secram: memory@e000000 {
+> >
+> > Where 'secram' is only a source level label until overlays come into
+> > the picture.
 > 
-> In general, we pass via the ABI fixed-sized values -- u8, u16, u32, u64
-> ... instead of int. Simply because sizeof(int) is in theory variable
-> (e.g., 32bit vs 64bit).
-> 
-> Take a look at arch/s390/include/uapi/asm/kvm.h and you won't find any
-> usage of int or bool.
-> 
-> Having that said, I'll let the maintainers decide. Using e.g., u8 is
-> just the natural thing to do on a Linux ABI, but we don't really support
-> 32 bit ... maybe we'll support 128bit at one point? ;)
-> 
+> We generate the DTB with libfdt, so source-only information
+> isn't something we can put in, I think. (The quoted DT fragment
+> in this patch's commit message is the result of decompiling
+> the runtime generated DT binary blob with dtc.)
 
-OK then I use u16 with a flag in case we get something in the utilities 
-which is related to the topology in the future.
+Given the runtime aspect with overlays, it's conceivable that libfdt 
+could support setting labels some day and then dts output maintaining 
+them.
 
-Thanks,
-Pierre
+We could also consider a standard node name such as 'secure-memory'. 
+It's a whole can of worms though on how secure vs. non-secure memory 
+(and other things) are represented.
 
--- 
-Pierre Morel
-IBM Lab Boeblingen
+> > > I'm not really sure to what extent node names in device trees are
+> > > "this is just an identifying textual label" and to what extent
+> > > they are "this is really ABI and you need to follow the standard",
+> > > though -- nothing in practice seems to care what they are,
+> > > suggesting the "textual label" theory, but some bits of tooling
+> > > complain if you do things like forget the address value or use the
+> > > same address for two different nodes, suggesting the "really ABI"
+> > > theory.
+> >
+> > Node names are supposed to follow the class of device and there's a
+> > list of established names in the spec.
+> >
+> > Sometimes it's ABI and sometimes not. Much of it is just good hygiene.
+> > memory nodes are also special because 'device_type' is used to
+> > identify them, but device_type is generally deprecated for FDT as its
+> > meaning in OpenFirmware doesn't apply (it defines what callable
+> > methods exist). We could use the nodename (without unit address)
+> > instead, but that would fail in some cases as other names have been
+> > used.
+> 
+> This seems kind of odd to me as a design, compared to
+
+Design? I wish. Evolution.
+
+> "have the node have a property that says what it is
+> and let the name of the node just be, well, its name"
+> (especially since 'device_type' and 'compatible' look an
+> awful lot like "this is the property that tells you what this
+> node actually is".)
+> Are we just stuck with what we have for historical reasons ?
+
+Yes. If we were designing this, we'd probably have 'compatible = 
+"memory"'. We're likely just stuck with things how they are. Mostly node 
+names haven't been an ABI and we're just trying to be consistent in 
+naming and use of unit-addresses.
+
+Rob
