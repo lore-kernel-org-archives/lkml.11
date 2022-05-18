@@ -2,93 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD535C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 586A8C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241673AbiERSx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
+        id S241682AbiERSyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241646AbiERSx0 (ORCPT
+        with ESMTP id S241681AbiERSyq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:53:26 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167FA1F90E0;
-        Wed, 18 May 2022 11:53:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652900005; x=1684436005;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2hqguD+cz1/iZKLkowNHSUq5raydVYd0Hdqyf7PUieI=;
-  b=mbvReICNSesHetVAzcE2eue9K+kZWz0YDZRrZLnBuSrp9MHWvSTDU3fW
-   glRPOf14XekZ+yd78AJtiV0WmtqgbQ7NJzZY0SbefQ99iqNUdEmaTjFJU
-   PAYT5fITmx/ITtxZ2kQUwK9rqug2zvzVvLHzqvUHlW09XGl7pAWP4npu7
-   LvRv82PUe/hbo/Ba3zKxlNDdSS3xVdvF3oXahGPjpSveZ/ONKV0/3DDQs
-   xuUTFAErDizdEH3VT0RNkSeF7zF/xWynqmc5DTN8yYl7etclvqn0ab37v
-   MAMRcFi55FlLvBegi0WCfXe/HYNvwo0v1E2DpyEg8A5+SV7uCaosCGxwr
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="271975090"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="271975090"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:48:36 -0700
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="545621407"
-Received: from cmhseih-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.195.218])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:48:34 -0700
-Message-ID: <41e7d536f72accbcbd2c782f1a5f18d0546098fb.camel@linux.intel.com>
-Subject: Re: hid-sensor-hub 001F:8087:0AC2.0002: timeout waiting for
- response from ISHTP device
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Jiri Kosina <jikos@kernel.org>, Even Xu <even.xu@intel.com>,
-        Zhang Lixu <lixu.zhang@intel.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Dell.Client.Kernel@dell.com
-Date:   Wed, 18 May 2022 11:48:34 -0700
-In-Reply-To: <82e9a41c-552a-07e2-7caa-a14913cd34f4@molgen.mpg.de>
-References: <289be79b-8fbb-d171-a1e5-5d8218dff39d@molgen.mpg.de>
-         <8833ba2600208a05940943636a3bd8b6af6a9fe4.camel@linux.intel.com>
-         <dff3d94c-93be-2b31-35c6-35a7886f3680@molgen.mpg.de>
-         <8fc40ebb2fbcecb1ab2f5ea156bf9ec10aff06bf.camel@linux.intel.com>
-         <82e9a41c-552a-07e2-7caa-a14913cd34f4@molgen.mpg.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Wed, 18 May 2022 14:54:46 -0400
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651421F7E17;
+        Wed, 18 May 2022 11:54:45 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2ff1ed64f82so34864487b3.1;
+        Wed, 18 May 2022 11:54:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kDoI+Hz+DjmDMhGHIjtUwfCy9jNRufdBM5+r6T9y4EI=;
+        b=Xi3OGE8xQmraAZsrkVKo7JtM5BCSD/hX0+5Hk7ErLz3+dJJHCvZfOJ+RzjIfDYDOv4
+         58F0VrFvB7a67GNnNRaXz+3Ii/7IxDE3152cP1rzNVrwvt2bakR7AOSnRpduy33hIwry
+         pRYo28IODMT+nbAo0AyB6ymRLCc9HKi5vTtk9Y/1qq2/EV4Dq1RYOBTdgeRZeY8gFRma
+         TRAlwsp0FI5oGFOI066+8vvt3Iv9dOrM/CKOTtuVXj1E8ubZ5oJF/LmCM/2zkzF4QwvL
+         dhIZNVQQJSfjbR4NLKeVBdCFxWCkkMRRsCMv1yi8Ymc7boj/quv4aVzP/Me2zfhPhEdq
+         xFyA==
+X-Gm-Message-State: AOAM532vUwUDBQCk0Eg0CU3tYHQNgBIfxNzmIKM9f2jEKTGY0AoO7UTt
+        25oSoYPgy1w9DdCF4awvGSj4xu9hNQdGRNksDo0=
+X-Google-Smtp-Source: ABdhPJxFrXLByqwcmqSEocnmy58ip2YxbYSqZGQH8Go8TzNcqICxzDBuL9fHa5mz7tClY1T8iZDvUocJo3ymmm0qF+Y=
+X-Received: by 2002:a0d:c5c7:0:b0:2fe:e955:2c45 with SMTP id
+ h190-20020a0dc5c7000000b002fee9552c45mr863340ywd.19.1652900084507; Wed, 18
+ May 2022 11:54:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <1652751061-23045-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1652751061-23045-1-git-send-email-baihaowen@meizu.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 18 May 2022 20:54:33 +0200
+Message-ID: <CAJZ5v0jgLd2qZw5s6e8S6i3D+RU8cvy1iGCMcadG0SHVKKpEoA@mail.gmail.com>
+Subject: Re: [PATCH] thermal: intel: hfi: remove null check after call container_of()
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+On Tue, May 17, 2022 at 3:31 AM Haowen Bai <baihaowen@meizu.com> wrote:
+>
+> container_of() will never return NULL, so remove useless code.
+>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>  drivers/thermal/intel/intel_hfi.c | 2 --
+>  1 file changed, 2 deletions(-)
+>
+> diff --git a/drivers/thermal/intel/intel_hfi.c b/drivers/thermal/intel/intel_hfi.c
+> index 730fd121df6e..a0640f762dc5 100644
+> --- a/drivers/thermal/intel/intel_hfi.c
+> +++ b/drivers/thermal/intel/intel_hfi.c
+> @@ -243,8 +243,6 @@ static void hfi_update_work_fn(struct work_struct *work)
+>
+>         hfi_instance = container_of(to_delayed_work(work), struct hfi_instance,
+>                                     update_work);
+> -       if (!hfi_instance)
+> -               return;
+>
+>         update_capabilities(hfi_instance);
+>  }
+> --
 
-On Wed, 2022-05-18 at 20:06 +0200, Paul Menzel wrote:
-> Dear Srinivas,
-> 
-> 
-> Am 18.05.22 um 17:39 schrieb srinivas pandruvada:
-> 
-> > Attached a diff. Please use git apply and build kernel. And attach
-> > dmesg. I want to see where did it fail.
-> 
-> As written, the device is used in production by a user, so I am not 
-> sure, if I can get the device to test self-built Linux kernel images
-> to 
-> debug this issue. It would really be better to get access to such a 
-> device from Dell or in some Intel lab.
-> 
-Let me try to get one.
-You described some firmware version. Where did you see that? Do you
-mean BIOS version?
-
-Thanks,
-Srinivas
-
-
-> 
-> Kind regards,
-> 
-> Paul
-
+Applied with adjusted subject as 5.19 material, thanks!
