@@ -2,108 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDFB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 22:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60787C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 22:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbiERWFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 18:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
+        id S229693AbiERWG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 18:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiERWEa (ORCPT
+        with ESMTP id S229992AbiERWGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 18:04:30 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC35D5DBCB;
-        Wed, 18 May 2022 15:01:20 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id wh22so6243652ejb.7;
-        Wed, 18 May 2022 15:01:20 -0700 (PDT)
+        Wed, 18 May 2022 18:06:00 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D741666B1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:04:16 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id i24so3376824pfa.7
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:04:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4MA9rL+NU5i49GzNZ6NnsLkOYe+sC2puAxmvZM/H6Yo=;
-        b=mVD+sNrl71aKSE4n8i+Ev8RM54Adnlcz6sWuA9ZFr2FZZkDEt5uuWMhBO9gzTlBw2h
-         yz0oTx5CQQwEAJ09Dg4NsmTbNRmtUBc2CucdYj2JrkPCwJEZ08jZ7owIDy3Jclw8qwjQ
-         mqenCkXcmiXo7I2H/65PDRzG9Ud3KeHzsK7voIqPsiA/lnCyV4TpNAC471OpP8dWLXUY
-         g7YabD5WF5D4ygteuHCl32aH3+h3kpu65Tp+He6Vxs8F+jKp2K0LxOgA3SbxfrhpmN2o
-         bm60TghigV1VYQRPkJoyQtOW6Evs6Ic8bOL0WYx8RQW/NU2uLQHV7vwMNTuOFks0TmVx
-         P09g==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/nGLK4xvSVUA2aTskL7KBthCb1HFoB9NWaLdwGSmKHI=;
+        b=BI2RBE7OtfruFWTCNYrgW7SluCI1Rz1x30/zpufzVOuVeQ01dyyAl9KN+supk4ojPw
+         GdvQYhtBojNjCzrclI30qnVPoypBgeo9+SsWAx194EvXhdWjCbQcLBkBIc6pdUknE90J
+         XxrdkfQEZ8oMyivFmEzFxb+kEYZUVIRttm6B4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4MA9rL+NU5i49GzNZ6NnsLkOYe+sC2puAxmvZM/H6Yo=;
-        b=g+9MaF0W++i7ZCeRPhhmzIQJDumLft1WFofJFFOOpFx2XGmnB7p+jUKThNct3PxHm3
-         J3HjmLGVYThuEqYIC7EA0MXaVyGRkdWwCFiO2E/sWUo4OGlQROsrsIebYnJ2PAOMb00T
-         rkP9G0zIGGlqkXXP7JVDw/+ILG1VYGfXLwKEF2jYIR2oXvfKZ5yn1WkXFpFxveHm9Ctr
-         HkhYtJeDTNMx5PkUbKUV5mMYRN0jzh51HYUr60XqsafmTE8nPbAI3yAYhpBjGLRsNy/3
-         jmUYuxkuzXEOzVcqBg08psU+U2u11ESkBPYtdr1RPzMtEuFfnF1jhIsE2/R+OByYPXOB
-         gHxQ==
-X-Gm-Message-State: AOAM533BFozW+dN2MDxoIK3GeUvpY3Z/LXXYQJNko32/7DQTidR7oVNW
-        GZhqJXNRQvD4in8OH3LBG2TXduhiHDg=
-X-Google-Smtp-Source: ABdhPJxnGdDumOEIBOGw/tZktEKPXF/kbNT9UxING++0zGZRedYLoleFQNqtdgW+LV4a4oXxe+QcMg==
-X-Received: by 2002:a17:907:6d82:b0:6f4:d62e:8168 with SMTP id sb2-20020a1709076d8200b006f4d62e8168mr1506638ejc.374.1652911279202;
-        Wed, 18 May 2022 15:01:19 -0700 (PDT)
-Received: from localhost.localdomain (dynamic-095-118-099-170.95.118.pool.telefonica.de. [95.118.99.170])
-        by smtp.googlemail.com with ESMTPSA id ot2-20020a170906ccc200b006f3ef214dd0sm1478885ejb.54.2022.05.18.15.01.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 15:01:18 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH net-next v2 1/2] net: dsa: lantiq_gswip: Fix start index in gswip_port_fdb()
-Date:   Thu, 19 May 2022 00:00:50 +0200
-Message-Id: <20220518220051.1520023-2-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
-References: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/nGLK4xvSVUA2aTskL7KBthCb1HFoB9NWaLdwGSmKHI=;
+        b=uP4VJQKRopcPUA6rFMl0NZ4rHS0DLexGAp8AJNCnpLlaYIyVL165/EWxKWxY97DE5W
+         oh/uFfxF59snsYRlHVdzlGWi7LoSl6FLR6PJxLWvB75sCuz+0n9yIbTCTwx0a5JT3uro
+         Kjl7MX3D23PyNHYk33YHNbmPqxRCikQ0jimHUwx5zFtQOYnD8ouMLKREUCOarEUXajSG
+         p/k+CFpBGNkccWnnNlIb1I2FTTWMZCTW2i0QzvhdlniDKF0ROpiNGzLlSUJtlsBQI4Xs
+         GG9hdkpDbXU6aJ2u9y2RhHXQgACFNzzpJi+6CzB4lOQBARizD/f1sk5ZvaepdsEf7SF2
+         Yd7w==
+X-Gm-Message-State: AOAM532KGqfM2YEYDW57lYSeE+QL/8nDgwHRasOYvEffCfOk6JF/zX9q
+        lndHiTQyQOXi4Wvx23dC4hHejA==
+X-Google-Smtp-Source: ABdhPJxXorvF4EPHY4DS+gEC8RdZC65si6o5SpHebhRG0HV11EiT/ZrxUJae2tcLmaUH8cRGnpDoXg==
+X-Received: by 2002:a05:6a00:1145:b0:4f6:3ebc:a79b with SMTP id b5-20020a056a00114500b004f63ebca79bmr1609722pfm.41.1652911456421;
+        Wed, 18 May 2022 15:04:16 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:620e:26da:4317:c2ee])
+        by smtp.gmail.com with UTF8SMTPSA id p123-20020a622981000000b0051811c2aa89sm2407750pfp.196.2022.05.18.15.04.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 15:04:15 -0700 (PDT)
+From:   Brian Norris <briannorris@chromium.org>
+To:     Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, Dmitry Torokhov <dtor@chromium.org>,
+        linux-usb@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
+        Brian Norris <briannorris@chromium.org>
+Subject: [PATCH] usb: Probe EHCI, OHCI controllers asynchronously
+Date:   Wed, 18 May 2022 15:02:51 -0700
+Message-Id: <20220518150150.1.Ie8ea0e945a9c15066237014be219eed60066d493@changeid>
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The first N entries in priv->vlans are reserved for managing ports which
-are not part of a bridge. Use priv->hw_info->max_ports to consistently
-access per-bridge entries at index 7. Starting at
-priv->hw_info->cpu_port (6) is harmless in this case because
-priv->vlan[6].bridge is always NULL so the comparison result is always
-false (which results in this entry being skipped).
+From: Dmitry Torokhov <dtor@chromium.org>
 
-Fixes: 58c59ef9e930c4 ("net: dsa: lantiq: Add Forwarding Database access")
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+initcall_debug shows that OHCI controllers take ~60ms to probe on
+Rockchip RK3399 systems:
+
+  probe of fe3a0000.usb returned 1 after 58941 usecs
+
+A few of these can add up to waste non-trivial amounts of time at boot.
+
+These host controllers don't provide resources to other drivers, so
+this shouldn't contribute to exposing race conditions.
+
+Chrome OS kernels have carried this patch on some systems for a while
+without issues. Similar patches have been merged for a variety of (e)MMC
+host controllers for similar reasons.
+
+Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
+[Brian: rewrote commit message, refreshed, but retained dtor's original
+ authorship ]
+Signed-off-by: Brian Norris <briannorris@chromium.org>
 ---
- drivers/net/dsa/lantiq_gswip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 12c15da55664..0c313db23451 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1360,7 +1360,7 @@ static int gswip_port_fdb(struct dsa_switch *ds, int port,
- 	struct net_device *bridge = dsa_port_bridge_dev_get(dsa_to_port(ds, port));
- 	struct gswip_priv *priv = ds->priv;
- 	struct gswip_pce_table_entry mac_bridge = {0,};
--	unsigned int cpu_port = priv->hw_info->cpu_port;
-+	unsigned int max_ports = priv->hw_info->max_ports;
- 	int fid = -1;
- 	int i;
- 	int err;
-@@ -1368,7 +1368,7 @@ static int gswip_port_fdb(struct dsa_switch *ds, int port,
- 	if (!bridge)
- 		return -EINVAL;
+ drivers/usb/host/ehci-platform.c | 1 +
+ drivers/usb/host/ohci-platform.c | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/usb/host/ehci-platform.c b/drivers/usb/host/ehci-platform.c
+index 1115431a255d..f343967443e2 100644
+--- a/drivers/usb/host/ehci-platform.c
++++ b/drivers/usb/host/ehci-platform.c
+@@ -518,6 +518,7 @@ static struct platform_driver ehci_platform_driver = {
+ 		.pm	= pm_ptr(&ehci_platform_pm_ops),
+ 		.of_match_table = vt8500_ehci_ids,
+ 		.acpi_match_table = ACPI_PTR(ehci_acpi_match),
++		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+ 	}
+ };
  
--	for (i = cpu_port; i < ARRAY_SIZE(priv->vlans); i++) {
-+	for (i = max_ports; i < ARRAY_SIZE(priv->vlans); i++) {
- 		if (priv->vlans[i].bridge == bridge) {
- 			fid = priv->vlans[i].fid;
- 			break;
+diff --git a/drivers/usb/host/ohci-platform.c b/drivers/usb/host/ohci-platform.c
+index 4a8456f12a73..47dfbfe9e519 100644
+--- a/drivers/usb/host/ohci-platform.c
++++ b/drivers/usb/host/ohci-platform.c
+@@ -334,6 +334,7 @@ static struct platform_driver ohci_platform_driver = {
+ 		.name	= "ohci-platform",
+ 		.pm	= &ohci_platform_pm_ops,
+ 		.of_match_table = ohci_platform_ids,
++		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+ 	}
+ };
+ 
 -- 
-2.36.1
+2.36.1.124.g0e6072fb45-goog
 
