@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AFA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:10:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231744AbiERHJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
+        id S231731AbiERHKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231713AbiERHJT (ORCPT
+        with ESMTP id S231742AbiERHJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:09:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0175EBCE95
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:09:17 -0700 (PDT)
+        Wed, 18 May 2022 03:09:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96306E7312
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:09:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7A4CB81E91
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBCF5C385AA;
-        Wed, 18 May 2022 07:09:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3127CB81E9A
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:09:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A7CC385A5;
+        Wed, 18 May 2022 07:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652857755;
-        bh=5VOCG6D7WIJ+aptpFBTKRAjSL5vE+/rVyHeXhlnHmuo=;
+        s=korg; t=1652857794;
+        bh=2JqqIZvpbqswCTRP/bzbvdehB+RQl291QgBbPVeUz5A=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mCDVzWkIzB5296VRCBwWDjhnnI6AHpE8Oz3xvcwgGItJaDFFprY0SiAENX9e2eD8y
-         fNHpHFVPH1/x2Trt/GPuW0OA4XamPZAa8d43KXAEXdk1R6Kz3lDk5aZH1Uhz9pu6lV
-         QyH39GovNr+oznN7Ua8c5oP3rLN00DY3+Lve1cio=
-Date:   Wed, 18 May 2022 09:09:12 +0200
+        b=Pp6SO/TKxrZNHvldAOjrKknX9j4MOMm00eEc1bfMfTaRIqoiHbCk/9Ay0O4pYErpz
+         4WdOW/iMxXaSM20je3wnFPC3Rgm/JmcjW14O0UwKCfuPKAz+kyEFtfveeT5pwRSsYI
+         CO9ObRCJkU7czDbnU3B4Uu/unhdj0DhMD4BhO25o=
+Date:   Wed, 18 May 2022 09:09:52 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 Cc:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
@@ -40,264 +40,84 @@ Cc:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
         conor.dooley@microchip.com, nicolas.ferre@microchip.com,
         marcan@marcan.st, linus.walleij@linaro.org, arnd@arndb.de,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 1/8] drivers: base: Add hardware prefetch control core
- driver
-Message-ID: <YoSbmA+5m1Le0XGe@kroah.com>
+Subject: Re: [PATCH v4 5/8] arm64: Create cache sysfs directory without ACPI
+ PPTT for hardware prefetch control
+Message-ID: <YoSbwJIDoXz5Aipv@kroah.com>
 References: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
- <20220518063032.2377351-2-tarumizu.kohei@fujitsu.com>
+ <20220518063032.2377351-6-tarumizu.kohei@fujitsu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220518063032.2377351-2-tarumizu.kohei@fujitsu.com>
+In-Reply-To: <20220518063032.2377351-6-tarumizu.kohei@fujitsu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 03:30:25PM +0900, Kohei Tarumizu wrote:
-> Adds a register/unregister function to provide sysfs interface to
-> control CPU's hardware prefetch behavior. It creates the
-> "prefetch_control" sysfs directory and some attributes.
+On Wed, May 18, 2022 at 03:30:29PM +0900, Kohei Tarumizu wrote:
+> Create a cache sysfs directory without ACPI PPTT if the
+> CONFIG_HWPF_CONTROL is true.
 > 
-> Attributes are hardware dependent, so it must be implemented for each
-> hardware. If CPU has a hardware prefetch behavior, call this function
-> to create sysfs.
+> Hardware prefetch control driver need cache sysfs directory and cache
+> level/type information. In ARM processor, these information can be
+> obtained from the register even without PPTT.
 > 
-> Following patches add support for A64FX and x86.
+> This patch set the cpu_map_populated to true if the machine doesn't
+> have PPTT. It use only the level/type information obtained from
+> CLIDR_EL1, and don't use CCSIDR information.
 > 
 > Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 > ---
->  drivers/base/pfctl.c  | 180 ++++++++++++++++++++++++++++++++++++++++++
->  include/linux/pfctl.h |  14 ++++
->  2 files changed, 194 insertions(+)
->  create mode 100644 drivers/base/pfctl.c
->  create mode 100644 include/linux/pfctl.h
+>  arch/arm64/kernel/cacheinfo.c | 29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
 > 
-> diff --git a/drivers/base/pfctl.c b/drivers/base/pfctl.c
-> new file mode 100644
-> index 000000000000..08ee8faaf277
-> --- /dev/null
-> +++ b/drivers/base/pfctl.c
-> @@ -0,0 +1,180 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Hardware prefetch control support via sysfs.
-> + *
-> + * Copyright 2022 FUJITSU LIMITED
-> + *
-> + * See Documentation/ABI/testing/sysfs-devices-system-cpu for more information.
-> + */
+> diff --git a/arch/arm64/kernel/cacheinfo.c b/arch/arm64/kernel/cacheinfo.c
+> index 587543c6c51c..039ec32d0b3d 100644
+> --- a/arch/arm64/kernel/cacheinfo.c
+> +++ b/arch/arm64/kernel/cacheinfo.c
+> @@ -43,6 +43,21 @@ static void ci_leaf_init(struct cacheinfo *this_leaf,
+>  	this_leaf->type = type;
+>  }
+>  
+> +#if defined(CONFIG_HWPF_CONTROL)
+
+Please do not put #if in .c files.
+
+> +static bool acpi_has_pptt(void)
+> +{
+> +	struct acpi_table_header *table;
+> +	acpi_status status;
 > +
-> +#include <linux/cacheinfo.h>
-> +#include <linux/cpu.h>
-> +#include <linux/device.h>
-> +#include <linux/pfctl.h>
-> +#include <linux/slab.h>
+> +	status = acpi_get_table(ACPI_SIG_PPTT, 0, &table);
+> +	if (ACPI_FAILURE(status))
+> +		return false;
 > +
-> +#ifdef pr_fmt
-> +#undef pr_fmt
+> +	acpi_put_table(table);
+> +	return true;
+> +}
 > +#endif
-> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 > +
-> +const struct pfctl_group *pgroups;
-> +enum cpuhp_state hp_online;
+>  int init_cache_level(unsigned int cpu)
+>  {
+>  	unsigned int ctype, level, leaves, fw_level;
+> @@ -95,5 +110,19 @@ int populate_cache_leaves(unsigned int cpu)
+>  			ci_leaf_init(this_leaf++, type, level);
+>  		}
+>  	}
 > +
-> +static struct device_attribute **
-> +get_pfctl_attribute(unsigned int level, enum cache_type type)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; pgroups[i].attrs; i++)
-> +		if ((level == pgroups[i].level) && (type == pgroups[i].type))
-> +			return pgroups[i].attrs;
-> +
-> +	return NULL;
-> +}
-> +
-> +static int remove_pfctl_attr(struct device *index_dev, void *data)
-> +{
-> +	struct cacheinfo *leaf = dev_get_drvdata(index_dev);
-> +	struct device_attribute **attrs;
-> +	struct device *pfctl_dev;
-> +	int i;
-> +
-> +	attrs = get_pfctl_attribute(leaf->level, leaf->type);
-> +	if (!attrs)
-> +		return 0;
-> +
-> +	pfctl_dev = device_find_child_by_name(index_dev, "prefetch_control");
-> +	if (!pfctl_dev)
-> +		return 0;
-> +
-> +	for (i = 0; attrs[i]; i++)
-> +		device_remove_file(pfctl_dev, attrs[i]);
+> +#if defined(CONFIG_HWPF_CONTROL)
+> +	/*
+> +	 * Hardware prefetch functions need cache sysfs directory and cache
+> +	 * level/type information. In ARM processor, these information can be
+> +	 * obtained from registers even without PPTT. Therefore, we set the
+> +	 * cpu_map_populated to true to create cache sysfs directory, if the
+> +	 * machine doesn't have PPTT.
+> +	 **/
+> +	if (!acpi_disabled)
+> +		if (!acpi_has_pptt())
+> +			this_cpu_ci->cpu_map_populated = true;
+> +#endif
 
-This feels wrong, attributes should be groups and be automatically added
-and removed by the driver core that way.  Not as lists of attributes
-like this, as that will race and be wrong.
-
-Use a list of attribute groups please.
-
-> +
-> +	device_unregister(pfctl_dev);
-> +	put_device(pfctl_dev);
-> +
-> +	pfctl_dev = NULL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int create_pfctl_attr(struct device *index_dev, void *data)
-> +{
-> +	struct cacheinfo *leaf = dev_get_drvdata(index_dev);
-> +	struct device_attribute **attrs;
-> +	struct device *pfctl_dev;
-> +	int i, err;
-> +
-> +	attrs = get_pfctl_attribute(leaf->level, leaf->type);
-> +	if (!attrs)
-> +		return 0;
-> +
-> +	pfctl_dev = cpu_device_create(index_dev, NULL, NULL,
-> +				      "prefetch_control");
-> +	if (IS_ERR(pfctl_dev))
-> +		return PTR_ERR(pfctl_dev);
-> +
-> +	for (i = 0; attrs[i]; i++) {
-> +		err = device_create_file(pfctl_dev, attrs[i]);
-
-You just raced with userspace and lost :(
-
-Please use attribute groups instead of manually adding files after the
-device is created and userspace is notified that it was present.
-
-That also makes your clean up logic much simpler (i.e. none as the drive
-core did it for you already.)
-
-> +		if (err) {
-> +			while (--i >= 0)
-> +				device_remove_file(pfctl_dev, attrs[i]);
-> +
-> +			device_unregister(pfctl_dev);
-> +			pfctl_dev = NULL;
-> +
-> +			return err;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int pfctl_online(unsigned int cpu)
-> +{
-> +	struct device *cpu_dev = get_cpu_device(cpu);
-> +	struct device *cache_dev;
-> +	int ret;
-> +
-> +	cache_dev = device_find_child_by_name(cpu_dev, "cache");
-> +	if (!cache_dev)
-> +		return -ENODEV;
-> +
-> +	ret = device_for_each_child(cache_dev, NULL, create_pfctl_attr);
-> +	if (ret < 0)
-> +		device_for_each_child(cache_dev, NULL, remove_pfctl_attr);
-> +
-> +	put_device(cache_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static int pfctl_prepare_down(unsigned int cpu)
-> +{
-> +	struct device *cpu_dev = get_cpu_device(cpu);
-> +	struct device *cache_dev;
-> +
-> +	cache_dev = device_find_child_by_name(cpu_dev, "cache");
-> +	if (!cache_dev)
-> +		return 0;
-> +
-> +	device_for_each_child(cache_dev, NULL, remove_pfctl_attr);
-> +
-> +	put_device(cache_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * pfctl_register_attrs - register a Hardware Prefetch Control attributes
-> + * @pfctl_groups: pfctl_groups contains device attribute group to control the
-> + *                hardware prefetch register.
-> + *
-> + * Note: Call this function after the cache device is initialized because it
-> + * requires access to the cache device. (e.g. Call at the late_initcall)
-> + *
-> + * Context: Any context.
-> + * Return: 0 on success, negative error code on failure.
-> + */
-> +int pfctl_register_attrs(const struct pfctl_group *pfctl_groups)
-> +{
-> +	int ret;
-> +
-> +	if (pgroups)
-> +		return -EEXIST;
-> +
-> +	pgroups = pfctl_groups;
-> +
-> +	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "base/pfctl:online",
-> +				pfctl_online, pfctl_prepare_down);
-> +	if (ret < 0) {
-> +		pr_err("failed to register hotplug callbacks\n");
-> +		pgroups = NULL;
-> +		return ret;
-> +	}
-> +
-> +	hp_online = ret;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pfctl_register_attrs);
-> +
-> +/**
-> + * pfctl_unregister_attrs - unregister the Hardware Prefetch Control driver
-> + * @pfctl_groups: Used to verify that this function is called by the same driver
-> + *                that called pfctl_register_attrs.
-> + *
-> + * Context: Any context.
-> + * Return: nothing.
-> + */
-> +void pfctl_unregister_attrs(const struct pfctl_group *pfctl_groups)
-> +{
-> +	if (!pgroups || (pfctl_groups != pgroups))
-> +		return;
-> +
-> +	cpuhp_remove_state(hp_online);
-> +
-> +	pgroups = NULL;
-> +}
-> +EXPORT_SYMBOL_GPL(pfctl_unregister_attrs);
-> diff --git a/include/linux/pfctl.h b/include/linux/pfctl.h
-> new file mode 100644
-> index 000000000000..ecdab78be09f
-> --- /dev/null
-> +++ b/include/linux/pfctl.h
-> @@ -0,0 +1,14 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _LINUX_PFCTL_H
-> +#define _LINUX_PFCTL_H
-> +
-> +struct pfctl_group {
-> +	unsigned int		level;
-> +	enum cache_type		type;
-> +	struct device_attribute	**attrs;
-
-Attribute groups please.
-
-> +};
-> +
-> +int pfctl_register_attrs(const struct pfctl_group *pfctl_groups);
-> +void pfctl_unregister_attrs(const struct pfctl_group *pfctl_groups);
-
-Why do you think this needs to be in the driver core?  Why isn't this
-just a normal cpu driver?
+Same here, no #if is needed if you do it properly in your .h file.
 
 thanks,
 
