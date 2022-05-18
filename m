@@ -2,339 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8058DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18002C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235553AbiERLUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
+        id S235405AbiERLWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235551AbiERLUG (ORCPT
+        with ESMTP id S235324AbiERLWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:20:06 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F260817490B;
-        Wed, 18 May 2022 04:20:04 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n6-20020a05600c3b8600b0039492b44ce7so861094wms.5;
-        Wed, 18 May 2022 04:20:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oifcGu/wBIFujV3M4+LF022wfIfIsx3++oPD8PzMcqY=;
-        b=N9SNePuXf5WbjXfMxBu/yGNs4MutoJweY+6B+WtZgFHx4+//6BpHtFAN4vbxlkmSwW
-         CprwhfMPBijt3VpJxQL3dn0rYsfD9W5nKSMj8CU40bMzyu/qvU5rNcE3HGrCTCvVgQEg
-         TsqKZUCsmixVHVANdgxwShIJI+N4SW5CVWVPxT7JH61Oy9hPghK50wpgMm5rcx+t7B1C
-         jzYsT6h7cyEvmCglzfCekVLGnLGsz215aUxNurb4A1wtIp6gt3GuTMa11jIGmXqmMWSZ
-         Pqg3rr32gl0BJqmweQqNbTHphBMXPR5CiEQyS55C8CO115aaSe0b7l8e6kYDwB6zPBun
-         Hdwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oifcGu/wBIFujV3M4+LF022wfIfIsx3++oPD8PzMcqY=;
-        b=Kb1cnWsAvUZgqYdFJnqHjcTqWeu5zBiH351FwujeKABYm2R3O1XrRvUzKMoaSZlnda
-         /mH74seEQSAUlvWxjPiD8YBluTdLLv7sP9e9m0uW+L8ac8b6JZDfMIIXosJamjhHrlxk
-         x7o6DoEgEOG1pF2uWKJ8tqHxEv7beDdWA8TuZMietJQYm3WJ3tls3bY03bFpZNAh4Mf7
-         BIjeOKaiGIwMxWCjhSnwtmjHaTRFeNPPXZyhJT+MPP7masulU8rOQLGR55pRTZEp5F7T
-         1FswVIuuaH6JqcjJFfGqetWtDiJbYiJt2sPiQTWGjcGTArz27m+66LYpjLrAfL2YOTqT
-         TYCQ==
-X-Gm-Message-State: AOAM531p1vykeUKdm28vpl5UHlD7K4ocIC4lcfAnIHLxtWMJnMoaziRb
-        g/EZ6oFVqliI2rmJujwa/ig=
-X-Google-Smtp-Source: ABdhPJxTdoJHmZxhLXgmc4WLVrKyFQ/WkTPc6NtT1aGinrO7WxU3gZn55dFiMyzlWWrn0XGm3CEaXA==
-X-Received: by 2002:a05:600c:3d09:b0:394:7224:e6c4 with SMTP id bh9-20020a05600c3d0900b003947224e6c4mr25505459wmb.60.1652872803364;
-        Wed, 18 May 2022 04:20:03 -0700 (PDT)
-Received: from [192.168.0.36] ([5.225.216.194])
-        by smtp.gmail.com with ESMTPSA id k13-20020a05600c1c8d00b003971fc23185sm1401427wms.20.2022.05.18.04.20.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 04:20:02 -0700 (PDT)
-Message-ID: <084e5990-b970-360d-cef5-d9875a0e97b6@gmail.com>
-Date:   Wed, 18 May 2022 13:20:01 +0200
+        Wed, 18 May 2022 07:22:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6085615E4B8;
+        Wed, 18 May 2022 04:22:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8AE260B84;
+        Wed, 18 May 2022 11:22:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166F6C385A5;
+        Wed, 18 May 2022 11:22:30 +0000 (UTC)
+Message-ID: <f83e6b7e-8cb7-67b4-3e20-82bd9ff9a6a0@xs4all.nl>
+Date:   Wed, 18 May 2022 13:22:29 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 2/2] clocksource/drivers/timer-mediatek: Implement
- CPUXGPT timers
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v4] media: imx-jpeg: Encoder support to set jpeg quality
 Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     daniel.lezcano@linaro.org, tglx@linutronix.de,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, konrad.dybcio@somainline.org,
-        marijn.suijten@somainline.org, martin.botka@somainline.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        paul.bouchara@somainline.org
-References: <20220509210741.12020-1-angelogioacchino.delregno@collabora.com>
- <20220509210741.12020-3-angelogioacchino.delregno@collabora.com>
- <20220517204705.GA1597201-robh@kernel.org>
- <e3f1fe5b-b031-10b7-6e17-bc11e98cf5a3@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <e3f1fe5b-b031-10b7-6e17-bc11e98cf5a3@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Ming Qian <ming.qian@nxp.com>, mchehab@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mirela.rabulea@oss.nxp.com
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220422015320.14600-1-ming.qian@nxp.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <20220422015320.14600-1-ming.qian@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Ming,
 
+On 4/22/22 03:53, Ming Qian wrote:
+> Implement V4L2_CID_JPEG_COMPRESSION_QUALITY
+> to set jpeg quality
+> 
+> Signed-off-by: Ming Qian <ming.qian@nxp.com>
+> ---
+> v4
+> - put the changelog in wrong place in v3
+> v3
+> - put this v3 information below the --- line
+> v2
+> - free ctrl handler if error is set and return error
+> 
+>  .../media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c | 11 +++-
+>  .../media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h |  1 +
+>  .../media/platform/nxp/imx-jpeg/mxc-jpeg.c    | 57 +++++++++++++++++++
+>  .../media/platform/nxp/imx-jpeg/mxc-jpeg.h    |  2 +
+>  4 files changed, 68 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
+> index 29c604b1b179..c482228262a3 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.c
+> @@ -100,9 +100,6 @@ void mxc_jpeg_enc_mode_conf(struct device *dev, void __iomem *reg)
+>  
+>  	/* all markers and segments */
+>  	writel(0x3ff, reg + CAST_CFG_MODE);
+> -
+> -	/* quality factor */
+> -	writel(0x4b, reg + CAST_QUALITY);
+>  }
+>  
+>  void mxc_jpeg_enc_mode_go(struct device *dev, void __iomem *reg)
+> @@ -114,6 +111,14 @@ void mxc_jpeg_enc_mode_go(struct device *dev, void __iomem *reg)
+>  	writel(0x140, reg + CAST_MODE);
+>  }
+>  
+> +void mxc_jpeg_enc_set_quality(struct device *dev, void __iomem *reg, u8 quality)
+> +{
+> +	dev_dbg(dev, "CAST Encoder Quality %d...\n", quality);
+> +
+> +	/* quality factor */
+> +	writel(quality, reg + CAST_QUALITY);
+> +}
+> +
+>  void mxc_jpeg_dec_mode_go(struct device *dev, void __iomem *reg)
+>  {
+>  	dev_dbg(dev, "CAST Decoder GO...\n");
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+> index ae70d3a0dc24..356e40140987 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+> @@ -119,6 +119,7 @@ int mxc_jpeg_enable(void __iomem *reg);
+>  void wait_frmdone(struct device *dev, void __iomem *reg);
+>  void mxc_jpeg_enc_mode_conf(struct device *dev, void __iomem *reg);
+>  void mxc_jpeg_enc_mode_go(struct device *dev, void __iomem *reg);
+> +void mxc_jpeg_enc_set_quality(struct device *dev, void __iomem *reg, u8 quality);
+>  void mxc_jpeg_dec_mode_go(struct device *dev, void __iomem *reg);
+>  int mxc_jpeg_get_slot(void __iomem *reg);
+>  u32 mxc_jpeg_get_offset(void __iomem *reg, int slot);
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> index 0c3a1efbeae7..1bd245ba00e2 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+> @@ -624,6 +624,7 @@ static irqreturn_t mxc_jpeg_dec_irq(int irq, void *priv)
+>  	    ctx->enc_state == MXC_JPEG_ENC_CONF) {
+>  		ctx->enc_state = MXC_JPEG_ENCODING;
+>  		dev_dbg(dev, "Encoder config finished. Start encoding...\n");
+> +		mxc_jpeg_enc_set_quality(dev, reg, ctx->jpeg_quality);
+>  		mxc_jpeg_enc_mode_go(dev, reg);
+>  		goto job_unlock;
+>  	}
+> @@ -1563,6 +1564,51 @@ static void mxc_jpeg_set_default_params(struct mxc_jpeg_ctx *ctx)
+>  	}
+>  }
+>  
+> +static int mxc_jpeg_s_ctrl(struct v4l2_ctrl *ctrl)
+> +{
+> +	struct mxc_jpeg_ctx *ctx =
+> +		container_of(ctrl->handler, struct mxc_jpeg_ctx, ctrl_handler);
+> +
+> +	switch (ctrl->id) {
+> +	case V4L2_CID_JPEG_COMPRESSION_QUALITY:
+> +		ctx->jpeg_quality = ctrl->val;
+> +		break;
+> +	default:
+> +		dev_err(ctx->mxc_jpeg->dev, "Invalid control, id = %d, val = %d\n",
+> +			ctrl->id, ctrl->val);
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct v4l2_ctrl_ops mxc_jpeg_ctrl_ops = {
+> +	.s_ctrl = mxc_jpeg_s_ctrl,
+> +};
+> +
+> +static void mxc_jpeg_encode_ctrls(struct mxc_jpeg_ctx *ctx)
+> +{
+> +	v4l2_ctrl_new_std(&ctx->ctrl_handler, &mxc_jpeg_ctrl_ops,
+> +			  V4L2_CID_JPEG_COMPRESSION_QUALITY, 1, 100, 1, 75);
+> +}
+> +
+> +static int mxc_jpeg_ctrls_setup(struct mxc_jpeg_ctx *ctx)
+> +{
+> +	v4l2_ctrl_handler_init(&ctx->ctrl_handler, 2);
+> +
+> +	if (ctx->mxc_jpeg->mode == MXC_JPEG_ENCODE)
+> +		mxc_jpeg_encode_ctrls(ctx);
+> +
+> +	if (ctx->ctrl_handler.error) {
+> +		int err = ctx->ctrl_handler.error;
+> +
+> +		v4l2_ctrl_handler_free(&ctx->ctrl_handler);
+> +		return err;
+> +	}
+> +
+> +	return v4l2_ctrl_handler_setup(&ctx->ctrl_handler);
 
-On 18/05/2022 10:08, AngeloGioacchino Del Regno wrote:
-> Il 17/05/22 22:47, Rob Herring ha scritto:
->> On Mon, May 09, 2022 at 11:07:40PM +0200, AngeloGioacchino Del Regno wrote:
->>> Some MediaTek platforms with a buggy TrustZone ATF firmware will not
->>> initialize the AArch64 System Timer correctly: in these cases, the
->>> System Timer address is correctly programmed, as well as the CNTFRQ_EL0
->>> register (reading 13MHz, as it should be), but the assigned hardware
->>> timers are never started before (or after) booting Linux.
->>
->> I believe the upstream position in regards to arch timer work-arounds is
->> fix the firmware.
->>
-> 
-> Hello Rob,
-> 
-> unfortunately, this is not possible for all boards and/or all devices: while
-> it's really straightforward to add a register write in TrustZone, and MT6795
-> even has ATF support upstream, the major blocker for this is consumer devices.
-> 
-> There, you cannot simply flash a new ATF firmware because some partitions and
-> some firmwares are checked against an obviously not public OEM signature:
-> taking as an example the device that I'm using for development (a Sony Xperia M5
-> smartphone), a firmware fix would imply that Sony needs to release a new TZ
-> fw, which is not going to happen because that device was *abandoned* years ago.
-> 
-> Though, Sony is not the only OEM that is affected by that issue: all smartphones
-> have this signature check against the OEM's keys, which is 99.9% of the MT6795
-> boards.
-> Now there's also another catch: MT6795 is *not* the only SoC that requires this
-> fix... it's many others as well, both ARM and ARM64, and the count is very large!
-> ...and there's more: some of the OEMs/ODMs that produced MT6795 devices don't
-> even exist anymore!!!
-> 
-> Hence, the only way to avoid turning a very large pile of electronics into
-> e-waste is to give a new life to those abandoned deices by actually providing
-> a way to boot them - and this is the only way, as this commit is not just
-> for SMP, but also for the boot CPU, and Linux won't work without. At all.
-> 
-> If there was any way to get the firmware fixed, I would've gone for that,
-> but this is *really* the only option.
-> 
+If v4l2_ctrl_handler_setup() fails, then v4l2_ctrl_handler_free() is never called.
+The mxc_jpeg_open() function assumes that mxc_jpeg_ctrls_setup() either returns
+0 or an error, and that on error it has freed any allocated memory.
 
-I agree with Angelo, we should make sure that we can run Linux on these devices, 
-as they are the only available for the general public.
-
-Actually we were forced to do something similar for arm32 devices as well [1].
+So this needs to be fixed.
 
 Regards,
-Matthias
 
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/mach-mediatek/mediatek.c?h=v5.18-rc7#n19
+	Hans
 
-> Regards,
-> Angelo
-> 
->> Rob
->>
->>>
->>> In this condition, any call to function get_cycles() will be returning
->>> zero, as CNTVCT_EL0 will always read zero.
->>>
->>> One common critical symptom of that is trying to use the udelay()
->>> function (calling __delay()), which executes the following loop:
->>>
->>>              start = get_cycles();
->>>              while ((get_cycles() - start) < cycles)
->>>                      cpu_relax();
->>>
->>> which, when CNTVCT_EL0 always reads zero, translates to:
->>>
->>>              while((0 - 0) < 0)  ==> while(0 < 0)
->>>
->>> ... generating an infinite loop, even though zero is never less
->>> than zero, but always equal to it (this has to be researched,
->>> but it's out of the scope of this commit).
->>>
->>> To fix this issue on the affected MediaTek platforms, the solution
->>> is to simply start the timers that are designed to be System Timer(s).
->>> These timers, downstream, are called "CPUXGPT" and there is one
->>> timer per CPU core; luckily, it is not necessary to set a start bit
->>> on each CPUX General Purpose Timer, but it's conveniently enough to:
->>>   - Set the clock divider (input = 26MHz, divider = 2, output = 13MHz);
->>>   - Set the ENABLE bit on a global register (starts all CPUX timers).
->>>
->>> The only small hurdle with this setup is that it's all done through
->>> the MCUSYS wrapper, where it is needed, for each read or write, to
->>> select a register address (by writing it to an index register) and
->>> then to perform any R/W on a "CON" register.
->>>
->>> For example, writing "0x1" to the CPUXGPT register offset 0x4:
->>> - Write 0x4 to mcusys INDEX register
->>> - Write 0x1 to mcusys CON register
->>>
->>> Reading from CPUXGPT register offset 0x4:
->>> - Write 0x4 to mcusys INDEX register
->>> - Read mcusys CON register.
->>>
->>> Finally, starting this timer makes platforms affected by this issue
->>> to work correctly.
->>>
->>> Signed-off-by: AngeloGioacchino Del Regno 
->>> <angelogioacchino.delregno@collabora.com>
->>> ---
->>>   drivers/clocksource/timer-mediatek.c | 119 +++++++++++++++++++++++++++
->>>   1 file changed, 119 insertions(+)
->>>
->>> diff --git a/drivers/clocksource/timer-mediatek.c 
->>> b/drivers/clocksource/timer-mediatek.c
->>> index 7bcb4a3f26fb..a3e90047f9ac 100644
->>> --- a/drivers/clocksource/timer-mediatek.c
->>> +++ b/drivers/clocksource/timer-mediatek.c
->>> @@ -22,6 +22,19 @@
->>>   #define TIMER_SYNC_TICKS        (3)
->>> +/* cpux mcusys wrapper */
->>> +#define CPUX_CON_REG        0x0
->>> +#define CPUX_IDX_REG        0x4
->>> +
->>> +/* cpux */
->>> +#define CPUX_IDX_GLOBAL_CTRL    0x0
->>> + #define CPUX_ENABLE        BIT(0)
->>> + #define CPUX_CLK_DIV_MASK    GENMASK(10, 8)
->>> + #define CPUX_CLK_DIV1        BIT(8)
->>> + #define CPUX_CLK_DIV2        BIT(9)
->>> + #define CPUX_CLK_DIV4        BIT(10)
->>> +#define CPUX_IDX_GLOBAL_IRQ    0x30
->>> +
->>>   /* gpt */
->>>   #define GPT_IRQ_EN_REG          0x00
->>>   #define GPT_IRQ_ENABLE(val)     BIT((val) - 1)
->>> @@ -72,6 +85,57 @@
->>>   static void __iomem *gpt_sched_reg __read_mostly;
->>> +static u32 mtk_cpux_readl(u32 reg_idx, struct timer_of *to)
->>> +{
->>> +    writel(reg_idx, timer_of_base(to) + CPUX_IDX_REG);
->>> +    return readl(timer_of_base(to) + CPUX_CON_REG);
->>> +}
->>> +
->>> +static void mtk_cpux_writel(u32 val, u32 reg_idx, struct timer_of *to)
->>> +{
->>> +    writel(reg_idx, timer_of_base(to) + CPUX_IDX_REG);
->>> +    writel(val, timer_of_base(to) + CPUX_CON_REG);
->>> +}
->>> +
->>> +static void mtk_cpux_disable_irq(struct timer_of *to)
->>> +{
->>> +    const unsigned long *irq_mask = cpumask_bits(cpu_possible_mask);
->>> +    u32 val;
->>> +
->>> +    val = mtk_cpux_readl(CPUX_IDX_GLOBAL_IRQ, to);
->>> +    val &= ~(*irq_mask);
->>> +    mtk_cpux_writel(val, CPUX_IDX_GLOBAL_IRQ, to);
->>> +}
->>> +
->>> +static void mtk_cpux_enable_irq(struct timer_of *to)
->>> +{
->>> +    const unsigned long *irq_mask = cpumask_bits(cpu_possible_mask);
->>> +    u32 val;
->>> +
->>> +    val = mtk_cpux_readl(CPUX_IDX_GLOBAL_IRQ, to);
->>> +    val |= *irq_mask;
->>> +    mtk_cpux_writel(val, CPUX_IDX_GLOBAL_IRQ, to);
->>> +}
->>> +
->>> +static int mtk_cpux_clkevt_shutdown(struct clock_event_device *clkevt)
->>> +{
->>> +    /* Clear any irq */
->>> +    mtk_cpux_disable_irq(to_timer_of(clkevt));
->>> +
->>> +    /*
->>> +     * Disabling CPUXGPT timer will crash the platform, especially
->>> +     * if Trusted Firmware is using it (usually, for sleep states),
->>> +     * so we only mask the IRQ and call it a day.
->>> +     */
->>> +    return 0;
->>> +}
->>> +
->>> +static int mtk_cpux_clkevt_resume(struct clock_event_device *clkevt)
->>> +{
->>> +    mtk_cpux_enable_irq(to_timer_of(clkevt));
->>> +    return 0;
->>> +}
->>> +
->>>   static void mtk_syst_ack_irq(struct timer_of *to)
->>>   {
->>>       /* Clear and disable interrupt */
->>> @@ -281,6 +345,60 @@ static struct timer_of to = {
->>>       },
->>>   };
->>> +static int __init mtk_cpux_init(struct device_node *node)
->>> +{
->>> +    static struct timer_of to_cpux;
->>> +    u32 freq, val;
->>> +    int ret;
->>> +
->>> +    /*
->>> +     * There are per-cpu interrupts for the CPUX General Purpose Timer
->>> +     * but since this timer feeds the AArch64 System Timer we can rely
->>> +     * on the CPU timer PPIs as well, so we don't declare TIMER_OF_IRQ.
->>> +     */
->>> +    to_cpux.flags = TIMER_OF_BASE | TIMER_OF_CLOCK;
->>> +    to_cpux.clkevt.name = "mtk-cpuxgpt";
->>> +    to_cpux.clkevt.rating = 10;
->>> +    to_cpux.clkevt.cpumask = cpu_possible_mask;
->>> +    to_cpux.clkevt.set_state_shutdown = mtk_cpux_clkevt_shutdown;
->>> +    to_cpux.clkevt.tick_resume = mtk_cpux_clkevt_resume;
->>> +
->>> +    /* If this fails, bad things are about to happen... */
->>> +    ret = timer_of_init(node, &to_cpux);
->>> +    if (ret) {
->>> +        WARN(1, "Cannot start CPUX timers.\n");
->>> +        return ret;
->>> +    }
->>> +
->>> +    /*
->>> +     * Check if we're given a clock with the right frequency for this
->>> +     * timer, otherwise warn but keep going with the setup anyway, as
->>> +     * that makes it possible to still boot the kernel, even though
->>> +     * it may not work correctly (random lockups, etc).
->>> +     * The reason behind this is that having an early UART may not be
->>> +     * possible for everyone and this gives a chance to retrieve kmsg
->>> +     * for eventual debugging even on consumer devices.
->>> +     */
->>> +    freq = timer_of_rate(&to_cpux);
->>> +    if (freq > 13000000)
->>> +        WARN(1, "Requested unsupported timer frequency %u\n", freq);
->>> +
->>> +    /* Clock input is 26MHz, set DIV2 to achieve 13MHz clock */
->>> +    val = mtk_cpux_readl(CPUX_IDX_GLOBAL_CTRL, &to_cpux);
->>> +    val &= ~CPUX_CLK_DIV_MASK;
->>> +    val |= CPUX_CLK_DIV2;
->>> +    mtk_cpux_writel(val, CPUX_IDX_GLOBAL_CTRL, &to_cpux);
->>> +
->>> +    /* Enable all CPUXGPT timers */
->>> +    val = mtk_cpux_readl(CPUX_IDX_GLOBAL_CTRL, &to_cpux);
->>> +    mtk_cpux_writel(val | CPUX_ENABLE, CPUX_IDX_GLOBAL_CTRL, &to_cpux);
->>> +
->>> +    clockevents_config_and_register(&to_cpux.clkevt, timer_of_rate(&to_cpux),
->>> +                    TIMER_SYNC_TICKS, 0xffffffff);
->>> +
->>> +    return 0;
->>> +}
->>> +
->>>   static int __init mtk_syst_init(struct device_node *node)
->>>   {
->>>       int ret;
->>> @@ -339,3 +457,4 @@ static int __init mtk_gpt_init(struct device_node *node)
->>>   }
->>>   TIMER_OF_DECLARE(mtk_mt6577, "mediatek,mt6577-timer", mtk_gpt_init);
->>>   TIMER_OF_DECLARE(mtk_mt6765, "mediatek,mt6765-timer", mtk_syst_init);
->>> +TIMER_OF_DECLARE(mtk_mt6795, "mediatek,mt6795-systimer", mtk_cpux_init);
->>> -- 
->>> 2.35.1
->>>
->>>
-> 
-> 
+> +}
+> +
+>  static int mxc_jpeg_open(struct file *file)
+>  {
+>  	struct mxc_jpeg_dev *mxc_jpeg = video_drvdata(file);
+> @@ -1594,6 +1640,12 @@ static int mxc_jpeg_open(struct file *file)
+>  		goto error;
+>  	}
+>  
+> +	ret = mxc_jpeg_ctrls_setup(ctx);
+> +	if (ret) {
+> +		dev_err(ctx->mxc_jpeg->dev, "failed to setup mxc jpeg controls\n");
+> +		goto err_ctrls_setup;
+> +	}
+> +	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
+>  	mxc_jpeg_set_default_params(ctx);
+>  	ctx->slot = MXC_MAX_SLOTS; /* slot not allocated yet */
+>  
+> @@ -1605,6 +1657,8 @@ static int mxc_jpeg_open(struct file *file)
+>  
+>  	return 0;
+>  
+> +err_ctrls_setup:
+> +	v4l2_m2m_ctx_release(ctx->fh.m2m_ctx);
+>  error:
+>  	v4l2_fh_del(&ctx->fh);
+>  	v4l2_fh_exit(&ctx->fh);
+> @@ -1962,6 +2016,8 @@ static int mxc_jpeg_subscribe_event(struct v4l2_fh *fh,
+>  		return v4l2_event_subscribe(fh, sub, 0, NULL);
+>  	case V4L2_EVENT_SOURCE_CHANGE:
+>  		return v4l2_src_change_event_subscribe(fh, sub);
+> +	case V4L2_EVENT_CTRL:
+> +		return v4l2_ctrl_subscribe_event(fh, sub);
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -2035,6 +2091,7 @@ static int mxc_jpeg_release(struct file *file)
+>  	else
+>  		dev_dbg(dev, "Release JPEG encoder instance on slot %d.",
+>  			ctx->slot);
+> +	v4l2_ctrl_handler_free(&ctx->ctrl_handler);
+>  	v4l2_m2m_ctx_release(ctx->fh.m2m_ctx);
+>  	v4l2_fh_del(&ctx->fh);
+>  	v4l2_fh_exit(&ctx->fh);
+> diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
+> index 9ae56e6e0fbe..9c9da32b2125 100644
+> --- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
+> +++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
+> @@ -96,6 +96,8 @@ struct mxc_jpeg_ctx {
+>  	unsigned int			slot;
+>  	unsigned int			source_change;
+>  	bool				header_parsed;
+> +	struct v4l2_ctrl_handler	ctrl_handler;
+> +	u8				jpeg_quality;
+>  };
+>  
+>  struct mxc_jpeg_slot_data {
