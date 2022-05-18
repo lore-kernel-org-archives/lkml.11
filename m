@@ -2,340 +2,462 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D058AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA55C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbiERGbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60228 "EHLO
+        id S231391AbiERGcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbiERGbh (ORCPT
+        with ESMTP id S231485AbiERGc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:31:37 -0400
-Received: from esa5.hc1455-7.c3s2.iphmx.com (esa5.hc1455-7.c3s2.iphmx.com [68.232.139.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B039CB4B3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:31:35 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="72779168"
-X-IronPort-AV: E=Sophos;i="5.91,234,1647270000"; 
-   d="scan'208";a="72779168"
-Received: from unknown (HELO yto-r3.gw.nic.fujitsu.com) ([218.44.52.219])
-  by esa5.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 15:31:33 +0900
-Received: from yto-m3.gw.nic.fujitsu.com (yto-nat-yto-m3.gw.nic.fujitsu.com [192.168.83.66])
-        by yto-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id B6E01D502D
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:32 +0900 (JST)
-Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
-        by yto-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id EFD23141C4
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:31 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om4.fujitsu.com (Postfix) with ESMTP id 80359400D50DB;
-        Wed, 18 May 2022 15:31:31 +0900 (JST)
-From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
-To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, gregkh@linuxfoundation.org,
-        rafael@kernel.org, mchehab+huawei@kernel.org, eugenis@google.com,
-        tony.luck@intel.com, pcc@google.com, peterz@infradead.org,
-        marcos@orca.pet, conor.dooley@microchip.com,
-        nicolas.ferre@microchip.com, marcan@marcan.st,
-        linus.walleij@linaro.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH v4 6/8] x86: Add hardware prefetch control support for x86
-Date:   Wed, 18 May 2022 15:30:30 +0900
-Message-Id: <20220518063032.2377351-7-tarumizu.kohei@fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
-References: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
+        Wed, 18 May 2022 02:32:26 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA24369CF0;
+        Tue, 17 May 2022 23:32:24 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: benjamin.gaignard)
+        with ESMTPSA id DF5F21F44A2A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652855542;
+        bh=09ycYoP6zwOQ5owwyRqEAN32FR2d2gdoiHqmsuGKEL4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=caVCMSSLwINOv9gkVoeiA2dtOiyhxZj2aDb4P+RowTA33Tfjs0txCjHgIC0hgGZ6R
+         E3SbMUxuu6VuaGBc7+zEssX9+vwRxG9BQVcd/8MstJoVBdCJrLdcOK1QOFhWfwMmlp
+         XeCEq5NaG3X+mMc491+T8aUbh0ibmcilcWXq1NfZw1L5xFCp2mx/1qMbIwgZStfcbB
+         JZRzYx54LmTahqySAj3Q6J+6uLayebL/Y3oxRSQyOFi97ZGEtLQaepsejHU6DvpI3G
+         8aMfMIHpjvM+WakGz2cDskT/I1ZMvIhvgfdEHZD2TOUtLKH89WtbIIJJTOx5+FLZa2
+         9/zZv0Ph/XujQ==
+Message-ID: <97f99848-8895-3540-6472-865f15e7a526@collabora.com>
+Date:   Wed, 18 May 2022 08:32:19 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] media: hantro: Be more accurate on pixel formats
+ step_width constraints
+Content-Language: en-US
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        mchehab@kernel.org, gregkh@linuxfoundation.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, heiko@sntech.de, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org
+Cc:     kernel@pengutronix.de, linux-media@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, kernel@collabora.com
+References: <20220517122629.522211-1-benjamin.gaignard@collabora.com>
+ <db9149100bbed9efecc54d9a39dc57862d49cd23.camel@collabora.com>
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <db9149100bbed9efecc54d9a39dc57862d49cd23.camel@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds module init/exit code to create sysfs attributes for x86 with
-"hardware_prefetcher_enable", "ip_prefetcher_enable" and
-"adjacent_cache_line_prefetcher_enable".
 
-This driver works only if a CPU model is mapped to type of register
-specification(e.g. TYPE_L12_BASE) in pfctl_match[].
+Le 17/05/2022 à 19:42, Nicolas Dufresne a écrit :
+> Le mardi 17 mai 2022 à 14:26 +0200, Benjamin Gaignard a écrit :
+>> On Hantro G2 decoder on IMX8MQ strides requirements aren't the same
+>> for NV12_4L4 and NV12 pixel formats. The first one use a 4 bytes padding
+>> while the last one needs 8 bytes.
+>> To be sure to provide the correct stride in all cases we need:
+>> - to relax the constraints on codec formats so set step_width to 4
+>> - use capture queue format and not the output queue format when applying
+>>    the pixel format constraints.
+>> - put the correct step_width constraints on each pixel format.
+>>
+>> Move HEVC SPS validation in hantro_hevc.c to be able to perform it
+>> when setting sps control and when starting to decode the bitstream.
+>> Add a new test in HEVC SPS validation function to check if resolution
+>> is still matching the hardware constraints.
+>>
+>> With this SAODBLK_A_MainConcept_4 and SAODBLK_B_MainConcept_4 conformance
+>> tests files are correctly decoded with both NV12 and NV12_4L4 pixel formats.
+>> These two files have a resolution of 1016x760.
+>> If step_width = 16 for the both pixel formats the selected capture
+> Did you mean is instead of = ? Are you missing "and" somewhere in this sentence
+> ?
 
-The details of the registers(MSR_MISC_FEATURE_CONTROL) to be read and
-written in this patch are described below:
+I mean 'equal' if step_width equal 16 the selected resolution is wrong for NV12_4L4.
 
-"https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html"
-    Volume 4
+>> resolution is 1024x768 which is wrong for NV12_4L4 (which expect 1016x760)
+>> on Hantro G2 on IMX8MQ (but correct for NV12).
+>>
+>> For other variants than Hantro G2 on IMX8M keep the same step_width to avoid
+>> regressions.
+>>
+>> Fluster HEVC test score is now 128/147 vs 126/147 with the both pixel
+>> formats as decoder output.
+>> Fluster VP9 test score stay at 147/303.
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+>> ---
+>> version 2:
+>> - Add a HEVC SPS validation function to be used when
+>>    setting the control and start decoding.
+>>    I hope that is what Nicolas expects in his remark on v1.
+>>
+>>   drivers/staging/media/hantro/hantro_drv.c     | 12 +++---
+>>   drivers/staging/media/hantro/hantro_hevc.c    | 28 +++++++++++++
+>>   drivers/staging/media/hantro/hantro_hw.h      |  2 +
+>>   drivers/staging/media/hantro/hantro_v4l2.c    |  2 +-
+>>   drivers/staging/media/hantro/imx8m_vpu_hw.c   | 40 +++++++++++++++++--
+>>   .../staging/media/hantro/rockchip_vpu_hw.c    | 32 +++++++++++++++
+>>   .../staging/media/hantro/sama5d4_vdec_hw.c    | 16 ++++++++
+>>   drivers/staging/media/hantro/sunxi_vpu_hw.c   | 16 ++++++++
+>>   8 files changed, 137 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+>> index 377dcc1d19de..5aac3a090480 100644
+>> --- a/drivers/staging/media/hantro/hantro_drv.c
+>> +++ b/drivers/staging/media/hantro/hantro_drv.c
+>> @@ -253,6 +253,11 @@ queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_vq)
+>>   
+>>   static int hantro_try_ctrl(struct v4l2_ctrl *ctrl)
+>>   {
+>> +	struct hantro_ctx *ctx;
+>> +
+>> +	ctx = container_of(ctrl->handler,
+>> +			   struct hantro_ctx, ctrl_handler);
+>> +
+>>   	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
+>>   		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
+>>   
+>> @@ -268,12 +273,7 @@ static int hantro_try_ctrl(struct v4l2_ctrl *ctrl)
+>>   	} else if (ctrl->id == V4L2_CID_STATELESS_HEVC_SPS) {
+>>   		const struct v4l2_ctrl_hevc_sps *sps = ctrl->p_new.p_hevc_sps;
+>>   
+>> -		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+>> -			/* Luma and chroma bit depth mismatch */
+>> -			return -EINVAL;
+>> -		if (sps->bit_depth_luma_minus8 != 0)
+>> -			/* Only 8-bit is supported */
+>> -			return -EINVAL;
+>> +		return hantro_hevc_validate_sps(ctx, sps);
+>>   	} else if (ctrl->id == V4L2_CID_STATELESS_VP9_FRAME) {
+>>   		const struct v4l2_ctrl_vp9_frame *dec_params = ctrl->p_new.p_vp9_frame;
+>>   
+>> diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
+>> index 7fdec50dc853..6abef810b285 100644
+>> --- a/drivers/staging/media/hantro/hantro_hevc.c
+>> +++ b/drivers/staging/media/hantro/hantro_hevc.c
+>> @@ -154,6 +154,30 @@ static int tile_buffer_reallocate(struct hantro_ctx *ctx)
+>>   	return -ENOMEM;
+>>   }
+>>   
+>> +int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc_sps *sps)
+>> +{
+>> +	if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+>> +		/* Luma and chroma bit depth mismatch */
+>> +		return -EINVAL;
+>> +	if (sps->bit_depth_luma_minus8 != 0)
+>> +		/* Only 8-bit is supported */
+>> +		return -EINVAL;
+>> +
+>> +	/* for tile pixel format check if the width and height match
+>> +	 * hardware constraints */
+>> +	if (ctx->vpu_dst_fmt->fourcc == V4L2_PIX_FMT_NV12_4L4) {
+>> +		if (ctx->dst_fmt.width !=
+>> +		    ALIGN(sps->pic_width_in_luma_samples, ctx->vpu_dst_fmt->frmsize.step_width))
+>> +			return -EINVAL;
+>> +
+>> +		if (ctx->dst_fmt.height !=
+>> +		    ALIGN(sps->pic_height_in_luma_samples, ctx->vpu_dst_fmt->frmsize.step_height))
+>> +			return -EINVAL;
+> No action needed, just a question. Can we output tiled out of the PP ? If so,
+> perhaps we could handle the alignment difference by enabling the PP even if
+> tiled. That would greatly help to handle compatibility between decoders and
+> encoders in the future.
 
-Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
----
- arch/x86/kernel/cpu/x86-pfctl.c | 258 ++++++++++++++++++++++++++++++++
- 1 file changed, 258 insertions(+)
- create mode 100644 arch/x86/kernel/cpu/x86-pfctl.c
+No tiled formats are produced by the decoder, PP produce NV12 format.
 
-diff --git a/arch/x86/kernel/cpu/x86-pfctl.c b/arch/x86/kernel/cpu/x86-pfctl.c
-new file mode 100644
-index 000000000000..0b3b22128dff
---- /dev/null
-+++ b/arch/x86/kernel/cpu/x86-pfctl.c
-@@ -0,0 +1,258 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright 2022 FUJITSU LIMITED
-+ *
-+ * x86 Hardware Prefetch Control support
-+ */
-+
-+#include <linux/cacheinfo.h>
-+#include <linux/device.h>
-+#include <linux/module.h>
-+#include <linux/pfctl.h>
-+#include <linux/slab.h>
-+#include <linux/smp.h>
-+#include <linux/sysfs.h>
-+#include <asm/cpu_device_id.h>
-+#include <asm/intel-family.h>
-+#include <asm/msr.h>
-+
-+/*
-+ * MSR_MISC_FEATURE_CONTROL has three type of register specifications.
-+ *
-+ * The register specification of TYPE_L12_BASE is as follow:
-+ * [0]    L2 Hardware Prefetcher Disable (R/W)
-+ * [1]    Reserved
-+ * [2]    DCU Hardware Prefetcher Disable (R/W)
-+ * [63:3] Reserved
-+ *
-+ * The register specification of TYPE_L12_PLUS is as follow:
-+ * [0]    L2 Hardware Prefetcher Disable (R/W)
-+ * [1]    L2 Adjacent Cache Line Prefetcher Disable (R/W)
-+ * [2]    DCU Hardware Prefetcher Disable (R/W)
-+ * [3]    DCU IP Prefetcher Disable (R/W)
-+ * [63:4] Reserved
-+ *
-+ * The register specification of TYPE_L12_XPHI is as follow:
-+ * [0]    L2 Hardware Prefetcher Disable (R/W)
-+ * [1]    DCU Hardware Prefetcher Disable (R/W)
-+ * [63:2] Reserved
-+ *
-+ * See "Intel 64 and IA-32 Architectures Software Developer's Manual"
-+ * (https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
-+ * for register specification details.
-+ */
-+enum {
-+	TYPE_L12_BASE,
-+	TYPE_L12_PLUS,
-+	TYPE_L12_XPHI,
-+};
-+
-+struct x86_pfctl_attr {
-+	struct device_attribute		attr;
-+	u64				mask;
-+};
-+
-+/*
-+ * Returns the cpu number of the cpu_device(/sys/devices/system/cpu/cpuX)
-+ * in the ancestor directory of prefetch_control.
-+ *
-+ * When initializing this driver, it is verified that the cache directory exists
-+ * under cpuX device. Therefore, the third level up from prefetch_control is
-+ * cpuX device as shown below.
-+ *
-+ * /sys/devices/system/cpu/cpuX/cache/indexX/prefetch_control
-+ */
-+static inline unsigned int pfctl_dev_get_cpu(struct device *pfctl_dev)
-+{
-+	return pfctl_dev->parent->parent->parent->id;
-+}
-+
-+static ssize_t
-+pfctl_show(struct device *pfctl_dev, struct device_attribute *attr, char *buf)
-+{
-+	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
-+	struct x86_pfctl_attr *xa;
-+	u64 val;
-+
-+	xa = container_of(attr, struct x86_pfctl_attr, attr);
-+
-+	rdmsrl_on_cpu(cpu, MSR_MISC_FEATURE_CONTROL, &val);
-+	return sysfs_emit(buf, "%d\n", val & xa->mask ? 0 : 1);
-+}
-+
-+struct write_info {
-+	u64 mask;
-+	bool enable;
-+};
-+
-+/*
-+ * wrmsrl() in this patch is only done inside of an interrupt-disabled region
-+ * to avoid a conflict of write access from other drivers,
-+ */
-+static void pfctl_write(void *info)
-+{
-+	struct write_info *winfo = info;
-+	u64 reg;
-+
-+	reg = 0;
-+	rdmsrl(MSR_MISC_FEATURE_CONTROL, reg);
-+
-+	if (winfo->enable)
-+		reg &= ~winfo->mask;
-+	else
-+		reg |= winfo->mask;
-+
-+	wrmsrl(MSR_MISC_FEATURE_CONTROL, reg);
-+}
-+
-+/*
-+ * MSR_MISC_FEATURE_CONTROL has "core" scope, so define the lock to avoid a
-+ * conflict of write access from different logical processors in the same core.
-+ */
-+static DEFINE_MUTEX(pfctl_mutex);
-+
-+static ssize_t
-+pfctl_store(struct device *pfctl_dev, struct device_attribute *attr,
-+	    const char *buf, size_t size)
-+{
-+	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
-+	struct x86_pfctl_attr *xa;
-+	struct write_info info;
-+
-+	xa = container_of(attr, struct x86_pfctl_attr, attr);
-+	info.mask = xa->mask;
-+
-+	if (strtobool(buf, &info.enable) < 0)
-+		return -EINVAL;
-+
-+	mutex_lock(&pfctl_mutex);
-+	smp_call_function_single(cpu, pfctl_write, &info, true);
-+	mutex_unlock(&pfctl_mutex);
-+
-+	return size;
-+}
-+
-+#define PFCTL_ATTR(_name, _level, _bit)					\
-+	struct x86_pfctl_attr attr_l##_level##_##_name = {		\
-+		.attr = __ATTR(_name, 0600, pfctl_show, pfctl_store),	\
-+		.mask = BIT_ULL(_bit), }
-+
-+static PFCTL_ATTR(hardware_prefetcher_enable,			1, 2);
-+static PFCTL_ATTR(hardware_prefetcher_enable,			2, 0);
-+static PFCTL_ATTR(ip_prefetcher_enable,				1, 3);
-+static PFCTL_ATTR(adjacent_cache_line_prefetcher_enable,	2, 1);
-+
-+static struct device_attribute *l1_attrs[] __ro_after_init = {
-+	&attr_l1_hardware_prefetcher_enable.attr,
-+	&attr_l1_ip_prefetcher_enable.attr,
-+	NULL,
-+};
-+
-+static struct device_attribute *l2_attrs[] __ro_after_init = {
-+	&attr_l2_hardware_prefetcher_enable.attr,
-+	&attr_l2_adjacent_cache_line_prefetcher_enable.attr,
-+	NULL,
-+};
-+
-+static const struct pfctl_group x86_pfctl_groups[] = {
-+	{
-+		.level = 1,
-+		.type = CACHE_TYPE_DATA,
-+		.attrs = l1_attrs,
-+	},
-+	{
-+		.level = 2,
-+		.type = CACHE_TYPE_UNIFIED,
-+		.attrs = l2_attrs,
-+	},
-+	{
-+		.attrs = NULL,
-+	},
-+};
-+
-+/*
-+ * Only BROADWELL_X has been tested in the actual machine at this point. Other
-+ * models were defined based on the information in the "Intel 64 and IA-32
-+ * Architectures Software Developer's Manual"
-+ */
-+static const struct x86_cpu_id pfctl_match[] __initconst = {
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_SILVERMONT_D,	TYPE_L12_BASE),
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_GOLDMONT,	TYPE_L12_BASE),
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_GOLDMONT_PLUS,	TYPE_L12_BASE),
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_D,	TYPE_L12_BASE),
-+	X86_MATCH_INTEL_FAM6_MODEL(NEHALEM,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(NEHALEM_G,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(NEHALEM_EP,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(NEHALEM_EX,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(SANDYBRIDGE,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(SANDYBRIDGE_X,	TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(IVYBRIDGE,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(IVYBRIDGE_X,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(HASWELL,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(HASWELL_X,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(HASWELL_L,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(HASWELL_G,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_G,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_X,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_D,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE_L,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE_X,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(KABYLAKE_L,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(KABYLAKE,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(COMETLAKE,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(COMETLAKE_L,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(CANNONLAKE_L,	TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_X,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_D,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_L,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(TIGERLAKE_L,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(TIGERLAKE,		TYPE_L12_PLUS),
-+	X86_MATCH_INTEL_FAM6_MODEL(XEON_PHI_KNL,	TYPE_L12_XPHI),
-+	X86_MATCH_INTEL_FAM6_MODEL(XEON_PHI_KNM,	TYPE_L12_XPHI),
-+	{},
-+};
-+
-+static int __init x86_pfctl_init(void)
-+{
-+	const struct x86_cpu_id *m;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-+		return -ENODEV;
-+
-+	m = x86_match_cpu(pfctl_match);
-+	if (!m)
-+		return -ENODEV;
-+
-+	switch (m->driver_data) {
-+	case TYPE_L12_BASE:
-+		l1_attrs[1] = NULL;
-+		l2_attrs[1] = NULL;
-+		break;
-+	case TYPE_L12_PLUS:
-+		break;
-+	case TYPE_L12_XPHI:
-+		attr_l1_hardware_prefetcher_enable.mask = BIT_ULL(1);
-+		l1_attrs[1] = NULL;
-+		l2_attrs[1] = NULL;
-+		break;
-+	default:
-+		return -ENODEV;
-+	};
-+
-+	return pfctl_register_attrs(x86_pfctl_groups);
-+}
-+
-+static void __exit x86_pfctl_exit(void)
-+{
-+	return pfctl_unregister_attrs(x86_pfctl_groups);
-+}
-+
-+late_initcall(x86_pfctl_init);
-+module_exit(x86_pfctl_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("FUJITSU LIMITED");
-+MODULE_DESCRIPTION("x86 Hardware Prefetch Control Driver");
--- 
-2.27.0
+>
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>   int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx)
+>>   {
+>>   	struct hantro_hevc_dec_hw_ctx *hevc_ctx = &ctx->hevc_dec;
+>> @@ -177,6 +201,10 @@ int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx)
+>>   	if (WARN_ON(!ctrls->sps))
+>>   		return -EINVAL;
+>>   
+>> +	ret = hantro_hevc_validate_sps(ctx, ctrls->sps);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>>   	ctrls->pps =
+>>   		hantro_get_ctrl(ctx, V4L2_CID_STATELESS_HEVC_PPS);
+>>   	if (WARN_ON(!ctrls->pps))
+>> diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
+>> index 994547fe41b9..0bba6378212d 100644
+>> --- a/drivers/staging/media/hantro/hantro_hw.h
+>> +++ b/drivers/staging/media/hantro/hantro_hw.h
+>> @@ -341,6 +341,8 @@ int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
+>>   void hantro_hevc_ref_init(struct hantro_ctx *ctx);
+>>   dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, s32 poc);
+>>   int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr);
+>> +int hantro_hevc_validate_sps(struct hantro_ctx *ctx, const struct v4l2_ctrl_hevc_sps *sps);
+>> +
+>>   
+>>   static inline unsigned short hantro_vp9_num_sbs(unsigned short dimension)
+>>   {
+>> diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+>> index 71a6279750bf..93d0dcf69f4a 100644
+>> --- a/drivers/staging/media/hantro/hantro_v4l2.c
+>> +++ b/drivers/staging/media/hantro/hantro_v4l2.c
+>> @@ -260,7 +260,7 @@ static int hantro_try_fmt(const struct hantro_ctx *ctx,
+>>   	} else if (ctx->is_encoder) {
+>>   		vpu_fmt = ctx->vpu_dst_fmt;
+>>   	} else {
+>> -		vpu_fmt = ctx->vpu_src_fmt;
+>> +		vpu_fmt = fmt;
+>>   		/*
+>>   		 * Width/height on the CAPTURE end of a decoder are ignored and
+>>   		 * replaced by the OUTPUT ones.
+>> diff --git a/drivers/staging/media/hantro/imx8m_vpu_hw.c b/drivers/staging/media/hantro/imx8m_vpu_hw.c
+>> index 9802508bade2..b6b2bf65e56d 100644
+>> --- a/drivers/staging/media/hantro/imx8m_vpu_hw.c
+>> +++ b/drivers/staging/media/hantro/imx8m_vpu_hw.c
+>> @@ -83,6 +83,14 @@ static const struct hantro_fmt imx8m_vpu_postproc_fmts[] = {
+>>   		.fourcc = V4L2_PIX_FMT_YUYV,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>>   		.postprocessed = true,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 3840,
+> I remember seeing limits to 4096 instead in VSI documentation (UWHD). Just like
+> many hardcoded limits in this driver, perhaps the limits was copied from the
+> white paper performance example. It would be weird that we can decode portrait
+> UHD/FHD.
+>
+> I think for this patch, what I'd like to see is the UDH and FHD limits to be set
+> as a define. Since if we got them wrong, fixing them later after this patch
+> becomes a lot more work, as its copied over and over.
+>
+> Everything else looks good to me know, thanks for the update.
 
+I will do that in the next version
+
+Benjamin
+
+>
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 2160,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   };
+>>   
+>> @@ -90,6 +98,14 @@ static const struct hantro_fmt imx8m_vpu_dec_fmts[] = {
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_NV12,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 3840,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 2160,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_MPEG2_SLICE,
+>> @@ -137,6 +153,14 @@ static const struct hantro_fmt imx8m_vpu_g2_postproc_fmts[] = {
+>>   		.fourcc = V4L2_PIX_FMT_NV12,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>>   		.postprocessed = true,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 3840,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 2160,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   };
+>>   
+>> @@ -144,6 +168,14 @@ static const struct hantro_fmt imx8m_vpu_g2_dec_fmts[] = {
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_NV12_4L4,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 3840,
+>> +			.step_width = 4,
+>> +			.min_height = 48,
+>> +			.max_height = 2160,
+>> +			.step_height = 4,
+>> +		},
+>>   	},
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_HEVC_SLICE,
+>> @@ -152,10 +184,10 @@ static const struct hantro_fmt imx8m_vpu_g2_dec_fmts[] = {
+>>   		.frmsize = {
+>>   			.min_width = 48,
+>>   			.max_width = 3840,
+>> -			.step_width = MB_DIM,
+>> +			.step_width = 4,
+>>   			.min_height = 48,
+>>   			.max_height = 2160,
+>> -			.step_height = MB_DIM,
+>> +			.step_height = 4,
+>>   		},
+>>   	},
+>>   	{
+>> @@ -165,10 +197,10 @@ static const struct hantro_fmt imx8m_vpu_g2_dec_fmts[] = {
+>>   		.frmsize = {
+>>   			.min_width = 48,
+>>   			.max_width = 3840,
+>> -			.step_width = MB_DIM,
+>> +			.step_width = 4,
+>>   			.min_height = 48,
+>>   			.max_height = 2160,
+>> -			.step_height = MB_DIM,
+>> +			.step_height = 4,
+>>   		},
+>>   	},
+>>   };
+>> diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+>> index fc96501f3bc8..efba7fcdf207 100644
+>> --- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
+>> +++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+>> @@ -63,6 +63,14 @@ static const struct hantro_fmt rockchip_vpu1_postproc_fmts[] = {
+>>   		.fourcc = V4L2_PIX_FMT_YUYV,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>>   		.postprocessed = true,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 1920,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 1088,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   };
+>>   
+>> @@ -70,6 +78,14 @@ static const struct hantro_fmt rk3066_vpu_dec_fmts[] = {
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_NV12,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 1920,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 1088,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_H264_SLICE,
+>> @@ -116,6 +132,14 @@ static const struct hantro_fmt rk3288_vpu_dec_fmts[] = {
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_NV12,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 4096,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 2304,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_H264_SLICE,
+>> @@ -162,6 +186,14 @@ static const struct hantro_fmt rk3399_vpu_dec_fmts[] = {
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_NV12,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 1920,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 1088,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_H264_SLICE,
+>> diff --git a/drivers/staging/media/hantro/sama5d4_vdec_hw.c b/drivers/staging/media/hantro/sama5d4_vdec_hw.c
+>> index b2fc1c5613e1..07ee804e706b 100644
+>> --- a/drivers/staging/media/hantro/sama5d4_vdec_hw.c
+>> +++ b/drivers/staging/media/hantro/sama5d4_vdec_hw.c
+>> @@ -16,6 +16,14 @@ static const struct hantro_fmt sama5d4_vdec_postproc_fmts[] = {
+>>   		.fourcc = V4L2_PIX_FMT_YUYV,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>>   		.postprocessed = true,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 1280,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 720,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   };
+>>   
+>> @@ -23,6 +31,14 @@ static const struct hantro_fmt sama5d4_vdec_fmts[] = {
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_NV12,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 1280,
+>> +			.step_width = MB_DIM,
+>> +			.min_height = 48,
+>> +			.max_height = 720,
+>> +			.step_height = MB_DIM,
+>> +		},
+>>   	},
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_MPEG2_SLICE,
+>> diff --git a/drivers/staging/media/hantro/sunxi_vpu_hw.c b/drivers/staging/media/hantro/sunxi_vpu_hw.c
+>> index c0edd5856a0c..c2392c08febb 100644
+>> --- a/drivers/staging/media/hantro/sunxi_vpu_hw.c
+>> +++ b/drivers/staging/media/hantro/sunxi_vpu_hw.c
+>> @@ -14,6 +14,14 @@ static const struct hantro_fmt sunxi_vpu_postproc_fmts[] = {
+>>   		.fourcc = V4L2_PIX_FMT_NV12,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>>   		.postprocessed = true,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 3840,
+>> +			.step_width = 32,
+>> +			.min_height = 48,
+>> +			.max_height = 2160,
+>> +			.step_height = 32,
+>> +		},
+>>   	},
+>>   };
+>>   
+>> @@ -21,6 +29,14 @@ static const struct hantro_fmt sunxi_vpu_dec_fmts[] = {
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_NV12_4L4,
+>>   		.codec_mode = HANTRO_MODE_NONE,
+>> +		.frmsize = {
+>> +			.min_width = 48,
+>> +			.max_width = 3840,
+>> +			.step_width = 32,
+>> +			.min_height = 48,
+>> +			.max_height = 2160,
+>> +			.step_height = 32,
+>> +		},
+>>   	},
+>>   	{
+>>   		.fourcc = V4L2_PIX_FMT_VP9_FRAME,
+>> -- 
+>> 2.32.0
+>>
+>>
