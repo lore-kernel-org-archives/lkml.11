@@ -2,180 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF893C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240580AbiERQ4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
+        id S240663AbiERQ4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240630AbiERQz6 (ORCPT
+        with ESMTP id S240586AbiERQyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:55:58 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C491900A
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:55:56 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id i27so4971040ejd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:55:56 -0700 (PDT)
+        Wed, 18 May 2022 12:54:40 -0400
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF479201394;
+        Wed, 18 May 2022 09:54:36 -0700 (PDT)
+Received: by mail-ua1-x92f.google.com with SMTP id 90so1053905uam.8;
+        Wed, 18 May 2022 09:54:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+RcN5J0ur4waoOrpP5dEneSJvtTucrgzrBX0vuvDNzg=;
-        b=jqT/3rdeSfMtEpH8kcA4/nn+EfeZSUuf8LPPqhLKI9etfw6hQt/jE/5RB9+wAn7N+Z
-         Ehawr2Lnj8Xy/V9rEAUasHDJAEfZoSITtIIF1X9hmH3oDXIBNzCPI0/8wWj68x+PdNBs
-         CYcJUtEpJeYfXt4e7pO3nCwPPYgiL7h53DO5Fuujh2Y6lzOqlHXACtVhqvzimDu3Oual
-         tfhtqDL4wOAzaNxnKSix47hX+w5GxeHrTuVV+uT6Gaq249kr69g+Sjjj703raStyIOke
-         zlWbjfU2A5GEbVZtSf4efh8q1kIlRtND9i+ESBSanFHpCYBuGyVgZ0dkOIm+//g3Sp7O
-         /xlQ==
+        bh=olguYhICHMpk2ctYiMxEpCHQEQIGnr/VO6tDtpsZhI4=;
+        b=evhgvtGZikjzHZh4O3xNSDiWD6D3AEmA1+RNqZ2K5y0E2agNcv001H7iUC3Zhd8+dF
+         L4xGeCtgjofqz9ru806hEF2EtlPJMeUmYAaDejjxeSZJCUafH4+sg7a6axt5Xc1aSkVN
+         0AYRnM1mUmxpN1t3BPNGjm7fZA7kvI6pJ0CasVvL/VmhZJUxi602KGVb96aBlAeKSrE2
+         nPCz2PvfbwOnEQG9Lem5EsX2Wa7e/ugBA29UDPJV+7aqd1ZALnWg50DJJvQ/83dareaC
+         CBLSBAaYaNewA3NqSn+pbBd2vkd1MCvptA67T+4OeyQBXNdrXdhV9QcK8gpbaCD1luUP
+         riXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+RcN5J0ur4waoOrpP5dEneSJvtTucrgzrBX0vuvDNzg=;
-        b=VUbKK93uqGZhj/+EanO5kNPAjpaaykEQ2g69pn/5wigD0hL7EB2K9uHiAzlWx+IXbK
-         sb/ds1r1y3XTqTtgDzJJ5/f193rsUv5+HiY09MLJYW5hBFFFPpUQfAhPNYDmwEMfEiaX
-         CkMdTuMP6NP+CrBaucEEo5e20gksEpbqWW4M9ZWNRu7mvhq+RtPH1pwFsTxUS9jAIrTZ
-         WZT2ipww3BBX9h8HKIPZKOXxIMaqEhWEAYQENJw4mc1SA2DJ7Bxzt/1cFg0YVq2wz3e+
-         Ct4yN1cost0V4ijTqVyDF1swkCjFPTu8qvqb/JblPv6Hv365di69OIIzn6PUF8ShRTRv
-         YMzg==
-X-Gm-Message-State: AOAM5329/k30hDGWVDX0EOMHI/UgCRZOoUfg5nWyYjdDA6AbFEbE5cq5
-        bhWa/Z3FJ3KQwB2ISgLb9Hxil8HbDBeqSvA3mPUpAA==
-X-Google-Smtp-Source: ABdhPJzoDOL5onqSCpBWW4lu7fFIE11dPS6M11PWkiCu5oUw/XsvL6IBRO8qySJCvzfyvrHLY+M/j+7SW0BKghv5pwQ=
-X-Received: by 2002:a17:907:1c8a:b0:6e9:2a0d:d7b7 with SMTP id
- nb10-20020a1709071c8a00b006e92a0dd7b7mr479411ejc.572.1652892954798; Wed, 18
- May 2022 09:55:54 -0700 (PDT)
+        bh=olguYhICHMpk2ctYiMxEpCHQEQIGnr/VO6tDtpsZhI4=;
+        b=Ed1fUtRpaIqhP0+KvUeYYMbu7hCxOtn4a4jFSAY+eJfnu0f7d0UcLriTtheUXWWfCn
+         k+hZIseC5TkE/JdEF5YpElkZoSIxCE8UzwLipJP6Fkt8qcECu3xEWov4rXSSCLK/Is9S
+         UNew9iEAZmGlNLHFqdhZQ1JGqP+rLTyoHKB2ogSlmXbCPWOlBEi4/aq0+4DkDBlbb8A0
+         bHrTDJ75DrgtZBFnT8CGfDcLgoddi/A9ydqf7cYsHqMKtKyRwjBpFs1iAJ0DcpoB8ir8
+         FUaTFobc2it+EiGFYq2BF3OENL2gPTKRW2Q0SmpWo908dWGjSonAaXMEJc7tWJW77M7n
+         uo4A==
+X-Gm-Message-State: AOAM532xxouWGlEdrCxGWmFtwjiFxh7tBU0AT3z9PYf0u2+ZXzp3MutY
+        XJB8LOUU5ubX6tEmX7WqywKzlF9/d0pQWeaI1EE=
+X-Google-Smtp-Source: ABdhPJxpr0Ba9x+SyqQxWYIRxlCA23EeQik362azVIbx1zBWRraLxOhiRXdlHoXPu29Z75Xqghi+NXJQGEDikvRW/88=
+X-Received: by 2002:ab0:72d5:0:b0:368:aad4:5ef8 with SMTP id
+ g21-20020ab072d5000000b00368aad45ef8mr373535uap.27.1652892876048; Wed, 18 May
+ 2022 09:54:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <1652860121-24092-1-git-send-email-quic_vivekuma@quicinc.com>
-In-Reply-To: <1652860121-24092-1-git-send-email-quic_vivekuma@quicinc.com>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Wed, 18 May 2022 12:55:18 -0400
-Message-ID: <CA+CK2bDDphX6ANu_=8SPTy7gbB5aajtE3uVLGZrpaczZQKw4QA@mail.gmail.com>
-Subject: Re: [RFC 0/6] Bootloader based hibernation
-To:     Vivek Kumar <quic_vivekuma@quicinc.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
+ <20220518092619.1269111-15-chenhuacai@loongson.cn> <87ilq294mg.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <87ilq294mg.fsf@email.froward.int.ebiederm.org>
+From:   Huacai Chen <chenhuacai@gmail.com>
+Date:   Thu, 19 May 2022 00:54:24 +0800
+Message-ID: <CAAhV-H5Aov1NVsbNWZa9psPhBiNssYWWEzNOyLooeXGKsYxN+w@mail.gmail.com>
+Subject: Re: [PATCH V11 14/22] LoongArch: Add signal handling support
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-pm@vger.kernel.org, linux-mm <linux-mm@kvack.org>,
-        len.brown@intel.com, Pavel Machek <pavel@ucw.cz>,
-        paulmck@kernel.org, Borislav Petkov <bp@suse.de>,
-        Kees Cook <keescook@chromium.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        damien.lemoal@opensource.wdc.com, Fuad Tabba <tabba@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>, tsoni@quicinc.com,
-        quic_psodagud@quicinc.com, quic_svaddagi@quicinc.com
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Al Viro <viro@zeniv.linux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vivek,
+Hi, Eric,
 
-Interesting stuff.
+On Thu, May 19, 2022 at 12:40 AM Eric W. Biederman
+<ebiederm@xmission.com> wrote:
+>
+> Huacai Chen <chenhuacai@loongson.cn> writes:
+>
+> > Add ucontext/sigcontext definition and signal handling support for
+> > LoongArch.
+> >
+> > Cc: Eric Biederman <ebiederm@xmission.com>
+> > Cc: Al Viro <viro@zeniv.linux.org.uk>
+> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+> > ---
+> >  arch/loongarch/include/uapi/asm/sigcontext.h |  44 ++
+> >  arch/loongarch/include/uapi/asm/signal.h     |  13 +
+> >  arch/loongarch/include/uapi/asm/ucontext.h   |  35 ++
+> >  arch/loongarch/kernel/signal.c               | 566 +++++++++++++++++++
+> >  4 files changed, 658 insertions(+)
+> >  create mode 100644 arch/loongarch/include/uapi/asm/sigcontext.h
+> >  create mode 100644 arch/loongarch/include/uapi/asm/signal.h
+> >  create mode 100644 arch/loongarch/include/uapi/asm/ucontext.h
+> >  create mode 100644 arch/loongarch/kernel/signal.c
+> >
+> > diff --git a/arch/loongarch/include/uapi/asm/sigcontext.h b/arch/loongarch/include/uapi/asm/sigcontext.h
+> > new file mode 100644
+> > index 000000000000..be3d3c6ac83e
+> > --- /dev/null
+> > +++ b/arch/loongarch/include/uapi/asm/sigcontext.h
+> > @@ -0,0 +1,44 @@
+> > +/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+> > +/*
+> > + * Author: Hanlu Li <lihanlu@loongson.cn>
+> > + *         Huacai Chen <chenhuacai@loongson.cn>
+> > + *
+> > + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
+> > + */
+> > +#ifndef _UAPI_ASM_SIGCONTEXT_H
+> > +#define _UAPI_ASM_SIGCONTEXT_H
+> > +
+> > +#include <linux/types.h>
+> > +#include <linux/posix_types.h>
+> > +
+> > +/* FP context was used */
+> > +#define SC_USED_FP           (1 << 0)
+> > +/* Address error was due to memory load */
+> > +#define SC_ADDRERR_RD                (1 << 30)
+> > +/* Address error was due to memory store */
+> > +#define SC_ADDRERR_WR                (1 << 31)
+> > +
+> > +struct sigcontext {
+> > +     __u64   sc_pc;
+> > +     __u64   sc_regs[32];
+> > +     __u32   sc_flags;
+> > +     __u64   sc_extcontext[0] __attribute__((__aligned__(16)));
+> > +};
+> > +
+> > +#define CONTEXT_INFO_ALIGN   16
+> > +struct _ctxinfo {
+> > +     __u32   magic;
+> > +     __u32   size;
+> > +     __u64   padding;        /* padding to 16 bytes */
+> > +};
+>
+> This is probably something I a missing but what is struct _ctxinfo and
+> why is it in a uapi header?
+>
+> I don't see anything else in the uapi implementation using it.
+This is used by get_ctx_through_ctxinfo() in signal.c and I think
+similar function is also needed by userspace.
 
-On Wed, May 18, 2022 at 3:49 AM Vivek Kumar <quic_vivekuma@quicinc.com> wrote:
+Its name is once before called context_info but conflict with another
+software, then I want to use ctx_info but conflict with another kernel
+struct. :(
 >
-> Kernel Hibernation
->
-> Linux Kernel has been already supporting hibernation, a process which
-> involves freezing of all userspace tasks, followed by quiescing of all
-> kernel device drivers and then a DDR snapshot is taken which is saved
-> to disc-swap partition, after the save, the system can either shutdown
-> or continue further. Generally during the next power cycle when kernel
-> boots and after probing almost all of the drivers, in the late_init()
-> part, it checks if a hibernation image is present in the specified swap
-> slot, if a valid hibernation image is found, it superimposes the currently
-> executing Kernel with an older kernel from the snapshot, moving further,
-> it calls the restore of the drivers and unfreezes the userspace tasks.
-> CONFIG_HIBERNATION and a designated swap partition needs to be present
-> for to enable Hibernation.
->
-> Bootloader Based Hibernation:
->
-> Automotive usecases require better boot KPIs, Hence we are proposing a
-> bootloader based hibernation restore. Purpose of bootloader based
-> hibernation is to improve the overall boot time till the first display
-> frame is seen on the screen or a camera application can be launched from
-> userspace after the power on reset key is pressed. This RFC patchset
-> implements a slightly tweaked version of hibernation in which the
-> restoration of an older snapshot into DDR is being carried out from the
-> bootloader (ABL) itself, by doing this we are saving some time
-> (1 second measured on msm-4.14 Kernel) by not running a
-> temporary kernel and figuring out the hibernation image at late_init().
+> Symbols that start with an underscore "_" are reserved and should not
+> be used in general, and especially not in uapi header files.
+Then, maybe we can use sctx_info here?
 
-I wonder where most of the time is spent? Is it initializing struct
-pages? Potentially we could enlighten bootloader to determine whether
-hibernation image is stored or not on the swap device, and change boot
-parameter for the kernel accordingly. The booting kernel would know
-from the very beginning of boot that it will eventually resume a
-hibernated image, and therefore skip some of initilization parts, and
-perhaps limit amount of memory that it initializes.
-
-> In order to achieve the same bootloader checks for the hibernation
-> image at a very early stage from swap partition, it parses the image and
-> loads it in the DDR instead of loading boot image form boot partition.
-> Since we are not running the temporary kernel,which would have done some
-> basic ARM related setup like, MMU enablement, EL2 setup, CPU setup etc,
-
-What boot loader is used? I suspect bootloader enables MMU to load the
-hibernated image into memory, otherwise the performance would be very
-poor. After the image is loaded, and prior to jumping into the entry
-address of loaded image the MMU is probably disabled.
-
-> entry point into hibernation snapshot image directly from bootloader is
-> different, on similar lines, all device drivers are now re-programming
-> the IO-mapped registers as part of the restore callback (which is
-> triggered from the hibernation framework) to bring back the HW/SW sync.
+Huacai
 >
-> Other factors like, read-speed of the secondary storage device and
-> organization of the hibernation image in the swap partition effects the
-> total image restore time and the overall boot time. In our current
-> implementation we have serialized the allocation of swap-partition's slots
-> in kernel, so when hibernation image is being saved to disc, each page is
-> not scattered across various swap-slot offsets, rather it in a serial
-> manner. For example, if a DDR page at Page frame number 0x8005 is
-> located at a swap-slot offset 50, the next valid DDR page at PFN 0x8005
-> will be preset at the swap-slot offset 51. With this optimization in
-> place, bootloader can utilize the max capacity of issuing a disc-read
-> for reading a bigger chunk (~50 MBs at once) from the swap slot,
-> and also parsing of the image becomes simpler as it is available
-> contiguously.
-
-This optimization seems generic enough that it would benefit both
-types of resume: from bootloader and from kernel.
-
-Thanks,
-Pasha
-
->
->
->
-> Vivek Kumar (6):
->   arm64: hibernate: Introduce new entry point to kernel
->   PM: Hibernate: Add option to disable disk offset randomization
->   block: gendisk: Add a new genhd capability flag
->   mm: swap: Add randomization check for swapon/off calls
->   Hibernate: Add check for pte_valid in saveable page
->   irqchip/gic-v3: Re-init GIC hardware upon hibernation restore
->
->  Documentation/admin-guide/kernel-parameters.txt |  11 ++
->  arch/arm64/kernel/hibernate.c                   |   9 ++
->  drivers/irqchip/irq-gic-v3.c                    | 138 ++++++++++++++++-
->  include/linux/blkdev.h                          |   1 +
->  kernel/power/snapshot.c                         |  43 ++++++++
->  kernel/power/swap.c                             |  12 +++
->  mm/swapfile.c                                   |   6 +-
->  7 files changed, 216 insertions(+), 4 deletions(-)
->
-> --
-> 2.7.4
->
+> Eric
