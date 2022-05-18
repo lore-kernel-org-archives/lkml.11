@@ -2,138 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 671C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41168C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238102AbiERN2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
+        id S238124AbiERN2d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237927AbiERNZq (ORCPT
+        with ESMTP id S237877AbiERN1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:25:46 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8342CE1C;
-        Wed, 18 May 2022 06:25:43 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id i8so1735503plr.13;
-        Wed, 18 May 2022 06:25:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AfO0NLcJeQALgqj1J+QSjTgv2c+H8QHy+g5kdNkMJ7M=;
-        b=IiQfUJbnQVhSdENbcqcJSJXCmhgKbUEjfrBb6BaRYmF0mIK2OjAacKriEIAiBbdqw5
-         XbEjTNJvSLMygitmTFnJhNWTVbU3h5/49xhgrKfolHmAJs/UfD3GwmfgFiFM1hHCir2B
-         /IMsh8APrpS8EeOoIYwsIogklrScL94RvFn0SHMYLNGmzAK5UgrKuKCnMIDvFl/am6MZ
-         oeRjnu0KYrNxbCXpZH4IR/KH0IFXkSZQoj8FA2+BA8hgHObOBZAG6AFGeLEuZIUQ+1ft
-         fBWc2tONJ040Lh3RwSg+ELoC0smRwAzepaxhpE5SAJAXHSHYadlaIwFliodn6s0Te3Ye
-         YfmQ==
+        Wed, 18 May 2022 09:27:39 -0400
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79EA187060;
+        Wed, 18 May 2022 06:27:34 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id i187so1417289ybg.6;
+        Wed, 18 May 2022 06:27:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AfO0NLcJeQALgqj1J+QSjTgv2c+H8QHy+g5kdNkMJ7M=;
-        b=LxKYzKdcHP/iWiTr3smoJGb5n5y97riJYuU6jfIQaTQZ3fdeeYHPEXiEL8+0i4MbYu
-         FjdE/LtCX1Yr9e8krhTLKWP2yvvgV6Zzn0vzbPR3EdLM/S+5ksDDez9Kg1CoKfH0ys32
-         gQsZzw8l8dB9wRkNZGfuTd1SXSqoUjDJduOV/1/m63+FD9xSj45YMk+xVMUUH1yEprMA
-         wWNOnIBFq0fAUZKhn5+FgnsJlhCKQqc6V2/IvSKg4qpw8ixiTMVoiCH81Ahq/7aPVelz
-         3kKatTOznnaooPMX4BwDxcTCYf9JzyPuvbxYHOLW5ObYaYg6HBtruLlz7ud8ZvCW4I2x
-         cr2A==
-X-Gm-Message-State: AOAM533L5Mf+oRS+wAd73GGhWWOnTrTCI2yW6OeV6wbfBKdMZvy9b5ts
-        M53OE1R338rRO2aeCNKZm6g=
-X-Google-Smtp-Source: ABdhPJyeSfY3EL0jyog7JKG5CzqT4tKWx4OegLVs7LzTRGzETI0wQHoYx9HNB6qV1Qc8HYrwrUdoAw==
-X-Received: by 2002:a17:902:b418:b0:15f:713:c914 with SMTP id x24-20020a170902b41800b0015f0713c914mr27608231plr.171.1652880342910;
-        Wed, 18 May 2022 06:25:42 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.117])
-        by smtp.gmail.com with ESMTPSA id s13-20020a17090302cd00b0015e8d4eb244sm1625549plk.142.2022.05.18.06.25.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 06:25:42 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH RESEND v3 09/11] perf: x86/core: Add interface to query perfmon_event_map[] directly
-Date:   Wed, 18 May 2022 21:25:10 +0800
-Message-Id: <20220518132512.37864-10-likexu@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518132512.37864-1-likexu@tencent.com>
-References: <20220518132512.37864-1-likexu@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LyQ6Fx0ZnY45xGr5Y2jsnDq8ZWgzz0EhlHFyuG9haXs=;
+        b=jIbvSAFezObjbcXOkwoWA6ady+/4pTpFk4TJfVmfhAT9ZOKUp3xcV4QgK8KBs0Jjgz
+         zHz8/X3uiiF7pTgPTuXB1AFjl20dqM1YVo1JQLSSvbOInLZJ/MYBV6C/k7eJAMzgJ6UG
+         x6N9TfeRqBss5FxrDsJiBiWDPynRSTiP4xAel5dcrEcx3/TKYqATa5mE3AVCElYApsEx
+         hh/zyFIzGA4vRn9ttSqafdalAEJIm+ZTnTDjb1hfPw8OtPhiqOA+9ZyAIASv4CQDcGsD
+         RC7hAJvjpyYna0lbGeAfSNk5ATo0WhX+i6Bz2pZZlcyhKDbu/UUkAbowEv11Ph/PpZPa
+         jcVA==
+X-Gm-Message-State: AOAM530EFt7ULcNK8jK933dS0HZ+NSQ6FVm1s0w5XUOKTlGP8xKn2DJ+
+        dNF0xJXkkJVVeVvC/dQEjk/lMFV74+6WdMjMMl+asPOt
+X-Google-Smtp-Source: ABdhPJyjRx5gA7bKsO07czfdltoky1/Nf4DCcgRm0CA+ey3YCQSpZFTINNpWzDS3Y96jPW58VJCCVFx1k4Cf/+aYtDE=
+X-Received: by 2002:a25:e7ce:0:b0:64d:6028:96b9 with SMTP id
+ e197-20020a25e7ce000000b0064d602896b9mr19858608ybh.365.1652880452946; Wed, 18
+ May 2022 06:27:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220518131913.26974-1-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20220518131913.26974-1-manivannan.sadhasivam@linaro.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 18 May 2022 15:27:22 +0200
+Message-ID: <CAJZ5v0hLtU=naptVYfp9ZmLeWzJREQ1icWJYrjh+a5LqOYG4Dw@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] PCI: Notify PCI drivers about powerdown during suspend
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-nvme <linux-nvme@lists.infradead.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        svarbanov@mm-sol.com, Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jens Axboe <axboe@fb.com>, quic_vbadigan@quicinc.com,
+        quic_krichai@quicinc.com, quic_nitirawa@quicinc.com,
+        Vidya Sagar <vidyas@nvidia.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On Wed, May 18, 2022 at 3:19 PM Manivannan Sadhasivam
+<manivannan.sadhasivam@linaro.org> wrote:
+>
+> Hi,
+>
+> This series adds support for notifying the PCI drivers like NVMe about the
+> transition of PCI devices into powerdown mode during system suspend.
 
-Currently, we have [intel|knc|p4|p6]_perfmon_event_map on the Intel
-platforms and amd_[f17h]_perfmon_event_map on the AMD platforms.
+What kind of system suspend are you referring to?  Suspend-to-idle or
+suspend-to-RAM?
 
-Early clumsy KVM code or other potential perf_event users may have
-hard-coded these perfmon_maps (e.g., arch/x86/kvm/svm/pmu.c), so
-it would not make sense to program a common hardware event based
-on the generic "enum perf_hw_id" once the two tables do not match.
+For suspend-to-RAM this series should not be necessary at all, because
+drivers cannot assume that the state of devices will be preserved
+anyway in this case.
 
-Let's provide an interface for callers outside the perf subsystem to get
-the counter config based on the perfmon_event_map currently in use,
-and it also helps to save bytes.
-
-Cc: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Like Xu <likexu@tencent.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/events/core.c            | 11 +++++++++++
- arch/x86/include/asm/perf_event.h |  6 ++++++
- 2 files changed, 17 insertions(+)
-
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index 7f1d10dbabc0..99cf67d63cf3 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -2997,3 +2997,14 @@ void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- 	cap->pebs_ept		= x86_pmu.pebs_ept;
- }
- EXPORT_SYMBOL_GPL(perf_get_x86_pmu_capability);
-+
-+u64 perf_get_hw_event_config(int hw_event)
-+{
-+	int max = x86_pmu.max_events;
-+
-+	if (hw_event < max)
-+		return x86_pmu.event_map(array_index_nospec(hw_event, max));
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(perf_get_hw_event_config);
-diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
-index dc295b8c8def..396f0ce7a0f4 100644
---- a/arch/x86/include/asm/perf_event.h
-+++ b/arch/x86/include/asm/perf_event.h
-@@ -478,6 +478,7 @@ struct x86_pmu_lbr {
- };
- 
- extern void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap);
-+extern u64 perf_get_hw_event_config(int hw_event);
- extern void perf_check_microcode(void);
- extern void perf_clear_dirty_counters(void);
- extern int x86_perf_rdpmc_index(struct perf_event *event);
-@@ -487,6 +488,11 @@ static inline void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- 	memset(cap, 0, sizeof(*cap));
- }
- 
-+static inline u64 perf_get_hw_event_config(int hw_event)
-+{
-+	return 0;
-+}
-+
- static inline void perf_events_lapic_init(void)	{ }
- static inline void perf_check_microcode(void) { }
- #endif
--- 
-2.36.1
-
+For suspend-to-idle, drivers can expect the preservation of the device
+state, so perhaps the firmware should be prevented from powering them
+off in the suspend-to-idle path instead.
