@@ -2,170 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2508C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240086AbiERQ0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38266 "EHLO
+        id S240154AbiERQ0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240182AbiERQ02 (ORCPT
+        with ESMTP id S240118AbiERQ0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:26:28 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A65D50E20
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:26:26 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id c12so3677498eds.10
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:26:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OT9eEBFMeKZroeDVOBWrAfjCYcqI+X5VChXxs9BlrXg=;
-        b=Gsl7VPQ9FyK0s5sL1fpz/EjhUZoQKGnGlpYrkZXH8BfbxKlvO5GUZPMlOfQz+y5b0t
-         /3+JhrFXrolcoO2X5Onss7j27Lxsb9Ew1AC0L6/7HCsHCwgPBRwWU3FHfyMoIdbMeeqf
-         YIDfQCWhi1TCO6M/Sdn6KoljmmkQjNNDN5fst0xkAjc9nj3OHmM4BRHkMKyxlFpU6a1S
-         Gaf/zuL0mhBX5ySZz1xCfh6QXNOLHJJONgeNBlxRY3irGcwfekbX9znijLdKWdEU9hBj
-         vLdo5SsbDeV1WlQxwvEg6rU9in5kF2p6DcdSMCKg3DNrL3zc/9SKETvhllh/zgiLQ+Zg
-         zkNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OT9eEBFMeKZroeDVOBWrAfjCYcqI+X5VChXxs9BlrXg=;
-        b=W7Wpljn7o/LxvPBM1TkqMENpQM7X1uZAKDZETsMMUUv25FMntTxE9XeuL94aoDRVnc
-         PSB0pi6jNTEQ44U9kJxpkjQCk2AAHTZyXLCeWlmVBI9i9jzyLCsTK9zz+PgR0F5Boj6t
-         ZkkBQ+FaNtJCCw6R/wdnJTJ4t9gGd0MQsamEJAksTIxn55X67Q+yyNALHoblTjGVF3oj
-         QDg9LmPgy5xWNnbLPJJ7VcR9Tm/nmir1uKma87A6+pmIlv8kyTRm9i05PGO5eW0sqq83
-         4VgD55jVESW8a80buT4UFYq5zbfpSbMc5xHYFNysgkEqrC4bL3hLds7YMknhyGEQE0pP
-         rAKg==
-X-Gm-Message-State: AOAM5300O79a/tj+IHYw9xNmHI5EBBYV9lSPTaiyIaibicBiRzgSB//6
-        dlvBRZMIWzytyU5PpvJKrB+euqVloGdAd33fUokf/g==
-X-Google-Smtp-Source: ABdhPJxhxyt/6HNDWzDngc8o2BdNPg+mRcwwuAQDkoEXX/yMHM4iyhj0NqJ0xgaCR9pwDVqv2xyC5E11gy00UG4FXjM=
-X-Received: by 2002:a05:6402:2709:b0:428:3ed9:abe3 with SMTP id
- y9-20020a056402270900b004283ed9abe3mr593155edd.51.1652891184623; Wed, 18 May
- 2022 09:26:24 -0700 (PDT)
+        Wed, 18 May 2022 12:26:10 -0400
+X-Greylist: delayed 965 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 09:26:05 PDT
+Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D8A1D0E6;
+        Wed, 18 May 2022 09:26:04 -0700 (PDT)
+Received: from [77.244.183.192] (port=64666 helo=[192.168.178.75])
+        by hostingweb31.netsons.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <luca@lucaceresoli.net>)
+        id 1nrMFJ-000DgX-8b; Wed, 18 May 2022 18:09:57 +0200
+Message-ID: <806462b6-e85e-f5e8-9ffb-cffa5dae72c2@lucaceresoli.net>
+Date:   Wed, 18 May 2022 18:09:55 +0200
 MIME-Version: 1.0
-References: <20220518091814.2028579-1-tzungbi@kernel.org> <20220518091814.2028579-3-tzungbi@kernel.org>
-In-Reply-To: <20220518091814.2028579-3-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Wed, 18 May 2022 09:26:13 -0700
-Message-ID: <CABXOdTe=K8V762Z3cgXq6qSFLosWKBfVQ1D4sCoZwqKY1RLNqg@mail.gmail.com>
-Subject: Re: [PATCH 2/4] platform/chrome: cros_ec_proto: factor legacy out
- from cros_ec_prepare_tx()
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Doug Anderson <dianders@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 1/2] dt-bindings: i2c: add property to avoid device
+ detection
+Content-Language: en-US
+To:     Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@kernel.org>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        kernel@axis.com, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, krzk+dt@kernel.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220412085046.1110127-1-vincent.whitchurch@axis.com>
+ <20220412085046.1110127-2-vincent.whitchurch@axis.com>
+ <Yn+8CJ3j2SY2+Mq+@shikoro> <7ab1f387-3670-4b49-211d-3ff9a7c3d40b@axentia.se>
+ <758ebcab-b0a2-29bd-d79c-1fbdc95212ae@axentia.se>
+From:   Luca Ceresoli <luca@lucaceresoli.net>
+In-Reply-To: <758ebcab-b0a2-29bd-d79c-1fbdc95212ae@axentia.se>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lucaceresoli.net
+X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca@lucaceresoli.net
+X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 2:18 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> cros_ec_prepare_tx() mixed the code for both versions.  To be neat and to
-> make it clear, factor the legacy part out as a separate function, rename
-> the function, and update the comments.
->
-> Specifically,
-> - prepare_tx(), for current protocol version (i.e. 3).
-> - prepare_tx_legacy(), for protocol version <= 2.
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+Hi Peter, all,
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+On 16/05/22 10:07, Peter Rosin wrote:
+> [Now with the proper email to Luca, sorry about that...]
+> 
+> 2022-05-16 at 09:57, Peter Rosin wrote:
+>> 2022-05-14 at 16:26, Wolfram Sang wrote:
+>>> On Tue, Apr 12, 2022 at 10:50:45AM +0200, Vincent Whitchurch wrote:
+>>>> When drivers with ->detect callbacks are loaded, the I2C core does a
+>>>> bunch of transactions to try to probe for these devices, regardless of
+>>>> whether they are specified in the devicetree or not.  (This only happens
+>>>> on I2C controllers whose drivers enable the I2C_CLASS* flags, but this
+>>>> is the case for generic drivers like i2c-gpio.)
+>>>>
+>>>> These kinds of transactions are unnecessary on systems where the
+>>>> devicetree specifies all the devices on the I2C bus, so add a property
+>>>> to indicate that the devicetree description of the hardware is complete
+>>>> and thus allow this discovery to be disabled.
+>>> Hmm, I don't think the name is fitting. "no-detect" is the desired
+>>> behaviour but a proper description is more like "bus-complete" or
+>>> something?
+>>>
+>>> That aside, I am not sure we should handle this at DT level. Maybe we
+>>> should better change the GPIO driver to not populate a class if we have
+>>> a firmware node?
+>> We also have the somewhat related address translation case (which I
+>> still need to look at). [Adding Luca to Cc]
+>>
+>> https://lore.kernel.org/lkml/20220206115939.3091265-1-luca@lucaceresoli.net/
+>>
+>> If a bus is "bus-complete", then address translation could use
+>> any unused address instead of from an explicit list of addresses.
+>> I.e. the "i2c-alias-pool" in the binding in patch 4/6 of that
+>> series could be made optional if the bus is "bus-complete".
 
-> ---
->  drivers/platform/chrome/cros_ec_proto.c | 51 ++++++++++++++-----------
->  1 file changed, 28 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index ff767dccdf0f..01ab58b3269b 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -52,8 +52,8 @@ static int cros_ec_map_error(uint32_t result)
->         return ret;
->  }
->
-> -static int prepare_packet(struct cros_ec_device *ec_dev,
-> -                         struct cros_ec_command *msg)
-> +static int prepare_tx(struct cros_ec_device *ec_dev,
-> +                     struct cros_ec_command *msg)
->  {
->         struct ec_host_request *request;
->         u8 *out;
-> @@ -85,6 +85,28 @@ static int prepare_packet(struct cros_ec_device *ec_dev,
->         return sizeof(*request) + msg->outsize;
->  }
->
-> +static int prepare_tx_legacy(struct cros_ec_device *ec_dev,
-> +                            struct cros_ec_command *msg)
-> +{
-> +       u8 *out;
-> +       u8 csum;
-> +       int i;
-> +
-> +       if (msg->outsize > EC_PROTO2_MAX_PARAM_SIZE)
-> +               return -EINVAL;
-> +
-> +       out = ec_dev->dout;
-> +       out[0] = EC_CMD_VERSION0 + msg->version;
-> +       out[1] = msg->command;
-> +       out[2] = msg->outsize;
-> +       csum = out[0] + out[1] + out[2];
-> +       for (i = 0; i < msg->outsize; i++)
-> +               csum += out[EC_MSG_TX_HEADER_BYTES + i] = msg->data[i];
-> +       out[EC_MSG_TX_HEADER_BYTES + msg->outsize] = csum;
-> +
-> +       return EC_MSG_TX_PROTO_BYTES + msg->outsize;
-> +}
-> +
->  static int send_command(struct cros_ec_device *ec_dev,
->                         struct cros_ec_command *msg)
->  {
-> @@ -161,35 +183,18 @@ static int send_command(struct cros_ec_device *ec_dev,
->   * @ec_dev: Device to register.
->   * @msg: Message to write.
->   *
-> - * This is intended to be used by all ChromeOS EC drivers, but at present
-> - * only SPI uses it. Once LPC uses the same protocol it can start using it.
-> - * I2C could use it now, with a refactor of the existing code.
-> + * This is used by all ChromeOS EC drivers to prepare the outgoing message
-> + * according to different protocol versions.
->   *
->   * Return: number of prepared bytes on success or negative error code.
->   */
->  int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
->                        struct cros_ec_command *msg)
->  {
-> -       u8 *out;
-> -       u8 csum;
-> -       int i;
-> -
->         if (ec_dev->proto_version > 2)
-> -               return prepare_packet(ec_dev, msg);
-> -
-> -       if (msg->outsize > EC_PROTO2_MAX_PARAM_SIZE)
-> -               return -EINVAL;
-> -
-> -       out = ec_dev->dout;
-> -       out[0] = EC_CMD_VERSION0 + msg->version;
-> -       out[1] = msg->command;
-> -       out[2] = msg->outsize;
-> -       csum = out[0] + out[1] + out[2];
-> -       for (i = 0; i < msg->outsize; i++)
-> -               csum += out[EC_MSG_TX_HEADER_BYTES + i] = msg->data[i];
-> -       out[EC_MSG_TX_HEADER_BYTES + msg->outsize] = csum;
-> +               return prepare_tx(ec_dev, msg);
->
-> -       return EC_MSG_TX_PROTO_BYTES + msg->outsize;
-> +       return prepare_tx_legacy(ec_dev, msg);
->  }
->  EXPORT_SYMBOL(cros_ec_prepare_tx);
->
-> --
-> 2.36.0.550.gb090851708-goog
->
+Indeed the alias pool is meant to completely disappear from the ATR
+implementation. The i2c core should evolve to know which addresses
+correspond to a device (no matter if it has a driver or not) and use any
+other addresses as aliases. This was the outcome of discussion on this
+topic with Wolfram, even though I AFAIK any implementation effort is
+idle since a long time.
+
+-- 
+Luca
