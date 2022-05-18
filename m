@@ -2,134 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC21C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D9AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239394AbiERPjP convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
+        id S239379AbiERPjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiERPjK (ORCPT
+        with ESMTP id S239341AbiERPjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:39:10 -0400
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B9C9BAEE;
-        Wed, 18 May 2022 08:39:08 -0700 (PDT)
-Received: by mail-qv1-f42.google.com with SMTP id eq14so1787916qvb.4;
-        Wed, 18 May 2022 08:39:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3x933ygnjXaKQtWyRvufRAEop/BHqYeq9sDh5XL4g5E=;
-        b=V9klkk0U6Sw1NhPbNbpAmsiXhUfJSIKrBDMllDPYIW0YNEl2tRUGOkUARyHLYEbnka
-         m8+Mo4cS1wrOv6BH0j+uxqKCH0FaYcNIodiMlYF51+LUbuGqK4zoUuSxfONINgTOd/jO
-         5obcHPc/GTkXKYZp9/EKss6RzuI5KnWSz2bUO5M7qYnrjwGH8pBl+J4t6DinL0kw5a4Y
-         gLllFJYFcG0cRjGsdV8VR7JkxFMNr1Jo0eQATIYBGbmKbsHbjUA3Bc3+PO9+KtCOYElT
-         uGnC/YziplO8uXgF379lO5LssmR1eqZXFZ+yMO+A3v7Ju+61C/A6lt5vDDXole+37ZKm
-         A1VQ==
-X-Gm-Message-State: AOAM532qEyY23yvuoBtRDhFwt2+wWfB3jDOlXtCDtV2DrO4avimkbx0z
-        e80qYFERl/JuMGBrySlPCwdyH3Bpw4sqTw==
-X-Google-Smtp-Source: ABdhPJw+2IDKkM4sXXUBpnnh73GXpP/pz4u1fF2SzQOKI4JcGYeBDH0nM0xjTTvvQI8TP48ADmXbmg==
-X-Received: by 2002:a05:6214:3e1:b0:461:f0b1:6b12 with SMTP id cf1-20020a05621403e100b00461f0b16b12mr326200qvb.122.1652888347444;
-        Wed, 18 May 2022 08:39:07 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id h25-20020ac87459000000b002f39b99f6c4sm1383095qtr.94.2022.05.18.08.39.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 08:39:06 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id o80so4371522ybg.1;
-        Wed, 18 May 2022 08:39:06 -0700 (PDT)
-X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
- bu5-20020a056902090500b0064a2089f487mr251266ybb.202.1652888346221; Wed, 18
- May 2022 08:39:06 -0700 (PDT)
+        Wed, 18 May 2022 11:39:24 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC83A5A81;
+        Wed, 18 May 2022 08:39:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652888363; x=1684424363;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version;
+  bh=8WND9E2GnGDv0ic+SbtV8f4+YwokzKLYteBSsNrOeuI=;
+  b=GAaBJx643bMeEt1h9obiks2aBOONhQ848W47IpiJdBB0s5JtSlquxi0X
+   huZnWthChw67hde9NRHbw60ayCM0OQCHowgJVoF1MZ4c5amDRxxFipcUq
+   GiYxyZC41ahLxhuji/lDGX9zQNi/xld2U3rjFWwg2ICE8DdAv8/mFoWgN
+   Zc4jTPSskuGEpi2XYH4XG8FO8ijP7nMmKQaTvQUvYY6SaBkkh2Z3qvL9U
+   iviqr/2vclL44WbBW9PC4hRPHhEyPNQA1tzFQxyjFfmOuSi8Yq3vdPIWU
+   fTtCXD70UuI+qaw603Cr+6l42y+W4S4i/5CIpZVZbiRYldSTXnQxOHpoT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="253779492"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="diff'?scan'208";a="253779492"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 08:39:22 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="diff'?scan'208";a="673494949"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 08:39:22 -0700
+Message-ID: <8fc40ebb2fbcecb1ab2f5ea156bf9ec10aff06bf.camel@linux.intel.com>
+Subject: Re: hid-sensor-hub 001F:8087:0AC2.0002: timeout waiting for
+ response from ISHTP device
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Jiri Kosina <jikos@kernel.org>, Even Xu <even.xu@intel.com>,
+        Zhang Lixu <lixu.zhang@intel.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Dell.Client.Kernel@dell.com
+Date:   Wed, 18 May 2022 08:39:21 -0700
+In-Reply-To: <dff3d94c-93be-2b31-35c6-35a7886f3680@molgen.mpg.de>
+References: <289be79b-8fbb-d171-a1e5-5d8218dff39d@molgen.mpg.de>
+         <8833ba2600208a05940943636a3bd8b6af6a9fe4.camel@linux.intel.com>
+         <dff3d94c-93be-2b31-35c6-35a7886f3680@molgen.mpg.de>
+Content-Type: multipart/mixed; boundary="=-fSLorNTvZrztzG+RVRp9"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-References: <20220516115627.66363-1-guozhengkui@vivo.com> <CAMuHMdWH1rdP22VnhR_h601tm+DDo7+sGdXR-6NQx0B-jGoZ1A@mail.gmail.com>
- <20220518083344.0886bd6f@kernel.org>
-In-Reply-To: <20220518083344.0886bd6f@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 18 May 2022 17:38:54 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU+3DcpgHbytt47MNcGtfVOe+CVXcptM7=WUTWCcHq8vA@mail.gmail.com>
-Message-ID: <CAMuHMdU+3DcpgHbytt47MNcGtfVOe+CVXcptM7=WUTWCcHq8vA@mail.gmail.com>
-Subject: Re: [PATCH linux-next] net: smc911x: replace ternary operator with min()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Guo Zhengkui <guozhengkui@vivo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        zhengkui_guo@outlook.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jakub,
 
-On Wed, May 18, 2022 at 5:33 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> On Wed, 18 May 2022 11:07:08 +0200 Geert Uytterhoeven wrote:
-> > On Mon, May 16, 2022 at 10:36 PM Guo Zhengkui <guozhengkui@vivo.com> wrote:
-> > > Fix the following coccicheck warning:
-> > >
-> > > drivers/net/ethernet/smsc/smc911x.c:483:20-22: WARNING opportunity for min()
-> > >
-> > > Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
-> >
-> > Thanks for your patch, which is now commit 5ff0348b7f755aac ("net:
-> > smc911x: replace ternary operator with min()") in net-next/master.
-> >
-> > > --- a/drivers/net/ethernet/smsc/smc911x.c
-> > > +++ b/drivers/net/ethernet/smsc/smc911x.c
-> > > @@ -480,7 +480,7 @@ static void smc911x_hardware_send_pkt(struct net_device *dev)
-> > >         SMC_SET_TX_FIFO(lp, cmdB);
-> > >
-> > >         DBG(SMC_DEBUG_PKTS, dev, "Transmitted packet\n");
-> > > -       PRINT_PKT(buf, len <= 64 ? len : 64);
-> > > +       PRINT_PKT(buf, min(len, 64));
-> >
-> > Unfortunately you forgot to test-compile this with
-> > ENABLE_SMC_DEBUG_PKTS=1, which triggers:
-> >
-> >         drivers/net/ethernet/smsc/smc911x.c: In function
-> > ‘smc911x_hardware_send_pkt’:
-> >         include/linux/minmax.h:20:28: error: comparison of distinct
-> > pointer types lacks a cast [-Werror]
-> >            20 |  (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-> >               |                            ^~
-> >         drivers/net/ethernet/smsc/smc911x.c:483:17: note: in expansion
-> > of macro ‘min’
-> >           483 |  PRINT_PKT(buf, min(len, 64));
-> >
-> > "len" is "unsigned int", while "64" is "(signed) int".
->
-> Ah, damn. I did double check that the build test actually compiles
-> smc911x.o 'cause this patch looked suspicious. Didn't realize that
-> more than allmodconfig is needed to trigger this :/
->
-> How do you enable ENABLE_SMC_DEBUG_PKTS? You edit the source?
+--=-fSLorNTvZrztzG+RVRp9
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Yes you do.
+Hi Paul,
 
-To avoid missing stuff like this in the future, my fix also includes
-a change to the dummy PRINT_PKT(), so you don't have to enable
-ENABLE_SMC_DEBUG_PKTS anymore to trigger the issue.
+Attached a diff. Please use git apply and build kernel. And attach
+dmesg. I want to see where did it fail.
 
-> > I have sent a fix
-> > https://lore.kernel.org/r/ca032d4122fc70d3a56a524e5944a8eff9a329e8.1652864652.git.geert+renesas@glider.be/
->
-> Thanks a lot!
+Thanks,
+Srinivas
 
-Gr{oetje,eeting}s,
+On Wed, 2022-05-18 at 06:07 +0200, Paul Menzel wrote:
+> Dear Srinivas,
+> 
+> 
+> Thank you for your reply.
+> 
+> Am 13.05.22 um 01:07 schrieb srinivas pandruvada:
+> 
+> > On Thu, 2022-05-12 at 17:01 +0200, Paul Menzel wrote:
+> 
+> > > On the Dell XPS 13 9310, firmware 2.2.0 04/06/2021, with Debian
+> > > sid/unstable, Linux 5.17.3 logs a lot of the messages below:
+> > > 
+> > >       timeout waiting for response from ISHTP device
+> > > 
+> > > Please find the output of `dmesg` attached.
+> > > 
+> > It seems that sensor FW is not responding after resume.
+> > 
+> > What is
+> > # cat /sys/power/mem_sleep
+> 
+>      $ cat /sys/power/mem_sleep
+>      [s2idle]
+> 
+> 
+> Kind regards,
+> 
+> Paul
+> 
+> 
+> PS: I think, Intel should have a Dell XPS 13 9310 available in some
+> test 
+> labs. If not, Dell (Cc) should be able to provide access to one.
 
-                        Geert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+--=-fSLorNTvZrztzG+RVRp9
+Content-Disposition: attachment; filename="ish_debug_1.diff"
+Content-Type: text/x-patch; name="ish_debug_1.diff"; charset="UTF-8"
+Content-Transfer-Encoding: base64
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXBjL3BjaS1pc2guYyBiL2Ry
+aXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXBjL3BjaS1pc2guYwppbmRleCA4ZTlkOTQ1MGNiODMu
+LjViODExZmE4ZjE1YiAxMDA2NDQKLS0tIGEvZHJpdmVycy9oaWQvaW50ZWwtaXNoLWhpZC9pcGMv
+cGNpLWlzaC5jCisrKyBiL2RyaXZlcnMvaGlkL2ludGVsLWlzaC1oaWQvaXBjL3BjaS1pc2guYwpA
+QCAtMjYzLDYgKzI2Myw5IEBAIHN0YXRpYyB2b2lkIF9fbWF5YmVfdW51c2VkIGlzaF9yZXN1bWVf
+aGFuZGxlcihzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspCiAJc3RydWN0IHBjaV9kZXYgKnBkZXYg
+PSB0b19wY2lfZGV2KGlzaF9yZXN1bWVfZGV2aWNlKTsKIAlzdHJ1Y3QgaXNodHBfZGV2aWNlICpk
+ZXYgPSBwY2lfZ2V0X2RydmRhdGEocGRldik7CiAJdWludDMyX3QgZndzdHMgPSBkZXYtPm9wcy0+
+Z2V0X2Z3X3N0YXR1cyhkZXYpOworCXN0cnVjdCBkZXZpY2UgKmRldmljZSA9ICZwZGV2LT5kZXY7
+CisKKwlkZXZfaW5mbyhkZXZpY2UsICIlcyBzdXNwZW5kX2ZsYWc6JWQgZndfc3RhdHVzOiV4XG4i
+LCBfX2Z1bmNfXywgZGV2LT5zdXNwZW5kX2ZsYWcsIElQQ19JU19JU0hfSUxVUChmd3N0cykpOwog
+CiAJaWYgKGlzaF9zaG91bGRfbGVhdmVfZDBpMyhwZGV2KSAmJiAhZGV2LT5zdXNwZW5kX2ZsYWcK
+IAkJCSYmIElQQ19JU19JU0hfSUxVUChmd3N0cykpIHsKQEAgLTI4Myw4ICsyODYsMTAgQEAgc3Rh
+dGljIHZvaWQgX19tYXliZV91bnVzZWQgaXNoX3Jlc3VtZV9oYW5kbGVyKHN0cnVjdCB3b3JrX3N0
+cnVjdCAqd29yaykKIAkJICogSWYgdGhlIGZsYWcgaXMgbm90IGNsZWFyZWQsIHNvbWV0aGluZyBp
+cyB3cm9uZyB3aXRoIElTSCBGVy4KIAkJICogU28gb24gcmVzdW1lLCBuZWVkIHRvIGdvIHRocm91
+Z2ggaW5pdCBzZXF1ZW5jZSBhZ2Fpbi4KIAkJICovCi0JCWlmIChkZXYtPnJlc3VtZV9mbGFnKQor
+CQlpZiAoZGV2LT5yZXN1bWVfZmxhZykgeworCQkJZGV2X2luZm8oZGV2aWNlLCAiJXMgcmVzdW1l
+X2ZsYWc6JWQgd2lsbCBjYWxsIGlzaF9pbml0XG4iLCBfX2Z1bmNfXywgZGV2LT5yZXN1bWVfZmxh
+Zyk7CiAJCQlpc2hfaW5pdChkZXYpOworCQl9CiAJfSBlbHNlIHsKIAkJLyoKIAkJICogUmVzdW1l
+IGZyb20gdGhlIEQzLCBmdWxsIHJlYm9vdCBvZiBJU0ggcHJvY2Vzc29yIHdpbGwgaGFwcGVuLApA
+QCAtMzA3LDcgKzMxMiw5IEBAIHN0YXRpYyBpbnQgX19tYXliZV91bnVzZWQgaXNoX3N1c3BlbmQo
+c3RydWN0IGRldmljZSAqZGV2aWNlKQogCXN0cnVjdCBwY2lfZGV2ICpwZGV2ID0gdG9fcGNpX2Rl
+dihkZXZpY2UpOwogCXN0cnVjdCBpc2h0cF9kZXZpY2UgKmRldiA9IHBjaV9nZXRfZHJ2ZGF0YShw
+ZGV2KTsKIAorCWRldl9pbmZvKGRldmljZSwgIiVzXG4iLCBfX2Z1bmNfXyk7CiAJaWYgKGlzaF9z
+aG91bGRfZW50ZXJfZDBpMyhwZGV2KSkgeworCQlkZXZfaW5mbyhkZXZpY2UsICIlcyBzdXNwZW5k
+X2ZsYWc6JWRcbiIsIF9fZnVuY19fLCBkZXYtPnN1c3BlbmRfZmxhZyk7CiAJCS8qCiAJCSAqIElm
+IHByZXZpb3VzIHN1c3BlbmQgaGFzbid0IGJlZW4gYXNud2VyZWQgdGhlbiBJU0ggaXMgbGlrZWx5
+CiAJCSAqIGRlYWQsIGRvbid0IGF0dGVtcHQgbmVzdGVkIG5vdGlmaWNhdGlvbgpAQCAtMzI2LDEy
+ICszMzMsMTQgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBpc2hfc3VzcGVuZChzdHJ1Y3Qg
+ZGV2aWNlICpkZXZpY2UpCiAJCQkJCW1zZWNzX3RvX2ppZmZpZXMoMjUpKTsKIAogCQlpZiAoZGV2
+LT5zdXNwZW5kX2ZsYWcpIHsKKwkJCWRldl9pbmZvKGRldmljZSwgIiVzIHN1c3BlbmRfZmxhZzol
+ZCBGVyBoYWx0ZWRcbiIsIF9fZnVuY19fLCBkZXYtPnN1c3BlbmRfZmxhZyk7CiAJCQkvKgogCQkJ
+ICogSXQgbG9va3MgbGlrZSBGVyBoYWx0LCBjbGVhciB0aGUgRE1BIGJpdCwgYW5kIHB1dAogCQkJ
+ICogSVNIIGludG8gRDMsIGFuZCBGVyB3b3VsZCByZXNldCBvbiByZXN1bWUuCiAJCQkgKi8KIAkJ
+CWlzaF9kaXNhYmxlX2RtYShkZXYpOwogCQl9IGVsc2UgeworCQkJZGV2X2luZm8oZGV2aWNlLCAi
+JXMgc3VzcGVuZF9mbGFnOiVkIFMwaXggc3VzcGVuZGVkXG4iLCBfX2Z1bmNfXywgZGV2LT5zdXNw
+ZW5kX2ZsYWcpOwogCQkJLyoKIAkJCSAqIFNhdmUgc3RhdGUgc28gUENJIGNvcmUgd2lsbCBrZWVw
+IHRoZSBkZXZpY2UgYXQgRDAsCiAJCQkgKiB0aGUgSVNIIHdvdWxkIGVudGVyIEQwaTMK
+
+
+--=-fSLorNTvZrztzG+RVRp9--
+
