@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0536EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240629AbiERRDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42608 "EHLO
+        id S240640AbiERRDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240610AbiERRDF (ORCPT
+        with ESMTP id S240616AbiERRDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 13:03:05 -0400
+        Wed, 18 May 2022 13:03:06 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748B51A29DE
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:03:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBFD1A15F9
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:03:05 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nrN4d-0001Pv-1b; Wed, 18 May 2022 19:02:59 +0200
+        id 1nrN4d-0001Pv-Q5; Wed, 18 May 2022 19:02:59 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         wefu@redhat.com, guoren@kernel.org, mick@ics.forth.gr,
         samuel@sholland.org, cmuellner@linux.com, philipp.tomsich@vrull.eu,
-        hch@lst.de, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 2/4] riscv: Improve description for RISCV_ISA_SVPBMT Kconfig symbol
-Date:   Wed, 18 May 2022 19:02:52 +0200
-Message-Id: <20220518170254.3178923-3-heiko@sntech.de>
+        hch@lst.de, Heiko Stuebner <heiko@sntech.de>,
+        kernel test robot <yujie.liu@intel.com>
+Subject: [PATCH 4/4] riscv: fix dependency for t-head errata
+Date:   Wed, 18 May 2022 19:02:54 +0200
+Message-Id: <20220518170254.3178923-5-heiko@sntech.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518170254.3178923-1-heiko@sntech.de>
 References: <20220518170254.3178923-1-heiko@sntech.de>
@@ -38,36 +39,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This improves the symbol's description to make it easier for
-people to understand what it is about.
+alternatives only work correctly on non-xip-kernels and while the
+selected alternative-symbol has the correct dependency the symbol
+selecting it also needs that dependency.
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Suggested-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
+So add the missing dependency to the T-Head errata Kconfig symbol.
+
+Reported-by: kernel test robot <yujie.liu@intel.com>
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/riscv/Kconfig | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/riscv/Kconfig.erratas | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 65285b980134..a4b299ad4473 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -356,8 +356,13 @@ config RISCV_ISA_SVPBMT
+diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
+index ebfcd5cc6eaf..457ac72c9b36 100644
+--- a/arch/riscv/Kconfig.erratas
++++ b/arch/riscv/Kconfig.erratas
+@@ -35,6 +35,7 @@ config ERRATA_SIFIVE_CIP_1200
+ 
+ config ERRATA_THEAD
+ 	bool "T-HEAD errata"
++	depends on !XIP_KERNEL
  	select RISCV_ALTERNATIVE
- 	default y
  	help
--	   Adds support to dynamically detect the presence of the SVPBMT extension
--	   (Supervisor-mode: page-based memory types) and enable its usage.
-+	   Adds support to dynamically detect the presence of the SVPBMT
-+	   ISA-extension (Supervisor-mode: page-based memory types) and
-+	   enable its usage.
-+
-+	   The memory type for a page contains a combination of attributes
-+	   that indicate the cacheability, idempotency, and ordering
-+	   properties for access to that page.
- 
- 	   The SVPBMT extension is only available on 64Bit cpus.
- 
+ 	  All T-HEAD errata Kconfig depend on this Kconfig. Disabling
 -- 
 2.35.1
 
