@@ -2,65 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DBDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:40:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232362AbiERHkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        id S232242AbiERHkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232348AbiERHjy (ORCPT
+        with ESMTP id S232243AbiERHk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:39:54 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9C0106A47;
-        Wed, 18 May 2022 00:39:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=P5UqBAHM0WQnE0g9GWkUw6qeNdkfJBe6hJymXR6R360=; b=zP2u3zx4Nqx82fjyBoNHLz6AOY
-        fHpXQJ24sWyjJtbHiAfCUHkKqWlu+/N5+S0QbL3dxp8min4ZnwWiMdlFcvfoW1l3rHL6lvSU8JyPu
-        tI3TV57NNnj4Bq/keqxZOTeeF9+9ZA4sWjS7BtUPWhT9DC+xFJLcsYPpuaji0p2/Oxwir7jvsuX/U
-        y9dpkmCJOjq2ER5XK5/faIeJxiQU9bZ+mnUsplo/ChCMm+unL1KWLS94bBjJDlzxjHqeD1l6dxzdJ
-        VudQgLy9jb8GOsrg3Fazw16gK5iNYGZFgwlNxo8CYGkPD+FAuZ8uZSZp9jKMhuX8XVLWsUSQokF10
-        K34xQl0g==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrEHV-00084D-Sx; Wed, 18 May 2022 07:39:41 +0000
-Date:   Wed, 18 May 2022 00:39:41 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Matthew Rosato <mjrosato@linux.ibm.com>,
-        alex.williamson@redhat.com, cohuck@redhat.com,
-        borntraeger@linux.ibm.com, jjherne@linux.ibm.com,
-        akrowiak@linux.ibm.com, pasic@linux.ibm.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com, hch@infradead.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] vfio: remove VFIO_GROUP_NOTIFY_SET_KVM
-Message-ID: <YoSivTU7nivO9FMD@infradead.org>
-References: <20220517180851.166538-1-mjrosato@linux.ibm.com>
- <20220517180851.166538-2-mjrosato@linux.ibm.com>
- <20220517185643.GY1343366@nvidia.com>
+        Wed, 18 May 2022 03:40:29 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12CD6EC47
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:40:27 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4L34f05mRKz9snR;
+        Wed, 18 May 2022 09:40:24 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 7NB8nyYK2GVL; Wed, 18 May 2022 09:40:24 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4L34f04wBpz9snF;
+        Wed, 18 May 2022 09:40:24 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 977778B77C;
+        Wed, 18 May 2022 09:40:24 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id ZBvs3ZPwmeUS; Wed, 18 May 2022 09:40:24 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7B0358B77B;
+        Wed, 18 May 2022 09:40:24 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 24I7eIHw2950429
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 09:40:18 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 24I7eIfs2950427;
+        Wed, 18 May 2022 09:40:18 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 2/2] powerpc/irq64: Remove get_irq_happened()
+Date:   Wed, 18 May 2022 09:40:16 +0200
+Message-Id: <af511b53e4eb51f8fbc51eda7f5597175e68dce6.1652859593.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <9f1a47de80f78d3dd270a7a72f69f55f581c4054.1652859593.git.christophe.leroy@csgroup.eu>
+References: <9f1a47de80f78d3dd270a7a72f69f55f581c4054.1652859593.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517185643.GY1343366@nvidia.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652859615; l=1520; s=20211009; h=from:subject:message-id; bh=ki5lqa1nR6Ei2hRN9t5gh7hJJB8s3+Kwk0dFblFytvE=; b=TRYat2aXOZrP/KvwCM+P5QKnDEjoX/tD6mhWCL/P+e0R7jQTcuMiVgXkk22R26fs9zbcxsyVw/b8 EWUwI2gvBgA8XmcRHUs3JI55nDqX7xzB4yA5PoJXx+7ECrsTN6U5
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->  	if (device->ops->flags & VFIO_DEVICE_NEEDS_KVM)
->  	{
+No need to open code the read of local_paca->irq_happened in
+assembly, we have READ_ONCE() for doing the same.
 
-Nit: this is not the normal brace placement.
+Replace get_irq_happened() by READ_ONCE(local_paca->irq_happened).
 
-But what is you diff against anyway?  The one Matthew sent did away
-with the VFIO_DEVICE_NEEDS_KVM flags, which does the wrong thing for
-zpci, so it can't be that..
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/kernel/irq_64.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
 
-Also if we want to do major code movement, it really needs to go into
-a separate patch or patches, as the combinations of all these moves
-with actual code changes is almost unreadable.
+diff --git a/arch/powerpc/kernel/irq_64.c b/arch/powerpc/kernel/irq_64.c
+index 488f6eb4553d..0f0e8bcb368c 100644
+--- a/arch/powerpc/kernel/irq_64.c
++++ b/arch/powerpc/kernel/irq_64.c
+@@ -67,16 +67,6 @@
+ 
+ int distribute_irqs = 1;
+ 
+-static inline notrace unsigned long get_irq_happened(void)
+-{
+-	unsigned long happened;
+-
+-	__asm__ __volatile__("lbz %0,%1(13)"
+-	: "=r" (happened) : "i" (offsetof(struct paca_struct, irq_happened)));
+-
+-	return happened;
+-}
+-
+ void replay_soft_interrupts(void)
+ {
+ 	struct pt_regs regs;
+@@ -233,7 +223,7 @@ notrace void arch_local_irq_restore(unsigned long mask)
+ 	return;
+ 
+ happened:
+-	irq_happened = get_irq_happened();
++	irq_happened = READ_ONCE(local_paca->irq_happened);
+ 	if (IS_ENABLED(CONFIG_PPC_IRQ_SOFT_MASK_DEBUG))
+ 		WARN_ON_ONCE(!irq_happened);
+ 
+@@ -256,7 +246,7 @@ notrace void arch_local_irq_restore(unsigned long mask)
+ 				 * IRQ_HARD_DIS again and warn if it is still
+ 				 * clear.
+ 				 */
+-				irq_happened = get_irq_happened();
++				irq_happened = READ_ONCE(local_paca->irq_happened);
+ 				WARN_ON_ONCE(!(irq_happened & PACA_IRQ_HARD_DIS));
+ 			}
+ 		}
+-- 
+2.35.3
+
