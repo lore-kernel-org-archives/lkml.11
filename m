@@ -2,78 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239597AbiERPuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
+        id S239615AbiERPv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:51:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239592AbiERPuu (ORCPT
+        with ESMTP id S239625AbiERPvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:50:50 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A94DDE8D
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:50:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=MAUXfcUkVFDIvFNCsb81T0316Hl0b9jykVcFYkHqtP4=; b=ZLZ4oNEPDpt5urvbAVTnE94zSx
-        dDIerDQOOl7Run6Tx46yCBRYkZ1KpwfVcAA8uXCxZY+uwhiu4pyWLzu08uwa6ZCWSxyXRzrpWuKk4
-        B9rfwYQS0i65gVIL02lUtH1OnctCd1QcRQgxnoaBVK8OiO9RbW9STaQhjrQHI0HN/S+8Ws+lvTW9u
-        7elJUXgz9i+3C6K08jZ2h3uI7YOuHGXana4aqFuzvtWUOjSwC/jRfw0bBGOS3T54XpaJAYWDHfNv8
-        YZNGpD0ssd+sqNMOtVzLEUFXZV5IuG9WJ1Tjxqi84tZ3rwxSVpwvH2e1AVKnsmZittq89FDJvZ5Fc
-        SFvr/6kA==;
-Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nrLwQ-00A7FJ-IK; Wed, 18 May 2022 17:50:26 +0200
-Message-ID: <f0a8918a-f4f9-d852-27be-52a095a9e59f@igalia.com>
-Date:   Wed, 18 May 2022 12:50:10 -0300
+        Wed, 18 May 2022 11:51:03 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9602791541
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:51:01 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id eg11so3538804edb.11
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:51:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cqJvUd681sz/Rpj3bROR5w8jszwa8bJSwwyEmSegot4=;
+        b=cPb1tJ1h/ExxwGcfPisCk9cYxVkxu4zTnNyhm8MU3HLzkkedyyXQHCZcS+39qSREQW
+         bZQblEk4puk1CLb2hzJKwRCkaqKnSkOZhhO9SsNZwlh4fSWbl2yIL4PeyF/w48jOyDVb
+         sJan6jKTe8TlxVRFkIrZ62DO3vNuYmkk+32E1Do9LyRqkO/ws+tYsD0PxWGzCzT1Yfv+
+         d1nRUuirNV3+t0eF2vwIgKY1izNmGxkJiTPA/4/TOAbCMKd/7gUj02TQvyNm7xhMGOQP
+         ACm7bA4BBpmmam8X+adli4IzDzD3AjeKxNzRue4T9B/2PJC/mByNGKw9EBAuh2EC/ONI
+         zkLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cqJvUd681sz/Rpj3bROR5w8jszwa8bJSwwyEmSegot4=;
+        b=o3z+DLgG4JL5JiMGd6IyoBDa3sUnXAMj4bNHtaZJlz9aKwROzieKOVa5xYsK4ayFqk
+         NjXBe/JYWdf7T+z3Nt/d8C492Qemn79N3k0LDN4UUseX/mruZvirignxXSNl1+C2C5XZ
+         yHMTllIf1K6kDFklaLOGiOTPnAsi95mPCboIP3RbRVRmoFyvTcV1HaT3GUaTGnCWXvmO
+         bNv2JYtypfuXhZq5/O8kOrmx3ZOlvfzodipIAsxD80Wvdym8MIlvFb8bi2gepyaDODUW
+         Lm3VVdDzjNCecKNNa7us2mDVL90EZsK6+mJofjbfs4dsYElpNSXA/QJgI+EqRCAjA49I
+         usqQ==
+X-Gm-Message-State: AOAM530geBlLv4z8rOY9liylApAluRUsW9KTWzxEsIoQT8jqqpqdUS4d
+        Ook1RiLuVUsxgDX6nB13f9pCOKP2XAO8D5xFutpMKw==
+X-Google-Smtp-Source: ABdhPJz9BjdO5Rzu/CX+M/2TdhMlwR3/Hv2vNRt9DPqIBxsRJeE1O37QbIGWPl+oOoM0PQiWjNO7ghXa3Ggvq6LCJUk=
+X-Received: by 2002:aa7:cb48:0:b0:42a:addf:4bf1 with SMTP id
+ w8-20020aa7cb48000000b0042aaddf4bf1mr392612edt.283.1652889059935; Wed, 18 May
+ 2022 08:50:59 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 1/3] x86/crash: Disable virt in core NMI crash handler
- to avoid double shootdown
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
-Cc:     "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-References: <20220518001647.1291448-1-seanjc@google.com>
- <20220518001647.1291448-2-seanjc@google.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220518001647.1291448-2-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220516194730.1546328-1-dlatypov@google.com> <20220516194730.1546328-3-dlatypov@google.com>
+ <CABVgOSn1Hq6AX-+=+m_uLwKne3wuUadrsE=uPRsgYH3+TFBEuA@mail.gmail.com>
+In-Reply-To: <CABVgOSn1Hq6AX-+=+m_uLwKne3wuUadrsE=uPRsgYH3+TFBEuA@mail.gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Wed, 18 May 2022 08:50:48 -0700
+Message-ID: <CAGS_qxqJNpoZkv0==q_yMTuWzATTtUsXw3o1ZOR=n+fjVS+ghA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] kunit: tool: refactoring printing logic into kunit_printer.py
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/05/2022 21:16, Sean Christopherson wrote:
-> [...]
-> Fixes: ed72736183c4 ("x86/reboot: Force all cpus to exit VMX root if VMX is supported)
-> Cc: stable@vger.kernel.org
-> Reported-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Cc: Paolo Bonzini <pbonzini@redhat.com>
-> Link: https://lore.kernel.org/all/20220427224924.592546-2-gpiccoli@igalia.com
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/include/asm/reboot.h |  1 +
->  arch/x86/kernel/crash.c       | 16 +--------
->  arch/x86/kernel/reboot.c      | 66 ++++++++++++++++++++++++++++-------
->  3 files changed, 56 insertions(+), 27 deletions(-)
+On Wed, May 18, 2022 at 12:48 AM David Gow <davidgow@google.com> wrote:
+>
+> On Tue, May 17, 2022 at 3:48 AM Daniel Latypov <dlatypov@google.com> wrote:
+> >
+> > Context:
+> > * kunit_kernel.py is importing kunit_parser.py just to use the
+> >   print_with_timestamp() function
+> > * the parser is directly printing to stdout, which will become an issue
+> >   if we ever try to run multiple kernels in parallel
+> >
+> > This patch introduces a kunit_printer.py file and migrates callers of
+> > kunit_parser.print_with_timestamp() to call
+> > kunit_printer.stdout.print_with_timestamp() instead.
+> >
+> > Future changes:
+> > If we want to support showing results for parallel runs, we could then
+> > create new Printer's that don't directly write to stdout and refactor
+> > the code to pass around these Printer objects.
+> >
+> > Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> > ---
+>
+> I agree that this will be useful down the line, as running multiple
+> kernels in parallel is definitely something which could be useful. I
+> know the original idea for that was to have multiple parsers, and just
+> to combine the results they gave after the fact, but given that
+> incremental output is so useful, I agree that this is the better path.
+>
+> My only super-minor gripe (which I can live with) is that importing
+> 'stdout' and using it as 'stdout.print_with_timestamp()' is a little
+> confusing: I'd've assumed an stdout variable imported into the global
+> namespace was sys.stdout, not a wrapper. Explicitly using
+> kunit_printer.stdout would be a little clearer, IMO. Up to you,
+> though.
 
-Thanks Sean, great patch! It's working fine according to my tests, and
-the comments made the code very clear.
-Feel free to add:
+I was initially writing it that way, but then the following pattern
+got super long
 
-Tested-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Old:
+print_with_timestamp(red("[ERROR]") + " some error")
 
+New options:
+stdout.print_with_timestamp(stdout.red("[ERROR]") + " some error")
+kunit_printer.stdout.print_with_timestamp(kunit_printer.stdout.red("[ERROR]")
++ " some error")
+
+But yeah, I see what you mean about potential confusion with sys.stdout.
+I couldn't think of a better (while still short name) for it.
+E.g. "default_printer", "stdout_printer", etc.
+
+FWIW, I have a local patch that drops 99% of the direct uses of
+kunit_printer.stdout in the parser and passes around buffered
+printers.
+And in that case, the use of stdout becomes small enough that we could
+do `kunit_printer.stdout` w/o as much pain/noise.
+
+But I have no plans of sending that out until we need it, since it
+muddies up the code quite a bit.
+And I don't have a clear idea of what the interface to parallel
+testing should look like, so that day is still far off.
