@@ -2,118 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9058DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0374C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231447AbiERGni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36444 "EHLO
+        id S231476AbiERGnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231450AbiERGne (ORCPT
+        with ESMTP id S231428AbiERGng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:43:34 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8791E3FA
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:43:32 -0700 (PDT)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id DECE93F1DA
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 06:43:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1652856210;
-        bh=ZDcEyYuCpzXeGn1i8/JzBv261YHZYgVn9+xhRbfWJ6s=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=GT3/jwl7xaBGuJwNJ8+svdfvdtbkWGsHO3frG7VxW1j5B3XI5IXwX4AZli12xxsz/
-         9oB/PI9pdzlZKrUVQhk1KHeP2TAXwGB21OGvzc17P52sKwfzZtVTL2rXFYm1ObZGBM
-         1zOybRevXMDhjVARlXwqY1HO7W8zlfCNzhiJcDQNMSqOyz9g53GpqrzGcyYhEkn+2T
-         AoNLIN5HmSm055D0gImm4l5qJyUf5zCs6sJAquhI8D2WpTkOURzBJgO1wBCy+uc/Sc
-         /S6vKjZcDcpSwWNSPXlN5Xd+mBkEA5XOhRDzZBhrcVu7NyFIYWqUJ62wjAhRWlU9lE
-         PWJW9OCDeu9AA==
-Received: by mail-ed1-f72.google.com with SMTP id h11-20020aa7c60b000000b0042ab2287015so974849edq.3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:43:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZDcEyYuCpzXeGn1i8/JzBv261YHZYgVn9+xhRbfWJ6s=;
-        b=WU8T9QwBrfak9NJwZf9/XN5ujUwKjffXk5CVn8J1bHsh44ltEBPLn8lDHWdwgDnKRi
-         ZlPuSszxbUX/tEnxdxjp39PXbV1afP8ekn8f3Y3y7x41ct6iIGo3g5DDpuQy+yE+LPsS
-         IdaHVCNnDXS54iygHz/hUk9nVPeMfB1pQ36hji9CqTtyhObFxQ1BP1PmUcVDU0sWSXBS
-         YcUBh4N29KbhHAZ5OYBhBHr5+k76c0uxB5Dd1qdiN2+SgoWM2hxvSJljCwEpd3ore9zb
-         C+JdBh+S+VVVkbRMnP18owuOJOU9TQgtOboJj6iLiTHm/DeUlgTr8MYelE349LxbVVuG
-         2UeQ==
-X-Gm-Message-State: AOAM533ahkW/gcOCPrSdm/WuompLzJSe3VpRlDW+k6kH6OQnvx9P2Hqk
-        i8Q0mSGrzyhe2iCbvK0pL0EYpTCoUymFWGcGqvmdobuDZyjtMmISvLX0FsNVQpWDosWhv6mkvaI
-        yuVztUHXmN4KPP9YSGOnkQdNlZElevRPoJ3+EOA7IbA==
-X-Received: by 2002:a17:907:3e8f:b0:6f4:4f42:a75f with SMTP id hs15-20020a1709073e8f00b006f44f42a75fmr23086302ejc.695.1652856210036;
-        Tue, 17 May 2022 23:43:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwKQoJ5rDXGpobxN5flxbIE7TLfwoxBllcLhwlfbVamKZ5GvfRasIiHknLd9MJZjAUfuvrDjg==
-X-Received: by 2002:a17:907:3e8f:b0:6f4:4f42:a75f with SMTP id hs15-20020a1709073e8f00b006f44f42a75fmr23086294ejc.695.1652856209852;
-        Tue, 17 May 2022 23:43:29 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id ee46-20020a056402292e00b0042617ba63aesm830271edb.56.2022.05.17.23.43.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 23:43:29 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH v2 1/3] ARM: Kconfig: Fix indentation
-Date:   Wed, 18 May 2022 08:43:26 +0200
-Message-Id: <20220518064326.366787-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <YoOyKb/0Mj849mt3@shell.armlinux.org.uk>
-References: <YoOyKb/0Mj849mt3@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 18 May 2022 02:43:36 -0400
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 3AF151DA68
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:43:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=QqUT63+lVdVPLayOPSpvAYh9oQVOVeBSUyqI0pU89dU=; b=s
+        CjLQmnAVjtEEiXx8ljxJpqLF7jay2G0sp/WBT8qiaJNj4DlB6jlbNZIgSxFlzOt7
+        wSfTMs8TYV2IoP4CYa9aQo67usrzsQZmBQpar7ekU5EoWvUsF+VV1LFyFbSUGjwW
+        9QYnByNB76G2VzIXVhhUaR6ua5BbJ753cu54DjVVhU=
+Received: from localhost (unknown [10.129.21.144])
+        by front01 (Coremail) with SMTP id 5oFpogDHzaV5lYRiupBaBw--.38611S2;
+        Wed, 18 May 2022 14:43:05 +0800 (CST)
+From:   Yongzhi Liu <lyz_cs@pku.edu.cn>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, jic23@kernel.org,
+        lars@metafoo.de
+Cc:     linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, fuyq@stu.pku.edu.cn,
+        Yongzhi Liu <lyz_cs@pku.edu.cn>
+Subject: [PATCH] iio: vadc: Fix potential dereference of NULL pointer
+Date:   Tue, 17 May 2022 23:43:00 -0700
+Message-Id: <1652856180-100582-1-git-send-email-lyz_cs@pku.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: 5oFpogDHzaV5lYRiupBaBw--.38611S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtr43ZF1xurWrZrW3AF47Arb_yoWfWrbEk3
+        Wvqw1xXasakrWUCr4jkr4xWr98KFyUWrn5Xw1jvas3KasxJFs3AasFyr4Iyr47Aa1kZ3WD
+        Grs8G3sYkFWakjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4xFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
+        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE-syl42xK82IYc2Ij64vIr41l42xK
+        82IY6x8ErcxFaVAv8VWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
+        v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkG
+        c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
+        0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4U
+        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUU
+        UU=
+X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwEJBlPy7vIULQAHsO
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+The return value of vadc_get_channel() needs to be checked
+to avoid use of NULL pointer, which is followed by
+the caller 'vadc_do_conversion' of function 'vadc_configure'.
+Fix this by adding the null pointer check on prop
+in function 'vadc_configure'.
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
-
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
 ---
-v2:
-  Drop endif/endmenu trailing comments.
----
- arch/arm/Kconfig | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/iio/adc/qcom-spmi-vadc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 2e8091e2d8a8..e93653709f07 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -973,14 +973,14 @@ config ARM_ERRATA_764369
- 	  in the diagnostic control register of the SCU.
+diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+index 34202ba..d99bd72 100644
+--- a/drivers/iio/adc/qcom-spmi-vadc.c
++++ b/drivers/iio/adc/qcom-spmi-vadc.c
+@@ -210,6 +210,9 @@ static int vadc_configure(struct vadc_priv *vadc,
+ 	u8 decimation, mode_ctrl;
+ 	int ret;
  
- config ARM_ERRATA_775420
--       bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
--       depends on CPU_V7
--       help
--	 This option enables the workaround for the 775420 Cortex-A9 (r2p2,
--	 r2p6,r2p8,r2p10,r3p0) erratum. In case a data cache maintenance
--	 operation aborts with MMU exception, it might cause the processor
--	 to deadlock. This workaround puts DSB before executing ISB if
--	 an abort may occur on cache maintenance.
-+	bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
-+	depends on CPU_V7
-+	help
-+	  This option enables the workaround for the 775420 Cortex-A9 (r2p2,
-+	  r2p6,r2p8,r2p10,r3p0) erratum. In case a data cache maintenance
-+	  operation aborts with MMU exception, it might cause the processor
-+	  to deadlock. This workaround puts DSB before executing ISB if
-+	  an abort may occur on cache maintenance.
- 
- config ARM_ERRATA_798181
- 	bool "ARM errata: TLBI/DSB failure on Cortex-A15"
++	if (!prop)
++		return -ENODEV;
++
+ 	/* Mode selection */
+ 	mode_ctrl = (VADC_OP_MODE_NORMAL << VADC_OP_MODE_SHIFT) |
+ 		     VADC_ADC_TRIM_EN | VADC_AMUX_TRIM_EN;
 -- 
-2.32.0
+2.7.4
 
