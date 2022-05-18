@@ -2,117 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D03C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6BC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241200AbiERRon (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
+        id S241204AbiERRpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241077AbiERRom (ORCPT
+        with ESMTP id S241174AbiERRpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 13:44:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1887F69B43
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:44:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652895880;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dzen8Tfphka+V9v1rHHzLeFthFMVB9wbjOwentfjkpk=;
-        b=b6v/Ku5vefSiHCUKyn9BLFjvA5wboI9knYphU2asZsrEbLNaonk4piKtMl4qYk4G/NJBLB
-        Y1FsPA8zdjFTFNfA064l0NIMrWqBQJGb07SghDQ9nLvW91un78+XWAhx8TLJZSLtaqYsXX
-        IN5jc4VdxP2hh0+ip2JbR+X8MA7WU2Y=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-296-tP__qQLGPtai9qnYDgv2xQ-1; Wed, 18 May 2022 13:44:35 -0400
-X-MC-Unique: tP__qQLGPtai9qnYDgv2xQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5567B811E78;
-        Wed, 18 May 2022 17:44:35 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.16.154])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 476FC2026D6A;
-        Wed, 18 May 2022 17:44:35 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id 0949F2208FA; Wed, 18 May 2022 13:44:35 -0400 (EDT)
-Date:   Wed, 18 May 2022 13:44:34 -0400
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Dharmendra Singh <dharamhans87@gmail.com>
-Cc:     miklos@szeredi.hu, linux-fsdevel@vger.kernel.org,
-        fuse-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        bschubert@ddn.com, Dharmendra Singh <dsingh@ddn.com>
-Subject: Re: [PATCH v5 1/3] FUSE: Avoid lookups in fuse create
-Message-ID: <YoUwgoAHiywYzvpK@redhat.com>
-References: <20220517100744.26849-1-dharamhans87@gmail.com>
- <20220517100744.26849-2-dharamhans87@gmail.com>
- <YoUvrSdh4B0rKy78@redhat.com>
+        Wed, 18 May 2022 13:45:43 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917FCDFB;
+        Wed, 18 May 2022 10:45:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652895942; x=1684431942;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=/MoSLRj2DcpOgWl7GCdrN80cWuUgwatF4OfOyEpMYzg=;
+  b=Emm0867kWW9mtega68cic9/Vm5L9GMUQHw3VObebyN5//BhMaIfPm+v9
+   neb+vIpRKNB/A331nKNPGqYcVOPkV+Kfn+UwEWJhgV3iVH6q57PPRfxmT
+   9Nw3Yl1yR+KGhY8zROcg4HjKN+YeO2YEt/r0+6Gx6cXkMSnj16YUWoJe7
+   a9z0XGVo2Se16yeyDeRG3qw60mg72BUmZ68aJo9t8wPNuCSxEUxFjX2XE
+   +yc6o5cmgDXjST2wtNJu2xDMa7i0IMgU+Rsr88W3yJMzJZn5HnXRny7V0
+   fgJiqkE8Z3Xqx4fcevEx0KxUUQsLFQG4gikEC2GyjBsedgwG2doFohjJB
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="271492326"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="271492326"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 10:21:00 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="700706711"
+Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.212.11.158]) ([10.212.11.158])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 10:21:00 -0700
+Message-ID: <a6df0b8a-dc42-51e4-4b7b-62d1d11c7800@intel.com>
+Date:   Wed, 18 May 2022 10:20:59 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoUvrSdh4B0rKy78@redhat.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.0
+Subject: Re: linux-next: manual merge of the dmaengine tree with Linus' tree
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220517153435.645a9313@canb.auug.org.au>
+ <YoTcmqygoMm/gmsZ@matsya>
+From:   Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <YoTcmqygoMm/gmsZ@matsya>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 01:41:02PM -0400, Vivek Goyal wrote:
-> On Tue, May 17, 2022 at 03:37:42PM +0530, Dharmendra Singh wrote:
-> 
-> [..]
-> > diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
-> > index d6ccee961891..bebe4be3f1cb 100644
-> > --- a/include/uapi/linux/fuse.h
-> > +++ b/include/uapi/linux/fuse.h
-> > @@ -301,6 +301,7 @@ struct fuse_file_lock {
-> >   * FOPEN_CACHE_DIR: allow caching this directory
-> >   * FOPEN_STREAM: the file is stream-like (no file position at all)
-> >   * FOPEN_NOFLUSH: don't flush data cache on close (unless FUSE_WRITEBACK_CACHE)
-> > + * FOPEN_FILE_CREATED: the file was actually created
-> >   */
-> >  #define FOPEN_DIRECT_IO		(1 << 0)
-> >  #define FOPEN_KEEP_CACHE	(1 << 1)
-> > @@ -308,6 +309,7 @@ struct fuse_file_lock {
-> >  #define FOPEN_CACHE_DIR		(1 << 3)
-> >  #define FOPEN_STREAM		(1 << 4)
-> >  #define FOPEN_NOFLUSH		(1 << 5)
-> > +#define FOPEN_FILE_CREATED	(1 << 6)
-> >  
-> >  /**
-> >   * INIT request/reply flags
-> > @@ -537,6 +539,7 @@ enum fuse_opcode {
-> >  	FUSE_SETUPMAPPING	= 48,
-> >  	FUSE_REMOVEMAPPING	= 49,
-> >  	FUSE_SYNCFS		= 50,
-> > +	FUSE_CREATE_EXT		= 51,
-> 
-> I am wondering if we really have to introduce a new opcode for this. Both
-> FUSE_CREATE and FUSE_CREATE_EXT prepare and send fuse_create_in{} and
-> expect fuse_entry_out and fuse_open_out in response. So no new structures
-> are being added. Only thing FUSE_CREATE_EXT does extra is that it also
-> reports back whether file was actually created or not.
-> 
-> May be instead of adding an new fuse_opcode, we could simply add a
-> new flag which we send in fuse_create_in and that reqeusts to report
-> if file was created or not. This is along the lines of
-> FUSE_OPEN_KILL_SUIDGID.
-> 
-> So say, a new flag FUSE_OPEN_REPORT_CREATE flag. Which we will set in
-> fuse_create_in->open_flags. If file server sees this flag is set, it
-> knows that it needs to set FOPEN_FILE_CREATED flag in response.
-> 
-> To me creating a new flag FUSE_OPEN_REPORT_CREATE seems better instead
-> of adding a new opcode.
 
-Actually I take that back. If we were to use a flag, then we will have to
-do feature negotiation in advance at init time and only then we can set
-FUSE_OPEN_REPORT_CREATE. But we are relying on no new feature bit instead
--ENOSYS will be returned if server does not support FUSE_CREATE_EXT.
-So adding a new opcode is better.
+On 5/18/2022 4:46 AM, Vinod Koul wrote:
+> On 17-05-22, 15:34, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> Today's linux-next merge of the dmaengine tree got a conflict in:
+>>
+>>    drivers/dma/idxd/device.c
+>>
+>> between commit:
+>>
+>>    1cd8e751d96c ("dmaengine: idxd: skip clearing device context when device is read-only")
+>>
+>> from Linus' tree and commit:
+>>
+>>    cf4ac3fef338 ("dmaengine: idxd: fix lockdep warning on device driver removal")
+> Thank you Stephen, the merge looks right to me. Dave pls verify and test
+> -next
+>
+>> from the dmaengine tree.
+>>
+>> I fixed it up (see below) and can carry the fix as necessary. This
+>> is now fixed as far as linux-next is concerned, but any non trivial
+>> conflicts should be mentioned to your upstream maintainer when your tree
+>> is submitted for merging.  You may also want to consider cooperating
+>> with the maintainer of the conflicting tree to minimise any particularly
+>> complex conflicts.
+>>
+>> -- 
+>> Cheers,
+>> Stephen Rothwell
+>>
+>> diff --cc drivers/dma/idxd/device.c
+>> index f652da6ab47d,1143886f4a80..000000000000
+>> --- a/drivers/dma/idxd/device.c
+>> +++ b/drivers/dma/idxd/device.c
+>> @@@ -699,21 -716,23 +716,26 @@@ static void idxd_device_wqs_clear_state
+>>    		struct idxd_wq *wq = idxd->wqs[i];
+>>    
+>>    		if (wq->state == IDXD_WQ_ENABLED) {
+>> + 			mutex_lock(&wq->wq_lock);
+>>    			idxd_wq_disable_cleanup(wq);
+>>   -			idxd_wq_device_reset_cleanup(wq);
+>>    			wq->state = IDXD_WQ_DISABLED;
+>> + 			mutex_unlock(&wq->wq_lock);
+>>    		}
+>>   +		idxd_wq_device_reset_cleanup(wq);
 
-Thanks
-Vivek
 
+The lock needs to go around both functions, we can move it outside the 
+if().
+
+  + 		mutex_lock(&wq->wq_lock);
+   		if (wq->state == IDXD_WQ_ENABLED) {
+   			idxd_wq_disable_cleanup(wq);
+  -			idxd_wq_device_reset_cleanup(wq);
+   			wq->state = IDXD_WQ_DISABLED;
+   		}
+  +		idxd_wq_device_reset_cleanup(wq);
+  + 		mutex_unlock(&wq->wq_lock);
+
+
+>>    	}
+>>    }
+>>    
+>>    void idxd_device_clear_state(struct idxd_device *idxd)
+>>    {
+>>   +	if (!test_bit(IDXD_FLAG_CONFIGURABLE, &idxd->flags))
+>>   +		return;
+>>   +
+>> + 	idxd_device_wqs_clear_state(idxd);
+>> + 	spin_lock(&idxd->dev_lock);
+>>    	idxd_groups_clear_state(idxd);
+>>    	idxd_engines_clear_state(idxd);
+>> - 	idxd_device_wqs_clear_state(idxd);
+>> + 	idxd->state = IDXD_DEV_DISABLED;
+>> + 	spin_unlock(&idxd->dev_lock);
+>>    }
+>>    
+>>    static void idxd_group_config_write(struct idxd_group *group)
+>
+>
