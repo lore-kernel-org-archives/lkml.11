@@ -2,82 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA471C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 524E6C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235642AbiERL1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
+        id S235676AbiERL3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235637AbiERL1r (ORCPT
+        with ESMTP id S235630AbiERL3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:27:47 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C815C166455;
-        Wed, 18 May 2022 04:27:45 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 545681F449B3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652873264;
-        bh=rBbCjdKWBmSyC6DxT/Ml286Uzl18qmi9zuCiDKlWOYc=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=hxETIbvhCXlF07VtM55O17KnEffGaMX0AFK2f/GIVWDG85eLSv1sKOYhVYZ5YtezQ
-         6TiPUkUn21A7yKRS/tu+jQBMDeA+8JXttz9J8r5z06zYzwG8vGM3WniTpiP6ccSB2r
-         CiXnGzUAZAX1MnhUAg9NYoZcQyNQ7qQAY4LK9BkP/S6iMVYW3HjoIOvAZW2ehHIMJn
-         0xadwx32BRSsO+goqBa+Q1FFplkxgh55p/735ifSr9kFOA2d8rv32sSb6vyBVkz6P/
-         5CNeGIeVEIf/Ifd1yMcI4moFLbHGN+RQOSgP9BFDpy9xTaaoJ7/zgPfKvIRD6Lp4QZ
-         zNXZ3Wh/ky7UQ==
-Message-ID: <890ae132-cf86-8c82-8280-291869183f5f@collabora.com>
-Date:   Wed, 18 May 2022 16:27:35 +0500
+        Wed, 18 May 2022 07:29:30 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10791756A6;
+        Wed, 18 May 2022 04:29:25 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso3038297wma.0;
+        Wed, 18 May 2022 04:29:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uFIsWxhH+SfWDbQeGJib3EffwTOsdWgNhmP3BKg6cTI=;
+        b=GIk1v/SP46GpQB2aa29XniHa4XWAzmRQTBwJvI2ojRUnPlE+MqZBO6G6nMAupnb8W+
+         G2EA2unw0FCDCoBzqtVzORAZzUFAFXx+Kdr8mqijkt1cl3qR20Nu7ks1Ou4EEIyvLfG1
+         BKNUqHtpdNg9JkHJn34prfdFRVXewGK/0aMoRwE31kjLG9CzM4rhFuUz60WAX4Xx4Qtf
+         Iw5hAdG4s9z4F6oM41gnCOxtwot5uL5itCKcTOqR+V3kIeqKyCtmTTLGt5h7TbNeBK4l
+         1nRGHnUOJvvntrUCPXJu1pJXgzrO3r0Q2kDfNl8uDHZhwRBCu9LgjhUgB/igxBzXk6Dk
+         Y+OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uFIsWxhH+SfWDbQeGJib3EffwTOsdWgNhmP3BKg6cTI=;
+        b=r7bMVYTEcFIWdWVVfFZRIV76V3Siu6yEXzNA5WQfwP1qDmgGo0yKscAtuKwkJIqZ2O
+         mRHaDQt7KD2DwZYe4VKetQsKMoYAGodAucOfxWFJFM63r+zTWhbLJmODa3AtVzbw1/HV
+         XspZkk82RLOpA7a90B+cn0UczBia06LYlb+1PA7Jv1KelUGbCMck5bLEU3wnYs/X67wK
+         dW9p+RhHBQaMTuNwfXY4yNPTApEILYeWd0uo3jGN3Yv0t6FU1w+O2MnpNxiTFK87lIRc
+         rkNIY+8S2Kv1xi5S55pGoEpNkX22WmRvKXHXzFC7DgNViVjfUa2r1MzqWRnbDa5MTJg9
+         eMTQ==
+X-Gm-Message-State: AOAM530yHaFDBoZ/LSudWjyZA1r8Q6BhuhrcyoAT+GF6OchwCYe2XikF
+        WM0P0DvGwhjbhx+N9jI1WJs=
+X-Google-Smtp-Source: ABdhPJwmMEJmW+CILoBoRlmxrlpjiQs7Ka6eyFZQusCiGX6OE9WPle9wfc8RX8mJ6nniBuuCC/UxRQ==
+X-Received: by 2002:a05:600c:3549:b0:394:89ba:e1be with SMTP id i9-20020a05600c354900b0039489bae1bemr25309861wmq.181.1652873364178;
+        Wed, 18 May 2022 04:29:24 -0700 (PDT)
+Received: from [192.168.0.36] ([5.225.216.194])
+        by smtp.gmail.com with ESMTPSA id v65-20020a1cac44000000b003947b59dfdesm5121659wme.36.2022.05.18.04.29.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 04:29:23 -0700 (PDT)
+Message-ID: <4cfbc8dd-83d3-80df-630d-6f8fb2efb9fd@gmail.com>
+Date:   Wed, 18 May 2022 13:29:22 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     usama.anjum@collabora.com, Benson Leung <bleung@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] platform/chrome: Use imperative mood for ChromeOS
- ACPI sysfs ABI descriptions
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 1/7] dt-bindings: iommu: mediatek: Add phandles for
+ mediatek infra/pericfg
 Content-Language: en-US
-To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
-References: <20220518083524.37380-1-bagasdotme@gmail.com>
- <20220518083524.37380-3-bagasdotme@gmail.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220518083524.37380-3-bagasdotme@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, yong.wu@mediatek.com
+Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        krzysztof.kozlowski@linaro.org
+References: <20220518100503.37279-1-angelogioacchino.delregno@collabora.com>
+ <20220518100503.37279-2-angelogioacchino.delregno@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220518100503.37279-2-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/18/22 1:35 PM, Bagas Sanjaya wrote:
-> The current descriptions all begin with ("This file shows something")
-> clause, which is incorrect wording since these mean return value from
-> sysfs.
-> 
-> Use imperative mood ("Returns something") instead, in line with
-> corresponding ACPI documentation at firmware-guide/.
-> 
-> Cc: Benson Leung <bleung@google.com>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> Cc: Tzung-Bi Shih <tzungbi@kernel.org>
-> Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-> Cc: Linux Next Mailing List <linux-next@vger.kernel.org>
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
--- 
-Muhammad Usama Anjum
+On 18/05/2022 12:04, AngeloGioacchino Del Regno wrote:
+> Add properties "mediatek,infracfg" and "mediatek,pericfg" to let the
+> mtk_iommu driver retrieve phandles to the infracfg and pericfg syscon(s)
+> instead of performing a per-soc compatible lookup.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>   .../devicetree/bindings/iommu/mediatek,iommu.yaml         | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> index 2ae3bbad7f1a..c4af41947593 100644
+> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+> @@ -101,6 +101,10 @@ properties:
+>       items:
+>         - const: bclk
+>   
+> +  mediatek,infracfg:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: The phandle to the mediatek infracfg syscon
+> +
+>     mediatek,larbs:
+>       $ref: /schemas/types.yaml#/definitions/phandle-array
+>       minItems: 1
+> @@ -112,6 +116,10 @@ properties:
+>         Refer to bindings/memory-controllers/mediatek,smi-larb.yaml. It must sort
+>         according to the local arbiter index, like larb0, larb1, larb2...
+>   
+> +  mediatek,pericfg:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: The phandle to the mediatek pericfg syscon
+> +
+
+I didn't explain myself. What I was suguesting was to squash the patch that add 
+requiered mediatek,infracfg with the patch that adds mediatk,infracfg to the 
+binding description. And then squash the both patches adding pericfg as well.
+
+Regards,
+Matthias
+
+
+>     '#iommu-cells':
+>       const: 1
+>       description: |
