@@ -2,140 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF53C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233735AbiERI5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
+        id S233815AbiERI5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233831AbiERI5M (ORCPT
+        with ESMTP id S233734AbiERI50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:57:12 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B242ADD
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:56:56 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id D7D0021BC3;
-        Wed, 18 May 2022 08:56:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1652864210; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=criOZiMFw6OxUa9n7KuC0jcpPnGIpjQereGBGjQYi1Y=;
-        b=Gf8+7UBNs9qJ1vft7M7F13PU7NMuIk1XlFshtcGo2jCoAZvwClz8KH/EoLer1KASBcMGG+
-        vKgEQ6r1af6XuFpTU3qqFWSz33Bsbs+2VeyvIjyPFvSTrO82ssmyT18amhstMatldhB8vv
-        9gTqprIboLSFmYIksLGiUkx6us3ITBo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1652864210;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=criOZiMFw6OxUa9n7KuC0jcpPnGIpjQereGBGjQYi1Y=;
-        b=THrHaklwYq15wL9i34o83RidmGlLFjvReNxdjH9HtU42clbjZOPdAl8lsR9M8x6CLjXjEd
-        bYjBNVdaUzgR1FAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F3D8413A6D;
-        Wed, 18 May 2022 08:56:49 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id GHanONG0hGIwegAAMHmgww
-        (envelope-from <osalvador@suse.de>); Wed, 18 May 2022 08:56:49 +0000
-Date:   Wed, 18 May 2022 10:56:48 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, willy@infradead.org, vbabka@suse.cz,
-        dhowells@redhat.com, neilb@suse.de, apopple@nvidia.com,
-        david@redhat.com, surenb@google.com, peterx@redhat.com,
-        naoya.horiguchi@nec.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/15] mm/swap: fold __swap_info_get() into its sole
- caller
-Message-ID: <YoSzrEOuQFnElkLW@localhost.localdomain>
-References: <20220509131416.17553-1-linmiaohe@huawei.com>
- <20220509131416.17553-4-linmiaohe@huawei.com>
+        Wed, 18 May 2022 04:57:26 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A768E13FAB;
+        Wed, 18 May 2022 01:57:05 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L36Dh1kP4zCsmj;
+        Wed, 18 May 2022 16:52:04 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 18 May 2022 16:56:59 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 16:56:58 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>
+CC:     <haijun.liu@mediatek.com>, <chandrashekar.devegowda@intel.com>,
+        <ricardo.martinez@linux.intel.com>, <loic.poulain@linaro.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH -next] net: wwan: t7xx: use GFP_ATOMIC under spin lock in t7xx_cldma_gpd_set_next_ptr()
+Date:   Wed, 18 May 2022 17:07:38 +0800
+Message-ID: <20220518090738.2694556-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509131416.17553-4-linmiaohe@huawei.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 09:14:04PM +0800, Miaohe Lin wrote:
-> Fold __swap_info_get() into its sole caller to make code more clear.
-> Minor readability improvement.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Sometimes t7xx_cldma_gpd_set_next_ptr() is called under spin lock,
+so add a parameter in t7xx_cldma_gpd_set_next_ptr() to make if it
+use GFP_ATOMIC flag.
 
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-> ---
->  mm/swapfile.c | 24 ++++++------------------
->  1 file changed, 6 insertions(+), 18 deletions(-)
-> 
-> diff --git a/mm/swapfile.c b/mm/swapfile.c
-> index 05ca79e68d63..0aee6286d6a7 100644
-> --- a/mm/swapfile.c
-> +++ b/mm/swapfile.c
-> @@ -1123,7 +1123,7 @@ int get_swap_pages(int n_goal, swp_entry_t swp_entries[], int entry_size)
->  	return n_ret;
->  }
->  
-> -static struct swap_info_struct *__swap_info_get(swp_entry_t entry)
-> +static struct swap_info_struct *_swap_info_get(swp_entry_t entry)
->  {
->  	struct swap_info_struct *p;
->  	unsigned long offset;
-> @@ -1138,8 +1138,13 @@ static struct swap_info_struct *__swap_info_get(swp_entry_t entry)
->  	offset = swp_offset(entry);
->  	if (offset >= p->max)
->  		goto bad_offset;
-> +	if (data_race(!p->swap_map[swp_offset(entry)]))
-> +		goto bad_free;
->  	return p;
->  
-> +bad_free:
-> +	pr_err("%s: %s%08lx\n", __func__, Unused_offset, entry.val);
-> +	goto out;
->  bad_offset:
->  	pr_err("%s: %s%08lx\n", __func__, Bad_offset, entry.val);
->  	goto out;
-> @@ -1152,23 +1157,6 @@ static struct swap_info_struct *__swap_info_get(swp_entry_t entry)
->  	return NULL;
->  }
->  
-> -static struct swap_info_struct *_swap_info_get(swp_entry_t entry)
-> -{
-> -	struct swap_info_struct *p;
-> -
-> -	p = __swap_info_get(entry);
-> -	if (!p)
-> -		goto out;
-> -	if (data_race(!p->swap_map[swp_offset(entry)]))
-> -		goto bad_free;
-> -	return p;
-> -
-> -bad_free:
-> -	pr_err("%s: %s%08lx\n", __func__, Unused_offset, entry.val);
-> -out:
-> -	return NULL;
-> -}
-> -
->  static struct swap_info_struct *swap_info_get_cont(swp_entry_t entry,
->  					struct swap_info_struct *q)
->  {
-> -- 
-> 2.23.0
-> 
-> 
-
+diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+index 0c52801ed0de..1fa9bb763831 100644
+--- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
++++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+@@ -91,9 +91,12 @@ static void t7xx_cldma_gpd_set_next_ptr(struct cldma_gpd *gpd, dma_addr_t next_p
+ }
+ 
+ static int t7xx_cldma_alloc_and_map_skb(struct cldma_ctrl *md_ctrl, struct cldma_request *req,
+-					size_t size)
++					size_t size, bool is_atomic)
+ {
+-	req->skb = __dev_alloc_skb(size, GFP_KERNEL);
++	if (is_atomic)
++		req->skb = __dev_alloc_skb(size, GFP_ATOMIC);
++	else
++		req->skb = __dev_alloc_skb(size, GFP_KERNEL);
+ 	if (!req->skb)
+ 		return -ENOMEM;
+ 
+@@ -174,7 +177,7 @@ static int t7xx_cldma_gpd_rx_from_q(struct cldma_queue *queue, int budget, bool
+ 		spin_unlock_irqrestore(&queue->ring_lock, flags);
+ 		req = queue->rx_refill;
+ 
+-		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, queue->tr_ring->pkt_size);
++		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, queue->tr_ring->pkt_size, false);
+ 		if (ret)
+ 			return ret;
+ 
+@@ -402,7 +405,7 @@ static struct cldma_request *t7xx_alloc_rx_request(struct cldma_ctrl *md_ctrl, s
+ 	if (!req->gpd)
+ 		goto err_free_req;
+ 
+-	val = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, pkt_size);
++	val = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, pkt_size, false);
+ 	if (val)
+ 		goto err_free_pool;
+ 
+@@ -801,7 +804,7 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
+ 		if (req->skb)
+ 			continue;
+ 
+-		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, rxq->tr_ring->pkt_size);
++		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, rxq->tr_ring->pkt_size, true);
+ 		if (ret)
+ 			break;
+ 
 -- 
-Oscar Salvador
-SUSE Labs
+2.25.1
+
