@@ -2,131 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D45EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 21:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C001C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 21:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243178AbiERV0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 17:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
+        id S243200AbiERVeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 17:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243157AbiERV0g (ORCPT
+        with ESMTP id S243183AbiERVeU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 17:26:36 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DE73BFB6;
-        Wed, 18 May 2022 14:26:35 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IL37Yc011281;
-        Wed, 18 May 2022 21:26:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=y7+InN4T1AhNfnrU+hjtQbi+AUPcRelZo9Aro4X0ebI=;
- b=Cmwc0+XWsZfiP+nmbI1Lgl131c8TUhy7H7ZNgfPLKnvGxTJBLwAfMeAtHQ37T1tsYO5c
- L0EG6zbdPYiIpS2ShYDHu4F7EjvMC2qYMN6NYpVlHX3KBscJzv6UI/H69fKjJDi+I3IU
- XQvaCp1gljf3OpxiHRW8toPAdSUcR4/n9jbbDFz061PtYk85nxmiM7NFlx3XuGRhAm8V
- fefudY7suiC57SqAIsryNJ0BtjMA7a66g8HqTcMIbs3WMHFWR1XdzwaQDsSPmQmQzS24
- HYfx2Sz4dqfDJ2zVniZTQhii3+ABMakAKQDsG56sz9Zkl/hpe8iuw4/0pd+Q/fPap80H lg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g58cgrgap-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 21:26:19 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24ILJr2m009229;
-        Wed, 18 May 2022 21:26:19 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g58cgrgac-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 21:26:19 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IL2rtQ019537;
-        Wed, 18 May 2022 21:26:18 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma05wdc.us.ibm.com with ESMTP id 3g242af9se-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 21:26:18 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24ILQHHC27328794
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 21:26:17 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8B5E528060;
-        Wed, 18 May 2022 21:26:17 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C359E2805E;
-        Wed, 18 May 2022 21:26:13 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.37.97])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 18 May 2022 21:26:13 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     jgg@nvidia.com, alex.williamson@redhat.com
-Cc:     cohuck@redhat.com, borntraeger@linux.ibm.com,
-        jjherne@linux.ibm.com, akrowiak@linux.ibm.com, pasic@linux.ibm.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com, hch@infradead.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/1] vfio: remove VFIO_GROUP_NOTIFY_SET_KVM
-Date:   Wed, 18 May 2022 17:26:06 -0400
-Message-Id: <20220518212607.467538-1-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: QrOItCWy51AZo_qIJ1RCc4LMGLxnuhOY
-X-Proofpoint-GUID: C7naun7PRSTlUTRKk_2a_XczLp56l8kd
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 18 May 2022 17:34:20 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E0A2370E5;
+        Wed, 18 May 2022 14:34:19 -0700 (PDT)
+Received: from zn.tnic (p200300ea97465796329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:5796:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D229E1EC053F;
+        Wed, 18 May 2022 23:34:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652909653;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=c41NaJmVmHFZHCOhh+O6Ca1I/+Z3sEzcffT/LbNeE3M=;
+        b=KxJWwcwjsFBbZOli2xs8Izbkovahw8hIfgf/y1HORYrtp7bvWPLXkD4JPPT3DkR2H31uvx
+        mLvjnse6hkI0oC0Fx8vBhDzsUPG5jhTBi3eTj6BDdqQ/5IcM/diu9KOOh9dbjcwYXqZWUA
+        FY+aHvKL4cTdtfTFcFkE1BlYmQCo1Pw=
+Date:   Wed, 18 May 2022 23:34:09 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        X86 ML <x86@kernel.org>
+Subject: Re: linux-next: Tree for May 18
+ (arch/x86/kernel/cpu/microcode/intel.o)
+Message-ID: <YoVlwN/IeVXoMaq1@zn.tnic>
+References: <20220518202934.730a8aba@canb.auug.org.au>
+ <8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- impostorscore=0 adultscore=0 lowpriorityscore=0 phishscore=0 bulkscore=0
- spamscore=0 priorityscore=1501 mlxlogscore=560 malwarescore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205180121
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As discussed in this thread:
+On Wed, May 18, 2022 at 02:05:28PM -0700, Randy Dunlap wrote:
+> on x86_64:
+> 
+> CONFIG_PROCESSOR_SELECT=y
+> # CONFIG_CPU_SUP_INTEL is not set   <<<<<
+> CONFIG_CPU_SUP_AMD=y
+> # CONFIG_CPU_SUP_HYGON is not set
+> CONFIG_CPU_SUP_CENTAUR=y
+> CONFIG_CPU_SUP_ZHAOXIN=y
+> 
+> CONFIG_MICROCODE=y
+> CONFIG_MICROCODE_INTEL=y   <<<<<
+> CONFIG_MICROCODE_AMD=y
 
-https://lore.kernel.org/kvm/20220516172734.GE1343366@nvidia.com/
+Hmm:
 
-Let's remove VFIO_GROUP_NOTIFY_SET_KVM and instead assume the association
-has already been established prior to device_open.  For the types today
-that need a KVM (GVT, vfio-ap) these will fail if a KVM is not found.
-Looking ahead, vfio-pci-zdev will optionally want the KVM association
-(enable hardware assists) but it will not be a hard requirement (still
-want to allow other, non-KVM userspace usage). 
+$ grep -E "(PROCESSOR_SELECT|CPU_SUP|MICROCODE)" .config
+CONFIG_PROCESSOR_SELECT=y
+# CONFIG_CPU_SUP_INTEL is not set
+CONFIG_CPU_SUP_AMD=y
+# CONFIG_CPU_SUP_HYGON is not set
+CONFIG_CPU_SUP_CENTAUR=y
+CONFIG_CPU_SUP_ZHAOXIN=y
+CONFIG_MICROCODE=y
+CONFIG_MICROCODE_INTEL=y
+CONFIG_MICROCODE_AMD=y
+CONFIG_MICROCODE_OLD_INTERFACE=y
 
-This is built on top of Jason's group locking series:
-https://github.com/jgunthorpe/linux/commits/vfio_group_locking
+that builds fine here on tip/master. Or is it linux-next specific? I'd
+hope not.
 
-And tested with s390x-pci (zdev-kvm series) and vfio-ap (GVT changes are
-compile-tested only)
+Can you send me your whole .config pls and how exactly you reproduce it,
+i.e., on which tree?
 
-Changes for v2:
-- gvt no longer needs release_work, get rid of it (Christoph)
-- a few compile fixes for gvt
-- update commit to mention fixes gvt oops (Jason)
-- s/down_write/down_read/ in a few spots (Jason)
-- avoid kvm build dependency by holding group read lock over device
-  open/close and put the onus on the driver to obtain a reference if
-  it will actually use the kvm pointer.  Document the requirement,
-  use lockdep_assert to ensure lock is held during register_notifer;
-  today all callers are from driver open_device.
-
-Matthew Rosato (1):
-  vfio: remove VFIO_GROUP_NOTIFY_SET_KVM
-
- drivers/gpu/drm/i915/gvt/gtt.c        |  4 +-
- drivers/gpu/drm/i915/gvt/gvt.h        |  3 -
- drivers/gpu/drm/i915/gvt/kvmgt.c      | 82 ++++++---------------------
- drivers/s390/crypto/vfio_ap_ops.c     | 38 ++++---------
- drivers/s390/crypto/vfio_ap_private.h |  3 -
- drivers/vfio/vfio.c                   | 75 ++++++++----------------
- include/linux/vfio.h                  |  5 +-
- 7 files changed, 56 insertions(+), 154 deletions(-)
+Thx.
 
 -- 
-2.27.0
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
