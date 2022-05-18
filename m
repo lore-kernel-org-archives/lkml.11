@@ -2,135 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0AD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0006C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237029AbiERMrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
+        id S236648AbiERMrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238343AbiERMrG (ORCPT
+        with ESMTP id S237401AbiERMrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:47:06 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3A51BB989
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:45:13 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id bu29so3491222lfb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:45:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=D6VKL5ciB5qVlcxfiIdVtP/GTWTB0JXjtarh7eRTsrU=;
-        b=aR7mE1q73uoQ1uafhYBOMLD+9L8M15booDjDaYV140/M2J9doR/E8kYLXAR5Ke0fhZ
-         ab02ZN9a4tLpuewD/NFrS/CC9xfmfeM6xHeWGW+PUoqUzc19OGuMNQYWdmyu4svaDyaq
-         zSch4ZJXyVx3c24lm9Z3hav0OwA1q4/fMjFfib9clgkszQavo1CsgSrfjQQWUxnBQ+1n
-         RlcgHcm99aO1b4BupqN9itIHbfV+20M0ycx5ZYWGcavrqHS8EmhjrYvj7XzsZSWn92ma
-         gdhQpWCXQ4AK5CMY3p4fgn1IieEvCN2onYqQTg6FA/V7Ouc+Y6YVOP/gY3tIFoLaaBYk
-         PN4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=D6VKL5ciB5qVlcxfiIdVtP/GTWTB0JXjtarh7eRTsrU=;
-        b=nW+DVsA4cMObTcR7+hPmtNC2/z/Uw1BP+xAy+83uCimb+a2JwdR50Gy68YkmAkwdiN
-         3mAJhw5HHd854Ncmlq3W7WOgMriXGbVxxLj/kEZHK2k9KyYzbLorFuDPD2VxKP99vMLM
-         tj/bI6ZkKDsp4g5i/oyPFEQGKwsWnpOmdiwMIMEPpHnaDU+7GkjTJGjAAkQvsmFSYZIS
-         /Sr/LQG6opKAwQE5VnH2edB9WlUYXWp9MVT5IkadytELyX3sdcR4kyz77U/yLYjQBGTs
-         VCX0gEvg0TAu2yBFUprCCJKl+Z4Z2xkVfh9keNTG4PRpCGaneIV+oAIDul5z8LXypZl/
-         a8SA==
-X-Gm-Message-State: AOAM5300JkjWJcxXJFWd3GFZprUHPBOsMaDeFXScSjkb8wPMMgnE9inF
-        S245i2awb3DDWE4jL/MGjXgGFiFYG6oEJw==
-X-Google-Smtp-Source: ABdhPJwwYOBAgpRd3PASBWocwl1ypfsAC1FFNAn1yCuNzTy2jNWH6EZ1NCYObMisAE1U6wEDStVZ1g==
-X-Received: by 2002:a19:f24e:0:b0:471:c076:bfb9 with SMTP id d14-20020a19f24e000000b00471c076bfb9mr20636965lfk.442.1652877911489;
-        Wed, 18 May 2022 05:45:11 -0700 (PDT)
-Received: from [192.168.43.196] ([185.174.128.243])
-        by smtp.gmail.com with ESMTPSA id v12-20020a2e990c000000b0024f3d1daed0sm205603lji.88.2022.05.18.05.45.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 05:45:11 -0700 (PDT)
-Message-ID: <55475ea9-5f6c-fa19-b52d-93fb89209850@openvz.org>
-Date:   Wed, 18 May 2022 15:45:08 +0300
+        Wed, 18 May 2022 08:47:21 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.162])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C174A1BDAC4;
+        Wed, 18 May 2022 05:45:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652877930;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=DALuquiPTpvakZ1hsawCfe1qGQYKJ9d3gJZOL4yRbi8=;
+    b=I1+RBVUa8+5UKOMUJ7PRni8lMXTd8Grq9ftk0o0fZiHn90/WTNWd5Ra3/0hJYTkTdN
+    vs4ncegtSSOEjLjbXPod2389zZSu2PcokzwYA63a1OxmUjFzlUPS2Gj6pK5s3uJn1UY4
+    mXPVtZ1YEdXZ4IzE94fa1zlDxTmxFogra9qG65e8myFUPkj/uIBn0BCMRUn8dJfXMJJK
+    gPmcYFjbijLxJwf2CRZfn2/kQqa1/m3WRrHwou4Lj52fAhCdVg/ZURWLfrNurVRYMRtC
+    XycNcyX6w1YxOlLOrLG9sjD2bKvRwr5FzEnBZhCb1O1TTycIoUD5rk1nVBNZfEc4fHY/
+    Ozww==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id R0691fy4ICjTHPh
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 18 May 2022 14:45:29 +0200 (CEST)
+Message-ID: <b76ed65a-cc3d-ae75-e764-9ce627dcb4c4@hartkopp.net>
+Date:   Wed, 18 May 2022 14:45:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH v2] blk-mq: fix incorrect blk_status_t casts
-To:     Christoph Hellwig <hch@infradead.org>, Jens Axboe <axboe@kernel.dk>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org
-References: <YoH0/2FBC2YS9kk5@infradead.org>
+ Thunderbird/91.8.0
+Subject: Re: Device Drivers: (was: Re: [PATCH v3 3/4] can: skb:: move
+ can_dropped_invalid_skb and can_skb_headroom_valid to skb.c)
 Content-Language: en-US
-In-Reply-To: <YoH0/2FBC2YS9kk5@infradead.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Max Staudt <max@enpas.org>, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+ <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+ <20220517104545.eslountqjppvcnz2@pengutronix.de>
+ <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+ <20220517141404.578d188a.max@enpas.org>
+ <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+ <20220517143921.08458f2c.max@enpas.org>
+ <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+ <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
+ <20220518121226.inixzcttub6iuwll@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220518121226.inixzcttub6iuwll@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes sparse warnings:
-block/blk-mq.c:1163:36: sparse:
- warning: cast from restricted blk_status_t
-block/blk-mq.c:1251:17: sparse:
- warning: cast to restricted blk_status_t
 
-blk_status_t type is bitwaise and requires __force for any casts.
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
----
-v2: introduced request_blk_status_en/decode helpers
-	thanks Christoph Hellwig for the hint
----
- block/blk-mq.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+On 18.05.22 14:12, Marc Kleine-Budde wrote:
+> On 18.05.2022 21:03:37, Vincent MAILHOL wrote:
+>> On a different topic, why are all the CAN devices
+>> under "Networking support" and not "Device Drivers" in menuconfig
+>> like everything else? Would it make sense to move our devices
+>> under the "Device Drivers" section?
+> 
+> ACK
+> 
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 84d749511f55..8f067b021af3 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -1151,6 +1151,16 @@ void blk_mq_start_request(struct request *rq)
- }
- EXPORT_SYMBOL(blk_mq_start_request);
- 
-+static void *request_blk_status_encode(blk_status_t status)
-+{
-+	return (void *)(__force uintptr_t)status;
-+}
-+
-+static blk_status_t request_blk_status_decode(void *ptr)
-+{
-+	return (__force blk_status_t)(uintptr_t)ptr;
-+}
-+
- /**
-  * blk_end_sync_rq - executes a completion event on a request
-  * @rq: request to complete
-@@ -1160,7 +1170,7 @@ static void blk_end_sync_rq(struct request *rq, blk_status_t error)
- {
- 	struct completion *waiting = rq->end_io_data;
- 
--	rq->end_io_data = (void *)(uintptr_t)error;
-+	rq->end_io_data = request_blk_status_encode(error);
- 
- 	/*
- 	 * complete last, if this is a stack request the process (and thus
-@@ -1228,6 +1238,7 @@ static void blk_rq_poll_completion(struct request *rq, struct completion *wait)
-  *    for execution and wait for completion.
-  * Return: The blk_status_t result provided to blk_mq_end_request().
-  */
-+
- blk_status_t blk_execute_rq(struct request *rq, bool at_head)
- {
- 	DECLARE_COMPLETION_ONSTACK(wait);
-@@ -1248,7 +1259,7 @@ blk_status_t blk_execute_rq(struct request *rq, bool at_head)
- 	else
- 		wait_for_completion_io(&wait);
- 
--	return (blk_status_t)(uintptr_t)rq->end_io_data;
-+	return request_blk_status_decode(rq->end_io_data);
- }
- EXPORT_SYMBOL(blk_execute_rq);
- 
--- 
-2.31.1
+Bluetooth did it that way too. But I feel the same.
+When we clean up the CAN drivers moving the CAN driver selection to 
+drivers/net/Kconfig would make sense.
+
+ACK
+
+Best regards,
+Oliver
 
