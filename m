@@ -2,161 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B42CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239742AbiERPza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34752 "EHLO
+        id S239771AbiERPzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239703AbiERPzS (ORCPT
+        with ESMTP id S239726AbiERPzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:55:18 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B92DB1CEEF6;
-        Wed, 18 May 2022 08:55:16 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7985E23A;
-        Wed, 18 May 2022 08:55:16 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E99C3F718;
-        Wed, 18 May 2022 08:55:15 -0700 (PDT)
-Date:   Wed, 18 May 2022 16:55:12 +0100
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     yoan.picchi@arm.com, Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        qat-linux <qat-linux@intel.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 2/2] Removes the x86 dependency on the QAT drivers
-Message-ID: <20220518165512.3e07c4b3@donnerap.cambridge.arm.com>
-In-Reply-To: <CAMj1kXGAiA-SkTFD5EgcacYao0RKT7oK0AxvxkR7Ho_KZSGXCw@mail.gmail.com>
-References: <20220516101635.1082132-1-yoan.picchi@arm.com>
-        <20220516101635.1082132-3-yoan.picchi@arm.com>
-        <CAMj1kXGAiA-SkTFD5EgcacYao0RKT7oK0AxvxkR7Ho_KZSGXCw@mail.gmail.com>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        Wed, 18 May 2022 11:55:38 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F401D2FD9
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:55:21 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id i23so3056770ljb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:55:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LXB4PHczyG5oHbe4vyBbwBDKCH3Ytd8BOKpXNaIHy/k=;
+        b=gTS4Ecx+KLnnH6CNoxgXoCl89JPbHcE197bOKVAl41bInBLS/kMF81zwc7RAcWGwlg
+         N+1m/byE4xc9/VP0XqGLes6LZ1dMh84HwoscFIgZxBs3XWh0nmmqopWqY+RjkrC1DW7H
+         w64GZZ8VjZphqi1fQYUrFefozRk6hcWKzapDGoYLgKNjVeJCvOF937bVCoiVW37lpH66
+         Gs5KaPRFYIIw8bUtoeHGKen70boOq1b9chb0JG8TkfpXIsOJtkVDoiE2cSJtfhthGkkH
+         wQWPKS4b1XlPQ0TxNhQOiB/PG5arr2sxfxZ6OdYMVX6cliH/KvMNtXGFTBC/ynuTSHMe
+         GaOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LXB4PHczyG5oHbe4vyBbwBDKCH3Ytd8BOKpXNaIHy/k=;
+        b=OaN7YWurrkQ4JCEb4A4JAnWXPOHGcA8xzvIu172LRlyiEdLXZZ0fwymRoLjvMi5IhV
+         48Q44c17zxdef47xqOlOpFbUma4+9ukmhxFWXFGIyU94RaGquE3SdxAisAajtgQpFegJ
+         N/5UMVijnJVdACuQzqCkORaQfAZDsYrixgvusICVG7AabQjpH3ARwRkYuUY4axS8sY4K
+         P1no1CkIGG4AEMvAvGjLL5gFwaQAHYa54Y9bzeTHXV3vkxITEuYmyeBp8dTJJUfiV2DK
+         FbJjHr80NjoH9poDxJH9bicnB3DkvmscF5gCv85GHpVAumcI0Bg9h+/bekHTVB2gxshG
+         Zvig==
+X-Gm-Message-State: AOAM532DasbzPfe5iFugU5otw2DHu+Hczl2C1uHMH4HJVySNOuIl/2Ie
+        5yFWs8AetW0jfVnSPjxneU8DxBl7IBMe8VP8ThvKMQ==
+X-Google-Smtp-Source: ABdhPJz9EvO2C5suzW/gjXYiMdSHDFYA2jjMoVgloR6ARreW+OoelbDGziZRLlGviyDvTGMc/QTw+MoceWQWmZz7YXU=
+X-Received: by 2002:a2e:808a:0:b0:253:cd4e:b0ae with SMTP id
+ i10-20020a2e808a000000b00253cd4eb0aemr49986ljg.6.1652889320141; Wed, 18 May
+ 2022 08:55:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220518100841.1497391-1-fam.zheng@bytedance.com>
+ <20220518102140.GF10117@worktop.programming.kicks-ass.net>
+ <CAG+v+Kb5ON2-49t8ZZwH2jT31Jvi+F_HYW0gQ3ss040GKdp0Zw@mail.gmail.com>
+ <CAKfTPtBAkQpKtZMC5uV6hNeMqe9rJHd_GLHVFf2o3r=HvqH9fg@mail.gmail.com>
+ <CAG+v+Kbfy-TuAWR9sfuWGyKb5Y+xjHDzB9hcoHuAN1kjYv5gWw@mail.gmail.com> <CAKfTPtA4qRUpMK4gw0STFg3kQqhpxCJpOMy9HgbSKaeVwfSjEQ@mail.gmail.com>
+In-Reply-To: <CAKfTPtA4qRUpMK4gw0STFg3kQqhpxCJpOMy9HgbSKaeVwfSjEQ@mail.gmail.com>
+From:   "Feiran Zheng ." <fam.zheng@bytedance.com>
+Date:   Wed, 18 May 2022 16:55:09 +0100
+Message-ID: <CAG+v+Kaa6Rfza_WewMw4K=vRTrt9UhRXp7G3XVi9cd_LvZkVEQ@mail.gmail.com>
+Subject: Re: [External] Re: [RFC PATCH] sched: Enable root level cgroup
+ bandwidth control
+To:     Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        zhouchengming@bytedance.com, fam@euphon.net,
+        Mel Gorman <mgorman@suse.de>, Ingo Molnar <mingo@redhat.com>,
+        songmuchun@bytedance.com, Juri Lelli <juri.lelli@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Cristian Marussi <cristian.marussi@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 17 May 2022 10:11:09 +0200
-Ard Biesheuvel <ardb@kernel.org> wrote:
+On Wed, May 18, 2022 at 3:31 PM Vincent Guittot
+<vincent.guittot@linaro.org> wrote:
+> there is a DTPM powercap provider in the latest kernel and a scmi
+> power capp provider is under review
 
-Hi,
 
-> On Mon, 16 May 2022 at 12:16, <yoan.picchi@arm.com> wrote:
-> >
-> > From: Yoan Picchi <yoan.picchi@arm.com>
-> >
-> > This dependency looks outdated. After the previous patch, we have been able
-> > to use this driver to encrypt some data and to create working VF on arm64.
-> >
-> > Signed-off-by: Yoan Picchi <yoan.picchi@arm.com>  
-> 
-> Are you sure the driver is safe for non-coherent DMA as well?
+Thanks, so DTPM can be a good solution for ARM. We could also deal
+with AMD with acpi-cpufreq if powercap is not supported yet.
 
-That depends on your definition of "sure".
-We indeed tested this only on a server with coherent PCIe.
+That aside, I think cpu cgroup has a familiar and simple sysfs
+interface, and is more importantly hardware agnostic so it would be
+really nice to have.
 
-I skimmed through the driver, and it looks like to use the DMA API
-correctly:
-- I see dma_alloc_coherent() calls for DMA ring buffers.
-- There are dma_map_single()/dma_unmap_single() pairs in other parts.
-- Accesses to the BARs are capsuled via macros, using readl/writel.
-- Access the the SRAM BAR is also only done via those macros.
+Alternatively, I assume we can look into a device-independent idle
+injection mechanism?
 
-I didn't go through the driver systematically, and of course the
-interesting parts are the ones you don't see easily, so I am eager to hear
-any other opinions on this topic.
-
-Ard, do you have anything special in mind? Is there something to look out
-for, specifically?
-
-The few cards we have access to are in some server in the data centre, so
-I can't easily walk in with, say a RockPro64, and test this there.
-
-Cheers,
-Andre
-
-> 
-> > ---
-> >  drivers/crypto/qat/Kconfig | 14 +++++++-------
-> >  1 file changed, 7 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/drivers/crypto/qat/Kconfig b/drivers/crypto/qat/Kconfig
-> > index 4b90c0f22b03..88df2cf4cac9 100644
-> > --- a/drivers/crypto/qat/Kconfig
-> > +++ b/drivers/crypto/qat/Kconfig
-> > @@ -17,7 +17,7 @@ config CRYPTO_DEV_QAT
-> >
-> >  config CRYPTO_DEV_QAT_DH895xCC
-> >         tristate "Support for Intel(R) DH895xCC"
-> > -       depends on X86 && PCI
-> > +       depends on PCI
-> >         select CRYPTO_DEV_QAT
-> >         help
-> >           Support for Intel(R) DH895xcc with Intel(R) QuickAssist Technology
-> > @@ -28,7 +28,7 @@ config CRYPTO_DEV_QAT_DH895xCC
-> >
-> >  config CRYPTO_DEV_QAT_C3XXX
-> >         tristate "Support for Intel(R) C3XXX"
-> > -       depends on X86 && PCI
-> > +       depends on PCI
-> >         select CRYPTO_DEV_QAT
-> >         help
-> >           Support for Intel(R) C3xxx with Intel(R) QuickAssist Technology
-> > @@ -39,7 +39,7 @@ config CRYPTO_DEV_QAT_C3XXX
-> >
-> >  config CRYPTO_DEV_QAT_C62X
-> >         tristate "Support for Intel(R) C62X"
-> > -       depends on X86 && PCI
-> > +       depends on PCI
-> >         select CRYPTO_DEV_QAT
-> >         help
-> >           Support for Intel(R) C62x with Intel(R) QuickAssist Technology
-> > @@ -50,7 +50,7 @@ config CRYPTO_DEV_QAT_C62X
-> >
-> >  config CRYPTO_DEV_QAT_4XXX
-> >         tristate "Support for Intel(R) QAT_4XXX"
-> > -       depends on X86 && PCI
-> > +       depends on PCI
-> >         select CRYPTO_DEV_QAT
-> >         help
-> >           Support for Intel(R) QuickAssist Technology QAT_4xxx
-> > @@ -61,7 +61,7 @@ config CRYPTO_DEV_QAT_4XXX
-> >
-> >  config CRYPTO_DEV_QAT_DH895xCCVF
-> >         tristate "Support for Intel(R) DH895xCC Virtual Function"
-> > -       depends on X86 && PCI
-> > +       depends on PCI
-> >         select PCI_IOV
-> >         select CRYPTO_DEV_QAT
-> >
-> > @@ -74,7 +74,7 @@ config CRYPTO_DEV_QAT_DH895xCCVF
-> >
-> >  config CRYPTO_DEV_QAT_C3XXXVF
-> >         tristate "Support for Intel(R) C3XXX Virtual Function"
-> > -       depends on X86 && PCI
-> > +       depends on PCI
-> >         select PCI_IOV
-> >         select CRYPTO_DEV_QAT
-> >         help
-> > @@ -86,7 +86,7 @@ config CRYPTO_DEV_QAT_C3XXXVF
-> >
-> >  config CRYPTO_DEV_QAT_C62XVF
-> >         tristate "Support for Intel(R) C62X Virtual Function"
-> > -       depends on X86 && PCI
-> > +       depends on PCI
-> >         select PCI_IOV
-> >         select CRYPTO_DEV_QAT
-> >         help
-> > --
-> > 2.25.1
-> >  
-
+Fam
