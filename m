@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6123BC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235032AbiERKSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 06:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
+        id S235040AbiERKSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 06:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235003AbiERKSI (ORCPT
+        with ESMTP id S235014AbiERKSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 06:18:08 -0400
 Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EED26C5E71;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 685F49D06A;
         Wed, 18 May 2022 03:18:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=cZPVs
-        Or4D2HpzvBj2K42jmApGOIRDJcYSuWdf3m0z9Y=; b=PsZVc0CnMULrq5QPJEOjM
-        ksYFCmLvVRSQJrX6EW0MEMgyllyzIy9rmMGqfDF/AAI9/edAtyRurbhWU6eAEZ2+
-        yvuJIbvEeBSTizLOrMM7hfXTU2ar9tE/vI3zRitgEK+goGE+kp/R9Oumm9WGGSvi
-        dSJpgvyzHMmTvGRBnSe1bo=
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=q7y9U
+        ErI2PocEDGVAu8nSItLWsdvHnnMxOp2rxgeIqk=; b=ChoR4JqbWuZqVu0CiIKc2
+        SQr7N9uKwxZizzYwCBnodkyVX9pK+glB2idwqg4y1g+p4Kz7Y6M8xjK95GOnA7vC
+        sbzLXebDiRPgGTFSmePWAoknqWsUVde8vCRfdC9RZ386PGkqcfZ2z550gIahqUZa
+        OmEI3dc7Asg47SaxfgG5Q8=
 Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.20])
-        by smtp13 (Coremail) with SMTP id EcCowACXG6mlx4RimzKrDA--.63720S2;
-        Wed, 18 May 2022 18:17:09 +0800 (CST)
+        by smtp13 (Coremail) with SMTP id EcCowACXG6mlx4RimzKrDA--.63720S4;
+        Wed, 18 May 2022 18:17:11 +0800 (CST)
 From:   qianfanguijin@163.com
 To:     linux-sunxi@lists.linux.dev
 Cc:     Andre Przywara <andre.przywara@arm.com>,
@@ -35,95 +35,120 @@ Cc:     Andre Przywara <andre.przywara@arm.com>,
         Samuel Holland <samuel@sholland.org>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, qianfan Zhao <qianfanguijin@163.com>
-Subject: [PATCH v4 0/2] ARM: sun8i-r40: Enable usb otg support
-Date:   Wed, 18 May 2022 18:17:04 +0800
-Message-Id: <20220518101706.26869-1-qianfanguijin@163.com>
+Subject: [PATCH v4 2/2] ARM: dts: bananapi-m2-ultra: Enable USB0_OTG and HOST support
+Date:   Wed, 18 May 2022 18:17:06 +0800
+Message-Id: <20220518101706.26869-3-qianfanguijin@163.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220518101706.26869-1-qianfanguijin@163.com>
+References: <20220518101706.26869-1-qianfanguijin@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EcCowACXG6mlx4RimzKrDA--.63720S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxXF4ftFy3XrykXFWDZrWUArb_yoW5Xr13pF
-        W7XrZ3Gw1kt34fJay3ZayUWa13Aa95ZayjyFs7tFy8Ar13ur4DA3WDKrZ0ga4DWr9xX3y7
-        Kw1kJr1fK3Z0gF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRpT5LUUUUU=
+X-CM-TRANSID: EcCowACXG6mlx4RimzKrDA--.63720S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uFykWw4rAF1Uur48tr4UCFg_yoW8urWDp3
+        sruFs5Cw1rGr4rJw1aqr4UCFy3Gwn5WryfCF1kCa4rJrnFva1kJrWIk3s5ZFZ0gryrCw4F
+        yFZrArnrGr1qywUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRctxkUUUUU=
 X-Originating-IP: [218.201.129.20]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiQhoF7VaECZPW+AABsX
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbCqR0F7V0Dfgie6QAAsD
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: qianfan Zhao <qianfanguijin@163.com>
 
-History:
-=======
+let USB0 work at OTG mode.
 
-v4(2022-05-18):
-- Enable both musb and OHCI/EHCI support
-
-Tests:
-======
-
-All test cases were tested on bananapi-m2-ultra.
-
-1. USB DEVICE(ping test)
-
-Enable usb gadget rndis network, ping m2u on ubuntu host:
-
-➜  ~ ping 192.168.200.2
-PING 192.168.200.2 (192.168.200.2) 56(84) bytes of data.
-64 bytes from 192.168.200.2: icmp_seq=1 ttl=64 time=0.544 ms
-64 bytes from 192.168.200.2: icmp_seq=2 ttl=64 time=0.269 ms
-64 bytes from 192.168.200.2: icmp_seq=3 ttl=64 time=0.300 ms
-64 bytes from 192.168.200.2: icmp_seq=4 ttl=64 time=0.295 ms
-64 bytes from 192.168.200.2: icmp_seq=5 ttl=64 time=0.283 ms
-64 bytes from 192.168.200.2: icmp_seq=6 ttl=64 time=0.226 ms
-64 bytes from 192.168.200.2: icmp_seq=7 ttl=64 time=0.246 ms
-64 bytes from 192.168.200.2: icmp_seq=8 ttl=64 time=0.204 ms
-64 bytes from 192.168.200.2: icmp_seq=9 ttl=64 time=0.302 ms
-64 bytes from 192.168.200.2: icmp_seq=10 ttl=64 time=0.249 ms
-64 bytes from 192.168.200.2: icmp_seq=11 ttl=64 time=0.459 ms
-64 bytes from 192.168.200.2: icmp_seq=12 ttl=64 time=0.232 ms
-64 bytes from 192.168.200.2: icmp_seq=13 ttl=64 time=0.275 ms
-64 bytes from 192.168.200.2: icmp_seq=14 ttl=64 time=0.243 ms
-
-2. USB HOST(OHCI)
-
-Connect an usb serial port on OTG port, nex t is the kernel log:
-
-[   27.824137] usb 2-1: new full-speed USB device number 2 using ohci-platform
-[   28.865504] cdc_acm 2-1:1.0: ttyACM0: USB ACM device
-[   29.565509] cdc_acm 2-1:1.2: ttyACM1: USB ACM device
-
-3. USB HOST(EHCI)
-
-Connect an usb storage on OTG port, next is the kernel log:
-
-[   17.754147] usb 1-1: new high-speed USB device number 2 using ehci-platform
-[   17.955995] usb-storage 1-1:1.0: USB Mass Storage device detected
-[   18.024497] scsi host1: usb-storage 1-1:1.0
-[   19.035091] scsi 1:0:0:0: Direct-Access     General  USB Flash Disk   1.0  PQ: 0 ANSI: 2
-[   19.049717] sd 1:0:0:0: [sda] 7831552 512-byte logical blocks: (4.01 GB/3.73 GiB)
-[   19.060873] sd 1:0:0:0: [sda] Write Protect is off
-[   19.071018] sd 1:0:0:0: [sda] No Caching mode page found
-[   19.076437] sd 1:0:0:0: [sda] Assuming drive cache: write through
-[   19.093566]  sda: sda1
-[   19.103492] sd 1:0:0:0: [sda] Attached SCSI removable disk
-
-issues:
-=======
-
-The system power often turned off when I plugged an usb device into the OTG port.
-It's not clear why.
-
-qianfan Zhao (2):
-  ARM: dts: sun8i-r40: Add USB0_OTG/HOST support
-  ARM: dts: bananapi-m2-ultra: Enable USB0_OTG and HOST support
-
+Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+---
  .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  | 39 +++++++++++++++++++
- arch/arm/boot/dts/sun8i-r40.dtsi              | 34 ++++++++++++++++
- 2 files changed, 73 insertions(+)
+ 1 file changed, 39 insertions(+)
 
+diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+index 28197bbcb1d5..b3421e67967d 100644
+--- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
++++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+@@ -122,6 +122,10 @@ &de {
+ 	status = "okay";
+ };
+ 
++&ehci0 {
++	status = "okay";
++};
++
+ &ehci1 {
+ 	status = "okay";
+ };
+@@ -164,6 +168,7 @@ axp22x: pmic@34 {
+ 		reg = <0x34>;
+ 		interrupt-parent = <&nmi_intc>;
+ 		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++		x-powers,drive-vbus-en;
+ 	};
+ };
+ 
+@@ -199,6 +204,10 @@ &mmc2 {
+ 	status = "okay";
+ };
+ 
++&ohci0 {
++	status = "okay";
++};
++
+ &ohci1 {
+ 	status = "okay";
+ };
+@@ -216,6 +225,15 @@ &pio {
+ 	vcc-pe-supply = <&reg_eldo1>;
+ 	vcc-pf-supply = <&reg_dcdc1>;
+ 	vcc-pg-supply = <&reg_dldo1>;
++
++	/* USB0_DRVVBUS connected to both the PMIC.N_VBUSEN and PI13,
++	 * we chose PMIC.N_VBUSEN for control, so set the gpio as
++	 * input mode here.
++	 */
++	usb0_vbus_enable_gpio: usb0-vbus-enable-gpio {
++		pins = "PI13";
++		function = "gpio_in";
++	};
+ };
+ 
+ &reg_aldo2 {
+@@ -298,6 +316,11 @@ &reg_dldo4 {
+ 	regulator-name = "vdd2v5-sata";
+ };
+ 
++&reg_drivevbus {
++	regulator-name = "usb0-vbus";
++	status = "okay";
++};
++
+ &reg_eldo3 {
+ 	regulator-min-microvolt = <1200000>;
+ 	regulator-max-microvolt = <1200000>;
+@@ -333,7 +356,23 @@ bluetooth {
+ 	};
+ };
+ 
++&usb_otg {
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&usb_power_supply {
++	status = "okay";
++};
++
+ &usbphy {
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb0_vbus_enable_gpio>;
++
++	usb0_id_det-gpios = <&pio 8 4 GPIO_ACTIVE_HIGH>; /* PI4 */
++	usb0_vbus_det-gpios = <&pio 8 8 GPIO_ACTIVE_HIGH>; /* PI8 */
++	usb0_vbus_power-supply = <&usb_power_supply>;
++	usb0_vbus-supply = <&reg_drivevbus>;
+ 	usb1_vbus-supply = <&reg_vcc5v0>;
+ 	usb2_vbus-supply = <&reg_vcc5v0>;
+ 	status = "okay";
 -- 
 2.25.1
 
