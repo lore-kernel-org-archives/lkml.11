@@ -2,129 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226B9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237811AbiERNZ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        id S237827AbiERNZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237707AbiERNZV (ORCPT
+        with ESMTP id S237718AbiERNZW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:25:21 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5301BA8ED;
-        Wed, 18 May 2022 06:25:20 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id i68so190535qke.11;
-        Wed, 18 May 2022 06:25:20 -0700 (PDT)
+        Wed, 18 May 2022 09:25:22 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625081B5FAB;
+        Wed, 18 May 2022 06:25:21 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id r71so2175126pgr.0;
+        Wed, 18 May 2022 06:25:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YdtG+Oh5rA118xynE6nPINrtJ9nv4r0UKABUGrkGLPI=;
-        b=nYS26kpkZXfBGMHF6KyW6cqwtWJ5gMbM+VtS1jLuEi2BdO/CHkPcjYbF3jgwZxYBAv
-         gIc8xm57N1sl9u5IjwbWuOxrFLRhC1nRq8RajcADa5fRtQrsw9SgrOsFSSO9Dhdeyrk7
-         pqE81P3TQikJGEnMPQ6CToW6oqF0wF482qrbch63Wx77e9wUmwoeFk4QUi7/zB/eOOQM
-         es0P6wMax1HuuBBcSM3II9r+McXiIkSVrxXa4OXYJOdstd02xFOGKdITbSAasss3ncdF
-         TuWALsNkrZWBFTdKO+ZQembLF2KWCOF020H6fRTiKS0F6JuYIk/MQDCiz3zna8TdqZG+
-         uIug==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xBJDPO61I3gQO/bIk0UDIpqOBCWbyudg+XjoFP7FP9A=;
+        b=keX0WaI+LV/BlyfDcr9BDjkzRCbHRKJZjLtphA4b01LMVaetwqa4xD5OoNd5AfSFiI
+         fh/tiVyzNmm6AejOOmAsVG0HC5+Gow8nfCtwur675txVYCYhNHNIrWspbGWGkuTxq+Ju
+         3cRM2/Tp7iaCwGIsNGENYaCFFceNjlL7Q82tLL2wDRletJpe8L7ypsIK+TqBl4W+/+l8
+         LhDRsVJfEAD5/cTbL73e2JcRcbdD9qm2u/3V88tQv6GyZACrHgAnlcxxebFZARXrFS7e
+         1jv3FdNCFsHsAQT1GTjmAG8VUf6DF9/81H2vo8BZEVkL+/BfPwLbwOM3fR23KOzX0vmj
+         J1pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YdtG+Oh5rA118xynE6nPINrtJ9nv4r0UKABUGrkGLPI=;
-        b=lzwLWPH9lPFpD6zJOuhd+TwiKwyOhCG59LAhHSlWyu82s8sFllTTAFpEiy7I5wjUEp
-         h0ixn1Q4fKyYVCipWXDobnCytck0DS6LmoNn6CEIKCNPXpjLUDaN5xY3U4AaHYGU0Kif
-         m/mdLe8UZAazOwTl5pdf6p7UrYSvYN0u7DD4AqD9XRvewbhuWSvYH13Ou3hJ2FjbSYCW
-         RM8F78FuWxku+H9D+pEUO4Mm9FI0JBsqZtRp5UiGjLNB2Ntnt7fZku38YriH/HLuO/sR
-         DYlNr/61e7v23fx+dc+5jMwBqeITTJfiz9SNJNGPDLp7WW9iyFQCMV7M/OUfoyRFc3Uy
-         yEHw==
-X-Gm-Message-State: AOAM530tQ4WEPNOhYwiGWf1okjPn3QJwPrvbIQTMQu2h1F1pLtQ7kyQm
-        E9PuYl2jiV5C1PBZoh2IrKdOkU7X2xb9HlygPwU=
-X-Google-Smtp-Source: ABdhPJyhLZWSZhcq2uRhpyaWCutF+RT3RE2uwuCUEUvW0wPBozfJ4+bEpziZ+uU99WBw3k645UCQ9oHw0WnVx48q77I=
-X-Received: by 2002:a05:620a:e18:b0:67d:7fcb:6244 with SMTP id
- y24-20020a05620a0e1800b0067d7fcb6244mr19961682qkm.42.1652880319465; Wed, 18
- May 2022 06:25:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xBJDPO61I3gQO/bIk0UDIpqOBCWbyudg+XjoFP7FP9A=;
+        b=xW/gmjao2NArw70aWcDAaSwzmGvhvrjl5P/hLFwmRl4sAwQkaUJJ0Pjvvbd0I8a2L/
+         PXSotW5h8US1grYUOV6RCG42CLVIaxsJTKDdWe+a6yb+vq2R6mvRXv3imOihTgAEhLhM
+         m6H/7tn1N0Llk8tpcGYwQYx1+d6JGvCUfVsHNQof5ZnPQOYKI8I4caToDpQ/1g5tcyYa
+         TvxgKnKFxCVIbvVwYKvCslbRS0GoZMRjFV6TRdalc4TzdrgS8DAQ1c+Cl7llQAFMNI++
+         4dNWHBTdq87sj6vzGAf657Ne6Mnql+P1vznnwcj/vM1WSm/ginWYlgO5gy5ATn1PrD3k
+         guXQ==
+X-Gm-Message-State: AOAM533snQ+l6UsGKbaodaCj+SCucTrvBap7mdma/coh8D7I5R3NRUkg
+        jIxOL0EIjcWo2e5ZyWkzgtA=
+X-Google-Smtp-Source: ABdhPJzxd5hvtnnjNdVX1po4z9RG9RwHDK6ykHHWMiswwQTeOKFwDbWh8EP1/G92tEEioEtQYLBiRQ==
+X-Received: by 2002:a62:6411:0:b0:50a:81df:bfa6 with SMTP id y17-20020a626411000000b0050a81dfbfa6mr28226016pfb.26.1652880320820;
+        Wed, 18 May 2022 06:25:20 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.117])
+        by smtp.gmail.com with ESMTPSA id s13-20020a17090302cd00b0015e8d4eb244sm1625549plk.142.2022.05.18.06.25.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 06:25:20 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v3 01/11] KVM: x86/pmu: Update comments for AMD gp counters
+Date:   Wed, 18 May 2022 21:25:02 +0800
+Message-Id: <20220518132512.37864-2-likexu@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220518132512.37864-1-likexu@tencent.com>
+References: <20220518132512.37864-1-likexu@tencent.com>
 MIME-Version: 1.0
-References: <20220517205341.536587-1-robimarko@gmail.com> <2905b9ae-df66-eb12-60fd-306ea2d3d626@linaro.org>
-In-Reply-To: <2905b9ae-df66-eb12-60fd-306ea2d3d626@linaro.org>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Wed, 18 May 2022 15:25:08 +0200
-Message-ID: <CAOX2RU4dH-iUMY8yebEEgdJRqm37AHBMH135YkNsnDJMPZCbPg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/6] dt-bindings: regulator: qcom,spmi-regulator:
- Convert to dtschema
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        lgirdwood@gmail.com, broonie@kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 18 May 2022 at 14:58, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 17/05/2022 22:53, Robert Marko wrote:
-> > Convert the bindings of Qualcomm SPMI regulators to DT schema.
-> >
-> > Signed-off-by: Robert Marko <robimarko@gmail.com>
->
->
-> > +$id: http://devicetree.org/schemas/regulator/qcom,spmi-regulator.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Qualcomm SPMI Regulators
-> > +
-> > +maintainers:
-> > +  - Robert Marko <robimarko@gmail.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - qcom,pm660-regulators
-> > +      - qcom,pm660l-regulators
-> > +      - qcom,pm8004-regulators
-> > +      - qcom,pm8005-regulators
-> > +      - qcom,pm8226-regulators
-> > +      - qcom,pm8841-regulators
-> > +      - qcom,pm8916-regulators
-> > +      - qcom,pm8941-regulators
-> > +      - qcom,pm8950-regulators
-> > +      - qcom,pm8994-regulators
-> > +      - qcom,pmi8994-regulators
-> > +      - qcom,pms405-regulators
-> > +
-> > +  interrupts: true
-> > +
-> > +  interrupt-names: true
->
-> I think we misunderstood each other. Old bindings indeed did not require
-> the interrupts, although if present they should be always defined.
-> Therefore here you should specify number of items and their names.
+From: Like Xu <likexu@tencent.com>
 
-Yeah, I think we are misunderstanding each other.
+The obsolete comment could more accurately state that AMD platforms
+have two base MSR addresses and two different maximum numbers
+for gp counters, depending on the X86_FEATURE_PERFCTR_CORE feature.
 
-Old text-based bindings specified the interrupts, but no naming or
-number was enforced,
-so I looked into the driver to see what is going on.
-Only pm8941 has interrupts defined in the driver and DTS, so I added
-those based on compatible
-matching, the same as with supplies.
-My logic was that it was only valid for interrupts to be described if
-PM8941 was used as describing
-interrupts for other regulator models will do nothing.
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ arch/x86/kvm/pmu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Regards,
-Robert
->
-> Rest looks ok
->
->
-> Best regards,
-> Krzysztof
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index b5d0c36b869b..3e200b9610f9 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -37,7 +37,9 @@ EXPORT_SYMBOL_GPL(kvm_pmu_cap);
+  *   However AMD doesn't support fixed-counters;
+  * - There are three types of index to access perf counters (PMC):
+  *     1. MSR (named msr): For example Intel has MSR_IA32_PERFCTRn and AMD
+- *        has MSR_K7_PERFCTRn.
++ *        has MSR_K7_PERFCTRn and, for families 15H and later,
++ *        MSR_F15H_PERF_CTRn, where MSR_F15H_PERF_CTR[0-3] are
++ *        aliased to MSR_K7_PERFCTRn.
+  *     2. MSR Index (named idx): This normally is used by RDPMC instruction.
+  *        For instance AMD RDPMC instruction uses 0000_0003h in ECX to access
+  *        C001_0007h (MSR_K7_PERCTR3). Intel has a similar mechanism, except
+@@ -49,7 +51,8 @@ EXPORT_SYMBOL_GPL(kvm_pmu_cap);
+  *        between pmc and perf counters is as the following:
+  *        * Intel: [0 .. INTEL_PMC_MAX_GENERIC-1] <=> gp counters
+  *                 [INTEL_PMC_IDX_FIXED .. INTEL_PMC_IDX_FIXED + 2] <=> fixed
+- *        * AMD:   [0 .. AMD64_NUM_COUNTERS-1] <=> gp counters
++ *        * AMD:   [0 .. AMD64_NUM_COUNTERS-1] and, for families 15H
++ *          and later, [0 .. AMD64_NUM_COUNTERS_CORE-1] <=> gp counters
+  */
+ 
+ static struct kvm_pmu_ops kvm_pmu_ops __read_mostly;
+-- 
+2.36.1
+
