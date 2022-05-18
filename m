@@ -2,91 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D25B4C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235892AbiERLy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59572 "EHLO
+        id S236008AbiERL4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235810AbiERLyu (ORCPT
+        with ESMTP id S235958AbiERL4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:54:50 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190AE49C86;
-        Wed, 18 May 2022 04:54:48 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IBlL3S016293;
-        Wed, 18 May 2022 11:54:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=Ap+lBzAtoKjwarN7fWcNP0poXNCXF3aQkSAGGC9mrNQ=;
- b=NZ7uR6yZYJ6e74NjpaNPrJrrcRrB/09ejn0/ApE2z6qFILFvQiQKg7xT0PoI09hY3cvT
- zJAGWDEMwIcgmMn+/DofYRip5ICBEclD2b36drlRFtlkBkoz/VkK/sgMvNrPhJCIu5J4
- Vm6nBwp9sRM/lZQit0tD+L6cajsFoHk29x72dc03eZgw8bwLrvIZTjXDVDTwb+UjI2hK
- BHQRqdtD8Aw9CgJUQQQcIqRgXHFCTxwA9AwG20f0CcuEGiO30fEHHbbwkUZWqMF20Clg
- BhwPRTv3KYEN9nuIWYf1uqe4qQU9roJuq4XU40sc5iOPozf/TO8cqyksh6rdD5WxI9kG Xg== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g508103x6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 11:54:46 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IBqsiq002923;
-        Wed, 18 May 2022 11:54:45 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma02fra.de.ibm.com with ESMTP id 3g2428mjfk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 11:54:44 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IBsfIl48628084
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 11:54:41 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AADF852057;
-        Wed, 18 May 2022 11:54:41 +0000 (GMT)
-Received: from osiris (unknown [9.145.54.247])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 5B02A5204E;
-        Wed, 18 May 2022 11:54:41 +0000 (GMT)
-Date:   Wed, 18 May 2022 13:54:39 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Steffen Eiden <seiden@linux.ibm.com>
-Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Nico Boehr <nrb@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Wed, 18 May 2022 07:56:19 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A308D2BD2;
+        Wed, 18 May 2022 04:56:14 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id f9so3417645ejc.0;
+        Wed, 18 May 2022 04:56:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oF+fUnzGRmCla6wkP2ZWWEZ7GzfOYIjKQWRL+xL61A4=;
+        b=ZhOdUoZvH+KX2I9nBjZp3CtDu3nBvOk3p9ODvo5x1oIeBFD5fYyBJONJC9otmNNT6e
+         toOCz1jR42Z4SpnKfNTHRZTqqTDFB1wGQQ+JNFAKKgC/UVWR1mAl3IIZCgJ3522FLH0t
+         7MfwtDN5RlpMHFeXqqe2u3GnNDOWSPkG3WYjXV2ZQ/djEf/FL+8kct1Vt97X9Hj6HFBL
+         R3gcv5yzbA7wkOfxzw/yJAVqnIbsr9rWHcRA3wk4lGLElIrBj9FKLETjF44MX0lk2YN/
+         Ia+7Hny0BlRYxo6a/C7Jqg0tWqLdEh9KD+8H3i9+QLMIH1AqS7vEQvTZvZ2C0k/shZ1f
+         7JDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oF+fUnzGRmCla6wkP2ZWWEZ7GzfOYIjKQWRL+xL61A4=;
+        b=U5jkzJ77gyW2p0OBBvGklBlBr09T1iLwhHpfQFbhaYO4SqjW5XWB9x9xVDJQc523uX
+         u0zdYRXWm3GROFhTQiiqSqrJWmbyTcN/cjqjB5Natxt0sme2ZqXaTpoAK2qoGgLloeF6
+         suHwvqyIOWAAWBzevzBB73sG7fXVCZ7/kHyn/WEffRvDG9YDjLVXyj/tRa/bO1qYKf5+
+         UoktSQ2hvy5fFGNAq+KPE1qcmQoLrYH6C3IjnUhnrUTq6SETjA4KFQ37jGdX/NCeLLj8
+         OjbJuWgYwBG5MoZ7QVIfhdAJp/PPVGmo9wf2dT95h+6qzQkysfc5VxWnQ37wKRIQS7xy
+         50Mw==
+X-Gm-Message-State: AOAM531VrrrJk6sBIdk5GtMOnMCY6TsFhwQhErCGnHyVNgV+CdO6jQay
+        wazcKfx5UArBWCa7kvXzZ7k=
+X-Google-Smtp-Source: ABdhPJyrMnKyVZWMc4n6Os+y/tg06UNnOrohRbv7mLb78lVsDCcAwXxErgbNu4RxUJjh76agRgw/2w==
+X-Received: by 2002:a17:907:d89:b0:6f5:be3:b06d with SMTP id go9-20020a1709070d8900b006f50be3b06dmr23900488ejc.74.1652874973392;
+        Wed, 18 May 2022 04:56:13 -0700 (PDT)
+Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
+        by smtp.gmail.com with ESMTPSA id dq20-20020a170907735400b006f5294986besm873999ejc.111.2022.05.18.04.56.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 04:56:12 -0700 (PDT)
+From:   Max Krummenacher <max.oss.09@gmail.com>
+To:     max.krummenacher@toradex.com
+Cc:     Marek Vasut <marex@denx.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Nikita Kiryanov <nikita@compulab.co.il>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] s390: Add attestation query information
-Message-ID: <YoTefxTetgGrfKym@osiris>
-References: <20220518095113.982955-1-seiden@linux.ibm.com>
+Subject: [PATCH v2 0/3] drm/panel: simple: add bus-format support for panel-dpi
+Date:   Wed, 18 May 2022 13:55:37 +0200
+Message-Id: <20220518115541.38407-1-max.oss.09@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518095113.982955-1-seiden@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: TKogau4XcC4SsuoX52VFtJzUpFkxKPIy
-X-Proofpoint-ORIG-GUID: TKogau4XcC4SsuoX52VFtJzUpFkxKPIy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_04,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 suspectscore=0
- spamscore=0 impostorscore=0 mlxscore=0 bulkscore=0 clxscore=1015
- phishscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=538
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205180065
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 09:51:13AM +0000, Steffen Eiden wrote:
-> We have information about the supported attestation header version
-> and paf (=  plaintext attestation flag) bits.
-> Let's expose it via the sysfs files.
-> 
-> Signed-off-by: Steffen Eiden <seiden@linux.ibm.com>
-> ---
->  arch/s390/boot/uv.c        |  2 ++
->  arch/s390/include/asm/uv.h |  7 ++++++-
->  arch/s390/kernel/uv.c      | 20 ++++++++++++++++++++
->  3 files changed, 28 insertions(+), 1 deletion(-)
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-Please write in the cover-letter *why* this is needed.
+
+Commit 4a1d0dbc8332 ("drm/panel: simple: add panel-dpi support") added
+support for defining a panel from device tree provided data.
+
+However support for setting the bus format is missing, so that with
+the current implementation a 'panel-dpi' panel can only be used
+if the driver of the display interface connected can cope with a
+missing bus_format.
+
+This patch series defines the new property bus-format and adds it to
+the panel-dpi implementation.
+
+Check initial discussions [1] and [2].
+[1] https://lore.kernel.org/all/20220201110717.3585-1-cniedermaier@dh-electronics.com/
+[2] https://lore.kernel.org/all/20220222084723.14310-1-max.krummenacher@toradex.com/
+
+
+Changes in v2:
+    - Fix errors found by dt_binding_check
+
+Max Krummenacher (3):
+  dt-bindings: display: add new bus-format property for panel-dpi
+  dt-bindings: display: startek,startek-kd050c: allow bus-format
+    property
+  drm/panel: simple: add bus-format support for panel-dpi
+
+ .../bindings/display/panel/panel-dpi.yaml     | 11 +++++
+ .../display/panel/startek,startek-kd050c.yaml |  1 +
+ drivers/gpu/drm/panel/panel-simple.c          | 43 +++++++++++++++++++
+ .../dt-bindings/display/dt-media-bus-format.h | 23 ++++++++++
+ 4 files changed, 78 insertions(+)
+ create mode 100644 include/dt-bindings/display/dt-media-bus-format.h
+
+-- 
+2.20.1
+
