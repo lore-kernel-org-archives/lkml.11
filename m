@@ -2,106 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 802F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F33C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:31:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238577AbiERO2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        id S238630AbiERObx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 10:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238563AbiERO2p (ORCPT
+        with ESMTP id S238567AbiERObw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:28:45 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3D4AE272;
-        Wed, 18 May 2022 07:28:44 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id p22so3926937lfo.10;
-        Wed, 18 May 2022 07:28:44 -0700 (PDT)
+        Wed, 18 May 2022 10:31:52 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8B7131F0D
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:31:50 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id p139so3950971ybc.11
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:31:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=f2asfCeFU8cxuqhZ8P9yqC7YEl+u0MhBiTAzL9Svh7A=;
-        b=GmR8tJF+da69/ciqhoEMUlRXNwY1NUWXLCdla2Iu0ylQrvgqJoaWgHVOQj0I/BO/Yt
-         nP4pPV2Kh56+9lbMh47i6yH9vGRnw2GTipLOgIx+vR+o1Z19nkbhutn80ixKS4ga71jK
-         A+ydg7x70pVAreJc50GlbW+OwN4b1u438Z94tANm2MAVc58md+nH8YLzs76lB2twLY0D
-         0bjCE4/cf9hyv05pUsTplflbdMB6BwJCjDvEXdlQ5+2eCdzPFvSK51qLn+aQF9t0mpAp
-         H2KU6PUOJmea42Z4FOKIZhF2ehzOT0AGgCkSpXpTU+CqqcJKgs/va/ovxPFOCXf81M73
-         bWlw==
+        bh=7nmEi6ZoG9r127aWoO2La/t7onhMEzl5Gbs0ISxTId4=;
+        b=QHkp2SHQ0ilczfAavRdE+bGwRoRlPSAVvvBQ/UKIKFlyIbmL071SoLuKxg2nQ4mA+S
+         Bl1WVEyfZ5uoc4hHnDGf/USDpoHoVvIYv92hR2CnXGjbCDRT6QdxTYIvB2FOkGlxpRrQ
+         fx8PX0tyYhijJpmU7oA+PmVGz59bta+zGUOz/Vy1uOLlBJ0Boi4TyEY1qN4AW4LWzZ10
+         I6URRpRzLgwtufvkwnBlWr1sC/oGRWtxEUaSxqgmvd8X1DlsETJBV81fx9iSiJ0nc/Fu
+         p4rE7aOVOT24cJLnW1/9GN48oTV0uRlwKeik5fpwsCXv3NJi9woK15JY6MY1CRiQY/nB
+         lUCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=f2asfCeFU8cxuqhZ8P9yqC7YEl+u0MhBiTAzL9Svh7A=;
-        b=36Ii1TxGVGh/ouMaNsYieULjVjiwS7xN7gErghLFGIgGfxNL+Ejrfwfbt9Ldv3E51x
-         aVkEDT+uUmJoGk8PTfmtfH62E6HSRDmHVOaLHEqPEWQ9H6dOPu+DpM1NwEEIOT+YK+YP
-         TqRjyoCl/Y6iDKEl9YgwuD5GpE2cu9wbIk8PpxyJBaouxPZncwUowezEH5qvPTWgY8RP
-         XAD5XJ2pj1MJwtQF5zoITWQMXqwpqRRPRNjkOtND5L4IsE3eXX/Gnlnlka1adSF9z8k/
-         KAz1Ib3oWHUzDbXDNyxfnq4qZv+GvCQxnAJoGV1Xo16VCz2kd1TipMpdKAzb8pCkhXzX
-         olrw==
-X-Gm-Message-State: AOAM532Dv1qZhEvYIH53LG0MiG2JfR2iIj2A8vpePoTTKkBl0RpmP2JO
-        i4A2KpFKE97hHK0rgKrPhkgtGFc+Cj3YneSIkTg=
-X-Google-Smtp-Source: ABdhPJzhrFJxl5/2J/veCGoYkn9Nu3bLLfWmyPSxzWdQt4Lt0dmM4NhnyYCHFhjGCnAmfT4rPU9IGMBqwfLndhZJouw=
-X-Received: by 2002:a19:8c1a:0:b0:472:315:48db with SMTP id
- o26-20020a198c1a000000b00472031548dbmr20359645lfd.235.1652884122909; Wed, 18
- May 2022 07:28:42 -0700 (PDT)
+        bh=7nmEi6ZoG9r127aWoO2La/t7onhMEzl5Gbs0ISxTId4=;
+        b=h+gGADsKM5OglcIgFkQJYDpdWS1BI74AJ513WtYgbG0N8FKY9uCzt56rE6gy9gr3up
+         U8Kan+hLYQtlXI50/unOQhfVXn0N79VYeQ3OtTYgwQxjqzoOqrWcxQuwJjxc66RIPuKA
+         L/p+4PVrn6f6MZ2K43u6Sxaj0Qrw6UPw2Xfn10glqKHOWutfPUB5zazsJQEpPMhYGcMo
+         ImdgA/0pCaozdG9reOZbODr3fFQ8K5ui/iryj86Bs2JQpZAknJtNNnwkz6d8Fh5hSayh
+         G4B9srr/VYZYsQBHDoHl06HmH3Yhh/mlcuZWYHCXZbx37ufDKXCERaF/w+ZAhP8sO4FC
+         PKkw==
+X-Gm-Message-State: AOAM533TKF1/lCU4ERbQC3xOSPrlth45LHgwcz9RihG8bAQcHMBSZXSA
+        RSwmq9rHmsWCJjA8tjcfZNhPlA3sNLhnBHGBQ1Znog==
+X-Google-Smtp-Source: ABdhPJz0ouudIkCpPRRDk/fmvhMRPYd6OJH2pyj1Rp+/2Y/lT2tLO6oxXSEmNkETJ6Y4AlsWwaA3UoEXv6zT6oaH7UA=
+X-Received: by 2002:a25:5e45:0:b0:64d:7707:e8c2 with SMTP id
+ s66-20020a255e45000000b0064d7707e8c2mr18758338ybb.403.1652884309753; Wed, 18
+ May 2022 07:31:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220516115846.58328-1-max.oss.09@gmail.com> <20220516115846.58328-12-max.oss.09@gmail.com>
- <CAOMZO5BtQtX2873RQJ6hB0rAZThJ82mf4gTm9JboAkMrwq+f6g@mail.gmail.com>
-In-Reply-To: <CAOMZO5BtQtX2873RQJ6hB0rAZThJ82mf4gTm9JboAkMrwq+f6g@mail.gmail.com>
-From:   Max Krummenacher <max.oss.09@gmail.com>
-Date:   Wed, 18 May 2022 16:28:31 +0200
-Message-ID: <CAEHkU3VKf9xNMMEcW39imkysH31e8SLtdOj-c+_EYkxMW2qN=w@mail.gmail.com>
-Subject: Re: [PATCH v1 11/17] ARM: dts: imx6q-apalis: Add ov5640 mipi csi camera
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
-        Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220518100841.1497391-1-fam.zheng@bytedance.com>
+ <20220518102140.GF10117@worktop.programming.kicks-ass.net>
+ <CAG+v+Kb5ON2-49t8ZZwH2jT31Jvi+F_HYW0gQ3ss040GKdp0Zw@mail.gmail.com>
+ <CAKfTPtBAkQpKtZMC5uV6hNeMqe9rJHd_GLHVFf2o3r=HvqH9fg@mail.gmail.com> <CAG+v+Kbfy-TuAWR9sfuWGyKb5Y+xjHDzB9hcoHuAN1kjYv5gWw@mail.gmail.com>
+In-Reply-To: <CAG+v+Kbfy-TuAWR9sfuWGyKb5Y+xjHDzB9hcoHuAN1kjYv5gWw@mail.gmail.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Wed, 18 May 2022 16:31:38 +0200
+Message-ID: <CAKfTPtA4qRUpMK4gw0STFg3kQqhpxCJpOMy9HgbSKaeVwfSjEQ@mail.gmail.com>
+Subject: Re: [External] Re: [RFC PATCH] sched: Enable root level cgroup
+ bandwidth control
+To:     "Feiran Zheng ." <fam.zheng@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        zhouchengming@bytedance.com, fam@euphon.net,
+        Mel Gorman <mgorman@suse.de>, Ingo Molnar <mingo@redhat.com>,
+        songmuchun@bytedance.com, Juri Lelli <juri.lelli@redhat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Cristian Marussi <cristian.marussi@arm.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio
+Adding daniel and cristian who works on some powercap implementation
 
-On Tue, May 17, 2022 at 8:28 PM Fabio Estevam <festevam@gmail.com> wrote:
+On Wed, 18 May 2022 at 14:56, Feiran Zheng . <fam.zheng@bytedance.com> wrote:
 >
-> Hi Max,
+> On Wed, May 18, 2022 at 1:03 PM Vincent Guittot
+> <vincent.guittot@linaro.org> wrote:
+> >
+> > On Wed, 18 May 2022 at 12:38, Feiran Zheng . <fam.zheng@bytedance.com> wrote:
+> > >
+> > > On Wed, May 18, 2022 at 11:21 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> > > >
+> > > > On Wed, May 18, 2022 at 11:08:41AM +0100, Fam Zheng wrote:
+> > > > > In the data center there sometimes comes a need to throttle down a
+> > > > > server,
+> > > >
+> > > > Why?
+> > >
+> > > For economical reasons there can be over-provisioning in DC power
+> > > supply (UPS capacity etc) because the utilization expectation of the
+> > > racks is not maximum value. But the workload can be client driven,
+> > > depending on how many users are online, and in the end the power
+> > > supply may overload and trip itself. To avoid that, upon a threshold,
+> > > some servers need to be brought down or throttled. The latter is
+> > > obviously going to be much more smooth.
+> >
+> > This looks like thermal or power budget management. We have other ways
+> > to do so with powercap or idle injection. Did you consider those
+> > solutions ?
 >
-> On Mon, May 16, 2022 at 8:59 AM Max Krummenacher <max.oss.09@gmail.com> wrote:
+> Hi Vincent,
 >
-> > +       ov5640_csi_cam: ov5640_mipi@3c {
-> > +               compatible = "ovti,ov5640";
->
-> Does it make sense to describe the ov5640 camera in the Apalis SoM dtsi?
->
-> The camera is not populated in the SoM. What if the customer baseboard
-> uses a different camera?
->
-> The same applies to the adv720 description.
+> I looked at powercap, and it seems Intel only? Any idea about AMD/ARM?
+> There seems nothing for them under drivers/powercap/.
 
-We moved to a pattern where we do describe the 'Toradex' peripherals
-in the SoM dtsi but
-keep their status disabled. Then if the peripheral is on the carrier
-board we only have to
-enable it in the carrier board dts, for peripherals attached to the
-carrier boards (e.g. like the
-cameras) we enable it in device tree overlays.
-This did reduce code duplication a lot.
-A customer who attaches a different camera would add its camera node
-in its device tree
-or overlay and keep the ov5640 or adv7280 nodes disabled.
+there is a DTPM powercap provider in the latest kernel and a scmi
+power capp provider is under review
+>
+> I don't know the idle injection interface, can you please give more hints?
 
-So I would rather not change anything here.
+idle injection can be used with cpuidle cooling device and there were
+some discussion to make a dtpm idle injection device but I think this
+has  never been sent on mailing list
 
-Max
+
+>
+> I also plan to test uclamp, still need to learn more about that.
+>
+> Fam
