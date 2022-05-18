@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17602C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D299C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236870AbiERMfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54654 "EHLO
+        id S237200AbiERMfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237018AbiERMdo (ORCPT
+        with ESMTP id S237116AbiERMd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:33:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0146C1737C2;
-        Wed, 18 May 2022 05:29:51 -0700 (PDT)
+        Wed, 18 May 2022 08:33:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B991912CE;
+        Wed, 18 May 2022 05:29:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F3DDB81FB9;
-        Wed, 18 May 2022 12:29:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B56DFC385A5;
-        Wed, 18 May 2022 12:29:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DADB46164C;
+        Wed, 18 May 2022 12:29:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2A64C385A5;
+        Wed, 18 May 2022 12:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876988;
-        bh=AEH/dvMVbcFeYDvFezpfR84pX6HTZhUBNCCoNrj0aKI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BIRmo9hTbP8frive6zI5edydk1EUOuDv5qAOheL/7kwkdFSBMdBiCS+DZDCT+b9EV
-         WorYbpOeq3EykQ+ijhBuzd5RHO9u8UTFonWi5U06n85OG/0roHn0d+9l1p/uB9K/iy
-         yf+9+tqOgsXCi6KwJX1IqipSBU7IeXYaPqEplmn+/HOfPo31G+RqvAcIXHwW3MULIP
-         vOtN9QFr31OqaNop03KzrQuB/AocfML9RQPJSIjQbvNxbwklU1/v3njNqBXK6xfpoC
-         UG7RwZXngeHSA+WDLekI6R0cnviwlQ6dAJnwLidfpRGAWhMQNp6jsZsFizOv+RSPKb
-         ulMEO7pHlDRVg==
+        s=k20201202; t=1652876994;
+        bh=T4OxzCgaUBm2DqSHVnJ48Imayt8DaPfRZpxmkuNlJUk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WY8gkAbMbyUZP5HzcSpZ6gbgFtMkbr/7PwWrewHRfj/PnoyOrAzhJsEqzf0Noc5yG
+         VvLle8noGo4NrCkB5yqysQgyowGzzB175qk6OXVysvRr9gx0OlgFzngrpwFr2oR2oC
+         g7HAkNJVpNXS6QyZ5JEeiz/aFZFUpg5Vtk4xa97foxSk6otgiZHT+mwkuqBNWgdzRs
+         KbHppJJP3wnfc1kzQHtPQg3s1YQCTnLcXXlUOZzO9zVmyV+Xf6TiSomPgXzabSxNMI
+         SPkCyWnML1jFaQRNoHScSUpO9kub6cmkGnmOzVdLl80X7FS9ZEEGXcFxIXcqMKUlhl
+         ADJ1W5i7U+Y3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gleb Chesnokov <Chesnokov.G@raidix.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, njavali@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 1/5] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
-Date:   Wed, 18 May 2022 08:29:41 -0400
-Message-Id: <20220518122946.343712-1-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, arnd@arndb.de,
+        jgg@ziepe.ca, netdev@vger.kernel.org, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 3/5] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+Date:   Wed, 18 May 2022 08:29:43 -0400
+Message-Id: <20220518122946.343712-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220518122946.343712-1-sashal@kernel.org>
+References: <20220518122946.343712-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,49 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gleb Chesnokov <Chesnokov.G@raidix.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
+[ Upstream commit 51ca86b4c9c7c75f5630fa0dbe5f8f0bd98e3c3e ]
 
-Aborting commands that have already been sent to the firmware can
-cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
+Fix the missing pci_disable_device() before return
+from tulip_init_one() in the error handling case.
 
-For instance:
-
- - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
-
- - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
-
- - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
-
- - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
-   unmapped
-
-Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
-
-Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220506094250.3630615-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
-index 09c52ef66887..27d3293eadf5 100644
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -3753,6 +3753,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
+index 3e3e08698876..fea4223ad6f1 100644
+--- a/drivers/net/ethernet/dec/tulip/tulip_core.c
++++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
+@@ -1410,8 +1410,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	spin_lock_irqsave(&cmd->cmd_lock, flags);
- 	if (cmd->aborted) {
-+		if (cmd->sg_mapped)
-+			qlt_unmap_sg(vha, cmd);
-+
- 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
- 		/*
- 		 * It's normal to see 2 calls in this path:
+ 	/* alloc_etherdev ensures aligned and zeroed private structures */
+ 	dev = alloc_etherdev (sizeof (*tp));
+-	if (!dev)
++	if (!dev) {
++		pci_disable_device(pdev);
+ 		return -ENOMEM;
++	}
+ 
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
+@@ -1788,6 +1790,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ err_out_free_netdev:
+ 	free_netdev (dev);
++	pci_disable_device(pdev);
+ 	return -ENODEV;
+ }
+ 
 -- 
 2.35.1
 
