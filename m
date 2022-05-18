@@ -2,160 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 326D5C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7588C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235815AbiESJJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 05:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36166 "EHLO
+        id S235823AbiESJK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 05:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbiESJJy (ORCPT
+        with ESMTP id S232032AbiESJKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 05:09:54 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8370A4D614
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:09:53 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2fee010f509so50046937b3.11
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:09:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fTYN8SQA1Kibj+1iEMNK2WJ4kiFH1jZy+Z6ZLSVIzN0=;
-        b=hvulyA/9nIvcQL349rFarbnddLvY9KxNXVzOwnuziFMGzgoXJafIeq4MkYBy6jLk6W
-         s3M1vHrQCdqvZAScHSvOaiC24sEZLHS49j0W88ksuOnZWzOJcz/qal8MrrGbJgy3AxE/
-         jC8pn9TpW1Fsn7CRdkMKMPRWnyntyy4uNhTFYqyIsPsY3xLU+1Tj8BSmdpt+ZPQQREut
-         hKV7/XAof2E30dQbV/qIr57X2zMxMUYLPtvgd3NWcR1W//0MOFeYlipiFSPiPdoYTRkl
-         EVNnGm474dJJ1JPi1bY7lymcKpQU0jo24pOGJbZyS5KotlMFZoWGsrDcpf3mxJcprTz2
-         2QvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fTYN8SQA1Kibj+1iEMNK2WJ4kiFH1jZy+Z6ZLSVIzN0=;
-        b=hfcS9JJWq+/3wNj1Du4Lae4t9xisx7MFwn7Z7FjjfRqkw8SaLILaeSNmvrnEkPW3l2
-         /D06VNEgsFEGk1YuTyvK5lWE3Sp+TvAzo6zDJ+uxPrfYeTQl43KtAZ19Mz7aoNU1MPY2
-         3fjDq7YdFU8VTtnK2JQRUayN/WGxX4Gdn8kfyqS2sbJ6GFN+lfGv0mJpkWKqCEZE4cMI
-         46quYKF7asq1Rko4q8+Nr6V9DdEJayKEeRn5x7kr2xywq+Ff5hK3gUhCOkZMcF5P6CxW
-         iM3jrImHlcZKKFTlAQXrU46kX7uk5GYMEGkgGvw3TlAsxMfIitrzirNTlhAQ3kCRRgeR
-         y7fw==
-X-Gm-Message-State: AOAM530Bi3QciOHLgCk2DrqWA9O+8qCBZGWiTTRaxPdN4FXO8tsO7w1H
-        QU0DRiXYHkY4w57pYZVTYx4Kl3Xc7tClxKkJzPEw6w==
-X-Google-Smtp-Source: ABdhPJwWgBnbFPBng8jyysNwYozhHy5L14kmJuY8TO30we9HAg0aLzdUurH9h7SgBVzWDxYOJ2zAzts+I/soNqiTxJU=
-X-Received: by 2002:a0d:c4c2:0:b0:2f1:6c00:9eb4 with SMTP id
- g185-20020a0dc4c2000000b002f16c009eb4mr3757471ywd.448.1652951392715; Thu, 19
- May 2022 02:09:52 -0700 (PDT)
+        Thu, 19 May 2022 05:10:23 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D969B4D9C9
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:10:20 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220519091014epoutp019a602498f58eba8b04cd51e62c586251~wdo3byiqJ0906609066epoutp01H
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:10:14 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220519091014epoutp019a602498f58eba8b04cd51e62c586251~wdo3byiqJ0906609066epoutp01H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1652951414;
+        bh=yubcOGk4qBi6F7AK2qNHCDaOxiRtu1ZlVFm1AAMU0xg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qxB0F0cknfBC3vPdDVAC8PpU76OHGL/xotEs6j9xPSMBQmGxV1FavIcD4Rp1mnKjK
+         90nQynLPpn+ffyTMqE5bkWLtkqXwbtxw2KC6Tp0/btBfGpWGsJOSkiOWb6QLfz9UI1
+         uuVpQGkue87n9n7xXrVUik7c0CfajlXZ7YlPV9wE=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220519091013epcas2p416d53e04b30074a096e59ca0f212ea54~wdo2kAvC31891518915epcas2p4d;
+        Thu, 19 May 2022 09:10:13 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.100]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4L3kb56xP8z4x9Px; Thu, 19 May
+        2022 09:10:09 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D9.2F.10028.07906826; Thu, 19 May 2022 18:10:08 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220519091007epcas2p2ba7cd404e9948ec4160f48cd83a995fa~wdowydnrZ3174631746epcas2p2Z;
+        Thu, 19 May 2022 09:10:07 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220519091007epsmtrp10cf908a2262ecf4b60e494f6890ad86d~wdowxmNml1347613476epsmtrp1H;
+        Thu, 19 May 2022 09:10:07 +0000 (GMT)
+X-AuditID: b6c32a47-589ff7000000272c-0f-62860970cb17
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        9D.5F.11276.F6906826; Thu, 19 May 2022 18:10:07 +0900 (KST)
+Received: from rack03.dsn.sec.samsung.com (unknown [10.229.95.126]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220519091007epsmtip27852461bb84b16036f626c1d4545a560~wdowmbKLy2681426814epsmtip2d;
+        Thu, 19 May 2022 09:10:07 +0000 (GMT)
+From:   SEO HOYOUNG <hy50.seo@samsung.com>
+To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, beanhuo@micron.com,
+        asutoshd@codeaurora.org, cang@codeaurora.org, bvanassche@acm.org,
+        bhoon95.kim@samsung.com, kwmad.kim@samsung.com
+Cc:     SEO HOYOUNG <hy50.seo@samsung.com>
+Subject: [PATCH v1] scsi: ufs: Change the shutting_down flag setting
+ position
+Date:   Thu, 19 May 2022 05:52:01 +0900
+Message-Id: <20220518205201.58264-1-hy50.seo@samsung.com>
+X-Mailer: git-send-email 2.26.0
+In-Reply-To: <sc.suh@samsung.com;>
 MIME-Version: 1.0
-References: <cover.1651835715.git.jo@jsfamily.in> <BY5PR02MB7009B91FB7306503B58C264BD9C59@BY5PR02MB7009.namprd02.prod.outlook.com>
- <CACRpkdYhkP9RYj98Lu=zkt+6aefx172R=8JtvOFpvh2uJ4byKA@mail.gmail.com> <BY5PR02MB7009831D8BC4DB2B34739CB6D9CF9@BY5PR02MB7009.namprd02.prod.outlook.com>
-In-Reply-To: <BY5PR02MB7009831D8BC4DB2B34739CB6D9CF9@BY5PR02MB7009.namprd02.prod.outlook.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 19 May 2022 11:09:41 +0200
-Message-ID: <CACRpkdZw+MwU42s8BWHkN2T3A-a-TGML8jJ0kQteMOE06m0UXg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] drm/panel: introduce ebbg,ft8719 panel
-To:     Joel Selvaraj <jo@jsfamily.in>
-Cc:     devicetree@vger.kernel.org, Hao Fang <fanghao11@huawei.com>,
-        David Airlie <airlied@linux.ie>,
-        Shawn Guo <shawnguo@kernel.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        phone-devel@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCJsWRmVeSWpSXmKPExsWy7bCmuW4BZ1uSwcYb/BYP5m1js9jbdoLd
+        4uXPq2wWBx92slh8XfqM1WLah5/MFp/WL2O1WL34AYvFohvbmCxubjnKYnF51xw2i+7rO9gs
+        lh//x+TA63H5irfH5b5eJo8Jiw4wenxf38Hm8fHpLRaPvi2rGD0+b5LzaD/QzRTAEZVtk5Ga
+        mJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hpYa6kkJeYm2qr5OIToOuWmQN0spJCWWJOKVAo
+        ILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwLxArzgxt7g0L10vL7XEytDAwMgUqDAhO+Nft3JB
+        F3fFy00HWRoYF3F2MXJySAiYSNzo7GbrYuTiEBLYwSixsW0DK4TziVFi/dalUM43RokVPyey
+        wLRM/7cdzBYS2MsocaRJFaLoB6PElPmvmUESbAIaEmuOHWICSYgIrGCS6Nn0iQkkwSygJvH5
+        7jKwbmEBf4ltr/YDxTk4WARUJU6fFAUJ8wpYSpzeP5EdYpm8xKKG32CtnAJKEu9PvWWGqBGU
+        ODnzCQvESHmJ5q2zmUF2SQis5JA4d/oIG0Szi8S7b1NZIWxhiVfHt0ANlZJ42d8GZRdL/Hiz
+        mgmiuYFRYmn7MWaIhLHErGftjCDHMQtoSqzfpQ9iSggoSxy5BbWXT6Lj8F92iDCvREebEESj
+        ksSZubehwhISB2fnQJgeEg/XMEFCrVTixYU/jBMYFWYh+WUWkl9mIWxdwMi8ilEstaA4Nz21
+        2KjAGB67yfm5mxjByVfLfQfjjLcf9A4xMnEwHmKU4GBWEuFlzG1JEuJNSaysSi3Kjy8qzUkt
+        PsRoCgzoicxSosn5wPSfVxJvaGJpYGJmZmhuZGpgriTO65WyIVFIID2xJDU7NbUgtQimj4mD
+        U6qBKSMuZ/Er4wXTMi0laq22bHx8ev6Nk9tOsLmzbdwlMHlj0+enbN84v5m+rrYS2PW+LunU
+        kye/+RnDr/IcED/z6MthR5c23cCI8v9N/CIH1h92tblRlnbwZoZ71711yrrWTj3z+bydMw4I
+        v5lf+D3u43bj2tT+kjkZ/WlTn0sJvCt4Pu3eyeRkQd2yvT5SIoYzvT9JT5LumF1fuGSXwXrD
+        B20L5978UJV8NEVH4LTNrhzlcxa2QlM37dnt1fn4anSKiRp/x3PZT7qKy64Uxx8Wk3im8dQw
+        WSLTq43HVcJQaOPPucw9bFUzj/92OFnckM0Z/jzk2Sw/2ZpLPb2tsbI2FjtP5nUwz7c5fKrx
+        4zwuJZbijERDLeai4kQAuYR3akcEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrELMWRmVeSWpSXmKPExsWy7bCSvG4+Z1uSwc0DmhYP5m1js9jbdoLd
+        4uXPq2wWBx92slh8XfqM1WLah5/MFp/WL2O1WL34AYvFohvbmCxubjnKYnF51xw2i+7rO9gs
+        lh//x+TA63H5irfH5b5eJo8Jiw4wenxf38Hm8fHpLRaPvi2rGD0+b5LzaD/QzRTAEcVlk5Ka
+        k1mWWqRvl8CV8a9buaCLu+LlpoMsDYyLOLsYOTkkBEwkpv/bztLFyMUhJLCbUWLu5ptMEAkJ
+        if+Lm6BsYYn7LUdYIYq+MUqcXPmNFSTBJqAhsebYISaQhIjANiaJux9OsoEkmAXUJD7fXcYC
+        YgsL+Eoc+fwIKM7BwSKgKnH6pChImFfAUuL0/onsEAvkJRY1/AZbximgJPH+1FtmEFtIQFHi
+        29p1TBD1ghInZz5hgRgvL9G8dTbzBEaBWUhSs5CkFjAyrWKUTC0ozk3PLTYsMMxLLdcrTswt
+        Ls1L10vOz93ECI4WLc0djNtXfdA7xMjEwXiIUYKDWUmElzG3JUmINyWxsiq1KD++qDQntfgQ
+        ozQHi5I474Wuk/FCAumJJanZqakFqUUwWSYOTqkGJsGFu9hTVyuEm9osk9nA3l14MztlJnNm
+        fumsdR/WFu5o5dSMsep29Di9wt/1hO15tv3r/vQ2XJ/UeFDkHt8Kzok/5Xvz11crTN2WdKYo
+        Z89LzSmL488I7W884lliujEnOFLmuPfh6k7hdcJLS77O0fAw/d658Prk+AlsCyL7fp0TbK+z
+        Uf+a6zt3jfj1hQqby1mn7tZL7WS5vD90aZ3fh/fyL+3MI093FmUc3dewVp75yPJpT86dyX8R
+        ezzNcn+jXvfbuDs7P63yfsaaPv8x0+5lnyy2xokKdqqe1GjWn9CREv+3oVdR4bLCRZmJios3
+        MzkmZcaqCE+IUuPZs/215Pk89TXth9Vf+Xaxz332SomlOCPRUIu5qDgRAJ9CpnMFAwAA
+X-CMS-MailID: 20220519091007epcas2p2ba7cd404e9948ec4160f48cd83a995fa
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220519091007epcas2p2ba7cd404e9948ec4160f48cd83a995fa
+References: <sc.suh@samsung.com;>
+        <CGME20220519091007epcas2p2ba7cd404e9948ec4160f48cd83a995fa@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 2:56 PM Joel Selvaraj <jo@jsfamily.in> wrote:
-> On 13/05/22 03:21, Linus Walleij wrote:
-> > On Fri, May 6, 2022 at 2:18 PM Joel Selvaraj <jo@jsfamily.in> wrote:
-> >> +#define dsi_dcs_write_seq(dsi, seq...) do {                            \
-> >> +               static const u8 d[] = { seq };                          \
-> >> +               int ret;                                                \
-> >> +               ret = mipi_dsi_dcs_write_buffer(dsi, d, ARRAY_SIZE(d)); \
-> >> +               if (ret < 0)                                            \
-> >> +                       return ret;                                     \
-> >> +       } while (0)
-> >
-> > First I don't see what the do {} while (0) buys you, just use
-> > a basic block {}.
->
-> The do {} while (0) in macro ensures there is a semicolon when it's
-> used. With normal blocking, it would have issues with if conditions?
-> I read about them here: https://stackoverflow.com/a/2381339
+When System shutdown, will called ufshcd_wl_shutdown().
+Then the shutting_down falg set to 1 at ufshcd_wl_shutdown().
+And send to SSU cmd at ufshcd_wl_shutdown()->__ufshcd_wl_suspend()->
+ufshcd_set_dev_pwr_mode() function.
 
-Hm that seems true, it enforces the semicolon ; at the end of the
-statement which is nice. I suppose we should fix the other macro
-as well.
+If occurred fail during send SSU cmd,
+then will called ufshcd_err_handler for recovery.
+But already set shutting_down to 1, so ufs driver could not recovery.
+Then System wait for SSU cmd to be completed and
+eventaully it will take Hang.
+So changed the position where shutting_down is set.
 
-Noralf added this ({}) form in 02dd95fe31693, so maybe he wants
-to chip in.
+Signed-off-by: SEO HOYOUNG <hy50.seo@samsung.com>
+---
+ drivers/scsi/ufs/ufshcd.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> > Second look at mipi_dbi_command() in include/drm/drm_mipi_dbi.h
-> > this is very similar.
->
-> Does the ({..}) style blocking used in mipi_dbi_command help workaround
-> the semicolon issue I mentioned above?
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 1fb3a8b9b03e..65d47cd5afbe 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -9235,10 +9235,6 @@ static void ufshcd_wl_shutdown(struct device *dev)
+ 
+ 	hba = shost_priv(sdev->host);
+ 
+-	down(&hba->host_sem);
+-	hba->shutting_down = true;
+-	up(&hba->host_sem);
+-
+ 	/* Turn on everything while shutting down */
+ 	ufshcd_rpm_get_sync(hba);
+ 	scsi_device_quiesce(sdev);
+@@ -9248,6 +9244,10 @@ static void ufshcd_wl_shutdown(struct device *dev)
+ 		scsi_device_quiesce(sdev);
+ 	}
+ 	__ufshcd_wl_suspend(hba, UFS_SHUTDOWN_PM);
++
++	down(&hba->host_sem);
++	hba->shutting_down = true;
++	up(&hba->host_sem);
+ }
+ 
+ /**
+-- 
+2.26.0
 
-Nope. But add the rate limited error print please!
-
-> > It's dubious that you always have dsi_dcs_write_seq()
-> > followed by dsi_generic_write_seq().
-> >
-> > That means mipi_dsi_generic_write() followed by
-> > mipi_dsi_dcs_write_buffer(). But if you look at these
-> > commands in drivers/gpu/drm/drm_mipi_dsi.c
-> > you see that they do the same thing!
->
-> They almost do the same thing except for the msg.type values? Mostly the
-> msg.type value is used to just check whether it's a long or short write
-> in the msm dsi_host code. However, in mipi_dsi_create_packet function,
-> the msg->type value is used to calculate packet->header[0] as follows:
->
-> packet->header[0] = ((msg->channel & 0x3) << 6) | (msg->type & 0x3f);
->
-> Wouldn't the difference between the mipi_dsi_dcs_write_buffer's and
-> mipi_dsi_generic_write's msg.type values cause issue here?
->
-> I tried using mipi_dsi_dcs_write_buffer for all commands and the panel
-> worked fine, but I am not sure if it's correct to do so?
-
-I think it's fine? The only issue would be if there is a DSI host controller
-that only supports short writes, and in that case it should emulate
-long writes by breaking long messages apart. (My amateur view at least.)
-
-> > Lots of magic numbers. You don't have a datasheet do you?
-> > So you could #define some of the magic?
->
-> Unfortunately, I don't have a datasheet and the power on sequence is
-> taken from downstream android dts. It works pretty well though. So I
-> don't think I can #define any of these magic.
-
-If you know which display controller the display is using (usually
-Novatek nnnnn, Ilitek nnnn etc someting like that) there is often
-a datasheet for the display controller available but the display per
-se often obscures the display controller.
-
->  > Doesn't it work to combine them into one call for each
->  > pair?
->  >> +       dsi_dcs_write_seq(dsi, );
->  >> +       dsi_generic_write_seq(dsi, 0xff, 0x87, 0x19);
->
-> By using a macro? We can... but I am not sure what (0x00, 0x80), (0x00,
-> 0xa0),etc type of commands signify without the datasheet, so I am not
-> sure what to name them in the macro and make any sensible meaning out of it.
-
-I meant just sending dsi_generic_write_seq() with everything in
-it:
-
-dsi_generic_write_seq(dsi, 0x00, 0x80, 0xff, 0x87, 0x19);
-
-Instead of two writes. Doesn't this work?
-
-Yours,
-Linus Walleij
