@@ -2,80 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8210CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF06C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237696AbiERNUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
+        id S237723AbiERNVT convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237648AbiERNUO (ORCPT
+        with ESMTP id S237689AbiERNVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:20:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8371B1CEB;
-        Wed, 18 May 2022 06:20:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7935D617B2;
-        Wed, 18 May 2022 13:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CD191C385AA;
-        Wed, 18 May 2022 13:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652880011;
-        bh=avjbSNidtagzZ6jQAeHx+sCWb/95cHhiJ54aAYjFjCk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fTOPk4OmT4MKgqRVqgxJYXaAR4DJyR23i7hMRBaOfbGm1OENsQYtj9yMf66Br8ams
-         2qqk3kSfsyAZJkSBcSk/mkBb2jOXayLqdf30WjeVb+YRHIud08hB2qdLayXlOrEt5D
-         hg8yOfbzNs5ckjf4wS73k5cTLXO9AMCIhMBktGdHyeH7Z6h4GgajmvPq6nSGoG0Rk+
-         BrSX6pV3Sq/He5iffFIt+Y4k+0CxCtExvKe8hbsj56LsNVdzdnlrhBoOyRxNC72yll
-         aZZMNnn46XY0zU4zpYKdleCU7TasJcylF85mB1re1si9YO4pNLBxTPI+X/UP4KpHn8
-         Kdtx7rrQ5GJiA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B5B7CF0383D;
-        Wed, 18 May 2022 13:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 18 May 2022 09:21:16 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831C53207B
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 06:21:14 -0700 (PDT)
+Received: from mail-yw1-f178.google.com ([209.85.128.178]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Mf0Nm-1nP7P03tzG-00gY1W for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022
+ 15:21:13 +0200
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ff53d86abbso4879067b3.8
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 06:21:12 -0700 (PDT)
+X-Gm-Message-State: AOAM532aocdncswfo+3bluwEcBPO6bXU+DfzhvBcMhTLgIDwdDwGUdR1
+        xUlLoL+YptAXCUlo7FxEW1p3kgQDtF8wV1RjV0o=
+X-Google-Smtp-Source: ABdhPJwBjy4ur3XLA4K8ugyaq6ZpN4zxCDmLVI7nhrJH0342w016iDhD3WX3/lYGpyx1rpcDzpcnq5gSYG2aj9C9IIk=
+X-Received: by 2002:a81:ad7:0:b0:2e6:84de:3223 with SMTP id
+ 206-20020a810ad7000000b002e684de3223mr31357253ywk.209.1652880071778; Wed, 18
+ May 2022 06:21:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: smc911x: Fix min() use in debug code
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165288001174.1590.3038393436342538398.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 May 2022 13:20:11 +0000
-References: <ca032d4122fc70d3a56a524e5944a8eff9a329e8.1652864652.git.geert+renesas@glider.be>
-In-Reply-To: <ca032d4122fc70d3a56a524e5944a8eff9a329e8.1652864652.git.geert+renesas@glider.be>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, guozhengkui@vivo.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220505125123.2088143-1-mpe@ellerman.id.au> <c6cbd41c-4cef-d4d7-324a-b4c3e2498262@csgroup.eu>
+ <87fsl7nggr.fsf@mpe.ellerman.id.au>
+In-Reply-To: <87fsl7nggr.fsf@mpe.ellerman.id.au>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 18 May 2022 14:21:08 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a17qq2dpyv1SzD=VmXWAs0JQiyG-AQL=Uv+N6xQzoMsQQ@mail.gmail.com>
+Message-ID: <CAK8P3a17qq2dpyv1SzD=VmXWAs0JQiyG-AQL=Uv+N6xQzoMsQQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] powerpc: Add generic PAGE_SIZE config symbols
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:vSU/9qQem/qqXcK/9nouj8TNQEbk5M1f1RgDMXWBukLFFK6za1C
+ ca0RLl4NezNg7sqC9oSsbFLdIIe2x4IsmvjTYtsYwzbttvcrW+N91J5sShldc5/tJ3CtWea
+ rHmKBmQ3MUXv1jJJGRbyINrUheenw2Ev4Img7gYuSg/DeeDMBGDwXvfmeIjyruTR/wdGgUm
+ f/UpPGzKmd8+8T5qE1Fpw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BltRFptvygA=:K3/2R/fYfF7ot2yyTSj4SV
+ hpniwt8UmJ4DeKd68EfR51BJDW4XNPAFB05AAitwa50UKHBkcu2W/WiH8WtN7hGr7JhJXl3Mj
+ Ff3c+PDV4M91QzLIGJpgwDOeVME+GYxrLxrgWlRWsKZEM/Ondvq8Xfpq9nhEhhdHOo5EG62tv
+ YUxbBNtElef2HJtzEvkRma05kcouLNpPojVul8I4L/GqARSd/AojkFE6ZaHSysbOPdhR2K67D
+ 5vpMUktKIAywsjMJ2kGde43gMrfmmSkq+9WWBzF2xE4P4YECbsZXMR3BLaNQniHq3A5BVpqPB
+ sfsARJ7pzIKf6Zsnw5i+C/7dBo27UGjlqzixs6Wtgk4CrQJjLKGn49Xx4pf+UExLKrqDjJ2ys
+ IddcWOPfBDEbCF1Z5D6Cw0GJQqgFHqzfipLokDm0rkngzECCW+OJYRkzuzPenwlllOVUViFle
+ IRcb74/XBzFsa6yPBDGs8p1pAa6PgTsQ1kEVn2nY5k3ZkYUQ8usMzeK7TppX5Pwn7XEIcXKzi
+ FF69nWsyajr7y5rkvgpPU31BRlCydjuVv/DRPgqlcEsD97NzmAM8Om1KiPyT5rPcPqARlHat5
+ YRNp+ECa/biNMqG1imrFXjL7fKLedBAFZoE+Klp1LqKkaTUkxhOeuRE54iHkA0qWL1gyvhKi/
+ m+K88ECS2ij5u7t0Mtk2rH0B48xXuLpEvLaYz46gQYP42a0xOC8hwDl6Ktu56HuJW/3M9z30m
+ C/wHnZ1jxpF+hB0pUFiqcAJTIYlr9dYH0yyY2Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Wed, May 18, 2022 at 2:00 PM Michael Ellerman <mpe@ellerman.id.au> wrote:
+>
+> Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+> > Le 05/05/2022 à 14:51, Michael Ellerman a écrit :
+> >> Other arches (sh, mips, hexagon) use standard names for PAGE_SIZE
+> >> related config symbols.
+> >>
+> >> Add matching symbols for powerpc, which are enabled by default but
+> >> depend on our architecture specific PAGE_SIZE symbols.
+> >>
+> >> This allows generic/driver code to express dependencies on the PAGE_SIZE
+> >> without needing to refer to architecture specific config symbols.
+> >
+> > I guess next step should be to get rid of powerpc specific symbols and
+> > use generic symbols instead.
+> >
+> > We have (only) 111 occurences of it.
+>
+> I thought about doing that, but it's quite a bit of churn. Maybe it's
+> worth it though to avoid confusion between the two symbols.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+I have actually done this at some point, but for some reason never sent it out,
+see my old patch at:
 
-On Wed, 18 May 2022 11:04:19 +0200 you wrote:
-> If ENABLE_SMC_DEBUG_PKTS=1:
-> 
->     drivers/net/ethernet/smsc/smc911x.c: In function ‘smc911x_hardware_send_pkt’:
->     include/linux/minmax.h:20:28: error: comparison of distinct pointer types lacks a cast [-Werror]
->        20 |  (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-> 	  |                            ^~
->     drivers/net/ethernet/smsc/smc911x.c:483:17: note: in expansion of macro ‘min’
->       483 |  PRINT_PKT(buf, min(len, 64));
-> 
-> [...]
+https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/commit/?h=randconfig-5.15-next&id=184c7273ee367fda3626e35f0079f181075690c8
 
-Here is the summary with links:
-  - net: smc911x: Fix min() use in debug code
-    https://git.kernel.org/netdev/net-next/c/a3641ca416a3
+Feel free to take ideas or the entire patch from that.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+      Arnd
