@@ -2,48 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C573FC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B9EC43219
 	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237619AbiERMgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
+        id S237675AbiERMgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237201AbiERMee (ORCPT
+        with ESMTP id S237220AbiERMeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:34:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918D419CB43;
-        Wed, 18 May 2022 05:30:09 -0700 (PDT)
+        Wed, 18 May 2022 08:34:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F183C19CB79;
+        Wed, 18 May 2022 05:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E7FF615FE;
-        Wed, 18 May 2022 12:30:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C26C34115;
-        Wed, 18 May 2022 12:30:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A260361666;
+        Wed, 18 May 2022 12:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A56BC385A5;
+        Wed, 18 May 2022 12:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652877003;
-        bh=1W2LW1qZ7oq6x4+GTpFCSF5m4dT2h7TD7pOzJu6tlbQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tvvUc004o1M0N15KzfsDYmjrS8rcIPOksrQMDp9pY4jfm5kvAhKceamFI8xHhV1ij
-         JuGCG1Bk5et0IJEQg8ZNtqUpyHjrXc42UEx/se47t932gRHzIdPesJGzrK3PqaGMwL
-         /OLLwtqRuF90paIS0+HG7Zlw9Gt7SINKPWueSM7prhCln5zDEpHScEH1o5H9dD2WbY
-         dr9wBF/SERuvVdHgoVD0Tnix8gUrUdQFSipoGB20N9nDPN0n5Q2MKz1iosPc3beH1j
-         toKbOORR5Tt78MuDY3wdALKrzHo3y/39RhoJAc6XAieMPfeIiL9OnNUpcIzliGmL+y
-         BnqX4GH6KthQw==
+        s=k20201202; t=1652877012;
+        bh=U3MCaPU4KcqqPQx9TyAhzv+aeX5+rNSIakb60lLPjGQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mCFfTjqNZ55el+4Q29UCl86uNw3uXPVFWY+0bMYe0SDMhZQeAt/JrwMnWxNKQME83
+         aTPtw7gykRdLnetsLGbmfEA9Et4Nc/xuXsgTWA7XhvWTE3wD1IrkIx2azLMb8kYFfr
+         IXvvP8u/jH1JVpOz5LnOxaZrf3Pg6tKpjFY0/OIo4vvKVSlbouhFXCvV+Pt+mNQSch
+         0yciW5AugL9lAXnPzXpoiw/AaAMttMK0u3ruqZMZgvl5ninejuWT8QMaZwWbzUcX17
+         gLq6amQc38ET/BmBNhhMexp//CSA4qd3QlFVPhg0SCDncrEMy31BAPAFJl2nIpeudx
+         qrmlPhGkv0cag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gleb Chesnokov <Chesnokov.G@raidix.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, njavali@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 1/5] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
-Date:   Wed, 18 May 2022 08:29:56 -0400
-Message-Id: <20220518123000.343787-1-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 4/5] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
+Date:   Wed, 18 May 2022 08:29:59 -0400
+Message-Id: <20220518123000.343787-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220518123000.343787-1-sashal@kernel.org>
+References: <20220518123000.343787-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,49 +57,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gleb Chesnokov <Chesnokov.G@raidix.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
+[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
 
-Aborting commands that have already been sent to the firmware can
-cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
+Switch to using pcim_enable_device() to avoid missing pci_disable_device().
 
-For instance:
-
- - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
-
- - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
-
- - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
-
- - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
-   unmapped
-
-Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
-
-Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
-index 97a0c2384aee..4b431ca55c96 100644
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -3639,6 +3639,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index cc1e887e47b5..3dec109251ad 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -261,7 +261,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
+ 		return -ENOMEM;
  
- 	spin_lock_irqsave(&cmd->cmd_lock, flags);
- 	if (cmd->aborted) {
-+		if (cmd->sg_mapped)
-+			qlt_unmap_sg(vha, cmd);
-+
- 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
- 		/*
- 		 * It's normal to see 2 calls in this path:
+ 	/* Enable pci device */
+-	ret = pci_enable_device(pdev);
++	ret = pcim_enable_device(pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
+ 			__func__);
+@@ -313,8 +313,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
+ 		pcim_iounmap_regions(pdev, BIT(i));
+ 		break;
+ 	}
+-
+-	pci_disable_device(pdev);
+ }
+ 
+ static int __maybe_unused stmmac_pci_suspend(struct device *dev)
 -- 
 2.35.1
 
