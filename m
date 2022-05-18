@@ -2,119 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9425C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95338C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240864AbiERRbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39136 "EHLO
+        id S240878AbiERRbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240922AbiERRbG (ORCPT
+        with ESMTP id S240935AbiERRbG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 13:31:06 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFD36456
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:31:04 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id bq30so4870248lfb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=W0khqJIcojkvYp4i+6PmQHGcWlcA75m1iNcSn8ShT7U=;
-        b=yTpK9RpaOCMTiTgGpMgZG8XdBWs1CywBpNqPNB29FH4LyQ4Q19n7ZDG+0p0yAbqn8r
-         BLjY1LZQvtzo9mGDZ/nJIQGicjEwpVawGRAnTB+TCU8GKGz/8MXPtW9ZbELwHRbRomG7
-         WOIH0dHRvGtarMRZNDeaXLjDXfk3TG+VyXheQA2lNSP+fNLwFM0vSsXRBEzz5AQdYH87
-         z2enqN7WR88m4xNykkWTEbhRSfwlE/YaTbp0OJ+LcNCFY1f/9F6vNsPL3X+BCG+0DPgG
-         Dr/m30YVoa5cq2h+I4NpsPojDin+LKAOeuLnNfeYfb4o/03GlxDTf0SXwTzkpDiVlFvZ
-         yg+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=W0khqJIcojkvYp4i+6PmQHGcWlcA75m1iNcSn8ShT7U=;
-        b=IogaN0jGinBMg8qNmBDa659eFcPPkb1ol6y23Vr6IQlm2dIcq4/9O1aLxOLDTt7kxF
-         /1kK44KI0RC7oY1+TyuRGth/ThLWOqAgNO3uJeutYIqpoMgqs4QyKbmsqoU2n+eGQai8
-         xcaurw/7FEJqolJIIhUd+Kt7M+ZQrpDxOaMBxn6EXj4nfosdQkKXUsSZHVaJr3/YUqkm
-         pMO41lIYuk1F1oAIh7bw0kZ6FGpLeqzNS2fWvtX8ad/qdED0yd6lKRP1BvKP90aMQ0yG
-         yT2lDlixM3qADjhwDx+mLlA1aGQdJ4/lkDw5WMZi6qWQQS4UTbvr6g67T3B+O5RDzK2Q
-         IFzw==
-X-Gm-Message-State: AOAM530+EtMtm+9yNbeLai+lrdkRgxtcaDRSpEuKIWAXOiHZ7jMzgD0U
-        pftp2VguYmUQfw2YTtOFG2WwaQ==
-X-Google-Smtp-Source: ABdhPJzfhQnOcGgqw+xluDL3RImpfpueTdknbybj82UpoiEHjdlbUY8XBYfPioSEHPNlaYbP/Hl7yg==
-X-Received: by 2002:a05:6512:2622:b0:448:27b9:5299 with SMTP id bt34-20020a056512262200b0044827b95299mr399179lfb.86.1652895062363;
-        Wed, 18 May 2022 10:31:02 -0700 (PDT)
-Received: from ?IPV6:2001:470:dd84:abc0::8a5? ([2001:470:dd84:abc0::8a5])
-        by smtp.gmail.com with ESMTPSA id h7-20020a197007000000b0047255d211a1sm5568lfc.208.2022.05.18.10.31.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 10:31:01 -0700 (PDT)
-Message-ID: <38e1f139-6814-db63-1f4b-5a76a1ab0eda@linaro.org>
-Date:   Wed, 18 May 2022 20:31:00 +0300
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FEF263A;
+        Wed, 18 May 2022 10:31:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652895065; x=1684431065;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BoOLoJEyDFfO0iEr6PodmlZMpo8kGeXxw5b90DAP5hw=;
+  b=TBqUJeRom2Lj1jRLQlnWIhxLqM927SA0zG36dbuUsF4sHd46tcB5/YEN
+   uXlEbIphLnpa1SyBr3kNb2QpOQQMMcPNLAF/npBDDvej+GhIAxddQD1CM
+   32aDGeVqbH+l3q2fBmRQyW8IB8oaTMlYMRIeTkdXBBQbbzcrJzYEppWhU
+   lVmh6KVnTMnlY7NKgxz7NnwO0TBoOy8YoMId8iIW89KyZLE/iE6g22YvN
+   MhEWI5owS9uycYW30tEyE9FvgRQqP6Dy52/ubFI3royfztdKJJrS8qcwt
+   YCLc93eQ1BH2XJdEOPgfVDKg1Nwnr/vkmwvbAP0gBgbtlXHev2Qxv9XwB
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="332407527"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="332407527"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 10:08:59 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="605989915"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 10:08:56 -0700
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 79AFF20387;
+        Wed, 18 May 2022 20:08:53 +0300 (EEST)
+Date:   Wed, 18 May 2022 20:08:53 +0300
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     Hugues Fruchet <hugues.fruchet@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@xs4all.nl>, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Alain Volmat <alain.volmat@foss.st.com>,
+        Yannick Fertre <yannick.fertre@foss.st.com>,
+        Philippe CORNU <philippe.cornu@foss.st.com>
+Subject: Re: [PATCH] media: stm32-dcmi: add support of 1X16 serial pixel
+ formats variant
+Message-ID: <YoUoJRzStCnzhxUK@paasikivi.fi.intel.com>
+References: <20220516092048.264036-1-hugues.fruchet@foss.st.com>
+ <20220516150237.v3xt7onp2lpmellw@uno.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 0/2] eDP/DP Phy vdda realted function
-Content-Language: en-GB
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
-        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1652892186-22346-1-git-send-email-quic_khsieh@quicinc.com>
- <CAA8EJpqq4fxxgY0mj0JBans3GE-HAuad4Zsf7Ntwy1WW3bHbTQ@mail.gmail.com>
- <98295144-2e05-674b-4983-5f1738480c86@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <98295144-2e05-674b-4983-5f1738480c86@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516150237.v3xt7onp2lpmellw@uno.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/05/2022 20:29, Kuogee Hsieh wrote:
-> 
-> On 5/18/2022 10:16 AM, Dmitry Baryshkov wrote:
->> On Wed, 18 May 2022 at 19:43, Kuogee Hsieh <quic_khsieh@quicinc.com> 
->> wrote:
->>> 1) add regulator_set_load() to eDP/DP phy
->>> 2) remove vdda related function out of eDP/DP controller
->> These patches touch two subsystems and have a dependency between them.
->> How do we merge them?
-> 
-> currently, both phy and controller are vote for regulator. The last vote 
-> will just increase count.
-> 
-> Therefore the dependency should be very loose.
+Hi Jacopo,
 
-So, do you propose to merge dp change a cycle after the phy changes go in?
-
+On Mon, May 16, 2022 at 05:02:37PM +0200, Jacopo Mondi wrote:
+> Hi Hugues,
 > 
+> On Mon, May 16, 2022 at 11:20:48AM +0200, Hugues Fruchet wrote:
+> > From: Hugues Fruchet <hugues.fruchet@st.com>
+> >
+> > Add support of 1X16 serial pixel formats in order to support
+> > CSI-2 camera sensor exposing 1x16 pixel formats only.
+> >
+> > Signed-off-by: Hugues Fruchet <hugues.fruchet@st.com>
 > 
->>> Kuogee Hsieh (2):
->>>    phy/qcom: add regulator_set_load to edp/dp phy
->>>    drm/msm/dp: delete vdda regulator related functions from eDP/DP
->>>      controller
->>>
->>>   drivers/gpu/drm/msm/dp/dp_parser.c  | 14 ------
->>>   drivers/gpu/drm/msm/dp/dp_parser.h  |  6 ---
->>>   drivers/gpu/drm/msm/dp/dp_power.c   | 95 
->>> +------------------------------------
->>>   drivers/phy/qualcomm/phy-qcom-edp.c | 25 ++++++++--
->>>   drivers/phy/qualcomm/phy-qcom-qmp.c | 13 +++++
->>>   5 files changed, 36 insertions(+), 117 deletions(-)
->>>
->>> -- 
->>> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
->>> Forum,
->>> a Linux Foundation Collaborative Project
->>>
->>
+> Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+> 
+> Sakari, if you're sending a new pull request for the ov5640 series,
+> could you include this one as otherwise dcmi would be broken when used
+> with that sensor.
 
+Just took this into my tree, with your refreshed ov5640 set.
+
+Thanks!
 
 -- 
-With best wishes
-Dmitry
+Sakari Ailus
