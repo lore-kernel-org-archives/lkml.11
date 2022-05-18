@@ -2,95 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25090C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B099FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238702AbiEROki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
+        id S238724AbiEROlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 10:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238799AbiEROk2 (ORCPT
+        with ESMTP id S238707AbiEROk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:40:28 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E8E1D3D07
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652884823; x=1684420823;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=q20Z/BBS35WkC9iaGshSAyrghNxrcU17os220vjkvmI=;
-  b=Wn0v0DF0phXOzo33U0onHFAJaJGSxerlNcSYwhqrApHFfKIkq6q7vpR3
-   f2fQt/CtzvV3ijqOEoacc6kq2uBSmbS1L9g2yYkHyWlW+Rv0KIKr7glMF
-   I1ahW75sQWNDaneaUT35O1oTW1PmXW8/EdMBu4pmDCAsE2uC/3kYqGaZh
-   943J6vbwU/Hm1QTqMUAWh7yMgIHjQP7n/EkKZkrlrV6OdvyQW7MM2dmbX
-   Sz+xK+QF6Jvkp7rL2orqRQDSU9kwtEdwYcdQcmRF/Zix5zP2lnsjyBPgJ
-   Y60rMEM0IQjW8xXxVtnNL3ZCHpb97Qj5uiYaM3iSrcTQaMD4/EtIomceg
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="253748018"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="253748018"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 07:37:51 -0700
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="597832130"
-Received: from jbai2-mobl1.amr.corp.intel.com (HELO [10.209.83.114]) ([10.209.83.114])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 07:37:49 -0700
-Message-ID: <728c697b-0df7-3d95-10cb-ce0111f0017b@linux.intel.com>
-Date:   Wed, 18 May 2022 08:32:17 -0500
+        Wed, 18 May 2022 10:40:58 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEA8237F2
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:40:55 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id m1so1980422plx.3
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:40:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=whW5AxATJkNaPhkcMwvHXExGnVFe5uKOgct6URQZl5g=;
+        b=CbGIorEmQCxYGxxT6P12ptGJmuJUMeLiDaJNEaORfJsQL6JEGQY5zafgphutTeIxCI
+         Ut1es3HQMvL0AP1lrqqCY3V49+KjOuy9b/sBKb6syi+deqJ+Y+CFS9H7rnA8YxN862co
+         Rd4xQhbA3oj+hZuLb/a7FALGlOGaJm0M20ZKA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=whW5AxATJkNaPhkcMwvHXExGnVFe5uKOgct6URQZl5g=;
+        b=oxtt3bOdjqGQr9rV06v1D4PhlxwD8yMpKkPncA5M1nTiTPfcS7yCA5zWB0W6BdMd2T
+         t33UhbFk1ZltpBts1UfX9M1LCMOJl+LsodcbLlOlr4PV2kyqaK1mBqUnOwBoAYtXA6xg
+         gj78HBz7BJ7nPEvyYwNNNK4ISPKMPW4C6VockEfFGw6/UCz2yBrdEoTX+Kd2hYJIlydN
+         HssWhlyx6DWgceMfSpEtO9f+KAFodgf3w3qJn0Bpc4KsNxxl3l0SoEaqXqR9lKFdS/BO
+         vLUNkDTkvhkP6Ok/pAFZnMJBqLSh4vfpI+IV3mPlzrxi5j3X9kz1Y4mruglHEbAwZSZJ
+         J4HQ==
+X-Gm-Message-State: AOAM533QZwIefXU0r++xYzgOZFvXJlDYOpBTSbnGhAntld7Jxhm39a9C
+        DIAypL3ohIHRHfNyDFNuUp3Bzw==
+X-Google-Smtp-Source: ABdhPJxi6BpB2w+x5UbiM0DcD5h4zJd4JLNDZl6PoiWtNEvkeQJsQKjoUIcCxjgfHjR+3VH6nDKcpg==
+X-Received: by 2002:a17:903:31d1:b0:159:804:e852 with SMTP id v17-20020a17090331d100b001590804e852mr27301661ple.19.1652884855095;
+        Wed, 18 May 2022 07:40:55 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:a14:3166:4b67:b688])
+        by smtp.gmail.com with UTF8SMTPSA id j11-20020a17090ae60b00b001d95c09f877sm1642073pjy.35.2022.05.18.07.40.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 07:40:54 -0700 (PDT)
+Date:   Wed, 18 May 2022 07:40:52 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>, kbuild-all@lists.01.org,
+        linux-security-module@vger.kernel.org, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v4 2/3] LoadPin: Enable loading from trusted dm-verity
+ devices
+Message-ID: <YoUFdBbwAvq71fQW@google.com>
+References: <20220517163437.v4.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
+ <202205181616.3eTP2DaC-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [v7] FROMLIST: ASoC: Intel: sof_cs42l42: adding support for ADL
- configuration and BT offload audio
-Content-Language: en-US
-To:     Terry Chen <terry_chen@wistron.corp-partner.google.com>,
-        alsa-devel@alsa-project.org
-Cc:     cezary.rojewski@intel.com, liam.r.girdwood@linux.intel.com,
-        yang.jie@linux.intel.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, brent.lu@intel.com, cujomalainey@chromium.org,
-        seanpaul@chromium.org, casey.g.bowman@intel.com,
-        mark_hsieh@wistron.corp-partner.google.com,
-        vamshi.krishna.gopal@intel.com, mac.chiang@intel.com,
-        kai.vehmanen@linux.intel.com, linux-kernel@vger.kernel.org
-References: <20220518033200.1471841-1-terry_chen@wistron.corp-partner.google.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220518033200.1471841-1-terry_chen@wistron.corp-partner.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202205181616.3eTP2DaC-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 18, 2022 at 04:58:06PM +0800, kernel test robot wrote:
+> Hi Matthias,
+> 
+> Thank you for the patch! Perhaps something to improve:
+> 
+> [auto build test WARNING on device-mapper-dm/for-next]
+> [also build test WARNING on song-md/md-next kees/for-next/pstore linus/master v5.18-rc7 next-20220517]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+> 
+> url:    https://github.com/intel-lab-lkp/linux/commits/Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220518-073635
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/device-mapper/linux-dm.git for-next
+> config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220518/202205181616.3eTP2DaC-lkp@intel.com/config)
+> compiler: m68k-linux-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/755e5d82e4d054b2b58a54c94681080cc8cb4582
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220518-073635
+>         git checkout 755e5d82e4d054b2b58a54c94681080cc8cb4582
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash security/loadpin/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    In file included from security/loadpin/loadpin.c:21:
+>    include/linux/dm-verity-loadpin.h:22:1: error: expected identifier or '(' before '{' token
+>       22 | {
+>          | ^
+> >> include/linux/dm-verity-loadpin.h:21:20: warning: 'dm_verity_loadpin_is_sb_trusted' used but never defined
+>       21 | static inline bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
+>          |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> 
+> vim +/dm_verity_loadpin_is_sb_trusted +21 include/linux/dm-verity-loadpin.h
+> 
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  17  
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  18  #if IS_ENABLED(CONFIG_SECURITY_LOADPIN) && IS_BUILTIN(CONFIG_DM_VERITY)
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  19  bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  20  #else
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17 @21  static inline bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17 @22  {
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  23  	return false;
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  24  }
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  25  #endif
+> afd03270f57b8c Matthias Kaehlcke 2022-05-17  26  
 
-> +	{
-> +		.id = "10134242",
-> +		.drv_name = "adl_mx98360a_cs4242",
-> +		.machine_quirk = snd_soc_acpi_codec_list,
-> +		.quirk_data = &adl_max98360a_amp,
-> +		.sof_tplg_filename = "sof-adl-max98360a-rt5682.tplg",
-> +	},
-
-To repeat myself, there is no precedent for using a topology file name
-that refers to a codec from a different vendor used on a different
-platform.
-
-It may work but it's confusing and not maintainable. I don't want to
-start a trend where confusion becomes the norm.
-
-In previous contributions, platforms with Cirrus Logic chips used a
-non-ambiguous filename, please follow this example:
-
-	{
-		.id = "CSC3541",
-		.drv_name = "adl_cs35l41",
-		.sof_tplg_filename = "sof-adl-cs35l41.tplg",
-	},
-
-and use
-
-.sof_tplg_filename = "sof-adl-max98360a-cs42l42.tplg",
-
-
-
+Oops, will fix
