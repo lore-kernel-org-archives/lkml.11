@@ -2,182 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B446C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:29:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11084C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235704AbiERL3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45348 "EHLO
+        id S235716AbiERLaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235643AbiERL3a (ORCPT
+        with ESMTP id S235643AbiERL34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:29:30 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7801756A4;
-        Wed, 18 May 2022 04:29:24 -0700 (PDT)
-X-UUID: adb2a4c03a9f477a9d4cce9bf501a2e6-20220518
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:03938c35-cbc3-43f7-b4e3-cdb829ea0fb2,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.5,REQID:03938c35-cbc3-43f7-b4e3-cdb829ea0fb2,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:2a19b09,CLOUDID:bbc5a5e2-edbf-4bd4-8a34-dfc5f7bb086d,C
-        OID:92d22bc90b32,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: adb2a4c03a9f477a9d4cce9bf501a2e6-20220518
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1150894366; Wed, 18 May 2022 19:29:18 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 18 May 2022 19:29:17 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 18 May 2022 19:29:16 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 18 May 2022 19:29:15 +0800
-Message-ID: <f26d5225fc8c499226c297ed86feb5ee20e8f3d3.camel@mediatek.com>
-Subject: Re: [PATCH v6, 6/7] media: mediatek: vcodec: prevent kernel crash
- when scp ipi timeout
-From:   "yunfei.dong@mediatek.com" <yunfei.dong@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        "Fritz Koenig" <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Wed, 18 May 2022 19:29:15 +0800
-In-Reply-To: <ea9a04fb-368d-daca-96ae-9366253a5e91@xs4all.nl>
-References: <20220513092526.9670-1-yunfei.dong@mediatek.com>
-         <20220513092526.9670-7-yunfei.dong@mediatek.com>
-         <ea9a04fb-368d-daca-96ae-9366253a5e91@xs4all.nl>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 18 May 2022 07:29:56 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E101778A8;
+        Wed, 18 May 2022 04:29:55 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IBOs2m016543;
+        Wed, 18 May 2022 11:29:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=0EciM2JOStnqa7conOmfeN1U3vKQZFHvrLdmVzuLBUk=;
+ b=lkrAr7oPP61U5vpzE2lSKvsJx/FVB4lPNeqjp0CexhhHGevAEH4aUhvIsBL7SFp6X8sj
+ UKRgQQEPl+4+cnCXIzgIq9SrSX7DA4FKGy58SRCCuZQSWPHLZIyjPxB+BWsZ6yg9jmmS
+ RDY/eUfjsLxT/ySmu/5GzSaoNveeWLmt0EgxPvE/x+L3KNILvWQVzwO5iVAqy/mVITwg
+ /S7wqiW0xrCoRS2vEnzgXssapY4QwpY0uzwaIoO87I7x0HOP5XZOBQn/QGsgaJgNLEjM
+ DxnvxWJiXzTbHJmYSp9Hx46UskLiD6bD90cTajYqIeI2f2W+Sp6oGhhVRLSgZhS/CypZ BQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4yw6r29u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 11:29:40 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IBPnB8023788;
+        Wed, 18 May 2022 11:29:38 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4yw6r28k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 11:29:38 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IB854f028911;
+        Wed, 18 May 2022 11:29:36 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3g23pjdmg9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 11:29:36 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IBFfBX52232570
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 11:15:41 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 27C75A404D;
+        Wed, 18 May 2022 11:29:33 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5FCAEA4040;
+        Wed, 18 May 2022 11:29:32 +0000 (GMT)
+Received: from osiris (unknown [9.145.54.247])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 18 May 2022 11:29:32 +0000 (GMT)
+Date:   Wed, 18 May 2022 13:29:31 +0200
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Coiby Xu <coxu@redhat.com>
+Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+        Michal Suchanek <msuchanek@suse.de>,
+        Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
+        stable@vger.kernel.org, Philipp Rudo <prudo@linux.ibm.com>,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>,
+        "open list:S390" <linux-s390@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 4/4] kexec, KEYS, s390: Make use of built-in and
+ secondary keyring for signature verification
+Message-ID: <YoTYm6Fo1vBUuJGu@osiris>
+References: <20220512070123.29486-1-coxu@redhat.com>
+ <20220512070123.29486-5-coxu@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512070123.29486-5-coxu@redhat.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QZ2aRxCw1ojqOWeZzANhIM2N8TBQebSk
+X-Proofpoint-ORIG-GUID: IjCvJ7YuMN2ii3itPe7V6ahbqtuLjERA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_04,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=905 phishscore=0 spamscore=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 impostorscore=0 clxscore=1011 malwarescore=0
+ adultscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2205180059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Hans,
+On Thu, May 12, 2022 at 03:01:23PM +0800, Coiby Xu wrote:
+> From: Michal Suchanek <msuchanek@suse.de>
+> 
+> commit e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
+> adds support for KEXEC_SIG verification with keys from platform keyring
+> but the built-in keys and secondary keyring are not used.
+> 
+> Add support for the built-in keys and secondary keyring as x86 does.
+> 
+> Fixes: e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
+> Cc: stable@vger.kernel.org
+> Cc: Philipp Rudo <prudo@linux.ibm.com>
+> Cc: kexec@lists.infradead.org
+> Cc: keyrings@vger.kernel.org
+> Cc: linux-security-module@vger.kernel.org
+> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
+> Acked-by: Baoquan He <bhe@redhat.com>
+> Signed-off-by: Coiby Xu <coxu@redhat.com>
+> ---
+>  arch/s390/kernel/machine_kexec_file.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
 
-Thanks for your review.
-On Wed, 2022-05-18 at 11:37 +0200, Hans Verkuil wrote:
-> Hi Yunfei,
-> 
-> On 5/13/22 11:25, Yunfei Dong wrote:
-> > When SCP timeout during playing video, kernel crashes with
-> > following
-> > message. It's caused by accessing NULL pointer in
-> > vpu_dec_ipi_handler.
-> > This patch doesn't solve the root cause of NULL pointer, but merely
-> > prevent kernel crashed when encounter the NULL pointer.
-> 
-> Is the root cause being addressed as well? Where is the root cause?
-> Is it
-> in this driver or in the scp (i.e. the remoteproc) driver?
-> 
-> I need a bit more information to decide whether this series is ready
-> to
-> be merged for 5.20 or not.
-> 
-> Regards,
-> 
-> 	Hans
-> 
-Vpu will be NUll when scp(micro processor) is hang or crash. Need to
-keep kernel works well , so add this patch.
+As far as I can tell this doesn't have any dependency to the other
+patches in this series, so should I pick this up for the s390 tree, or
+how will this go upstream?
 
-Best Regards,
-Yunfei Dong
-> > 
-> > After applied this patch, kernel keeps alive, only the video player
-> > turns
-> > to green screen.
-> > 
-> > [67242.065474] pc : vpu_dec_ipi_handler+0xa0/0xb20 [mtk_vcodec_dec]
-> > [67242.065485] [MTK_V4L2] level=0 fops_vcodec_open(),334:
-> > 18000000.vcodec_dec decoder [135]
-> > [67242.065523] lr : scp_ipi_handler+0x11c/0x244 [mtk_scp]
-> > [67242.065540] sp : ffffffbb4207fb10
-> > [67242.065557] x29: ffffffbb4207fb30 x28: ffffffd00a1d5000
-> > [67242.065592] x27: 1ffffffa0143aa24 x26: 0000000000000000
-> > [67242.065625] x25: dfffffd000000000 x24: ffffffd0168bfdb0
-> > [67242.065659] x23: 1ffffff76840ff74 x22: ffffffbb41fa8a88
-> > [67242.065692] x21: ffffffbb4207fb9c x20: ffffffbb4207fba0
-> > [67242.065725] x19: ffffffbb4207fb98 x18: 0000000000000000
-> > [67242.065758] x17: 0000000000000000 x16: ffffffd042022094
-> > [67242.065791] x15: 1ffffff77ed4b71a x14: 1ffffff77ed4b719
-> > [67242.065824] x13: 0000000000000000 x12: 0000000000000000
-> > [67242.065857] x11: 0000000000000000 x10: dfffffd000000001
-> > [67242.065890] x9 : 0000000000000000 x8 : 0000000000000002
-> > [67242.065923] x7 : 0000000000000000 x6 : 000000000000003f
-> > [67242.065956] x5 : 0000000000000040 x4 : ffffffffffffffe0
-> > [67242.065989] x3 : ffffffd043b841b8 x2 : 0000000000000000
-> > [67242.066021] x1 : 0000000000000010 x0 : 0000000000000010
-> > [67242.066055] Call trace:
-> > [67242.066092]  vpu_dec_ipi_handler+0xa0/0xb20 [mtk_vcodec_dec
-> > 12220d230d83a7426fc38c56b3e7bc6066955bae]
-> > [67242.066119]  scp_ipi_handler+0x11c/0x244 [mtk_scp
-> > 8fb69c2ef141dd3192518b952b65aba35627b8bf]
-> > [67242.066145]  mt8192_scp_irq_handler+0x70/0x128 [mtk_scp
-> > 8fb69c2ef141dd3192518b952b65aba35627b8bf]
-> > [67242.066172]  scp_irq_handler+0xa0/0x114 [mtk_scp
-> > 8fb69c2ef141dd3192518b952b65aba35627b8bf]
-> > [67242.066200]  irq_thread_fn+0x84/0xf8
-> > [67242.066220]  irq_thread+0x170/0x1ec
-> > [67242.066242]  kthread+0x2f8/0x3b8
-> > [67242.066264]  ret_from_fork+0x10/0x30
-> > [67242.066292] Code: 38f96908 35003628 91004340 d343fc08 (38f96908)
-> > 
-> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> > Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-> > Reviewed-by: Macpaul Lin <macpaul.lin@mediatek.com>
-> > ---
-> >  drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> > 
-> > diff --git a/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c
-> > b/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c
-> > index 35f4d5583084..1041dd663e76 100644
-> > --- a/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c
-> > +++ b/drivers/media/platform/mediatek/vcodec/vdec_vpu_if.c
-> > @@ -91,6 +91,11 @@ static void vpu_dec_ipi_handler(void *data,
-> > unsigned int len, void *priv)
-> >  	struct vdec_vpu_inst *vpu = (struct vdec_vpu_inst *)
-> >  					(unsigned long)msg-
-> > >ap_inst_addr;
-> >  
-> > +	if (!vpu) {
-> > +		mtk_v4l2_err("ap_inst_addr is NULL");
-> > +		return;
-> > +	}
-> > +
-> >  	mtk_vcodec_debug(vpu, "+ id=%X", msg->msg_id);
-> >  
-> >  	vpu->failure = msg->status;
-
+In any case:
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
