@@ -2,101 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B1DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C45C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239816AbiERQFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42346 "EHLO
+        id S239784AbiERQF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239790AbiERQF3 (ORCPT
+        with ESMTP id S239786AbiERQFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:05:29 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B131D6746
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:05:28 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id j3so1877429qvn.0
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:05:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AsDPJQJoORPGh0qS4EUeaOiktBXOii5jyqGHGv+kXII=;
-        b=N76w0omWsgq1J3trQP+78nGSW1FVT0gWGjc72Mb7QVydmmWW9+FAv5I3Dcl5COOIKO
-         4vA4c/iw6Hjv1lPlLWYuu4ZXAV0cmilaFztjoqQq3rpGsdIFIbi3551Hy18a84tDtlM1
-         /PVy20Jd2KeJ0STPnZZTjPBpGkbDWJmfUuaImI4EugibkVhOCmGuKS4x5BqJjjSa84Tw
-         nnk40ZmaQIdUG4daGMY+vWEQed0/kZKjkAfoSigwJTPRTsEEfJAYQcPLAAF4LtR/2p+U
-         xlREPjULkf2pEVenp75I+mD993ExL5U5UfVfMA2Y0WgBGhVwjcrJdMytRTXhKHsMJl4j
-         uWxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AsDPJQJoORPGh0qS4EUeaOiktBXOii5jyqGHGv+kXII=;
-        b=Ms/RzsYKseP7WjmzVhpQZOtnCCwNAqftlTTi3RFGEY44sWui8ChLe+VV4ekPAjhocr
-         2HCw2cEuyI6+DRudXE7OehBi3cnSZr2KOq2nWC52LJFpVHr+XMFAqoEY6LZtTbrrfPXH
-         8z3Y8pSHy158uCK49kbj1g6gMHsLaDBnJ1iC2FhftsGOSEyJ/dCQ/z4toyV6ATlHZnKx
-         LArTxoijo9fYgCohBZigxqR60gSaYFKpieBMp9sO9nLjI7xnbzxhjtZbNz09uxTPRi68
-         K7h9AnuPmCYKo5+wLVmRR1/vEAT9zCe0Eo4c6TvaxpwFry8OP9/hkn85eTQXPSyeBv5l
-         PAow==
-X-Gm-Message-State: AOAM530aQxkdGcnXupQcKiwztlaXowtwVHUqgl3ChVTO4x8xjsRi1wfj
-        TVmml4BgrE/i4xRi4dfSr4l/Tw==
-X-Google-Smtp-Source: ABdhPJwuWum5215mzbkNuSWa3OtW1/3pKlaT8sVXotoEFY0mMu9fuRHdN8UiWPfDKaWJgTpYISj/9g==
-X-Received: by 2002:a05:6214:224d:b0:461:f264:ba2 with SMTP id c13-20020a056214224d00b00461f2640ba2mr406148qvc.43.1652889927418;
-        Wed, 18 May 2022 09:05:27 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id l19-20020a05622a175300b002f39b99f670sm1567656qtk.10.2022.05.18.09.05.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 09:05:26 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nrMAv-008VXe-MH; Wed, 18 May 2022 13:05:25 -0300
-Date:   Wed, 18 May 2022 13:05:25 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Ajay Sharma <sharmaajay@microsoft.com>
-Cc:     Long Li <longli@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [EXTERNAL] Re: [PATCH 05/12] net: mana: Set the DMA device max
- page size
-Message-ID: <20220518160525.GP63055@ziepe.ca>
-References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
- <1652778276-2986-6-git-send-email-longli@linuxonhyperv.com>
- <20220517145949.GH63055@ziepe.ca>
- <PH7PR21MB3263EFA8F624F681C3B57636CECE9@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220517193515.GN63055@ziepe.ca>
- <PH7PR21MB3263C44368F02B8AF8521C4ACECE9@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220518000356.GO63055@ziepe.ca>
- <BL1PR21MB3283790E8270ED6C639AAB0DD6D19@BL1PR21MB3283.namprd21.prod.outlook.com>
+        Wed, 18 May 2022 12:05:54 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B41DAF
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:05:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652889949; x=1684425949;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3euCKGvKwyKLln5ErCYPgdSqPR/sbrIxcH0pwTWC3p0=;
+  b=b26ECYVzZGowkJTmGkDTx9/1okihywbYndHkcJzVuujajY9w30Q59WCI
+   PPBYC/TMq9yDCZ3QzGGVc5hbhneQczSGng2MXmKEGIPs7ZIXXuqdy82nt
+   1mGy3vn55ZwS7tBJOWcpe+a9/ctRpOXY5xI8p9vTz7omg1dLcV8yiOLqb
+   HxArExY3rs9qSHbAoH5riGLJxQDj6gvcOaMxWRcfP6Du2T7VFsTHMI6xc
+   TNaDvDUn4xUDllrcV3R5+u4eS54N1JGpLiNstZrX42YwdATzrjFvwhAPd
+   5Q2je6TZQBUgXh3MVdtJskWAsRxBkPpP0j+WG2iB8FIegWfiw/4j/IpIr
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="96333410"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 May 2022 09:00:53 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 18 May 2022 09:00:53 -0700
+Received: from [10.12.73.39] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 18 May 2022 09:00:51 -0700
+Message-ID: <b97221e1-dd43-e2e0-5c37-f86162768f00@microchip.com>
+Date:   Wed, 18 May 2022 18:00:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BL1PR21MB3283790E8270ED6C639AAB0DD6D19@BL1PR21MB3283.namprd21.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] ARM: configs: enable support for Kontron KSwitch D10
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>, Michael Walle <michael@walle.cc>
+CC:     Russell King <linux@armlinux.org.uk>,
+        Olof Johansson <olof@lixom.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        SoC Team <soc@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Horatiu Vultur - M31836 <Horatiu.Vultur@microchip.com>
+References: <20220518141542.531148-1-michael@walle.cc>
+ <CAK8P3a01B2uEP7=AkVBG5FYdfMHyReFP=120Ay3+s2EV9kO5Uw@mail.gmail.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <CAK8P3a01B2uEP7=AkVBG5FYdfMHyReFP=120Ay3+s2EV9kO5Uw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 05:59:00AM +0000, Ajay Sharma wrote:
-> Thanks Long. 
-> Hello Jason,
-> I am the author of the patch.
-> To your comment below : 
-> " As I've already said, you are supposed to set the value that limits to ib_sge and *NOT* the value that is related to ib_umem_find_best_pgsz. It is usually 2G because the ib_sge's typically work on a 32 bit length."
+Arnd, Michael,
+
+On 18/05/2022 at 16:52, Arnd Bergmann wrote:
+> On Wed, May 18, 2022 at 3:15 PM Michael Walle <michael@walle.cc> wrote:
+>>
+>> The Kontron KSwitch D10 is based on a Microchip LAN9668 SoC. It is a
+>> managed ethernet network switch with either 8 copper ports or 6 copper
+>> ports and 2 SFP cages.
+>>
+>> Enable all required kconfig symbols, either as module where possible or
+>> compiled-in where it is not possible.
+>>
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+
+>> ---
+>> FWIW, there will be a board in our lab in KernelCI using this config.
 > 
-> The ib_sge is limited by the __sg_alloc_table_from_pages() which
-> uses ib_dma_max_seg_size() which is what is set by the eth driver
-> using dma_set_max_seg_size() . Currently our hw does not support
-> PTEs larger than 2M.
+> The patch looks ok to me, but normally I'd expect it to go through the
+> platform maintainer tree unless there is a reason not to. Adding the at91
+> maintainers to Cc here.
+> 
+> It's also a bit late for 5.19, but if everyone agrees, I can add the patch
+> to the arm/late branch.
 
-*sigh* again it has nothing to do with *PTEs* in the HW.
+If it's possible for you Arnd, I do agree that you take it in the 
+arm/late branch.
 
-Jason
+Thanks, best regards,
+   Nicolas
+
+-- 
+Nicolas Ferre
