@@ -2,149 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A513C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97988C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233120AbiERIcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47704 "EHLO
+        id S233325AbiERIcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233209AbiERIcn (ORCPT
+        with ESMTP id S233243AbiERIco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:32:43 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2021B4ECDD
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:32:41 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4L35pH42jSz9srH;
-        Wed, 18 May 2022 10:32:39 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id HMCf16Pr1Z1M; Wed, 18 May 2022 10:32:39 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4L35pG56pWz9srY;
-        Wed, 18 May 2022 10:32:38 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9C71E8B77C;
-        Wed, 18 May 2022 10:32:38 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id E3jlTJhOfF0Y; Wed, 18 May 2022 10:32:38 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 854168B763;
-        Wed, 18 May 2022 10:32:38 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 24I8WTkO2962120
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 10:32:29 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 24I8WTXa2962119;
-        Wed, 18 May 2022 10:32:29 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 1/2] powerpc/irq: Don't open code irq_soft_mask helpers
-Date:   Wed, 18 May 2022 10:32:27 +0200
-Message-Id: <e2454434992cc932a5a34b695ae981c0b2f4c28e.1652862729.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.3
+        Wed, 18 May 2022 04:32:44 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716E04ECF1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:32:43 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nrF6i-0005rw-Ea; Wed, 18 May 2022 10:32:36 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nrF6c-0002Y8-VS; Wed, 18 May 2022 10:32:30 +0200
+Date:   Wed, 18 May 2022 10:32:30 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     linux-wireless@vger.kernel.org
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        netdev@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
+        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
+        neo_jou <neo_jou@realtek.com>
+Subject: Re: [PATCH 06/10] rtw88: Add common USB chip support
+Message-ID: <20220518083230.GR25578@pengutronix.de>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+ <20220518082318.3898514-7-s.hauer@pengutronix.de>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652862747; l=2320; s=20211009; h=from:subject:message-id; bh=X8ypGLidc9Ld56ViHNF6ENtra1vjlh8aweG5rIJZaw4=; b=/9IqEfZeKBHtjVq5+XohFVjap2G23Hxm274hZ5E0E3ahyR6OmW/ES/4Bij1BSY8St+QldzRW7FM/ +ovtTNP4BxJkQ3+Bbi21G11TqdckONqOReIf2LneOX3El67t9hDS
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518082318.3898514-7-s.hauer@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:27:57 up 48 days, 20:57, 79 users,  load average: 0.07, 0.10,
+ 0.09
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use READ_ONCE() and WRITE_ONCE() instead of open coding
-read and write of local PACA irq_soft_mask.
+On Wed, May 18, 2022 at 10:23:14AM +0200, Sascha Hauer wrote:
+> Add the common bits and pieces to add USB support to the RTW88 driver.
+> This is based on https://github.com/ulli-kroll/rtw88-usb.git which
+> itself is first written by Neo Jou.
+> 
+> Signed-off-by: neo_jou <neo_jou@realtek.com>
+> Signed-off-by: Hans Ulli Kroll <linux@ulli-kroll.de>
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>  drivers/net/wireless/realtek/rtw88/Kconfig  |    3 +
+>  drivers/net/wireless/realtek/rtw88/Makefile |    2 +
+>  drivers/net/wireless/realtek/rtw88/mac.c    |    3 +
+>  drivers/net/wireless/realtek/rtw88/main.c   |    5 +
+>  drivers/net/wireless/realtek/rtw88/main.h   |    4 +
+>  drivers/net/wireless/realtek/rtw88/reg.h    |    1 +
+>  drivers/net/wireless/realtek/rtw88/tx.h     |   31 +
+>  drivers/net/wireless/realtek/rtw88/usb.c    | 1051 +++++++++++++++++++
+>  drivers/net/wireless/realtek/rtw88/usb.h    |  109 ++
+>  9 files changed, 1209 insertions(+)
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/usb.c
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/usb.h
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/Kconfig b/drivers/net/wireless/realtek/rtw88/Kconfig
+> index e3d7cb6c12902..1624c5db69bac 100644
+> --- a/drivers/net/wireless/realtek/rtw88/Kconfig
+> +++ b/drivers/net/wireless/realtek/rtw88/Kconfig
+> @@ -16,6 +16,9 @@ config RTW88_CORE
+>  config RTW88_PCI
+>  	tristate
+>  
+> +config RTW88_USB
+> +	tristate
+> +
+>  config RTW88_8822B
+>  	tristate
+>  
+> diff --git a/drivers/net/wireless/realtek/rtw88/Makefile b/drivers/net/wireless/realtek/rtw88/Makefile
+> index 834c66ec0af9e..9e095f8181483 100644
+> --- a/drivers/net/wireless/realtek/rtw88/Makefile
+> +++ b/drivers/net/wireless/realtek/rtw88/Makefile
+> @@ -45,4 +45,6 @@ obj-$(CONFIG_RTW88_8821CE)	+= rtw88_8821ce.o
+>  rtw88_8821ce-objs		:= rtw8821ce.o
+>  
+>  obj-$(CONFIG_RTW88_PCI)		+= rtw88_pci.o
+> +obj-$(CONFIG_RTW88_USB)		+= rtw88_usb.o
+>  rtw88_pci-objs			:= pci.o
+> +rtw88_usb-objs			:= usb.o
+> diff --git a/drivers/net/wireless/realtek/rtw88/mac.c b/drivers/net/wireless/realtek/rtw88/mac.c
+> index d1678aed9d9cb..19728c705eaa9 100644
+> --- a/drivers/net/wireless/realtek/rtw88/mac.c
+> +++ b/drivers/net/wireless/realtek/rtw88/mac.c
+> @@ -1032,6 +1032,9 @@ static int txdma_queue_mapping(struct rtw_dev *rtwdev)
+>  	if (rtw_chip_wcpu_11ac(rtwdev))
+>  		rtw_write32(rtwdev, REG_H2CQ_CSR, BIT_H2CQ_FULL);
+>  
+> +	if (rtw_hci_type(rtwdev) == RTW_HCI_TYPE_USB)
+> +		rtw_write8_set(rtwdev, REG_TXDMA_PQ_MAP, BIT_RXDMA_ARBBW_EN);
+> +
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+> index 5afb8bef9696a..162fa432ce0d1 100644
+> --- a/drivers/net/wireless/realtek/rtw88/main.c
+> +++ b/drivers/net/wireless/realtek/rtw88/main.c
+> @@ -1715,6 +1715,10 @@ static int rtw_chip_parameter_setup(struct rtw_dev *rtwdev)
+>  		rtwdev->hci.rpwm_addr = 0x03d9;
+>  		rtwdev->hci.cpwm_addr = 0x03da;
+>  		break;
+> +	case RTW_HCI_TYPE_USB:
+> +		rtwdev->hci.rpwm_addr = 0xfe58;
+> +		rtwdev->hci.cpwm_addr = 0xfe57;
+> +		break;
+>  	default:
+>  		rtw_err(rtwdev, "unsupported hci type\n");
+>  		return -EINVAL;
+> @@ -2105,6 +2109,7 @@ int rtw_register_hw(struct rtw_dev *rtwdev, struct ieee80211_hw *hw)
+>  	hw->wiphy->available_antennas_rx = hal->antenna_rx;
+>  
+>  	hw->wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS |
+> +			    WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
+>  			    WIPHY_FLAG_TDLS_EXTERNAL_SETUP;
 
-For the write, add a barrier to keep the memory clobber
-that was there previously.
+This change should be in a separate patch. I don't have an idea though
+what it's good for anyway. Is this change desired for the PCI variants
+as well or only for USB? Do we want to have this change at all?
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/include/asm/hw_irq.h | 43 +++++--------------------------
- 1 file changed, 7 insertions(+), 36 deletions(-)
+Sascha
 
-diff --git a/arch/powerpc/include/asm/hw_irq.h b/arch/powerpc/include/asm/hw_irq.h
-index 674e5aaafcbd..edc569481faf 100644
---- a/arch/powerpc/include/asm/hw_irq.h
-+++ b/arch/powerpc/include/asm/hw_irq.h
-@@ -113,14 +113,7 @@ static inline void __hard_RI_enable(void)
- 
- static inline notrace unsigned long irq_soft_mask_return(void)
- {
--	unsigned long flags;
--
--	asm volatile(
--		"lbz %0,%1(13)"
--		: "=r" (flags)
--		: "i" (offsetof(struct paca_struct, irq_soft_mask)));
--
--	return flags;
-+	return READ_ONCE(local_paca->irq_soft_mask);
- }
- 
- /*
-@@ -148,46 +141,24 @@ static inline notrace void irq_soft_mask_set(unsigned long mask)
- 	WARN_ON(mask && !(mask & IRQS_DISABLED));
- #endif
- 
--	asm volatile(
--		"stb %0,%1(13)"
--		:
--		: "r" (mask),
--		  "i" (offsetof(struct paca_struct, irq_soft_mask))
--		: "memory");
-+	WRITE_ONCE(local_paca->irq_soft_mask, mask);
-+	barrier();
- }
- 
- static inline notrace unsigned long irq_soft_mask_set_return(unsigned long mask)
- {
--	unsigned long flags;
--
--#ifdef CONFIG_PPC_IRQ_SOFT_MASK_DEBUG
--	WARN_ON(mask && !(mask & IRQS_DISABLED));
--#endif
-+	unsigned long flags = irq_soft_mask_return();
- 
--	asm volatile(
--		"lbz %0,%1(13); stb %2,%1(13)"
--		: "=&r" (flags)
--		: "i" (offsetof(struct paca_struct, irq_soft_mask)),
--		  "r" (mask)
--		: "memory");
-+	irq_soft_mask_set(mask);
- 
- 	return flags;
- }
- 
- static inline notrace unsigned long irq_soft_mask_or_return(unsigned long mask)
- {
--	unsigned long flags, tmp;
--
--	asm volatile(
--		"lbz %0,%2(13); or %1,%0,%3; stb %1,%2(13)"
--		: "=&r" (flags), "=r" (tmp)
--		: "i" (offsetof(struct paca_struct, irq_soft_mask)),
--		  "r" (mask)
--		: "memory");
-+	unsigned long flags = irq_soft_mask_return();
- 
--#ifdef CONFIG_PPC_IRQ_SOFT_MASK_DEBUG
--	WARN_ON((mask | flags) && !((mask | flags) & IRQS_DISABLED));
--#endif
-+	irq_soft_mask_set(flags | mask);
- 
- 	return flags;
- }
 -- 
-2.35.3
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
