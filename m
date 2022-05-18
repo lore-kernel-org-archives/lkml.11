@@ -2,144 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B77C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235795AbiERLyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
+        id S235887AbiERLyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235874AbiERLyn (ORCPT
+        with ESMTP id S235810AbiERLyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 07:54:43 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8438742ECF;
-        Wed, 18 May 2022 04:54:39 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso1788578pjb.3;
-        Wed, 18 May 2022 04:54:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qZ4rncoyGFQjon2zJSWDjtwMAq3ZWWnFkDUlE+wmkgc=;
-        b=I3NM2uZ9tp3oYKMlCG+JFNj2KUghksK39Pq3/ZBVLLP9Vuljc6IgCyPN7syDipHm3+
-         OfPHEq9klr6SmwYgzO+10cHLTchPqsGGxEbNsPdBEUZ1sUCmtgkakMIKzwdiK02CYBrJ
-         aS6YtDqlniNJvCyMsUAPyCZPgQ2Suy5f7iNZ5Chh7O0/Lw6ideQNxjMI17j9MdXgM5D3
-         xbHoFWtgSoEAu3h9VRRpBkihqIDc4+GIVPMC56AZeSUJcC43Ibnw/INYuGY9nYxiP0tW
-         3vp/+U3a03WuqEewO0i7uZuhLDhOwW78iCAnipGk/m8yRMwD8e1hioewhBQFzZdCH+nK
-         hFHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qZ4rncoyGFQjon2zJSWDjtwMAq3ZWWnFkDUlE+wmkgc=;
-        b=SvBkBn9JTx9U4Tgf674D+ake0CnYP8FQ/M8YkABJX7WSXH9l2PIANSarK7HcAcfjoW
-         Slu14ptZ7zTydc+euxUkIWE+Oz3I+qrjT9bKeoC0XST/gII1ZiE62qgjbO6Cgs5IrXTA
-         CVEd6K4+mafhY1B5WrweebsFRpi8dGH6BbyII+FCPrk4dl6dcOMV7A5eJtmnc9X78yiV
-         gWrYOBUzBUBmTHeRn95aNefzgtF4u3mwWziAYP/74ZAlHkMktkWQS6Ri1yrdMqQsl2zI
-         /OgTKfZQkP6eWoYN0NtmdcxTDJ0Ssksln30SGv2kZTbfrHyXVm09sz8CJEZMc3ui59Wn
-         d/PA==
-X-Gm-Message-State: AOAM533136gRv08/k3hNsCfYzb56X6X8ijdA4ihwszYXy2l0KJiJyc+m
-        4pdxNOtkn+2xQy72b/T5Ans=
-X-Google-Smtp-Source: ABdhPJzUUw6sp/8onoLyjYQQXzsoGYB1a1jcXVVvrMlvxiQt9k5434pZsal3kaXbjCVhs8pUKllpXw==
-X-Received: by 2002:a17:902:ecc7:b0:161:c860:38e2 with SMTP id a7-20020a170902ecc700b00161c86038e2mr2175566plh.75.1652874879062;
-        Wed, 18 May 2022 04:54:39 -0700 (PDT)
-Received: from localhost.localdomain ([103.126.24.15])
-        by smtp.gmail.com with ESMTPSA id q19-20020a056a00085300b0050dc76281c9sm1755304pfk.163.2022.05.18.04.54.36
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 May 2022 04:54:38 -0700 (PDT)
-From:   Sheng Bi <windy.bi.enflame@gmail.com>
-To:     helgaas@kernel.org, bhelgaas@google.com
-Cc:     alex.williamson@redhat.com, lukas@wunner.de,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sheng Bi <windy.bi.enflame@gmail.com>
-Subject: [PATCH v2] PCI: Fix no-op wait after secondary bus reset
-Date:   Wed, 18 May 2022 19:54:32 +0800
-Message-Id: <20220518115432.76183-1-windy.bi.enflame@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516165740.6256af51.alex.williamson@redhat.com>
-References: <20220516165740.6256af51.alex.williamson@redhat.com>
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782D642A1C;
+        Wed, 18 May 2022 04:54:36 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L3B9b2Vr5zCskK;
+        Wed, 18 May 2022 19:49:39 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 19:54:33 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <linux-ext4@vger.kernel.org>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>, <libaokun1@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH] ext4: fix bug_on in __es_tree_search
+Date:   Wed, 18 May 2022 20:08:16 +0800
+Message-ID: <20220518120816.1541863-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pci_bridge_secondary_bus_reset() triggers SBR followed by 1 second sleep,
-and then uses pci_dev_wait() for waiting device ready. The dev parameter
-passes to the wait function is currently the bridge itself, but not the
-device been reset.
+Hulk Robot reported a BUG_ON:
+==================================================================
+kernel BUG at fs/ext4/extents_status.c:199!
+[...]
+RIP: 0010:ext4_es_end fs/ext4/extents_status.c:199 [inline]
+RIP: 0010:__es_tree_search+0x1e0/0x260 fs/ext4/extents_status.c:217
+[...]
+Call Trace:
+ ext4_es_cache_extent+0x109/0x340 fs/ext4/extents_status.c:766
+ ext4_cache_extents+0x239/0x2e0 fs/ext4/extents.c:561
+ ext4_find_extent+0x6b7/0xa20 fs/ext4/extents.c:964
+ ext4_ext_map_blocks+0x16b/0x4b70 fs/ext4/extents.c:4384
+ ext4_map_blocks+0xe26/0x19f0 fs/ext4/inode.c:567
+ ext4_getblk+0x320/0x4c0 fs/ext4/inode.c:980
+ ext4_bread+0x2d/0x170 fs/ext4/inode.c:1031
+ ext4_quota_read+0x248/0x320 fs/ext4/super.c:6257
+ v2_read_header+0x78/0x110 fs/quota/quota_v2.c:63
+ v2_check_quota_file+0x76/0x230 fs/quota/quota_v2.c:82
+ vfs_load_quota_inode+0x5d1/0x1530 fs/quota/dquot.c:2368
+ dquot_enable+0x28a/0x330 fs/quota/dquot.c:2490
+ ext4_quota_enable fs/ext4/super.c:6137 [inline]
+ ext4_enable_quotas+0x5d7/0x960 fs/ext4/super.c:6163
+ ext4_fill_super+0xa7c9/0xdc00 fs/ext4/super.c:4754
+ mount_bdev+0x2e9/0x3b0 fs/super.c:1158
+ mount_fs+0x4b/0x1e4 fs/super.c:1261
+[...]
+==================================================================
 
-If we call pci_bridge_secondary_bus_reset() to trigger SBR to a device,
-there is 1 second sleep but not waiting device ready, since the bridge
-is always ready while resetting downstream devices. pci_dev_wait() here
-is a no-op actually. This would be risky in the case which the device
-becomes ready after more than 1 second, especially while hotplug enabled.
-The late coming hotplug event after 1 second will trigger hotplug module
-to remove/re-insert the device.
+Above issue may happen as follows:
+-------------------------------------
+ext4_fill_super
+ ext4_enable_quotas
+  ext4_quota_enable
+   ext4_iget
+    __ext4_iget
+     ext4_ext_check_inode
+      ext4_ext_check
+       __ext4_ext_check
+        ext4_valid_extent_entries
+         Check for overlapping extents does't take effect
+   dquot_enable
+    vfs_load_quota_inode
+     v2_check_quota_file
+      v2_read_header
+       ext4_quota_read
+        ext4_bread
+         ext4_getblk
+          ext4_map_blocks
+           ext4_ext_map_blocks
+            ext4_find_extent
+             ext4_cache_extents
+              ext4_es_cache_extent
+               ext4_es_cache_extent
+                __es_tree_search
+                 ext4_es_end
+                  BUG_ON(es->es_lblk + es->es_len < es->es_lblk)
 
-Instead of waiting ready of bridge itself, changing to wait all the
-downstream devices become ready with timeout PCIE_RESET_READY_POLL_MS
-after SBR, considering all downstream devices are affected during SBR.
-Once one of the devices doesn't reappear within the timeout, return
--ENOTTY to indicate SBR doesn't complete successfully.
+The error ext4 extents is as follows:
+0af3 0300 0400 0000 00000000    extent_header
+00000000 0100 0000 12000000     extent1
+00000000 0100 0000 18000000     extent2
+02000000 0400 0000 14000000     extent3
 
-Fixes: 6b2f1351af56 ("PCI: Wait for device to become ready after secondary bus reset")
-Signed-off-by: Sheng Bi <windy.bi.enflame@gmail.com>
+In the ext4_valid_extent_entries function,
+if prev is 0, no error is returned even if lblock<=prev.
+This was intended to skip the check on the first extent, but
+in the error image above, prev=0+1-1=0 when checking the second extent,
+so even though lblock<=prev, the function does not return an error.
+As a result, bug_ON occurs in __es_tree_search and the system panics.
+
+To solve this problem, we only need to check that:
+1. The lblock of the first extent is not less than 0.
+2. The lblock of the next extent  is not less than
+   the next block of the previous extent.
+The same applies to extent_idx.
+
+Fixes: 5946d089379a ("ext4: check for overlapping extents in ext4_valid_extent_entries()")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
 ---
- drivers/pci/pci.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+ fs/ext4/extents.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index eb7c0a08ff57..32b7a5c1fa3a 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -5049,6 +5049,34 @@ void pci_bridge_wait_for_secondary_bus(struct pci_dev *dev)
+diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+index e473fde6b64b..86ba0db20968 100644
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -372,7 +372,7 @@ static int ext4_valid_extent_entries(struct inode *inode,
+ {
+ 	unsigned short entries;
+ 	ext4_lblk_t lblock = 0;
+-	ext4_lblk_t prev = 0;
++	ext4_lblk_t cur = 0;
+ 
+ 	if (eh->eh_entries == 0)
+ 		return 1;
+@@ -396,11 +396,11 @@ static int ext4_valid_extent_entries(struct inode *inode,
+ 
+ 			/* Check for overlapping extents */
+ 			lblock = le32_to_cpu(ext->ee_block);
+-			if ((lblock <= prev) && prev) {
++			if (lblock < cur) {
+ 				*pblk = ext4_ext_pblock(ext);
+ 				return 0;
+ 			}
+-			prev = lblock + ext4_ext_get_actual_len(ext) - 1;
++			cur = lblock + ext4_ext_get_actual_len(ext);
+ 			ext++;
+ 			entries--;
+ 		}
+@@ -420,13 +420,13 @@ static int ext4_valid_extent_entries(struct inode *inode,
+ 
+ 			/* Check for overlapping index extents */
+ 			lblock = le32_to_cpu(ext_idx->ei_block);
+-			if ((lblock <= prev) && prev) {
++			if (lblock < cur) {
+ 				*pblk = ext4_idx_pblock(ext_idx);
+ 				return 0;
+ 			}
+ 			ext_idx++;
+ 			entries--;
+-			prev = lblock;
++			cur = lblock + 1;
+ 		}
  	}
- }
- 
-+static int pci_bridge_secondary_bus_wait(struct pci_dev *bridge, int timeout)
-+{
-+	struct pci_dev *dev;
-+	int delay = 0;
-+
-+	if (!bridge->subordinate || list_empty(&bridge->subordinate->devices))
-+		return 0;
-+
-+	list_for_each_entry(dev, &bridge->subordinate->devices, bus_list) {
-+		while (!pci_device_is_present(dev)) {
-+			if (delay > timeout) {
-+				pci_warn(dev, "not ready %dms after secondary bus reset; giving up\n",
-+					delay);
-+				return -ENOTTY;
-+			}
-+
-+			msleep(20);
-+			delay += 20;
-+		}
-+
-+		if (delay > 1000)
-+			pci_info(dev, "ready %dms after secondary bus reset\n",
-+				delay);
-+	}
-+
-+	return 0;
-+}
-+
- void pci_reset_secondary_bus(struct pci_dev *dev)
- {
- 	u16 ctrl;
-@@ -5092,7 +5120,7 @@ int pci_bridge_secondary_bus_reset(struct pci_dev *dev)
- {
- 	pcibios_reset_secondary_bus(dev);
- 
--	return pci_dev_wait(dev, "bus reset", PCIE_RESET_READY_POLL_MS);
-+	return pci_bridge_secondary_bus_wait(dev, PCIE_RESET_READY_POLL_MS);
- }
- EXPORT_SYMBOL_GPL(pci_bridge_secondary_bus_reset);
- 
-
-base-commit: 617c8a1e527fadaaec3ba5bafceae7a922ebef7e
+ 	return 1;
 -- 
-2.36.1
+2.31.1
 
