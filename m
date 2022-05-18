@@ -2,48 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21663C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237067AbiERMeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
+        id S237150AbiERMeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236795AbiERMdP (ORCPT
+        with ESMTP id S236902AbiERMct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:33:15 -0400
+        Wed, 18 May 2022 08:32:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D624F13275E;
-        Wed, 18 May 2022 05:29:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C444A19CB61;
+        Wed, 18 May 2022 05:29:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C93261688;
-        Wed, 18 May 2022 12:29:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B668C34100;
-        Wed, 18 May 2022 12:29:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34BAC6169A;
+        Wed, 18 May 2022 12:29:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22769C34118;
+        Wed, 18 May 2022 12:29:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876972;
-        bh=PbB7C77+uD6w0+4mF6M8fnCmGhUXFeYrAwDI9Gltt64=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lTckHEocHQZ5e2/iGwY1bRYorpQGOwkn5FVgJzQ/SBLGPOHvYsCGqzH3OQQbPuN90
-         YEMxfMAqmMjjkvZXK4RM99Je0l8jkCL9m8WuLFIe5afYTjOngKhmB+Jk/Rwka7d9iV
-         mEFOfFeyxAmM0TW+J6tL3kY9M7f1KQwLWUY3dJoMQbEHEk3q8PSQmYb5nwPGnNu7A5
-         dFSUSrYTTASxNjhXuWXwBIeW65Lxar0T+lE8x2idn+5R/a36Cf8ta6PHFTmszhLEYF
-         N+cFM8+0ciHkjGyjK2Z6PTmQ5SgER+RuxtU66LN5jWTyL4H+3gJVcKhAAZrU1I799U
-         6Da3XU4yuIQJg==
+        s=k20201202; t=1652876953;
+        bh=rAZen7RQzLM1AtPnxO+QsytUnBXywbtMIxIy+YJqXqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jqvcPEp8LDZu1tenJqAJPUWSQLcuFB25uDtayedQJh/llGlkwNihIodh32+CaQlyP
+         YVdwE5h4bCYMSRIQGDvidtUXe2d6Vtie159meyR8KEBePiLkwCHE3uJQg280sJJhcB
+         dYxvcKf9Tq4ceIYQjup/rhio1zLKhU2HI3IKWl9EMGCa4Ufo6OS5KZEt/5EHR0QO4U
+         hoq9W3Ya/9MwGlPrTIpgbDr72hHscKrOARhJlBREfKa8LZgdGgle5BNw9XLxQr55AK
+         nx23ssVpPTv8j+xbeawZ/Dd3+ArgUPGQFmNLsW3/NQU41j8+fMWRx2mWlfV0r/lvPr
+         x1Xae16mjqzCQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gleb Chesnokov <Chesnokov.G@raidix.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, njavali@marvell.com,
-        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 1/6] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
-Date:   Wed, 18 May 2022 08:29:24 -0400
-Message-Id: <20220518122929.343615-1-sashal@kernel.org>
+Cc:     Grant Grundler <grundler@chromium.org>,
+        Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 10/13] net: atlantic: add check for MAX_SKB_FRAGS
+Date:   Wed, 18 May 2022 08:28:41 -0400
+Message-Id: <20220518122844.343220-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
+References: <20220518122844.343220-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,49 +56,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gleb Chesnokov <Chesnokov.G@raidix.com>
+From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
+[ Upstream commit 6aecbba12b5c90b26dc062af3b9de8c4b3a2f19f ]
 
-Aborting commands that have already been sent to the firmware can
-cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
+Enforce that the CPU can not get stuck in an infinite loop.
 
-For instance:
-
- - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
-
- - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
-
- - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
-
- - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
-   unmapped
-
-Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
-
-Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Aashay Shringarpure <aashay@google.com>
+Reported-by: Yi Chou <yich@google.com>
+Reported-by: Shervin Oloumi <enlightened@google.com>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
-index df598c377161..cb97565b6a33 100644
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -3768,6 +3768,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 339efdfb1d49..e9c6f1fa0b1a 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -362,6 +362,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 			continue;
  
- 	spin_lock_irqsave(&cmd->cmd_lock, flags);
- 	if (cmd->aborted) {
-+		if (cmd->sg_mapped)
-+			qlt_unmap_sg(vha, cmd);
+ 		if (!buff->is_eop) {
++			unsigned int frag_cnt = 0U;
+ 			buff_ = buff;
+ 			do {
+ 				bool is_rsc_completed = true;
+@@ -370,6 +371,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 					err = -EIO;
+ 					goto err_exit;
+ 				}
 +
- 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
- 		/*
- 		 * It's normal to see 2 calls in this path:
++				frag_cnt++;
+ 				next_ = buff_->next,
+ 				buff_ = &self->buff_ring[next_];
+ 				is_rsc_completed =
+@@ -377,7 +380,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 							    next_,
+ 							    self->hw_head);
+ 
+-				if (unlikely(!is_rsc_completed)) {
++				if (unlikely(!is_rsc_completed) ||
++						frag_cnt > MAX_SKB_FRAGS) {
+ 					err = 0;
+ 					goto err_exit;
+ 				}
 -- 
 2.35.1
 
