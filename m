@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A23E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbiERIYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
+        id S233226AbiERIYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233101AbiERIXs (ORCPT
+        with ESMTP id S233098AbiERIXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 04:23:48 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5293B108AA0
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:23:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29F4108A8E
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:23:38 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <sha@pengutronix.de>)
-        id 1nrExn-0004R7-CA; Wed, 18 May 2022 10:23:23 +0200
+        id 1nrExn-0004R1-0u; Wed, 18 May 2022 10:23:23 +0200
 Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <sha@pengutronix.de>)
-        id 1nrExn-0032pU-KR; Wed, 18 May 2022 10:23:22 +0200
+        id 1nrExm-0032pC-NS; Wed, 18 May 2022 10:23:21 +0200
 Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <sha@pengutronix.de>)
-        id 1nrExk-00GXTy-4G; Wed, 18 May 2022 10:23:20 +0200
+        id 1nrExj-00GXTV-RY; Wed, 18 May 2022 10:23:19 +0200
 From:   Sascha Hauer <s.hauer@pengutronix.de>
 To:     linux-wireless@vger.kernel.org
 Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
@@ -37,12 +37,10 @@ Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
         Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH 10/10] rtw88: Add rtw8822cu chipset support
-Date:   Wed, 18 May 2022 10:23:18 +0200
-Message-Id: <20220518082318.3898514-11-s.hauer@pengutronix.de>
+Subject: [PATCH 00/10] RTW88: Add support for USB variants
+Date:   Wed, 18 May 2022 10:23:08 +0200
+Message-Id: <20220518082318.3898514-1-s.hauer@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -53,186 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the rtw8822cu chipset based on
-https://github.com/ulli-kroll/rtw88-usb.git
+This series adds support for the USB chip variants to the RTW88 driver.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
----
- drivers/net/wireless/realtek/rtw88/Kconfig    | 11 +++++
- drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
- drivers/net/wireless/realtek/rtw88/rtw8822c.c | 24 +++++++++++
- .../net/wireless/realtek/rtw88/rtw8822cu.c    | 40 +++++++++++++++++++
- .../net/wireless/realtek/rtw88/rtw8822cu.h    | 15 +++++++
- 5 files changed, 93 insertions(+)
+The first patches in the series consolidate the locking in the driver.
+The rtw88 driver protects the register accesses with spinlocks which
+naturally don't cope well with the asynchronous nature of USB. It turned
+out though that in most cases where additional locks are taken the
+global driver mutex is acquired anyway which makes them mostly
+unnecessary. The exception is the debugfs code which depends on the
+additional locks. This is changed to acquire the global driver mutex as
+well, so the additional locks can be removed.  I verified the callstacks
+leading to the different locks with a cscope based shell script, so I am
+pretty confident that I haven't missed any pathes. Nevertheless please
+have a careful look, please.
+
+Another problem to address is that the driver uses
+ieee80211_iterate_stations_atomic() and
+ieee80211_iterate_active_interfaces_atomic() and does register accesses
+in the iterator. This doesn't work with USB, so iteration is done in two
+steps now: The ieee80211_iterate_*_atomic() functions are only used to
+collect the stations/interfaces on a list which is then iterated over
+non-atomically in the second step. The implementation for this is
+basically the one suggested by Ping-Ke here:
+https://lore.kernel.org/lkml/423f474e15c948eda4db5bc9a50fd391@realtek.com/
+
+The USB driver code itself is based on
+https://github.com/ulli-kroll/rtw88-usb.git.  The most significant
+change to that code base is likely the TX queue handling.  It seems the
+PCI versions of the RTW88 chips have eight differently prioritized TX
+queues whereas the USB variants only have one to three queues (one per
+bulk endpoint).  The original code base first mapped the TX packets
+coming into the driver onto eight TX queues which were then re-mapped
+again to the existing endpoints. As the eight TX queues do not
+physically exist on the USB variants I changed that to map the incoming
+TX packets directly onto the bulk endpoints.
+
+I tested this series on the RTW8822CU only. I don't have access to any
+of the other chips supported by the RTW88 driver, so testing feedback
+would be greatly appreciated.
+
+This is my first excursion to the Linux wireless world, so please review
+carefully :)
+
+Sascha
+
+
+Sascha Hauer (10):
+  rtw88: Call rtw_fw_beacon_filter_config() with rtwdev->mutex held
+  rtw88: Drop rf_lock
+  rtw88: Drop h2c.lock
+  rtw88: Drop coex mutex
+  rtw88: Do not access registers while atomic
+  rtw88: Add common USB chip support
+  rtw88: Add rtw8723du chipset support
+  rtw88: Add rtw8821cu chipset support
+  rtw88: Add rtw8822bu chipset support
+  rtw88: Add rtw8822cu chipset support
+
+ drivers/net/wireless/realtek/rtw88/Kconfig    |   47 +
+ drivers/net/wireless/realtek/rtw88/Makefile   |   14 +
+ drivers/net/wireless/realtek/rtw88/coex.c     |    3 +-
+ drivers/net/wireless/realtek/rtw88/debug.c    |   15 +
+ drivers/net/wireless/realtek/rtw88/fw.c       |   13 +-
+ drivers/net/wireless/realtek/rtw88/hci.h      |    9 +-
+ drivers/net/wireless/realtek/rtw88/mac.c      |    3 +
+ drivers/net/wireless/realtek/rtw88/mac80211.c |    2 +-
+ drivers/net/wireless/realtek/rtw88/main.c     |    9 +-
+ drivers/net/wireless/realtek/rtw88/main.h     |   11 +-
+ drivers/net/wireless/realtek/rtw88/phy.c      |    6 +-
+ drivers/net/wireless/realtek/rtw88/ps.c       |    2 +-
+ drivers/net/wireless/realtek/rtw88/reg.h      |    1 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.c |   19 +
+ drivers/net/wireless/realtek/rtw88/rtw8723d.h |    1 +
+ .../net/wireless/realtek/rtw88/rtw8723du.c    |   40 +
+ .../net/wireless/realtek/rtw88/rtw8723du.h    |   13 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c |   23 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h |   21 +
+ .../net/wireless/realtek/rtw88/rtw8821cu.c    |   69 ++
+ .../net/wireless/realtek/rtw88/rtw8821cu.h    |   15 +
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c |   19 +
+ .../net/wireless/realtek/rtw88/rtw8822bu.c    |   62 +
+ .../net/wireless/realtek/rtw88/rtw8822bu.h    |   15 +
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c |   24 +
+ .../net/wireless/realtek/rtw88/rtw8822cu.c    |   40 +
+ .../net/wireless/realtek/rtw88/rtw8822cu.h    |   15 +
+ drivers/net/wireless/realtek/rtw88/tx.h       |   31 +
+ drivers/net/wireless/realtek/rtw88/usb.c      | 1051 +++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/usb.h      |  109 ++
+ drivers/net/wireless/realtek/rtw88/util.c     |   92 ++
+ drivers/net/wireless/realtek/rtw88/util.h     |   12 +-
+ 32 files changed, 1770 insertions(+), 36 deletions(-)
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.h
  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.c
  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.h
 
-diff --git a/drivers/net/wireless/realtek/rtw88/Kconfig b/drivers/net/wireless/realtek/rtw88/Kconfig
-index e4c60f1449ec8..651ab56d9c6bd 100644
---- a/drivers/net/wireless/realtek/rtw88/Kconfig
-+++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -64,6 +64,17 @@ config RTW88_8822CE
- 
- 	  802.11ac PCIe wireless network adapter
- 
-+config RTW88_8822CU
-+	tristate "Realtek 8822CU USB wireless network adapter"
-+	depends on USB
-+	select RTW88_CORE
-+	select RTW88_USB
-+	select RTW88_8822C
-+	help
-+	  Select this option will enable support for 8822CU chipset
-+
-+	  802.11ac USB wireless network adapter
-+
- config RTW88_8723DE
- 	tristate "Realtek 8723DE PCI wireless network adapter"
- 	depends on PCI
-diff --git a/drivers/net/wireless/realtek/rtw88/Makefile b/drivers/net/wireless/realtek/rtw88/Makefile
-index e4126ddf7d659..e0950dbc2565a 100644
---- a/drivers/net/wireless/realtek/rtw88/Makefile
-+++ b/drivers/net/wireless/realtek/rtw88/Makefile
-@@ -35,6 +35,9 @@ rtw88_8822c-objs		:= rtw8822c.o rtw8822c_table.o
- obj-$(CONFIG_RTW88_8822CE)	+= rtw88_8822ce.o
- rtw88_8822ce-objs		:= rtw8822ce.o
- 
-+obj-$(CONFIG_RTW88_8822CU)	+= rtw88_8822cu.o
-+rtw88_8822cu-objs		:= rtw8822cu.o
-+
- obj-$(CONFIG_RTW88_8723D)	+= rtw88_8723d.o
- rtw88_8723d-objs		:= rtw8723d.o rtw8723d_table.o
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-index cd74607a61a28..51c90ef20c456 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-@@ -29,6 +29,12 @@ static void rtw8822ce_efuse_parsing(struct rtw_efuse *efuse,
- 	ether_addr_copy(efuse->addr, map->e.mac_addr);
- }
- 
-+static void rtw8822cu_efuse_parsing(struct rtw_efuse *efuse,
-+				    struct rtw8822c_efuse *map)
-+{
-+	ether_addr_copy(efuse->addr, map->u.mac_addr);
-+}
-+
- static int rtw8822c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
- {
- 	struct rtw_efuse *efuse = &rtwdev->efuse;
-@@ -58,6 +64,9 @@ static int rtw8822c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
- 	case RTW_HCI_TYPE_PCIE:
- 		rtw8822ce_efuse_parsing(efuse, map);
- 		break;
-+	case RTW_HCI_TYPE_USB:
-+		rtw8822cu_efuse_parsing(efuse, map);
-+		break;
- 	default:
- 		/* unsupported now */
- 		return -ENOTSUPP;
-@@ -4557,6 +4566,18 @@ static void rtw8822c_adaptivity(struct rtw_dev *rtwdev)
- 	rtw_phy_set_edcca_th(rtwdev, l2h, h2l);
- }
- 
-+static void rtw8822c_fill_txdesc_checksum(struct rtw_dev *rtwdev,
-+					  struct rtw_tx_pkt_info *pkt_info,
-+					  u8 *txdesc)
-+{
-+	struct rtw_chip_info *chip = rtwdev->chip;
-+	size_t words;
-+
-+	words = (pkt_info->pkt_offset * 8 + chip->tx_pkt_desc_sz) / 2;
-+
-+	fill_txdesc_checksum_common(txdesc, words);
-+}
-+
- static const struct rtw_pwr_seq_cmd trans_carddis_to_cardemu_8822c[] = {
- 	{0x0086,
- 	 RTW_PWR_CUT_ALL_MSK,
-@@ -4895,6 +4916,8 @@ static const struct rtw_rfe_def rtw8822c_rfe_defs[] = {
- 	[0] = RTW_DEF_RFE(8822c, 0, 0),
- 	[1] = RTW_DEF_RFE(8822c, 0, 0),
- 	[2] = RTW_DEF_RFE(8822c, 0, 0),
-+	[3] = RTW_DEF_RFE(8822c, 0, 0),
-+	[4] = RTW_DEF_RFE(8822c, 0, 0),
- 	[5] = RTW_DEF_RFE(8822c, 0, 5),
- 	[6] = RTW_DEF_RFE(8822c, 0, 0),
- };
-@@ -4978,6 +5001,7 @@ static struct rtw_chip_ops rtw8822c_ops = {
- 	.cfo_track		= rtw8822c_cfo_track,
- 	.config_tx_path		= rtw8822c_config_tx_path,
- 	.config_txrx_mode	= rtw8822c_config_trx_mode,
-+	.fill_txdesc_checksum	= rtw8822c_fill_txdesc_checksum,
- 
- 	.coex_set_init		= rtw8822c_coex_cfg_init,
- 	.coex_set_ant_switch	= NULL,
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822cu.c b/drivers/net/wireless/realtek/rtw88/rtw8822cu.c
-new file mode 100644
-index 0000000000000..36dc734f76eb3
---- /dev/null
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822cu.c
-@@ -0,0 +1,40 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+/* Copyright(c) 2018-2019  Realtek Corporation
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/usb.h>
-+#include "main.h"
-+#include "rtw8822cu.h"
-+#include "usb.h"
-+
-+static const struct usb_device_id rtw_8822cu_id_table[] = {
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK,
-+					RTW_USB_PRODUCT_ID_REALTEK_8822C,
-+					0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) },
-+	{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK,
-+					RTW_USB_PRODUCT_ID_REALTEK_8812C,
-+					0xff, 0xff, 0xff),
-+	  .driver_info = (kernel_ulong_t)&(rtw8822c_hw_spec) },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(usb, rtw_8822cu_id_table);
-+
-+static int rtw8822bu_probe(struct usb_interface *intf,
-+			    const struct usb_device_id *id)
-+{
-+	return rtw_usb_probe(intf, id);
-+}
-+
-+static struct usb_driver rtw_8822cu_driver = {
-+	.name = "rtw_8822cu",
-+	.id_table = rtw_8822cu_id_table,
-+	.probe = rtw8822bu_probe,
-+	.disconnect = rtw_usb_disconnect,
-+};
-+module_usb_driver(rtw_8822cu_driver);
-+
-+MODULE_AUTHOR("Realtek Corporation");
-+MODULE_DESCRIPTION("Realtek 802.11ac wireless 8822cu driver");
-+MODULE_LICENSE("Dual BSD/GPL");
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822cu.h b/drivers/net/wireless/realtek/rtw88/rtw8822cu.h
-new file mode 100644
-index 0000000000000..16afe22a8216c
---- /dev/null
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822cu.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-+/* Copyright(c) 2018-2019  Realtek Corporation
-+ */
-+
-+#ifndef __RTW_8822CU_H_
-+#define __RTW_8822CU_H_
-+
-+/* USB Vendor/Product IDs */
-+#define RTW_USB_VENDOR_ID_REALTEK		0x0BDA
-+#define RTW_USB_PRODUCT_ID_REALTEK_8812C	0xC812
-+#define RTW_USB_PRODUCT_ID_REALTEK_8822C	0xC82C
-+
-+extern struct rtw_chip_info rtw8822c_hw_spec;
-+
-+#endif
 -- 
 2.30.2
 
