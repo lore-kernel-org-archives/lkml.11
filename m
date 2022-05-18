@@ -2,121 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E69EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21549C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234117AbiERJWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60726 "EHLO
+        id S234104AbiERJYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234104AbiERJWf (ORCPT
+        with ESMTP id S234141AbiERJYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:22:35 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18FFD1F602
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:22:32 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id f2so1846241wrc.0
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:22:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aYv9sRLI7bJwp+N2At4wjffC8t0qCPCqKx/aIfhkVRc=;
-        b=Bx791FgAcxOvK9T5I5mW1O2stza4Yq+SU8uF6QI50wTsBwxFr/t4D7Q9mXtDAJcLUx
-         p17zMxSvZtETdUdAJpTjH9AtE+TLl6z/dhu2T3Y2J8xzacp47cmvbbiEqJFaIgh0IVs+
-         evA0Vuw76mWBxQqeK83sAVqV3e9Jx/OVK9zsje6a8b/oDQTv2CraAJohRuyLm7K5SUKg
-         hS1imuK7ZMnh7acWOtZQj7kkhlHLdOvJrN9EUyMVE7rhnxqQYxcoa6orvYhbuuYXAJX8
-         thlIQDe8Ytn2pdOsUxfo+9Nkg2QcGQ3TMA8wSblFyUZO5/pjDhmq+QoUfHy3JuG81Xh8
-         YMbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aYv9sRLI7bJwp+N2At4wjffC8t0qCPCqKx/aIfhkVRc=;
-        b=xw7T+e2NY5cYcnhwWXmb845LrRj10kHC+J1xvtIF//Y4mIsZyrA/EkgFhnq+jnJbzE
-         Apsqck55YG0VvAxFZvApdNkVNEV++/IDB1JCwHAcZ0wXBUPr28+OkH+WAkOijzV6Ft2T
-         e0cN/l622ijXsyFurGKSR4FfU40qOoOp79sMMsyXlKu85TdpAOFdNamUBR2jrZ0HXQ2D
-         y/E3qYf6fEKxY12J2gSauqizVgi1b3JF7QQePDjm0LrpaFcxwsOj3ZagpWcUBEtoFpAF
-         HVKhZFBlKhLCC7qm6AtXgZI0LbUHLlF/eco4Z8M+0nAAwpFdKT5ibEwW4QSIX6vLvDlk
-         lsjA==
-X-Gm-Message-State: AOAM532OaegRPxu9hSFzbJWVS+nmDhXI1EcjliFLXayluCciAV3F8Qjk
-        h0E1oCtXjJBBT0CqTs4htUepVQ==
-X-Google-Smtp-Source: ABdhPJyaIg8Bgl1cARcw5hIG7Q+j6EXk2MNoBQ/8SilKrhqYa6wciJBokhSQg3QGCOpvb/fnUuhhIA==
-X-Received: by 2002:a5d:55cd:0:b0:20d:743:6078 with SMTP id i13-20020a5d55cd000000b0020d07436078mr12731983wrw.240.1652865751403;
-        Wed, 18 May 2022 02:22:31 -0700 (PDT)
-Received: from elver.google.com ([2a00:79e0:15:13:450f:9c92:a170:5581])
-        by smtp.gmail.com with ESMTPSA id z22-20020a05600c0a1600b003942a244f38sm3873757wmp.17.2022.05.18.02.22.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 02:22:30 -0700 (PDT)
-Date:   Wed, 18 May 2022 11:22:25 +0200
-From:   Marco Elver <elver@google.com>
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Dmitry Vyukov <dvyukov@google.com>, kunit-dev@googlegroups.com,
-        kasan-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] kunit: tool: Add x86_64-smp architecture for SMP
- testing
-Message-ID: <YoS60c/CIK3mHWyq@elver.google.com>
-References: <20220518073232.526443-1-davidgow@google.com>
+        Wed, 18 May 2022 05:24:40 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AAB344E5;
+        Wed, 18 May 2022 02:24:25 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id C7FA11F422B2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652865864;
+        bh=1M8epVbbhrfB5k/OezZImU9QLYUkLMpwpTMw3zQrCrU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=O5+PqTxz/Us7pmb2QEwNAgTmsE8DICn3Cyx1r3kVPknydLuln1vHIiuFVlriMchZv
+         SgA3HnMXkFxPXQGgR2P8D+Z9cyw7nGGVw7GdHxbBQapAjqJTyeDQN0fJE90yDOTnQc
+         Bx9G08IYG2xlxYAUIbc2/skaG1SpFCP97KOOdoncXf58acKHglWFqjIvB38efhklGA
+         Ha4qjHCXtKuxjiHMb/IsLr5rYJ17kPlUz024EcKXzTNw4qN/z3uVa261OZwBZ7bZah
+         9x7xGeR3od5os0By7OZc8jn9KyuzW5d1uJxp3HcNjF+c+hchYg6NqI9Ncg6nkeB3Tl
+         ATsAtZ8T+t80Q==
+Message-ID: <5100b851-6787-fed8-a40f-7e6e64a123d8@collabora.com>
+Date:   Wed, 18 May 2022 11:24:21 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518073232.526443-1-davidgow@google.com>
-User-Agent: Mutt/2.1.4 (2021-12-11)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 2/6] dt-bindings: arm: mt8186: Set #clock-cells as
+ required property
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sboyd@kernel.org, chun-jie.chen@mediatek.com,
+        rex-bc.chen@mediatek.com, wenst@chromium.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220517101514.21639-1-angelogioacchino.delregno@collabora.com>
+ <20220517101514.21639-3-angelogioacchino.delregno@collabora.com>
+ <1cec6a09-9d80-99e7-ccc4-c918c6be7dbb@linaro.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <1cec6a09-9d80-99e7-ccc4-c918c6be7dbb@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 03:32PM +0800, 'David Gow' via KUnit Development wrote:
-> Add a new QEMU config for kunit_tool, x86_64-smp, which provides an
-> 8-cpu SMP setup. No other kunit_tool configurations provide an SMP
-> setup, so this is the best bet for testing things like KCSAN, which
-> require a multicore/multi-cpu system.
+Il 17/05/22 16:34, Krzysztof Kozlowski ha scritto:
+> On 17/05/2022 12:15, AngeloGioacchino Del Regno wrote:
+>> This is a clock-controller binding, so it needs #clock-cells, or
+>> it would be of no use: add that to the list of required properties.
+>>
+>> Fixes: f113a51aa2cf ("dt-bindings: ARM: MediaTek: Add new document bindings of MT8186 clock")
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   .../devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml  | 1 +
 > 
-> The choice of 8 CPUs is pretty arbitrary: it's enough to get tests like
-> KCSAN to run with a nontrivial number of worker threads, while still
-> working relatively quickly on older machines.
+> If these are clock controllers and new bindings, why they were added to
+> "arm" directory? arm is only for top-level stuff, not for devices.
 > 
-> Signed-off-by: David Gow <davidgow@google.com>
+> In the future please put your bindings in respective subsystem matching
+> the hardware. Fallback is soc directory, not arm.
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
 
-Acked-by: Marco Elver <elver@google.com>
+Hello Krzysztof,
 
-> ---
-> 
-> This is based off the discussion in:
-> https://groups.google.com/g/kasan-dev/c/A7XzC2pXRC8
-> 
-> ---
->  tools/testing/kunit/qemu_configs/x86_64-smp.py | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->  create mode 100644 tools/testing/kunit/qemu_configs/x86_64-smp.py
-> 
-> diff --git a/tools/testing/kunit/qemu_configs/x86_64-smp.py b/tools/testing/kunit/qemu_configs/x86_64-smp.py
-> new file mode 100644
-> index 000000000000..a95623f5f8b7
-> --- /dev/null
-> +++ b/tools/testing/kunit/qemu_configs/x86_64-smp.py
-> @@ -0,0 +1,13 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +from ..qemu_config import QemuArchParams
-> +
-> +QEMU_ARCH = QemuArchParams(linux_arch='x86_64',
-> +			   kconfig='''
-> +CONFIG_SERIAL_8250=y
-> +CONFIG_SERIAL_8250_CONSOLE=y
-> +CONFIG_SMP=y
-> +			   ''',
-> +			   qemu_arch='x86_64',
-> +			   kernel_path='arch/x86/boot/bzImage',
-> +			   kernel_command_line='console=ttyS0',
-> +			   extra_qemu_params=['-smp', '8'])
-> -- 
-> 2.36.0.550.gb090851708-goog
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups "KUnit Development" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to kunit-dev+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/kunit-dev/20220518073232.526443-1-davidgow%40google.com.
+I agree with you about these bindings belonging to the clock directory.
+Should I add a patch to this series that moves all of the mtxxxx-clock
+and mtxxxx-sys-clock yaml files to the clock directory?
+
+Regards,
+Angelo
