@@ -2,133 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236917AbiERMsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
+        id S237069AbiERMsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237572AbiERMqF (ORCPT
+        with ESMTP id S237465AbiERMr3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:46:05 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87511632AC;
-        Wed, 18 May 2022 05:43:04 -0700 (PDT)
+        Wed, 18 May 2022 08:47:29 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E093AA64
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:46:38 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id j24so2581145wrb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:46:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652877785; x=1684413785;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=s1haGoMzWn+D78/Wjs5Eo95uLM9lSkcETlTB2+3u46w=;
-  b=hnpwlAkkzVzs23vGtWnOfs/wUZonfu7p2syRxT77kFgjRaBgptaGyWRy
-   YYYiBm8r2Oajs5yr+k9fV8Xhg4g7sBXtbvnNC+CC+2Vf3zZNLQg0WYlG3
-   dxcU+71xKU3D09DqeYMl7Ix3sgK4GFLhl4PTJQ1/2cnTmDp/Nq87w0ki4
-   4=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 18 May 2022 05:43:03 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:43:03 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 18 May 2022 05:43:02 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 18 May 2022 05:42:56 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <vkoul@kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v2] ASoC: qcom: soundwire: Add support for controlling audio CGCR from HLOS
-Date:   Wed, 18 May 2022 18:12:35 +0530
-Message-ID: <1652877755-25120-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TqvCPF23Ms20FFQ5TlXnBSrzpH8LW6nALjmeWYnhReo=;
+        b=DSgUV6ToeN1MSryHL/tltBh6f9mKpkryoPaBlsNHGYMCXLXqkxMktmfdStBq02SZGa
+         oygT1vN282zL0iPelZlIx5NuwBLtndPSzLExgCVdiKR89shaWf9sYVBtBvuUp1DqknXJ
+         pPajFqfQ96pLqv2TyZ+uEt2IeEKCnKNftr4ufmHYLT5KnUauabiHJ2cHa4w//+GrkOtG
+         H88+SZdtpUi/TiR+iopdyL9D2JPRurqfmRI19Xd9otkcGO8QFoc/eqerdmvdRVnf51LJ
+         NLgAPIiwXBMKYt7sL6EsK3bd9V2M1JCWOcp4aJbbPCahjwhXCxohuIk0yUrl+2V4bVUV
+         VJFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TqvCPF23Ms20FFQ5TlXnBSrzpH8LW6nALjmeWYnhReo=;
+        b=pzcHhtEpTi2cOjG8ow+/fmWUOPehrTHlMchzYlL3ACxDONXkZoQNtf0UI6ZNOFF/il
+         S2FdfHq6jqAhzy0js+5xQJaN52uS09SmiPErdHapLfN3L9oQ44d0DcMS722Og9bkXxzv
+         EP11aGAj+jpzQs+0ZIT0YxKBMhuzCX1lobz4jJA+Bp8FSQYwYXAY52pN0lghybJQS8zJ
+         nHjUeSnYWf2DgGyg7xtWhwUqt+7jjP+sm5gKZiWYd+KO4hjPUv69XZBaNkRAGa8mDn5W
+         aoaduUI5tc+davPDD26W2cUvQi5Y0TpQxaZXLl/y69riNdjDkOew4vbCFeROSYfFzbcj
+         OA7w==
+X-Gm-Message-State: AOAM5336tDZDKgwN3xGu41Pc3hTzfPk/LmcgqrOs/tFGAYcl3c/FdU49
+        gV8dZPfu3O4YKc4BaHZyuDtV4g==
+X-Google-Smtp-Source: ABdhPJw9hqTJXrzAyDQDtMUJVh8D+qdxxxXPxX90fAkVu57sAotRgHnTkS6DQrnAhMKsrAUyaL74OA==
+X-Received: by 2002:a05:6000:786:b0:20d:6048:71bd with SMTP id bu6-20020a056000078600b0020d604871bdmr7847076wrb.358.1652877996745;
+        Wed, 18 May 2022 05:46:36 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:713a:278c:9b87:86fe? ([2a01:e34:ed2f:f020:713a:278c:9b87:86fe])
+        by smtp.googlemail.com with ESMTPSA id f1-20020a1cc901000000b00395b809dfd3sm1676759wmb.12.2022.05.18.05.46.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 05:46:35 -0700 (PDT)
+Message-ID: <916c968b-773d-197d-4e22-2fcca805ceba@linaro.org>
+Date:   Wed, 18 May 2022 14:46:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v9 1/2] dt-bindings: thermal: k3-j72xx: Add VTM bindings
+ documentation
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Keerthy <j-keerthy@ti.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, rui.zhang@intel.com,
+        amitk@kernel.org, kristo@kernel.org
+Cc:     rafael@kernel.org, linux-pm@vger.kernel.org, vigneshr@ti.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220517172920.10857-1-j-keerthy@ti.com>
+ <20220517172920.10857-2-j-keerthy@ti.com>
+ <783127cf-79cf-90f2-4200-30db56a1fd7c@linaro.org>
+ <9417e665-c1d4-e82c-5c55-a2c5860cc453@linaro.org>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <9417e665-c1d4-e82c-5c55-a2c5860cc453@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for controlling soundwire audio CGCR interface using clock
-framework to make hclk ungating with software. As per new hardware
-changes, software has to always ungate hclk if soundwire is operational
-and keep it running. This requirement is for latest LPASS chipsets for
-RX, TX and WSA path to work.
+On 18/05/2022 14:42, Krzysztof Kozlowski wrote:
+> On 18/05/2022 10:27, Daniel Lezcano wrote:
+>>
+>> Hi Krzysztof,
+>>
+>> I would like to pick this series, does the DT bindings have your blessing ?
+> 
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
----
-This patch set depends on:
-    -- Clock driver patches for CGCR reset control support.
-	--- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638002
-	--- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=637998	
+Thanks!
 
-Changes since v1:
-    -- Add audio cgcr reset control in runtime PM resume handler.
-    -- Update dependency list.
 
- drivers/soundwire/qcom.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index da1ad7e..445e481 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -13,6 +13,7 @@
- #include <linux/of_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
-+#include <linux/reset.h>
- #include <linux/slab.h>
- #include <linux/pm_wakeirq.h>
- #include <linux/slimbus.h>
-@@ -142,6 +143,7 @@ struct qcom_swrm_ctrl {
- 	struct device *dev;
- 	struct regmap *regmap;
- 	void __iomem *mmio;
-+	struct reset_control *audio_cgcr;
- #ifdef CONFIG_DEBUG_FS
- 	struct dentry *debugfs;
- #endif
-@@ -656,6 +658,8 @@ static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
- 	val = FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_ROW_CTRL_BMSK, ctrl->rows_index);
- 	val |= FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_COL_CTRL_BMSK, ctrl->cols_index);
- 
-+	reset_control_reset(ctrl->audio_cgcr);
-+
- 	ctrl->reg_write(ctrl, SWRM_MCP_FRAME_CTRL_BANK_ADDR(0), val);
- 
- 	/* Enable Auto enumeration */
-@@ -1333,6 +1337,10 @@ static int qcom_swrm_probe(struct platform_device *pdev)
- 	ctrl->bus.compute_params = &qcom_swrm_compute_params;
- 	ctrl->bus.clk_stop_timeout = 300;
- 
-+	ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, "swr_audio_cgcr");
-+	if (IS_ERR(ctrl->audio_cgcr))
-+		dev_err(dev, "Failed to get audio_cgcr reset required for soundwire-v1.6.0\n");
-+
- 	ret = qcom_swrm_get_port_config(ctrl);
- 	if (ret)
- 		goto err_clk;
-@@ -1486,6 +1494,8 @@ static int __maybe_unused swrm_runtime_resume(struct device *dev)
- 		qcom_swrm_get_device_status(ctrl);
- 		sdw_handle_slave_status(&ctrl->bus, ctrl->status);
- 	} else {
-+		reset_control_reset(ctrl->audio_cgcr);
-+
- 		ctrl->reg_write(ctrl, SWRM_MCP_BUS_CTRL, SWRM_MCP_BUS_CLK_START);
- 		ctrl->reg_write(ctrl, SWRM_INTERRUPT_CLEAR,
- 			SWRM_INTERRUPT_STATUS_MASTER_CLASH_DET);
 -- 
-2.7.4
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
