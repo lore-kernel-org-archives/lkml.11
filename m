@@ -2,149 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A769C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B106BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233750AbiERJDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
+        id S240022AbiERQT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233672AbiERJDi (ORCPT
+        with ESMTP id S239910AbiERQTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:03:38 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4753E1238A8;
-        Wed, 18 May 2022 02:03:37 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24I8isbW017356;
-        Wed, 18 May 2022 09:03:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version : date :
- from : to : subject : reply-to : in-reply-to : references : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=5b9ExFuV/mdbXBcWZ/YTWQ8xvIPBld8ClYxJkOjjqFQ=;
- b=sqwyNbO3CE+rC7+zMxgccmjhhR53iMoeId7JVnXtt0+SLjU3h7qRfvCTu7Jk3sT0muZl
- sAT3zUIm6J8WjVmY/Gph2VWo/3ZP7beHmoJ23SdNjuPItewc+k9MU0EKqexfc8XIOEJP
- ZsealRbOxzpn8c2wPDhFpYOxP3bSC270ieS/dTPYHZAp5OlDO+hnYnSodlZ3lA8BG/A3
- Or3StUKx0tvPgULlOip/Ulf+mUyR4RnUlYxOhALrqSa9pZoqP4pHbWTAea8NEZcTQzzx
- 6JhHA9HQHMzGJGyYnIOEfnVie66PvHauH5w1GTQqXNpxGQPlNoDVL0ccRlAOs0na/nu1 BA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4wjh8css-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 09:03:34 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24I93XcF013967;
-        Wed, 18 May 2022 09:03:33 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g4wjh8a9d-10
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 09:03:33 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24I8QeWP021832;
-        Wed, 18 May 2022 08:30:32 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma01dal.us.ibm.com with ESMTP id 3g242b9xhc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 08:30:32 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24I8UVaS22348232
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 08:30:31 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7FB88112065;
-        Wed, 18 May 2022 08:30:31 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 05A65112063;
-        Wed, 18 May 2022 08:30:31 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 18 May 2022 08:30:30 +0000 (GMT)
+        Wed, 18 May 2022 12:19:14 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE3C1E3EF5;
+        Wed, 18 May 2022 09:19:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 1523C21B69;
+        Wed, 18 May 2022 16:19:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652890752; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MA/TGEKVPxKbLeu24UuN4Wl1Ug0/+Zeg7Z8sjXvszlQ=;
+        b=T85gBeJqRK7xR4vfqE2zMJJ0HcOS1Oi0LQBMKaORbDWklcTCaU6N0C+f/+G32E1UIaG2pf
+        uN7mFG3ut+AnHRXV4hElSGMXOe4Z3ksjgrCJsuNXmcgZNR7l7Mt3ecWR4ZUOijndkH1n6F
+        pdEZxqpGuYJi3qbHxvEon2tXxQjwnS8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D94E313A6D;
+        Wed, 18 May 2022 16:19:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id PXsQNH8chWLqZAAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Wed, 18 May 2022 16:19:11 +0000
+From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
+To:     cgroups@vger.kernel.org, linux-mm@kvack.org
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Richard Palethorpe <rpalethorpe@suse.de>
+Subject: 
+Date:   Wed, 18 May 2022 18:18:54 +0200
+Message-Id: <20220518161859.21565-1-mkoutny@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Date:   Wed, 18 May 2022 10:30:30 +0200
-From:   Harald Freudenberger <freude@linux.ibm.com>
-To:     undisclosed-recipients:;
-Subject: Re: [PATCH] s390/crypto: fix scatterwalk_unmap() callers in AES-GCM
-Reply-To: freude@linux.ibm.com
-In-Reply-To: <YoPi5eH+oFJ2anQh@osiris>
-References: <20220517143047.3054498-1-jannh@google.com>
- <YoPi5eH+oFJ2anQh@osiris>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <b07a2e97b1198007ea170a91cecbd9d1@linux.ibm.com>
-X-Sender: freude@linux.ibm.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9EUW4Wyvf76gYoLAuzxu8q96O3eUjMhp
-X-Proofpoint-ORIG-GUID: 0rNeDyJbJunPJw4CkZwJGcEECBwMHQ_t
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_03,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- mlxscore=0 priorityscore=1501 adultscore=0 clxscore=1015 bulkscore=0
- impostorscore=0 lowpriorityscore=0 mlxlogscore=799 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205180048
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-17 20:01, Heiko Carstens wrote:
-> On Tue, May 17, 2022 at 04:30:47PM +0200, Jann Horn wrote:
->> The argument of scatterwalk_unmap() is supposed to be the void* that 
->> was
->> returned by the previous scatterwalk_map() call.
->> The s390 AES-GCM implementation was instead passing the pointer to the
->> struct scatter_walk.
->> 
->> This doesn't actually break anything because scatterwalk_unmap() only 
->> uses
->> its argument under CONFIG_HIGHMEM and ARCH_HAS_FLUSH_ON_KUNMAP.
->> 
->> Note that I have not tested this patch in any way, not even 
->> compile-tested
->> it.
->> 
->> Fixes: bf7fa038707c ("s390/crypto: add s390 platform specific aes gcm 
->> support.")
->> Signed-off-by: Jann Horn <jannh@google.com>
->> ---
->> IDK which tree this has to go through - s390 or crypto?
->> maybe s390 is better, since they can actually test it?
->> 
->>  arch/s390/crypto/aes_s390.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> This can go via the s390 tree, however I'd like to have an ACK from
-> Harald, who wrote the original code.
-> 
->> diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
->> index 54c7536f2482..1023e9d43d44 100644
->> --- a/arch/s390/crypto/aes_s390.c
->> +++ b/arch/s390/crypto/aes_s390.c
->> @@ -701,7 +701,7 @@ static inline void 
->> _gcm_sg_unmap_and_advance(struct gcm_sg_walk *gw,
->>  					     unsigned int nbytes)
->>  {
->>  	gw->walk_bytes_remain -= nbytes;
->> -	scatterwalk_unmap(&gw->walk);
->> +	scatterwalk_unmap(gw->walk_ptr);
->>  	scatterwalk_advance(&gw->walk, nbytes);
->>  	scatterwalk_done(&gw->walk, 0, gw->walk_bytes_remain);
->>  	gw->walk_ptr = NULL;
->> @@ -776,7 +776,7 @@ static int gcm_out_walk_go(struct gcm_sg_walk *gw, 
->> unsigned int minbytesneeded)
->>  		goto out;
->>  	}
->> 
->> -	scatterwalk_unmap(&gw->walk);
->> +	scatterwalk_unmap(gw->walk_ptr);
->>  	gw->walk_ptr = NULL;
->> 
->>  	gw->ptr = gw->buf;
->> 
->> base-commit: 42226c989789d8da4af1de0c31070c96726d990c
->> --
->> 2.36.0.550.gb090851708-goog
->> 
-Ok, tests pass. Here is my Acked-by: Harald Freudenberger 
-<freude@linux.ibm.com>
+Subject: [PATCH v2 0/5] memcontrol selftests fixups
+
+Hello.
+
+I'm just flushing the patches to make memcontrol selftests check the
+events behavior we had consensus about (test_memcg_low fails).
+
+(test_memcg_reclaim, test_memcg_swap_max fail for me now but it's present
+even before the refactoring.)
+
+The two bigger changes are:
+- adjustment of the protected values to make tests succeed with the given
+  tolerance,
+- both test_memcg_low and test_memcg_min check protection of memory in
+  populated cgroups (actually as per Documentation/admin-guide/cgroup-v2.rst
+  memory.min should not apply to empty cgroups, which is not the case
+  currently. Therefore I unified tests with the populated case in order to to
+  bring more broken tests).
+
+
+Thanks,
+Michal
+
+Changes from v1 (https://lore.kernel.org/r/20220513171811.730-1-mkoutny@suse.com/)
+- fixed mis-rebase in compilation fix patch,
+- added review, ack tags from v1,
+- applied feedback from v1 (Octave script in git tree),
+- added one more patch extracting common parts,
+- rebased on mm-stable bbe832b9db2e.
+
+Michal Koutný (5):
+  selftests: memcg: Fix compilation
+  selftests: memcg: Expect no low events in unprotected sibling
+  selftests: memcg: Adjust expected reclaim values of protected cgroups
+  selftests: memcg: Remove protection from top level memcg
+  selftests: memcg: Factor out common parts of memory.{low,min} tests
+
+ MAINTAINERS                                   |   1 +
+ .../selftests/cgroup/memcg_protection.m       |  89 +++++++
+ .../selftests/cgroup/test_memcontrol.c        | 247 +++++-------------
+ 3 files changed, 152 insertions(+), 185 deletions(-)
+ create mode 100644 tools/testing/selftests/cgroup/memcg_protection.m
+
+-- 
+2.35.3
+
