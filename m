@@ -2,107 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC351C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:36:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C23D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241504AbiERSg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
+        id S241479AbiERSkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241296AbiERSg4 (ORCPT
+        with ESMTP id S241280AbiERSj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:36:56 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796321C345C;
-        Wed, 18 May 2022 11:36:55 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id q135so5154018ybg.10;
-        Wed, 18 May 2022 11:36:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z+wFB5Fdlp80HPZ0rDBxYUuhgX0VkiUoP9qDKbx3W6U=;
-        b=i6uC2Gh7/Iu4IYcfm/izqjPXBLaBPFh9F7S/XxDzPCmeusV+g95LEEU2TxZ5+Eybcn
-         vSzevKbVChVrkixF3JhT34XLebrh3DBiRdNizqnmoccc/nzrX0H+Ex8ugdsNGzIh/3mp
-         DURbMuGpIoI7NC9lUr37VzbvjkZDgfAUGnfu5dUJGaQnxnp+qHdXtIKe6ZGFOdDoWxUD
-         taiDR28BLZGYDqhf0KXaaSv1F61XaDLid7rjBpqWmRBCp9r4fm4agcJmke60LmtzsERZ
-         Qdk63z7GJw7R0h4N0rg79sOYS+UIrCGEEr46NyYvPgb2cHD7dn6HAE+GYbmg6lnG42D6
-         4u9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z+wFB5Fdlp80HPZ0rDBxYUuhgX0VkiUoP9qDKbx3W6U=;
-        b=2jCpqcCFrCNOBNUdtDqBlJeqvsuFg+OVf4NK7iayON38XOFpdngItq3YRP79ABpxfa
-         AsEJkxN2xpTqlPjchWkYDenJFLRaDDHGiYTAxSigpKbsmdK1vQAU0SxwmrdtRFYp+29J
-         OAJV0ArGfrEwy0HC8q6oRvNF7YR5gl+aNLLJqVBOHhAi7czTGEoSNBK605Jh963objFn
-         7rqumDaz5B8WIkcpFbrtTN76WdqVDCZDSH9pURkYIKXgpwLzz1RGLXZX8CihN+AM5Lbe
-         i1yaD2xFZkI4ld2eCgNR/xtOJFWwFOQw8mxvEh30lhErmICX1aAaThBQ/6CAJqYjcFRD
-         abQQ==
-X-Gm-Message-State: AOAM530kcWi3LG7rSlhuAX9heYXd0QRjYy5lqE7s1tNRxb/PTEkO186a
-        O4sXFVvRa3rIv4k8T6dOpTE1ucMkb+GP0BVK4BU=
-X-Google-Smtp-Source: ABdhPJxomAexeHpFDfrCohF3Dr3KktAL/UvFbfVdhyWtHW79Q4HxbdlPH0duXEI0EhEhmuUukOhmCshmVdmPlacd24s=
-X-Received: by 2002:a05:6902:1407:b0:64a:ecc7:aa2 with SMTP id
- z7-20020a056902140700b0064aecc70aa2mr937661ybu.645.1652899014699; Wed, 18 May
- 2022 11:36:54 -0700 (PDT)
+        Wed, 18 May 2022 14:39:58 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B641DB588;
+        Wed, 18 May 2022 11:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652899197; x=1684435197;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=M/oKhYTcnY4myTpFoegzGHopmAVVEEzgyLwyapl7tQQ=;
+  b=gjifRWwVI7atM6NqpjKQjmIIKSpRRAvJjla4cCLFkc5/c5LeqQwiOPmq
+   KraYXLAeeWMDecMyFyPbwEQmu6QVzhfBD4Hd4SB08h24jDQYLaRJLuxx7
+   pjF7eRU/yHmf59EaRXYMnU/rPUSBRa4MX9HccnwP6e0fyZfpvttn1MxNX
+   wsT4o+PKpfOs/kDGJwK7KvG9kE3pe3tj9IL21ilIWyXUDj82f3hAkVyOv
+   FoLIc49hjSoHw+0zgbbwnHXDI2/dseCwKpZMheoqbvy+0sSrLVbq4Q7Jd
+   aoB2iW2VBrHyQVI1D40EAELe/wapHYj7LJYfbfUmg35oiJeXyUNI+eKym
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="269425271"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="269425271"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:38:14 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="569686074"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:38:14 -0700
+Date:   Wed, 18 May 2022 11:42:04 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, vkoul@kernel.org,
+        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
+ attach_dev_pasid
+Message-ID: <20220518114204.4d251b41@jacob-builder>
+In-Reply-To: <20220511182908.GK49344@nvidia.com>
+References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
+        <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
+        <20220510232121.GP49344@nvidia.com>
+        <20220510172309.3c4e7512@jacob-builder>
+        <20220511115427.GU49344@nvidia.com>
+        <20220511082958.79d5d8ee@jacob-builder>
+        <20220511161237.GB49344@nvidia.com>
+        <20220511100216.7615e288@jacob-builder>
+        <20220511170025.GF49344@nvidia.com>
+        <20220511102521.6b7c578c@jacob-builder>
+        <20220511182908.GK49344@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220511183210.5248-5-prabhakar.mahadev-lad.rj@bp.renesas.com> <CACRpkdYQAsam_v0XHm-A_trbyifj1pBQq5N+zc9KVw1vXVTYUw@mail.gmail.com>
-In-Reply-To: <CACRpkdYQAsam_v0XHm-A_trbyifj1pBQq5N+zc9KVw1vXVTYUw@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 18 May 2022 19:36:28 +0100
-Message-ID: <CA+V-a8v_bCtoipKXyYoHsSku0-AbABi6Wj0RsHrj7_Sk4MUJyg@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] gpio: gpiolib: Add ngirq member to struct gpio_irq_chip
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Hi Jason,
 
-Thank you for the review.
+On Wed, 11 May 2022 15:29:08 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On Fri, May 13, 2022 at 9:47 PM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Wed, May 11, 2022 at 8:32 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> > Supported GPIO IRQs by the chip is not always equal to the number of GPIO
-> > pins. For example on Renesas RZ/G2L SoC where it has GPIO0-122 pins but at
-> > a give point a maximum of only 32 GPIO pins can be used as IRQ lines in
-> > the IRQC domain.
-> >
-> > This patch adds ngirq member to struct gpio_irq_chip and passes this as a
-> > size to irq_domain_create_hierarchy()/irq_domain_create_simple() if it is
-> > being set in the driver otherwise fallbacks to using ngpio.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> As Geert says, I think you can just use .valid_mask for this,
-> what do you say?
->
-I don't think Geert is suggesting that. The .valid_mask option is one
-time setting but what I need is something dynamic i.e. out of 392 GPIO
-pins any 32 can be used as an interrupt pin. Also with this patch we
-also save on memory [0].
+> On Wed, May 11, 2022 at 10:25:21AM -0700, Jacob Pan wrote:
+> > Hi Jason,
+> > 
+> > On Wed, 11 May 2022 14:00:25 -0300, Jason Gunthorpe <jgg@nvidia.com>
+> > wrote: 
+> > > On Wed, May 11, 2022 at 10:02:16AM -0700, Jacob Pan wrote:  
+> > > > > > If not global, perhaps we could have a list of pasids (e.g.
+> > > > > > xarray) attached to the device_domain_info. The TLB flush logic
+> > > > > > would just go through the list w/o caring what the PASIDs are
+> > > > > > for. Does it make sense to you?      
+> > > > > 
+> > > > > Sort of, but we shouldn't duplicate xarrays - the group already
+> > > > > has this xarray - need to find some way to allow access to it
+> > > > > from the driver.
+> > > > >     
+> > > > I am not following,  here are the PASIDs for devTLB flush which is
+> > > > per device. Why group?    
+> > > 
+> > > Because group is where the core code stores it.  
+> > I see, with singleton group. I guess I can let dma-iommu code call
+> > 
+> > iommu_attach_dma_pasid {
+> > 	iommu_attach_device_pasid();
+> > Then the PASID will be stored in the group xa.  
+> 
+> Yes, again, the dma-iommu should not be any different from the normal
+> unmanaged path. At this point there is no longer any difference, we
+> should not invent new ones.
+> 
+> > The flush code can retrieve PASIDs from device_domain_info.device ->
+> > group -> pasid_array.  Thanks for pointing it out, I missed the new
+> > pasid_array.  
+> 
+> Yes.. It seems inefficient to iterate over that xarray multiple times
+> on the flush hot path, but maybe there is little choice. Try to use
+> use the xas iterators under the xa_lock spinlock..
+> 
+xas_for_each takes a max range, here we don't really have one. So I posted
+v4 w/o using the xas advanced API. Please let me know if you have
+suggestions.
+xa_for_each takes RCU read lock, it should be fast for tlb flush, right? The
+worst case maybe over flush when we have stale data but should be very rare.
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/kernel/irq/irqdomain.c?h=next-20220518#n153
+> The challenge will be accessing the group xa in the first place, but
+> maybe the core code can gain a function call to return a pointer to
+> that XA or something..
+> 
+I added a helper function to find the matching DMA API PASID in v4.
 
-Cheers,
-Prabhakar
+
+Thanks,
+
+Jacob
