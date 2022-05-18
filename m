@@ -2,164 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD937C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41745C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:55:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233650AbiERIzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44204 "EHLO
+        id S233648AbiERIz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233535AbiERIyu (ORCPT
+        with ESMTP id S233637AbiERIzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:54:50 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E8E13C0B6;
-        Wed, 18 May 2022 01:54:24 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 04B6A1F9A4;
-        Wed, 18 May 2022 08:54:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652864063; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=06nyVlCgwJloMa3Sgbdy84v4l9AGS+6HLkM9Egdi3zA=;
-        b=uDiK6ZQrV58T7Sse8eaWlPU/3YOfscJkXv3EILIbosD7HQybDKyxvcVVoFbmUsqTnGDWOC
-        4CJ72erIQVpdbKFsT+vzEs5YDvh5g2rDpQI37Yrwv7EeYQF5L0T6eBevotMPC/qL715vvd
-        nBQrLN7qvUP+ufxvplkKEKxxqZ6CM98=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6C56E2C141;
-        Wed, 18 May 2022 08:54:22 +0000 (UTC)
-Date:   Wed, 18 May 2022 10:54:22 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>
-Subject: Re: [PATCH] random: remove mostly unused async readiness notifier
-Message-ID: <YoS0Pn9IotUrQh01@alley>
-References: <YoD7hn4yBHE0RYUa@zx2c4.com>
- <20220515131927.474097-1-Jason@zx2c4.com>
+        Wed, 18 May 2022 04:55:22 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D622D13B8FF;
+        Wed, 18 May 2022 01:55:10 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id t6so1696239wra.4;
+        Wed, 18 May 2022 01:55:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HCEO+iL8PzcVcziic8Uodsq5+0pyHWr11hT8on+eWZ4=;
+        b=gFBh5Nf3KOSLsXC5/R9dO3VK6UrYrkWgVeOW12JiCAkUSNZOeAhn3Jh8gvAebC+xFz
+         aTw2U1NwsFCHRtIYCMISIIzg6sBB/JCIK6e+A7pDK6ZVmp4WvTr2lwHeCxjhp8QX4OjQ
+         kyONU/gXHGsOYK5whNQuAwVko9+r93bLV6HyMZ6aIRDeT23GcSGk01N80HWhoMMLKcvF
+         LFlBo7xViunwknipyEARQ7/skDBOLxpZrhBNd5GjfrCGy4b5khijeXCIPrfJDQkrntul
+         WayVmdD2qeWEY+bknZSqBzECSswhyuBUro0hzkcqTmuSRw6/i7BPYSX2sHoC7B89x0S8
+         a2cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HCEO+iL8PzcVcziic8Uodsq5+0pyHWr11hT8on+eWZ4=;
+        b=60H3BaMAzq+Wx0E/hxOb3It4oJF4uMs+KzfAjicuZ5bJzYAIfWNyhx+hq+MlKQ6+3P
+         DNbyDSmvfbniRbxrUmWHygLCMtNwJhZ0QPXBzIIAMelt81VVMsh173nSxkeDmUkTuqDY
+         R/tPDgT6tR/8xE4ixKSRGUwbabkKvASL/IpKhWImqLQMo9r+It2TP8L9x3GOcKqN79Hg
+         0XHLJA2ZP9mAvWrzw34IoKE1C3uIFOxi9oUQRyqOfCzxrpgsm+8xIpx2/gRJjPDPb7XZ
+         kn7ly/c0h9YQblWWcKYWA42tyHK1DI2f+lS4f6fdi1o4CMKusbjmq/SlJvcC9k21rGoI
+         53lg==
+X-Gm-Message-State: AOAM530Dax4MhzjgHfRySQ4rOdpze+FnN3GZykm6UN2s3FsvjLVltYyT
+        1Q7xLsaAHJPbg9MaAthXrUxPMGjd2vV4P0PD
+X-Google-Smtp-Source: ABdhPJwKra1tYkJP29iu9Ix2hAARIM9jf8t+ktsW+NhHHwzVbJmrFTptuDqdfpAd/A9Whq8jrU79FA==
+X-Received: by 2002:a5d:6c65:0:b0:20c:5230:f145 with SMTP id r5-20020a5d6c65000000b0020c5230f145mr21454248wrz.337.1652864109461;
+        Wed, 18 May 2022 01:55:09 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id o3-20020a05600002c300b0020c547f75easm1579622wry.101.2022.05.18.01.55.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 01:55:09 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ceph: remove redundant variable ino
+Date:   Wed, 18 May 2022 09:55:08 +0100
+Message-Id: <20220518085508.509104-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220515131927.474097-1-Jason@zx2c4.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 2022-05-15 15:19:27, Jason A. Donenfeld wrote:
-> The register_random_ready_notifier() notifier is somewhat complicated,
-> and was already recently rewritten to use notifier blocks. It is only
-> used now by one consumer in the kernel, vsprintf.c, for which the async
-> mechanism is really overly complex for what it actually needs. This
-> commit removes register_random_ready_notifier() and unregister_random_
-> ready_notifier(), because it just adds complication with little utility,
-> and changes vsprintf.c to just check on `!rng_is_initialized() &&
-> !rng_has_arch_random()`, which will eventually be true. Performance-
-> wise, that code was already using a static branch, so there's basically
-> no overhead at all to this change.
-> 
-> --- a/lib/vsprintf.c
-> +++ b/lib/vsprintf.c
-> @@ -750,60 +750,37 @@ static int __init debug_boot_weak_hash_enable(char *str)
->  }
->  early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
->  
-> -static DEFINE_STATIC_KEY_TRUE(not_filled_random_ptr_key);
-> -static siphash_key_t ptr_key __read_mostly;
-> +static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
->  
->  static void enable_ptr_key_workfn(struct work_struct *work)
->  {
-> -	get_random_bytes(&ptr_key, sizeof(ptr_key));
-> -	/* Needs to run from preemptible context */
-> -	static_branch_disable(&not_filled_random_ptr_key);
-> +	static_branch_enable(&filled_random_ptr_key);
->  }
->  
-> -static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
-> -
-> -static int fill_random_ptr_key(struct notifier_block *nb,
-> -			       unsigned long action, void *data)
-> +/* Maps a pointer to a 32 bit unique identifier. */
-> +static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
->  {
-> -	/* This may be in an interrupt handler. */
-> -	queue_work(system_unbound_wq, &enable_ptr_key_work);
-> -	return 0;
-> -}
-> -
-> -static struct notifier_block random_ready = {
-> -	.notifier_call = fill_random_ptr_key
-> -};
-> +	static siphash_key_t ptr_key __read_mostly;
-> +	unsigned long hashval;
->  
-> -static int __init initialize_ptr_random(void)
-> -{
-> -	int ret;
-> +	if (!static_branch_likely(&filled_random_ptr_key)) {
-> +		static bool filled = false;
-> +		static DEFINE_SPINLOCK(filling);
-> +		static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
-> +		unsigned long flags;
->  
-> -	/* Don't bother waiting for RNG to be ready if RDRAND is mixed in already. */
-> -	if (rng_has_arch_random()) {
-> -		enable_ptr_key_workfn(&enable_ptr_key_work);
-> -		return 0;
-> -	}
-> +		if (!rng_is_initialized() && !rng_has_arch_random())
-> +			return -EAGAIN;
->  
-> -	ret = register_random_ready_notifier(&random_ready);
-> -	if (!ret) {
-> -		return 0;
-> -	} else if (ret == -EALREADY) {
-> -		/* This is in preemptible context */
-> -		enable_ptr_key_workfn(&enable_ptr_key_work);
-> -		return 0;
-> +		spin_lock_irqsave(&filling, flags);
+Variable ino is being assigned a value that is never read. The variable
+and assignment are redundant, remove it.
 
-I thought more about this and there is a small risk of a deadlock
-when get_random_bytes() or queue_work() or NMI calls
-printk()/vsprintf() with %p here.
+Cleans up clang scan build warning:
+warning: Although the value stored to 'ino' is used in the enclosing
+expression, the value is never actually read from 'ino'
+[deadcode.DeadStores]
 
-A simple solution would be to use trylock():
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ fs/ceph/mds_client.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-		if (!spin_trylock_irqsave(&filling, flags))
-			return -EDEADLK;
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 00c3de177dd6..20197f05faec 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -437,7 +437,7 @@ static int ceph_parse_deleg_inos(void **p, void *end,
+ 	ceph_decode_32_safe(p, end, sets, bad);
+ 	dout("got %u sets of delegated inodes\n", sets);
+ 	while (sets--) {
+-		u64 start, len, ino;
++		u64 start, len;
+ 
+ 		ceph_decode_64_safe(p, end, start, bad);
+ 		ceph_decode_64_safe(p, end, len, bad);
+@@ -449,7 +449,7 @@ static int ceph_parse_deleg_inos(void **p, void *end,
+ 			continue;
+ 		}
+ 		while (len--) {
+-			int err = xa_insert(&s->s_delegated_inos, ino = start++,
++			int err = xa_insert(&s->s_delegated_inos, start++,
+ 					    DELEGATED_INO_AVAILABLE,
+ 					    GFP_KERNEL);
+ 			if (!err) {
+-- 
+2.35.1
 
-Could we do this change, please?
-
-I do not mind if it will be done by re-spinning the original
-patch or another patch on top of it.
-
-Best Regards,
-Petr
-
-
-> +		if (!filled) {
-> +			get_random_bytes(&ptr_key, sizeof(ptr_key));
-> +			queue_work(system_unbound_wq, &enable_ptr_key_work);
-> +			filled = true;
-> +		}
-> +		spin_unlock_irqrestore(&filling, flags);
->  	}
->  
-> -	return ret;
-> -}
-> -early_initcall(initialize_ptr_random);
-> -
-> -/* Maps a pointer to a 32 bit unique identifier. */
-> -static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
-> -{
-> -	unsigned long hashval;
-> -
-> -	if (static_branch_unlikely(&not_filled_random_ptr_key))
-> -		return -EAGAIN;
->  
->  #ifdef CONFIG_64BIT
->  	hashval = (unsigned long)siphash_1u64((u64)ptr, &ptr_key);
