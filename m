@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 051B7C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23210C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239587AbiERPlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
+        id S239635AbiERPlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239506AbiERPkx (ORCPT
+        with ESMTP id S239489AbiERPkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 11:40:53 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225A32CE38;
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7649F2F3A8;
         Wed, 18 May 2022 08:40:49 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 8847D21B9B;
+        by smtp-out2.suse.de (Postfix) with ESMTPS id EDF811F8D9;
         Wed, 18 May 2022 15:40:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
         t=1652888447; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0s4UvaoqQhOvXVFcayQAcYm+9aULoAvV0U7raXaG3hU=;
-        b=ek3UJfEiUiPLsUwTz+kfxjgpe/oHTGh7t+lQgpppq4VT7NQCfgWzI8gtDKPoJHVxEePsbd
-        jGjBVmrou19eu2/eV7hu9/gxOzYZRFHFdYa8vSEJ8HhK2TRPIVPr2GH0S09LOiCBot39FG
-        tQFeGy3tPwfWGummxk34KWZtUrQKrEE=
+        bh=nGOjxaCmozTaID0zJr5Qv3xqJGJFYW6IddaRszUZ5Io=;
+        b=qH9RzgwWP6HM53SV3SM9GGw5HQvJnlpl2b6Igr7X3voYR3Dc6P/OeGTR8HmssfX0JXtIb3
+        IFt9nGwpbzlH5B8YLrnC+uRfxBCXJjdl9/mD2oT3bwzduOCwx8obI4+3YeG0Vv0iNgE7Bd
+        YcDBOk6JwLQkbFgeamv+7fxW53/ziPo=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5831213A6D;
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BEA7D13A6D;
         Wed, 18 May 2022 15:40:47 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id gL+rFH8ThWJDUgAAMHmgww
+        id wLqYLX8ThWJDUgAAMHmgww
         (envelope-from <mkoutny@suse.com>); Wed, 18 May 2022 15:40:47 +0000
 From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
 To:     cgroups@vger.kernel.org, linux-mm@kvack.org
@@ -48,9 +48,9 @@ Cc:     Johannes Weiner <hannes@cmpxchg.org>,
         Shakeel Butt <shakeelb@google.com>,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
         Richard Palethorpe <rpalethorpe@suse.de>
-Subject: [PATCH 2/4] selftests: memcg: Expect no low events in unprotected sibling
-Date:   Wed, 18 May 2022 17:40:35 +0200
-Message-Id: <20220518154037.18819-3-mkoutny@suse.com>
+Subject: [PATCH 4/4] selftests: memcg: Remove protection from top level memcg
+Date:   Wed, 18 May 2022 17:40:37 +0200
+Message-Id: <20220518154037.18819-5-mkoutny@suse.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220518154037.18819-1-mkoutny@suse.com>
 References: <20220518154037.18819-1-mkoutny@suse.com>
@@ -61,31 +61,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is effectively a revert of commit cdc69458a5f3 ("cgroup: account
-for memory_recursiveprot in test_memcg_low()"). The case test_memcg_low
-will fail with memory_recursiveprot until resolved in reclaim
-code.
-However, this patch preserves the existing helpers and variables for
-later uses.
+The reclaim is triggered by memory limit in a subtree, therefore the
+testcase does not need configured protection against external reclaim.
+
+Also, correct/deduplicate respective comments
 
 Signed-off-by: Michal Koutný <mkoutny@suse.com>
 ---
- tools/testing/selftests/cgroup/test_memcontrol.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/cgroup/test_memcontrol.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
 diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
-index 4958b42201a9..eba252fa64ac 100644
+index 9ffacf024bbd..9d370aafd799 100644
 --- a/tools/testing/selftests/cgroup/test_memcontrol.c
 +++ b/tools/testing/selftests/cgroup/test_memcontrol.c
-@@ -528,7 +528,7 @@ static int test_memcg_low(const char *root)
+@@ -247,7 +247,7 @@ static int cg_test_proc_killed(const char *cgroup)
+ 
+ /*
+  * First, this test creates the following hierarchy:
+- * A       memory.min = 50M,  memory.max = 200M
++ * A       memory.min = 0,    memory.max = 200M
+  * A/B     memory.min = 50M,  memory.current = 50M
+  * A/B/C   memory.min = 75M,  memory.current = 50M
+  * A/B/D   memory.min = 25M,  memory.current = 50M
+@@ -257,7 +257,7 @@ static int cg_test_proc_killed(const char *cgroup)
+  * Usages are pagecache, but the test keeps a running
+  * process in every leaf cgroup.
+  * Then it creates A/G and creates a significant
+- * memory pressure in it.
++ * memory pressure in A.
+  *
+  * A/B    memory.current ~= 50M
+  * A/B/C  memory.current ~= 29M
+@@ -335,8 +335,6 @@ static int test_memcg_min(const char *root)
+ 			      (void *)(long)fd);
  	}
  
- 	for (i = 0; i < ARRAY_SIZE(children); i++) {
--		int no_low_events_index = has_recursiveprot ? 2 : 1;
-+		int no_low_events_index = 1;
+-	if (cg_write(parent[0], "memory.min", "50M"))
+-		goto cleanup;
+ 	if (cg_write(parent[1], "memory.min", "50M"))
+ 		goto cleanup;
+ 	if (cg_write(children[0], "memory.min", "75M"))
+@@ -404,8 +402,8 @@ static int test_memcg_min(const char *root)
  
- 		oom = cg_read_key_long(children[i], "memory.events", "oom ");
- 		low = cg_read_key_long(children[i], "memory.events", "low ");
+ /*
+  * First, this test creates the following hierarchy:
+- * A       memory.low = 50M,  memory.max = 200M
+- * A/B     memory.low = 50M,  memory.current = 50M
++ * A       memory.low = 0,    memory.max = 200M
++ * A/B     memory.low = 50M,  memory.current = ...
+  * A/B/C   memory.low = 75M,  memory.current = 50M
+  * A/B/D   memory.low = 25M,  memory.current = 50M
+  * A/B/E   memory.low = 0,    memory.current = 50M
+@@ -490,8 +488,6 @@ static int test_memcg_low(const char *root)
+ 			goto cleanup;
+ 	}
+ 
+-	if (cg_write(parent[0], "memory.low", "50M"))
+-		goto cleanup;
+ 	if (cg_write(parent[1], "memory.low", "50M"))
+ 		goto cleanup;
+ 	if (cg_write(children[0], "memory.low", "75M"))
 -- 
 2.35.3
 
