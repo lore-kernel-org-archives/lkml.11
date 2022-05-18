@@ -2,145 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3416C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 05:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27D69C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 05:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230424AbiERF6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 01:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
+        id S230425AbiERF6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 01:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiERF6e (ORCPT
+        with ESMTP id S230407AbiERF6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 01:58:34 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C68BDA22
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 22:58:32 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id qe3-20020a17090b4f8300b001dc24e4da73so3277727pjb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 22:58:32 -0700 (PDT)
+        Wed, 18 May 2022 01:58:44 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A962DC1ED8;
+        Tue, 17 May 2022 22:58:42 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id k16so1190072pff.5;
+        Tue, 17 May 2022 22:58:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VGM/bEGraxiyYz5sJxhipNVYwSAuDPrN7YJAla+bigE=;
-        b=IpXNl8dm2aOvNaOOjpOKE4+kQa64lm1nqTPvuWLysojfMy+Ax66dtC+ELIOxOH4uLF
-         Oe+1QJMiHtbVXAqjbrD6xmjvYI6tGUlhne3JRsR2iI8oni5sfRSlQk1wFsFo1GQw67Q7
-         Nck2EHWL6Lh7TwSN2uEyGpve54uvxk5Y5ixO5HX/+SS0pAKAf534uZQvHvQXbBz8VfwT
-         yrqRZ6nMjh3ZjqOw5tkBuC41z8bWqP5a3GciPA0vAddfjqGjpXMDV5nfrV68mZk14akf
-         mGzPEPZtJ1D9B9QbtM71Y+LghGWOqHlGOOUJiEk4mYSRQECIsRAXxSfEcquFkTRs25y1
-         VcYQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Wvwoi2ieX1SAY39tBWj8LHG37asi931JP8mrlpfaKk4=;
+        b=IYRMNrIiumsSaflitKrY0i7FLS+lQCNLzOzrzfpuDPHl8qKTyR2SruC/IiZPaWASLU
+         h1814XYKS6hk+GXI8YmOfUnZZvmtntVApJKWkygY16itKnRQP2mlCzMkvZBUWHpeFhdf
+         vxsTjQ/hFRdQmWf81TAcvUVbgUIqwgYy/P2macO/GgTqyvjwUq6j6rEzicfyDezBeCJh
+         jalDG8dek+x5k4G1i6fjll8rsPu9bLOuh5MuDAsCSNI+H91QXyUx22iqd8m24ddtm7p9
+         SQvgRYreW4YjQ3RNg+uvIuLy6RceXkwr/A5qYIInoXTV+YQHxzPC4L5WS8ySQpgc+F6R
+         R5yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VGM/bEGraxiyYz5sJxhipNVYwSAuDPrN7YJAla+bigE=;
-        b=Ygej9sVZOqGBxC0rvqFuE+vaKCl6UtzpEk2blJ/GeKwAL2444r78xjma29tS1ZMZZO
-         Gehd2VxWMYEP60Vrw2ADNCqmRKKtN7F+Kbr8Af7vV+9uelb5VvKxhXn3VYwpZE5xQtBV
-         A6qNMcmMfyprThtilV/4xP/AV8OU2G8cNj9DjPBStAfcRw0Sa4xmqCd7C2ooP+0GrMzH
-         Vmbyo8IfaSHhi6NbJyDfn3RwUYMfarvTMzSRzWK37xP0BaS6RvPdB9XwzjcrNnnUSS1A
-         lBotlDj6UOwfdkRbvWInwf/cMKPdDRCrKrQq0J7ecOS4+XHL0rg/Naso5lR5p4Prp6In
-         c6dQ==
-X-Gm-Message-State: AOAM5305p7UEEzEKxLJXEZNUUawijXp5KbEY3AoQ5Nj1g6YgmkoG19Za
-        Juy41cXk362EFO0kZpHOhVTVFg==
-X-Google-Smtp-Source: ABdhPJyhLbR6ODACRKr7nE+PBu14rq2aoR/Tm6xqOmHUKzLal9kezvc3cQVKQ4wq3faFhognnFkLuw==
-X-Received: by 2002:a17:90b:3901:b0:1dc:5a24:691 with SMTP id ob1-20020a17090b390100b001dc5a240691mr40309047pjb.40.1652853511645;
-        Tue, 17 May 2022 22:58:31 -0700 (PDT)
-Received: from localhost.localdomain (n058152048195.netvigator.com. [58.152.48.195])
-        by smtp.gmail.com with ESMTPSA id cp16-20020a170902e79000b0015e8d4eb2c2sm627127plb.268.2022.05.17.22.58.26
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wvwoi2ieX1SAY39tBWj8LHG37asi931JP8mrlpfaKk4=;
+        b=xCX9NlvSF5v2EHSXkqW2W7By52Pssel/I3L1TpNUQop0PsCIdJ0KaswWdZmsYhT9UL
+         ROCiwZqU9vDGnfnFLZjXK8LJ8lAg6d5nXXNzoGV3k+KOlpTwibI+LWnwf207VyrnvjKm
+         qTCJfdnXurpPdzMrZhZ8gva4eY2/pzligiZc+uCbb/T+PKClqKt6sM1QRtxjiub3tIil
+         Lps85V/5MzQ0GO9406X6z+rxUShcoL5F+bAdTJImJ+WBpejALcycdSIZYkKsLwW4+2h2
+         DhN++/vmXwD86by/NM5gIAeAEJf9r54SB27Qa3Y7ScI0R+0HxmYlynT4iA0Ggt20b6iW
+         54Ng==
+X-Gm-Message-State: AOAM530R0N0HgWofdpR6aAGaAJCE9WMCiPMaI/Suj8jZVNiYJZ52yHGj
+        E5+U2s0hBOBul3eS4h5oGKY=
+X-Google-Smtp-Source: ABdhPJwr9HRFJAt/zhYuJZ10Py9yYXbZjFzFpTiFrytFhnSOVnn+LtwTvwpMfpIndB0c1Sf+6QiTvA==
+X-Received: by 2002:a63:5d50:0:b0:3db:5325:b120 with SMTP id o16-20020a635d50000000b003db5325b120mr22910678pgm.212.1652853521830;
+        Tue, 17 May 2022 22:58:41 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id q13-20020a170903204d00b0015e8d4eb20asm649445pla.84.2022.05.17.22.58.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 22:58:31 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Like Xu <likexu@tencent.com>, Alyssa Ross <hi@alyssa.is>,
-        Ian Rogers <irogers@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Adam Li <adamli@amperemail.onmicrosoft.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        German Gomez <german.gomez@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Ali Saidi <alisaidi@amazon.com>, Joe Mario <jmario@redhat.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v3 08/11] perf c2c: Refactor node header
-Date:   Wed, 18 May 2022 13:57:26 +0800
-Message-Id: <20220518055729.1869566-9-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220518055729.1869566-1-leo.yan@linaro.org>
-References: <20220518055729.1869566-1-leo.yan@linaro.org>
+        Tue, 17 May 2022 22:58:41 -0700 (PDT)
+Message-ID: <62848b11.1c69fb81.6ce50.2091@mx.google.com>
+X-Google-Original-Message-ID: <20220518055839.GA1677365@cgel.zte@gmail.com>
+Date:   Wed, 18 May 2022 05:58:39 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
+        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, william.kucharski@oracle.com,
+        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
+        songmuchun@bytedance.com, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
+References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+ <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
+ <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
+ <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
+ <6278fa75.1c69fb81.9c598.f794@mx.google.com>
+ <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
+ <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
+ <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
+ <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
+ <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node header array contains 3 items, each item is used for one of
-the 3 flavors for node accessing info.  To extend sorting on other
-snooping type and not always stick to HITMs, the second header string
-"Node{cpus %hitms %stores}" should be adjusted (e.g. it's changed as
-"Node{cpus %peer %stores}").
+On Tue, May 10, 2022 at 03:36:34PM +0200, Michal Hocko wrote:
+> On Tue 10-05-22 11:52:51, CGEL wrote:
+> > On Tue, May 10, 2022 at 12:00:04PM +0200, Michal Hocko wrote:
+> > > On Tue 10-05-22 01:43:38, CGEL wrote:
+> > > > On Mon, May 09, 2022 at 01:48:39PM +0200, Michal Hocko wrote:
+> > > > > On Mon 09-05-22 11:26:43, CGEL wrote:
+> > > > > > On Mon, May 09, 2022 at 12:00:28PM +0200, Michal Hocko wrote:
+> > > > > > > On Sat 07-05-22 02:05:25, CGEL wrote:
+> > > > > > > [...]
+> > > > > > > > If there are many containers to run on one host, and some of them have high
+> > > > > > > > performance requirements, administrator could turn on thp for them:
+> > > > > > > > # docker run -it --thp-enabled=always
+> > > > > > > > Then all the processes in those containers will always use thp.
+> > > > > > > > While other containers turn off thp by:
+> > > > > > > > # docker run -it --thp-enabled=never
+> > > > > > > 
+> > > > > > > I do not know. The THP config space is already too confusing and complex
+> > > > > > > and this just adds on top. E.g. is the behavior of the knob
+> > > > > > > hierarchical? What is the policy if parent memcg says madivise while
+> > > > > > > child says always? How does the per-application configuration aligns
+> > > > > > > with all that (e.g. memcg policy madivise but application says never via
+> > > > > > > prctl while still uses some madvised - e.g. via library).
+> > > > > > >
+> > > > > > 
+> > > > > > The cgroup THP behavior is align to host and totally independent just likes
+> > > > > > /sys/fs/cgroup/memory.swappiness. That means if one cgroup config 'always'
+> > > > > > for thp, it has no matter with host or other cgroup. This make it simple for
+> > > > > > user to understand or control.
+> > > > > 
+> > > > > All controls in cgroup v2 should be hierarchical. This is really
+> > > > > required for a proper delegation semantic.
+> > > > >
+> > > > 
+> > > > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
+> > > > Some distributions like Ubuntu is still using cgroup v1.
+> > > 
+> > > cgroup v1 interface is mostly frozen. All new features are added to the
+> > > v2 interface.
+> > >
+> > 
+> > So what about we add this interface to cgroup v2?
+> 
+> Can you come up with a sane hierarchical behavior?
+> 
+> [...]
+> > > > For micro-service architecture, the application in one container is not a
+> > > > set of loosely tight processes, it's aim at provide one certain service,
+> > > > so different containers means different service, and different service
+> > > > has different QoS demand. 
+> > > 
+> > > OK, if they are tightly coupled you could apply the same THP policy by
+> > > an existing prctl interface. Why is that not feasible. As you are noting
+> > > below...
+> > > 
+> > > >     5.containers usually managed by compose software, which treats container as
+> > > > base management unit;
+> > > 
+> > > ..so the compose software can easily start up the workload by using prctl
+> > > to disable THP for whatever workloads it is not suitable for.
+> > 
+> > prctl(PR_SET_THP_DISABLE..) can not be elegance to support the semantic we
+> > need. If only some containers needs THP, other containers and host do not need
+> > THP. We must set host THP to always first, and call prctl() to close THP for
+> > host tasks and other containers one by one,
+> 
+> It might not be the most elegant solution but it should work.
+> Maintaining user interfaces for ever has some cost and the THP
+> configuration space is quite large already. So I would rather not add
+> more complication in unless that is absolutely necessary.
+>
 
-For this reason, this patch changes the node header array to three
-flat variables and uses switch-case in function setup_nodes_header(),
-thus it is easier for altering the header string.
+By the way, should we let prctl() support PR_SET_THP_ALWAYS? Just likes
+PR_TASK_PERF_EVENTS_DISABLE and PR_TASK_PERF_EVENTS_ENABLE. This would
+make it simpler to let certain process use THP while others not use.
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: Ali Saidi <alisaidi@amazon.com>
----
- tools/perf/builtin-c2c.c | 26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
-
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index ace7ead4ab75..757a79442a52 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -1651,12 +1651,6 @@ static struct c2c_dimension dim_dso = {
- 	.se		= &sort_dso,
- };
- 
--static struct c2c_header header_node[3] = {
--	HEADER_LOW("Node"),
--	HEADER_LOW("Node{cpus %hitms %stores}"),
--	HEADER_LOW("Node{cpu list}"),
--};
--
- static struct c2c_dimension dim_node = {
- 	.name		= "node",
- 	.cmp		= empty_cmp,
-@@ -2144,9 +2138,27 @@ static int resort_cl_cb(struct hist_entry *he, void *arg __maybe_unused)
- 	return 0;
- }
- 
-+static struct c2c_header header_node_0 = HEADER_LOW("Node");
-+static struct c2c_header header_node_1 = HEADER_LOW("Node{cpus %hitms %stores}");
-+static struct c2c_header header_node_2 = HEADER_LOW("Node{cpu list}");
-+
- static void setup_nodes_header(void)
- {
--	dim_node.header = header_node[c2c.node_info];
-+	switch (c2c.node_info) {
-+	case 0:
-+		dim_node.header = header_node_0;
-+		break;
-+	case 1:
-+		dim_node.header = header_node_1;
-+		break;
-+	case 2:
-+		dim_node.header = header_node_2;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return;
- }
- 
- static int setup_nodes(struct perf_session *session)
--- 
-2.25.1
-
+> > in this process some tasks that start before we call prctl() may
+> > already use THP with no need.
+> 
+> As long as all those processes have a common ancestor I do not see how
+> that would be possible.
+> 
+> -- 
+> Michal Hocko
+> SUSE Labs
