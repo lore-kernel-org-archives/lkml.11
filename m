@@ -2,210 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA84C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 23:54:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 23:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229819AbiERXyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 19:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        id S231135AbiERX5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 19:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231201AbiERXxd (ORCPT
+        with ESMTP id S231132AbiERX5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 19:53:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF109BAFC;
-        Wed, 18 May 2022 16:53:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 121FDB82257;
-        Wed, 18 May 2022 23:53:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F19C34118;
-        Wed, 18 May 2022 23:53:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652918009;
-        bh=yHkjjFgPWBAM7ugXVTMsE7MeQw6lNau0sWLXQYhemjQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U+vswUshzS2JZAeaZrQ+4R1JogbOEdkBJFDHz8XBpOHRMP+e3IIt4z5+z9wm3oL2O
-         HvCC0qNI96X1HuADp2nF7J1rWWw0u7A5Lf0lTRyYvDuQdaNZXjLoLhjyFV62NmkCBY
-         1QpHXI9NecyqoTvXFSn9PT1QmDUTrAm4P1xTaSiY2hHzZdfrnCIn6otPkl0y1i/dxh
-         0qI6LbOQ4qt/bnKKHSiNIm+XzachEBhVyC8cRZrn3IRse920bLke7nxN7wkVPVS/eK
-         jLQpMy/iJU4hnp1ZTh3EWFUOOVP00jgba2Db1nkOC3MEFtuC4K4P+v4x7ynGsL28T/
-         CHzEOkd21WvtA==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
-Subject: [RFC PATCH v2 2/7] fscrypt: change fscrypt_dio_supported() to prepare for STATX_IOALIGN
-Date:   Wed, 18 May 2022 16:50:06 -0700
-Message-Id: <20220518235011.153058-3-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518235011.153058-1-ebiggers@kernel.org>
-References: <20220518235011.153058-1-ebiggers@kernel.org>
+        Wed, 18 May 2022 19:57:04 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13C8A205F;
+        Wed, 18 May 2022 16:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652918219; x=1684454219;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sYnBWBRsHWJ/CxGScUq9f0aZZYV853hQS0dqrvcFiLM=;
+  b=GjfPgl4BKfE7EJcB8jvLb1bkSfE6TdRgs0eKIwCSAvHUr7K5kQ9QLae0
+   Iaz0zdAv0OFI+Ag0+ogi1V2udrWLjQM/RAe+ZNEuQ82wtG2hvTN935rZK
+   PqEAqjN+Kml9Lm3V/5xHqxuDUyiY8HsZSuN8spf1gEf3mfMJnhmWfyXMc
+   u3CJa1T5NzI9LfwKQWl3PTEJ/U86Ji4QJZqOMQKGI2yjGz+Bqc4KNhb1b
+   doLQH7vNTLSktbRR7/mvKeL51T5meoTzRuXtyCm22sXpwdvM83UEJjq7/
+   CLP8cyDTpswAFU27u3+PMHyL8J77IiF7q9RefcB4aPyQw9MKVFEZY0iEa
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="334990901"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="334990901"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 16:56:59 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="700864699"
+Received: from ppamkunt-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.33.252])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 16:56:55 -0700
+Message-ID: <1e880953645d966a9869531409e1296c2ae234f9.camel@intel.com>
+Subject: Re: [PATCH v3 09/21] x86/virt/tdx: Get information about TDX module
+ and convertible memory
+From:   Kai Huang <kai.huang@intel.com>
+To:     Sagi Shahar <sagis@google.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        "Yamahata, Isaku" <isaku.yamahata@intel.com>
+Date:   Thu, 19 May 2022 11:56:53 +1200
+In-Reply-To: <CAAhR5DGNGJ=MAMPOsbZ2jEOEXG_vR69L77ks4ihMUhixPTuXLA@mail.gmail.com>
+References: <cover.1649219184.git.kai.huang@intel.com>
+         <145620795852bf24ba2124a3f8234fd4aaac19d4.1649219184.git.kai.huang@intel.com>
+         <f929fb7a-5bdc-2567-77aa-762a098c8513@intel.com>
+         <0bab7221179229317a11311386c968bd0d40e344.camel@intel.com>
+         <CAAhR5DGNGJ=MAMPOsbZ2jEOEXG_vR69L77ks4ihMUhixPTuXLA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+On Wed, 2022-05-18 at 15:30 -0700, Sagi Shahar wrote:
+> > > 
+> > > > +   pr_info("TDX module: vendor_id 0x%x, major_version %u, minor_version
+> > > > %u, build_date %u, build_num %u",
+> > > > +           tdx_sysinfo.vendor_id, tdx_sysinfo.major_version,
+> > > > +           tdx_sysinfo.minor_version, tdx_sysinfo.build_date,
+> > > > +           tdx_sysinfo.build_num);
+> > > > +
+> > > > +   /* Print BIOS provided CMRs */
+> > > > +   print_cmrs(tdx_cmr_array, cmr_num, "BIOS-CMR");
+> > > > +
+> 
+> sanitize_cmrs already prints the cmrs in case of success. So for valid
+> cmrs we are going to print them twice.
+> Would it be better to only print cmrs here in case sanitize_cmrs fails?
 
-To prepare for STATX_IOALIGN support, make two changes to
-fscrypt_dio_supported().
+The "BIOS-CMR" will always have 32 entries.  It includes all the *empty* CMRs
+after the valid CMRs, so the two are different.  But yes it seems there's no
+need to always print "BIOS-CMR".
 
-First, remove the filesystem-block-alignment check and make the
-filesystems handle it instead.  It previously made sense to have it in
-fs/crypto/; however, to support STATX_IOALIGN the alignment requirement
-would have to be returned to filesystems.  It ends up being simpler if
-filesystems handle this part themselves, especially for f2fs which only
-allows fs-block-aligned DIO in the first place.
 
-Second, make fscrypt_dio_supported() work on inodes whose encryption key
-hasn't been set up yet, by making it set up the key if needed.  This is
-required for statx(), since statx() doesn't require a file descriptor.
-
-Signed-off-by: Eric Biggers <ebiggers@google.com>
----
- fs/crypto/inline_crypt.c | 48 +++++++++++++++++++++-------------------
- fs/ext4/file.c           |  9 ++++++--
- fs/f2fs/f2fs.h           |  2 +-
- include/linux/fscrypt.h  |  7 ++----
- 4 files changed, 35 insertions(+), 31 deletions(-)
-
-diff --git a/fs/crypto/inline_crypt.c b/fs/crypto/inline_crypt.c
-index 93c2ca8580923..82df4c0b9903c 100644
---- a/fs/crypto/inline_crypt.c
-+++ b/fs/crypto/inline_crypt.c
-@@ -370,43 +370,45 @@ bool fscrypt_mergeable_bio_bh(struct bio *bio,
- EXPORT_SYMBOL_GPL(fscrypt_mergeable_bio_bh);
- 
- /**
-- * fscrypt_dio_supported() - check whether a DIO (direct I/O) request is
-- *			     supported as far as encryption is concerned
-- * @iocb: the file and position the I/O is targeting
-- * @iter: the I/O data segment(s)
-+ * fscrypt_dio_supported() - check whether DIO (direct I/O) is supported on an
-+ *			     inode, as far as encryption is concerned
-+ * @inode: the inode in question
-  *
-  * Return: %true if there are no encryption constraints that prevent DIO from
-  *	   being supported; %false if DIO is unsupported.  (Note that in the
-  *	   %true case, the filesystem might have other, non-encryption-related
-- *	   constraints that prevent DIO from actually being supported.)
-+ *	   constraints that prevent DIO from actually being supported.  Also, on
-+ *	   encrypted files the filesystem is still responsible for only allowing
-+ *	   DIO when requests are filesystem-block-aligned.)
-  */
--bool fscrypt_dio_supported(struct kiocb *iocb, struct iov_iter *iter)
-+bool fscrypt_dio_supported(struct inode *inode)
- {
--	const struct inode *inode = file_inode(iocb->ki_filp);
--	const unsigned int blocksize = i_blocksize(inode);
-+	int err;
- 
- 	/* If the file is unencrypted, no veto from us. */
- 	if (!fscrypt_needs_contents_encryption(inode))
- 		return true;
- 
--	/* We only support DIO with inline crypto, not fs-layer crypto. */
--	if (!fscrypt_inode_uses_inline_crypto(inode))
--		return false;
--
- 	/*
--	 * Since the granularity of encryption is filesystem blocks, the file
--	 * position and total I/O length must be aligned to the filesystem block
--	 * size -- not just to the block device's logical block size as is
--	 * traditionally the case for DIO on many filesystems.
-+	 * We only support DIO with inline crypto, not fs-layer crypto.
- 	 *
--	 * We require that the user-provided memory buffers be filesystem block
--	 * aligned too.  It is simpler to have a single alignment value required
--	 * for all properties of the I/O, as is normally the case for DIO.
--	 * Also, allowing less aligned buffers would imply that data units could
--	 * cross bvecs, which would greatly complicate the I/O stack, which
--	 * assumes that bios can be split at any bvec boundary.
-+	 * To determine whether the inode is using inline crypto, we have to set
-+	 * up the key if it wasn't already done.  This is because in the current
-+	 * design of fscrypt, the decision of whether to use inline crypto or
-+	 * not isn't made until the inode's encryption key is being set up.  In
-+	 * the DIO read/write case, the key will always be set up already, since
-+	 * the file will be open.  But in the case of statx(), the key might not
-+	 * be set up yet, as the file might not have been opened yet.
- 	 */
--	if (!IS_ALIGNED(iocb->ki_pos | iov_iter_alignment(iter), blocksize))
-+	err = fscrypt_require_key(inode);
-+	if (err) {
-+		/*
-+		 * Key unavailable or couldn't be set up.  This edge case isn't
-+		 * worth worrying about; just report that DIO is unsupported.
-+		 */
-+		return false;
-+	}
-+	if (!fscrypt_inode_uses_inline_crypto(inode))
- 		return false;
- 
- 	return true;
-diff --git a/fs/ext4/file.c b/fs/ext4/file.c
-index 6feb07e3e1eb5..de153b508b20a 100644
---- a/fs/ext4/file.c
-+++ b/fs/ext4/file.c
-@@ -40,8 +40,13 @@ static bool ext4_dio_supported(struct kiocb *iocb, struct iov_iter *iter)
- {
- 	struct inode *inode = file_inode(iocb->ki_filp);
- 
--	if (!fscrypt_dio_supported(iocb, iter))
--		return false;
-+	if (IS_ENCRYPTED(inode)) {
-+		if (!fscrypt_dio_supported(inode))
-+			return false;
-+		if (!IS_ALIGNED(iocb->ki_pos | iov_iter_alignment(iter),
-+				i_blocksize(inode)))
-+			return false;
-+	}
- 	if (fsverity_active(inode))
- 		return false;
- 	if (ext4_should_journal_data(inode))
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index 8c570de21ed5a..271509b1c7928 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -4469,7 +4469,7 @@ static inline bool f2fs_force_buffered_io(struct inode *inode,
- 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
- 	int rw = iov_iter_rw(iter);
- 
--	if (!fscrypt_dio_supported(iocb, iter))
-+	if (!fscrypt_dio_supported(inode))
- 		return true;
- 	if (fsverity_active(inode))
- 		return true;
-diff --git a/include/linux/fscrypt.h b/include/linux/fscrypt.h
-index 50d92d805bd8c..6ca89461d48dc 100644
---- a/include/linux/fscrypt.h
-+++ b/include/linux/fscrypt.h
-@@ -714,7 +714,7 @@ bool fscrypt_mergeable_bio(struct bio *bio, const struct inode *inode,
- bool fscrypt_mergeable_bio_bh(struct bio *bio,
- 			      const struct buffer_head *next_bh);
- 
--bool fscrypt_dio_supported(struct kiocb *iocb, struct iov_iter *iter);
-+bool fscrypt_dio_supported(struct inode *inode);
- 
- u64 fscrypt_limit_io_blocks(const struct inode *inode, u64 lblk, u64 nr_blocks);
- 
-@@ -747,11 +747,8 @@ static inline bool fscrypt_mergeable_bio_bh(struct bio *bio,
- 	return true;
- }
- 
--static inline bool fscrypt_dio_supported(struct kiocb *iocb,
--					 struct iov_iter *iter)
-+static inline bool fscrypt_dio_supported(struct inode *inode)
- {
--	const struct inode *inode = file_inode(iocb->ki_filp);
--
- 	return !fscrypt_needs_contents_encryption(inode);
- }
- 
 -- 
-2.36.1
+Thanks,
+-Kai
+
 
