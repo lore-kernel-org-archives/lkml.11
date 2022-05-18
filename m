@@ -2,110 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 238B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D25C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235633AbiERL0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
+        id S235654AbiERL1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235694AbiERL0E (ORCPT
+        with ESMTP id S235593AbiERL1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:26:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA03011448;
-        Wed, 18 May 2022 04:26:00 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 543261F921;
-        Wed, 18 May 2022 11:25:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652873159;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lzGqbB6W/4jJjPwTJUIMVwsso9o7Blm3R0BLht7tMSI=;
-        b=f+6VssfOQNjRrpyZABnQm1ZJYRE361ARv7x8KnF355SG32w2Ax34yCjoPPRxBuaxVPOhV0
-        Hm2GPKSqAIMqMPuMHudFaV8I6u1zYTIBm+V8pf1FMVTZ06nuyGcQe22FmaqLCGQumpQEZZ
-        K6tTLvqVreUvJqYmDXQeMKL/Vw9ntF8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652873159;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lzGqbB6W/4jJjPwTJUIMVwsso9o7Blm3R0BLht7tMSI=;
-        b=sT0MzHwKutP4nbHRSXKZbIYvCH0qzaHplxeoyZZgFfGo8b8tDBuCsoErL2HuIA/5bv5Z2G
-        TGabJCLWnc1UxcCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F0BAF13A6D;
-        Wed, 18 May 2022 11:25:58 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 38XzOcbXhGL8TgAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Wed, 18 May 2022 11:25:58 +0000
-Date:   Wed, 18 May 2022 13:21:40 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     dsterba@suse.cz, axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
-        pankydev8@gmail.com, dsterba@suse.com, hch@lst.de,
-        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, jiangbo.365@bytedance.com,
-        linux-block@vger.kernel.org, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH v4 07/13] btrfs: zoned: use generic btrfs zone helpers to
- support npo2 zoned devices
-Message-ID: <20220518112140.GI18596@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
-        axboe@kernel.dk, damien.lemoal@opensource.wdc.com,
-        pankydev8@gmail.com, dsterba@suse.com, hch@lst.de,
-        linux-nvme@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, jiangbo.365@bytedance.com,
-        linux-block@vger.kernel.org, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, dm-devel@redhat.com,
-        Luis Chamberlain <mcgrof@kernel.org>
-References: <20220516165416.171196-1-p.raghav@samsung.com>
- <CGME20220516165428eucas1p1374b5f9592db3ca6a6551aff975537ce@eucas1p1.samsung.com>
- <20220516165416.171196-8-p.raghav@samsung.com>
- <20220517123008.GC18596@twin.jikos.cz>
- <2b169f03-11d6-9989-84cb-821d67eb6cae@samsung.com>
+        Wed, 18 May 2022 07:27:19 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B77B163F74;
+        Wed, 18 May 2022 04:27:17 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id CD32E1F449B3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652873236;
+        bh=e8p4TR3+Gx2olOYDXG39tw2db3gvoqk5KGWU0EEerow=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=g4oIkNfPtJb5VUZtQrESG1J4U4OhFQtjew7FoNk/MT2hHujri51MXh3vtsMfftMqz
+         JuZ3wQUtjPhtbGi6N+YDU6FPgvRbqLBT/ky16/XR19hy6YNomn/8yVl4DJKCqouFDM
+         tPUaS55Vei16kDq2phb8A9vRkKU0X9iktBII3jzw1zcOJA1xqSkkI3RWoDz6MZcfed
+         c7HEdXwLQpTKvnmHk5H9tR82TwiQSuQIFQ8HGYCGpSOI+W8IN8WtuNsx6Vs17TpXtP
+         0IYsmJMDwVOn16eBbJ3oIv6nHlOVs2aMH8qCzD3MO2GIIdBKUdfQ2zqMYfdJt4hjn0
+         uwdjIdeK2T58Q==
+Message-ID: <aa89071a-b69c-3ea4-4f61-14904505c34d@collabora.com>
+Date:   Wed, 18 May 2022 16:27:06 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2b169f03-11d6-9989-84cb-821d67eb6cae@samsung.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Cc:     usama.anjum@collabora.com, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Benson Leung <bleung@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] platform/chrome: Use tables for values lists of
+ ChromeOS ACPI sysfs ABI
+Content-Language: en-US
+To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
+References: <20220518083524.37380-1-bagasdotme@gmail.com>
+ <20220518083524.37380-2-bagasdotme@gmail.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20220518083524.37380-2-bagasdotme@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 11:40:22AM +0200, Pankaj Raghav wrote:
-> On 2022-05-17 14:30, David Sterba wrote:
-> > On Mon, May 16, 2022 at 06:54:10PM +0200, Pankaj Raghav wrote:
-> >> @@ -1108,14 +1101,14 @@ int btrfs_reset_device_zone(struct btrfs_device *device, u64 physical,
-> >>  int btrfs_ensure_empty_zones(struct btrfs_device *device, u64 start, u64 size)
-> >>  {
-> >>  	struct btrfs_zoned_device_info *zinfo = device->zone_info;
-> >> -	const u8 shift = zinfo->zone_size_shift;
-> >> -	unsigned long begin = start >> shift;
-> >> -	unsigned long end = (start + size) >> shift;
-> >> +	unsigned long begin = bdev_zone_no(device->bdev, start >> SECTOR_SHIFT);
-> >> +	unsigned long end =
-> >> +		bdev_zone_no(device->bdev, (start + size) >> SECTOR_SHIFT);
-> > 
-> > There are unsinged long types here though I'd rather see u64, better for
-> > a separate patch. Fixed width types are cleaner here and in the zoned
-> > code as there's always some conversion to/from sectors.
-> > 
-> Ok. I will probably send a separate patch to convert them to fix width
-> types. Is it ok if I do it as a separate patch instead of including it
-> in this series?
+On 5/18/22 1:35 PM, Bagas Sanjaya wrote:
+> Stephen Rothwell reported htmldocs warning when merging chrome-platform
+> tree:
+> 
+> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:2: WARNING: Unexpected indentation.
+> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:11: WARNING: Unexpected indentation.
+> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:22: WARNING: Unexpected indentation.
+> Documentation/ABI/testing/sysfs-driver-chromeos-acpi:56: WARNING: Unexpected indentation.
+> 
+> The warning is due to missing blank line separator surrounding values
+> lists.
+> 
+> Instead of using lists, use tables to be consistent with rest of sysfs
+> ABI documentation.
+> 
+> Link: https://lore.kernel.org/linux-next/20220516213832.19127535@canb.auug.org.au/
+> Fixes: 0a4cad9c11ad46 ("platform/chrome: Add ChromeOS ACPI device
+> driver")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Cc: Benson Leung <bleung@google.com>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> Cc: Tzung-Bi Shih <tzungbi@kernel.org>
+> Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+> Cc: Linux Next Mailing List <linux-next@vger.kernel.org>
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Yes, it's a cleanup for later, not directly introduced or affecting this
-patchset. I've checked zoned.c, in btrfs_ensure_empty_zones it's the
-only instance so it's not some widespread problem.
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+
+-- 
+Muhammad Usama Anjum
