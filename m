@@ -2,89 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B955EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234061AbiERB4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 21:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
+        id S234069AbiERB5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 21:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234054AbiERBzw (ORCPT
+        with ESMTP id S234054AbiERB47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 21:55:52 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D50F07;
-        Tue, 17 May 2022 18:55:50 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24HKgGIQ031659;
-        Wed, 18 May 2022 01:55:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=WINoPMnV95p+ub5aBvEYZWMBEM7WAa67hzS2CHcAaio=;
- b=dwHYrkVDO/TpiP0jM/grCR0oLAW2moLDg/VdNtXeW60TeX+Ctc+/q0SsrcRS002PI0Y8
- H6P9hEhtGBhjWg2ZqfCPOP1c0DbnvGE21+SEp12uUVc2ZYGae4NCmRb4iiVKqQsh2GOX
- dsKus5IQNi790E2d8zKfEL+RFYTTUysKFUYIy1I33CcntPDxkDgRyMcS9Rxxuglfnrf0
- BUgTHllwN9rl2J3DWDIYBVIYoaMsHnKZc6l/rouh5LqS1bmvcR1NoObcCr8PNC5om9z5
- RPWGQSwcZfZycYzkE4IwGxptMEBu80n+2+VBLUi1+iN8xEbaYmi79cnZJgXWs2UwCXlU Sw== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g24aaftv4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 01:55:41 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24I1j166022553;
-        Wed, 18 May 2022 01:55:40 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g22v3r69s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 01:55:40 +0000
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 24I1tdCY004454;
-        Wed, 18 May 2022 01:55:39 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g22v3r69m-1;
-        Wed, 18 May 2022 01:55:39 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     mingzhe.zou@easystack.cn, michael.christie@oracle.com,
-        torvalds@linux-foundation.org, zgrieee@gmail.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        target-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dongsheng.yang@easystack.cn, zoumingzhe@qq.com,
-        linux-scsi@vger.kernel.org
-Subject: Re: [PATCH v2] scsi: target: fixup incorrect use of 'cpumask_t'
-Date:   Tue, 17 May 2022 21:55:38 -0400
-Message-Id: <165283883037.1328.16838345221393341169.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220516054721.1548-1-mingzhe.zou@easystack.cn>
-References: <20220516054721.1548-1-mingzhe.zou@easystack.cn>
+        Tue, 17 May 2022 21:56:59 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5166030579;
+        Tue, 17 May 2022 18:56:56 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2wyJ2fvlzGppJ;
+        Wed, 18 May 2022 09:54:00 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 18 May 2022 09:56:54 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 09:56:54 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <wellslutw@gmail.com>, <andrew@lunn.ch>, <pabeni@redhat.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH -next v2] net: ethernet: sunplus: add missing of_node_put() in spl2sw_mdio_init()
+Date:   Wed, 18 May 2022 10:08:12 +0800
+Message-ID: <20220518020812.2626293-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: gep8iAr9P7wUo-80x8z-rdTt17I37yM_
-X-Proofpoint-GUID: gep8iAr9P7wUo-80x8z-rdTt17I37yM_
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 13:47:21 +0800, mingzhe.zou@easystack.cn wrote:
+of_get_child_by_name() returns device node pointer with refcount
+incremented. The refcount should be decremented before returning
+from spl2sw_mdio_init().
 
-> From: mingzhe <mingzhe.zou@easystack.cn>
-> 
-> In commit d72d827f2f26, I used 'cpumask_t' incorrectly.
-> ```
-> void iscsit_thread_get_cpumask(struct iscsi_conn *conn)
-> {
->         int ord, cpu;
->         cpumask_t conn_allowed_cpumask;
->         ......
-> }
-> 
-> [...]
+Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+v2:
+  add fix tag.
+---
+ drivers/net/ethernet/sunplus/spl2sw_mdio.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-Applied to 5.18/scsi-fixes, thanks!
-
-[1/1] scsi: target: fixup incorrect use of 'cpumask_t'
-      https://git.kernel.org/mkp/scsi/c/525f447f88b1
-
+diff --git a/drivers/net/ethernet/sunplus/spl2sw_mdio.c b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
+index 139ac8f2685e..733ae1704269 100644
+--- a/drivers/net/ethernet/sunplus/spl2sw_mdio.c
++++ b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
+@@ -97,8 +97,10 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
+ 
+ 	/* Allocate and register mdio bus. */
+ 	mii_bus = devm_mdiobus_alloc(&comm->pdev->dev);
+-	if (!mii_bus)
+-		return -ENOMEM;
++	if (!mii_bus) {
++		ret = -ENOMEM;
++		goto out;
++	}
+ 
+ 	mii_bus->name = "sunplus_mii_bus";
+ 	mii_bus->parent = &comm->pdev->dev;
+@@ -110,10 +112,13 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
+ 	ret = of_mdiobus_register(mii_bus, mdio_np);
+ 	if (ret) {
+ 		dev_err(&comm->pdev->dev, "Failed to register mdiobus!\n");
+-		return ret;
++		goto out;
+ 	}
+ 
+ 	comm->mii_bus = mii_bus;
++
++out:
++	of_node_put(mdio_np);
+ 	return ret;
+ }
+ 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.25.1
+
