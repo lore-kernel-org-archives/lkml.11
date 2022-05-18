@@ -2,120 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58243C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C41C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232946AbiERH7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        id S232950AbiERH7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232896AbiERH7c (ORCPT
+        with ESMTP id S232893AbiERH7p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:59:32 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4561712719B;
-        Wed, 18 May 2022 00:59:31 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L350f4WXkzQk9h;
-        Wed, 18 May 2022 15:56:34 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 15:59:28 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 15:59:28 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <keescook@chromium.org>, <viro@zeniv.linux.org.uk>,
-        <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <chengzhihao1@huawei.com>,
-        <yukuai3@huawei.com>
-Subject: [PATCH -next] exec: Remove redundant check in do_open_execat/uselib
-Date:   Wed, 18 May 2022 16:12:27 +0800
-Message-ID: <20220518081227.1278192-1-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 18 May 2022 03:59:45 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB7E128150
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:59:44 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso2706032wma.0
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:59:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wlqyxLIVERxp3Tu6GIwPl+ul2krpLlZaTE7gd9Ebq94=;
+        b=KkQdc3tiGJBMpjiYHGZ6Sad1+0fYqnkXhm+k7PwzSgZF3Rc86LdTNSkQz/jhBnPubH
+         RrocU5rWVwWCoKhZW5gQeLd33eEB/pqlC3xI7YZkfqY7aFF++P3zre0ynNR3AEzsWCec
+         FWzYKUWg7XA5KHHS/CWsm1NiAMvWR23LJtRlzafNkFW4LKpVyOmM39G8kZ4KmgZnLCJW
+         OApk7fm8anJlRuoqJwTj0xmB3uxSe2klpBaQMgDojglKFZJfPvr78leulETSDynG6hSN
+         AkKxrisZfRktOqrvSgQktOzfH2M7Vr2/5rm733vQOAohE02Rae6mDqjcPYNdZDk6iLYN
+         g1Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wlqyxLIVERxp3Tu6GIwPl+ul2krpLlZaTE7gd9Ebq94=;
+        b=zcdg6f2POk8k3FvVM+oyCIJTE9BrDI9rN50RpxDhQkTA2SA5vyxOfIxHF7KDcDLPxO
+         vm4jPQAuRmuZirwVsX6Cf4N6DnN6w+uWsgPjkelirZGGAUCJ5PEE1Hx5l6d/t4E0wo1L
+         cuzBWwhG4GzE7uAJGEeGXut8MrEOi8cp9up5Gyod4bkw5b6wSti59Fttjsk+RQZ3WP5s
+         XBRpW/yzluD5Y8SQRE7dkg6WKU3KkpiCRF1UGkb7VXFCDYwl+8QWZbBc7gy+4JY0+Mjd
+         OfPd4O2SXR+lKCcLKbiKajT0htt8nc3rCiS+s5jHvQPpIU+pLI+r/ix24xR0U/iEs+7s
+         /lUQ==
+X-Gm-Message-State: AOAM531Wc0nEy2TUYUPBm/YTLCpL6mKyC1rYFMRAXPwiRhOZW1qTq4e5
+        e4M1YIkuz4YPtfOhTISxSCb229mRL4Dczkb2XYwgyQ==
+X-Google-Smtp-Source: ABdhPJwegnkje+Jgg7NNxzXZ4UchLta3+c/kfL5JdSjYS7XpBINQ/6CEF8S+8QuMw0CBjf6wCkeIgrhkH6c2eZnLHpY=
+X-Received: by 2002:a05:600c:6021:b0:394:56be:18e with SMTP id
+ az33-20020a05600c602100b0039456be018emr24290795wmb.86.1652860782644; Wed, 18
+ May 2022 00:59:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+References: <20220516165446.1246262-1-dlatypov@google.com>
+In-Reply-To: <20220516165446.1246262-1-dlatypov@google.com>
+From:   David Gow <davidgow@google.com>
+Date:   Wed, 18 May 2022 15:59:31 +0800
+Message-ID: <CABVgOS=rs97gnSJ+_uJwnNXRHkxvQXJxUS2s0vvNw+Vaoi8JYA@mail.gmail.com>
+Subject: Re: [PATCH] kunit: use kmemdup in kunit_filter_tests(), take suite as const
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        kernel test robot <lkp@intel.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000d3e58505df44a3d6"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a false positive WARNON happening in execve(2)/uselib(2)
-syscalls with concurrent noexec-remount.
+--000000000000d3e58505df44a3d6
+Content-Type: text/plain; charset="UTF-8"
 
-       execveat                           remount
-do_open_execat(path/bin)
-  do_filp_open
-    path_openat
-      do_open
-        may_open
-          path_noexec() // PASS
-	                            remount(path->mnt, MS_NOEXEC)
-WARNON(path_noexec(&file->f_path)) // path_noexec() checks fail
+On Tue, May 17, 2022 at 12:54 AM Daniel Latypov <dlatypov@google.com> wrote:
+>
+> kmemdup() is easier than kmalloc() + memcpy(), per lkp bot.
+>
+> Also make the input `suite` as const since we're now always making
+> copies after commit a127b154a8f2 ("kunit: tool: allow filtering test
+> cases via glob").
+>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> ---
 
-Since may_open() has already checked the same conditions, fix it by
-removing 'S_ISREG' and 'path_noexec' check in do_open_execat()/uselib(2).
+Ah, this is definitely better. Thanks. I ran it under KASAN to double
+check, and no issues there, either.
 
-Fixes: 0fd338b2d2cdf8 ("exec: move path_noexec() check earlier")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
----
- fs/exec.c | 22 +---------------------
- 1 file changed, 1 insertion(+), 21 deletions(-)
+Reviewed-by: David Gow <davidgow@google.com>
 
-diff --git a/fs/exec.c b/fs/exec.c
-index e3e55d5e0be1..0f8ea7e9e03c 100644
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -141,16 +141,6 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
- 	if (IS_ERR(file))
- 		goto out;
- 
--	/*
--	 * may_open() has already checked for this, so it should be
--	 * impossible to trip now. But we need to be extra cautious
--	 * and check again at the very end too.
--	 */
--	error = -EACCES;
--	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
--			 path_noexec(&file->f_path)))
--		goto exit;
--
- 	fsnotify_open(file);
- 
- 	error = -ENOEXEC;
-@@ -169,7 +159,7 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
- 			break;
- 	}
- 	read_unlock(&binfmt_lock);
--exit:
-+
- 	fput(file);
- out:
-   	return error;
-@@ -919,16 +909,6 @@ static struct file *do_open_execat(int fd, struct filename *name, int flags)
- 	if (IS_ERR(file))
- 		goto out;
- 
--	/*
--	 * may_open() has already checked for this, so it should be
--	 * impossible to trip now. But we need to be extra cautious
--	 * and check again at the very end too.
--	 */
--	err = -EACCES;
--	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
--			 path_noexec(&file->f_path)))
--		goto exit;
--
- 	err = deny_write_access(file);
- 	if (err)
- 		goto exit;
--- 
-2.31.1
+Cheers,
+-- David
 
+>  lib/kunit/executor.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
+> index 2f73a6a35a7e..43e15112460a 100644
+> --- a/lib/kunit/executor.c
+> +++ b/lib/kunit/executor.c
+> @@ -55,7 +55,7 @@ static void kunit_parse_filter_glob(struct kunit_test_filter *parsed,
+>
+>  /* Create a copy of suite with only tests that match test_glob. */
+>  static struct kunit_suite *
+> -kunit_filter_tests(struct kunit_suite *const suite, const char *test_glob)
+> +kunit_filter_tests(const struct kunit_suite *const suite, const char *test_glob)
+>  {
+>         int n = 0;
+>         struct kunit_case *filtered, *test_case;
+> @@ -69,11 +69,9 @@ kunit_filter_tests(struct kunit_suite *const suite, const char *test_glob)
+>         if (n == 0)
+>                 return NULL;
+>
+> -       /* Use memcpy to workaround copy->name being const. */
+> -       copy = kmalloc(sizeof(*copy), GFP_KERNEL);
+> +       copy = kmemdup(suite, sizeof(*copy), GFP_KERNEL);
+>         if (!copy)
+>                 return ERR_PTR(-ENOMEM);
+> -       memcpy(copy, suite, sizeof(*copy));
+>
+>         filtered = kcalloc(n + 1, sizeof(*filtered), GFP_KERNEL);
+>         if (!filtered)
+>
+> base-commit: 9660209d9418f2295d31fea0d32e313e9b2c1200
+> --
+> 2.36.0.550.gb090851708-goog
+>
+
+--000000000000d3e58505df44a3d6
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
+IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
+dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
+6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
+c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
+I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
+AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
+CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
+AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
+MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
+My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
+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
+G7p3AiuB2sgfq6cOpbO5MEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
+dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
+AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
+c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
+LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
+LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
+Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQBsL34EJkCtu9Nu
+2+R6l1Qzno5Gl+N2Cm6/YLujukDGYa1JW27txXiilR9dGP7yl60HYyG2Exd5i6fiLDlaNEw0SqzE
+dw9ZSIak3Qvm2UybR8zcnB0deCUiwahqh7ZncEPlhnPpB08ETEUtwBEqCEnndNEkIN67yz4kniCZ
+jZstNF/BUnI3864fATiXSbnNqBwlJS3YkoaCTpbI9qNTrf5VIvnbryT69xJ6f25yfmxrXNJJe5OG
+ncB34Cwnb7xQyk+uRLZ465yUBkbjk9pC/yamL0O7SOGYUclrQl2c5zzGuVBD84YcQGDOK6gSPj6w
+QuBfOooZPOyZZZ8AMih7J980MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
+R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
+MDIwAhABQeVybOOpR4bOOXZYL5T3MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCDw
+o01xzHM5aJUZJoDoBqnyp6fghiaAaqC31a4o2sqGhzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0yMjA1MTgwNzU5NDJaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
+BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
+CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAgTYaltoQDQk3DcvXq0cr
+f50IfGmXApVB6rmn7z0/FyTXT+OMm+mk8D+LYgMOrYdEzTLtGYo+GFs2tOB4/Xl1ZP/NVNHfVVmm
+eXRlqiigdIFUsXdG+3358lgluue+hkXSkHJ8kiZ/ZxbcGr4PRqBKwZCOaFddVAOtTkhyO+6uGpPy
+HUnYua61E2XNH+CHMiyPsAjL8iIpJP26fQj8Dh4RG+A9I0ED+pVol5qfr7Cwzdi1jIVfUk37H5u6
+PG8vsplJfe27T+FI7FMaIztBxPzVb40dc/P9zDvnAJFRWlv5umzW5i3u2xskDP5jU67X2syl+N+d
+5H6E1s3bGBzfXF207A==
+--000000000000d3e58505df44a3d6--
