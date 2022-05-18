@@ -2,106 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B874C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 963C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239346AbiERPab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36958 "EHLO
+        id S239373AbiERPbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235589AbiERPa2 (ORCPT
+        with ESMTP id S239360AbiERPbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:30:28 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91ED1A29D3;
-        Wed, 18 May 2022 08:30:27 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id i19so4498274eja.11;
-        Wed, 18 May 2022 08:30:27 -0700 (PDT)
+        Wed, 18 May 2022 11:31:41 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5953A73E
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:31:39 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id tk15so4548664ejc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:31:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=eIwb4I0AwekwEpYMZmVGy6yg88acm8K/xMMngQQs0ts=;
-        b=BDVWzBwgW8nUV9ufnXuwBYEi7IYd+UCbdLMt8V1mSIrGR1YwWGZGmM8dmCh90ssZrU
-         tLT6BPrKtp/nRHm7BSf7zDX5nTwZIuPTT26KXiL/oo6RklIpiCNyVVDxaWeOMGCguOGk
-         X5w/Z+eQdJAG4n9rHESqnQjY2a2i7U5omRmm6qIsVOeggtTLKmFaDRWqrdGhfr/rZPUW
-         7Z4HjRXH+9tly+0Rk3je8nAuG62qp0OBZTWoTJFJFEuG97Y0ibV5nL/Oh0K41ppWXFZn
-         OpwOc96AX3ec2v1+f0lhbrB3jJltt9oEyf3VGgEn7Kn8u4mM+0ATVk1VVBe16AYBqTlN
-         9zeg==
+         :cc;
+        bh=BsKITgJe0n74ro4jmQWlnQSOXtIrCCeeoRj5fvJvlc0=;
+        b=QbX9x8QYId9IYqLSJLz7B0lNYR5Ysq9SBtezIFgF9MxRuFFhgUQb08yofIQ91NjF6T
+         j8BNWfBXTMUcqev9dUOJvjngjgkinx9SiYS0zg/d9CVznombWSAUvvOCZa/PuaVB3gwN
+         1uqYIsQhnkwLB7akZjsrIp2VfWC1BcVGVCaD0AAVV3T+AUJkM9grUxrjgGOUlcbpCJ7Q
+         IeWC5F8GO0y6JSidBbBMapnVKYFFwBBW9XUYgsKDbR2gGqbLYPKMNNiaZDRzEa24wDKr
+         j8pNn6PckGBWkyQaarY2OOp8IP9hmqxUkTcK3KmWub42D4ReKkPddXGxFnJ7tv5ZqaV9
+         jJsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=eIwb4I0AwekwEpYMZmVGy6yg88acm8K/xMMngQQs0ts=;
-        b=e8OeS4G+tvrtFkftWGPblqohecrOcQjxax+Oy34K7LBrhZKqYm+G/YzcaRBLrnAclN
-         8SNDRoCwEtvaz7QdzFyoJc7b/uW9Ic9DGWAOdhuajtJzAgW4/bMtJH6523fKFOoTooNj
-         4puUurqqiBoUwR88YjT6BXImv16Hp/chdrOpoi0oDGYkduMyFjHUdmpgEhbZHuklS6cU
-         lsKsD6SPdvoAZpwXgtEif3yZqy/2oO7baPyw+q3TBS5zuf1fPYNZxrdJawD6hcvUt+uA
-         t2hU66OXmL4J4CaosRl4m0gtALsWcM0WOW9I4EtyOQzA/TIrf0EDy176nI6XcjEgT52n
-         3hyQ==
-X-Gm-Message-State: AOAM532a0TXzlAJ5/pVIfBH8TqyacNfvkTYybspniKPJTVaaHs68oYQe
-        7ZV9pveMiaUti0k5Erw5wKJ3wdy5Hr1vqLQU5IX7G0PZB5o7VQ==
-X-Google-Smtp-Source: ABdhPJxsi9nMEKiVYaazPPhTBmzUAFFAp90WptYrLpDKLLw0lqq05xSIfgvppNf/eoYKuFksNbhOl9iOjrJAexnpfNc=
-X-Received: by 2002:a17:906:a219:b0:6e4:86a3:44ea with SMTP id
- r25-20020a170906a21900b006e486a344eamr120040ejy.385.1652887826262; Wed, 18
- May 2022 08:30:26 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=BsKITgJe0n74ro4jmQWlnQSOXtIrCCeeoRj5fvJvlc0=;
+        b=WozQ/mV4x4qJc8tKjG6i78kpE8WgtDljdmfuAHafLW4lwhaYVjIt3zNzubVXn07fbq
+         QjydCXSGDJeoNrui1weGC2OW+iacDp+I8y6/2vABTRl6VGj9oywF9cVYxyyNlPZcKuT1
+         34pLd8BCZ7Q2K9aBOKjC1C3NGjWN8mKsIRBx1gHxAE2mCj59gnAo8nGl29HvTG16z23/
+         fGTXj/6TwGGfNINRP2Odaflz2WHkai3RQhrqfEJ2QQQuSKOSElkyjMSbVUBQLA3mv8gh
+         CpappneBNngkd5BT6mzhYdTLwqTbC7dg0MHT3oHns6eDz931P4+UP/mJ0HiwPQyU/jS1
+         XpoA==
+X-Gm-Message-State: AOAM5324IJuS58cKWj9n4fOmXrFG5+uFsZ83Z5amLp101dbSOYibzG64
+        XVkuseZxiAOLPe5ee+cxrvoUW4TFSw7l4o1abOOKPw==
+X-Google-Smtp-Source: ABdhPJypdAwNsHGSQOCFoNHLEpvFi/jgA+FFF6DbVWnbkiIb+knGUAlhkoYYf6uCpI4qtHTl6NSZOVNx73Y9TpbSvCE=
+X-Received: by 2002:a17:907:2cc7:b0:6fa:7356:f411 with SMTP id
+ hg7-20020a1709072cc700b006fa7356f411mr118908ejc.369.1652887898099; Wed, 18
+ May 2022 08:31:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220518024347.213402-1-lizhengyu3@huawei.com>
-In-Reply-To: <20220518024347.213402-1-lizhengyu3@huawei.com>
-From:   Dmitry Baryshkov <dbaryshkov@gmail.com>
-Date:   Wed, 18 May 2022 18:30:15 +0300
-Message-ID: <CALT56yO_ek55BGX4cKuTim2gWwQp7EXUFyh332MPYHPdi7xEWw@mail.gmail.com>
-Subject: Re: [PATCH -next] usb: host: ohci-tmio: Remove redundant if statement
-To:     Li Zhengyu <lizhengyu3@huawei.com>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb <linux-usb@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>
+References: <20220518073232.526443-1-davidgow@google.com>
+In-Reply-To: <20220518073232.526443-1-davidgow@google.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Wed, 18 May 2022 08:31:27 -0700
+Message-ID: <CAGS_qxrOUYC5iycS436Rb-gEoEnYDa2OJLkQhEVXcDN0BEJ4YA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] kunit: tool: Add x86_64-smp architecture for SMP testing
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Marco Elver <elver@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Dmitry Vyukov <dvyukov@google.com>, kunit-dev@googlegroups.com,
+        kasan-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=D1=81=D1=80, 18 =D0=BC=D0=B0=D1=8F 2022 =D0=B3. =D0=B2 05:45, Li Zhengyu <=
-lizhengyu3@huawei.com>:
+On Wed, May 18, 2022 at 12:32 AM 'David Gow' via KUnit Development
+<kunit-dev@googlegroups.com> wrote:
 >
-> (ret =3D=3D 0) is true when (ret) is false, so remove it.
-> Also remove unreachable code.
+> Add a new QEMU config for kunit_tool, x86_64-smp, which provides an
+> 8-cpu SMP setup. No other kunit_tool configurations provide an SMP
+> setup, so this is the best bet for testing things like KCSAN, which
+> require a multicore/multi-cpu system.
 >
-> Signed-off-by: Li Zhengyu <lizhengyu3@huawei.com>
-> ---
->  drivers/usb/host/ohci-tmio.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
->
-> diff --git a/drivers/usb/host/ohci-tmio.c b/drivers/usb/host/ohci-tmio.c
-> index 49539b9f0e94..6bcb0cb53f7c 100644
-> --- a/drivers/usb/host/ohci-tmio.c
-> +++ b/drivers/usb/host/ohci-tmio.c
-> @@ -243,12 +243,8 @@ static int ohci_hcd_tmio_drv_probe(struct platform_d=
-evice *dev)
->         ret =3D usb_add_hcd(hcd, irq, 0);
->         if (ret)
->                 goto err_add_hcd;
-> -
->         device_wakeup_enable(hcd->self.controller);
-
-I think the proper patch would be to check the return value of
-device_wakeup_enable(), so NAK.
-
-> -       if (ret =3D=3D 0)
-> -               return ret;
-> -
-> -       usb_remove_hcd(hcd);
-> +       return ret;
->
->  err_add_hcd:
->         tmio_stop_hc(dev);
-> --
-> 2.17.1
+> The choice of 8 CPUs is pretty arbitrary: it's enough to get tests like
+> KCSAN to run with a nontrivial number of worker threads, while still
+> working relatively quickly on older machines.
 >
 
+Since it's arbitrary, I somewhat prefer the idea of leaving up
+entirely to the caller
+i.e.
+$ kunit.py run --kconfig_add=CONFIG_SMP=y --qemu_args '-smp 8'
 
---=20
-With best wishes
-Dmitry
+We could add CONFIG_SMP=y to the default qemu_configs/*.py and do
+$ kunit.py run --qemu_args '-smp 8'
+but I'd prefer the first, even if it is more verbose.
+
+Marco, does this seem reasonable from your perspective?
+
+I think that a new --qemu_args would be generically useful for adhoc
+use and light enough that people won't need to add qemu_configs much.
+E.g. I can see people wanting multiple NUMA nodes, a specific -cpu, and so on.
