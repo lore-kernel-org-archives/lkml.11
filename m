@@ -2,97 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59988C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235739AbiERLnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38608 "EHLO
+        id S235766AbiERLoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235762AbiERLnL (ORCPT
+        with ESMTP id S235714AbiERLoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:43:11 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FF32B1BC;
-        Wed, 18 May 2022 04:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652874189; x=1684410189;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tw6Z4f9Bhax1c/2buQLmzsM9gge//sdJmnyXlU32Rlc=;
-  b=eJQ4XPZTsxO31SOu3CgTf0SfECcc/z4uOMlHSfwXEMihacHB2ZRa0Bnt
-   e/Gqt0EqxjbiE472AUwTMDxungnabNqFGMm5VOk78GIm3bIJgPupwL5+9
-   Qb0Xgri5rvLGyynGh0mAJhn4X0QsOQLfSnMc646emdTj/qD3j3J/tiibK
-   NWGm80XKFNfPj1NvaTKI/41nkeptpIGLNS7KcAvodL2ldyXP6OZr+j/PW
-   1wLUr/6IpQ3Ibiv6EvZqSPotK9VvJDThgWaG8Lu/zY4gOQtNOjAbUt48W
-   J9DcERwFF+FhGzj3/0eTzfy2cuy7lNfwhs9Le3RjfKd561i4eJ3f9mYYl
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="358038747"
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="358038747"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 04:43:09 -0700
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="597743292"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 04:43:07 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rcu: Add cpu-exp indicator to expedited RCU CPU stall warnings
-Date:   Wed, 18 May 2022 19:43:10 +0800
-Message-Id: <20220518114310.1478091-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 18 May 2022 07:44:02 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0931790BF
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 04:44:01 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id c24so3092079lfv.11
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 04:44:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VUs/qiRUXkX7u01sNNHH5nG6z38UxD4eg1cpL+kl3IY=;
+        b=NL6N69NjUsnYgCBbK2CT7VS2GcLCktUlueSaZScu8TI9QduQ1VobJVGHSjM38FUuyN
+         svg/5Jvr9RM/i54uw89DK5BdJVd3k7bYxS4fKpNGfgzeHiu2IBBMc4/H2B5p7LBXQW/l
+         fSjbKPI6oR+Lutlwlrodtc0ejMPjEb4ELg7Sz0HPnCX9/dhG01EVYeV0/H3crVaUdqjh
+         f0moCm64ZwSM9COqEFhdyLvS3Zi7jVSzlzlVPD2xqhhr3zNskJFro2paspiFWn9X25ON
+         hO7Yvk2ts2a+8I06rySiQ2nPfQJEhwCZFLB2l69ERfJkczOkCp96X75BOrrnejjQ5OR+
+         ExYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VUs/qiRUXkX7u01sNNHH5nG6z38UxD4eg1cpL+kl3IY=;
+        b=8FwZKcjaYSdCPyKpHqQWGGU3xtAWEuUdEAX5f1cou1XplsLOeNlFPD55aYfXYpSkHI
+         nALTtZH/Fq92pziaGfUGj0s8sbCENJQzb2A3iHv+r5oyb9bb2z3Mmk8WnfRZkAjdUwoX
+         Rev9mGKdbNe2nAxYWZgodYG/G9CsfYLmQnf8JNFkzunKw7a1mHfXN7/1DDBMofzvScTF
+         V8FrH8tDY/4N3h0se9fXC1H3QRzSRZmnrBYxVuyShL3GbrmDASdL9QlSKV3pmFXCDtGq
+         eO5Sv4t5LwjH5mE0ZsPh87HEWuw3+ajsqwSPMRo/NSUjMnr5CUIs6kMfcXVYqfOy9AvE
+         iDEA==
+X-Gm-Message-State: AOAM532xHZRRWWWsZFc0RpcOJ4pGPMpISTmiyAz0sK+TsjB8z+1ZFdgV
+        j/LrAx2eSCOQCct/M6CfjR8Mtg==
+X-Google-Smtp-Source: ABdhPJwlewLBeyGbH+jR6wIjAntDY4XD70LvPuqQZXZ1HYzVHqv2jEV/UgO2M8DbS0xmSByoyJGxsg==
+X-Received: by 2002:a05:6512:3f94:b0:474:68e:46c3 with SMTP id x20-20020a0565123f9400b00474068e46c3mr20754082lfa.431.1652874240015;
+        Wed, 18 May 2022 04:44:00 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id h18-20020a05651211d200b0047255d211eesm181695lfr.285.2022.05.18.04.43.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 04:43:59 -0700 (PDT)
+Message-ID: <efb99320-b0d5-11fc-cd37-2c2f1ca90ece@linaro.org>
+Date:   Wed, 18 May 2022 13:43:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs in
+ nfc_hci_hcp_message_tx
+Content-Language: en-US
+To:     duoming@zju.edu.cn
+Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org,
+        netdev@vger.kernel.org
+References: <20220517105526.114421-1-duoming@zju.edu.cn>
+ <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
+ <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
+ <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
+ <454a29ba.1b9b1.180d576985b.Coremail.duoming@zju.edu.cn>
+ <bb566eb7-c571-9a51-af51-78e36412fbfc@linaro.org>
+ <670b87a9.1d1aa.180d6d8952e.Coremail.duoming@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <670b87a9.1d1aa.180d6d8952e.Coremail.duoming@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds a "D" indicator to expedited RCU CPU stall warnings.
-when an expedited grace period begins, due to CPU disable interrupt
-time too long, cause the IPI(rcu_exp_handler()) unable to respond in
-time, this debugging id will be showed.
+On 18/05/2022 13:05, duoming@zju.edu.cn wrote:
+> Hello,
+> 
+> 
+>  struct st21nfca_hci_info {
+> 
+> If you think this solution is ok, I will send "PATCH v3".
 
-runqemu kvm slirp nographic qemuparams="-m 4096 -smp 4"  bootparams=
-"isolcpus=2,3 nohz_full=2,3 rcu_nocbs=2,3 rcutree.dump_tree=1
-rcutorture.stall_cpu_holdoff=30 rcutorture.stall_cpu=40
-rcutorture.stall_cpu_irqsoff=1 rcutorture.stall_cpu_block=0
-rcutorture.stall_no_softlockup=1" -d
+More or less, send entire patch, so we'll see.
 
-rcu_torture_stall start on CPU 1.
-............
-rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks:
-{ 1-...D } 26467 jiffies s: 13317 root: 0x1/.
-rcu: blocking rcu_node structures (internal RCU debug): l=1:0-1:0x2/.
-Task dump for CPU 1:
-task:rcu_torture_sta state:R  running task     stack:    0 pid:   76
-ppid:     2 flags:0x00004008
+> 
+> Best regards,
+> Duoming Zhou
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
----
- kernel/rcu/tree_exp.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index 4c7037b50703..f092c7f18a5f 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -637,10 +637,11 @@ static void synchronize_rcu_expedited_wait(void)
- 					continue;
- 				ndetected++;
- 				rdp = per_cpu_ptr(&rcu_data, cpu);
--				pr_cont(" %d-%c%c%c", cpu,
-+				pr_cont(" %d-%c%c%c%c", cpu,
- 					"O."[!!cpu_online(cpu)],
- 					"o."[!!(rdp->grpmask & rnp->expmaskinit)],
--					"N."[!!(rdp->grpmask & rnp->expmaskinitnext)]);
-+					"N."[!!(rdp->grpmask & rnp->expmaskinitnext)],
-+					"D."[!!(rdp->cpu_no_qs.b.exp)]);
- 			}
- 		}
- 		pr_cont(" } %lu jiffies s: %lu root: %#lx/%c\n",
--- 
-2.25.1
-
+Best regards,
+Krzysztof
