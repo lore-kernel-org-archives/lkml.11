@@ -2,363 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC76C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239693AbiERPtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
+        id S239707AbiERPuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbiERPtK (ORCPT
+        with ESMTP id S239689AbiERPuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:49:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8EC5D104CAE
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:49:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652888947;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CPMtpCANwEoxwHK48M0Snd0aiOyfZBKw+8aByA2ZSdo=;
-        b=X1vOMluRtqcu1faAOU2cIY1NqraQRwbYNBTWdVLLejM3sQskMTL5txZ1DEUixs7uJ+ivyY
-        G0Psq6xsJ4e53tPWa9AhQT5nBsJe9RfzhE3gWHW1Gpi/SRt6F0TeaH0eoVCvsNcABzzDOC
-        HdV0PBuFKNznvNLNGGCA/MF+b+Be8SM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-YbbNmX4VOyusgVngS6orDQ-1; Wed, 18 May 2022 11:49:05 -0400
-X-MC-Unique: YbbNmX4VOyusgVngS6orDQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 587AA294EDCB;
-        Wed, 18 May 2022 15:49:05 +0000 (UTC)
-Received: from localhost (unknown [10.39.192.212])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BFAE140C1438;
-        Wed, 18 May 2022 15:49:04 +0000 (UTC)
-Date:   Wed, 18 May 2022 16:49:03 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Ming Lei <ming.lei@redhat.com>
-Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Harris James R <james.r.harris@intel.com>,
-        io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Subject: Re: [PATCH V2 0/1] ubd: add io_uring based userspace block driver
-Message-ID: <YoUVb8CeWRIErJBY@stefanha-x1.localdomain>
-References: <20220517055358.3164431-1-ming.lei@redhat.com>
- <YoOr6jBfgVm8GvWg@stefanha-x1.localdomain>
- <YoSbuvT88sG5UkfG@T590>
- <YoTOTCooQfQQxyA8@stefanha-x1.localdomain>
- <YoTsYvnACbCNIMPE@T590>
+        Wed, 18 May 2022 11:50:15 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE221A0ADF;
+        Wed, 18 May 2022 08:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652889014; x=1684425014;
+  h=from:to:cc:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=c2g+TUBC1/pI/Od7fgFqoX+P0rL1XVMNEFrcKCuHC3s=;
+  b=gZMVmrmR7e90B91E50UOX952/XjGYXUm9vgjFwmXwV/eqUzu7MrNTX3E
+   waBh4wlNlHBtubK7mVFsj22XHy+TT9OyQeSzaCfCG4tYPE5kSzAoPcHHn
+   lHFAkMtFWIVNf4aLqa1IcRYHRSCoRtlNZGhiAoPzHqLjGYrUEyy0L3aA+
+   BVhUniC0cJMMxUBzkafXDFDxyUk0mY7F6NuVTVvEJ9kpQtjsZKoO5EHfb
+   0VrjK9WGKoQP42uyV8auf5AIM6nRMSO6pNFsu6DlQnXj3eTiF9MxnS9Nc
+   WNmrdp7Jj3/pCxC/5bAinuLrApX60CYkzaBxlmrsoHIqIrzdFJnjFhvSP
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="269323771"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="269323771"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 08:50:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="817500535"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by fmsmga006.fm.intel.com with ESMTP; 18 May 2022 08:50:14 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 18 May 2022 08:50:13 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 18 May 2022 08:50:13 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.104)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 18 May 2022 08:50:13 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=atk29epn7soY4L+R9F31Gyx1QZ2vvHLwu2r81uWO/gjHEzN2GtkEb6eQeFlX4m6zwirFEqlhLnbKTsjoyPzPSdBOyTh1QFLiGSYsv29kJeqp3FuH44JNKVsat6LVYg8aBfWremxU6M9RI6jH9vZ0mGc8Hvg2tkQU8dhH6wUkkMZONvCw2VfKRTGeR3sdt5Cqr2Q2Yn8cEULdq3xOV2hZS5pEw1wlSNyKxg9C+9y087fjiigWPS3ewMhZaxYamRCYtgyAJXnpOVRyueqhgTeP2j+QlaR3uf1w54bIhN/6sfxUiETP32zRrYDwG2U7ctQFQrh9dHxH+RFexrTv0tHNtA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c2g+TUBC1/pI/Od7fgFqoX+P0rL1XVMNEFrcKCuHC3s=;
+ b=cDiRCCbLT1XIN8QYzwhCVqBy3zJ7JKDG2MTGe1Hx12OSltS6EKBgwHJkV9HKR/Cl6p6Sakjz3+u0c8Eofd+6DwJTx5HjYggACxb7UgbKhpUa81qVvLtKJczUFn+Icn2JB+iJoO7ULfN4Ld2N/cIBP3AjhKsNYFGeeoma7rlUqiVQfmvpsbBqIUY99hie6i498ynHSKE82o/EvKQbTXObFhVuhfPX2JwjJ/eQjYcFvvRfSw4OcDDji3ZksVXW1bbTnbWBqFcVPhEXwCCTTFpN4wF/8OGSLCX5O8nNVFerCdxW1i3/tYUzBL7wvUOodLOGf6VZYqYBvsRuJ0TwRlP9fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM8PR11MB5750.namprd11.prod.outlook.com (2603:10b6:8:11::17) by
+ BYAPR11MB2614.namprd11.prod.outlook.com (2603:10b6:a02:cc::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5250.18; Wed, 18 May 2022 15:50:11 +0000
+Received: from DM8PR11MB5750.namprd11.prod.outlook.com
+ ([fe80::80cd:dbf8:958d:b8f7]) by DM8PR11MB5750.namprd11.prod.outlook.com
+ ([fe80::80cd:dbf8:958d:b8f7%5]) with mapi id 15.20.5250.018; Wed, 18 May 2022
+ 15:50:11 +0000
+From:   "Reshetova, Elena" <elena.reshetova@intel.com>
+To:     "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "keyrings@linux-nfs.org" <keyrings@linux-nfs.org>,
+        "gentoo-hardened@gentoo.org" <gentoo-hardened@gentoo.org>,
+        "kernel-hardening@lists.openwall.com" 
+        <kernel-hardening@lists.openwall.com>,
+        "selinux@vger.kernel.org" <selinux@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "tpmdd-devel@lists.sourceforge.net" 
+        <tpmdd-devel@lists.sourceforge.net>,
+        Audit-ML <linux-audit@redhat.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "lwn@lwn.net" <lwn@lwn.net>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "fedora-selinux-list@redhat.com" <fedora-selinux-list@redhat.com>
+CC:     Linux Security Summit Program Committee 
+        <lss-pc@lists.linuxfoundation.org>
+Subject: [ANNOUNCE][CFP] Linux Security Summit Europe 2022
+Thread-Topic: [ANNOUNCE][CFP] Linux Security Summit Europe 2022
+Thread-Index: AdhqzkvZUYsIzEfbS2Ok0K5VWG7sfg==
+Date:   Wed, 18 May 2022 15:50:11 +0000
+Message-ID: <DM8PR11MB575091BB70382539DC3993A6E7D19@DM8PR11MB5750.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7baac8e8-6823-49c8-83bf-08da38e61761
+x-ms-traffictypediagnostic: BYAPR11MB2614:EE_
+x-microsoft-antispam-prvs: <BYAPR11MB261492087022D83C4A4BAB36E7D19@BYAPR11MB2614.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 17H65JD32dqpIYfJHlUoAKCZmsTofZhUVMwHnVdtuAwWZoRqtzS44YKiihzH7mAAJxoHM0xH0NjGcWT1cNJ5pt67Le7u7e3BGZ1p39HVTFJWtZESg2Y/rT3ZzRIBEwzlWHipyfYkINj0/kIVTOSQrDZDoYLlkiYvB+fhymXnFJmKC5PEhsVONaAGjIqN2wxeoFF7uSkFor/+F/3uk1K+m7R1sAPqoVjcUCL7ey6wZFTMN7PjzG9U1o2e+tmGItEF2+6fKTB8qVdAGk2krB3vCCoF5MYfOHOW7eD3htReo2gryPag7q7438Q+1EnRQEMZQExvxfmv3/oRAPWutt6J1l/ZTFBuMPMfxu1UK9sKzXlYxVMenb7B38oRlIp65W+xDL415dTj8GHecNa04M0L8m2yzu1fxlT3mvNpY3PdJDprWzB42DmPzuXSWphfa94cLbD723TGP0FCvgeEOkehULz+ztXlshRzLBYPLMUOomg06WtfVrDdhKcrsEkOI8acoC+nwXqitzcmdziI82iGuP+3TFeddd9eyDsg4OPyozSIMzEbneU7jmSCRuJrBFRw9TyVhYWqJBSu+OjFgiASq2j36yM/qdYJnt4QmNtX1t8Irfm2qI+LTW7ivpcrAq/tY6OalTUCg6vwB2w1eN/weZ+vtRyWUCm5NX3lOcEY/1NrXrwHaeBUghax/V1xBAXrtAyUd3tapcOo2J+4eLUYXOoFaW0+0tzx/NA0BqITYrZVMcZMDIr54PjeUnoQn9TlQI28aTh0iz45mmsqk2QmYv/PuMPO7DzOq66bAzcA0aNOGs+3DLLuRipyCC2Dj5U5
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5750.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(110136005)(15650500001)(9686003)(83380400001)(508600001)(71200400001)(186003)(6506007)(38100700002)(66556008)(76116006)(64756008)(66946007)(66446008)(26005)(8936002)(33656002)(38070700005)(55016003)(7416002)(122000001)(316002)(66476007)(5660300002)(921005)(82960400001)(966005)(8676002)(52536014)(7696005)(2906002)(45080400002)(4326008)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SVVLTzBSTlN3MUkzR3ZpNU9EQlV5UzZUODRCNmJ2bnkyMHBiWjlYV0dRN0w5?=
+ =?utf-8?B?N0JRbko2U05LV2Z0aTRBUXBqN0dxLzlKMHhjL0ZMTW9BU1dWVHhIRDJGK0xn?=
+ =?utf-8?B?ZkpvM0FMRTVXSHpMUGNaZGFzN1B4UXBiYkdKWHdHQkJpRHFhM3B4MFZMMHlh?=
+ =?utf-8?B?ejBiQVgrc2s3NmU3OC80aFRKa1MwQUt6VmZZSi9aWXhxbXUzZytlcU9xSkxH?=
+ =?utf-8?B?b3NXWVZmR2hBc1dCa0dLSk9WZXJRZSttTnRwOXZ5R2U0ck1FUTV2SEhNSzNT?=
+ =?utf-8?B?N0hkWEdhOFhyVnZhWFN3bUZOQmJLSTJOYk81OThKWTVGNHR3OVduWER0T0Z6?=
+ =?utf-8?B?Ym5jYm1zemluSGR5WmhVU1FvS1ZUd0xoRmQ2TlhhVmxhcHRPYkphNitjNzFu?=
+ =?utf-8?B?c2k0WU10RnlWd3F6N0VnTFJYMDJhRDlJYThMWmJTTjkwaUdRNXQ2Y1ZpTjNP?=
+ =?utf-8?B?cWJLMHpjclYxTHZTSTFiV1NDOXBPRGp6N2RrczFxQVExZERUU3g1RUk2NWw4?=
+ =?utf-8?B?K0pkTlNrcDJGODYwTW0vMnNlcjhBQzBqNnh6QnM1Nk1tNkJVbmVSY1pwZElj?=
+ =?utf-8?B?WDVoajNLeTZjVVQzOUFBZWhFZDBIN25rU3FIODI2WWNkQ1M5algwVTA3TjJQ?=
+ =?utf-8?B?dVVLc0gzQ21iN1RpNWhlVTN1RmFXUHNobU1YU0o2WTNoS1NDVDJlOCtiNUR2?=
+ =?utf-8?B?TkFuNmI5MEdYdnAyTU50UHM4Z2V4ZGFYSWQxRkxEOXNWVmppSXllNGw2ZHJH?=
+ =?utf-8?B?VlVGeTZXMEJDQ0REc0R6QTVwOFZjNGVoTzFGeEVUcEk3RGtFU3d0UFFtRC93?=
+ =?utf-8?B?a2ZlMWo5bzY1d214Vkl1ZDFkRXpSK2tEa2xXZnVmY3RLR3hpcjVRZ200b2JC?=
+ =?utf-8?B?empwdzhlTForWDBHa1F0bWk2YkhoWjdzRDZURzdDN0UrUTJ3SjRpV0ZBaXoz?=
+ =?utf-8?B?Y2dQdXJ3TmdjdXM4OE9vVFBrbXBaU3AzVHdhdEpZZzRHYkhYd1VUWWRRNVdM?=
+ =?utf-8?B?RGN5Rnl0TzNyVkVhWWNMV2VYNTdBUWpiTXJyTEpTQmRtQlQyRE1FZGx4b3dU?=
+ =?utf-8?B?YVV5UWUzbVk3Wmc4Z2UvK0kzV0dPdzZBQ3JXL1FZWUdSQ3VpcG4zcStZRXg2?=
+ =?utf-8?B?R2dhWGdhV2JsMTBERjI5L0Nxb04rUkVmSVVVTmR3QTlsZjg3QmxvRGFvcWhw?=
+ =?utf-8?B?ZHRHRUtxUVNYeWthblh3a1VtNlllM1R5Ymw2V0QzRUN6emd0UXdSMldUUWxL?=
+ =?utf-8?B?eTI2dDVCVDlCSjlKNE5NdTRGR2N1Z0x2Q2diVlRWQm52T09SSUFFdTFJTW5H?=
+ =?utf-8?B?TW1hMmZ2cHV0cGFneExGd2kzZXJJN3hGMm54YnRsclhYQXNpRzRJcHRObUFF?=
+ =?utf-8?B?UmJXdHVINEVoSXZpWm9iL1d2bnozenlwRUFoa1RLOFphazNpU1pVRTl0YXdL?=
+ =?utf-8?B?dU5vcncyMVlPaFZEZHArY09ML2xUWnM0dWorZmNvUW1JN0hPcFZrTW02TkQ0?=
+ =?utf-8?B?eGxrRlNDbWRXVDd3a3pNeTd2cDNhUTY1SmM2L2VOQlVBZEZNL1c1SmcyMnJZ?=
+ =?utf-8?B?WGNseUMwVVc3aGNEQlBvaENHOXhsVnRUdDBYQTQwREFtM093SnA0RlkxeVRz?=
+ =?utf-8?B?MDgrcjdJOFRDQjVLN21Hd0dqZ2Y0bU9SbC9STVhSbnQvaExYUVVvKzB1T2RW?=
+ =?utf-8?B?WkZJRm82MUREWFUwYzlUVjR2M2VzUnlUT05UN3E5b3dBemFJSGhxMXYwc1Jy?=
+ =?utf-8?B?TmpGN2ZoL3BVaGtWTlpMT3dMOFJnVmtWdWJpMUpkNHJiRU9VSm4veGFEUjY1?=
+ =?utf-8?B?MThFM1orY2t5N0tYa3gyYzZEakRYRDNHSldNR2Z0Z0JTYmV0L3B0V2ZGZE94?=
+ =?utf-8?B?ZXZMSklDNE1UZ2NweFZZcENZUjdJWjFQQkpiczlHdXpkeVpBbEFENWM4Rktp?=
+ =?utf-8?B?UkJNdzhMUXdjZ2o5dXIxbGZPK0ZFdFNFeDJtOXVXQ29IckU5ZVJDbklFd0NL?=
+ =?utf-8?B?eFYxclA3T21wZG40bHRGQzNoZjNnWlg4N2t2cFp5dlByeGpDYVJRaXNsY2NS?=
+ =?utf-8?B?ejZEZXE2Z0dOc1hETFl1QzE2S2NGcXZFQjc1M1YvM1UxdVd4eHhUVHhyR054?=
+ =?utf-8?B?RWhRTHV0TmJZVnRyTHFYV0RhOVh3QnMyOEJhMjY2SElRQndaV0hxTVR3Q3lj?=
+ =?utf-8?B?NVlIdWtpaGx1M01URWR4Ymx6aDgxNUpiY2RhWGdVaWFwdnVRTE5vNHcxa2hu?=
+ =?utf-8?B?OEFFeDFyZUtTVzJpR0grei9odVB1K2xkcmdXZ3VoUUxlaVV1WTRLTlV3d3hN?=
+ =?utf-8?B?NmNUSVJlTWt4QVlpeHlhWmVJUjNxVmFQUGM1anl4YWNVMU1PYjlndz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="hPQQNyCAeGrb5boE"
-Content-Disposition: inline
-In-Reply-To: <YoTsYvnACbCNIMPE@T590>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5750.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7baac8e8-6823-49c8-83bf-08da38e61761
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2022 15:50:11.1621
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aU2/KYvf/WUdRys8LsxsvZ5fWzxOF6d1UuHJkcbPvwaHxuc1xluBmiH968VIwE4oLX4kQAwzkYv9WovIjebbx/INI5zitmRZPKdAiuvw2Ms=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2614
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---hPQQNyCAeGrb5boE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, May 18, 2022 at 08:53:54PM +0800, Ming Lei wrote:
-> On Wed, May 18, 2022 at 11:45:32AM +0100, Stefan Hajnoczi wrote:
-> > On Wed, May 18, 2022 at 03:09:46PM +0800, Ming Lei wrote:
-> > > On Tue, May 17, 2022 at 03:06:34PM +0100, Stefan Hajnoczi wrote:
-> > > > Here are some more thoughts on the ubd-control device:
-> > > >=20
-> > > > The current patch provides a ubd-control device for processes with
-> > > > suitable permissions (i.e. root) to create, start, stop, and fetch
-> > > > information about devices.
-> > > >=20
-> > > > There is no isolation between devices created by one process and th=
-ose
-> > >=20
-> > > I understand linux hasn't device namespace yet, so can you share the
-> > > rational behind the idea of device isolation, is it because ubd device
-> > > is served by ubd daemon which belongs to one pid NS? Or the user crea=
-ting
-> > > /dev/ubdbN belongs to one user NS?
-> >=20
-> > With the current model a process with access to ubd-control has control
-> > over all ubd devices. This is not desirable for most container use cases
-> > because ubd-control usage within a container means that container could
-> > stop any ubd device on the system.
-> >=20
-> > Even for non-container use cases it's problematic that two applications
-> > that use ubd can interfere with each other. If an application passes the
-> > wrong device ID they can stop the other application's device, for
-> > example.
-> >=20
-> > I think it's worth supporting a model where there are multiple ubd
-> > daemons that are not cooperating/aware of each other. They should be
-> > isolated from each other.
->=20
-> Maybe I didn't mention it clearly, I meant the following model in last em=
-ail:
->=20
-> 1) every user can send UBD_CMD_ADD_DEV to /dev/ubd-control
->=20
-> 2) the created /dev/ubdcN & /dev/udcbN are owned by the user who creates
-> it
-
-How does this work? Does userspace (udev) somehow get the uid/gid from
-the uevent so it can set the device node permissions?
-
-> 3) only the user who has permission to /dev/ubdcN can send other control
-> commands(START_DEV/STOP_DEV/GET_DEV_INFO/GET_QUEUE_AFFINITY/DEL_DEV);
-> and same with /dev/ubdbN
->=20
-> 4) for unprivileged user who owns /dev/ubdbN, limit kernel behavior,
-> such as, not probed for partitions and LVM, only allow unprivileged
-> mounts,...
->=20
-> So ubd device can be isolated wrt. user NS.
-
-Cool!
-
->=20
-> >=20
-> > > IMO, ubd device is one file in VFS, and FS permission should be appli=
-ed,
-> > > then here the closest model should be user NS, and process privilege &
-> > > file ownership.
-> >=20
-> > Yes, /dev/ubdbN can has file ownership/permissions and the cgroup device
-> > controller can restrict access too. That works fine when the device was
-> > created previously.
-> >=20
-> > But what about ubd device creation via ubd-control?
-> >=20
-> > The problem is a global control interface like ubd-control gives access
-> > to all ubd devices. There is no way to let an application/container
-> > control (create/start/stop/etc) some ubd devices but not all. I think
-> > ubd-control must be more fine-grained so multiple
-> > applications/containers can use it without the possibility of
-> > interference.
-> >=20
-> > /dev/ubdcN is a separate problem. The cgroup device controller can limit
-> > the device nodes that are accessible from a process. However, this
-> > requires reserving device minor number ranges for each
-> > application/container so they can only mknod/open their own ubd devices
-> > and not devices that don't belong to them. Maybe there is a better
-> > solution?
-> >=20
-> > /dev/ubdbN has similar requirements to /dev/ubdcN. It should be possible
-> > to create a new /dev/ubdbN but not access an existing device that belong
-> >=20
-> > So if we want to let containers create ubd devices without granting them
-> > access to all devices on the system, then the ubd-control interface
-> > needs to be changed (see below) and the container needs a reserved range
-> > of ubdcN minor numbers. Any container using ubdbN needs the cgroup
-> > device controller and file ownership/permissions to open the block
-> > device.
-> >=20
-> > > > created by another. Therefore two processes that do not trust each =
-other
-> > > > cannot both use UBD without potential interference. There is also no
-> > >=20
-> > > Can you share what the expectation is for this situation?
-> >=20
-> > Two users should be able to run ubd daemons on the same system without
-> > being able to stop each other's devices.
->=20
-> Yeah, the above process privilege & file ownership based way can reach
-> the goal in user NS.
->=20
-> >=20
-> > > It is the created UBD which can only be used in this NS, or can only =
-be
-> > > visible inside this NS? I guess the latter isn't possible since we do=
-n't
-> > > have this kind of isolation framework yet.
-> >=20
-> > It should be possible to access the ubd device according to file
-> > ownership/permissions. No new isolation framework is needed for that.
-> >=20
-> > But ubd-control should not grant global access to all ubd devices, at
-> > least not in the typical case of a ubd daemon that just wishes to
-> > create/start/stop its own devices.
->=20
-> Yeah, I agree.
->=20
-> >=20
-> > > > isolation for containers.
-> > > >=20
-> > > > I think it would be a mistake to keep the ubd-control interface in =
-its
-> > > > current form since the current global/root model is limited. Instea=
-d I
-> > > > suggest:
-> > > > - Creating a device returns a new file descriptor instead of a glob=
-al
-> > > >   dev_id. The device can be started/stopped/configured through this=
- (and
-> > > >   only through this) per-device file descriptor. The device is not
-> > > >   visible to other processes through ubd-control so interference is=
- not
-> > > >   possible. In order to give another process control over the devic=
-e the
-> > > >   fd can be passed (e.g. SCM_RIGHTS).=20
-> > > >=20
-> > >=20
-> > > /dev/ubdcN can only be opened by the process which is the descendant =
-of
-> > > the process which creates the device by sending ADD_DEV.
-> > >=20
-> > > But the device can be deleted/queried by other processes, however, I
-> > > think it is reasonable if all these processes has permission to do th=
-at,
-> > > such as all processes owns the device with same uid.
-> >=20
-> > I don't think it's a good idea to require all ubd daemons to have
-> > CAP_SYS_ADMIN/same uid. That's the main point I'm trying to make and the
-> > discussion is based on that.
->=20
-> I meant only the user who owns /dev/ubdcN can send the command to
-> /dev/ubd-control for controlling /dev/ubdcN. I believe this way is
-> straightforward.
->=20
-> >=20
-> > > So can we apply process privilege & file ownership for isolating ubd =
-device?
-> > >=20
-> > > If per-process FD is used, it may confuse people, because process can
-> > > not delete/query ubd device even though its uid shows it has the
-> > > privilege.
-> >=20
-> > Is it better to stop the device via ubd-control instead of a
-> > daemon-specific command (or just killing the daemon process)?
-> >=20
-> > Regarding querying the device, the daemon has more information
-> > associated with the device (e.g. if it's an iSCSI initiator it will have
-> > the iSCSI URI). The ubd driver can only tell you the daemon pid and the
-> > block device attributes that should already be available via sysfs.
-> > Quering the daemon will yield more useful information than using
-> > ubd-control.
->=20
-> I don't think it is good to interrupt daemon for this admin/control job,
-> which may distract daemon from handling normal IO tasks, also not necessa=
-ry
-> to make daemon implementation more complicated.
->=20
-> We should separate admin task from normal IO handling, which is one
-> common design pattern.
->=20
-> >=20
-> > > > Now multiple applications/containers/etc can use ubd-control without
-> > > > interfering with each other. The security model still requires root
-> > > > though since devices can be malicious.
-> > > >=20
-> > > > FUSE allows unprivileged mounts (see fuse_allow_current_process()).=
- Only
-> > > > processes with the same uid as the FUSE daemon can access such moun=
-ts
-> > > > (in the default configuration). This prevents security issues while
-> > > > still allowing unprivileged use cases.
-> > >=20
-> > > OK, looks FUSE applies process privilege & file ownership for dealing
-> > > with unprivileged mounts.
-> > >=20
-> > > >=20
-> > > > I suggest adapting the FUSE security model to block devices:
-> > > > - Devices can be created without CAP_SYS_ADMIN but they have an
-> > > >   'unprivileged' flag set to true.
-> > > > - Unprivileged devices are not probed for partitions and LVM doesn't
-> > > >   touch them. This means the kernel doesn't access these devices via
-> > > >   code paths that might be exploitable.
-> > >=20
-> > > The above two makes sense.
-> > >=20
-> > > > - When another process with a different uid from ubdsrv opens an
-> > > >   unprivileged device, -EACCES is returned. This protects other
-> > > >   uids from the unprivileged device.
-> > >=20
-> > > OK, only the user who owns the device can access unprivileged device.
-> > >=20
-> > > > - When another process with a different uid from ubdsrv opens a
-> > > >   _privileged_ device there is no special access check because ubds=
-rv is
-> > > >   privileged.
-> > >=20
-> > > IMO, it depends if uid of this process has permission to access the
-> > > ubd device, and we can set ubd device's owership by the process
-> > > credentials.
-> >=20
-> > Yes, file ownership/permissions are still relevant.
-> >=20
-> > >=20
-> > > >=20
-> > > > With these changes UBD can be used by unprivileged processes and
-> > > > containers. I think it's worth discussing the details and having th=
-is
-> > > > model from the start so UBD can be used in a wide range of use case=
-s.
-> > >=20
-> > > I am pretty happy to discuss & figure out the details, but not sure
-> > > it is one blocker for ubd:
-> > >=20
-> > > 1) kernel driver of loop/nbd or others haven't support the isolation
-> >=20
-> > It may be better to compare it with FUSE where unprivileged users can
-> > run their own servers. Imagine FUSE required a global root control
-> > interface like ubd-control, then it wouldn't be possible to have
-> > unprivileged FUSE mounts.
-> >=20
-> > > 2) still don't know exact ubd use case for containers
-> >=20
-> > There are two common use cases for block devices:
-> > 1. File systems or volume managers
-> > 2. Direct access for databases, backup tools, disk image tools, etc
-> >=20
-> > The file system use case involved kernel code and probably needs to be
-> > restricted to untrusted containers cannot exploit the kernel file system
-> > implementations. I'll ignore this use case and containers probably
-> > shouldn't do this.
-> >=20
-> > The second use case is when you have any program that can operate on a
-> > block device. It could be an application that imports/exports a block
-> > device from network storage. This kind of application should be able to
-> > do its job without CAP_SYS_ADMIN and it should be able to run in a
-> > container. It might be part of KubeVirt's Containerized Data Importer,
-> > for example, and is deployed as a container.
-> >=20
-> > If ubd supports unprivileged operation then this container use case is
-> > straightforward. If not, then it's problematic because it either
-> > requires a privileged container or some kind of privileged helper
-> > outside the container. At that point people may avoid ubd because it's
-> > too hard to deploy with privilege requirements.
->=20
-> OK, thanks for the sharing. In short, container requires unprivileged
-> operation on block device. I think it makes sense.
-
-Thanks!
-
-Stefan
-
---hPQQNyCAeGrb5boE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKFFW8ACgkQnKSrs4Gr
-c8gl4gf/af2Wh8d//orm/DrB4u5zPE6iRY7WWi8cKLS0lLx9gBqTGh2Yn3516lDd
-PnujQYCS05Nn8QeQtNvzXTUGunhse85gey/a0p35+pwU+dhJCeOQR70/0gdYM4j7
-iyr2RNaJgulxY+g/1E8FpxqQ9hRB/QX54iYyfSRjqWeltLmQhspJeTo+JTmry4+/
-jdxqTedrXxciq89R0DV+q3B69nw1EybWGWJue6MWSn2PzuAAZ+KWIM0PNdzAoJQp
-8rQgC5DpKGNyJDpaRJUqywwIXUEjioqAXPIXrRobD7PoPaWBkdQn8CtCJAk42cZ4
-UDTTg/pfM/U/9HAXi9avOLg+L/EnaA==
-=jsUe
------END PGP SIGNATURE-----
-
---hPQQNyCAeGrb5boE--
-
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09DQogICAgICAgICAgICAgICAgICAgQU5OT1VOQ0VNRU5UIEFO
+RCBDQUxMIEZPUiBQQVJUSUNJUEFUSU9ODQoNCiAgICAgICAgICAgICAgICAgICBMSU5VWCBTRUNV
+UklUWSBTVU1NSVQgRVVST1BFIDIwMjINCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAxNS0xNiBTZXB0ZW1iZXINCiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIER1YmxpbiwgSXJlbGFuZCAmIFZpcnR1YWwNCj09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PQ0KDQpERVNDUklQVElPTg0KIA0KTGludXggU2VjdXJpdHkgU3VtbWl0IEV1cm9w
+ZSAoTFNTLUVVKSBpcyBhIHRlY2huaWNhbCBmb3J1bSBmb3INCmNvbGxhYm9yYXRpb24gYmV0d2Vl
+biBMaW51eCBkZXZlbG9wZXJzLCByZXNlYXJjaGVycywgYW5kIGVuZC11c2Vycy4gIEl0cw0KcHJp
+bWFyeSBhaW0gaXMgdG8gZm9zdGVyIGNvbW11bml0eSBlZmZvcnRzIGluIGFuYWx5c2luZyBhbmQg
+c29sdmluZyBMaW51eA0Kc2VjdXJpdHkgY2hhbGxlbmdlcy4NCg0KIFRoZSBwcm9ncmFtIGNvbW1p
+dHRlZSBjdXJyZW50bHkgc2Vla3MgcHJvcG9zYWxzIGZvcjoNCiANCiAgICogUmVmZXJlZWQgUHJl
+c2VudGF0aW9uczoNCiAgICAgNDUgbWludXRlcyBpbiBsZW5ndGguDQogDQogICAqIFBhbmVsIERp
+c2N1c3Npb24gVG9waWNzOg0KICAgICA0NSBtaW51dGVzIGluIGxlbmd0aC4NCiANCiAgICogU2hv
+cnQgVG9waWNzOg0KICAgICAzMCBtaW51dGVzIGluIHRvdGFsLCBpbmNsdWRpbmcgYXQgbGVhc3Qg
+MTAgbWludXRlcyBkaXNjdXNzaW9uLg0KIA0KICAgKiBUdXRvcmlhbHMNCiAgICAgOTAgbWludXRl
+cyBpbiBsZW5ndGguDQogDQpUdXRvcmlhbCBzZXNzaW9ucyBzaG91bGQgYmUgZm9jdXNlZCBvbiBh
+ZHZhbmNlZCBMaW51eCBzZWN1cml0eSBkZWZlbnNlDQp0b3BpY3Mgd2l0aGluIGFyZWFzIHN1Y2gg
+YXMgdGhlIGtlcm5lbCwgY29tcGlsZXIsIGFuZCBzZWN1cml0eS1yZWxhdGVkDQpsaWJyYXJpZXMu
+ICBQcmlvcml0eSB3aWxsIGJlIGdpdmVuIHRvIHR1dG9yaWFscyBjcmVhdGVkIGZvciB0aGlzIGNv
+bmZlcmVuY2UsDQphbmQgdGhvc2Ugd2hlcmUgdGhlIHByZXNlbnRlciBhIGxlYWRpbmcgc3ViamVj
+dCBtYXR0ZXIgZXhwZXJ0IG9uIHRoZSB0b3BpYy4NCiANClRvcGljIGFyZWFzIGluY2x1ZGUsIGJ1
+dCBhcmUgbm90IGxpbWl0ZWQgdG86DQogDQogICAqIEtlcm5lbCBzZWxmLXByb3RlY3Rpb24NCiAg
+ICogQWNjZXNzIGNvbnRyb2wNCiAgICogQ3J5cHRvZ3JhcGh5IGFuZCBrZXkgbWFuYWdlbWVudA0K
+ICAgKiBJbnRlZ3JpdHkgcG9saWN5IGFuZCBlbmZvcmNlbWVudA0KICAgKiBIYXJkd2FyZSBTZWN1
+cml0eQ0KICAgKiBJb1QgYW5kIGVtYmVkZGVkIHNlY3VyaXR5DQogICAqIFZpcnR1YWxpemF0aW9u
+IGFuZCBjb250YWluZXJzDQogICAqIFN5c3RlbS1zcGVjaWZpYyBzeXN0ZW0gaGFyZGVuaW5nDQog
+ICAqIENhc2Ugc3R1ZGllcw0KICAgKiBTZWN1cml0eSB0b29scw0KICAgKiBTZWN1cml0eSBVWA0K
+ICAgKiBFbWVyZ2luZyB0ZWNobm9sb2dpZXMsIHRocmVhdHMgJiB0ZWNobmlxdWVzDQoNCiAgUHJv
+cG9zYWxzIHNob3VsZCBiZSBzdWJtaXR0ZWQgdmlhOg0KICAgIGh0dHBzOi8vZXZlbnRzLmxpbnV4
+Zm91bmRhdGlvbi5vcmcvbGludXgtc2VjdXJpdHktc3VtbWl0LWV1cm9wZS8NCg0KDQpOb3RlIHRo
+YXQgZm9yIDIwMjIsIHdlIGFyZSByZXR1cm5pbmcgdG8gaGF2aW5nIGJvdGggTm9ydGggQW1lcmlj
+YW4gYW5kDQpFdXJvcGVhbiBldmVudHMgKExTUy1OQSB3aWxsIGJlIGhlbGQgaW4gSnVuZSBpbiBB
+dXN0aW4sIFRleGFzKS4NCiANCg0KTFNTLUVVIERBVEVTDQogDQogICogQ0ZQIGNsb3NlOiAgICAg
+ICAgICAgIEp1bHkgMQ0KICAqIENGUCBub3RpZmljYXRpb25zOiAgICBKdWx5IDI2DQogICogU2No
+ZWR1bGUgYW5ub3VuY2VkOiAgIEp1bHkgMjgNCiAgKiBFdmVudDogICAgICAgICAgICAgICAgU2Vw
+dGVtYmVyIDE1LTE2DQoNCldITyBTSE9VTEQgQVRURU5EDQogDQpXZSdyZSBzZWVraW5nIGEgZGl2
+ZXJzZSByYW5nZSBvZiBhdHRlbmRlZXMgYW5kIHdlbGNvbWUgcGFydGljaXBhdGlvbiBieQ0KcGVv
+cGxlIGludm9sdmVkIGluIExpbnV4IHNlY3VyaXR5IGRldmVsb3BtZW50LCBvcGVyYXRpb25zLCBh
+bmQgcmVzZWFyY2guDQogDQpMU1MgaXMgYSB1bmlxdWUgZ2xvYmFsIGV2ZW50IHRoYXQgcHJvdmlk
+ZXMgdGhlIG9wcG9ydHVuaXR5IHRvIHByZXNlbnQgYW5kDQpkaXNjdXNzIHlvdXIgd29yayBvciBy
+ZXNlYXJjaCB3aXRoIGtleSBMaW51eCBzZWN1cml0eSBjb21tdW5pdHkgbWVtYmVycyBhbmQNCm1h
+aW50YWluZXJzLiAgSXQncyBhbHNvIHVzZWZ1bCBmb3IgdGhvc2Ugd2hvIHdpc2ggdG8ga2VlcCB1
+cCB3aXRoIHRoZSBsYXRlc3QNCmluIExpbnV4IHNlY3VyaXR5IGRldmVsb3BtZW50IGFuZCB0byBw
+cm92aWRlIGlucHV0IHRvIHRoZSBkZXZlbG9wbWVudA0KcHJvY2Vzcy4NCg0KV0VCIFNJVEUNCg0K
+ICAgIGh0dHBzOi8vZXZlbnRzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbGludXgtc2VjdXJpdHktc3Vt
+bWl0LWV1cm9wZS8NCg0KVFdJVFRFUg0KDQogIEZvciBldmVudCB1cGRhdGVzIGFuZCBhbm5vdW5j
+ZW1lbnRzLCBmb2xsb3c6DQoNCiAgICBodHRwczovL3R3aXR0ZXIuY29tL0xpbnV4U2VjU3VtbWl0
+DQogIA0KICAgICNsaW51eHNlY3VyaXR5c3VtbWl0DQoNClBST0dSQU0gQ09NTUlUVEVFDQoNCiAg
+VGhlIHByb2dyYW0gY29tbWl0dGVlIGZvciBMU1MgMjAyMSBpczoNCg0KICAgICogRWxlbmEgUmVz
+aGV0b3ZhLCBJbnRlbA0KICAgICogSmFtZXMgTW9ycmlzLCBNaWNyb3NvZnQNCiAgICAqIFNlcmdl
+IEhhbGx5biwgQ2lzY28NCiAgICAqIFBhdWwgTW9vcmUsIE1pY3Jvc29mdA0KICAgICogU3RlcGhl
+biBTbWFsbGV5LCBOU0ENCiAgICAqIEpvaG4gSm9oYW5zZW4sIENhbm9uaWNhbA0KICAgICogS2Vl
+cyBDb29rLCBHb29nbGUNCiAgICAqIENhc2V5IFNjaGF1ZmxlciwgSW50ZWwNCiAgICAqIE1pbWkg
+Wm9oYXIsIElCTQ0KICAgICogRGF2aWQgQS4gV2hlZWxlciwgTGludXggRm91bmRhdGlvbg0KDQog
+IFRoZSBwcm9ncmFtIGNvbW1pdHRlZSBtYXkgYmUgY29udGFjdGVkIGFzIGEgZ3JvdXAgdmlhIGVt
+YWlsOg0KICAgIGxzcy1wYyAoKSBsaXN0cy5saW51eGZvdW5kYXRpb24ub3JnDQo=
