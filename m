@@ -2,204 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 105D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 19:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 19:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242116AbiERTqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 15:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33090 "EHLO
+        id S242127AbiERTqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 15:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242102AbiERTqH (ORCPT
+        with ESMTP id S242085AbiERTqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 15:46:07 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D743DDE7
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 12:46:02 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id h14so4101511wrc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 12:46:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chrisdown.name; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8ODKmCKf5lDkdRcNfgffFFETbXdXKUL8UVzkV2BGiaA=;
-        b=FQDAH9eD/4pa95U6VnV/VCQ93dQa52p5soSL5J+4rv1xFZYDYmngjuni56TupbZyfk
-         bbB0B/5BhtHkx+XIEYyTh2QyuHAJTxgHOcJ829oAJsirUfC7vsLtV/RsL0ddu+MRQSo8
-         Afm/V2Hh4wMLcX8DJDIp3hfG2o1zzQgIl/MKg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8ODKmCKf5lDkdRcNfgffFFETbXdXKUL8UVzkV2BGiaA=;
-        b=TTf+k1y+8MxKwoNK/3+fD4QCLvEoubde3Wx3TqTTmSGLwhiaBvy3XEhTMMmkqLVBfX
-         Zp48Gz6reG9bmvzCZylL5bSU6P4FM9JSn5Z24jRwfbqYQbIe/5ARYKsmz00WxcEh6Nzw
-         JlJicabeg4qBidz31JjdU99ufmNXehLdKT2kpQAtooK/MMiYi495vhQNTQRZ2FmAX/xv
-         lF7ttmJUBaqI5auoIaXJOm2RkrhTplXqmZUWCsT+ALoMHrxD2TXncCTWbs42+GzdyTU/
-         fjnezEH9NCHiheE+tsZ94dMS8i7TDiDoyitsH6C/WUemo+L0IMv5UeOsHXsU5CChwlzV
-         080Q==
-X-Gm-Message-State: AOAM531pNxAe32Vpq5xOEjJkw2yNIpShcesHxJyJugpwJljf4alyIGMK
-        0PbwnS9oUfevZku1PknrUpfWfw==
-X-Google-Smtp-Source: ABdhPJw6C9f+JVUT9pvieU1zCIbaDc1e/tYZ2AEXNX1M37TEU1WLUf3CZgmbNFfcklNjl5dusV3SOw==
-X-Received: by 2002:adf:ed8a:0:b0:20c:fe1d:d9e3 with SMTP id c10-20020adfed8a000000b0020cfe1dd9e3mr1069976wro.546.1652903161391;
-        Wed, 18 May 2022 12:46:01 -0700 (PDT)
-Received: from localhost ([2620:10d:c092:400::4:c43c])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056000188c00b0020c5253d8ddsm3180843wri.41.2022.05.18.12.46.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 15:46:01 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2077.outbound.protection.outlook.com [40.107.102.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AEEF286EC;
         Wed, 18 May 2022 12:46:00 -0700 (PDT)
-Date:   Wed, 18 May 2022 20:46:00 +0100
-From:   Chris Down <chris@chrisdown.name>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
-        kernel-team@fb.com
-Subject: Re: [RFC PATCH] printk: console: Allow each console to have its own
- loglevel
-Message-ID: <YoVM+KbdyJm8RSSr@chrisdown.name>
-References: <YoUBh5BSsURDO71Z@chrisdown.name>
- <YoUR6RlzkCNG7BU0@kroah.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C/q5QXVWffLXR3pK+NXHPql07jv1XkRSf0OAH+2jMFIwrZZxkYbsx8+eTCcwFh3l0ZQJ2RCOVrOLMl8emaLWZb11sfFX5vlbYWw6aB3Jc/o9RwIOuq6CkhZgTxbpQP5hk5Q4wiTfbQB5fySXU4lbnvyySJcjryrS9Cs8rqQPvztInIOH5u5IaQxYejfQTnoJfnX0rANsEhD6FUWcYLwn6pjZZ8HeN6xoiC3A+BhGASpPkPEqZLHxzUZXtmPyGHbGxBReC4MqnECGGR5as170JaNiXpxPCefCejrnwtzUMy9KBYW24lQ2IrPgcdxOLjLGKG6HJHdYINiO9BphPJ0yKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4gCZx7QyuGVnalB22sSTvvWZFX7WaRXkBUyTRClvQgw=;
+ b=P3WULk4HFrpYzpoVc0XqPxORlMozLs6pitHI4WaQDBsUXbKaLgNub1kIR3lPRgngMDO0mGl3tii/wci7nvaL+1kvDO9+jM9dSpq8j6rCS1lUlARAjKJZetClG2FEwaHAYZIEXp5wtO8hl74InMRSMoAbEAET9ajU7/FHzmu5JzXl1Rl6nnCN4uppyg4YL/qzUDKAYLamBqOa2X5XeHuk9i8rxUV8wq6TulFaG1NgvaLFg3WUabx2XQ4jcNzH7dSFXKx7C0jUnBr5dkkCmSEHNAZBGowmEdzPwKlcgS3T/RUBRUDqGJBEtGuR8Ci1xi+srrWi9NqCCr/dVfE7e8jtWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=linaro.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4gCZx7QyuGVnalB22sSTvvWZFX7WaRXkBUyTRClvQgw=;
+ b=QhbJGoUlojW/fhPmjrC7uOqsLyTx30L4ZoMDf5DIWM8LgWmcr1QkIxP+JXUwte1VtrgOke4hJgOVp07Hxkqkv1xDP76HUBEnwmIpzG+xJ0TdVct8F+cFc2HupMF+R/K5Cg7pxLGVfRr+jl7e5XY5CRbP9zvTEzBFb8ItfCQTgAg=
+Received: from DS7PR03CA0016.namprd03.prod.outlook.com (2603:10b6:5:3b8::21)
+ by CH2PR02MB6491.namprd02.prod.outlook.com (2603:10b6:610:35::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13; Wed, 18 May
+ 2022 19:45:58 +0000
+Received: from DM3NAM02FT044.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:3b8:cafe::e9) by DS7PR03CA0016.outlook.office365.com
+ (2603:10b6:5:3b8::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14 via Frontend
+ Transport; Wed, 18 May 2022 19:45:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT044.mail.protection.outlook.com (10.13.5.98) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5273.14 via Frontend Transport; Wed, 18 May 2022 19:45:58 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 18 May 2022 12:45:57 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 18 May 2022 12:45:57 -0700
+Envelope-to: bjorn.andersson@linaro.org,
+ mathieu.poirier@linaro.org,
+ robh+dt@kernel.org,
+ krzk+dt@kernel.org,
+ linux-remoteproc@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Received: from [172.19.3.14] (port=40706 helo=xsjtanmays50.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <tanmay.shah@xilinx.com>)
+        id 1nrPcL-0004Ew-Ft; Wed, 18 May 2022 12:45:57 -0700
+From:   Tanmay Shah <tanmay.shah@xilinx.com>
+To:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <michal.simek@xilinx.com>
+CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tanmay Shah <tanmay.shah@xilinx.com>
+Subject: [PATCH v5 0/6]  Add Xilinx RPU subsystem support
+Date:   Wed, 18 May 2022 12:44:21 -0700
+Message-ID: <20220518194426.3784095-1-tanmay.shah@xilinx.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YoUR6RlzkCNG7BU0@kroah.com>
-User-Agent: Mutt/2.2.4 (c3baa83e) (2022-04-30)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3232df86-1a98-4bf6-ca5c-08da390707bf
+X-MS-TrafficTypeDiagnostic: CH2PR02MB6491:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR02MB6491E6790685494732B07AE8CAD19@CH2PR02MB6491.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kuqetUcq+32shTtOUnnAJ2C7Pa7WDkCPxhSQ/An/Zb0vgvegzBD/rNsD68bKblZIzhaBqkKw30kQ2Y0BdiQk/TS0DWIg6NRjvaeCRLY0r3G1EZ9TyskNDnxKEuehGjCvFdO4Jd2L7ePS8Z0UjOpMSlAUYpp+hv34Kd7sMXne/erjCUS1GrDS9eO9tAJu9FfS4boVgB1DrFuu/gdAUOsxj4lgY8ohOUNJviz7xvNtZhhLFfcryunXHT84myhdQZ4L0rw0emZA5obySe4LOcF6qOvYmw1ob+3glqIMwxn7Vo+e2ZGbk7EtfAPIFIul8MJ2DmpIhbLpC0BEr2iqlUQ3usgLD+G5CYzUpvwyCmniSfVqdlAE0ssZo0RsCVJNd/yjxDGNB+IsayZrs1pJZelbLDU3k7BGRhTzCmOJXfGoKB1vz9Vy2l6iAqSUKz0uTU/lcSpYzAHUBnSS5DyrpEYaFvt4LWxhXvD6zY2i9kBaOJcM8VTsO7bh643EP6mhiS7uUVO5wBIw6NnjM8ccgBRcwdhDkrtWoUJst6rk6rQ50rVerrJu1ES1exHoNsUK1YYoc6XAtxBJswH/x+vvlCp3NjGI7DNroqHMYp93GXYaf2L0QRgq4slrtih8NNE4ErloYkN2F1wuJfyezYaegQ5Jlzd9ffws3dKbaAZDyjSvuEvpjx7FqwaCLAss1TfAIQ11km1JYmLltCRNwWX/HBlYrw==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(186003)(426003)(7636003)(110136005)(44832011)(316002)(26005)(1076003)(54906003)(47076005)(107886003)(2616005)(8676002)(9786002)(7696005)(508600001)(6636002)(36860700001)(8936002)(356005)(2906002)(36756003)(40460700003)(82310400005)(70586007)(6666004)(70206006)(5660300002)(83380400001)(336012)(4326008)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2022 19:45:58.3129
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3232df86-1a98-4bf6-ca5c-08da390707bf
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT044.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6491
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greg Kroah-Hartman writes:
->>  .../admin-guide/kernel-parameters.txt         |  18 +-
->>  .../admin-guide/per-console-loglevel.rst      | 116 ++++++
->
->All sysfs attributes need to be documented in Documentation/ABI/ so that
->the automated tools can properly pick them up and check them.  Please
->don't bury them in some other random Documentation file.
+This patch series adds bindings document for RPU subsystem found on Xilinx
+ZynqMP platforms. It also adds device nodes and driver to enable RPU
+subsystem in split mode and lockstep mode.
 
-Ack.
+Xilinx ZynqMP platform contains Remote Processing Unit(RPU). RPU subsystem
+contains two arm cortex r5f cores. RPU subsystem can be configured in
+split mode, lockstep mode and single-cpu mode.
 
->> +static ssize_t loglevel_show(struct device *dev, struct device_attribute *attr,
->> +			     char *buf)
->> +{
->> +	struct console *con = container_of(dev, struct console, classdev);
->> +
->> +	if (con->flags & CON_LOGLEVEL)
->> +		return sprintf(buf, "%d\n", con->level);
->> +	else
->> +		return sprintf(buf, "unset\n");
->
->sysfs_emit() is your friend, always use it please.  For all of the sysfs
->attributes.
+RPU subsystem also contains 4 Tightly Coupled Memory(TCM) banks.
+In lockstep mode, all 4 banks are combined and total of 256KB memory is
+made available to r5 core0. In split mode, both cores can access two
+TCM banks i.e. 128 KB.
 
-Ack.
+RPU can also fetch data and execute instructions from DDR memory along with
+TCM memory.
+---
 
->> +static struct attribute *console_sysfs_attrs[] = {
->> +	&dev_attr_loglevel.attr,
->> +	&dev_attr_effective_loglevel_source.attr,
->> +	&dev_attr_effective_loglevel.attr,
->> +	&dev_attr_enabled.attr,
->> +	NULL,
->> +};
->> +
->> +ATTRIBUTE_GROUPS(console_sysfs);
->
->Thanks for using an attribute group properly, that's nice to see.
+Changes in v5:
+  - Add constraints of the possible values of xlnx,cluster-mode property
+  - fix description of power-domains property for r5 core
+  - Remove reg, address-cells and size-cells properties as it is not required
+  - Fix description of mboxes property
+  - Add description of each memory-region and remove old .txt binding link
+    reference in the description
+  - Remove optional reg property from r5fss node
+  - Move r5fss node out of axi node
 
-Hah, I have no idea what I'm doing with the device model in general, but at 
-least I vaguely know how to keep the code tidy ;-)
+Changes in v4:
+  - Add memory-region, mboxes and mbox-names properties in dt-bindings example
+  - Add reserved memory region node and use it in Xilinx dt RPU subsystem node
+  - Remove redundant header files
+  - use dev_err_probe() to report errors during probe
+  - Fix missing check on error code returned by zynqmp_r5_add_rproc_core()
+  - Fix memory leaks all over the driver when resource allocation fails for any core
+  - make cluster mode check only at one place
+  - remove redundant initialization of variable
+  - remove redundant use of of_node_put() 
+  - Fix Comment format problem
+  - Assign offset of zynqmp_tcm_banks instead of duplicating it
+  - Add tcm and memory regions rproc carveouts during prepare instead of parse_fw
+  - Remove rproc_mem_entry object from r5_core
+  - Use put_device() and rproc_del() APIs to fix memory leaks
+  - Replace pr_* with dev_*. This was missed in v3, fix now.
+  - Use "GPL" instead of "GPL v2" in MODULE_LICENSE macro. This was reported by checkpatch script.
 
->> +static void console_classdev_release(struct device *dev)
->> +{
->> +	struct console *con = container_of(dev, struct console, classdev);
->> +
->> +	/*
->> +	 * `struct console' objects are statically allocated (or at the very
->> +	 * least managed outside of our lifecycle), nothing to do. Just set a
->> +	 * flag so that we know we are no longer waiting for anyone and can
->> +	 * return control in unregister_console().
->> +	 */
->> +	con->flags &= ~CON_CLASSDEV_ACTIVE;
->> +}
->
->The old documentation rules said I could complain about this a lot, so
->I'll be nice here just say "this is not ok at all."  You have a dynamic
->object, properly free the memory here please.  class objects can NOT be
->static, sorry.  If you are doing that here, it is really wrong and
->broken and will cause problems when you try to remove the device from
->the system.
+Changes in v3:
+  - Fix checkpatch script indentation warning
+  - Remove unused variable from xilinx remoteproc driver
+  - use C style comments, i.e /*...*/
+  - Remove redundant debug information which can be derived using /proc/device-tree
+  - Fix multiline comment format
+  - s/"final fot TCM"/"final for TCM"
+  - Function devm_kzalloc() does not return an code on error, just NULL.
+    Remove redundant error check for this function throughout the driver.
+  - Fix RPU mode configuration and add documentation accordingly
+  - Get rid of the indentations to match function documentation style with rest of the driver
+  - Fix memory leak by only using r5_rproc->priv and not replace it with new instance
+  - Use 'i' for the outer loop and 'j' for the inner one as per convention
+  - Remove redundant error and NULL checks throughout the driver
+  - Use devm_kcalloc() when more than one element is required
+  - Add memory-regions carveouts during driver probe instead of parse_fw call
+    This removes redundant copy of reserved_mem object in r5_core structure.
+  - Fix memory leak by using of_node_put()
+  - Fix indentation of tcm_mem_map function args
+  - Remove redundant init of variables
+  - Initialize tcm bank size variable for lockstep mode
+  - Replace u32 with phys_addr_t for variable stroing memory bank address
+  - Add documentation of TCM behavior in lockstep mode
+  - Use dev_get_drvdata instead of platform driver API
+  - Remove info level messages
+  - Fix checkpatch.pl warnings
+  - Add documentation for the Xilinx r5f platform to understand driver design
 
-Let me check I understand you correctly. The class is:
+Changes in v2:
+  - Remove proprietary copyright footer from cover letter
 
-     static struct class *console_class;
-     [...]
-     console_class = class_create(THIS_MODULE, "console");
 
-Which exists within printk.c. This class exists to contain all consoles which 
-present themselves over the lifetime of the kernel.
+Ben Levinsky (3):
+  firmware: xilinx: Add ZynqMP firmware ioctl enums for RPU
+    configuration.
+  firmware: xilinx: Add shutdown/wakeup APIs
+  firmware: xilinx: Add RPU configuration APIs
 
-console_classdev_release is the release for a single console's "classdev" 
-object, rather than the release of the class itself.
+Tanmay Shah (3):
+  dt-bindings: remoteproc: Add Xilinx RPU subsystem bindings
+  arm64: dts: xilinx: zynqmp: Add RPU subsystem device node
+  drivers: remoteproc: Add Xilinx r5 remoteproc driver
 
-If you're talking about properly freeing the memory, I suppose it should happen 
-by doing something like the following in unregister_console():
+ .../bindings/remoteproc/xlnx,r5f-rproc.yaml   |  128 ++
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi        |   33 +
+ drivers/firmware/xilinx/zynqmp.c              |   97 ++
+ drivers/remoteproc/Kconfig                    |   12 +
+ drivers/remoteproc/Makefile                   |    1 +
+ drivers/remoteproc/xlnx_r5_remoteproc.c       | 1045 +++++++++++++++++
+ include/dt-bindings/power/xlnx-zynqmp-power.h |    6 +
+ include/linux/firmware/xlnx-zynqmp.h          |   60 +
+ 8 files changed, 1382 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
+ create mode 100644 drivers/remoteproc/xlnx_r5_remoteproc.c
 
-     if (!console_drivers)
-         /* free the class object under console lock */
 
-...right? Let me know if I'm misunderstanding you.
+base-commit: 01a1a0c8d456b11f2f6b9b822414481beaa44d6f
+-- 
+2.25.1
 
-Any suggestions you have here are more than welcome, I'm definitely not that 
-familiar with the device/class API.
-
->> +static void console_register_device(struct console *new)
->> +{
->> +	/*
->> +	 * We might be called from register_console() before the class is
->> +	 * registered. If that happens, we'll take care of it in
->> +	 * printk_late_init.
->
->If so, is the device properly registered there as well?  I missed that
->logic...
-
-We call console_register_device() on all previously known consoles at 
-late_initcall() time. Or were you thinking of something else?
-
->> +	 */
->> +	if (IS_ERR_OR_NULL(console_class))
->> +		return;
->> +
->> +	new->flags |= CON_CLASSDEV_ACTIVE;
->> +	device_initialize(&new->classdev);
->> +	dev_set_name(&new->classdev, "%s", new->name);
->> +	new->classdev.release = console_classdev_release;
->> +	new->classdev.class = console_class;
->> +	if (WARN_ON(device_add(&new->classdev)))
->
->What is with these random WARN_ON() stuff?  Don't do that, just handle
->the error and move on properly.  Systems with panic_on_warn() should not
->fail from stuff like this, that's rude to cause them to reboot.
-
-Oh, that's fair enough, I hadn't thought of that. Ack.
-
->> +	console_class = class_create(THIS_MODULE, "console");
->> +	if (!WARN_ON(IS_ERR(console_class)))
->> +		console_class->dev_groups = console_sysfs_groups;
->
->Do you ever free the class?
-
-Currently no. What do you think about the above proposal to do it once the 
-console driver list is exhausted?
-
->> +static int printk_sysctl_deprecated(struct ctl_table *table, int write,
->> +				    void __user *buffer, size_t *lenp,
->> +				    loff_t *ppos)
->> +{
->> +	int res = proc_dointvec(table, write, buffer, lenp, ppos);
->> +
->> +	if (write)
->> +		pr_warn_ratelimited(
->> +			"printk: The kernel.printk sysctl is deprecated and will be removed soon. Use kernel.force_console_loglevel, kernel.default_message_loglevel, kernel.minimum_console_loglevel, or kernel.default_console_loglevel instead.\n"
->
->Please define "soon".
-
-Petr, what do you think about the timebounds here? :-)
-
-Thanks for the feedback!
-
-Chris
