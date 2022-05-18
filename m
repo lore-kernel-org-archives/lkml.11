@@ -2,125 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 749B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240692AbiERRB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
+        id S240608AbiERRDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240687AbiERRBn (ORCPT
+        with ESMTP id S240611AbiERRDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 13:01:43 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6866B0A7
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:01:40 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2fef1441caaso24215037b3.6
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:01:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=4p2OIzyLZf5DSGNOpJEFrH/AUMGocyU2gKg4RrUCI6s=;
-        b=o5OhYnQd0/SVCrvlR6BDzl8uSzC29hs7YQvNz7dWRteQ/kcph4lfVshtJMcGVo8NbR
-         8oPMuS2Sy3hBVX0NlOaNEA1jYg1VVcAyjjB5W5GCnTurc+o6G6BnalBX94/qqs6hCzLs
-         DctERLk5noT2qeLVnzOhKgBlIYCrTVRrvYb9LRF1DFeA5aXdX1vveh0/ZLWm258Bg5QT
-         AqtIL3PC+7Dwsphqra6Pf2FpK5aG362O8TacCzJwMfbncnPDgIOlO3qFPVubRSYuK8yT
-         mDb8PkHBaX+sR03HvwUcwMLP0EOOi2RoiJjRaOz2RMUvBc/Af3lA3sg/1OMeK5n6OeR3
-         sTfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=4p2OIzyLZf5DSGNOpJEFrH/AUMGocyU2gKg4RrUCI6s=;
-        b=4w95kfiue1zfkFQ71iYJg15junwkaSb0vLw2pBEETCZ5deRYoOI+tnWK4BJkjHUWKl
-         PA8C/OV4ikpaitl0bxEVSHGhnf1k/NHfhlpat2h70Oqb++MaRr2egOxKNfnRERitX9V0
-         VIym35RDRsv5DC6Rux1vqhOVJXPRRR0aNHMsfV3YgD9LEiDH0cdgmVMVNctik39mfXDB
-         FV6lbg94P938HFRmPSsjnsy3PrfpcPmy59nRF684+FXdyV3bADMDmCQieEFCierrfIUd
-         Yii6MJIem35l1vYT3LIPr6LKY/mrGWKGU6nsyclpAQQmYJvoA9Wt7ELQdFfO4XaK/cXl
-         UvlA==
-X-Gm-Message-State: AOAM531/g970Divv2cLmg1QA1yMSj6frSsuL0PXQypac7KUt7/Zwbb7M
-        FjNaAxOzWWx8liQnqRi7DGcIM+tPovF/Yw==
-X-Google-Smtp-Source: ABdhPJwzQoL+Dq+U5iIHnbnBF+QHziVBDA7Opsu9u46q835S42QBPgAJVd2R6NkKdXe9e7Mt9HkW5TVwAq+D1Q==
-X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:a94f:2cb3:f298:ec1b])
- (user=dlatypov job=sendgmr) by 2002:a81:bb49:0:b0:2fe:e07b:9a6c with SMTP id
- a9-20020a81bb49000000b002fee07b9a6cmr415296ywl.136.1652893300072; Wed, 18 May
- 2022 10:01:40 -0700 (PDT)
-Date:   Wed, 18 May 2022 10:01:23 -0700
-In-Reply-To: <20220518170124.2849497-1-dlatypov@google.com>
-Message-Id: <20220518170124.2849497-3-dlatypov@google.com>
-Mime-Version: 1.0
-References: <20220518170124.2849497-1-dlatypov@google.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH 2/3] kunit: tool: simplify creating LinuxSourceTreeOperations
-From:   Daniel Latypov <dlatypov@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com
-Cc:     elver@google.com, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        Daniel Latypov <dlatypov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 18 May 2022 13:03:05 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740641A0766
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:03:01 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nrN4d-0001Pv-Dd; Wed, 18 May 2022 19:02:59 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     palmer@dabbelt.com, paul.walmsley@sifive.com
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, guoren@kernel.org, mick@ics.forth.gr,
+        samuel@sholland.org, cmuellner@linux.com, philipp.tomsich@vrull.eu,
+        hch@lst.de, Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 3/4] riscv: make patch-function pointer more generic in cpu_manufacturer_info struct
+Date:   Wed, 18 May 2022 19:02:53 +0200
+Message-Id: <20220518170254.3178923-4-heiko@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220518170254.3178923-1-heiko@sntech.de>
+References: <20220518170254.3178923-1-heiko@sntech.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop get_source_tree_ops() and just call what used to be
-get_source_tree_ops_from_qemu_config() in both cases.
+During review the naming of the function-pointer was called
+confusing as the vendor id is just one of three inputs for
+the patching and indeed it serves no real purpose, as with
+recent changes the function pointer is not a static
+global element anymore, so drop the "vendor_" prefix.
 
-Also rename the functions to have shorter names and add a "_" prefix to
-note they're not meant to be used outside this function.
-
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Suggested-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- tools/testing/kunit/kunit_kernel.py | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ arch/riscv/kernel/alternative.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
-index 8bc8305ba817..e93f07ac0af1 100644
---- a/tools/testing/kunit/kunit_kernel.py
-+++ b/tools/testing/kunit/kunit_kernel.py
-@@ -178,19 +178,16 @@ def get_old_kunitconfig_path(build_dir: str) -> str:
- def get_outfile_path(build_dir: str) -> str:
- 	return os.path.join(build_dir, OUTFILE_PATH)
+diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
+index c9d0d3c53223..a7d26a00beea 100644
+--- a/arch/riscv/kernel/alternative.c
++++ b/arch/riscv/kernel/alternative.c
+@@ -20,7 +20,7 @@ struct cpu_manufacturer_info_t {
+ 	unsigned long vendor_id;
+ 	unsigned long arch_id;
+ 	unsigned long imp_id;
+-	void (*vendor_patch_func)(struct alt_entry *begin, struct alt_entry *end,
++	void (*patch_func)(struct alt_entry *begin, struct alt_entry *end,
+ 				  unsigned long archid, unsigned long impid,
+ 				  unsigned int stage);
+ };
+@@ -40,16 +40,16 @@ static void __init_or_module riscv_fill_cpu_mfr_info(struct cpu_manufacturer_inf
+ 	switch (cpu_mfr_info->vendor_id) {
+ #ifdef CONFIG_ERRATA_SIFIVE
+ 	case SIFIVE_VENDOR_ID:
+-		cpu_mfr_info->vendor_patch_func = sifive_errata_patch_func;
++		cpu_mfr_info->patch_func = sifive_errata_patch_func;
+ 		break;
+ #endif
+ #ifdef CONFIG_ERRATA_THEAD
+ 	case THEAD_VENDOR_ID:
+-		cpu_mfr_info->vendor_patch_func = thead_errata_patch_func;
++		cpu_mfr_info->patch_func = thead_errata_patch_func;
+ 		break;
+ #endif
+ 	default:
+-		cpu_mfr_info->vendor_patch_func = NULL;
++		cpu_mfr_info->patch_func = NULL;
+ 	}
+ }
  
--def get_source_tree_ops(arch: str, cross_compile: Optional[str]) -> LinuxSourceTreeOperations:
-+def _default_qemu_config_path(arch: str) -> str:
- 	config_path = os.path.join(QEMU_CONFIGS_DIR, arch + '.py')
--	if arch == 'um':
--		return LinuxSourceTreeOperationsUml(cross_compile=cross_compile)
- 	if os.path.isfile(config_path):
--		return get_source_tree_ops_from_qemu_config(config_path, cross_compile)[1]
-+		return config_path
+@@ -68,13 +68,13 @@ static void __init_or_module _apply_alternatives(struct alt_entry *begin,
  
- 	options = [f[:-3] for f in os.listdir(QEMU_CONFIGS_DIR) if f.endswith('.py')]
- 	raise ConfigError(arch + ' is not a valid arch, options are ' + str(sorted(options)))
+ 	riscv_cpufeature_patch_func(begin, end, stage);
  
--def get_source_tree_ops_from_qemu_config(config_path: str,
--					 cross_compile: Optional[str]) -> Tuple[
--							 str, LinuxSourceTreeOperations]:
-+def _get_qemu_ops(config_path: str,
-+		  cross_compile: Optional[str]) -> Tuple[str, LinuxSourceTreeOperations]:
- 	# The module name/path has very little to do with where the actual file
- 	# exists (I learned this through experimentation and could not find it
- 	# anywhere in the Python documentation).
-@@ -226,11 +223,14 @@ class LinuxSourceTree:
- 	      qemu_config_path=None) -> None:
- 		signal.signal(signal.SIGINT, self.signal_handler)
- 		if qemu_config_path:
--			self._arch, self._ops = get_source_tree_ops_from_qemu_config(
--					qemu_config_path, cross_compile)
-+			self._arch, self._ops = _get_qemu_ops(qemu_config_path, cross_compile)
- 		else:
- 			self._arch = 'um' if arch is None else arch
--			self._ops = get_source_tree_ops(self._arch, cross_compile)
-+			if self._arch == 'um':
-+				self._ops = LinuxSourceTreeOperationsUml(cross_compile=cross_compile)
-+			else:
-+				qemu_config_path = _default_qemu_config_path(self._arch)
-+				_, self._ops = _get_qemu_ops(qemu_config_path, cross_compile)
+-	if (!cpu_mfr_info.vendor_patch_func)
++	if (!cpu_mfr_info.patch_func)
+ 		return;
  
- 		if kunitconfig_path:
- 			if os.path.isdir(kunitconfig_path):
+-	cpu_mfr_info.vendor_patch_func(begin, end,
+-				   cpu_mfr_info.arch_id,
+-				   cpu_mfr_info.imp_id,
+-				   stage);
++	cpu_mfr_info.patch_func(begin, end,
++				cpu_mfr_info.arch_id,
++				cpu_mfr_info.imp_id,
++				stage);
+ }
+ 
+ void __init apply_boot_alternatives(void)
 -- 
-2.36.1.124.g0e6072fb45-goog
+2.35.1
 
