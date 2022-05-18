@@ -2,102 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54665C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA058C43217
 	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 22:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231219AbiERWz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 18:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
+        id S231770AbiERW4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 18:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiERWzE (ORCPT
+        with ESMTP id S230460AbiERWz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 18:55:04 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693A82265E6;
-        Wed, 18 May 2022 15:55:03 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:55170)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nrSZK-001T8Y-Fv; Wed, 18 May 2022 16:55:02 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38724 helo=localhost.localdomain)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nrSZJ-002Z0O-E4; Wed, 18 May 2022 16:55:02 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        tj@kernel.org, linux-pm@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Douglas Miller <dougmill@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Wed, 18 May 2022 17:53:49 -0500
-Message-Id: <20220518225355.784371-10-ebiederm@xmission.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
-References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
+        Wed, 18 May 2022 18:55:56 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E706922EA43
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:55:25 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2f16645872fso40096617b3.4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:55:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y/rm2MRI5aLb2MmNxgz+kjwRgqyFx3fvvNWWrAiR8q8=;
+        b=kUiYDk2lMsrPYOhv2kA28Sl9FTbu4rOMn2S5SqcHbaxziz3PuZ0PNlYnXDyE4VWOJc
+         NnF4XespAeSACBuJNjZ0nzAjwjyOu6Z4mUMRaFH73XPDoO1m93wgGPDaAM3E+G/hMFTr
+         FwILD0T3dWkQ5ecSBPJrkz7WG3QJuvp0IWxxI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y/rm2MRI5aLb2MmNxgz+kjwRgqyFx3fvvNWWrAiR8q8=;
+        b=5dgRBpcs8umzkwhLOHz6tS1EYkfAeCrvtjGRqJifEt8N/CiJI7oi0csolsko4CTh3t
+         +Tycw9cv2utwVTpZ7wkLvniHNB+YRrAm7S/VWTXkaTY+4DkNAMRnzXdMTLO3vyA6e56p
+         Z3cM8T5mhYEx1vpy29epowUh/spcm9eNr641TFrCBrfcP92qyaawW7ujq2PCEfB+ZUDI
+         CU6lyB6Eds8IYxOzTWDLRC9ABU66nb3oIv7aEHMWzl4UGODEReJJ1LLHpWJtgjCrlbrI
+         RGpm/hX/voCSxZL5wkXO6XFN7i0uWAXI3rMNvGOmASrAZCCWpRIEK5BN466EQbuBEQrT
+         RqWA==
+X-Gm-Message-State: AOAM531wBgmSLjq9nF0olagu5tLpwa9IexwM6cvyLy+JNddMaBpWyp7f
+        R5JFvvRw2MkWo23hzxuE+YTr2AzSSXDUW9ihDN9DWg==
+X-Google-Smtp-Source: ABdhPJxQ8almf8LqT1X5OeWRJQH+8DaWIpAWbuYo4jXba9Mn0DewpDlZNJqHEwPWKRkkiRgzZhrCVYmKYpzwTQwRQ78=
+X-Received: by 2002:a81:5645:0:b0:2f4:df9b:80f2 with SMTP id
+ k66-20020a815645000000b002f4df9b80f2mr1755666ywb.296.1652914524973; Wed, 18
+ May 2022 15:55:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nrSZJ-002Z0O-E4;;;mid=<20220518225355.784371-10-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+msBsnMWwqD43ol0tBZ0Atn/7Xdy2Pjbs=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 10/16] ptrace: In ptrace_signal look at what the debugger did with siginfo
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+References: <20220511222910.635307-1-dlunev@chromium.org> <20220512082832.v2.2.I692165059274c30b59bed56940b54a573ccb46e4@changeid>
+ <YoQfls6hFcP3kCaH@zeniv-ca.linux.org.uk> <YoQihi4OMjJj2Mj0@zeniv-ca.linux.org.uk>
+ <CAJfpegtQUP045X5N8ib1rUTKzSj-giih0eL=jC5-MP7aVgyN_g@mail.gmail.com>
+In-Reply-To: <CAJfpegtQUP045X5N8ib1rUTKzSj-giih0eL=jC5-MP7aVgyN_g@mail.gmail.com>
+From:   Daniil Lunev <dlunev@chromium.org>
+Date:   Thu, 19 May 2022 08:55:14 +1000
+Message-ID: <CAONX=-do9yvxW2gTak0WGbFVPiLbkM2xH5LReMZkvC-upOUVxg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] FUSE: Retire superblock on force unmount
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org,
+        Christoph Hellwig <hch@infradead.org>,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that siginfo is only modified by the tracer and that siginfo is
-cleared with the signal is canceled have ptrace_signal directly examine
-siginfo.
+> Yep, messing with the bdi doesn't look good.  Fuse always uses a
+> private bdi, so it's not even necessary.
 
-This makes the code a little simpler and handles the case when
-the tracer exits without calling ptrace_detach.
+The reason I needed to remove the bdi is name collision - fuse
+generates a fixed name for its bdi based on the underlying block
+device. However, those collisions of mine were conducted on a
+version prior to the private bdi introduction, I am not sure if that
+is supposed to fix the collision issue. Need to check
 
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- kernel/signal.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/signal.c b/kernel/signal.c
-index ff4a52352390..3d955c23b13d 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2556,9 +2556,10 @@ static int ptrace_signal(int signr, kernel_siginfo_t *info, enum pid_type type)
- 	 * comment in dequeue_signal().
- 	 */
- 	current->jobctl |= JOBCTL_STOP_DEQUEUED;
--	signr = ptrace_stop(signr, CLD_TRAPPED, 0, info);
-+	ptrace_stop(signr, CLD_TRAPPED, 0, info);
- 
- 	/* We're back.  Did the debugger cancel the sig?  */
-+	signr = info->si_signo;
- 	if (signr == 0)
- 		return signr;
- 
--- 
-2.35.3
-
+Thanks,
+Daniil
