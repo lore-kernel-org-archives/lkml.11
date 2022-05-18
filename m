@@ -2,104 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02860C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 009EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235700AbiERLdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
+        id S235690AbiERLdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235652AbiERLdY (ORCPT
+        with ESMTP id S235692AbiERLd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:33:24 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E4A5C878;
-        Wed, 18 May 2022 04:33:20 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id i40so2584758eda.7;
-        Wed, 18 May 2022 04:33:20 -0700 (PDT)
+        Wed, 18 May 2022 07:33:29 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2078.outbound.protection.outlook.com [40.107.220.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96398111B9E;
+        Wed, 18 May 2022 04:33:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T72GiVIMJzDZ731AeqcmzKVmeqv/yKpN/Hp+PMiQLX7/zojdNbQENb6oWiQxGmgFlZfqxXW/FeH4YqgppeC7pJTT7XkYoXrJXFwyxKIkNiibVJUqFQLNKwLjjrwjvfmJSYcN7PMwmxlzOathCuUz3gQRm2cyAgQXJtgCS76x5HaXft78yMweDwVPdIp5Z0jnW8SBpYWV4MmL+AW5Gz2r7604ZP0bfYjp8MzRyR/dgTI6wt/HTaEIi+oBVh1SscNDIVGWMJlXsa99wJOkZ8dsKb/CxY8O6VIcTdTD/4rBgjhjHs4agj0li9voAbX9ZoCg6zgi6LjFPq8wJkYH/cgQ4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FcuSpLEywbuFAfH5li1/EqYk1T/U3iTYF8qpgkrGwJg=;
+ b=J/C+kp6WEAxjSgwmT2tC/6bfjaGJTDqnr+fGN+toIwzrtyLxWxYiOxVMhSD2iSOchmjRD7i4/aQHmiViTdUeIxQKPYc4WYciF/OxfhFoeokT9DH0zsBRFr2hFadLf+yjkF/lTEVxJi6h/IF7gjsllLoyfsNPQIuFhX+cFDLWhb1Nhtj+v745pJi63YxA9uQ7cyYdg8Ohr1FqP0oNEb98n7Ium8gQUeSHRLZ0QnH6wEZr4XsCpRT8WfMValkuQRixIca5gf2ECq40ImDW9eKv7tlZxsg4plNmyOxbLm0AiuFMsL8qMcJaTEYwhUA0i32WX6W9bESB8Ji82Ik66Lnplg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=microchip.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gJ3rsnwq2b/rwZyiM+K6St2dD//MHaJRGiRZ+2rN6jw=;
-        b=boSZSG16VTmcUf9r+ZEJo1bDXBXu800Ay6RdbxwGTxtnWhZtEKXO1kS/q9r6t4Tbci
-         qL3ppu4OcqJi0yGfUQ8PEQXAM37v19+vWyt/KkmPyWYi6F0LLZnjXPCGdz/3bKRQkXZT
-         lacgus8QOEdvO43y/iK1HshJzwZ7xXyaUplatLnYfmn6pXxRT82uMM4Ni2/WHTR2II8K
-         ALtwTOzMDdk6fjrCaMfZyt2H6ggyBkfLPti/+alKhAF/HQkLqC1+TCdXR0w9sBbi7H1e
-         1GE0pCaRFMH3c9+2fLt8NFmnwIkMfkpwnJWn/kpqhAWWfbEdxxxPjRoOzTV/7SuTb4wQ
-         SHww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gJ3rsnwq2b/rwZyiM+K6St2dD//MHaJRGiRZ+2rN6jw=;
-        b=buWKwSzrfJUXVJQ5jCuzZn3JGe3F6f+ajsWYfur5yGEyavNFP+JXdEwKBEps+kOxw9
-         X4gI12v03touR18QQmmv6e2WJqDegjLZJ8H3IdJrqqCOJPXS7IoszjmUm97i8JREzUWe
-         LDxxrG2DU1wvUdQsaynZ/Jqd5CUqX3KpMdA/LpiqkuMQ1RBJqXS4hGmonFdtHo3GCENi
-         LZsO+CcdrBzQOnCQy9cy+EP+H5P7njGMXwxYYNaSWdJfTh1o30RbEUWvQsLSu+0LCs25
-         f+4vH//BDp0nnUYorBTj186o6pZo+YKD9JLgxkuSU1C1Rxu0zc5QvwYDJfrliUBuvgH2
-         S0RA==
-X-Gm-Message-State: AOAM532EHBsDkXMqEt+Uoe16kOJ32QISUgnmWntyS+uvpmtggXKizjLg
-        ytfQQ2DX9mdCKesglhXwsi0=
-X-Google-Smtp-Source: ABdhPJyxtALu03Yuzdg/AfJ0FAnnybpgKbzcjrKmwL/9vAr2Byxm+xGrgpvROIgpruNaQz1AgwGHxA==
-X-Received: by 2002:a05:6402:741:b0:42a:8fad:8f67 with SMTP id p1-20020a056402074100b0042a8fad8f67mr21895251edy.285.1652873599246;
-        Wed, 18 May 2022 04:33:19 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id d19-20020a1709067a1300b006f3ef214e05sm852697ejo.107.2022.05.18.04.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 04:33:18 -0700 (PDT)
-Date:   Wed, 18 May 2022 14:33:15 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Hauke Mehrtens <hauke@hauke-m.de>
-Subject: Re: [PATCH net v1 2/2] net: dsa: lantiq_gswip: Fix typo in
- gswip_port_fdb_dump() error print
-Message-ID: <20220518113315.w3p6vzj3djat2abd@skbuf>
-References: <20220517194015.1081632-1-martin.blumenstingl@googlemail.com>
- <20220517194015.1081632-3-martin.blumenstingl@googlemail.com>
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FcuSpLEywbuFAfH5li1/EqYk1T/U3iTYF8qpgkrGwJg=;
+ b=AbaYMZtNIHAmMh0o6CLV88gNjwwOgRJKOCCffYcUy5VNxpNvEdr3Pg9TGwLiLyLLk1i375xKVIf3lQR9LJFAHv8KyKB2K9gxx69+3gzvM84+jbJ9cwrOanYjXrpKTC2SJrIoEQHz/fAVTnTjxWmio6+xEwVIf17tF18G84ZFN78=
+Received: from BN9PR03CA0895.namprd03.prod.outlook.com (2603:10b6:408:13c::30)
+ by BL0PR02MB6483.namprd02.prod.outlook.com (2603:10b6:208:1cb::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13; Wed, 18 May
+ 2022 11:33:25 +0000
+Received: from BN1NAM02FT014.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:13c:cafe::6e) by BN9PR03CA0895.outlook.office365.com
+ (2603:10b6:408:13c::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13 via Frontend
+ Transport; Wed, 18 May 2022 11:33:25 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT014.mail.protection.outlook.com (10.13.2.131) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5273.14 via Frontend Transport; Wed, 18 May 2022 11:33:25 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 18 May 2022 04:33:18 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 18 May 2022 04:33:18 -0700
+Envelope-to: nicolas.ferre@microchip.com,
+ davem@davemloft.net,
+ richardcochran@gmail.com,
+ claudiu.beznea@microchip.com,
+ kuba@kernel.org,
+ edumazet@google.com,
+ pabeni@redhat.com,
+ netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ harinikatakamlinux@gmail.com
+Received: from [10.140.6.13] (port=41766 helo=xhdharinik40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <harini.katakam@xilinx.com>)
+        id 1nrHva-000DlO-9B; Wed, 18 May 2022 04:33:18 -0700
+From:   Harini Katakam <harini.katakam@xilinx.com>
+To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
+        <kuba@kernel.org>, <edumazet@google.com>, <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
+        <harini.katakam@xilinx.com>, <radhey.shyam.pandey@xilinx.com>
+Subject: [PATCH net v2 1/2] include: ptp: Add common two step flag mask
+Date:   Wed, 18 May 2022 17:03:09 +0530
+Message-ID: <20220518113310.28132-2-harini.katakam@xilinx.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220518113310.28132-1-harini.katakam@xilinx.com>
+References: <20220518113310.28132-1-harini.katakam@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517194015.1081632-3-martin.blumenstingl@googlemail.com>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 53a6b4dd-dd14-4ef0-111b-08da38c23909
+X-MS-TrafficTypeDiagnostic: BL0PR02MB6483:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR02MB64838DA34E91D2A74BDB5C8AC9D19@BL0PR02MB6483.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +WVKQDZOi52KVr656POlFcTCcthnkkX21sGrRV4TxHHtYKEdLfnRe5/GfF1uQDgwku/KLHeQRDi4caM6Ekz3vODin9f/6B/0/zwQWXtj9fJ+XJKVylFADzp90KKula6qxTS+5448VE6qnN4OlOq1nNDNLXLbxYHCRtEPm7aEMrBt8g3uu6lTLlk772YqwQpfZKxgfyl6KiWHJtJJ7MmSOwkJ6dHzvhIrecbObbATRCsGM5AyMiLM/15hcH1OmU4YuM+HHuI6+qZqT7uTaoWo4ykIWGt3KgLgiNHgH7I1dvI5P21fpOV3QHcq7cEPZwul9yUvCidBD+61loNt4oi6oVrsOGLvwppJSvuFwq7ixZyOI+dZqbk2Ss0t3ZYeagcceXL+nSUq/ONXnIe1wBljRKitQQlZewn7QFV8t0BuLJB69iKYsXEPcdNVlBNqYaAoV1qe+2cigEFakftRew0ZRHjbRc6rMgSKexgsMbI2h+DvX1jo1r/2ST7biQfG4edUEBaKb4LovWSxf1sKmLoZ8JSQcnAXTyouxjCCF7ynpQrbYpVph360DKi7uAvROVeY6/weI6hFDkKGm5w7+17gj8kgOWftzSbBu8lyWbsj+ZRDoCc2taGepvnK+SuBaFu9/bsb8LoDFj6quFHQZ6WTjx6BKw93DHTrv+FH+beHbJZFhcw+yqq4JO8W29AfXyQGietf6HkYFhxZgB9KKFGWxg==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(316002)(8676002)(54906003)(36756003)(82310400005)(110136005)(70206006)(70586007)(4326008)(36860700001)(508600001)(6666004)(40460700003)(356005)(7416002)(5660300002)(7636003)(8936002)(44832011)(4744005)(9786002)(2906002)(186003)(7696005)(1076003)(26005)(426003)(336012)(2616005)(47076005)(107886003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2022 11:33:25.6646
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53a6b4dd-dd14-4ef0-111b-08da38c23909
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT014.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB6483
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 09:40:15PM +0200, Martin Blumenstingl wrote:
-> gswip_port_fdb_dump() reads the MAC bridge entries. The error message
-> should say "failed to read mac bridge entry". While here, also add the
-> index to the error print so humans can get to the cause of the problem
-> easier.
-> 
-> Fixes: 58c59ef9e930c4 ("net: dsa: lantiq: Add Forwarding Database access")
-> Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
+Add mask for PTP header flag field "twoStepflag".
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+---
+ include/linux/ptp_classify.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
->  drivers/net/dsa/lantiq_gswip.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-> index 0c313db23451..8af4def38a98 100644
-> --- a/drivers/net/dsa/lantiq_gswip.c
-> +++ b/drivers/net/dsa/lantiq_gswip.c
-> @@ -1426,8 +1426,9 @@ static int gswip_port_fdb_dump(struct dsa_switch *ds, int port,
->  
->  		err = gswip_pce_table_entry_read(priv, &mac_bridge);
->  		if (err) {
-> -			dev_err(priv->dev, "failed to write mac bridge: %d\n",
-> -				err);
-> +			dev_err(priv->dev,
-> +				"failed to read mac bridge entry %d: %d\n",
-> +				i, err);
->  			return err;
->  		}
->  
-> -- 
-> 2.36.1
-> 
+diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
+index fefa7790dc46..2b6ea36ad162 100644
+--- a/include/linux/ptp_classify.h
++++ b/include/linux/ptp_classify.h
+@@ -43,6 +43,9 @@
+ #define OFF_PTP_SOURCE_UUID	22 /* PTPv1 only */
+ #define OFF_PTP_SEQUENCE_ID	30
+ 
++/* PTP header flag fields */
++#define PTP_FLAG_TWOSTEP	BIT(1)
++
+ /* Below defines should actually be removed at some point in time. */
+ #define IP6_HLEN	40
+ #define UDP_HLEN	8
+-- 
+2.17.1
+
