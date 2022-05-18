@@ -2,106 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B86AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D716C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239464AbiERPji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48152 "EHLO
+        id S239486AbiERPjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239376AbiERPjb (ORCPT
+        with ESMTP id S239459AbiERPjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:39:31 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9275A88B7
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:39:29 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id z2so4615183ejj.3
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:39:29 -0700 (PDT)
+        Wed, 18 May 2022 11:39:36 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B2FAFB1D
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:39:35 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id n18so2138856plg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:39:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mZSb0554f2n8IO9cffG87Gnp2j/skjs0bnuEFWLNgIY=;
-        b=WHvW2VBAWCKNirykCIyA6YptIU6wNsv9VCGN8wOYMmKaMjRzSeTzXVb1yHCgJS+KT7
-         1iBphXfPCXXOwa29DMSIMcAMmGjG8XAxYg0yESaZ83dzWTSHThvUF7Awts9WtGe1UXkQ
-         u+KC4dhFZQIfEZT5XqXaYWB0g9xywDTEvSxLMidkGpJW8RvyqiIbXdoIe8VuclRnRBe6
-         Zyi83obCclcurYrIGkGydvwcoHGmgg4wOe9VeN/cl6Y9X7AiFpBJUPlA0XAX6OJytvOC
-         hoGJ15W7z3GtBPR8QN/WDMIjmt9VCNCvTSRfHoHe2/LswP0YKhOYhCPyslKJ8vbjxb2x
-         Gniw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Z/HMrrvCFWNmAHmvXNwS49dfDiOpl1n+gYXOKnIc4zI=;
+        b=dar/R+iwJh6De/GxHOwX6pHMbcfNFw2VosEiMVS9rUR0uhV04veQWjUvNn1Um9Mals
+         wRoCyapdixfM61qMc2HADICJWAjNnbA0wtGr+uJWt1QyWrw8PNXt7Yv4NGDLvF2Gd909
+         XcWfnB1NhBE0JV5FT3WZn8Q7ynTgoH7QPo1cYLo2usyEG3DmpqGOF4Wvrv4j9nv286VG
+         lcdB7BWKcl6xOcJUlig3kblVxHP0L0b6ubldhuv/9M5eUxiQc66zPE9PTz5a6oeBRpRm
+         cN/wh3MpbOvQlWkpL/q6/zoIwYwptqGj6VxyDCscWcLs6MIpRyajD/xgVpEZAEStq968
+         ahlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mZSb0554f2n8IO9cffG87Gnp2j/skjs0bnuEFWLNgIY=;
-        b=doldLuu3O/PUMGM6E8f6ZtRe4q62Sc3fsd97QcoGUWYZ3zcBcR3LFi96+kFE6YrNts
-         MNuEyVTC7gPTdKGj3liU98OP6gtiB9u8JlYcJN0UjYBO9NludZ09ofRoFI24Hi5ZbQPC
-         jTqPLtseL3FsWutRDZVp2YAHxOOCsK1dVVNLT6YTjmxWvxfjuG0FWlZdI0j8LFUjapMY
-         vVbjjzbC9amrc10ufsSHB1F9Xoyc0GS13TIOVajjVz5FqNcYNjhkhR+tmejbIsivS55R
-         PxukU0SEYgGV64UFRpaHR4us4KT2uwmJIK5Jj0lddnNs+i2URwv6SFuD1S88wzgqos2R
-         iaSg==
-X-Gm-Message-State: AOAM532Ommsr3T+hGxPV0kzWuTGnd7/oPfRHDXqREon+R+aupiz1kifu
-        hIHPYZ5lvWQVdAZ/oTh1/Mths8SGrS8KkeYI2PtA6g==
-X-Google-Smtp-Source: ABdhPJzYpWouIziad7D8nl6r5roTQa4hx5zFTiFU4Z1KMkPe481kLhzDmKMeDJHNd638PlKuV4hsYIx8MUM4+EatzPk=
-X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id
- nc6-20020a1709071c0600b006dfb257cbb3mr139397ejc.631.1652888367981; Wed, 18
- May 2022 08:39:27 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z/HMrrvCFWNmAHmvXNwS49dfDiOpl1n+gYXOKnIc4zI=;
+        b=IiVSUhMy0Pm7spda8HUf52OG0qBufqYXs8WJ/U4D85xguIlEHn+mZdUoAq4/jrEMZW
+         TdZ/PYz5fCGV/PyCaaLhSu3C2ETvO1fAVOM99CbzFWDEldiE4qKcqeUrlb9XNVhdh/I7
+         xFvK8ADcQSXGIL6rrAjZ4NuW8nzYjNEUkvf58MP3/UpTB3oh2o0D6quTqr22tMJ2xzfU
+         kTUKNa72XFeW9DPY99GFHPO6FXxxxyrBWGrILuoaZ0r4sdcbkfPSCVGROYdUgelYxBjQ
+         Uj6jGwaLY0EKDqtCo0OythHlbmONoXWX01mnWSKTAItLTbgCCixCoPQtswZhPDyZFVki
+         PG9g==
+X-Gm-Message-State: AOAM530d40V0o86Kem8KmyBP1FE8IoDjzuy0WKRPXx+UuEJW8hBdp4rf
+        YyZd+tEAz5rL3OAfjRBrkBz8GQ==
+X-Google-Smtp-Source: ABdhPJy4YDsen62GVqvNQ0gvtfR6xnGo8BpbBvHMqJCocqqqkTLqWVsTvmo43FO52CB7x/t5SXQ/jg==
+X-Received: by 2002:a17:902:f814:b0:161:505d:a4f4 with SMTP id ix20-20020a170902f81400b00161505da4f4mr318446plb.6.1652888374834;
+        Wed, 18 May 2022 08:39:34 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id gv3-20020a17090b11c300b001da160621d1sm1671704pjb.45.2022.05.18.08.39.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 08:39:34 -0700 (PDT)
+Date:   Wed, 18 May 2022 15:39:30 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Chao Gao <chao.gao@intel.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the guest
+ and/or host changes apic id/base from the defaults.
+Message-ID: <YoUTMsnFS+bSED+5@google.com>
+References: <20220427200314.276673-1-mlevitsk@redhat.com>
+ <20220427200314.276673-3-mlevitsk@redhat.com>
+ <20220518082811.GA8765@gao-cwp>
+ <8c78939bf01a98554696add10e17b07631d97a28.camel@redhat.com>
 MIME-Version: 1.0
-References: <20220518073232.526443-1-davidgow@google.com> <CAGS_qxrOUYC5iycS436Rb-gEoEnYDa2OJLkQhEVXcDN0BEJ4YA@mail.gmail.com>
- <CANpmjNPSm8eZX7nAJyMts-4XdYB2ChXK17HApUpoHN-SOo7fRA@mail.gmail.com>
-In-Reply-To: <CANpmjNPSm8eZX7nAJyMts-4XdYB2ChXK17HApUpoHN-SOo7fRA@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Wed, 18 May 2022 08:39:16 -0700
-Message-ID: <CAGS_qxr4vTSEtcGGFyoZibga2Q_Avp9pFD78GOA3W9o6F9RVRQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] kunit: tool: Add x86_64-smp architecture for SMP testing
-To:     Marco Elver <elver@google.com>
-Cc:     David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Dmitry Vyukov <dvyukov@google.com>, kunit-dev@googlegroups.com,
-        kasan-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8c78939bf01a98554696add10e17b07631d97a28.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 8:36 AM Marco Elver <elver@google.com> wrote:
->
-> On Wed, 18 May 2022 at 17:31, Daniel Latypov <dlatypov@google.com> wrote:
-> >
-> > On Wed, May 18, 2022 at 12:32 AM 'David Gow' via KUnit Development
-> > <kunit-dev@googlegroups.com> wrote:
-> > >
-> > > Add a new QEMU config for kunit_tool, x86_64-smp, which provides an
-> > > 8-cpu SMP setup. No other kunit_tool configurations provide an SMP
-> > > setup, so this is the best bet for testing things like KCSAN, which
-> > > require a multicore/multi-cpu system.
-> > >
-> > > The choice of 8 CPUs is pretty arbitrary: it's enough to get tests like
-> > > KCSAN to run with a nontrivial number of worker threads, while still
-> > > working relatively quickly on older machines.
-> > >
-> >
-> > Since it's arbitrary, I somewhat prefer the idea of leaving up
-> > entirely to the caller
-> > i.e.
-> > $ kunit.py run --kconfig_add=CONFIG_SMP=y --qemu_args '-smp 8'
-> >
-> > We could add CONFIG_SMP=y to the default qemu_configs/*.py and do
-> > $ kunit.py run --qemu_args '-smp 8'
-> > but I'd prefer the first, even if it is more verbose.
-> >
-> > Marco, does this seem reasonable from your perspective?
->
-> Either way works. But I wouldn't mind a sane default though, where
-> that default can be overridden with custom number of CPUs.
->
+On Wed, May 18, 2022, Maxim Levitsky wrote:
+> On Wed, 2022-05-18 at 16:28 +0800, Chao Gao wrote:
+> > > struct kvm_arch {
+> > > @@ -1258,6 +1260,7 @@ struct kvm_arch {
+> > > 	hpa_t	hv_root_tdp;
+> > > 	spinlock_t hv_root_tdp_lock;
+> > > #endif
+> > > +	bool apic_id_changed;
+> > 
+> > What's the value of this boolean? No one reads it.
+> 
+> I use it in later patches to kill the guest during nested VM entry 
+> if it attempts to use nested AVIC after any vCPU changed APIC ID.
 
-Ack.
-Let me clean up what I have for --qemu_args and send it out for discussion.
+Then the flag should be introduced in the later patch, because (a) it's dead code
+if that patch is never merged and (b) it's impossible to review this patch for
+correctness without seeing the usage, e.g. setting apic_id_changed isn't guarded
+with a lock and so the usage may or may not be susceptible to races.
 
-One downside I see to adding more qemu_configs is that --arch now
-becomes more kunit-specific.
-Before, a user could assume "oh, it's just what I pass in to make ARCH=...".
-This new "--arch=x86_64-smp" violates that. I don't personally see it
-being that confusing, but I still worry.
+> > > +	apic->vcpu->kvm->arch.apic_id_changed = true;
+> > > +}
+> > > +
