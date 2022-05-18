@@ -2,123 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE72C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58243C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbiERH71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54590 "EHLO
+        id S232946AbiERH7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232896AbiERH7R (ORCPT
+        with ESMTP id S232896AbiERH7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:59:17 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219CA122B44
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:59:16 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so2679334wmj.1
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:59:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n37OLhluDeZRZjQV8gqjswMetHIVJY0WAfxFDmSPshs=;
-        b=BW34tKuFY3dYsRa6d9qALrie8sssLLFboJeX2+kC6OJrQ5TfgGTzIBKQQHohBfcNZk
-         bYIds93O59FlA8sQcuxILI1lv/ktt5LDnb0xCg/vN8RCdU5jFzrMPI4ZVWofVgfVOsUd
-         14331uJXaQoHYkESFOFgCKOw4Yk8JLeXG4DAaKZPhY0QDFpmf6gI+cGlkIP/YlU6y0TF
-         F66rGc4GOx7GT55IR5uFokoMlaFReP33WcQoRNqlwsjhbv7PpkgYT7jrnL5sbuA5Fi1j
-         Xy9cu3XfAK4+kwJt+NAT0KPQMCQfFAjUGIj8AFfgVGqJoTw5Ox8ZnRJCXX+jUCeNhQj4
-         xmSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n37OLhluDeZRZjQV8gqjswMetHIVJY0WAfxFDmSPshs=;
-        b=V8tfhZ5KoTkfUnSr4zQk1AFQwMZIDfFglvLMHN0oBAkYRX/T2Z0bItAvKPFRo24IHa
-         sDGc38SzIFK1humRgIONcPRy7gzJbDSimBrYZjx2rX6X73d2NpzP/SLViWige7/GmW9T
-         jUb9pqUAtB7iXCIDHHFMG0feY5jmnh1i7slf/HSz/GubFqBE8EL5ytK8R9iEFHRahl2r
-         r2CG72LnhTFv9BMBByOFrR0su5qV6K681VWJiYHJbPsr6TigGQFywk3ciWRdrILl0iNx
-         ymsGZBi9kkPV/KSa5kqGVmfvKYQUJKuiY7X1/l+ub57uwqu1fOCYY0rvIxPXQd9DSyRC
-         S7qQ==
-X-Gm-Message-State: AOAM531eebJru+oegbMDe372SicXNNHmXHphsASDoGZjqYFRv1s3R1Xe
-        WaWNDyDpmzvVQDUs0IotSBBAFA==
-X-Google-Smtp-Source: ABdhPJyEDKmFLRtJYfnFPvmAhLChghVgJ7rMcWed6hs0AcueTZLx1tLS3abGpGneOm6CWaHFi8gqag==
-X-Received: by 2002:a1c:2c3:0:b0:38f:f280:caa3 with SMTP id 186-20020a1c02c3000000b0038ff280caa3mr24284284wmc.14.1652860754650;
-        Wed, 18 May 2022 00:59:14 -0700 (PDT)
-Received: from groot.home ([2a01:cb19:85e6:1900:bda6:8356:4db1:4539])
-        by smtp.gmail.com with ESMTPSA id ay1-20020a05600c1e0100b0039706782e06sm1041300wmb.33.2022.05.18.00.59.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 00:59:14 -0700 (PDT)
-From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        linux-input@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Subject: [PATCH v2 2/2] Input: mt6779-keypad - implement row/column selection
-Date:   Wed, 18 May 2022 09:59:09 +0200
-Message-Id: <20220518075909.180629-3-mkorpershoek@baylibre.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220518075909.180629-1-mkorpershoek@baylibre.com>
-References: <20220518075909.180629-1-mkorpershoek@baylibre.com>
+        Wed, 18 May 2022 03:59:32 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4561712719B;
+        Wed, 18 May 2022 00:59:31 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L350f4WXkzQk9h;
+        Wed, 18 May 2022 15:56:34 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 18 May 2022 15:59:28 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 15:59:28 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <keescook@chromium.org>, <viro@zeniv.linux.org.uk>,
+        <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <chengzhihao1@huawei.com>,
+        <yukuai3@huawei.com>
+Subject: [PATCH -next] exec: Remove redundant check in do_open_execat/uselib
+Date:   Wed, 18 May 2022 16:12:27 +0800
+Message-ID: <20220518081227.1278192-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MediaTek keypad has a total of 6 input rows and 6 input columns.
-By default, rows/columns 0-2 are enabled.
+There is a false positive WARNON happening in execve(2)/uselib(2)
+syscalls with concurrent noexec-remount.
 
-This is controlled by the KP_SEL register:
-- bits[9:4]   control row selection
-- bits[15:10] control column selection
+       execveat                           remount
+do_open_execat(path/bin)
+  do_filp_open
+    path_openat
+      do_open
+        may_open
+          path_noexec() // PASS
+	                            remount(path->mnt, MS_NOEXEC)
+WARNON(path_noexec(&file->f_path)) // path_noexec() checks fail
 
-Each bit enables the corresponding row/column number (e.g KP_SEL[4]
-enables ROW0)
+Since may_open() has already checked the same conditions, fix it by
+removing 'S_ISREG' and 'path_noexec' check in do_open_execat()/uselib(2).
 
-Depending on how the keypad is wired, this may result in wrong readings
-of the keypad state.
-
-Program the KP_SEL register to limit the key detection to n_rows,
-n_cols we retrieve from the device tree.
-
-Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Fixes: 0fd338b2d2cdf8 ("exec: move path_noexec() check earlier")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
 ---
- drivers/input/keyboard/mt6779-keypad.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/exec.c | 22 +---------------------
+ 1 file changed, 1 insertion(+), 21 deletions(-)
 
-diff --git a/drivers/input/keyboard/mt6779-keypad.c b/drivers/input/keyboard/mt6779-keypad.c
-index 23360de20da5..9a8133970f5b 100644
---- a/drivers/input/keyboard/mt6779-keypad.c
-+++ b/drivers/input/keyboard/mt6779-keypad.c
-@@ -17,6 +17,11 @@
- #define MTK_KPD_DEBOUNCE	0x0018
- #define MTK_KPD_DEBOUNCE_MASK	GENMASK(13, 0)
- #define MTK_KPD_DEBOUNCE_MAX_MS	256
-+#define MTK_KPD_SEL		0x0020
-+#define MTK_KPD_SEL_COL	GENMASK(15, 10)
-+#define MTK_KPD_SEL_ROW	GENMASK(9, 4)
-+#define MTK_KPD_SEL_COLMASK(c)	GENMASK((c) + 9, 10)
-+#define MTK_KPD_SEL_ROWMASK(r)	GENMASK((r) + 3, 4)
- #define MTK_KPD_NUM_MEMS	5
- #define MTK_KPD_NUM_BITS	136	/* 4*32+8 MEM5 only use 8 BITS */
+diff --git a/fs/exec.c b/fs/exec.c
+index e3e55d5e0be1..0f8ea7e9e03c 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -141,16 +141,6 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
+ 	if (IS_ERR(file))
+ 		goto out;
  
-@@ -171,6 +176,11 @@ static int mt6779_keypad_pdrv_probe(struct platform_device *pdev)
- 	regmap_write(keypad->regmap, MTK_KPD_DEBOUNCE,
- 		     (debounce * (1 << 5)) & MTK_KPD_DEBOUNCE_MASK);
+-	/*
+-	 * may_open() has already checked for this, so it should be
+-	 * impossible to trip now. But we need to be extra cautious
+-	 * and check again at the very end too.
+-	 */
+-	error = -EACCES;
+-	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
+-			 path_noexec(&file->f_path)))
+-		goto exit;
+-
+ 	fsnotify_open(file);
  
-+	regmap_update_bits(keypad->regmap, MTK_KPD_SEL, MTK_KPD_SEL_ROW,
-+			   MTK_KPD_SEL_ROWMASK(keypad->n_rows));
-+	regmap_update_bits(keypad->regmap, MTK_KPD_SEL, MTK_KPD_SEL_COL,
-+			   MTK_KPD_SEL_COLMASK(keypad->n_cols));
+ 	error = -ENOEXEC;
+@@ -169,7 +159,7 @@ SYSCALL_DEFINE1(uselib, const char __user *, library)
+ 			break;
+ 	}
+ 	read_unlock(&binfmt_lock);
+-exit:
 +
- 	keypad->clk = devm_clk_get(&pdev->dev, "kpd");
- 	if (IS_ERR(keypad->clk))
- 		return PTR_ERR(keypad->clk);
+ 	fput(file);
+ out:
+   	return error;
+@@ -919,16 +909,6 @@ static struct file *do_open_execat(int fd, struct filename *name, int flags)
+ 	if (IS_ERR(file))
+ 		goto out;
+ 
+-	/*
+-	 * may_open() has already checked for this, so it should be
+-	 * impossible to trip now. But we need to be extra cautious
+-	 * and check again at the very end too.
+-	 */
+-	err = -EACCES;
+-	if (WARN_ON_ONCE(!S_ISREG(file_inode(file)->i_mode) ||
+-			 path_noexec(&file->f_path)))
+-		goto exit;
+-
+ 	err = deny_write_access(file);
+ 	if (err)
+ 		goto exit;
 -- 
-2.34.1
+2.31.1
 
