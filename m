@@ -2,232 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C49C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD65C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231996AbiERHQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58848 "EHLO
+        id S231993AbiERHSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiERHQn (ORCPT
+        with ESMTP id S231947AbiERHR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:16:43 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D688FD7A;
-        Wed, 18 May 2022 00:16:34 -0700 (PDT)
+        Wed, 18 May 2022 03:17:58 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F442F3B2;
+        Wed, 18 May 2022 00:17:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652858199; x=1684394199;
+  t=1652858277; x=1684394277;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0IL0WsCd3/HrKBEhnZxB/UtqoL3AiE13Ig/YdXaNECc=;
-  b=eFQDZfadVSk4x17IA06xFmftv8weyNNCUQ6ymjTKMoaZJ01iwuQC4uza
-   HUFQzDw0iyWjtVG16ndwvJCeSFgkoQ713Q0So0mJR+z8g0ZbkxTym63JI
-   e5EE9BKE2xypVWaI4fYTSMTQOXwCCxs4zpdfDEQXgeNqTBQMoklqFKSqM
-   PS+u1HlMSilA+adW6rjj23Q2Kop8Yl8O8wTkfABOi8S1GquOoLz72uSy6
-   mVIOK82OT72fArfdO4I6e7YvTOdUELDRalAVrGCH7Njwgrqw4gmN4m8Gj
-   HIhU9N/Sn4j1ptq0siWsldYUBoJQ2DM81/Wmsj/xpk1ok2uKprQFmMCI6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357931708"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=q+JFlMjJAbHftH3ICVKYgfpJzrW4prf2V94k/9k9eo0=;
+  b=kjNzYqfr+LU8FIUfavgY4mWbwQQhokbimq4fybA0Hvwm7C6IWkcVJmwi
+   u3/6vtRnBwo46Wk/k90QhXJN400mZEshalGLunBkSrId2eNaIP5wNPKY+
+   2phyRNcWLrYXxGJVluw3Qlagz0yEAix5ZosCnHGNw57Pc7AphO2eQTrj0
+   QSLiFIrqy5dVuX4GUk/Wm1977UGS5B37XA0W0Xuk86BRXwap+xhgOlQvE
+   WenBWMTkMP1kXdnlj9Bc4rVu9whyGylIAoGuACGK7yRaX7g17XWj6kOye
+   D5S/aDiw9Ex1w7zvsQxk98T8vby20YunTIA+gMZyEKqcD7nJzSmafGeYI
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="252042965"
 X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="357931708"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 00:16:26 -0700
+   d="scan'208";a="252042965"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 00:17:47 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="898089195"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 18 May 2022 00:16:22 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrDuw-0001v6-6S;
-        Wed, 18 May 2022 07:16:22 +0000
-Date:   Wed, 18 May 2022 15:16:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Besar Wicaksono <bwicaksono@nvidia.com>, robin.murphy@arm.com,
-        catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org, sudeep.holla@arm.com,
-        thanu.rangarajan@arm.com, Michael.Williams@arm.com,
-        suzuki.poulose@arm.com, treding@nvidia.com, jonathanh@nvidia.com,
-        vsethi@nvidia.com, Besar Wicaksono <bwicaksono@nvidia.com>
-Subject: Re: [PATCH v2 1/2] perf: coresight_pmu: Add support for ARM
- CoreSight PMU driver
-Message-ID: <202205181534.wuyBFt9d-lkp@intel.com>
-References: <20220515163044.50055-2-bwicaksono@nvidia.com>
+   d="scan'208";a="545297940"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga006.jf.intel.com with ESMTP; 18 May 2022 00:17:43 -0700
+Date:   Wed, 18 May 2022 15:10:10 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Russ Weight <russell.h.weight@intel.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, lee.jones@linaro.org,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com
+Subject: Re: [PATCH v20 3/5] fpga: m10bmc-sec: expose max10 flash update count
+Message-ID: <20220518071010.GA55267@yilunxu-OptiPlex-7050>
+References: <20220516234941.592886-1-russell.h.weight@intel.com>
+ <20220516234941.592886-4-russell.h.weight@intel.com>
+ <20220517041310.GA40711@yilunxu-OptiPlex-7050>
+ <8fb5dea0-9ce6-a17c-1253-64a43c86c82c@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220515163044.50055-2-bwicaksono@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8fb5dea0-9ce6-a17c-1253-64a43c86c82c@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Besar,
+On Tue, May 17, 2022 at 09:16:50AM -0700, Russ Weight wrote:
+> 
+> 
+> On 5/16/22 21:13, Xu Yilun wrote:
+> > On Mon, May 16, 2022 at 04:49:39PM -0700, Russ Weight wrote:
+> >> Extend the MAX10 BMC Secure Update driver to provide a sysfs file to
+> >> expose the flash update count.
+> >>
+> >> Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+> >> Reviewed-by: Tom Rix <trix@redhat.com>
+> >> ---
+> >> v20:
+> >>   - No change
+> >> v19:
+> >>   - Change "card bmc" naming back to "m10 bmc" naming to be consistent
+> >>     with the parent driver.
+> >> v18:
+> >>   - No change
+> >> v17:
+> >>   - Update the Date and KernelVersion for the ABI documentation to Jul 2022
+> >>     and 5.19 respectively.
+> >>   - Change "m10bmc" in symbol names to "cardbmc" to reflect the fact that the
+> >>     future devices will not necessarily use the MAX10.
+> >> v16:
+> >>   - No Change
+> >> v15:
+> >>   - Updated the Dates and KernelVersions in the ABI documentation
+> >> v14:
+> >>   - No change
+> >> v13:
+> >>   - Updated ABI documentation date and kernel version
+> >> v12:
+> >>   - Updated Date and KernelVersion fields in ABI documentation
+> >> v11:
+> >>   - No change
+> >> v10:
+> >>   - Changed the path expression in the sysfs documentation to
+> >>     replace the n3000 reference with something more generic to
+> >>     accomodate other devices that use the same driver.
+> >> v9:
+> >>   - Rebased to 5.12-rc2 next
+> >>   - Updated Date and KernelVersion in ABI documentation
+> >> v8:
+> >>   - Previously patch 3/6, otherwise no change
+> >> v7:
+> >>   - Updated Date and KernelVersion in ABI documentation
+> >> v6:
+> >>   - Changed flash_count_show() parameter list to achieve
+> >>     reverse-christmas tree format.
+> >>   - Added WARN_ON() call for (FLASH_COUNT_SIZE / stride) to ensure
+> >>     that the proper count is passed to regmap_bulk_read().
+> >> v5:
+> >>   - Renamed sysfs node user_flash_count to flash_count and updated the
+> >>     sysfs documentation accordingly.
+> >> v4:
+> >>   - Moved the sysfs file for displaying the flash count from the
+> >>     FPGA Security Manager class driver to here. The
+> >>     m10bmc_user_flash_count() function is removed and the
+> >>     functionality is moved into a user_flash_count_show()
+> >>     function.
+> >>   - Added ABI documentation for the new sysfs entry
+> >> v3:
+> >>   - Changed: iops -> sops, imgr -> smgr, IFPGA_ -> FPGA_, ifpga_ to fpga_
+> >>   - Changed "MAX10 BMC Secure Engine driver" to "MAX10 BMC Secure Update
+> >>     driver"
+> >>   - Removed wrapper functions (m10bmc_raw_*, m10bmc_sys_*). The
+> >>     underlying functions are now called directly.
+> >> v2:
+> >>   - Renamed get_qspi_flash_count() to m10bmc_user_flash_count()
+> >>   - Minor code cleanup per review comments
+> >>   - Added m10bmc_ prefix to functions in m10bmc_iops structure
+> >> ---
+> >>  .../sysfs-driver-intel-m10-bmc-sec-update     |  8 +++++
+> >>  drivers/fpga/intel-m10-bmc-sec-update.c       | 36 +++++++++++++++++++
+> >>  2 files changed, 44 insertions(+)
+> >>
+> >> diff --git a/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update b/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
+> >> index 2bb271695e14..1132e39b2125 100644
+> >> --- a/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
+> >> +++ b/Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
+> >> @@ -27,3 +27,11 @@ Description:	Read only. Returns the root entry hash for the BMC image
+> >>  		"hash not programmed".  This file is only visible if the
+> >>  		underlying device supports it.
+> >>  		Format: string.
+> >> +
+> >> +What:		/sys/bus/platform/drivers/intel-m10bmc-sec-update/.../security/flash_count
+> >> +Date:		Jul 2022
+> >> +KernelVersion:	5.19
+> >> +Contact:	Russ Weight <russell.h.weight@intel.com>
+> >> +Description:	Read only. Returns number of times the secure update
+> >> +		staging area has been flashed.
+> >> +		Format: "%u".
+> >> diff --git a/drivers/fpga/intel-m10-bmc-sec-update.c b/drivers/fpga/intel-m10-bmc-sec-update.c
+> >> index f9f39d2cfe5b..3f183202de3b 100644
+> >> --- a/drivers/fpga/intel-m10-bmc-sec-update.c
+> >> +++ b/drivers/fpga/intel-m10-bmc-sec-update.c
+> >> @@ -78,7 +78,43 @@ DEVICE_ATTR_SEC_REH_RO(bmc, BMC_PROG_MAGIC, BMC_PROG_ADDR, BMC_REH_ADDR);
+> >>  DEVICE_ATTR_SEC_REH_RO(sr, SR_PROG_MAGIC, SR_PROG_ADDR, SR_REH_ADDR);
+> >>  DEVICE_ATTR_SEC_REH_RO(pr, PR_PROG_MAGIC, PR_PROG_ADDR, PR_REH_ADDR);
+> >>  
+> >> +#define FLASH_COUNT_SIZE 4096	/* count stored as inverted bit vector */
+> >> +
+> >> +static ssize_t flash_count_show(struct device *dev,
+> >> +				struct device_attribute *attr, char *buf)
+> >> +{
+> >> +	struct m10bmc_sec *sec = dev_get_drvdata(dev);
+> >> +	unsigned int stride, num_bits;
+> >> +	u8 *flash_buf;
+> >> +	int cnt, ret;
+> >> +
+> >> +	stride = regmap_get_reg_stride(sec->m10bmc->regmap);
+> >> +	num_bits = FLASH_COUNT_SIZE * 8;
+> >> +
+> >> +	flash_buf = kmalloc(FLASH_COUNT_SIZE, GFP_KERNEL);
+> >> +	if (!flash_buf)
+> >> +		return -ENOMEM;
+> >> +
+> >> +	WARN_ON(FLASH_COUNT_SIZE % stride);
+> > The same concern here. Stop users from getting the broken value.
+> 
+> Sure - I will change this.
+> 
+> I was using WARN_ON() because it indicates a problem in the device or
+> the driver itself. It is not really validating information from userspace.
 
-Thank you for the patch! Perhaps something to improve:
+Understood. So it is OK we keep the WARN_ON, or WARN_ON_ONCE？But we
+should still have some code to handle the issue gracefully rather
+than just passing the broken value to user.
 
-[auto build test WARNING on arm64/for-next/core]
-[also build test WARNING on soc/for-next linus/master v5.18-rc7 next-20220517]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Thanks
+Yilun
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Besar-Wicaksono/perf-coresight_pmu-Add-support-for-ARM-CoreSight-PMU-driver/20220516-013131
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220518/202205181534.wuyBFt9d-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/79f30980a7a91e6bbe7430206e4e46fa8134cfa9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Besar-Wicaksono/perf-coresight_pmu-Add-support-for-ARM-CoreSight-PMU-driver/20220516-013131
-        git checkout 79f30980a7a91e6bbe7430206e4e46fa8134cfa9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/media/platform/qcom/venus/ drivers/perf/coresight_pmu/ drivers/rtc/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:165:49: error: incomplete definition of type 'struct acpi_apmt_node'
-           return CHECK_APMT_FLAG(coresight_pmu->apmt_node->flags, ATOMIC, SUPP);
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:129:4: note: expanded from macro 'CHECK_APMT_FLAG'
-           ((flags & (ACPI_APMT_FLAGS_ ## f)) == (ACPI_APMT_FLAGS_ ## f ## _ ## v))
-             ^~~~~
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:165:9: error: use of undeclared identifier 'ACPI_APMT_FLAGS_ATOMIC'
-           return CHECK_APMT_FLAG(coresight_pmu->apmt_node->flags, ATOMIC, SUPP);
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:129:13: note: expanded from macro 'CHECK_APMT_FLAG'
-           ((flags & (ACPI_APMT_FLAGS_ ## f)) == (ACPI_APMT_FLAGS_ ## f ## _ ## v))
-                      ^
-   <scratch space>:61:1: note: expanded from here
-   ACPI_APMT_FLAGS_ATOMIC
-   ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:165:9: error: use of undeclared identifier 'ACPI_APMT_FLAGS_ATOMIC_SUPP'
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:129:41: note: expanded from macro 'CHECK_APMT_FLAG'
-           ((flags & (ACPI_APMT_FLAGS_ ## f)) == (ACPI_APMT_FLAGS_ ## f ## _ ## v))
-                                                  ^
-   <scratch space>:64:1: note: expanded from here
-   ACPI_APMT_FLAGS_ATOMIC_SUPP
-   ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:369:13: error: incomplete definition of type 'struct acpi_apmt_node'
-                   (apmt_node->impl_id) ? apmt_node->impl_id :
-                    ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:369:35: error: incomplete definition of type 'struct acpi_apmt_node'
-                   (apmt_node->impl_id) ? apmt_node->impl_id :
-                                          ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:894:58: error: incomplete definition of type 'struct acpi_apmt_node'
-                   devm_kasprintf(dev, GFP_KERNEL, PMUNAME "%u", apmt_node->id);
-                                                                 ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:920:31: error: incomplete definition of type 'struct acpi_apmt_node'
-           if (CHECK_APMT_FLAG(apmt_node->flags, DUAL_PAGE, SUPP)) {
-                               ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:129:4: note: expanded from macro 'CHECK_APMT_FLAG'
-           ((flags & (ACPI_APMT_FLAGS_ ## f)) == (ACPI_APMT_FLAGS_ ## f ## _ ## v))
-             ^~~~~
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:920:6: error: use of undeclared identifier 'ACPI_APMT_FLAGS_DUAL_PAGE'
-           if (CHECK_APMT_FLAG(apmt_node->flags, DUAL_PAGE, SUPP)) {
-               ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:129:13: note: expanded from macro 'CHECK_APMT_FLAG'
-           ((flags & (ACPI_APMT_FLAGS_ ## f)) == (ACPI_APMT_FLAGS_ ## f ## _ ## v))
-                      ^
-   <scratch space>:60:1: note: expanded from here
-   ACPI_APMT_FLAGS_DUAL_PAGE
-   ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:920:6: error: use of undeclared identifier 'ACPI_APMT_FLAGS_DUAL_PAGE_SUPP'
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:129:41: note: expanded from macro 'CHECK_APMT_FLAG'
-           ((flags & (ACPI_APMT_FLAGS_ ## f)) == (ACPI_APMT_FLAGS_ ## f ## _ ## v))
-                                                  ^
-   <scratch space>:63:1: note: expanded from here
-   ACPI_APMT_FLAGS_DUAL_PAGE_SUPP
-   ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:1028:15: error: incomplete definition of type 'struct acpi_apmt_node'
-           if (apmt_node->ovflw_irq == 0)
-               ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
->> drivers/perf/coresight_pmu/arm_coresight_pmu.c:1053:6: warning: variable 'level' set but not used [-Wunused-but-set-variable]
-           int level = 0;
-               ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:1079:27: error: incomplete definition of type 'struct acpi_apmt_node'
-           affinity_flag = apmt_node->flags & ACPI_APMT_FLAGS_AFFINITY;
-                           ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:1079:37: error: use of undeclared identifier 'ACPI_APMT_FLAGS_AFFINITY'
-           affinity_flag = apmt_node->flags & ACPI_APMT_FLAGS_AFFINITY;
-                                              ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:1081:23: error: use of undeclared identifier 'ACPI_APMT_FLAGS_AFFINITY_PROC'
-           if (affinity_flag == ACPI_APMT_FLAGS_AFFINITY_PROC) {
-                                ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:1083:17: error: incomplete definition of type 'struct acpi_apmt_node'
-                           if (apmt_node->proc_affinity ==
-                               ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.c:1093:23: error: incomplete definition of type 'struct acpi_apmt_node'
-                                       cpu, apmt_node->proc_affinity))
-                                            ~~~~~~~~~^
-   drivers/perf/coresight_pmu/arm_coresight_pmu.h:116:9: note: forward declaration of 'struct acpi_apmt_node'
-           struct acpi_apmt_node *apmt_node;
-                  ^
-   1 warning and 15 errors generated.
-
-
-vim +/level +1053 drivers/perf/coresight_pmu/arm_coresight_pmu.c
-
-  1047	
-  1048	static inline int coresight_pmu_find_cpu_container(int cpu, u32 container_uid)
-  1049	{
-  1050		u32 acpi_uid;
-  1051		struct device *cpu_dev = get_cpu_device(cpu);
-  1052		struct acpi_device *acpi_dev = ACPI_COMPANION(cpu_dev);
-> 1053		int level = 0;
-  1054	
-  1055		if (!cpu_dev)
-  1056			return -ENODEV;
-  1057	
-  1058		while (acpi_dev) {
-  1059			if (!strcmp(acpi_device_hid(acpi_dev),
-  1060				    ACPI_PROCESSOR_CONTAINER_HID) &&
-  1061			    !kstrtouint(acpi_device_uid(acpi_dev), 0, &acpi_uid) &&
-  1062			    acpi_uid == container_uid)
-  1063				return 0;
-  1064	
-  1065			acpi_dev = acpi_dev->parent;
-  1066			level++;
-  1067		}
-  1068	
-  1069		return -ENODEV;
-  1070	}
-  1071	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> As I understand it, WARN_ON() is used to log such events to the kernel
+> log. If this isn't an appropriate use of WARN_ON(), then when should I
+> consider using it?
+> 
+> Thanks,
+> - Russ
+> >
+> >> +	ret = regmap_bulk_read(sec->m10bmc->regmap, STAGING_FLASH_COUNT,
+> >> +			       flash_buf, FLASH_COUNT_SIZE / stride);
+> >> +	if (ret) {
+> >> +		dev_err(sec->dev,
+> >> +			"failed to read flash count: %x cnt %x: %d\n",
+> >> +			STAGING_FLASH_COUNT, FLASH_COUNT_SIZE / stride, ret);
+> >> +		goto exit_free;
+> >> +	}
+> >> +	cnt = num_bits - bitmap_weight((unsigned long *)flash_buf, num_bits);
+> >> +
+> >> +exit_free:
+> >> +	kfree(flash_buf);
+> >> +
+> >> +	return ret ? : sysfs_emit(buf, "%u\n", cnt);
+> >> +}
+> >> +static DEVICE_ATTR_RO(flash_count);
+> >> +
+> >>  static struct attribute *m10bmc_security_attrs[] = {
+> >> +	&dev_attr_flash_count.attr,
+> >>  	&dev_attr_bmc_root_entry_hash.attr,
+> >>  	&dev_attr_sr_root_entry_hash.attr,
+> >>  	&dev_attr_pr_root_entry_hash.attr,
+> >> -- 
+> >> 2.25.1
