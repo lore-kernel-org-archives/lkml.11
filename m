@@ -2,126 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93916C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D496BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240546AbiERQuY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41872 "EHLO
+        id S240554AbiERQvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240519AbiERQuV (ORCPT
+        with ESMTP id S240551AbiERQvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:50:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D831FE1EB;
-        Wed, 18 May 2022 09:50:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E2AC616EF;
-        Wed, 18 May 2022 16:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F6A9C385A5;
-        Wed, 18 May 2022 16:50:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652892619;
-        bh=EKfo8rCNyIy8YeDE1LpF8Seb9BHiYKO7eUMI8MfUgBs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=XaXPeOe1KI51PdJFOGclVzYI2pVIPi3mRdJtkiw+bz1rxLTBiJKOT5iCJwBDjQ7e4
-         08/7S6ec+vl1O1EAzMjFu1QJFY9hHfeug3613KdpEXc5IGIUXa4hpwxO2jiUCTlx8j
-         M5zS1Ij2juPbnLSZ3Gth+Exc4FG6TLVy39jYUfYgpNFWcz0RNFBRuJlG2PluOR4Gcq
-         TzihJWT8NUSt5VXcm4U8ZQ4xLpHx1ecS8XBt7KGJzO8lI9Plc6VvFoQ36sqJRe/yEa
-         T25CbOxQyCPcdPfD71VUvTc9ZcdTEqp1Kz+OGbeeqUsbOWq64z0plg8UtsCMxBclrI
-         uBXOXHofb08hg==
-Date:   Wed, 18 May 2022 11:50:17 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Christoph Hellwig <hch@lst.de>, linux-nvme@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jens Axboe <axboe@fb.com>,
-        Veerabhadrarao Badiganti <quic_vbadigan@quicinc.com>,
-        quic_krichai@quicinc.com, Nitin Rawat <quic_nitirawa@quicinc.com>,
-        Vidya Sagar <vidyas@nvidia.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Prasad Malisetty <quic_pmaliset@quicinc.com>,
-        Andy Gross <agross@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Rajat Jain <rajatja@google.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        Rama Krishna <quic_ramkri@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: Re: [PATCH 2/3] PCI: dwc: qcom: Set suspend_poweroff flag for SC7280
-Message-ID: <20220518165017.GA1145045@bhelgaas>
+        Wed, 18 May 2022 12:51:45 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCEF9E9F2;
+        Wed, 18 May 2022 09:51:44 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IGO5D7019721;
+        Wed, 18 May 2022 16:51:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=kZmuOQk3nB0k0QQUHtuVyv6VXcOPkjCgoM1V8L0+TvY=;
+ b=PrksPn0W3hOiWQTtNYA6q3tuCzNvWy5D0jfh5fXMu7Lw3RdQI5p8BxL5W8Xq7isn0B5O
+ 8xWPymE9J0ZU81db+pokLEG6ZLRSoep41GmDsvD0eGHw3DVdzLt7ukj+YKMRlhh5EqJ7
+ 7hGjOrhH8mE3oc1OzuJB+M5URxLWSt/GwA2fuS/jRbnYCFtn5zxYFG9PHlZd3XsZxhqH
+ qS1Pp7hQOTuyXXqv6RGQ3v1rd3dbI2RbATgPVTDksouB2k2zotnr0q3I1pR9X7PNxHwg
+ 43QUrXe9LcfbDE2lpDJCQfbd/ShyPIPRGxROmU2tVMFJWrYY1+47+otEO4sEnJF8xUXq xw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrrxt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 16:51:43 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IGSPfm008382;
+        Wed, 18 May 2022 16:51:43 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrrx9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 16:51:43 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IGXFdl022179;
+        Wed, 18 May 2022 16:51:41 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 3g2428vv5n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 16:51:41 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IGpbSS46858650
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 16:51:38 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E476542041;
+        Wed, 18 May 2022 16:51:37 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 30A314203F;
+        Wed, 18 May 2022 16:51:37 +0000 (GMT)
+Received: from [9.171.6.188] (unknown [9.171.6.188])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 18 May 2022 16:51:37 +0000 (GMT)
+Message-ID: <5de8d8c2-100d-f935-667c-1090ee31277d@linux.ibm.com>
+Date:   Wed, 18 May 2022 18:55:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518035211.GA4791@thinkpad>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v9 3/3] s390x: KVM: resetting the Topology-Change-Report
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, borntraeger@de.ibm.com,
+        frankja@linux.ibm.com, cohuck@redhat.com, thuth@redhat.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
+        seiden@linux.ibm.com, nrb@linux.ibm.com
+References: <20220506092403.47406-1-pmorel@linux.ibm.com>
+ <20220506092403.47406-4-pmorel@linux.ibm.com>
+ <76fd0c11-5b9b-0032-183b-54db650f13b1@redhat.com>
+ <20220512115250.2e20bfdf@p-imbrenda>
+ <70a7d93c-c1b1-fa72-0eb4-02e3e2235f94@redhat.com>
+ <bae4e416-b0e9-31c6-c9d0-df6b5a5fd46f@linux.ibm.com>
+ <cfe448f7-0b4e-680d-46a7-33ad25a4c09b@redhat.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <cfe448f7-0b4e-680d-46a7-33ad25a4c09b@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: W5fS3N71cLrX1I_e6-quxj7Z0L_xZDmt
+X-Proofpoint-GUID: uu-AwpmzG2aQew89jZnaju95wJ-pORKx
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 malwarescore=0 phishscore=0 suspectscore=0 spamscore=0
+ mlxscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=792 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205180099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 09:22:11AM +0530, Manivannan Sadhasivam wrote:
-> On Tue, May 17, 2022 at 12:18:57PM -0500, Bjorn Helgaas wrote:
-> > [+cc Prasad, Andy, Rob, Krzysztof, Rajat, Saheed, Rama, Stephen,
-> > Dmitry, Kalle for connection to https://lore.kernel.org/lkml/CAE-0n53ho2DX2rqQMvvKAuDCfsWW62TceTaNPzv5Mn_NQ-U6dA@mail.gmail.com/T/]
-> > 
-> > Subject line convention for this file is "PCI: qcom:" (not "PCI: dwc:
-> > qcom:").
-> > 
-> > Find this from "git log --oneline drivers/pci/controller/dwc/pcie-qcom.c".
-> > 
-> > On Tue, May 17, 2022 at 08:41:34PM +0530, Manivannan Sadhasivam wrote:
-> > > On Mon, May 16, 2022 at 03:19:50PM -0500, Bjorn Helgaas wrote:
-> > > > On Fri, May 13, 2022 at 04:30:26PM +0530, Manivannan Sadhasivam wrote:
-> > > > > For aggressive power saving on SC7280 SoCs, the power for the
-> > > > > PCI devices will be taken off during system suspend. Hence,
-> > > > > notify the same to the PCI device drivers using
-> > > > > "suspend_poweroff" flag so that the drivers can prepare the PCI
-> > > > > devices to handle the poweroff and recover them during resume.
-> > > > 
-> > > > No doubt "power ... will be taken off during system suspend" is
-> > > > true, but this isn't very informative.  Is this a property of
-> > > > SC7280?  A choice made by the SC7280 driver?  Why is this not
-> > > > applicable to other systems?
-> > > 
-> > > The SC7280's RPMh firmware is cutting off the PCIe power domain
-> > > during system suspend. And as I explained in previous patch, the RC
-> > > driver itself may put the devices in D3cold conditionally on this
-> > > platform. The reason is to save power as this chipset is being used
-> > > in Chromebooks.
-> > 
-> > It looks like this should be squashed into the patch you mentioned:
-> > https://lore.kernel.org/lkml/CAE-0n53ho2DX2rqQMvvKAuDCfsWW62TceTaNPzv5Mn_NQ-U6dA@mail.gmail.com/T/
-> > 
-> > If Prasad's patch is applied without this, devices will be powered
-> > off, but nvme will not be prepared for it.  Apparently something would
-> > be broken in that case?
-> > 
+
+
+On 5/18/22 16:33, David Hildenbrand wrote:
+> On 16.05.22 16:21, Pierre Morel wrote:
+>>
+>>
+>> On 5/12/22 12:01, David Hildenbrand wrote:
+>>>>>
+>>>>> I think we prefer something like u16 when copying to user space.
+>>>>
+>>>> but then userspace also has to expect a u16, right?
+>>>
+>>> Yep.
+>>>
+>>
+>> Yes but in fact, inspired by previous discussion I had on the VFIO
+>> interface, that is the reason why I did prefer an int.
+>> It is much simpler than a u16 and the definition of a bit.
+>>
+>> Despite a bit in a u16 is what the s3990 achitecture proposes I thought
+>> we could make it easier on the KVM/QEMU interface.
+>>
+>> But if the discussion stops here, I will do as you both propose change
+>> to u16 in KVM and userland and add the documentation for the interface.
 > 
-> Yes, but Prasad's patch is not yet reviewed so likely not get merged until
-> further respins.
-
-Ok.  Please work with Prasad to squash these as needed so there are no
-regressions along the way.
-
-> > Also, I think this patch should be reordered so the nvme driver is
-> > prepared for suspend_poweroff before the qcom driver starts setting
-> > it.  Otherwise there's a window where qcom sets suspend_poweroff and
-> > powers off devices, but nvme doesn't know about it, and I assume
-> > something will be broken in that case?
+> In general, we pass via the ABI fixed-sized values -- u8, u16, u32, u64
+> ... instead of int. Simply because sizeof(int) is in theory variable
+> (e.g., 32bit vs 64bit).
 > 
-> As per my understanding, patches in a series should not have build dependency
-> but they may depend on each other for functionality.
+> Take a look at arch/s390/include/uapi/asm/kvm.h and you won't find any
+> usage of int or bool.
+> 
+> Having that said, I'll let the maintainers decide. Using e.g., u8 is
+> just the natural thing to do on a Linux ABI, but we don't really support
+> 32 bit ... maybe we'll support 128bit at one point? ;)
+> 
 
-Yes.  But if qcom starts powering off devices when nvme isn't
-expecting it, it sounds like nvme will regress until the patch that
-adds nvme support.  That temporary regression is what I want to avoid.
+OK then I use u16 with a flag in case we get something in the utilities 
+which is related to the topology in the future.
 
-Bjorn
+Thanks,
+Pierre
+
+-- 
+Pierre Morel
+IBM Lab Boeblingen
