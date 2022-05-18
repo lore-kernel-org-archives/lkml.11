@@ -2,211 +2,394 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9437EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234762AbiERJze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36222 "EHLO
+        id S234843AbiERJ4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234741AbiERJzR (ORCPT
+        with ESMTP id S234832AbiERJ4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:55:17 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993F957102;
-        Wed, 18 May 2022 02:55:15 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L37cs5pqKzhZ6f;
-        Wed, 18 May 2022 17:54:37 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 17:55:13 +0800
-Received: from [10.174.178.178] (10.174.178.178) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 17:55:12 +0800
-Message-ID: <b085940d-bdd0-9f85-beda-9bdcadc609b6@huawei.com>
-Date:   Wed, 18 May 2022 17:55:11 +0800
+        Wed, 18 May 2022 05:56:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2414C9;
+        Wed, 18 May 2022 02:56:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFB83B81EF3;
+        Wed, 18 May 2022 09:56:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83693C385AA;
+        Wed, 18 May 2022 09:56:05 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        WANG Xuerui <git@xen0n.name>
+Subject: [PATCH V11 17/22] LoongArch: Add some library functions
+Date:   Wed, 18 May 2022 17:57:04 +0800
+Message-Id: <20220518095709.1313120-1-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220518092619.1269111-1-chenhuacai@loongson.cn>
+References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.0.3
-Subject: Re: [PATCH 1/2] psi: add support for multi level pressure stall
- trigger
-To:     Suren Baghdasaryan <surenb@google.com>
-CC:     Alex Shi <seakeel@gmail.com>, LKML <linux-kernel@vger.kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alex Shi <alexs@kernel.org>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-References: <20220516033524.3130816-1-chenwandun@huawei.com>
- <30b37eeb-e77b-882e-fc24-3367321a8ca3@gmail.com>
- <CAJuCfpE7fBsp8ntYVeLsW7Cd0Z09OmxN75X9Az_Qco0GJrz3Wg@mail.gmail.com>
- <CAJuCfpH-BDqsft1YvGFhkbR60VC0TJgfXKRVN+80e0iqQdhxpA@mail.gmail.com>
- <3a31521f-a68a-b2a9-baae-9a458ee17033@huawei.com>
- <CAJuCfpF4pdREUYvhU6zDB67fjZ2R-wn9XQbA3k7u7_e_jMr7xw@mail.gmail.com>
-From:   Chen Wandun <chenwandun@huawei.com>
-In-Reply-To: <CAJuCfpF4pdREUYvhU6zDB67fjZ2R-wn9XQbA3k7u7_e_jMr7xw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.178]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add some library functions for LoongArch, including: delay, memset,
+memcpy, memmove, copy_user, strncpy_user, strnlen_user and tlb dump
+functions.
 
+Reviewed-by: WANG Xuerui <git@xen0n.name>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ arch/loongarch/include/asm/delay.h  |  26 +++++++
+ arch/loongarch/include/asm/string.h |  12 +++
+ arch/loongarch/lib/clear_user.S     |  43 +++++++++++
+ arch/loongarch/lib/copy_user.S      |  47 ++++++++++++
+ arch/loongarch/lib/delay.c          |  43 +++++++++++
+ arch/loongarch/lib/dump_tlb.c       | 111 ++++++++++++++++++++++++++++
+ 6 files changed, 282 insertions(+)
+ create mode 100644 arch/loongarch/include/asm/delay.h
+ create mode 100644 arch/loongarch/include/asm/string.h
+ create mode 100644 arch/loongarch/lib/clear_user.S
+ create mode 100644 arch/loongarch/lib/copy_user.S
+ create mode 100644 arch/loongarch/lib/delay.c
+ create mode 100644 arch/loongarch/lib/dump_tlb.c
 
-在 2022/5/18 1:35, Suren Baghdasaryan 写道:
-> On Tue, May 17, 2022 at 5:46 AM Chen Wandun <chenwandun@huawei.com> wrote:
->>
->>
->> 在 2022/5/16 16:43, Suren Baghdasaryan 写道:
->>> On Mon, May 16, 2022 at 1:21 AM Suren Baghdasaryan <surenb@google.com> wrote:
->>>> On Sun, May 15, 2022 at 11:20 PM Alex Shi <seakeel@gmail.com> wrote:
->>>>>
->>>>> On 5/16/22 11:35, Chen Wandun wrote:
->>>>>> Nowadays, psi events are triggered when stall time exceed
->>>>>> stall threshold, but no any different between these events.
->>>>>>
->>>>>> Actually, events can be divide into multi level, each level
->>>>>> represent a different stall pressure, that is help to identify
->>>>>> pressure information more accurately.
->>>> IIUC by defining min and max, you want the trigger to activate when
->>>> the stall is between min and max thresholds. But I don't see why you
->>>> would need that. If you want to have several levels, you can create
->>>> multiple triggers and monitor them separately. For your example, that
->>>> would be:
->>>>
->>>> echo "some 150000 1000000" > /proc/pressure/memory
->>>> echo "some 350000 1000000" > /proc/pressure/memory
->>>>
->>>> Your first trigger will fire whenever the stall exceeds 150ms within
->>>> each 1sec and the second one will trigger when it exceeds 350ms. It is
->>>> true that if the stall jumps sharply above 350ms, you would get both
->>>> triggers firing. I'm guessing that's why you want this functionality
->>>> so that 150ms trigger does not fire when 350ms one is firing but why
->>>> is that a problem? Can't userspace pick the highest level one and
->>>> ignore all the lower ones when this happens? Or are you addressing
->>>> some other requirement?
->>>>
->>>>>> echo "some 150000 350000 1000000" > /proc/pressure/memory would
->>>>> This breaks the old ABI. And why you need this new function?
->>>> Both great points.
->>> BTW, I think the additional max_threshold parameter could be
->>> implemented in a backward compatible way so that the old API is not
->>> broken:
->>>
->>> arg_count = sscanf(buf, "some %u %u %u", &min_threshold_us,  &arg2, &arg3);
->>> if (arg_count < 2) return ERR_PTR(-EINVAL);
->>> if (arg_count < 3) {
->>>       max_threshold_us = INT_MAX;
->>>       window_us = arg2;
->>> } else {
->>>       max_threshold_us = arg2;
->>>       window_us = arg3;
->>> }
->> OK
->>
->> Thanks.
->>> But again, the motivation still needs to be explained.
->> we want do different operation for different stall level,
->> just as prev email explain, multi trigger is also OK in old
->> ways, but it is a litter complex.
-> Ok, so the issue can be dealt with in the userspace but would make it
-> simpler if max_threashold is supported by the kernel. I can buy this
-> argument if the kernel implementation is not complex and max_threshold
-> is added in a way that does not break current users. I believe both
-> conditions can be met.
-OK, I will send v2
-
-Thanks
->
->>>>> Thanks
->>>>>
->>>>>> add [150ms, 350ms) threshold for partial memory stall measured
->>>>>> within 1sec time window.
->>>>>>
->>>>>> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
->>>>>> ---
->>>>>>    include/linux/psi_types.h |  3 ++-
->>>>>>    kernel/sched/psi.c        | 19 +++++++++++++------
->>>>>>    2 files changed, 15 insertions(+), 7 deletions(-)
->>>>>>
->>>>>> diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
->>>>>> index c7fe7c089718..2b1393c8bf90 100644
->>>>>> --- a/include/linux/psi_types.h
->>>>>> +++ b/include/linux/psi_types.h
->>>>>> @@ -119,7 +119,8 @@ struct psi_trigger {
->>>>>>         enum psi_states state;
->>>>>>
->>>>>>         /* User-spacified threshold in ns */
->>>>>> -     u64 threshold;
->>>>>> +     u64 min_threshold;
->>>>>> +     u64 max_threshold;
->>>>>>
->>>>>>         /* List node inside triggers list */
->>>>>>         struct list_head node;
->>>>>> diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
->>>>>> index 6f9533c95b0a..17dd233b533a 100644
->>>>>> --- a/kernel/sched/psi.c
->>>>>> +++ b/kernel/sched/psi.c
->>>>>> @@ -541,7 +541,7 @@ static u64 update_triggers(struct psi_group *group, u64 now)
->>>>>>
->>>>>>                         /* Calculate growth since last update */
->>>>>>                         growth = window_update(&t->win, now, total[t->state]);
->>>>>> -                     if (growth < t->threshold)
->>>>>> +                     if (growth < t->min_threshold || growth >= t->max_threshold)
->>>>>>                                 continue;
->>>>>>
->>>>>>                         t->pending_event = true;
->>>>>> @@ -1087,15 +1087,18 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
->>>>>>    {
->>>>>>         struct psi_trigger *t;
->>>>>>         enum psi_states state;
->>>>>> -     u32 threshold_us;
->>>>>> +     u32 min_threshold_us;
->>>>>> +     u32 max_threshold_us;
->>>>>>         u32 window_us;
->>>>>>
->>>>>>         if (static_branch_likely(&psi_disabled))
->>>>>>                 return ERR_PTR(-EOPNOTSUPP);
->>>>>>
->>>>>> -     if (sscanf(buf, "some %u %u", &threshold_us, &window_us) == 2)
->>>>>> +     if (sscanf(buf, "some %u %u %u", &min_threshold_us,
->>>>>> +                             &max_threshold_us, &window_us) == 3)
->>>>>>                 state = PSI_IO_SOME + res * 2;
->>>>>> -     else if (sscanf(buf, "full %u %u", &threshold_us, &window_us) == 2)
->>>>>> +     else if (sscanf(buf, "full %u %u %u", &min_threshold_us,
->>>>>> +                             &max_threshold_us, &window_us) == 3)
->>>>>>                 state = PSI_IO_FULL + res * 2;
->>>>>>         else
->>>>>>                 return ERR_PTR(-EINVAL);
->>>>>> @@ -1107,8 +1110,11 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
->>>>>>                 window_us > WINDOW_MAX_US)
->>>>>>                 return ERR_PTR(-EINVAL);
->>>>>>
->>>>>> +     if (min_threshold_us >= max_threshold_us)
->>>>>> +             return ERR_PTR(-EINVAL);
->>>>>> +
->>>>>>         /* Check threshold */
->>>>>> -     if (threshold_us == 0 || threshold_us > window_us)
->>>>>> +     if (max_threshold_us > window_us)
->>>>>>                 return ERR_PTR(-EINVAL);
->>>>>>
->>>>>>         t = kmalloc(sizeof(*t), GFP_KERNEL);
->>>>>> @@ -1117,7 +1123,8 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
->>>>>>
->>>>>>         t->group = group;
->>>>>>         t->state = state;
->>>>>> -     t->threshold = threshold_us * NSEC_PER_USEC;
->>>>>> +     t->min_threshold = min_threshold_us * NSEC_PER_USEC;
->>>>>> +     t->max_threshold = max_threshold_us * NSEC_PER_USEC;
->>>>>>         t->win.size = window_us * NSEC_PER_USEC;
->>>>>>         window_reset(&t->win, 0, 0, 0);
->>>>>>
->>> .
-> .
+diff --git a/arch/loongarch/include/asm/delay.h b/arch/loongarch/include/asm/delay.h
+new file mode 100644
+index 000000000000..36d775191310
+--- /dev/null
++++ b/arch/loongarch/include/asm/delay.h
+@@ -0,0 +1,26 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#ifndef _ASM_DELAY_H
++#define _ASM_DELAY_H
++
++#include <linux/param.h>
++
++extern void __delay(unsigned long cycles);
++extern void __ndelay(unsigned long ns);
++extern void __udelay(unsigned long us);
++
++#define ndelay(ns) __ndelay(ns)
++#define udelay(us) __udelay(us)
++
++/* make sure "usecs *= ..." in udelay do not overflow. */
++#if HZ >= 1000
++#define MAX_UDELAY_MS	1
++#elif HZ <= 200
++#define MAX_UDELAY_MS	5
++#else
++#define MAX_UDELAY_MS	(1000 / HZ)
++#endif
++
++#endif /* _ASM_DELAY_H */
+diff --git a/arch/loongarch/include/asm/string.h b/arch/loongarch/include/asm/string.h
+new file mode 100644
+index 000000000000..b07e60ded957
+--- /dev/null
++++ b/arch/loongarch/include/asm/string.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#ifndef _ASM_STRING_H
++#define _ASM_STRING_H
++
++extern void *memset(void *__s, int __c, size_t __count);
++extern void *memcpy(void *__to, __const__ void *__from, size_t __n);
++extern void *memmove(void *__dest, __const__ void *__src, size_t __n);
++
++#endif /* _ASM_STRING_H */
+diff --git a/arch/loongarch/lib/clear_user.S b/arch/loongarch/lib/clear_user.S
+new file mode 100644
+index 000000000000..25d9be5fbb19
+--- /dev/null
++++ b/arch/loongarch/lib/clear_user.S
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#include <asm/asm.h>
++#include <asm/asmmacro.h>
++#include <asm/export.h>
++#include <asm/regdef.h>
++
++.macro fixup_ex from, to, offset, fix
++.if \fix
++	.section .fixup, "ax"
++\to:	addi.d	a0, a1, \offset
++	jr	ra
++	.previous
++.endif
++	.section __ex_table, "a"
++	PTR	\from\()b, \to\()b
++	.previous
++.endm
++
++/*
++ * unsigned long __clear_user(void *addr, size_t size)
++ *
++ * a0: addr
++ * a1: size
++ */
++SYM_FUNC_START(__clear_user)
++	beqz	a1, 2f
++
++1:	st.b	zero, a0, 0
++	addi.d	a0, a0, 1
++	addi.d	a1, a1, -1
++	bgt	a1, zero, 1b
++
++2:	move	a0, a1
++	jr	ra
++
++	fixup_ex 1, 3, 0, 1
++SYM_FUNC_END(__clear_user)
++
++EXPORT_SYMBOL(__clear_user)
+diff --git a/arch/loongarch/lib/copy_user.S b/arch/loongarch/lib/copy_user.S
+new file mode 100644
+index 000000000000..9ae507f851b5
+--- /dev/null
++++ b/arch/loongarch/lib/copy_user.S
+@@ -0,0 +1,47 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++
++#include <asm/asm.h>
++#include <asm/asmmacro.h>
++#include <asm/export.h>
++#include <asm/regdef.h>
++
++.macro fixup_ex from, to, offset, fix
++.if \fix
++	.section .fixup, "ax"
++\to:	addi.d	a0, a2, \offset
++	jr	ra
++	.previous
++.endif
++	.section __ex_table, "a"
++	PTR	\from\()b, \to\()b
++	.previous
++.endm
++
++/*
++ * unsigned long __copy_user(void *to, const void *from, size_t n)
++ *
++ * a0: to
++ * a1: from
++ * a2: n
++ */
++SYM_FUNC_START(__copy_user)
++	beqz	a2, 3f
++
++1:	ld.b	t0, a1, 0
++2:	st.b	t0, a0, 0
++	addi.d	a0, a0, 1
++	addi.d	a1, a1, 1
++	addi.d	a2, a2, -1
++	bgt	a2, zero, 1b
++
++3:	move	a0, a2
++	jr	ra
++
++	fixup_ex 1, 4, 0, 1
++	fixup_ex 2, 4, 0, 0
++SYM_FUNC_END(__copy_user)
++
++EXPORT_SYMBOL(__copy_user)
+diff --git a/arch/loongarch/lib/delay.c b/arch/loongarch/lib/delay.c
+new file mode 100644
+index 000000000000..5d856694fcfe
+--- /dev/null
++++ b/arch/loongarch/lib/delay.c
+@@ -0,0 +1,43 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ */
++#include <linux/delay.h>
++#include <linux/export.h>
++#include <linux/smp.h>
++#include <linux/timex.h>
++
++#include <asm/compiler.h>
++#include <asm/processor.h>
++
++void __delay(unsigned long cycles)
++{
++	u64 t0 = get_cycles();
++
++	while ((unsigned long)(get_cycles() - t0) < cycles)
++		cpu_relax();
++}
++EXPORT_SYMBOL(__delay);
++
++/*
++ * Division by multiplication: you don't have to worry about
++ * loss of precision.
++ *
++ * Use only for very small delays ( < 1 msec).	Should probably use a
++ * lookup table, really, as the multiplications take much too long with
++ * short delays.  This is a "reasonable" implementation, though (and the
++ * first constant multiplications gets optimized away if the delay is
++ * a constant)
++ */
++
++void __udelay(unsigned long us)
++{
++	__delay((us * 0x000010c7ull * HZ * lpj_fine) >> 32);
++}
++EXPORT_SYMBOL(__udelay);
++
++void __ndelay(unsigned long ns)
++{
++	__delay((ns * 0x00000005ull * HZ * lpj_fine) >> 32);
++}
++EXPORT_SYMBOL(__ndelay);
+diff --git a/arch/loongarch/lib/dump_tlb.c b/arch/loongarch/lib/dump_tlb.c
+new file mode 100644
+index 000000000000..cda2c6bc7f09
+--- /dev/null
++++ b/arch/loongarch/lib/dump_tlb.c
+@@ -0,0 +1,111 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
++ *
++ * Derived from MIPS:
++ * Copyright (C) 1994, 1995 by Waldorf Electronics, written by Ralf Baechle.
++ * Copyright (C) 1999 by Silicon Graphics, Inc.
++ */
++#include <linux/kernel.h>
++#include <linux/mm.h>
++
++#include <asm/loongarch.h>
++#include <asm/page.h>
++#include <asm/pgtable.h>
++#include <asm/tlb.h>
++
++void dump_tlb_regs(void)
++{
++	const int field = 2 * sizeof(unsigned long);
++
++	pr_info("Index    : %0x\n", read_csr_tlbidx());
++	pr_info("PageSize : %0x\n", read_csr_pagesize());
++	pr_info("EntryHi  : %0*llx\n", field, read_csr_entryhi());
++	pr_info("EntryLo0 : %0*llx\n", field, read_csr_entrylo0());
++	pr_info("EntryLo1 : %0*llx\n", field, read_csr_entrylo1());
++}
++
++static void dump_tlb(int first, int last)
++{
++	unsigned long s_entryhi, entryhi, asid;
++	unsigned long long entrylo0, entrylo1, pa;
++	unsigned int index;
++	unsigned int s_index, s_asid;
++	unsigned int pagesize, c0, c1, i;
++	unsigned long asidmask = cpu_asid_mask(&current_cpu_data);
++	int pwidth = 11;
++	int vwidth = 11;
++	int asidwidth = DIV_ROUND_UP(ilog2(asidmask) + 1, 4);
++
++	s_entryhi = read_csr_entryhi();
++	s_index = read_csr_tlbidx();
++	s_asid = read_csr_asid();
++
++	for (i = first; i <= last; i++) {
++		write_csr_index(i);
++		tlb_read();
++		pagesize = read_csr_pagesize();
++		entryhi	 = read_csr_entryhi();
++		entrylo0 = read_csr_entrylo0();
++		entrylo1 = read_csr_entrylo1();
++		index = read_csr_tlbidx();
++		asid = read_csr_asid();
++
++		/* EHINV bit marks entire entry as invalid */
++		if (index & CSR_TLBIDX_EHINV)
++			continue;
++		/*
++		 * ASID takes effect in absence of G (global) bit.
++		 */
++		if (!((entrylo0 | entrylo1) & ENTRYLO_G) &&
++		    asid != s_asid)
++			continue;
++
++		/*
++		 * Only print entries in use
++		 */
++		pr_info("Index: %2d pgsize=%x ", i, (1 << pagesize));
++
++		c0 = (entrylo0 & ENTRYLO_C) >> ENTRYLO_C_SHIFT;
++		c1 = (entrylo1 & ENTRYLO_C) >> ENTRYLO_C_SHIFT;
++
++		pr_cont("va=%0*lx asid=%0*lx",
++			vwidth, (entryhi & ~0x1fffUL), asidwidth, asid & asidmask);
++
++		/* NR/NX are in awkward places, so mask them off separately */
++		pa = entrylo0 & ~(ENTRYLO_NR | ENTRYLO_NX);
++		pa = pa & PAGE_MASK;
++		pr_cont("\n\t[");
++		pr_cont("ri=%d xi=%d ",
++			(entrylo0 & ENTRYLO_NR) ? 1 : 0,
++			(entrylo0 & ENTRYLO_NX) ? 1 : 0);
++		pr_cont("pa=%0*llx c=%d d=%d v=%d g=%d plv=%lld] [",
++			pwidth, pa, c0,
++			(entrylo0 & ENTRYLO_D) ? 1 : 0,
++			(entrylo0 & ENTRYLO_V) ? 1 : 0,
++			(entrylo0 & ENTRYLO_G) ? 1 : 0,
++			(entrylo0 & ENTRYLO_PLV) >> ENTRYLO_PLV_SHIFT);
++		/* NR/NX are in awkward places, so mask them off separately */
++		pa = entrylo1 & ~(ENTRYLO_NR | ENTRYLO_NX);
++		pa = pa & PAGE_MASK;
++		pr_cont("ri=%d xi=%d ",
++			(entrylo1 & ENTRYLO_NR) ? 1 : 0,
++			(entrylo1 & ENTRYLO_NX) ? 1 : 0);
++		pr_cont("pa=%0*llx c=%d d=%d v=%d g=%d plv=%lld]\n",
++			pwidth, pa, c1,
++			(entrylo1 & ENTRYLO_D) ? 1 : 0,
++			(entrylo1 & ENTRYLO_V) ? 1 : 0,
++			(entrylo1 & ENTRYLO_G) ? 1 : 0,
++			(entrylo1 & ENTRYLO_PLV) >> ENTRYLO_PLV_SHIFT);
++	}
++	pr_info("\n");
++
++	write_csr_entryhi(s_entryhi);
++	write_csr_tlbidx(s_index);
++	write_csr_asid(s_asid);
++}
++
++void dump_tlb_all(void)
++{
++	dump_tlb(0, current_cpu_data.tlbsize - 1);
++}
+-- 
+2.27.0
 
