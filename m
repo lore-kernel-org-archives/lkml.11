@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1728CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234918AbiERKFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 06:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
+        id S234904AbiERKFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 06:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234821AbiERKFO (ORCPT
+        with ESMTP id S234879AbiERKFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 06:05:14 -0400
+        Wed, 18 May 2022 06:05:17 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA566F482;
-        Wed, 18 May 2022 03:05:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB84A6FA2E;
+        Wed, 18 May 2022 03:05:15 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 61ED61F44E08
+        with ESMTPSA id D048F1F44E0B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652868312;
-        bh=QldET8Tith6XpQTESLUFmBU4bL4nM1vDAby2xnsh/3s=;
+        s=mail; t=1652868314;
+        bh=+xTyEZ131wWMOMNxSY33aVPVZoxl3tqtIBcQv4cQtYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OKHk/q8oiV3Jx3vURxCYvrr6N5xQTM4Rz6VneBa345wqTTsd7cyy706N9/c1Ef0LL
-         Uo1pcr/J2bfK7IVi5S9JVpE/Nzf6FstsiVPOvRJl4MlMxGL3Ffaak2NLVO+DSIGoEY
-         JuzIue3TVMTOZMsjQrkpI9Klyql3w06eO6Iz1ewjzOf5gReh2QeNyB+tIjoZ01uTu+
-         RdSzpYgDrgYJ08oMFOboynMNmbYDJas7zfM/stIogyptfG2a+ilzRJAhVi84l5a61K
-         Od5YBOeDWxAzgYZvKUQs10U5B9x8RW2k5FderWzNRBuPsanB3Bl88sZmBErSkoRv4z
-         TMN2KNghaK3dA==
+        b=D1vp+/AwIas/9dOAytAhqaGYFF/9ac9nRiYcMReBB49LkaAcP31lRYdpULf1VS1SF
+         cEjTybeVHaZFAHgwxqh11jciQsrb28ENTeg8dN5Q/7YFOCncRGirCbQGQpDMVg1q0M
+         HUZQZcn6afPA0ez9BITloBRac7pIwBiFAEo02wOsBn+jVRBFzUEeMpFoqM9pCp2llZ
+         osCTplyIdDD0KUAgaGhqpaRNs4n20bmze5pCBC9YDjnGHNsheMqmDzOa3UvAmA6V24
+         uGMk40rfjHouEFuxGi0ku4uD2F9dygsDLroKK1o6+NPYQxLNQEjvW0dzA4VGw6f0wZ
+         +8Gj0vRtIV0Yw==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     yong.wu@mediatek.com
@@ -39,9 +39,9 @@ Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski@linaro.org,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 1/7] dt-bindings: iommu: mediatek: Add phandles for mediatek infra/pericfg
-Date:   Wed, 18 May 2022 12:04:57 +0200
-Message-Id: <20220518100503.37279-2-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 4/7] arm64: dts: mediatek: mt8173: Add mediatek,infracfg phandle for IOMMU
+Date:   Wed, 18 May 2022 12:05:00 +0200
+Message-Id: <20220518100503.37279-5-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518100503.37279-1-angelogioacchino.delregno@collabora.com>
 References: <20220518100503.37279-1-angelogioacchino.delregno@collabora.com>
@@ -51,41 +51,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add properties "mediatek,infracfg" and "mediatek,pericfg" to let the
-mtk_iommu driver retrieve phandles to the infracfg and pericfg syscon(s)
-instead of performing a per-soc compatible lookup.
+The IOMMU driver now looks for the "mediatek,infracfg" phandle as a
+new way to retrieve a syscon to that:
+even though the old way is retained, it has been deprecated and the
+driver will write a message in kmsg advertising to use the phandle
+way instead.
+
+For this reason, assign the right phandle to mediatek,infracfg in
+the iommu node.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../devicetree/bindings/iommu/mediatek,iommu.yaml         | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8173.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index 2ae3bbad7f1a..c4af41947593 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -101,6 +101,10 @@ properties:
-     items:
-       - const: bclk
- 
-+  mediatek,infracfg:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: The phandle to the mediatek infracfg syscon
-+
-   mediatek,larbs:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
-     minItems: 1
-@@ -112,6 +116,10 @@ properties:
-       Refer to bindings/memory-controllers/mediatek,smi-larb.yaml. It must sort
-       according to the local arbiter index, like larb0, larb1, larb2...
- 
-+  mediatek,pericfg:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: The phandle to the mediatek pericfg syscon
-+
-   '#iommu-cells':
-     const: 1
-     description: |
+diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+index 40d7b47fc52e..825a3c670373 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+@@ -588,6 +588,7 @@ iommu: iommu@10205000 {
+ 			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
+ 			clocks = <&infracfg CLK_INFRA_M4U>;
+ 			clock-names = "bclk";
++			mediatek,infracfg = <&infracfg>;
+ 			mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
+ 					 <&larb3>, <&larb4>, <&larb5>;
+ 			#iommu-cells = <1>;
 -- 
 2.35.1
 
