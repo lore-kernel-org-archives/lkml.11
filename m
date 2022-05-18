@@ -2,105 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF044C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240391AbiERQhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
+        id S240376AbiERQjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240376AbiERQhr (ORCPT
+        with ESMTP id S240340AbiERQj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:37:47 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F4B1A076D;
-        Wed, 18 May 2022 09:37:41 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IGO5D3019597;
-        Wed, 18 May 2022 16:37:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=OwaaPn3eTFYQ3Q5Amp/y0UpxotIGatx97i4xISD2eY0=;
- b=URrCEZP2TAtALmvr7UGDq88RFLd5dLeAXCxpPtXMxZbnh3zUJ4o1u3o9fZb+AeylBIn9
- 0JH+QxWJXMXAHtp2wgidTp/2x7iESVpSA5EIB5rYt56pwok125EAq0pqJyCbgb2IcUUO
- csi4wW5igfApscJ/JpFaZaoRCGJUZcRw5s2T6W++O5+6E5bZwXKpUEYiP9+OFsA/2PM6
- bfHaGQJtia7YXYjXlRkX7OTZDUyh6fLHuc5Jp8iH5w9gyoAglJR2sSyXrQnAKMiN2wCF
- SOHrXM1UUGD0lCniLIk/agrEz0A0PxsXJCm6Xg/gfLXn4bdbLWVAHczJT93wDdipVv+1 4A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrcxm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 16:37:40 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IGSCTQ008094;
-        Wed, 18 May 2022 16:37:40 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrcw1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 16:37:40 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IGY0Xb012243;
-        Wed, 18 May 2022 16:37:38 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3g2428vvev-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 16:37:38 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IGaxWx31261064
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 16:36:59 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BD6754203F;
-        Wed, 18 May 2022 16:37:34 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0883642041;
-        Wed, 18 May 2022 16:37:34 +0000 (GMT)
-Received: from [9.171.6.188] (unknown [9.171.6.188])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 18 May 2022 16:37:33 +0000 (GMT)
-Message-ID: <5ff3feee-63ff-b5f0-5b96-456a7e2514e1@linux.ibm.com>
-Date:   Wed, 18 May 2022 18:41:22 +0200
+        Wed, 18 May 2022 12:39:28 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E39316F93F;
+        Wed, 18 May 2022 09:39:26 -0700 (PDT)
+Received: from mail-yb1-f175.google.com ([209.85.219.175]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N63JO-1npMbU28vQ-016PHS; Wed, 18 May 2022 18:39:24 +0200
+Received: by mail-yb1-f175.google.com with SMTP id v71so4646073ybi.4;
+        Wed, 18 May 2022 09:39:24 -0700 (PDT)
+X-Gm-Message-State: AOAM532l8m8lEszDoj70Q9bmmqfVAJcoCtndPIiTWhKzJVVK4wAiysQj
+        LqvGooPp3FLdd8CL4XL5Tw25IChUez5HjYRD8bc=
+X-Google-Smtp-Source: ABdhPJzgO+qZWLWCVNG0zigCWvcyaAMnm3eGdOmvWgnrUQyVgjytOzSGXEWpAN07OlHuwbLMC0znLO5cjVzishwdUG8=
+X-Received: by 2002:a25:cfd7:0:b0:64d:9526:1ed4 with SMTP id
+ f206-20020a25cfd7000000b0064d95261ed4mr487184ybg.106.1652891963222; Wed, 18
+ May 2022 09:39:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 0/3] s390x: KVM: CPU Topology
-Content-Language: en-US
-To:     Christian Borntraeger <borntraeger@de.ibm.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        frankja@linux.ibm.com, cohuck@redhat.com, david@redhat.com,
-        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
-        nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <f9cb28d5-2aa5-f902-53ab-592b08672c62@de.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <f9cb28d5-2aa5-f902-53ab-592b08672c62@de.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: gKJ5lT6lGAjn_2OB776ywvFlbYh25qAq
-X-Proofpoint-GUID: Gu2X3N1w3CtPCxABOK7wBQ9-ugvhvqSu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 malwarescore=0 phishscore=0 suspectscore=0 spamscore=0
- mlxscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=740 adultscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205180099
+References: <1651947548-4055-1-git-send-email-olekstysh@gmail.com>
+ <1651947548-4055-6-git-send-email-olekstysh@gmail.com> <CAK8P3a2cAnXr8TDDYTiFxTWzQxa67sGnYDQRRD+=Q8_cSb1mEw@mail.gmail.com>
+ <56e8c32d-6771-7179-005f-26ca58555659@gmail.com>
+In-Reply-To: <56e8c32d-6771-7179-005f-26ca58555659@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 18 May 2022 17:39:23 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1YhkEZ8gcbXHEa5Bwx-4VVRJO8SUHf8=RNWRsc2Yo-+A@mail.gmail.com>
+Message-ID: <CAK8P3a1YhkEZ8gcbXHEa5Bwx-4VVRJO8SUHf8=RNWRsc2Yo-+A@mail.gmail.com>
+Subject: Re: [PATCH V2 5/7] dt-bindings: Add xen,dev-domid property
+ description for xen-grant DMA ops
+To:     Oleksandr <olekstysh@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        xen-devel <xen-devel@lists.xenproject.org>,
+        "open list:DRM DRIVER FOR QEMU'S CIRRUS DEVICE" 
+        <virtualization@lists.linux-foundation.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Julien Grall <julien@xen.org>, Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:l6Zmm0Lt2Cs3Lj3V/oRAG1XoFxKRLpZyyELmAAmBae16I65msdd
+ 5JM6bkwu7sJPAOaiw//CuKljLbLeZcxBAaKafhVBllY8NkFvtnW312uXnwxG1PpeLelGKJe
+ qMT6rxYcCLtfBuOzoyCyJGtUnj3lnf2371xiIqY969MkIQzN0PTHgOe65AdXgsRe8p2wPUZ
+ Ci1OTFOHAUzcBUD0PNqIg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:S6JupdEVbEI=:IVS+G9GEQ5TsiitUcqK9BO
+ jzKYAZxO0bn70RdppsRPMUII0MihQqTtSkOAPfNbM9AQQap4U25NhvYinbRizJuqEXvEtP+gs
+ O1iqiZ9m2GrrLMDYQrYBxYaUUaqrdxR9hmy6NxiAcvaKezWxmQwgrqQzJxsn+S2iCpeBBQseZ
+ j3W8mN0IiiQ3YTY6gQBAhzLM0h/UyjuHJwBixIhjd/ur6fQ8hrZSiNU+jMcUfFQjT5yo1FcZu
+ iFcj9L6FnlPAIE/XQ1t3wgDwNXmts8ZZ1jWheZ0mXGl1e1eCxMjn0JOetjO5KR9hDZX8l2Jig
+ M/KDdEZakfN9yjk9a6f/nNKT2orkGPoYLy/8zlVJCSMMqJ5f9ri1M1GkiNb7IvFjAIZK5MLdS
+ KSK5zCvAjwSkRg04WBRwYRyUIUc6vUJAGbnprDlOF6K6SHUiMoYPiE5VMHsB+uPfc9f6tSMyF
+ Ql9dh1/fvuG4eOHt5V8OXugiwgpuXthOW4W5DlRrydmY9kXFt3p43WdoiL3Mo/QSfx6TPy/5q
+ PVeQ1Lr995aIILAGl+mTbHbprEMoK1ukNI4rW6E+SRGpF+/Gli22rJiGtn83yV3GRR+oJ9aD8
+ P6IsGMrtmCrOKs0aXm6phDpv+qwcX1vBSCZnGCH/XdMUUXSMpXVxdbrjt4RPnnQOP9KMJdQRb
+ hNwKjMOrMoYk9fXPqg9mu0Z9cawdyi8w7V6iVWcK0khHf/qNQPwbovPxG17h0Ao+SUfRFs1JN
+ MMaVUJOGfXc0fRfN6WWDrOFc0uGrMr7phYr0JQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 18, 2022 at 5:06 PM Oleksandr <olekstysh@gmail.com> wrote:
+> On 18.05.22 17:32, Arnd Bergmann wrote:
+> > On Sat, May 7, 2022 at 7:19 PM Oleksandr Tyshchenko <olekstysh@gmail.com> wrote:
+>
+> >   This would mean having a device
+> > node for the grant-table mechanism that can be referred to using the 'iommus'
+> > phandle property, with the domid as an additional argument.
+>
+> I assume, you are speaking about something like the following?
+>
+>
+> xen_dummy_iommu {
+>     compatible = "xen,dummy-iommu";
+>     #iommu-cells = <1>;
+> };
+>
+> virtio@3000 {
+>     compatible = "virtio,mmio";
+>     reg = <0x3000 0x100>;
+>     interrupts = <41>;
+>
+>     /* The device is located in Xen domain with ID 1 */
+>     iommus = <&xen_dummy_iommu 1>;
+> };
 
-On 5/18/22 17:26, Christian Borntraeger wrote:
-> Pierre,
-> 
-> please use "KVM: s390x:" and not "s390x: KVM:" for future series.
+Right, that's that's the idea, except I would not call it a 'dummy'.
+From the perspective of the DT, this behaves just like an IOMMU,
+even if the exact mechanism is different from most hardware IOMMU
+implementations.
 
+> > It does not quite fit the model that Linux currently uses for iommus,
+> > as that has an allocator for dma_addr_t space
+>
+> yes (# 3/7 adds grant-table based allocator)
+>
+>
+> > , but it would think it's
+> > conceptually close enough that it makes sense for the binding.
+>
+> Interesting idea. I am wondering, do we need an extra actions for this
+> to work in Linux guest (dummy IOMMU driver, etc)?
 
-OK, thanks
+It depends on how closely the guest implementation can be made to
+resemble a normal iommu. If you do allocate dma_addr_t addresses,
+it may actually be close enough that you can just turn the grant-table
+code into a normal iommu driver and change nothing else.
 
--- 
-Pierre Morel
-IBM Lab Boeblingen
+        Arnd
