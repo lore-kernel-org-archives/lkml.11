@@ -2,176 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 361EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:58:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234889AbiERJ5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
+        id S234894AbiERJ6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234851AbiERJ5R (ORCPT
+        with ESMTP id S234897AbiERJ5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:57:17 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DAA22B12
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:57:15 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id w200so1653398pfc.10
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:57:15 -0700 (PDT)
+        Wed, 18 May 2022 05:57:46 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F5A3150D
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:57:44 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id r71so1727199pgr.0
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:57:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HOkV9qsSBetFWbuRvijcZUKcVy03YutgM/62olPjrWo=;
-        b=cAI0lTAvSOZe3Oz8ErLeU7+Li5R1V8awIyu+6ihioqc1AsF8rG0Y0/aPtoQobnrpm3
-         E6pFtSqr0ETvX7B8izUuDkpnMzZGdkLNxLe/7X4yoyCtZFpG6bfGtgUXfzWrCrJzs6Lp
-         OXbGRBAVCfU8gPEynr0EpoVU9GrXrBLbTdqmlbNWg8JK7ch6OxoPweh14uFAUhRxc+mO
-         ZwozyLr2/lxtfUIu8rxErY65syCKPZYdTpE4d0cFYqU0viFJQK0wEU7+mI1ccNNqdweY
-         bq3TxUc6w2YFl+1X3GG6PZP/+q47vhJGuXQeLWIlliIHTvn7MRjbaYsK3nF6e1NbJA3g
-         1Dzg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tc9+bvqYCqMUSJXb0nfQvcyKgjqV7Ocz6lWJsoBLOyQ=;
+        b=am+ErBo1ZB0G/hYVBrcfY1g1WCS12VRPKU0MqxO1eFPOZMnO1PfcYkLY3tknTliDWw
+         wBxg3LqZeg3ef3iGmyHkqn5SkRzAY1N5efuwoM7Ks+s38oDEoUJ05k6XRmLMQkuXE23j
+         Ts51nH6G6UDl9pi4Jy0PmG8h/z4mbK/jT4Qi/3K+KzA3bYHCZ9R60zq74x+5dZidSzJ/
+         eWrgC3XfDdl4Mzm+4qDElEQJiU4NCV3owan7qspY8A0AndODbOwqRy2U50Dzxc/nU3as
+         5QpBsthosbzuJM2zWM2vnv8Db49i3VEpNpZVfEub7knFMi3uWBTIiRIJdYAeOvh0dkuN
+         GJzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HOkV9qsSBetFWbuRvijcZUKcVy03YutgM/62olPjrWo=;
-        b=Vpb/lseTMLDZLxCezqThl8VT53OO3cRhQ3USDRjuvZg87JK3WZKw6tY2ODhN/bzcug
-         2G+9+yHNJE9LDcoN4jQuwoSyEyxqk3l22OCd9ccnTYlgBwHlvlmDzFXVp5zrFxkngPH3
-         N2vCexk0EzxnALnJjLGBsKXrszU9NuJOP5+upJJlDdDr0wi/cRXtc/Na/LATrGZcurqZ
-         iqRE4nLtd/I9HUz0fxnftxKeNB+tY1VkSVDbyHXDd+IwiQi6/pSW5jYXgEoqeuLnXoQY
-         yNfnpgzyQGW23j9+BpR1uYsD1MaolBRQPUGhLQRzvtvirlt8XmpAnd/BQHYBK01PUSx8
-         Y9tQ==
-X-Gm-Message-State: AOAM533IIN3qBN1XsbkJtBXQ3GzZLXGPz2PXJh2ojZDXxU1ngNx8bEwR
-        +WzpHbBfvTyGOEABAawW8fFl/A==
-X-Google-Smtp-Source: ABdhPJyL3iVHnWkCm6IHy7Z8dC9rx9dc0kMEpXEKFzYNjEcqkIqbrS5MCOwubvn2NoPvO3BDjKlVlw==
-X-Received: by 2002:a05:6a00:1a47:b0:510:a41b:362d with SMTP id h7-20020a056a001a4700b00510a41b362dmr27191567pfv.30.1652867835327;
-        Wed, 18 May 2022 02:57:15 -0700 (PDT)
-Received: from kerodipc.Dlink ([49.206.7.17])
-        by smtp.gmail.com with ESMTPSA id u2-20020a1709026e0200b0015e8d4eb1b7sm1258252plk.1.2022.05.18.02.57.11
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tc9+bvqYCqMUSJXb0nfQvcyKgjqV7Ocz6lWJsoBLOyQ=;
+        b=MYgo376JwKNQd29cgneNpbJd+xccRQy6gWxns5IwrMeVisOzlPfsSFnc1QIsk5uaio
+         epiOx+kGWHDyl3+TrWr284X4rPultL5lzv89kKNNWS2cFkNeZkD7qmXjSs+oz5S7tEGB
+         hVtrKxpPgjle4VXUpVS8xvtkyd9iKlbkFAbLDvLVX5W3PDw3ztaBiMwnne2fUJ4KPmVR
+         CJMwYgurOhpWr2PNxeGV3Cm3nIug1UZ9FqIPn2eoDB+BhIkl9zsTJW5TUDgKWlCXHZ9w
+         ZRAZGWZzCtrbP5Jgcoj5N+aozDlTpdtz2H78bAX3RIrEJi6IFHbH6rXHo5B9uyspw4ZI
+         PsYA==
+X-Gm-Message-State: AOAM530PGfJda59bUHF9ZcXCWynFowAeRahzw0g/45CqzWNA9xmaz1OZ
+        F+6E5ywVOAM4VPfwadUz1RgLVA==
+X-Google-Smtp-Source: ABdhPJwxN17DvvwgA27WGHd/CQU6EzFpAzCAl1BFGWWAOX6ggp1eIFb0ryL4HktPXI/Dtai14vWbIA==
+X-Received: by 2002:a63:5a01:0:b0:3d8:22cb:9224 with SMTP id o1-20020a635a01000000b003d822cb9224mr22960915pgb.548.1652867863321;
+        Wed, 18 May 2022 02:57:43 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([137.184.121.66])
+        by smtp.gmail.com with ESMTPSA id s26-20020a056a001c5a00b005180ea859d7sm1419223pfw.123.2022.05.18.02.57.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 02:57:15 -0700 (PDT)
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Ard Biesheuvel <ardb@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Abner Chang <abner.chang@hpe.com>, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Sunil V L <sunilvl@ventanamicro.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH V4 1/1] riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
-Date:   Wed, 18 May 2022 15:26:46 +0530
-Message-Id: <20220518095646.47548-2-sunilvl@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220518095646.47548-1-sunilvl@ventanamicro.com>
-References: <20220518095646.47548-1-sunilvl@ventanamicro.com>
+        Wed, 18 May 2022 02:57:42 -0700 (PDT)
+Date:   Wed, 18 May 2022 17:57:35 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        broonie@kernel.org, acme@kernel.org, german.gomez@arm.com,
+        mathieu.poirier@linaro.org, john.garry@huawei.com,
+        Will Deacon <will@kernel.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 4/4] perf tools: arm64: Add support for VG register
+Message-ID: <20220518095735.GB430350@leoy-ThinkPad-X240s>
+References: <20220517102005.3022017-1-james.clark@arm.com>
+ <20220517102005.3022017-5-james.clark@arm.com>
+ <20220517131952.GE153558@leoy-ThinkPad-X240s>
+ <ca02e8f5-04bd-01ff-7b57-0fd08a1e2359@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ca02e8f5-04bd-01ff-7b57-0fd08a1e2359@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the support for getting the boot hart ID in
-Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL. This protocol
-is preferred method over existing DT based solution since it
-works irrespective of DT or ACPI.
+On Wed, May 18, 2022 at 10:44:57AM +0100, James Clark wrote:
 
-The specification of the protocol is hosted at:
-https://github.com/riscv-non-isa/riscv-uefi
+[...]
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
----
- drivers/firmware/efi/libstub/efistub.h    |  7 ++++++
- drivers/firmware/efi/libstub/riscv-stub.c | 29 +++++++++++++++++++----
- include/linux/efi.h                       |  1 +
- 3 files changed, 32 insertions(+), 5 deletions(-)
+> >> +	if (getauxval(AT_HWCAP) & HWCAP_SVE)
+> >> +		attr.sample_regs_user |= SMPL_REG_MASK(PERF_REG_ARM64_VG);
+> >> +
+> >> +	/*
+> >> +	 * Check if the pmu supports perf extended regs, before
+> >> +	 * returning the register mask to sample.
+> >> +	 */
+> >> +	if (attr.sample_regs_user != PERF_REGS_MASK) {
+> >> +		event_attr_init(&attr);
+> >> +		fd = sys_perf_event_open(&attr, 0, -1, -1, 0);
+> >> +		if (fd != -1) {
+> >> +			close(fd);
+> >> +			return attr.sample_regs_user;
+> >> +		}
+> >> +	}
+> > 
+> > Just curious, since we can know SVE is supported from reading
+> > auxiliary value, can we directly return the register mask as below?
+> > 
+> >   PERF_REGS_MASK | SMPL_REG_MASK(PERF_REG_ARM64_VG);
+> 
+> I was trying to cover the case where the system supports SVE, but
+> the kernel doesn't have my changes to add the VG register yet.
+> 
+> Technically I could just attempt to open the event without checking
+> for SVE first and see if it works or not. But I preferred to be
+> explicit so it's obvious why we're doing that.
 
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index edb77b0621ea..aced62a0907e 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -720,6 +720,13 @@ union efi_tcg2_protocol {
- 	} mixed_mode;
- };
- 
-+struct riscv_efi_boot_protocol {
-+	u64 revision;
-+
-+	efi_status_t (__efiapi * get_boot_hartid)(struct riscv_efi_boot_protocol *this,
-+						  size_t *boot_hartid);
-+};
-+
- typedef union efi_load_file_protocol efi_load_file_protocol_t;
- typedef union efi_load_file_protocol efi_load_file2_protocol_t;
- 
-diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-index 9c460843442f..012504f6f9a4 100644
---- a/drivers/firmware/efi/libstub/riscv-stub.c
-+++ b/drivers/firmware/efi/libstub/riscv-stub.c
-@@ -23,7 +23,7 @@
- 
- typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
- 
--static u32 hartid;
-+static size_t hartid;
- 
- static int get_boot_hartid_from_fdt(void)
- {
-@@ -47,14 +47,33 @@ static int get_boot_hartid_from_fdt(void)
- 	return 0;
- }
- 
-+static efi_status_t get_boot_hartid_from_efi(void)
-+{
-+	efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-+	efi_status_t status;
-+	struct riscv_efi_boot_protocol *boot_protocol;
-+
-+	status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-+			     (void **)&boot_protocol);
-+	if (status == EFI_SUCCESS) {
-+		status = efi_call_proto(boot_protocol,
-+					get_boot_hartid, &hartid);
-+	}
-+	return status;
-+}
-+
- efi_status_t check_platform_features(void)
- {
- 	int ret;
-+	efi_status_t status;
- 
--	ret = get_boot_hartid_from_fdt();
--	if (ret) {
--		efi_err("/chosen/boot-hartid missing or invalid!\n");
--		return EFI_UNSUPPORTED;
-+	status = get_boot_hartid_from_efi();
-+	if (status != EFI_SUCCESS) {
-+		ret = get_boot_hartid_from_fdt();
-+		if (ret) {
-+			efi_err("Failed to get boot hartid!\n");
-+			return EFI_UNSUPPORTED;
-+		}
- 	}
- 	return EFI_SUCCESS;
- }
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..9822c730207c 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
- #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
- #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
- #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-+#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
- #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
- #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
- #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
--- 
-2.25.1
+Understand; LGTM.
 
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
