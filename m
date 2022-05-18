@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB1FC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A610AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236592AbiERMdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
+        id S236682AbiERMdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237013AbiERMbY (ORCPT
+        with ESMTP id S236766AbiERMb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:31:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEA319C748;
-        Wed, 18 May 2022 05:28:57 -0700 (PDT)
+        Wed, 18 May 2022 08:31:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A0014CA3E;
+        Wed, 18 May 2022 05:29:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFC19B81FBA;
-        Wed, 18 May 2022 12:28:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFD6CC385AA;
-        Wed, 18 May 2022 12:28:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F0B6B81FBC;
+        Wed, 18 May 2022 12:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 046FAC385A5;
+        Wed, 18 May 2022 12:28:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876895;
-        bh=59034JlVFmmJqNI8BkjyG9GauHmmps4h9zRtuWOswGM=;
+        s=k20201202; t=1652876940;
+        bh=skf72eKnPydbXAD+C8AUVtvHd8SfUZDOivH4WGlXk9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uv25hGStdhTcomC6evrU4/Oy1SN0Hl8b1yldSYZPt+X2MixOT2Efn7Kz/KpzP2+ms
-         XmLetg56rTQqPgmDGApj0Mvig9mNMTqnwGA1K1ct3YL2mWiyecZiPMOTC4Xo3wXbpS
-         yd+3vVM2hJuzz8Daubri9ArMKpUs4z51LILDpjbFHLAkfmiuRkhx+/uh4kweW4RPPF
-         aADhyu1CCtocf+9g9g77dsIJOlOo+dhYDk3rD/F+3xlmlcJUFfciBK05/HZIT418t1
-         Y+P9eQOIGGVn4Raw+vMSPYbK0sTabBROj5nYdBDF0/YRMswIwBEsb4JH4BDGU1Jjas
-         U74sq2WIpSqhQ==
+        b=q385eD66xD2DbuaHk6FjKY9QNGiV7zQUVhdcXw7GDYEBYJrJ22wI4vK+qcaNn9nVa
+         WdOCogRlIg7znOUuwPnKB9vAh1NXsjre3XFxBY3ugedB8T4x6rHuTJgAH4dibD5Mqy
+         cYTNjdzikJZ7cilRZM8q0qbl1Mx3yfYuLvdxLsBiO9rVQEUV79QTtQ/RZ6VAMUmIH5
+         JcYNziMQi/9q8PHBAVVMcD0J4rHTK7gzPBErqBMKug54yG8oDA7fMFyTuQTweioJP0
+         j12lUnGKThx5oK2/xdNqyiFWzMp78swBVtdd7VVDbXD/ZBPbbZ3U/BgmQQzJX3MfKH
+         Y/ROKGrwVSnig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lina Wang <lina.wang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        ilias.apalodimas@linaro.org, vasily.averin@linux.dev,
-        luiz.von.dentz@intel.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/17] net: fix wrong network header length
-Date:   Wed, 18 May 2022 08:27:42 -0400
-Message-Id: <20220518122753.342758-8-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 05/13] nl80211: fix locking in nl80211_set_tx_bitrate_mask()
+Date:   Wed, 18 May 2022 08:28:36 -0400
+Message-Id: <20220518122844.343220-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
-References: <20220518122753.342758-1-sashal@kernel.org>
+In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
+References: <20220518122844.343220-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,69 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lina Wang <lina.wang@mediatek.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit cf3ab8d4a797960b4be20565abb3bcd227b18a68 ]
+[ Upstream commit f971e1887fdb3ab500c9bebf4b98f62d49a20655 ]
 
-When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-network_header\transport_header\mac_header have been updated as ipv4 acts,
-but other skbs in frag_list didnot update anything, just ipv6 packets.
+This accesses the wdev's chandef etc., so cannot safely
+be used without holding the lock.
 
-udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-frag_list and make sure right udp payload is delivered to user space.
-Unfortunately, other skbs in frag_list who are still ipv6 packets are
-updated like the first skb and will have wrong transport header length.
-
-e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-has the same network_header(24)& transport_header(64), after
-bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-skb's network_header is 44,transport_header is 64, other skbs in frag_list
-didnot change.After skb_segment_list, the other skbs in frag_list has
-different network_header(24) and transport_header(44), so there will be 20
-bytes different from original,that is difference between ipv6 header and
-ipv4 header. Just change transport_header to be the same with original.
-
-Actually, there are two solutions to fix it, one is traversing all skbs
-and changing every skb header in bpf_skb_proto_6_to_4, the other is
-modifying frag_list skb's header in skb_segment_list. Considering
-efficiency, adopt the second one--- when the first skb and other skbs in
-frag_list has different network_header length, restore them to make sure
-right udp payload is delivered to user space.
-
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220506102136.06b7205419e6.I2a87c05fbd8bc5e565e84d190d4cfd2e92695a90@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/wireless/nl80211.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e4badc189e37..7ef0f5a8ab03 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3873,7 +3873,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 	unsigned int delta_len = 0;
- 	struct sk_buff *tail = NULL;
- 	struct sk_buff *nskb, *tmp;
--	int err;
-+	int len_diff, err;
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 283447df5fc6..f8d5f35cfc66 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -11095,18 +11095,23 @@ static int nl80211_set_tx_bitrate_mask(struct sk_buff *skb,
+ 	struct cfg80211_bitrate_mask mask;
+ 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
+ 	struct net_device *dev = info->user_ptr[1];
++	struct wireless_dev *wdev = dev->ieee80211_ptr;
+ 	int err;
  
- 	skb_push(skb, -skb_network_offset(skb) + offset);
+ 	if (!rdev->ops->set_bitrate_mask)
+ 		return -EOPNOTSUPP;
  
-@@ -3913,9 +3913,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
++	wdev_lock(wdev);
+ 	err = nl80211_parse_tx_bitrate_mask(info, info->attrs,
+ 					    NL80211_ATTR_TX_RATES, &mask,
+ 					    dev);
+ 	if (err)
+-		return err;
++		goto out;
  
- 		skb_release_head_state(nskb);
-+		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
- 		__copy_skb_header(nskb, skb);
+-	return rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
++	err = rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
++out:
++	wdev_unlock(wdev);
++	return err;
+ }
  
- 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		nskb->transport_header += len_diff;
- 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
- 						 nskb->data - tnl_hlen,
- 						 offset + tnl_hlen);
+ static int nl80211_register_mgmt(struct sk_buff *skb, struct genl_info *info)
 -- 
 2.35.1
 
