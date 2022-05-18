@@ -2,117 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C60AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:13:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236338AbiERMNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
+        id S236391AbiERMNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236264AbiERMMt (ORCPT
+        with ESMTP id S236267AbiERMNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:12:49 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C374714B669;
-        Wed, 18 May 2022 05:12:39 -0700 (PDT)
-Received: from kwepemi100016.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L3BZQ49YlzCsjp;
-        Wed, 18 May 2022 20:07:42 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100016.china.huawei.com (7.221.188.123) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 20:12:37 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 20:12:36 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <josef@toxicpanda.com>, <axboe@kernel.dk>, <ming.lei@redhat.com>
-CC:     <linux-block@vger.kernel.org>, <nbd@other.debian.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next v2 3/6] nbd: don't clear 'NBD_CMD_INFLIGHT' flag if request is not completed
-Date:   Wed, 18 May 2022 20:26:15 +0800
-Message-ID: <20220518122618.1702997-4-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220518122618.1702997-1-yukuai3@huawei.com>
-References: <20220518122618.1702997-1-yukuai3@huawei.com>
+        Wed, 18 May 2022 08:13:22 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F7C16647C;
+        Wed, 18 May 2022 05:13:06 -0700 (PDT)
+Received: from mail-yw1-f171.google.com ([209.85.128.171]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N3K9E-1ninzO3Mm2-010NS2; Wed, 18 May 2022 14:13:05 +0200
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2ef5380669cso21757527b3.9;
+        Wed, 18 May 2022 05:13:04 -0700 (PDT)
+X-Gm-Message-State: AOAM533WFZbmctZ48/8LoVTYNDrYAjdAD6HJ5kGa+eFx3AMaBuc1umGx
+        7jIb8a6u6GRTGg8EF51d7NA9eD5doXqswrJsI2k=
+X-Google-Smtp-Source: ABdhPJww4o6KC19Bdx3y+Y9+BEECGSt26A7Urzyyba0OuquV/hIeym4xoshJpgwWoBBDawOH5VaMVVqfZTQGwVugx8c=
+X-Received: by 2002:a81:456:0:b0:2fe:dee5:fbbc with SMTP id
+ 83-20020a810456000000b002fedee5fbbcmr20604776ywe.249.1652875983425; Wed, 18
+ May 2022 05:13:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+References: <20220516163310.44842-1-nick.hawkins@hpe.com>
+In-Reply-To: <20220516163310.44842-1-nick.hawkins@hpe.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 18 May 2022 13:13:05 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0914=TM9f1CNcg_PXfHvt6nHDPyrvLp=0KO4hZM2GT5w@mail.gmail.com>
+Message-ID: <CAK8P3a0914=TM9f1CNcg_PXfHvt6nHDPyrvLp=0KO4hZM2GT5w@mail.gmail.com>
+Subject: Re: [PATCH v8 0/8] Introduce HPE GXP Architecture
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        SoC Team <soc@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Joel Stanley <joel@jms.id.au>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:bydMuVtSfsxmxw1dETS7deuD573u5VRVlreV62FDWZCuxVkVs5m
+ m/BlQ3z2fTcGSokvu/fL0b1hNvD/SKEjP5bVC2+KL5NTMFY4074kJfHxr0cazzqfKlzLlnX
+ 7deLur69HKUxusSC/uH3fjS1aWnTy9r87dAWEM1GJfDJvz9ZiaCnAAvnrMvZFAQUApy+b5G
+ I8DdgtpQv3ZEinOXv/qNQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bUur6YHxCdI=:t+hhY/5KzTjCZpCa+RWXg1
+ A1+xKDu9yxP7y185JnFxMHYj9CUQHAbxi51w60/V2b3I47x12bIIPxeRFGet7qCN3QXVzfZhb
+ zim6r8NSFZ4ol7kIR+kd172yZiUFcXkrJVnZ7sAFegmiXDTXNPX09dyD9HJllOvN2N7eQuLa1
+ PbF7SQ7jlfkvHseJLc3YtKZHN6/WpyvCf/a1uwRgR0I1TQYtraIg+1l+ZTkVsslxMmNecQKqe
+ nu1wFsGrUACHZjBC1eIXAY1PNaf2B7lHz1003x9qxnLi43W5TmJLfwQofYceXv8Rn7eL2aMAm
+ PWJbvrQX3LPue04TZKETnSoXR5D4ET4ptuRwWPAtjWYZEYTONa+aeFKcPKkQi11luGfXEUsQ9
+ /N6KAdL2XZo7R+BC4RkUmEm7M0T14wZyqv/6gMKcEwLsZUXwFqpxz4G91CvKpz3GVLJMW1ftZ
+ WflWCX9/faS5Jwxfe+FPQc58Fb8xYIv0a3WyiXI0n+Ltw18ifk1xTX4e0e8cyOJyQ1YvVvlPU
+ 1rATssIj1Qb/Kfnt1pvmOQ9VyT/Ts7AQHHDxCqpfvAwZVpTBNVdc+Bo7UDYOKP0IeJag4BfEV
+ Sae8fnGIWpCkZkbnaPKx/hr5CMfmRpECLXqG0ZVwJOcJPJTPnORAxxpLgaEiWKG2y40HDHTWt
+ KpzOTG2/EVJj+c5nniiAlQ+QFWvZ8wD87+KjQCf+JLYXIYBDptl1ILZ8rzjkxBi0jBMY9xScl
+ UclB3I4NSBH61t3wL8FXJ+hiSPB8KmPASnUSxnLCcWaPBGUyA6gC9hDMGqOKa+f1Yw1J8XGNV
+ 1F8WeBawLkS9o2dVpRII7H/FKZMJYeQP2vkYhq21cyTV0cUKZLAZeVlPI3mgNfpshkCk9l4x6
+ GKz2dvsxt8saw2CmZGB14mm/+FtvSX4L1+h0BmrM8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Otherwise io will hung because request will only be completed if the
-cmd has the flag 'NBD_CMD_INFLIGHT'.
+On Mon, May 16, 2022 at 5:33 PM <nick.hawkins@hpe.com> wrote:
+>
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+>
+> Changes since v7:
+>  *Fixed comment format in watchdog driver
+>  *Added the Acked-by tag to the device tree patch.
+>  *Resubmitted the dt-bindings patches hpe,gxp and hpe,gxp-timer with
+>   Reviewed-by tags from previous patch in descriptions to keep patchset
+>   continuity for v8.
 
-Fixes: 07175cb1baf4 ("nbd: make sure request completion won't concurrent")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- drivers/block/nbd.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+Hi Nick,
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 2ee1e376d5c4..a0d0910dae2a 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -403,13 +403,14 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req,
- 	if (!mutex_trylock(&cmd->lock))
- 		return BLK_EH_RESET_TIMER;
- 
--	if (!__test_and_clear_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
-+	if (!test_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
- 		mutex_unlock(&cmd->lock);
- 		return BLK_EH_DONE;
- 	}
- 
- 	if (!refcount_inc_not_zero(&nbd->config_refs)) {
- 		cmd->status = BLK_STS_TIMEOUT;
-+		__clear_bit(NBD_CMD_INFLIGHT, &cmd->flags);
- 		mutex_unlock(&cmd->lock);
- 		goto done;
- 	}
-@@ -478,6 +479,7 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req,
- 	dev_err_ratelimited(nbd_to_dev(nbd), "Connection timed out\n");
- 	set_bit(NBD_RT_TIMEDOUT, &config->runtime_flags);
- 	cmd->status = BLK_STS_IOERR;
-+	__clear_bit(NBD_CMD_INFLIGHT, &cmd->flags);
- 	mutex_unlock(&cmd->lock);
- 	sock_shutdown(nbd);
- 	nbd_config_put(nbd);
-@@ -745,7 +747,7 @@ static struct nbd_cmd *nbd_handle_reply(struct nbd_device *nbd, int index,
- 	cmd = blk_mq_rq_to_pdu(req);
- 
- 	mutex_lock(&cmd->lock);
--	if (!__test_and_clear_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
-+	if (!test_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
- 		dev_err(disk_to_dev(nbd->disk), "Suspicious reply %d (status %u flags %lu)",
- 			tag, cmd->status, cmd->flags);
- 		ret = -ENOENT;
-@@ -854,8 +856,16 @@ static void recv_work(struct work_struct *work)
- 		}
- 
- 		rq = blk_mq_rq_from_pdu(cmd);
--		if (likely(!blk_should_fake_timeout(rq->q)))
--			blk_mq_complete_request(rq);
-+		if (likely(!blk_should_fake_timeout(rq->q))) {
-+			bool complete;
-+
-+			mutex_lock(&cmd->lock);
-+			complete = __test_and_clear_bit(NBD_CMD_INFLIGHT,
-+							&cmd->flags);
-+			mutex_unlock(&cmd->lock);
-+			if (complete)
-+				blk_mq_complete_request(rq);
-+		}
- 		percpu_ref_put(&q->q_usage_counter);
- 	}
- 
--- 
-2.31.1
+I have preliminarily applied this version into a the arm/late branch,
+but since I'm
+travelling at the moment, I cannot actually push that branch out for linux-next
+before the coming merge window.
 
+My feeling is that this should just wait until 5.20 now, but if you
+and others others
+feel strongly about it, I could send it during the second half of the
+merge window.
+
+It still needs to pass all the CI build tests, but at least it's
+unlikely that there
+are any runtime regressions for other platforms.
+
+         Arnd
