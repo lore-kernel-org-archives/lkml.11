@@ -2,88 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6181AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B77C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235959AbiERLxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51892 "EHLO
+        id S235795AbiERLyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235961AbiERLxD (ORCPT
+        with ESMTP id S235874AbiERLyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:53:03 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC5936319;
-        Wed, 18 May 2022 04:52:58 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id n13so1440136ejv.1;
-        Wed, 18 May 2022 04:52:58 -0700 (PDT)
+        Wed, 18 May 2022 07:54:43 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8438742ECF;
+        Wed, 18 May 2022 04:54:39 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso1788578pjb.3;
+        Wed, 18 May 2022 04:54:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MqhErziUEw78e6VTLZU9E1LrqvgPXxI1qfZwHRU+Wg4=;
-        b=Ldg0yXUBO/N4BoCEL7z+USUKsS/S7OwcsdUEa+17wn71t6KoOvHEcMecvQy9RH+rhT
-         PZH0NsGuUwp1qLZZHfy0kN7+eVMcnqVL9iSjaB3TAkHRT1VgjUJ/KHoe/NOWR4IPVhVn
-         w/jyj6LWAJueW2Eq48G0LLBsStTRFNcHSKQorDw1DAVWbfYg0wzdGrLVlfwGa4I7zP+3
-         aqNoGcN0CiOUBPFbem1tSRNp57u8lCIlOjnWUbd8sjzHypD57pkn2OzEQ/AljChMlwgW
-         Al/uKpm2LDC1TY+7UyYmsI5fSijEh112WKnZdhKnvRTC9OKBvVGuvh5VLrVgqSbAhe5f
-         JSKQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qZ4rncoyGFQjon2zJSWDjtwMAq3ZWWnFkDUlE+wmkgc=;
+        b=I3NM2uZ9tp3oYKMlCG+JFNj2KUghksK39Pq3/ZBVLLP9Vuljc6IgCyPN7syDipHm3+
+         OfPHEq9klr6SmwYgzO+10cHLTchPqsGGxEbNsPdBEUZ1sUCmtgkakMIKzwdiK02CYBrJ
+         aS6YtDqlniNJvCyMsUAPyCZPgQ2Suy5f7iNZ5Chh7O0/Lw6ideQNxjMI17j9MdXgM5D3
+         xbHoFWtgSoEAu3h9VRRpBkihqIDc4+GIVPMC56AZeSUJcC43Ibnw/INYuGY9nYxiP0tW
+         3vp/+U3a03WuqEewO0i7uZuhLDhOwW78iCAnipGk/m8yRMwD8e1hioewhBQFzZdCH+nK
+         hFHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MqhErziUEw78e6VTLZU9E1LrqvgPXxI1qfZwHRU+Wg4=;
-        b=Up6dHyQtIVojN4EsK5ogdDWRVCSMKOKFu4uFv+1UdKjjLKb/sU6zGqaTCwst6ABNOA
-         OXFPBW43OjIb0ho8/yAAX61R1tAY8QOchv693ErtSSEPJE/qdKXmV/x0RZKhI8vj+PLZ
-         FgCixcj7wrUacowO8AnZH7LDjphkThTxtREH28xJIeUTKIfAMZk6FjzJRjlqodbcW1cx
-         VKoQhf2NIfmgWS2129iwE39hfBvTosqS6TlzFAnI3x+fZUFl36/TBK8vuDYRDyquCG0U
-         gRMF0uT+7o6cUYOxMjUe9CjglDo+Hcd9H2JZqE5KlHbsZiDXXoRzr9tPUesprfyqIp/B
-         KEfQ==
-X-Gm-Message-State: AOAM533MOuBjGCtHL4m0WrtWFnEOp+vye+BpDV6/aBsvfovqJq2nRjN4
-        1HYJoda0TrR4VO0l3YFcD+U=
-X-Google-Smtp-Source: ABdhPJzdLHDC2YSdudKFMOdqsfKyN9aV51oMqEDlQjYPkWzCw/9Gb/RZCjdQlKmgk/6akMA3FUaWlA==
-X-Received: by 2002:a17:907:2cc3:b0:6fa:55f:8805 with SMTP id hg3-20020a1709072cc300b006fa055f8805mr24115348ejc.46.1652874777182;
-        Wed, 18 May 2022 04:52:57 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id n24-20020a056402515800b0042ad0358c8bsm1221775edd.38.2022.05.18.04.52.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 04:52:56 -0700 (PDT)
-Date:   Wed, 18 May 2022 14:52:55 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Marek Vasut <marex@denx.de>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [Patch net-next 4/9] net: dsa: microchip: move struct mib_names
- to ksz_chip_data
-Message-ID: <20220518115255.xyazzfo2snzy6c3f@skbuf>
-References: <20220517094333.27225-1-arun.ramadoss@microchip.com>
- <20220517094333.27225-5-arun.ramadoss@microchip.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qZ4rncoyGFQjon2zJSWDjtwMAq3ZWWnFkDUlE+wmkgc=;
+        b=SvBkBn9JTx9U4Tgf674D+ake0CnYP8FQ/M8YkABJX7WSXH9l2PIANSarK7HcAcfjoW
+         Slu14ptZ7zTydc+euxUkIWE+Oz3I+qrjT9bKeoC0XST/gII1ZiE62qgjbO6Cgs5IrXTA
+         CVEd6K4+mafhY1B5WrweebsFRpi8dGH6BbyII+FCPrk4dl6dcOMV7A5eJtmnc9X78yiV
+         gWrYOBUzBUBmTHeRn95aNefzgtF4u3mwWziAYP/74ZAlHkMktkWQS6Ri1yrdMqQsl2zI
+         /OgTKfZQkP6eWoYN0NtmdcxTDJ0Ssksln30SGv2kZTbfrHyXVm09sz8CJEZMc3ui59Wn
+         d/PA==
+X-Gm-Message-State: AOAM533136gRv08/k3hNsCfYzb56X6X8ijdA4ihwszYXy2l0KJiJyc+m
+        4pdxNOtkn+2xQy72b/T5Ans=
+X-Google-Smtp-Source: ABdhPJzUUw6sp/8onoLyjYQQXzsoGYB1a1jcXVVvrMlvxiQt9k5434pZsal3kaXbjCVhs8pUKllpXw==
+X-Received: by 2002:a17:902:ecc7:b0:161:c860:38e2 with SMTP id a7-20020a170902ecc700b00161c86038e2mr2175566plh.75.1652874879062;
+        Wed, 18 May 2022 04:54:39 -0700 (PDT)
+Received: from localhost.localdomain ([103.126.24.15])
+        by smtp.gmail.com with ESMTPSA id q19-20020a056a00085300b0050dc76281c9sm1755304pfk.163.2022.05.18.04.54.36
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 18 May 2022 04:54:38 -0700 (PDT)
+From:   Sheng Bi <windy.bi.enflame@gmail.com>
+To:     helgaas@kernel.org, bhelgaas@google.com
+Cc:     alex.williamson@redhat.com, lukas@wunner.de,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sheng Bi <windy.bi.enflame@gmail.com>
+Subject: [PATCH v2] PCI: Fix no-op wait after secondary bus reset
+Date:   Wed, 18 May 2022 19:54:32 +0800
+Message-Id: <20220518115432.76183-1-windy.bi.enflame@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220516165740.6256af51.alex.williamson@redhat.com>
+References: <20220516165740.6256af51.alex.williamson@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517094333.27225-5-arun.ramadoss@microchip.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 03:13:28PM +0530, Arun Ramadoss wrote:
-> The ksz88xx family has one set of mib_names. The ksz87xx, ksz9477,
-> LAN937x based switches has one set of mib_names. In order to remove
-> redundant declaration, moved the struct mib_names to ksz_chip_data
-> structure.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
+pci_bridge_secondary_bus_reset() triggers SBR followed by 1 second sleep,
+and then uses pci_dev_wait() for waiting device ready. The dev parameter
+passes to the wait function is currently the bridge itself, but not the
+device been reset.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+If we call pci_bridge_secondary_bus_reset() to trigger SBR to a device,
+there is 1 second sleep but not waiting device ready, since the bridge
+is always ready while resetting downstream devices. pci_dev_wait() here
+is a no-op actually. This would be risky in the case which the device
+becomes ready after more than 1 second, especially while hotplug enabled.
+The late coming hotplug event after 1 second will trigger hotplug module
+to remove/re-insert the device.
+
+Instead of waiting ready of bridge itself, changing to wait all the
+downstream devices become ready with timeout PCIE_RESET_READY_POLL_MS
+after SBR, considering all downstream devices are affected during SBR.
+Once one of the devices doesn't reappear within the timeout, return
+-ENOTTY to indicate SBR doesn't complete successfully.
+
+Fixes: 6b2f1351af56 ("PCI: Wait for device to become ready after secondary bus reset")
+Signed-off-by: Sheng Bi <windy.bi.enflame@gmail.com>
+---
+ drivers/pci/pci.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index eb7c0a08ff57..32b7a5c1fa3a 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -5049,6 +5049,34 @@ void pci_bridge_wait_for_secondary_bus(struct pci_dev *dev)
+ 	}
+ }
+ 
++static int pci_bridge_secondary_bus_wait(struct pci_dev *bridge, int timeout)
++{
++	struct pci_dev *dev;
++	int delay = 0;
++
++	if (!bridge->subordinate || list_empty(&bridge->subordinate->devices))
++		return 0;
++
++	list_for_each_entry(dev, &bridge->subordinate->devices, bus_list) {
++		while (!pci_device_is_present(dev)) {
++			if (delay > timeout) {
++				pci_warn(dev, "not ready %dms after secondary bus reset; giving up\n",
++					delay);
++				return -ENOTTY;
++			}
++
++			msleep(20);
++			delay += 20;
++		}
++
++		if (delay > 1000)
++			pci_info(dev, "ready %dms after secondary bus reset\n",
++				delay);
++	}
++
++	return 0;
++}
++
+ void pci_reset_secondary_bus(struct pci_dev *dev)
+ {
+ 	u16 ctrl;
+@@ -5092,7 +5120,7 @@ int pci_bridge_secondary_bus_reset(struct pci_dev *dev)
+ {
+ 	pcibios_reset_secondary_bus(dev);
+ 
+-	return pci_dev_wait(dev, "bus reset", PCIE_RESET_READY_POLL_MS);
++	return pci_bridge_secondary_bus_wait(dev, PCIE_RESET_READY_POLL_MS);
+ }
+ EXPORT_SYMBOL_GPL(pci_bridge_secondary_bus_reset);
+ 
+
+base-commit: 617c8a1e527fadaaec3ba5bafceae7a922ebef7e
+-- 
+2.36.1
+
