@@ -2,190 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE4BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A19EC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241383AbiERSTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S241467AbiERS0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241339AbiERSTj (ORCPT
+        with ESMTP id S241366AbiERS0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:19:39 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5611C7435
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:19:36 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IIHYLO019334;
-        Wed, 18 May 2022 18:19:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=BIZAjSskEX4ZGsdDdyHF4V6S1IvnQosszACzcUTuvvw=;
- b=M/+uNR8WKwNu7M/JW2Pzi3TO/M0oRujQrYJ5g/izFNcOqG+O0AOT8aeX7buNbbyPlb8t
- S/YXv75ZZqS5xtiP8D4yUVyabftWddM39a+CnoJdh96n+fAMrUJ9w0mt+n/CPpVZBGQM
- 6SwZ2cPsZXUQ7TmVBWqYzBmMyfRRLuO6jJeP9I7zr/frclNpGjmYYOWGw62BXgfAAdxr
- M+SiYLAQqsHwp6bD9IMex/flLT83efWBxOVK7RiZbdlBpkRU8V/fVj6EcoyGrt142Byp
- yhRkzoqn+yXNApSoGXXhyLBILuaYR61wmYuHEF3HwIHmTfaVCKP9spNGh9JnD1YjKhuV kA== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g55xxg151-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 18:19:15 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24II8XKa011871;
-        Wed, 18 May 2022 18:19:13 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3g2429e34f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 18:19:13 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IIJAao52232462
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 18:19:10 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AB51C4C046;
-        Wed, 18 May 2022 18:19:10 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 118784C040;
-        Wed, 18 May 2022 18:19:09 +0000 (GMT)
-Received: from li-NotSettable.ibm.com.com (unknown [9.43.19.36])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 18 May 2022 18:19:08 +0000 (GMT)
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Eric Biederman <ebiederm@xmission.com>
-Cc:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        kexec@lists.infradead.org
-Subject: [PATCH] kexec_file: Drop weak attribute from arch_kexec_apply_relocations[_add]
-Date:   Wed, 18 May 2022 23:48:28 +0530
-Message-Id: <20220518181828.645877-1-naveen.n.rao@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.27.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: uPzPQywlzQTS2FrupWy_fWcu16Q8beLq
-X-Proofpoint-ORIG-GUID: uPzPQywlzQTS2FrupWy_fWcu16Q8beLq
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 18 May 2022 14:26:05 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452F17CDE7;
+        Wed, 18 May 2022 11:26:03 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id y20so2108011qvx.3;
+        Wed, 18 May 2022 11:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nfgYoWCNYtN7yDfm2+d3s9VvRbNwsmq2M10lbEvV91w=;
+        b=BU4UhCSBQmodnhlemcE31H7c2P5bS4uD95BTXf+A6pZjh/XS3tC1t1En3GecHCtM0t
+         mXQzgOkt6y2dhDUY4NaqxzkRzFnNMxFB4vbJUXChGiDaCeCFkzu5wJklFunrx/hsoTT4
+         DDRXS8UCcvLanVCmZV8nJjMyto4R6qqi3P1Tm23y4csTS2oY7xthDULzOf5X+hnuKGaJ
+         X03is8tUWDjhmeZkDo6Ma0u3ZEmvm5T17uAkkGtZd6pAO5HEFbHOq5jKBTJEThCQyV8/
+         EMQVr/w2ANjh/ZxHtdzRLqqlA8lxcIh0UiG47/f0dRuTjnFXUSDrVFyIgBdYSFOEHDqo
+         hfLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nfgYoWCNYtN7yDfm2+d3s9VvRbNwsmq2M10lbEvV91w=;
+        b=jEkzD9UEu6pILcZi/1ENbeJH4Hq/TWjVTgnaXOVX4TUzZpm+WdgRLN9Vdy/muXFNuY
+         uWzTT9Lv6ga4Zio3pFFppxWsVtOesA0B6NeRFFtov4GAeNI2ydW19QY89Y6ASDrGjjLn
+         F3OAqfRYH0/6nEnwy47LL7bYssq7cMOMdaBsHXIHDT7tWluqBcezOxRpD+ZfYXKhdcV/
+         Ie5kZRoj6v49L2kcTU5OY+d1/k0ddDnk9hlJDoutsF8i/hiB9Ja5qehR/LaKLQ906j8c
+         5MP1gb/fmECdQLiir5Uj0smk+IbPAKuNGGBHEcKWMY09CUim7oqK3HC3lYDgvjqeOK/O
+         31ZQ==
+X-Gm-Message-State: AOAM532XZ59VtOhDzBX4Jv/UX92XQMdB08L+J31totlxfI2bZdJaicUv
+        cV7Aw3gwk43uJDSkjGOqLYEGA8iPGgaeRffX/lk=
+X-Google-Smtp-Source: ABdhPJxjdpnM2ndfyB5ODLWDF8yv7yrQbec+TF3B+bzIAyN+RclUCT2TptIXCHT028RbwipcOB7Y/r3VopoJQUn8u/U=
+X-Received: by 2002:a05:6214:48f:b0:461:d4fe:4eed with SMTP id
+ ay15-20020a056214048f00b00461d4fe4eedmr859981qvb.48.1652898362364; Wed, 18
+ May 2022 11:26:02 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- impostorscore=0 suspectscore=0 adultscore=0 mlxlogscore=689 bulkscore=0
- clxscore=1015 mlxscore=0 priorityscore=1501 lowpriorityscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205180106
+References: <20220517205341.536587-1-robimarko@gmail.com> <20220517205341.536587-4-robimarko@gmail.com>
+ <d60f32dc-a9f5-95ad-245e-6b9521d73fce@somainline.org> <CAOX2RU7jCdggA8y1cE4sfZLw_niDUNkG8pkJ=d=5mM1BbrrBQA@mail.gmail.com>
+In-Reply-To: <CAOX2RU7jCdggA8y1cE4sfZLw_niDUNkG8pkJ=d=5mM1BbrrBQA@mail.gmail.com>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Wed, 18 May 2022 20:25:51 +0200
+Message-ID: <CAOX2RU4wVXvm93Z5u1hEEUxn4S2YDGHVq_89Z7b-ryf0t7iJSg@mail.gmail.com>
+Subject: Re: [PATCH v3 4/6] regulator: qcom_spmi: Add support for PMP8074 regulators
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        lgirdwood@gmail.com, broonie@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Devicetree List <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit d1bcae833b32f1 ("ELF: Don't generate unused section
-symbols") [1], binutils (v2.36+) started dropping section symbols that
-it thought were unused.  This isn't an issue in general, but with
-kexec_file.c, gcc is placing kexec_arch_apply_relocations[_add] into a
-separate .text.unlikely section and the section symbol ".text.unlikely"
-is being dropped. Due to this, recordmcount is unable to find a non-weak
-symbol in .text.unlikely to generate a relocation record against.
+On Wed, 18 May 2022 at 19:31, Robert Marko <robimarko@gmail.com> wrote:
+>
+> On Wed, 18 May 2022 at 15:42, Konrad Dybcio
+> <konrad.dybcio@somainline.org> wrote:
+> >
+> >
+> > On 17/05/2022 22:53, Robert Marko wrote:
+> > > PMP8074 is a companion PMIC for the Qualcomm IPQ8074 WiSoC-s.
+> > >
+> > > It features 5 HF-SMPS and 13 LDO regulators.
+> > >
+> > > This commit adds support for S3 and S4 HF-SMPS buck regulators of
+> > > the HFS430 type and LDO11 of the HT_P150 type.
+> > > S3 is the CPU cluster voltage supply, S4 supplies the UBI32 NPU cores
+> > > and LDO11 is the SDIO/eMMC I/O voltage regulator required for high speeds.
+> > >
+> > > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> > > ---
+> > >   drivers/regulator/qcom_spmi-regulator.c | 8 ++++++++
+> > >   1 file changed, 8 insertions(+)
+> > >
+> > > diff --git a/drivers/regulator/qcom_spmi-regulator.c b/drivers/regulator/qcom_spmi-regulator.c
+> > > index 38bbc70241ae..696b088aae40 100644
+> > > --- a/drivers/regulator/qcom_spmi-regulator.c
+> > > +++ b/drivers/regulator/qcom_spmi-regulator.c
+> > > @@ -2137,6 +2137,13 @@ static const struct spmi_regulator_data pms405_regulators[] = {
+> > >       { }
+> > >   };
+> > >
+> > > +static const struct spmi_regulator_data pmp8074_regulators[] = {
+> >
+> > Please sort the struct alphabletically.
+>
+> Hi,
+> Will fixup in v3.
+>
+> >
+> >
+> > > +     { "s3", 0x1a00, "vdd_s3"},
+> > > +     { "s4", 0x1d00, "vdd_s4"},
+> > > +     { "l11", 0x4a00, "vdd_l10_l11_l12_l13"},
+> >
+> > Are the other regulators somehow not controllable through SPMI? Please
+> > leave a comment if that's the case.
+>
+> No, they are all controllable via SPMI as far as I know.
+> Though the output table completely leaves out L7, L9, and L10.
+> L5 and L6 are specified as Ebuck-4 subtypes (0x3d), while L10 is not
+> listed at all (0x34).
 
-Address this by dropping the weak attribute from these functions:
-- arch_kexec_apply_relocations() is not overridden by any architecture
-  today, so just drop the weak attribute.
-- arch_kexec_apply_relocations_add() is only overridden by x86 and s390.
-  Retain the function prototype for those and move the weak
-  implementation into the header as a static inline for other
-  architectures.
+Ok, I dug a bit further and L5/6 are HT_P600 and are easily supportable.
+L10 is an HT_P50 type but it's listed as unused and left disabled, I don't know
+its supported output voltage range.
 
-[1] https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=d1bcae833b32f1
+Regards,
+Robert
 
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
----
- include/linux/kexec.h | 28 ++++++++++++++++++++++++----
- kernel/kexec_file.c   | 19 +------------------
- 2 files changed, 25 insertions(+), 22 deletions(-)
-
-diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-index 58d1b58a971e34..e656f981f43a73 100644
---- a/include/linux/kexec.h
-+++ b/include/linux/kexec.h
-@@ -193,10 +193,6 @@ void *kexec_purgatory_get_symbol_addr(struct kimage *image, const char *name);
- int arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
- 				  unsigned long buf_len);
- void *arch_kexec_kernel_image_load(struct kimage *image);
--int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
--				     Elf_Shdr *section,
--				     const Elf_Shdr *relsec,
--				     const Elf_Shdr *symtab);
- int arch_kexec_apply_relocations(struct purgatory_info *pi,
- 				 Elf_Shdr *section,
- 				 const Elf_Shdr *relsec,
-@@ -229,6 +225,30 @@ extern int crash_exclude_mem_range(struct crash_mem *mem,
- 				   unsigned long long mend);
- extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
- 				       void **addr, unsigned long *sz);
-+
-+#if defined(CONFIG_X86_64) || defined(CONFIG_S390)
-+int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
-+				     Elf_Shdr *section,
-+				     const Elf_Shdr *relsec,
-+				     const Elf_Shdr *symtab);
-+#else
-+/*
-+ * arch_kexec_apply_relocations_add - apply relocations of type RELA
-+ * @pi:		Purgatory to be relocated.
-+ * @section:	Section relocations applying to.
-+ * @relsec:	Section containing RELAs.
-+ * @symtab:	Corresponding symtab.
-+ *
-+ * Return: 0 on success, negative errno on error.
-+ */
-+static inline int
-+arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
-+				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
-+{
-+	pr_err("RELA relocation unsupported.\n");
-+	return -ENOEXEC;
-+}
-+#endif /* CONFIG_X86_64 || CONFIG_S390 */
- #endif /* CONFIG_KEXEC_FILE */
- 
- #ifdef CONFIG_KEXEC_ELF
-diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-index 8347fc158d2b96..6bae253b4d315e 100644
---- a/kernel/kexec_file.c
-+++ b/kernel/kexec_file.c
-@@ -108,23 +108,6 @@ int __weak arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
- }
- #endif
- 
--/*
-- * arch_kexec_apply_relocations_add - apply relocations of type RELA
-- * @pi:		Purgatory to be relocated.
-- * @section:	Section relocations applying to.
-- * @relsec:	Section containing RELAs.
-- * @symtab:	Corresponding symtab.
-- *
-- * Return: 0 on success, negative errno on error.
-- */
--int __weak
--arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
--				 const Elf_Shdr *relsec, const Elf_Shdr *symtab)
--{
--	pr_err("RELA relocation unsupported.\n");
--	return -ENOEXEC;
--}
--
- /*
-  * arch_kexec_apply_relocations - apply relocations of type REL
-  * @pi:		Purgatory to be relocated.
-@@ -134,7 +117,7 @@ arch_kexec_apply_relocations_add(struct purgatory_info *pi, Elf_Shdr *section,
-  *
-  * Return: 0 on success, negative errno on error.
-  */
--int __weak
-+int
- arch_kexec_apply_relocations(struct purgatory_info *pi, Elf_Shdr *section,
- 			     const Elf_Shdr *relsec, const Elf_Shdr *symtab)
- {
-
-base-commit: ef1302160bfb19f804451d0e919266703501c875
--- 
-2.36.1
-
+> These are not currently supported and I don't have enough information
+> to support them.
+> L1, L2, L3, L4, L7, L8, L9, L11, L12, and L13 appear to have their
+> subtype already supported.
+> L1, L2, L3, L8, L9 subtype (0x32)
+> L4 subtype (0x30)
+> L7, L11, L12, L13 subtype (0x35)
+>
+> S3, S4, and L11 are the most important ones.
+> >
+> >
+> > > +     { }
+> > > +};
+> > > +
+> > >   static const struct of_device_id qcom_spmi_regulator_match[] = {
+> > >       { .compatible = "qcom,pm8004-regulators", .data = &pm8004_regulators },
+> > >       { .compatible = "qcom,pm8005-regulators", .data = &pm8005_regulators },
+> > > @@ -2150,6 +2157,7 @@ static const struct of_device_id qcom_spmi_regulator_match[] = {
+> > >       { .compatible = "qcom,pm660-regulators", .data = &pm660_regulators },
+> > >       { .compatible = "qcom,pm660l-regulators", .data = &pm660l_regulators },
+> > >       { .compatible = "qcom,pms405-regulators", .data = &pms405_regulators },
+> > > +     { .compatible = "qcom,pmp8074-regulators", .data = &pmp8074_regulators },
+> >
+> > Please sort the compatible too.
+>
+> Will fixup in v3.
+>
+> Regards,
+> Robert
+> >
+> >
+> > Konrad
+> >
+> > >       { }
+> > >   };
+> > >   MODULE_DEVICE_TABLE(of, qcom_spmi_regulator_match);
+> > >
