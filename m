@@ -2,74 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 840FFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D39DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236010AbiERL5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
+        id S235903AbiERL6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235879AbiERL47 (ORCPT
+        with ESMTP id S235885AbiERL56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:56:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD14F45;
-        Wed, 18 May 2022 04:56:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E909EB81F93;
-        Wed, 18 May 2022 11:56:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71455C385AA;
-        Wed, 18 May 2022 11:56:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652875014;
-        bh=9vOoc0v+BIYkpytw8iBPivZ+HzNBFguqZOXNLAw6pLI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Irbz9HalufQgGqTpCt8jY8Xm1siWggiektz9izx5891iEwNqN+DXa2Lu7Hwz/yMgM
-         7AjzcF1Wv0whPCL1zeMQkL8a/R21522q487O5jeyHJAlPKveanVPxAbeBfCI7vL+qP
-         EgPyXb6pgvfARMWftzyE/11KCHVPcUjXofl0GqZzbAmtTbDgwcM36nRkYTEHgF04wC
-         O+vLlTlKQEEhW8QD8Q+EjqR20fM3NzFISDbB7K376Juo+VNDh6pl4dtFVqHqYMXECp
-         UTouosNDQQ1BlRF5gsdStQtZx4TBAn6Hrgogn6ILgm3J4v8moGLtqaEN7JOAh/17+e
-         i0TLaJ5G63Hpg==
-Date:   Wed, 18 May 2022 19:56:50 +0800
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-doc@vger.kernel.org, Benson Leung <bleung@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: [PATCH v2 0/2] Documentation update for Chrome OS ACPI
-Message-ID: <YoTfArGLd85jaG2Y@google.com>
-References: <20220518083524.37380-1-bagasdotme@gmail.com>
+        Wed, 18 May 2022 07:57:58 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3DA24093
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 04:57:57 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id wh22so3190088ejb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 04:57:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1AQVLqL8oPCsWqIf0y5cLrjgJaveJU57q/bnqY+Bcwc=;
+        b=oy5BQ1sPa+NNYI44WvlAhaedelel72TvA+F0iA95vikBTLLK/78vZ+B3nN3vxgrIHZ
+         1ub3KAZd6byRBhiUxivonltflM0hRYEm7ah6fM1zbSbnT13QLxV7WAzmrOsyn/gkY975
+         /VQOv6SrG1Dv2Vq0c58Z9F+EMLND4vnSrCvyc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1AQVLqL8oPCsWqIf0y5cLrjgJaveJU57q/bnqY+Bcwc=;
+        b=WlS/vIARezwr+oIYNbGhvVycUw2qNTfYjG2kZGNvx2lg1zTtG6PbsKsYR7ONkVm6wF
+         7KMz8V2c1/m/Fw/eVs7yB6CF2mALop9qzS08OpTGlNuHl9zfkZPsmckK9uA9gcecYMbO
+         AnRXynYEpsVNkyHealrFxzt880/GS6q21tXuOLCPtK3DfN7FgPlVIsifIOHcI3TQspkb
+         esCGD8Njiujhc31+gbilvsG9RRCB3WTxOFzeBU9nn2aLNpxC2/60f7JbHmXzCJwiIuWk
+         8Mt6F8KJLIOiBh7vdbsQ/ms1I+RRjLpvOQA/1G/rVB8w/Ulb3+QCPqnmuF4/ySdddt9+
+         avlQ==
+X-Gm-Message-State: AOAM532I77qDYI0THf4l/TFIE31jchavUvEwL3Bm91hn4Jg8K1/jFGdX
+        H3M4nIGLaNb3l6Iee6JPONQ3NBNzWCu0c+bcqLqmwA==
+X-Google-Smtp-Source: ABdhPJwxUucUZ5jQkIxILawVnBHu4LaNFhal53sVL/JVRbmmLUpb/dQrdpadwZ931FvDV3vgHVdeI22o598w+yO6yeE=
+X-Received: by 2002:a17:907:6e9e:b0:6fe:8d81:b4a3 with SMTP id
+ sh30-20020a1709076e9e00b006fe8d81b4a3mr1443382ejc.748.1652875076330; Wed, 18
+ May 2022 04:57:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518083524.37380-1-bagasdotme@gmail.com>
+References: <20220511222910.635307-1-dlunev@chromium.org> <20220512082832.v2.2.I692165059274c30b59bed56940b54a573ccb46e4@changeid>
+ <YoQfls6hFcP3kCaH@zeniv-ca.linux.org.uk> <YoQihi4OMjJj2Mj0@zeniv-ca.linux.org.uk>
+In-Reply-To: <YoQihi4OMjJj2Mj0@zeniv-ca.linux.org.uk>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Wed, 18 May 2022 13:57:45 +0200
+Message-ID: <CAJfpegtQUP045X5N8ib1rUTKzSj-giih0eL=jC5-MP7aVgyN_g@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] FUSE: Retire superblock on force unmount
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Daniil Lunev <dlunev@chromium.org>, linux-fsdevel@vger.kernel.org,
+        Christoph Hellwig <hch@infradead.org>,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 03:35:22PM +0700, Bagas Sanjaya wrote:
-> Two documentation patches touching Chrome OS ACPI sysfs.
-> 
->   1. Patch [1/2] fixes htmldocs warning reported in linux-next and should
->      be merged before upcoming merge window.
->   2. Patch [2/2] rewrites symbol descriptions to use imperative mood. It
->      can be merged when appropriate, independent of previous patch
->      above.
-> 
-> [...]
+On Wed, 18 May 2022 at 00:32, Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+> On Tue, May 17, 2022 at 10:20:06PM +0000, Al Viro wrote:
+> > On Thu, May 12, 2022 at 08:29:10AM +1000, Daniil Lunev wrote:
+> > > Force unmount of FUSE severes the connection with the user space, even
+> > > if there are still open files. Subsequent remount tries to re-use the
+> > > superblock held by the open files, which is meaningless in the FUSE case
+> > > after disconnect - reused super block doesn't have userspace counterpart
+> > > attached to it and is incapable of doing any IO.
+> >
+> >       Why not simply have those simply rejected by fuse_test_super()?
+> > Looks like that would be much smaller and less invasive patch...
+> > Confused...
+>
+> ... because Miklos had suggested that, apparently ;-/  I disagree -
+> that approach has more side effects.  "mount will skip that sucker" is,
+> AFAICS, the only effect of modiyfing test_super callback(s); yours, OTOH...
 
-Applied, thanks!
+Yep, messing with the bdi doesn't look good.  Fuse always uses a
+private bdi, so it's not even necessary.
 
-[1/2] platform/chrome: Use tables for values lists of ChromeOS ACPI sysfs ABI
-      commit: 596cbc6ab0abd18206b3247aaeaa225788afaf8c
-[2/2] platform/chrome: Use imperative mood for ChromeOS ACPI sysfs ABI descriptions
-      commit: 7bff62406671dd89e9d1a7bf00169197f2833c41
+Just removing from type->fs_supers should not have any side effects,
+at least I can't spot any.
+
+Fixing fuse_test_super() is not sufficient, as the fuseblk type goes
+though get_tree_bdev().  That could be tweaked as well, but it would
+end up with more complexity.
+
+Thanks,
+Miklos
