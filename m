@@ -2,230 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9115C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 02:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6179C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 02:44:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234283AbiERCnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 22:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34904 "EHLO
+        id S234311AbiERCoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 22:44:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232506AbiERCnA (ORCPT
+        with ESMTP id S232506AbiERCoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 22:43:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4636C2CC98;
-        Tue, 17 May 2022 19:42:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C33A5616BD;
-        Wed, 18 May 2022 02:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC934C385B8;
-        Wed, 18 May 2022 02:42:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652841776;
-        bh=8lal2RSw8WZDliO+MS5PxwsArM0OcZxQoc6XS524+XQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PMQn4g6draPn5/ucYkLGG4AIMeasxadp/5xL/DF+6xJntfe7A0GbuGSfJZ03wHRXD
-         g15C715cWQipJ+dRax4EpfPtF/OVcskbX9aRYFlMjbJeQqfT5PcwVsyePxNEzTv3H+
-         uvZ3b8rHJmk+C1PbtD0+y68wCLMHrxCQ9vc9paAv71RmMUPVmRxe3S/9otxnYF/lqF
-         CX638d7HUFT9WJ8jOPsYSgzbWr/du0vP/63aT0qxvHkKJre/nO4hKKnFhe+Noq+RaM
-         BgGbIsNE3/VVUKDYcdQWNJdE2ERShfcsypNkcSooPSMri2xKWNfYaLSJY2jVzMo4v5
-         NdSP1Kd+2udzQ==
-Date:   Tue, 17 May 2022 19:42:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Harini Katakam <harini.katakam@xilinx.com>
-Cc:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <michal.simek@xilinx.com>,
-        <harinikatakamlinux@gmail.com>, <radhey.shyam.pandey@xilinx.com>
-Subject: Re: [PATCH 1/3] net: macb: Fix PTP one step sync support
-Message-ID: <20220517194254.015e87f3@kernel.org>
-In-Reply-To: <20220517073259.23476-2-harini.katakam@xilinx.com>
-References: <20220517073259.23476-1-harini.katakam@xilinx.com>
-        <20220517073259.23476-2-harini.katakam@xilinx.com>
+        Tue, 17 May 2022 22:44:16 -0400
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2131.outbound.protection.outlook.com [40.107.117.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAEE2D1E9;
+        Tue, 17 May 2022 19:44:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=atZx5HRtv5xgbQiD4dR4bdX/Z6935xbNhydkZ3Xj2cX8AmSy1pDOwTGbQTsoAIQJeV4Po9Ybs3mVKlFTws0wghuDYb2UaKO3bxbIAD3Sfdwk3KJjgV8D0xzy51cBhMWZmjHUva0UK/5iIuQ3dmSMSsaC+7unel/kH1olNuflG2QALSdXD/P8uEYLp1iqSopL0ySOMpEKTt0Pn/YcOfS6YhQqFxv41YadEIgdRhTowP/e+1lL+FuZFRWcLxzyDzhU2E77SvPjImJh0DanD5GGadVJe2yA9KfSt25mjjaspR5YdfVwuGDyC6j6ZYcQd+TJ5pMtyqPJvydWnOIBObZpUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=H0/QkbkU3yUWmuSPxRUx4FyNzsUL0pouWI+2eCIZAzs=;
+ b=bxvun1ymwuVZbLtpaZSI5Z+jF2MNUdG32I1dmTBB33X1cGsPDtfggXPlJ/OsdKphm3mAE7DCtJzuWnukPFSUdepkkUhcHtC6k0hJcSVxyxSfeoTIovh7uztlFhA1AV5UiEaasu/dRlsUDye7bd2gUtbcfNCj+irh27bRHStxWQitD5kTp2+gXOr1pba/8kwSGmUapjRut0ZMaVLopEeHMzicF9+MfTMTFE1abelncE70CPi5eFY72oxQ63XCm7/EfzXzTw1gwtn1M/MwF3PGP7eogbn9+iLt8rGL2QxTGI7LGwwjmNsmV+EPgRWnKAT5SCb26pMUTntqzB80ZlXwfw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H0/QkbkU3yUWmuSPxRUx4FyNzsUL0pouWI+2eCIZAzs=;
+ b=Dfjggpi/P/VuL0m18VBQEbPlAHc6qy2/5qa+tpA6YFO/1JZ9kLNscGYq7MMWhrNAv51TEvL/lkhws/OSdz652L/3MMQ5mb4CsU+icqtwqu/OaqfX6X6/VGqxOe1dKKK6L5ib9J5WcqKWS5kCWigcaAynsf+gZ6HQjOoy2MHuJn8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ SG2PR06MB3127.apcprd06.prod.outlook.com (2603:1096:4:76::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5250.18; Wed, 18 May 2022 02:44:12 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::ccb7:f612:80b2:64d5]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::ccb7:f612:80b2:64d5%4]) with mapi id 15.20.5250.018; Wed, 18 May 2022
+ 02:44:12 +0000
+Message-ID: <b0438374-ff82-e74f-0b83-e0f2b4a99e36@vivo.com>
+Date:   Wed, 18 May 2022 10:44:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/4] dmaengine: sprd-dma: Remove unneeded ERROR check
+ before clk_disable_unprepare
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220516084139.8864-1-wanjiabing@vivo.com>
+ <20220516084139.8864-3-wanjiabing@vivo.com>
+ <214de163-d576-d9be-76f2-3b70eefd6e68@linaro.org>
+From:   Jiabing Wan <wanjiabing@vivo.com>
+Organization: vivo
+In-Reply-To: <214de163-d576-d9be-76f2-3b70eefd6e68@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: TYBP286CA0008.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:404:ce::20) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c9d24693-1778-48c7-3241-08da387849a3
+X-MS-TrafficTypeDiagnostic: SG2PR06MB3127:EE_
+X-Microsoft-Antispam-PRVS: <SG2PR06MB312731B3C421D60EA08BAEC7ABD19@SG2PR06MB3127.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: llH7pu97yjWCFtDSkrlgEARrVRXAqfg4zH1nwOj9y14AC50RpZKL42wBoMzPEv0N95phQ9VFL1pDZzd5TOwCKmgQjBbuCduC6zyqR0xtRLNkIoAtSnEIF4zCJGx5noNZSgmdbDkM6ItrgJiIIDcRbyUXmwoZGckeXZfVVFOo3cbN7quAvw/EzceEyiQKzSWoD9Ahbs3qXmuF41+wM/QmND7Pc9mLTX3V9K7Q6VOd0LIDiSkfoIcX5/Sa3fmC/h/NYnbb2iGyGCeCsg9GxOCETBpekOVe1MfRsGqPTNzw+L8N2bCiKR8UvqmTJ8y3XET7FsqEXvM0jejYmSphjsoBhEvDMOq6VsLsPuDjLDsBvYb75erWPYK45Fs1cZehmN51EkZDrVEFuVL6BXuSt5gw4XWqzstSxkI4Omrm1b7C7XGxFaaj8v7ImDksb5106NSIgqXHZeASXG2mL8qeiM2dN9bBdsxVte9Tr/pcCupL5+RHRhQNsIuQe1VEmHy31iFElugX8zVAI+O0VvMWzpq7qLcmcJqXHmeyPFvLC3vraV2ZFiYngoPcvAhqg+PtclXjfagElnFmbLsI8aVJHzhU1xE1clARMvK0RWP3xdfMp1tSybK9VFb5Tsj2vTMgR9zKlr23T+lmkWOWZLGwNhfi9vBf23GM5ODWqst6SZoWpWcEn1OBEw4cb2KedP3h8pwQWtlwl0DcaJR6ExAp0M+kNI7U9RZ5avkPmmKRBzxSIGgqcb6Sk0PkzCjX/pLnnG9nGo/Qj3Q3MeR6Zl8yPa36L/f3Jz6W30oy0CN5qV8f2+Y=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4744005)(6506007)(31696002)(6512007)(26005)(5660300002)(66556008)(66946007)(53546011)(52116002)(36916002)(2906002)(8936002)(186003)(49246003)(6486002)(31686004)(8676002)(66476007)(6666004)(316002)(2616005)(508600001)(36756003)(38100700002)(38350700002)(86362001)(110136005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cGpxYzVpeHlWeGdFcVZwWDJHOC9mSnhkZnRUZUZkKzE1NDQ1Q3VpVjRVT1Mv?=
+ =?utf-8?B?K2lRTUkxUkpja3dCK0M2dXFUWnNFU2ZvMUx3STdZRzVrcWQxS0ZRSjc2aElP?=
+ =?utf-8?B?VnRjdHh0NGVia2ZRTDU0KzFEUmVrUThmQXJtSXJlUFB4R3hxc2ZlQkRhZ0Iz?=
+ =?utf-8?B?Zm9CZ1grd0ZQN1YrblNvanlJZldmQnJqdDVUU1BhVmVaRWxlVXZUUU04MlI3?=
+ =?utf-8?B?QW1FekhKK2ZQOHJtbUtNMW1nVWY3dmI0TkRodVdzMmhkNmNOV0xIVngzcmdW?=
+ =?utf-8?B?QnBtZ21GYlNwaXo0aEptQVN6ZW9uQXNSMEhhSGxmQXBMMW5ncTBKR3habUdO?=
+ =?utf-8?B?NVkya1h0SHZyWW9adi9KbHNwVTRhbmhsRGhWSk80S1NwWnZjVWNHWkZNRG9q?=
+ =?utf-8?B?YUprcU12eXdPZHhVb2RHaHNqbFZhVWVqeHBmYzFWNGN0aE9acHR6dG1wZWk1?=
+ =?utf-8?B?RmMyTjRaTEM1R2NtNHNYUVNxQXVQdGxKUitVT0dnY3paM212L0g1M09vVTUr?=
+ =?utf-8?B?S05hcUQ2OXdTMFV3SVZhLzFndzUrSkpVT01wN08xenJsLzJ1ekRKMEVTSk5E?=
+ =?utf-8?B?V1VQMUl3Tkt1N3JXR24vUE1UWnFFeGlpVEJVTVlEa1pwT1BMbCtIeTlGSCtW?=
+ =?utf-8?B?bzVBajRmY0M5b081ZXQ2OEUxTDVFd2t1ZFgwUktObkZRQnJEOFFwOG9jWllz?=
+ =?utf-8?B?aTFoemRoMGIzUG02S2Q2V3N2cGcyMFFXL05SLzI4S2R5b1JldllYaFk3ekJI?=
+ =?utf-8?B?cnZrSFdoUTVTRFhQb0toZ2VwRnVac29OSzN2eEpZUEluWEJUUWUyeEhlQndk?=
+ =?utf-8?B?Vld3bXdxMEFRYXJ3VktOMFdEOUxqMmpLL2NUOXVBV01hVFBHUkJaZVR0bGEx?=
+ =?utf-8?B?eElNSkhjV3VQM2hCaUZvaUVNU2ZHS0VIL2xRUDZjYThqT2JxQnQyWWdmZ0Fw?=
+ =?utf-8?B?TW9ZMnduQ1M1OFhwbWJGTFhkdTVDSGViMVp2TnM4Szlkbk5xaUhzbS9jQytn?=
+ =?utf-8?B?RVI5bnFhRmlNa2xNZnkzUnBzNWh3dEtIMmhlOGVwTjdiTitQYWp5aUk5Y2p2?=
+ =?utf-8?B?czJUanQveWo0Nm95dm1Gb3dvMWo3R3FoK3JwU1hmWGlCSE4yVmoyZkQ5aHpR?=
+ =?utf-8?B?MEtqSE90NnZmeVNlVGQxVlI2MXhvWERYUytnUHpoUlV0RW5jRXVvWTMxTWZz?=
+ =?utf-8?B?U09ZeXdCSERlZE0zWEV3N0h2cS95VEdQS1Z5NzlXY3BwdmJkVmx2ZEc3YjQv?=
+ =?utf-8?B?cVo0NFFyY2RseWlPVzU5ZElIN1J4eFB5eU1pNzUwT21YUWFqY0Q3a3ArMWxi?=
+ =?utf-8?B?elRpYXBWQ2gzcFlnczBCenlNeklNTCttbTZMVXBVdG1qZ1FuWE5oMUZJYVUy?=
+ =?utf-8?B?Qk5zNWpOclMrclo1b3dUY3l2Y0tuVExnUlFKcmIxeHRsZkFjRTJpOFZYbmNI?=
+ =?utf-8?B?d0RmbGl1K3FBNmQ3c0lkeElBZXRjWExacnJDUjNxK2d2ck1sTnJvUllxWUkv?=
+ =?utf-8?B?WWpzUTg0dUcxOW5LWEVaN2FzSGY2VU5xMUZtaXhtMGJrYXY0L2JWM3FkMllq?=
+ =?utf-8?B?ZzlQYm5va1Q4VXU2T0J2Rk9FbTFtYnNYNWswSWkwOWpoa1RDdnZxbkJLREpZ?=
+ =?utf-8?B?Q1k0TTlidzJ4RE84bkJUaGVZd0E1VEdTOS9QYU9WdVV1VDlTeEVpOHJkOW5n?=
+ =?utf-8?B?Rm83ekozcFY0THJMbVVKSkptbEVIRnBaMW9aNXNFb2dNc1dGY05CQ09ZTSts?=
+ =?utf-8?B?Y3NkZW5HMElnMDlrUnkxODFjaTVLakNJdTZnRXNGaEhwcVQyUEZxd3dCdjVy?=
+ =?utf-8?B?QnNlelRHNW5LTWJZSlRhVmJxckNCR3B2eWdGZm9ZTnZYWUdXYzlPUmYyUTdZ?=
+ =?utf-8?B?T1I3dmpCWWJVc2JiWlR2RkVicjhSZkk0L2I2MkF6bDJjTXJtNUUrcjA3Z2tu?=
+ =?utf-8?B?UzBZWWxwK1FjTFhRT3k5YVliZXEzWlFtMDB5cEQzVE5CY0xocEdWSjlzdzRt?=
+ =?utf-8?B?NklCclJwV1ltUUw1RlVxWHdpOGVzSkNmalQrWlFWN2xZdXNBNytuemhMTjZB?=
+ =?utf-8?B?aE9VNUNHdlN5NllEREpVRjIrS2d5RU03Tmd6NkpwOGppaFovV0ExSUd6eG9j?=
+ =?utf-8?B?ZTQrN041K3JZR016Q25pYXRqVDY5akY3NFFhQjJIRWtVYzU4SFdGZlBQaXh5?=
+ =?utf-8?B?SEw4eTZXdVljVjMzRTZvZkhyd2ZRR1RMcUJ0SUZEY255Si9jTWpUWXlCRTBm?=
+ =?utf-8?B?enhMNlhJRzFGVXdteDg3Q0N5d0QrL0hYMlU0UUZQRU9tN2RUZDU1US9vbGRR?=
+ =?utf-8?B?alMvOU9ocEIybk5wamJrcHI0TVVqWGZaaUFoU0dwaGxLNC8zUkFnUT09?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9d24693-1778-48c7-3241-08da387849a3
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2022 02:44:12.3070
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 11YV+ERikADauojpIsh4CpQQ5YRmraFH/qFjzE9JHTVNGeXbT4VCfVYPdfBeW6jtYzCri77x8yZ1ThYrGpDQpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3127
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 17 May 2022 13:02:57 +0530 Harini Katakam wrote:
-> PTP one step sync packets cannot have CSUM padding and insertion in
-> SW since time stamp is inserted on the fly by HW.
-> In addition, ptp4l version 3.0 and above report an error when skb
-> timestamps are reported for packets that not processed for TX TS
-> after transmission.
-> Add a helper to identify PTP one step sync and fix the above two
-> errors.
-> Also reset ptp OSS bit when one step is not selected.
-> 
-> Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
-> Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
+Hi,
 
-Please make sure to CC authors of the patches under fixes.
-./scripts/get_maintainer should point them out.
+On 2022/5/17 23:13, Krzysztof Kozlowski wrote:
+> On 16/05/2022 10:41, Wan Jiabing wrote:
+>> clk_disable_unprepare() already checks ERROR by using IS_ERR_OR_NULL.
+> Hmm, maybe I am looking at different sources, but which commit
+> introduced IS_ERR_OR_NULL() check? Where is it in the sources?
+>
+In commit 4dff95dc9477a, IS_ERR_OR_NULL check is added in clk_disable() 
+and clk_unprepare().
+And clk_disable_unprepare() just calls clk_disable() and clk_unprepare():
 
-> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+static inline void clk_disable_unprepare(struct clk *clk)
+{
+      clk_disable(clk);
+      clk_unprepare(clk);
+}
+>
+> Best regards,
+> Krzysztof
 
-If this is a fix it needs to be posted as [PATCH net] separately first
-so we can get it into stable as well. The trees get merged together
-every Thursday, if you're quick you may still make it this week.
-Then after trees get merged you should send send the remaining patches.
-
-https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
-
-> Notes:
-> -> Added the macb pad and fcs fixes tag because strictly speaking the PTP support  
-> patch precedes the fcs patch in timeline.
-> -> FYI, the error observed with setting HW TX timestamp for one step sync packets:  
-> ptp4l[405.292]: port 1: unexpected socket error
-> 
->  drivers/net/ethernet/cadence/macb_main.c | 54 ++++++++++++++++++++----
->  drivers/net/ethernet/cadence/macb_ptp.c  |  4 +-
->  2 files changed, 48 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index e993616308f8..e23a03e8badf 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -37,6 +37,7 @@
->  #include <linux/phy/phy.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/reset.h>
-> +#include <linux/ptp_classify.h>
-
-Please keep the includes in alphabetical order.
-
->  #include "macb.h"
->  
->  /* This structure is only used for MACB on SiFive FU540 devices */
-> @@ -98,6 +99,9 @@ struct sifive_fu540_macb_mgmt {
->  
->  #define MACB_MDIO_TIMEOUT	1000000 /* in usecs */
->  
-> +/* IEEE1588 PTP flag field values  */
-> +#define PTP_FLAG_TWOSTEP	0x2
-
-Shouldn't this go into the PTP header?
-
->  /* DMA buffer descriptor might be different size
->   * depends on hardware configuration:
->   *
-> @@ -1122,6 +1126,36 @@ static void macb_tx_error_task(struct work_struct *work)
->  	napi_enable(&queue->napi_tx);
->  }
->  
-> +static inline bool ptp_oss(struct sk_buff *skb)
-
-Please spell out then name more oss == open source software.
-
-No inline here, please, let the compiler decide if the function is
-small enough. One step timestamp may be a rare use case so inlining
-this twice is not necessarily the right choice.
-
-> +{
-> +	struct ptp_header *hdr;
-> +	unsigned int ptp_class;
-> +	u8 msgtype;
-> +
-> +	/* No need to parse packet if PTP TS is not involved */
-> +	if (!(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
-> +		goto not_oss;
-> +
-> +	/* Identify and return whether PTP one step sync is being processed */
-> +	ptp_class = ptp_classify_raw(skb);
-> +	if (ptp_class == PTP_CLASS_NONE)
-> +		goto not_oss;
-> +
-> +	hdr = ptp_parse_header(skb, ptp_class);
-> +	if (!hdr)
-> +		goto not_oss;
-> +
-> +	if (hdr->flag_field[0] & PTP_FLAG_TWOSTEP)
-> +		goto not_oss;
-> +
-> +	msgtype = ptp_get_msgtype(hdr, ptp_class);
-> +	if (msgtype == PTP_MSGTYPE_SYNC)
-> +		return true;
-> +
-> +not_oss:
-> +	return false;
-> +}
-> +
->  static int macb_tx_complete(struct macb_queue *queue, int budget)
->  {
->  	struct macb *bp = queue->bp;
-> @@ -1158,13 +1192,14 @@ static int macb_tx_complete(struct macb_queue *queue, int budget)
->  
->  			/* First, update TX stats if needed */
->  			if (skb) {
-> -				if (unlikely(skb_shinfo(skb)->tx_flags &
-> -					     SKBTX_HW_TSTAMP) &&
-> -				    gem_ptp_do_txstamp(queue, skb, desc) == 0) {
-> -					/* skb now belongs to timestamp buffer
-> -					 * and will be removed later
-> -					 */
-> -					tx_skb->skb = NULL;
-> +				if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-
-ptp_oss already checks if HW_TSTAMP is set.
-
-> +				    !ptp_oss(skb)) {
-> +					if (gem_ptp_do_txstamp(queue, skb, desc) == 0) {
-
-Why convert the gem_ptp_do_txstamp check from a && in the condition to
-a separate if?
-
-> +						/* skb now belongs to timestamp buffer
-> +						 * and will be removed later
-> +						 */
-> +						tx_skb->skb = NULL;
-> +					}
->  				}
->  				netdev_vdbg(bp->dev, "skb %u (data %p) TX complete\n",
->  					    macb_tx_ring_wrap(bp, tail),
-> @@ -2063,7 +2098,7 @@ static unsigned int macb_tx_map(struct macb *bp,
->  			ctrl |= MACB_BF(TX_LSO, lso_ctrl);
->  			ctrl |= MACB_BF(TX_TCP_SEQ_SRC, seq_ctrl);
->  			if ((bp->dev->features & NETIF_F_HW_CSUM) &&
-> -			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl)
-> +			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl && !ptp_oss(skb))
->  				ctrl |= MACB_BIT(TX_NOCRC);
->  		} else
->  			/* Only set MSS/MFS on payload descriptors
-> @@ -2159,9 +2194,10 @@ static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
->  	struct sk_buff *nskb;
->  	u32 fcs;
->  
-> +	/* Not available for GSO and PTP one step sync */
-
-If the functions are named right this comment should not be needed.
-
->  	if (!(ndev->features & NETIF_F_HW_CSUM) ||
->  	    !((*skb)->ip_summed != CHECKSUM_PARTIAL) ||
-> -	    skb_shinfo(*skb)->gso_size)	/* Not available for GSO */
-> +	    skb_shinfo(*skb)->gso_size || ptp_oss(*skb))
->  		return 0;
->  
->  	if (padlen <= 0) {
-> diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-> index fb6b27f46b15..9559c16078f9 100644
-> --- a/drivers/net/ethernet/cadence/macb_ptp.c
-> +++ b/drivers/net/ethernet/cadence/macb_ptp.c
-> @@ -470,8 +470,10 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
->  	case HWTSTAMP_TX_ONESTEP_SYNC:
->  		if (gem_ptp_set_one_step_sync(bp, 1) != 0)
->  			return -ERANGE;
-> -		fallthrough;
-> +		tx_bd_control = TSTAMP_ALL_FRAMES;
-> +		break;
->  	case HWTSTAMP_TX_ON:
-> +		gem_ptp_set_one_step_sync(bp, 0);
->  		tx_bd_control = TSTAMP_ALL_FRAMES;
->  		break;
->  	default:
+Thanks,
+Wan Jiabing
 
