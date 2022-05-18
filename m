@@ -2,352 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5331DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 21:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 961B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 21:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243106AbiERVCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 17:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59950 "EHLO
+        id S243022AbiERVFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 17:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243040AbiERVBF (ORCPT
+        with ESMTP id S242992AbiERVFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 17:01:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2341D2573E7
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 14:00:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652907632;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gC0dx605l5WeGGnTBbF9J16eadz0PSMt0gS7tJITGSE=;
-        b=HNwNwCoCHAcbf1ZtwRsVtbj/AArr71tbTpTES/VS/AvwUeBMB1BvGQp+olJR9vbzKPTihT
-        3nFNMmpxFzW/SxCz+v3pnhhcIkZ3vDRXmORLPNKxmA19QuYsmOQXLPud3hLEttG14PFw2t
-        w2gL7aqAOmYatMgConj0jXsCSGSxtjc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-211-pVi_G_J8Nyy_ic7mB6udZg-1; Wed, 18 May 2022 17:00:29 -0400
-X-MC-Unique: pVi_G_J8Nyy_ic7mB6udZg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 18 May 2022 17:05:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E73B25B064;
+        Wed, 18 May 2022 14:05:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CB9E8381078F;
-        Wed, 18 May 2022 21:00:27 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 94DB82166B25;
-        Wed, 18 May 2022 21:00:18 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v5 12/17] selftests/bpf: add tests for bpf_hid_hw_request
-Date:   Wed, 18 May 2022 22:59:19 +0200
-Message-Id: <20220518205924.399291-13-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
-References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AC1AB8217A;
+        Wed, 18 May 2022 21:03:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62235C385A9;
+        Wed, 18 May 2022 21:03:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652907836;
+        bh=C6ZPEPxOZAN12azD/fwrk+j/6+C5D+/6JNnA8f0Hn7A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=KdlUM67kO4vLjc+9iXpu0HAnvVxOp555umS5H+ikJYYBRpEIsdKSj9ues56wGG5y5
+         9EpT3b1LdmueOYEf1vkgQXdlCMxJvZPinX4EYDZKL7TyEaC614UC3wCB/6zFs4M0D4
+         RsE6zlAlBNO9HAbRyyJYCBEBbt/4SMTWPcs+BvnpdzlNPznEgFCW/Agi3CSFXER2FS
+         0/COcp3KrMY/zUY2cavHMXAGGorH9yA5bHqVQ1Y+Jxk1BhtN+a072UOfZCdMNa2Xzs
+         2wKbozqpFaZROYYHeOQ4BoqwvTmMbd5CQwljEhe8pQnLYzCUopoiP7ylMUgIxoyQFf
+         OY7uaGzddauiQ==
+Received: by mail-oi1-f172.google.com with SMTP id t144so943996oie.7;
+        Wed, 18 May 2022 14:03:56 -0700 (PDT)
+X-Gm-Message-State: AOAM533pPGQBQpUeVRSueafHD+UwffR4V+hhEdDf+/QaIY7QY+ZcSQEM
+        m+hnnf6Dsh7WyzupKVtzv3Q0tROF3QDaOAQ65sg=
+X-Google-Smtp-Source: ABdhPJxAy0RYlypDvElW+UxqxkK2Lu4KGok9yXXBZxGkdD9cQ5Fo0NzIt8Z1EFuUYz6J3hd2igAnh7kCqgXYR+7pJsI=
+X-Received: by 2002:a05:6808:e8d:b0:322:bac0:2943 with SMTP id
+ k13-20020a0568080e8d00b00322bac02943mr885914oil.126.1652907835508; Wed, 18
+ May 2022 14:03:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+References: <20220518095646.47548-1-sunilvl@ventanamicro.com> <20220518095646.47548-2-sunilvl@ventanamicro.com>
+In-Reply-To: <20220518095646.47548-2-sunilvl@ventanamicro.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 18 May 2022 23:03:44 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXF2N+0zRCNg0Aq9Y8Y35FUaQ1V+swzY__y86sayKW7PPA@mail.gmail.com>
+Message-ID: <CAMj1kXF2N+0zRCNg0Aq9Y8Y35FUaQ1V+swzY__y86sayKW7PPA@mail.gmail.com>
+Subject: Re: [PATCH V4 1/1] riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
+To:     Sunil V L <sunilvl@ventanamicro.com>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Atish Patra <atishp@rivosinc.com>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Jessica Clarke <jrtc27@jrtc27.com>,
+        Abner Chang <abner.chang@hpe.com>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add tests for the newly implemented function.
-We test here only the GET_REPORT part because the other calls are pure
-HID protocol and won't infer the result of the test of the bpf hook.
+On Wed, 18 May 2022 at 11:57, Sunil V L <sunilvl@ventanamicro.com> wrote:
+>
+> This patch adds the support for getting the boot hart ID in
+> Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL. This protocol
+> is preferred method over existing DT based solution since it
+> works irrespective of DT or ACPI.
+>
+> The specification of the protocol is hosted at:
+> https://github.com/riscv-non-isa/riscv-uefi
+>
+> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+> ---
+>  drivers/firmware/efi/libstub/efistub.h    |  7 ++++++
+>  drivers/firmware/efi/libstub/riscv-stub.c | 29 +++++++++++++++++++----
+>  include/linux/efi.h                       |  1 +
+>  3 files changed, 32 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
+> index edb77b0621ea..aced62a0907e 100644
+> --- a/drivers/firmware/efi/libstub/efistub.h
+> +++ b/drivers/firmware/efi/libstub/efistub.h
+> @@ -720,6 +720,13 @@ union efi_tcg2_protocol {
+>         } mixed_mode;
+>  };
+>
+> +struct riscv_efi_boot_protocol {
+> +       u64 revision;
+> +
+> +       efi_status_t (__efiapi * get_boot_hartid)(struct riscv_efi_boot_protocol *this,
+> +                                                 size_t *boot_hartid);
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+size_t is not a EFI type, and your spec uses UINTN here, which is
+equivalent to 'unsigned long'. However, jump_kernel_func() takes a
+unsigned int for the hartid. Please clean this up.
 
----
 
-changes in v5:
-- use the new hid_bpf_allocate_context() API
-- remove the need for ctx_in for syscall TEST_RUN
+> +};
+> +
+>  typedef union efi_load_file_protocol efi_load_file_protocol_t;
+>  typedef union efi_load_file_protocol efi_load_file2_protocol_t;
+>
+> diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
+> index 9c460843442f..012504f6f9a4 100644
+> --- a/drivers/firmware/efi/libstub/riscv-stub.c
+> +++ b/drivers/firmware/efi/libstub/riscv-stub.c
+> @@ -23,7 +23,7 @@
+>
+>  typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
+>
+> -static u32 hartid;
+> +static size_t hartid;
+>
 
-changes in v3:
-- use the new hid_get_data API
-- directly use HID_FEATURE_REPORT and HID_REQ_GET_REPORT from uapi
+and here
 
-changes in v2:
-- split the series by bpf/libbpf/hid/selftests and samples
----
- tools/testing/selftests/bpf/prog_tests/hid.c | 114 ++++++++++++++++---
- tools/testing/selftests/bpf/progs/hid.c      |  59 ++++++++++
- 2 files changed, 155 insertions(+), 18 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
-index 47bc0a30c275..54c0a0fcd54d 100644
---- a/tools/testing/selftests/bpf/prog_tests/hid.c
-+++ b/tools/testing/selftests/bpf/prog_tests/hid.c
-@@ -77,12 +77,23 @@ static unsigned char rdesc[] = {
- 	0xc0,			/* END_COLLECTION */
- };
- 
-+static u8 feature_data[] = { 1, 2 };
-+
- struct attach_prog_args {
- 	int prog_fd;
- 	unsigned int hid;
- 	int retval;
- };
- 
-+struct hid_hw_request_syscall_args {
-+	__u8 data[10];
-+	unsigned int hid;
-+	int retval;
-+	size_t size;
-+	enum hid_report_type type;
-+	__u8 request_type;
-+};
-+
- static pthread_mutex_t uhid_started_mtx = PTHREAD_MUTEX_INITIALIZER;
- static pthread_cond_t uhid_started = PTHREAD_COND_INITIALIZER;
- 
-@@ -142,7 +153,7 @@ static void destroy(int fd)
- 
- static int uhid_event(int fd)
- {
--	struct uhid_event ev;
-+	struct uhid_event ev, answer;
- 	ssize_t ret;
- 
- 	memset(&ev, 0, sizeof(ev));
-@@ -183,6 +194,15 @@ static int uhid_event(int fd)
- 		break;
- 	case UHID_GET_REPORT:
- 		fprintf(stderr, "UHID_GET_REPORT from uhid-dev\n");
-+
-+		answer.type = UHID_GET_REPORT_REPLY;
-+		answer.u.get_report_reply.id = ev.u.get_report.id;
-+		answer.u.get_report_reply.err = ev.u.get_report.rnum == 1 ? 0 : -EIO;
-+		answer.u.get_report_reply.size = sizeof(feature_data);
-+		memcpy(answer.u.get_report_reply.data, feature_data, sizeof(feature_data));
-+
-+		uhid_write(fd, &answer);
-+
- 		break;
- 	case UHID_SET_REPORT:
- 		fprintf(stderr, "UHID_SET_REPORT from uhid-dev\n");
-@@ -391,6 +411,7 @@ static int open_hidraw(int dev_id)
- struct test_params {
- 	struct hid *skel;
- 	int hidraw_fd;
-+	int hid_id;
- };
- 
- static int prep_test(int dev_id, const char *prog_name, struct test_params *test_data)
-@@ -419,27 +440,33 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
- 	if (!ASSERT_OK_PTR(hid_skel, "hid_skel_open"))
- 		goto cleanup;
- 
--	prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
--	if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
--		goto cleanup;
-+	if (prog_name) {
-+		prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
-+		if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
-+			goto cleanup;
- 
--	bpf_program__set_autoload(prog, true);
-+		bpf_program__set_autoload(prog, true);
- 
--	err = hid__load(hid_skel);
--	if (!ASSERT_OK(err, "hid_skel_load"))
--		goto cleanup;
-+		err = hid__load(hid_skel);
-+		if (!ASSERT_OK(err, "hid_skel_load"))
-+			goto cleanup;
- 
--	attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
--	if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
--		err = attach_fd;
--		goto cleanup;
--	}
-+		attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
-+		if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
-+			err = attach_fd;
-+			goto cleanup;
-+		}
- 
--	args.prog_fd = bpf_program__fd(prog);
--	err = bpf_prog_test_run_opts(attach_fd, &tattr);
--	snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
--	if (!ASSERT_EQ(args.retval, 0, buf))
--		goto cleanup;
-+		args.prog_fd = bpf_program__fd(prog);
-+		err = bpf_prog_test_run_opts(attach_fd, &tattr);
-+		snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
-+		if (!ASSERT_EQ(args.retval, 0, buf))
-+			goto cleanup;
-+	} else {
-+		err = hid__load(hid_skel);
-+		if (!ASSERT_OK(err, "hid_skel_load"))
-+			goto cleanup;
-+	}
- 
- 	hidraw_fd = open_hidraw(dev_id);
- 	if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
-@@ -447,6 +474,7 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
- 
- 	test_data->skel = hid_skel;
- 	test_data->hidraw_fd = hidraw_fd;
-+	test_data->hid_id = hid_id;
- 
- 	return 0;
- 
-@@ -693,6 +721,54 @@ static int test_hid_change_report(int uhid_fd, int dev_id)
- 	return ret;
- }
- 
-+/*
-+ * Attach hid_user_raw_request to the given uhid device,
-+ * call the bpf program from userspace
-+ * check that the program is called and does the expected.
-+ */
-+static int test_hid_user_raw_request_call(int uhid_fd, int dev_id)
-+{
-+	struct test_params params;
-+	int err, prog_fd;
-+	int ret = -1;
-+	struct hid_hw_request_syscall_args args = {
-+		.retval = -1,
-+		.type = HID_FEATURE_REPORT,
-+		.request_type = HID_REQ_GET_REPORT,
-+		.size = 10,
-+	};
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattrs,
-+			    .ctx_in = &args,
-+			    .ctx_size_in = sizeof(args),
-+	);
-+
-+	err = prep_test(dev_id, NULL, &params);
-+	if (!ASSERT_EQ(err, 0, "prep_test()"))
-+		goto cleanup;
-+
-+	args.hid = params.hid_id;
-+	args.data[0] = 1; /* report ID */
-+
-+	prog_fd = bpf_program__fd(params.skel->progs.hid_user_raw_request);
-+
-+	err = bpf_prog_test_run_opts(prog_fd, &tattrs);
-+	if (!ASSERT_EQ(err, 0, "bpf_prog_test_run_opts"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(args.retval, 2, "bpf_prog_test_run_opts_retval"))
-+		goto cleanup;
-+
-+	if (!ASSERT_EQ(args.data[1], 2, "hid_user_raw_request_check_in"))
-+		goto cleanup;
-+
-+	ret = 0;
-+
-+cleanup:
-+	cleanup_test(&params);
-+
-+	return ret;
-+}
-+
- void serial_test_hid_bpf(void)
- {
- 	int err, uhid_fd;
-@@ -720,6 +796,8 @@ void serial_test_hid_bpf(void)
- 	ASSERT_OK(err, "hid_attach_detach");
- 	err = test_hid_change_report(uhid_fd, dev_id);
- 	ASSERT_OK(err, "hid_change_report");
-+	err = test_hid_user_raw_request_call(uhid_fd, dev_id);
-+	ASSERT_OK(err, "hid_change_report");
- 
- 	destroy(uhid_fd);
- 
-diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
-index ee7529c47ad8..e3444d444303 100644
---- a/tools/testing/selftests/bpf/progs/hid.c
-+++ b/tools/testing/selftests/bpf/progs/hid.c
-@@ -10,6 +10,13 @@ extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
- 			      unsigned int offset,
- 			      const size_t __sz) __ksym;
- extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
-+extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
-+extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
-+extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
-+			      __u8 *data,
-+			      size_t len,
-+			      enum hid_report_type type,
-+			      int reqtype) __ksym;
- 
- struct attach_prog_args {
- 	int prog_fd;
-@@ -56,3 +63,55 @@ int attach_prog(struct attach_prog_args *ctx)
- 					  0);
- 	return 0;
- }
-+
-+struct hid_hw_request_syscall_args {
-+	/* data needs to come at offset 0 so we can do a memcpy into it */
-+	__u8 data[10];
-+	unsigned int hid;
-+	int retval;
-+	size_t size;
-+	enum hid_report_type type;
-+	__u8 request_type;
-+};
-+
-+SEC("syscall")
-+int hid_user_raw_request(struct hid_hw_request_syscall_args *args)
-+{
-+	struct hid_bpf_ctx *ctx;
-+	int i, ret = 0;
-+	__u8 *data;
-+
-+	ctx = hid_bpf_allocate_context(args->hid);
-+	if (!ctx)
-+		return 0; /* EPERM check */
-+
-+	/* We can not use the context data memory directly in the hid_bpf call,
-+	 * so we rely on the PTR_TO_MEM allocated in the hid_bpf_context
-+	 */
-+	data = hid_bpf_get_data(ctx, 0 /* offset */, 10 /* size */);
-+	if (!data)
-+		goto out; /* EPERM check */
-+
-+	__builtin_memcpy(data, args->data, sizeof(args->data));
-+
-+	if (args->size <= sizeof(args->data)) {
-+		ret = hid_bpf_hw_request(ctx,
-+					 data,
-+					 args->size,
-+					 args->type,
-+					 args->request_type);
-+		args->retval = ret;
-+		if (ret < 0)
-+			goto out;
-+	} else {
-+		ret = -7; /* -E2BIG */
-+		goto out;
-+	}
-+
-+	__builtin_memcpy(args->data, data, sizeof(args->data));
-+
-+ out:
-+	hid_bpf_release_context(ctx);
-+
-+	return ret;
-+}
--- 
-2.36.1
-
+>  static int get_boot_hartid_from_fdt(void)
+>  {
+> @@ -47,14 +47,33 @@ static int get_boot_hartid_from_fdt(void)
+>         return 0;
+>  }
+>
+> +static efi_status_t get_boot_hartid_from_efi(void)
+> +{
+> +       efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
+> +       efi_status_t status;
+> +       struct riscv_efi_boot_protocol *boot_protocol;
+> +
+> +       status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
+> +                            (void **)&boot_protocol);
+> +       if (status == EFI_SUCCESS) {
+> +               status = efi_call_proto(boot_protocol,
+> +                                       get_boot_hartid, &hartid);
+> +       }
+> +       return status;
+> +}
+> +
+>  efi_status_t check_platform_features(void)
+>  {
+>         int ret;
+> +       efi_status_t status;
+>
+> -       ret = get_boot_hartid_from_fdt();
+> -       if (ret) {
+> -               efi_err("/chosen/boot-hartid missing or invalid!\n");
+> -               return EFI_UNSUPPORTED;
+> +       status = get_boot_hartid_from_efi();
+> +       if (status != EFI_SUCCESS) {
+> +               ret = get_boot_hartid_from_fdt();
+> +               if (ret) {
+> +                       efi_err("Failed to get boot hartid!\n");
+> +                       return EFI_UNSUPPORTED;
+> +               }
+>         }
+>         return EFI_SUCCESS;
+>  }
+> diff --git a/include/linux/efi.h b/include/linux/efi.h
+> index ccd4d3f91c98..9822c730207c 100644
+> --- a/include/linux/efi.h
+> +++ b/include/linux/efi.h
+> @@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
+>  #define EFI_CONSOLE_OUT_DEVICE_GUID            EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
+>  #define APPLE_PROPERTIES_PROTOCOL_GUID         EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
+>  #define EFI_TCG2_PROTOCOL_GUID                 EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
+> +#define RISCV_EFI_BOOT_PROTOCOL_GUID           EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
+>  #define EFI_LOAD_FILE_PROTOCOL_GUID            EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
+>  #define EFI_LOAD_FILE2_PROTOCOL_GUID           EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
+>  #define EFI_RT_PROPERTIES_TABLE_GUID           EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
+> --
+> 2.25.1
+>
