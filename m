@@ -2,122 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 195B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231990AbiERHPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51802 "EHLO
+        id S232076AbiERHOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232038AbiERHPO (ORCPT
+        with ESMTP id S231949AbiERHOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:15:14 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2B1111B9B
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:15:12 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id h8so1430495ljb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:15:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=gxNp7wo0EZOb9E1oU3VMuWuT9HM6AfJUFpl0839G+5s=;
-        b=tKXG6V85D2IceWP9CGx1Vc1gGzqurlyZq7Oah63v/H7nSicVwXlhdnL588nU1vOKcB
-         xzu9ZZllIl8ae9KUaRi0UpDLfZCZWB0bbqLDdOMlzeusYmZkHfOuxDC0qJAvvxRrHIyG
-         uqrc/xMkLN942zfAiH4pYrzsaJgq/AbAaMjvLiqLeAjR3nCJ/YpSndJec3HJ/fUbobra
-         kNMrylw8k4PYqTt4eq70W8h2IB/hUNAEuW9Ey3e8hmGKVRagJE9dGPpeAFocatr9fm20
-         F6MDGl37XtMVV3P20vp3flUxfUTzOad2mIjAKMb+a7gMHFZ9PBvJ2iY37+bOPnSmTnFx
-         +gAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gxNp7wo0EZOb9E1oU3VMuWuT9HM6AfJUFpl0839G+5s=;
-        b=7SMbZlgPaamT2ZGEksbiiS9S1lrMRd2Ew6rztjJNgJfEzFkCe7ELCqXrOPEfa/NYUg
-         htpgKncpCWIjaL5gMtJeCOqZiCptx2nPsD+b6KubTGV4bQ+5jSy2+Xu81fW20eQEoyIi
-         KPBsLKICund0/yGhpz6QyNxv0reXwkbVkaoiUcoUz4a/BIeqEoqXybpqeM0aRTqnJlsP
-         CA7kvbYP3T6HosX8d7Wrk/Dl6ZEvNxokhhXafUOGwYZDb6oB/fx4Mfmprhy8DH2kDghw
-         F2QqudADpqaRov1CMtdnXx++VLIX0zLQZEbgdYgD+J6Sv3uRHEtF1ZR8ghtSnnlPqBCR
-         b7pQ==
-X-Gm-Message-State: AOAM533rk1bPJtNPRfCyJeuy6MLzPJAUOWq1jk6vIlryjG5jk/+zg1r+
-        bYP0SbrT4L6AFOro3suKaIvO8g==
-X-Google-Smtp-Source: ABdhPJwURjJVQZqzoLW8bTWlGprlMgYzVTATCzQl9kCMuCP3oIFU+YXs2kBOcrsE0DtsAebLjZHIxw==
-X-Received: by 2002:a2e:96d3:0:b0:24f:11ea:2118 with SMTP id d19-20020a2e96d3000000b0024f11ea2118mr16352095ljj.316.1652858110428;
-        Wed, 18 May 2022 00:15:10 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id v9-20020a197409000000b0047255d21101sm123190lfe.48.2022.05.18.00.15.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 00:15:09 -0700 (PDT)
-Message-ID: <02e9ba1a-852b-b2b9-209e-4c819f86dc34@linaro.org>
-Date:   Wed, 18 May 2022 09:15:08 +0200
+        Wed, 18 May 2022 03:14:19 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319FB106567;
+        Wed, 18 May 2022 00:14:10 -0700 (PDT)
+Received: from kwepemi100022.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L33y210S2zCsjB;
+        Wed, 18 May 2022 15:09:14 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100022.china.huawei.com (7.221.188.126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 18 May 2022 15:14:08 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 15:14:08 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <tj@kernel.org>, <axboe@kernel.dk>, <ming.lei@redhat.com>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next v2 1/2] blk-throttle: fix that io throttle can only work for single bio
+Date:   Wed, 18 May 2022 15:27:50 +0800
+Message-ID: <20220518072751.1188163-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220518072751.1188163-1-yukuai3@huawei.com>
+References: <20220518072751.1188163-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 3/4] dmaengine: ste_dma40: Remove unneeded ERROR and NULL
- check in ste_dma40
-Content-Language: en-US
-To:     Wan Jiabing <wanjiabing@vivo.com>, Vinod Koul <vkoul@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220516084139.8864-1-wanjiabing@vivo.com>
- <20220516084139.8864-4-wanjiabing@vivo.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220516084139.8864-4-wanjiabing@vivo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/05/2022 10:41, Wan Jiabing wrote:
-> clk_put() already checks ERROR by using IS_ERR.
-> clk_disable_unprepare() already checks NULL by using IS_ERR_OR_NULL.
-> Remove unneeded NULL check for clk_ret and ERROR check for clk.
-> 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->  drivers/dma/ste_dma40.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/dma/ste_dma40.c b/drivers/dma/ste_dma40.c
-> index e1827393143f..7d1bf4ae4495 100644
-> --- a/drivers/dma/ste_dma40.c
-> +++ b/drivers/dma/ste_dma40.c
-> @@ -3119,7 +3119,7 @@ static struct d40_base * __init d40_hw_detect_init(struct platform_device *pdev)
->  	clk = clk_get(&pdev->dev, NULL);
->  	if (IS_ERR(clk)) {
->  		d40_err(&pdev->dev, "No matching clock found\n");
-> -		goto check_prepare_enabled;
-> +		goto disable_unprepare;
+commit 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
+introduce a new problem, for example:
 
-This should be rather return PTR_ERR. No need to jump to labels which
-are not relevant (even if harmless) for this case. It's a confusing code.
+[root@localhost ~]# echo "8:0 1024" > /sys/fs/cgroup/blkio/blkio.throttle.write_bps_device
+[root@localhost ~]# echo $$ > /sys/fs/cgroup/blkio/cgroup.procs
+[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
+[1] 620
+[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
+[2] 626
+[root@localhost ~]# 1+0 records in
+1+0 records out
+10240 bytes (10 kB, 10 KiB) copied, 10.0038 s, 1.0 kB/s1+0 records in
+1+0 records out
 
->  	}
->  
->  	clk_ret = clk_prepare_enable(clk);
-> @@ -3305,12 +3305,10 @@ static struct d40_base * __init d40_hw_detect_init(struct platform_device *pdev)
->  	iounmap(virtbase);
->   release_region:
->  	release_mem_region(res->start, resource_size(res));
-> - check_prepare_enabled:
-> -	if (!clk_ret)
->   disable_unprepare:
-> -		clk_disable_unprepare(clk);
-> -	if (!IS_ERR(clk))
-> -		clk_put(clk);
-> +	clk_disable_unprepare(clk);
-> +	clk_put(clk);
-> +
->  	return NULL;
->  }
->  
+10240 bytes (10 kB, 10 KiB) copied, 9.23076 s, 1.1 kB/s
+-> the second bio is issued after 10s instead of 20s.
 
+This is because if some bios are already queued, current bio is queued
+directly and the flag 'BIO_THROTTLED' is set. And later, when former
+bios are dispatched, this bio will be dispatched without waiting at all,
+this is due to tg_with_in_bps_limit() return 0 for this bio.
 
-Best regards,
-Krzysztof
+In order to fix the problem, don't skip flaged bio in
+tg_with_in_bps_limit(), and for the problem that split bio can be
+double accounted, compensate the over-accounting in __blk_throtl_bio().
+
+Fixes: 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-throttle.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 447e1b8722f7..6f69859eae23 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -811,7 +811,7 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+ 	/* no need to throttle if this bio's bytes have been accounted */
+-	if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
++	if (bps_limit == U64_MAX) {
+ 		if (wait)
+ 			*wait = 0;
+ 		return true;
+@@ -921,11 +921,8 @@ static void throtl_charge_bio(struct throtl_grp *tg, struct bio *bio)
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+ 	/* Charge the bio to the group */
+-	if (!bio_flagged(bio, BIO_THROTTLED)) {
+-		tg->bytes_disp[rw] += bio_size;
+-		tg->last_bytes_disp[rw] += bio_size;
+-	}
+-
++	tg->bytes_disp[rw] += bio_size;
++	tg->last_bytes_disp[rw] += bio_size;
+ 	tg->io_disp[rw]++;
+ 	tg->last_io_disp[rw]++;
+ 
+@@ -2121,6 +2118,21 @@ bool __blk_throtl_bio(struct bio *bio)
+ 			tg->last_low_overflow_time[rw] = jiffies;
+ 		throtl_downgrade_check(tg);
+ 		throtl_upgrade_check(tg);
++
++		/*
++		 * re-entered bio has accounted bytes already, so try to
++		 * compensate previous over-accounting. However, if new
++		 * slice is started, just forget it.
++		 */
++		if (bio_flagged(bio, BIO_THROTTLED)) {
++			unsigned int bio_size = throtl_bio_data_size(bio);
++
++			if (tg->bytes_disp[rw] >= bio_size)
++				tg->bytes_disp[rw] -= bio_size;
++			if (tg->last_bytes_disp[rw] > bio_size)
++				tg->last_bytes_disp[rw] -= bio_size;
++		}
++
+ 		/* throtl is FIFO - if bios are already queued, should queue */
+ 		if (sq->nr_queued[rw])
+ 			break;
+-- 
+2.31.1
+
