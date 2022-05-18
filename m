@@ -2,95 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB549C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:35:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237195AbiERMfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S237240AbiERMfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237065AbiERMeP (ORCPT
+        with ESMTP id S237167AbiERMea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:34:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA488195933;
-        Wed, 18 May 2022 05:30:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65642B81F40;
-        Wed, 18 May 2022 12:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7A7CC385AA;
-        Wed, 18 May 2022 12:29:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652877000;
-        bh=BUNLhRfompu2Orpy6NY8TgsXhVZK+k4CPtKbD4EVduU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fQgUOXB+mlYIm/O+IiLbdhX0oq2VHMAAU3TkzlAx7tUGJTYEeKfEXPo6AN7FmQdv5
-         gHaWasEhj+EiyF8EEr+rkwwNCOj1Qfly/8eGVvs5DoXIONCEyYEj/l2n1uc5dS4PzF
-         4qPEhuwZ8G0sz4+rjfzrf2lJ0VqZFDoNgbd+gxRKNNMzEJFMPU42NcSe3Dp540Q1JY
-         oXDBOczzd1c9Xd/IMtyEWt3qUKlWfsyz120jzS5sVMgJG2RvTt2UV+Hhv8BoNqiH0y
-         Ude8098+UJEhWRftFPWDHl6zOHIHXLBjkMibEySD20z6c85usvYzRFI/Tc0kHR5F9v
-         FcsHZy7/GrM6g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 5/5] net: atlantic: verify hw_head_ lies within TX buffer ring
-Date:   Wed, 18 May 2022 08:29:45 -0400
-Message-Id: <20220518122946.343712-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122946.343712-1-sashal@kernel.org>
-References: <20220518122946.343712-1-sashal@kernel.org>
+        Wed, 18 May 2022 08:34:30 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFBD195BC7;
+        Wed, 18 May 2022 05:30:02 -0700 (PDT)
+Received: from mail-yw1-f178.google.com ([209.85.128.178]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N5FxN-1nhQlJ2bp7-011BPq; Wed, 18 May 2022 14:24:48 +0200
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ef5380669cso22085547b3.9;
+        Wed, 18 May 2022 05:24:48 -0700 (PDT)
+X-Gm-Message-State: AOAM5338/s/qHA3UKNQFolakTnjREpT0yWd1L53JIUD9VgvzOjXDe+CQ
+        VF2bavNxYvWWJJ6wFDNC8LEeVmvFWmFc7ViQPaY=
+X-Google-Smtp-Source: ABdhPJxZRkGXRvX53ymOSUVaooG3HpMXOKVV13GaKLQVQtT/IdcwmlHH1YBCPp9l/07/fkfwXAFHJLin8SwdOcL4H+U=
+X-Received: by 2002:a81:456:0:b0:2fe:dee5:fbbc with SMTP id
+ 83-20020a810456000000b002fedee5fbbcmr20659765ywe.249.1652876687402; Wed, 18
+ May 2022 05:24:47 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220518065639.2432213-1-gerg@linux-m68k.org> <20220518065639.2432213-3-gerg@linux-m68k.org>
+In-Reply-To: <20220518065639.2432213-3-gerg@linux-m68k.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 18 May 2022 13:24:50 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2DNKEj2T9fr_tch=WGWvVT0rG5Pbi8J04dAAxtwEZj7w@mail.gmail.com>
+Message-ID: <CAK8P3a2DNKEj2T9fr_tch=WGWvVT0rG5Pbi8J04dAAxtwEZj7w@mail.gmail.com>
+Subject: Re: [PATCH 2/3] m68k: removed unused "mach_get_ss"
+To:     Greg Ungerer <gerg@linux-m68k.org>
+Cc:     "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:mkFA0VxBtWgHqqY2a8Z1cBSEYRjG9fUF5O9c/Y3vHbkiETmf2/+
+ JTbY5ziAptpkM6nHfC4uXHwKGN9cKKDX3rUTLjscXyW818j704TsgxyNKGZnr2rU4hOuXG2
+ knxebAYyuvoNqpjsa0KqjU3btasyUwxJ1DWo+pb9bCHf8U2G9Mn7CsCEh5SGQicrJI8sFWO
+ xoYRtaXTE/vJ21L1+qxsw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:elFAfiDWLBs=:9whmihggJ4h6kYZB2znNdn
+ ZUyxM9J2Uy3PkOw7ozqRJ3zY6mPjAX38FSFQWkqjeBZbbDtNOOPzfvisgOaJ5j1dF1k5Jl5mq
+ nSbMisOe4I7g9T9wj5YUPPfXSYfSYVcLcgFob9yHDXD7jutYgDaYmAkTJy+X2auJprhtRSS7T
+ uhJMXIpL3jb246P3ySYsViVIuh8xHLC0k5i8IJwEMVRu2rv5I4fAc2+1iIDCqwsxd4HoQJgF/
+ ZODOBSWhXp8FdDXckpkViAxnYvkzcH6duHtr7f9Uj+RZmMcyJGr0h2uJt6UIltfp1tYgKrtNv
+ 44vJN76rGtv4HIu5TuD6LuwInDJKYdmxB6Ude5IxSuCOcOWjVKb6BY+9ND4BPFPDcg2v5Wath
+ e+KCYj+D62yQ56O1hCFAGIGL4bM3CNkuLyvvi/L7ijOZvrk2zOXv0re4n3yQAFxdGbniFtsnT
+ /Og0N+hFwl2yoT7QEAdHhUJvy5wQJlfmV6A70qTpop/OEeWgaCwQFKFTGENL7AnAKtdBWgJhf
+ F9IykRFLl/y1xISgXIX+udSXMoDqf+XIeZP5DejQVi6HgFaZd/7sdTGRBXmKfyLtyjtYmTz9b
+ Ya4IsrsRVAo2fTsCNeilJbzu2hMZC9NRF3CROjfrRJ2LMmkShIbSPuB4uYn+4LgpOXGa83JGj
+ wZOIYeTq6HcyHkzP3hcPMnt6TXzpyfCqyZ3Av2HWH9pRwpvQtMSqSGVZb/PzWjJyDZDb3tfD2
+ 0xDh+ygETdvGQkON+VBytRtNFzla3HXMhQvkFU51HiTuM66oTsbJRbfhvnP314keTafJ12e1v
+ f1AQWCMcrv3otEX7B5007rDmIAHPhq1GGpFj6k8R0lZOYH73nxj4gpEr/IjAxgTGmE/hNIxLB
+ xooDDk0st5ahNM+TCKGQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grant Grundler <grundler@chromium.org>
+On Wed, May 18, 2022 at 7:56 AM Greg Ungerer <gerg@linux-m68k.org> wrote:
+>
+> The m68k machine helper function "mach_get_ss" function pointer is
+> set for some machines, but ultimately never used anywhere. Remove it.
+>
+> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 
-[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
+Good catch!
 
-Bounds check hw_head index provided by NIC to verify it lies
-within the TX buffer ring.
-
-Reported-by: Aashay Shringarpure <aashay@google.com>
-Reported-by: Yi Chou <yich@google.com>
-Reported-by: Shervin Oloumi <enlightened@google.com>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index c4f914a29c38..bdb0b37c048a 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -637,6 +637,13 @@ static int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
- 		err = -ENXIO;
- 		goto err_exit;
- 	}
-+
-+	/* Validate that the new hw_head_ is reasonable. */
-+	if (hw_head_ >= ring->size) {
-+		err = -ENXIO;
-+		goto err_exit;
-+	}
-+
- 	ring->hw_head = hw_head_;
- 	err = aq_hw_err_from_flags(self);
- 
--- 
-2.35.1
-
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
