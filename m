@@ -2,114 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 04:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA64C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 04:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbiEREKn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 00:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        id S229599AbiEREQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 00:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbiEREKU (ORCPT
+        with ESMTP id S229553AbiEREQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 00:10:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2990D163291
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 21:10:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652847015;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+NOVFFIZd9DRh/qXC8inU5DUoXa1hR/cvg4Nz0WouAs=;
-        b=DeBVfZoUmOC7BLSv+daLVjIMW3AXrI++NZl4FfVl18Gn9Y9l0XhK0RzOZsyOTfIZfODoV0
-        eug8bRgrsm+As6nnqtpbioI2dEnzmkeDUYXMN7tmjkJExRvo17ub6UB3xxRhdZlhlknUXs
-        2960qj5wob6V5YXaRr27/md5f/Ezpp8=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-160-KMLBO9wgNAOWnmTsImET2w-1; Wed, 18 May 2022 00:10:14 -0400
-X-MC-Unique: KMLBO9wgNAOWnmTsImET2w-1
-Received: by mail-lf1-f70.google.com with SMTP id p5-20020ac246c5000000b0047257761087so500415lfo.7
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 21:10:13 -0700 (PDT)
+        Wed, 18 May 2022 00:16:41 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB35118E24
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 21:16:39 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id j6so979147pfe.13
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 21:16:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=a1/wuoT5db0kZRpIcSlyOn+OdTYXUqFFSk5R5NCmBHw=;
+        b=MyF+2wckfA0xYav8+EWfGdnkUM0DYtS4Y2y9V/ytqWLSrqhylsXZ2s8Mq/FwmlhHTq
+         lxy7FfrbV8Ab+3HwWgL2PI6Y6FSeSSbOvBijJNxilLM156T5cCkLfa2mR/pUiLxy48Xx
+         x8WGMoK7dbEGOcP9xeFijVk+gWVRAX8xXilDHmGp0kXMQPvqoI3nl3uya0+Vmck8dpFQ
+         9wDqW4/ODwpDMX2TfgDg94LOwZrur7HoIiSsRbBbTyr1DyAvksOdQu/GjL0B0k2a32VY
+         xfFSvTFSZGm5qBDg+NsrxsizvAE8eD7RzwAAMBBM3nF1lb4JZz62ffvjJ/QE8dMb6mBk
+         NYAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+NOVFFIZd9DRh/qXC8inU5DUoXa1hR/cvg4Nz0WouAs=;
-        b=BCL6qILpxe7+7m2d1e6Ei7geuMm/88p9wINFSOFE3gMjcpKpYusu2ITmT57UXFVoKq
-         BgiXrejbPpcUXQEr7lnITuKGuDSAYQ5gaAhE/dKwelBvWxAfYjqRjtBkDtWnVeDCjpXu
-         9LkGzPUDRFZVnccW2iyuEkUk7/e1pveA4kw3vSBDH40Hyx3J4OG/4P07FWM19nmERoUl
-         ON5ExKpgZVg3oq0vM/lQdzgzp+lyBoz+BDhhfZQVlBdZD0k6ZrWFcrAxsmsCIhUej1qg
-         XzYAS99GwBX1oEppxh0/+3R1VveZH4hbmyy44fR3SHt/3OvB/Y26tU7gDQBLhlE7vTpp
-         ZD4g==
-X-Gm-Message-State: AOAM5319RiP1rajblBD6FR3V+ezNK8rWqot/XPWy4m+djXfEdOoWY2+V
-        n3o0Th9FincwIlLmVOWjyczain3065d9Ns/HP9LQb3m9J9SSAAzTDlUM+wHWxrG4JCpKugQrCnM
-        p5zZ7rMtFOp+7kleyD/o0lcpV328i14kWMo13HFMq
-X-Received: by 2002:a05:6512:3e0a:b0:477:b256:56b with SMTP id i10-20020a0565123e0a00b00477b256056bmr2426675lfv.587.1652847012602;
-        Tue, 17 May 2022 21:10:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyo7LnwP2KhWd3cqQbJhDB1nD2XDUYc/xI2VSj4Lg3fzncr5rIBmRwqIBBPDJGhkob+9Xm5o+qCmV9M+3IXOIU=
-X-Received: by 2002:a05:6512:3e0a:b0:477:b256:56b with SMTP id
- i10-20020a0565123e0a00b00477b256056bmr2426663lfv.587.1652847012356; Tue, 17
- May 2022 21:10:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a1/wuoT5db0kZRpIcSlyOn+OdTYXUqFFSk5R5NCmBHw=;
+        b=BQi/BUamru9boF6HGqMvsu5uf1ak5WnmarP+dmnmYiB9iZVypSZT4UngLpFORS0jfl
+         Xv0h64bfVjSTKs9JyDqSWZt1RuQMcHjfy/IHSyA3DCFFlTodcGA38BGpVFIZQ47YU/r7
+         9gM3vEmbQwj5vFbmmVNv4v2ynLbymp973Bt1YlPxuIO32WYnsRbB8ZB95S1ul1HKEE4O
+         GjlKS2DoQW786SWCW2CGemSFWZVXk6DSeHFEGyr8zL1XZepYhKjV2894QIQf10Oy+Ffu
+         bkncVDWViO2CHF2A1PlpVk1zDQplj/dmGgCr2bY6ZIh6ZOqiABDTPxjd+kBrijVUHEd4
+         NLXw==
+X-Gm-Message-State: AOAM533+XIWCMZwGhIiYEFcUMzaShKi+WjfB+qWUItXYYW6MHRrDtJve
+        GKDu+o9pjh2ipNSpx/5G4cu7DA==
+X-Google-Smtp-Source: ABdhPJxIV/XkPSMp7Do5pkXR6Jtk0s9fhWG2Gr5Uks+e1PYfpOasm2UKlDlq1CpPFhRZ9d2o6C/HGQ==
+X-Received: by 2002:a05:6a00:170d:b0:512:ebab:3b25 with SMTP id h13-20020a056a00170d00b00512ebab3b25mr22777489pfc.32.1652847399126;
+        Tue, 17 May 2022 21:16:39 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([137.184.121.66])
+        by smtp.gmail.com with ESMTPSA id p123-20020a622981000000b0051811c2aa89sm568212pfp.196.2022.05.17.21.16.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 21:16:38 -0700 (PDT)
+Date:   Wed, 18 May 2022 12:16:30 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Ali Saidi <alisaidi@amazon.com>, Joe Mario <jmario@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, german.gomez@arm.com,
+        benh@kernel.crashing.org, Nick.Forrington@arm.com,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        james.clark@arm.com, john.garry@huawei.com,
+        Jiri Olsa <jolsa@kernel.org>, kjain@linux.ibm.com,
+        lihuafei1@huawei.com, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
+        peterz@infradead.org, will@kernel.org
+Subject: Re: [PATCH v8 0/4] perf: arm-spe: Decode SPE source and use for perf
+ c2c
+Message-ID: <20220518041630.GD402837@leoy-ThinkPad-X240s>
+References: <20220517020326.18580-1-alisaidi@amazon.com>
+ <YoQRg1r7HuwiO3bZ@kernel.org>
 MIME-Version: 1.0
-References: <20220516084213.26854-1-jasowang@redhat.com> <20220516044400-mutt-send-email-mst@kernel.org>
- <YoQa4wzy9jSwDY7E@zeniv-ca.linux.org.uk>
-In-Reply-To: <YoQa4wzy9jSwDY7E@zeniv-ca.linux.org.uk>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 18 May 2022 12:10:01 +0800
-Message-ID: <CACGkMEvu8eVQ5Sy0675xjhukyPRoCKnTF+t0tpXw6dsexe3v1A@mail.gmail.com>
-Subject: Re: [PATCH] vhost_net: fix double fget()
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>,
-        davem <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoQRg1r7HuwiO3bZ@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 6:00 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> On Mon, May 16, 2022 at 04:44:19AM -0400, Michael S. Tsirkin wrote:
-> > > Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> >
-> > Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> >
-> > and this is stable material I guess.
->
-> It is, except that commit message ought to be cleaned up.  Something
-> along the lines of
->
-> ----
-> Fix double fget() in vhost_net_set_backend()
->
-> Descriptor table is a shared resource; two fget() on the same descriptor
-> may return different struct file references.  get_tap_ptr_ring() is
-> called after we'd found (and pinned) the socket we'll be using and it
-> tries to find the private tun/tap data structures associated with it.
-> Redoing the lookup by the same file descriptor we'd used to get the
-> socket is racy - we need to same struct file.
->
-> Thanks to Jason for spotting a braino in the original variant of patch -
-> I'd missed the use of fd == -1 for disabling backend, and in that case
-> we can end up with sock == NULL and sock != oldsock.
-> ----
->
-> Does the above sound sane for commit message?
+Hi Joe,
 
-Yes.
+On Tue, May 17, 2022 at 06:20:03PM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Tue, May 17, 2022 at 02:03:21AM +0000, Ali Saidi escreveu:
+> > When synthesizing data from SPE, augment the type with source information
+> > for Arm Neoverse cores so we can detect situtions like cache line
+> > contention and transfers on Arm platforms. 
+> > 
+> > This changes enables future changes to c2c on a system with SPE where lines that
+> > are shared among multiple cores show up in perf c2c output. 
+> > 
+> > Changes is v9:
+> >  * Change reporting of remote socket data which should make Leo's upcomping
+> >    patch set for c2c make sense on multi-socket platforms  
+> 
+> Hey,
+> 
+> 	Joe Mario, who is one of 'perf c2c' authors asked me about some
+> git tree he could clone from for both building the kernel and
+> tools/perf/ so that he could do tests, can you please provide that?
 
-> And which tree would you
-> prefer it to go through?  I can take it in vfs.git#fixes, or you could
-> take it into your tree...
->
+I have uploaded the latest patches for enabling 'perf c2c' on Arm SPE
+on the repo:
 
-Consider Michael gave an ack, it would be fine if you want to take via
-your tree.
+https://git.linaro.org/people/leo.yan/linux-spe.git branch: perf_c2c_arm_spe_peer_v3
 
-Thanks
+Below are the quick notes for build the kernel with enabling Arm SPE:
 
+  $ git clone -b perf_c2c_arm_spe_peer_v3 https://git.linaro.org/people/leo.yan/linux-spe.git
+
+  Or
+
+  $ git clone -b perf_c2c_arm_spe_peer_v3 ssh://git@git.linaro.org/people/leo.yan/linux-spe.git
+
+  $ cd linux-spe
+
+  # Build kernel
+  $ make defconfig
+  $ ./scripts/config -e CONFIG_PID_IN_CONTEXTIDR
+  $ ./scripts/config -e CONFIG_ARM_SPE_PMU
+  $ make Image
+
+  # Build perf
+  $ cd tools/perf
+  $ make VF=1 DEBUG=1
+
+When boot the kernel, please add option "kpti=off" in kernel command
+line, you might need to update grub menu for this.
+
+Please feel free let us know if anything is not clear for you.
+
+Thank you,
+Leo
