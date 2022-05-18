@@ -2,130 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A32C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6759C38A02
 	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237694AbiERMgj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:36:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49192 "EHLO
+        id S238195AbiERMiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236509AbiERMem (ORCPT
+        with ESMTP id S237074AbiERMew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:34:42 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE6B13F1C4;
-        Wed, 18 May 2022 05:30:16 -0700 (PDT)
-X-UUID: cfb92021c2cb4b5889b5e09063b42fca-20220518
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:5c997898-8337-4b40-9819-78c3c6782b49,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:90
-X-CID-INFO: VERSION:1.1.5,REQID:5c997898-8337-4b40-9819-78c3c6782b49,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:90
-X-CID-META: VersionHash:2a19b09,CLOUDID:fe5ab779-5ef6-470b-96c9-bdb8ced32786,C
-        OID:0defb325eb7f,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: cfb92021c2cb4b5889b5e09063b42fca-20220518
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2034958229; Wed, 18 May 2022 20:30:08 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 18 May 2022 20:30:07 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 18 May 2022 20:30:05 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v7, 0/7] support mt8195 decoder
-Date:   Wed, 18 May 2022 20:29:57 +0800
-Message-ID: <20220518123004.18286-1-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 18 May 2022 08:34:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0E2519CB70
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:30:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652877035;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2LCFQ3BaiAODg52eVM1mGg1zRamZE6jNoZ6Ptxb2fNI=;
+        b=InxmeWFn/13zeF7RpWsPz2G0icYldRDFBCV3nICqaigL4K5YUsQGVEtpZ0fcorfrbQ7jg4
+        a5cIMwRdqsXYTb3An/arbzuutkUZ//q0hQtNym3I8ubRcLo7Jtf6pm6HH+yvJJZ6M+q/S7
+        TBI+xDBf3Rx1AoZECmw1oWXDYIqjrCU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-YxyU2fNjOvaFcC_5G4hFKw-1; Wed, 18 May 2022 08:30:32 -0400
+X-MC-Unique: YxyU2fNjOvaFcC_5G4hFKw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 235FD86B8A2;
+        Wed, 18 May 2022 12:30:31 +0000 (UTC)
+Received: from asgard.redhat.com (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5779C7C2A;
+        Wed, 18 May 2022 12:30:25 +0000 (UTC)
+Date:   Wed, 18 May 2022 14:30:22 +0200
+From:   Eugene Syromiatnikov <esyr@redhat.com>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 4/4] bpf_trace: pass array of u64 values in
+ kprobe_multi.addrs
+Message-ID: <20220518123022.GA5425@asgard.redhat.com>
+References: <cover.1652772731.git.esyr@redhat.com>
+ <6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com>
+ <YoNnAgDsIWef82is@krava>
+ <20220517123050.GA25149@asgard.redhat.com>
+ <YoP/eEMqAn3sVFXf@krava>
+ <7c5e64f2-f2cf-61b7-9231-fc267bf0f2d8@fb.com>
+ <YoTXiAk1EpZ0rLKE@krava>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoTXiAk1EpZ0rLKE@krava>
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Firstly, add mt8195 soc lat hardware and compatible, then add documents.
-For vp8 only support MM21 mode, H264/vp9 support MT21C, need to separate
-them. Lastly, enable H264 inner racing mode to reduce hardware latency.
+On Wed, May 18, 2022 at 01:24:56PM +0200, Jiri Olsa wrote:
+> On Tue, May 17, 2022 at 02:34:55PM -0700, Yonghong Song wrote:
+> > On 5/17/22 1:03 PM, Jiri Olsa wrote:
+> > > On Tue, May 17, 2022 at 02:30:50PM +0200, Eugene Syromiatnikov wrote:
+> > > > On Tue, May 17, 2022 at 11:12:34AM +0200, Jiri Olsa wrote:
+> > > > > On Tue, May 17, 2022 at 09:36:47AM +0200, Eugene Syromiatnikov wrote:
+> > > > > > With the interface as defined, it is impossible to pass 64-bit kernel
+> > > > > > addresses from a 32-bit userspace process in BPF_LINK_TYPE_KPROBE_MULTI,
+> > > > > > which severly limits the useability of the interface, change the ABI
+> > > > > > to accept an array of u64 values instead of (kernel? user?) longs.
+> > > > > > Interestingly, the rest of the libbpf infrastructure uses 64-bit values
+> > > > > > for kallsyms addresses already, so this patch also eliminates
+> > > > > > the sym_addr cast in tools/lib/bpf/libbpf.c:resolve_kprobe_multi_cb().
+> > > > > 
+> > > > > so the problem is when we have 32bit user sace on 64bit kernel right?
+> > > > > 
+> > > > > I think we should keep addrs as longs in uapi and have kernel to figure out
+> > > > > if it needs to read u32 or u64, like you did for symbols in previous patch
+> > > > 
+> > > > No, it's not possible here, as addrs are kernel addrs and not user space
+> > > > addrs, so user space has to explicitly pass 64-bit addresses on 64-bit
+> > > > kernels (or have a notion whether it is running on a 64-bit
+> > > > or 32-bit kernel, and form the passed array accordingly, which is against
+> > > > the idea of compat layer that tries to abstract it out).
+> > > 
+> > > hum :-\ I'll need to check on compat layer.. there must
+> > > be some other code doing this already somewhere, right?
+> 
+> so the 32bit application running on 64bit kernel using libbpf won't
+> work at the moment, right? because it sees:
+> 
+>   bpf_kprobe_multi_opts::addrs as its 'unsigned long'
+> 
+> which is 4 bytes and it needs to put there 64bits kernel addresses
+> 
+> if we force the libbpf interface to use u64, then we should be fine
 
-Patch 1~4 add mt8195 soc lat hardware and compatible, then add documents.
-Patch 5 using different format for different codecs.
-Patch 6 prevent kernel crash when scp reboot.
-Patch 7 enable H264 inner racing mode to reduce hardware latency.
----
-This patch depends on "add h264 decoder driver for mt8186"[1]
+Yes, that's correct.
 
-[1]  https://patchwork.kernel.org/project/linux-mediatek/cover/20220512034620.30500-1-yunfei.dong@mediatek.com/
----
-changed with v6:
-- add detail error message in patch 6.
-changed with v5:
-- fix __iomem not reasonable, align share memory to dram.
-changed with v4:
-- fix sparse and smatch check fail for patch 7.
-changed with v3:
-- rebase driver to the latest media_stage.
-changed with v2:
-- add detail explanation for lat soc hardware for patch 1.
-changed with v1:
-- separate "Init VP9 stateless decode params" patch and remove it to another one.
-- add reviewed-by in patch v3/v4/v6
----
-Yunfei Dong (7):
-  dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for lat
-    soc
-  media: mediatek: vcodec: Add to support lat soc hardware
-  dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for
-    mt8195
-  media: mediatek: vcodec: Adds compatible for mt8195
-  media: mediatek: vcodec: Different codec using different capture
-    format
-  media: mediatek: vcodec: prevent kernel crash when scp ipi timeout
-  media: mediatek: vcodec: Add to support H264 inner racing mode
+> > I am not familiar with all these compatibility thing. But if we
+> > have 64-bit pointer for **syms, maybe we could also have
+> > 64-bit pointer for *syms for consistency?
+> 
+> right, perhaps we could have one function to read both syms and addrs arrays
 
- .../media/mediatek,vcodec-subdev-decoder.yaml | 52 +++++++++++++------
- .../platform/mediatek/vcodec/mtk_vcodec_dec.c | 41 +++++++++++++++
- .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |  8 +++
- .../mediatek/vcodec/mtk_vcodec_dec_hw.c       | 12 +++--
- .../mediatek/vcodec/mtk_vcodec_dec_hw.h       |  2 +
- .../mediatek/vcodec/mtk_vcodec_dec_pm.c       | 50 ++++++++++++++++++
- .../platform/mediatek/vcodec/mtk_vcodec_drv.h | 12 +++++
- .../vcodec/vdec/vdec_h264_req_multi_if.c      | 25 +++++++--
- .../platform/mediatek/vcodec/vdec_vpu_if.c    |  5 ++
- 9 files changed, 183 insertions(+), 24 deletions(-)
+The distinction here it that syms are user space pointers (so they are
+naturally 32-bit for 32-bit applications) and addrs are kernel-space
+pointers (so they may be 64-bit even when the application is 32-bit).
+Nothing prevents from changing the interface so that syms is an array
+of 64-bit values treated as user space pointers, of course.
 
--- 
-2.18.0
+> > > > > we'll need to fix also bpf_kprobe_multi_cookie_swap because it assumes
+> > > > > 64bit user space pointers
+> 
+> if we have both addresses and cookies 64 then this should be ok
+> 
+> > > > > 
+> > > > > would be gret if we could have selftest for this
+> 
+> let's add selftest for this
+
+Sure, I'll try to write one.
 
