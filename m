@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07EBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1373AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237155AbiERMe0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
+        id S237219AbiERMeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236903AbiERMct (ORCPT
+        with ESMTP id S236992AbiERMdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:32:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C23712DC;
-        Wed, 18 May 2022 05:29:15 -0700 (PDT)
+        Wed, 18 May 2022 08:33:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FC7170F2E;
+        Wed, 18 May 2022 05:29:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFBFF61290;
-        Wed, 18 May 2022 12:29:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 357D3C385AA;
-        Wed, 18 May 2022 12:29:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07353615FE;
+        Wed, 18 May 2022 12:29:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33F3AC385AA;
+        Wed, 18 May 2022 12:29:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876951;
-        bh=Z0yLV7OaN3ICxtsmf7PdR/dPOvR2eTHVeN76hlLFETA=;
+        s=k20201202; t=1652876975;
+        bh=Em6VDN095tlB4mBZm4+ai7DDqRwvok4lEQCa+cyHyY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E5+7vZdU9hk/yanQUKyz2j3s1E2njcyKXXjCaMsQOZtU8blgrc/vDWFgro3ZwsJ6T
-         mjZCzTP+FW2tibPeJAXbTsDWJBVs5BjaVJrHhlVGOXwHlXfs05DUwMT7wzMQuRLVp5
-         Rc/2E9r+Wb5yWHI3zSzkLofMaJOIkNIPhO/xEsu85XsEBgh/qEeJOB1ruVe95m0MKu
-         9mSKUjv3vuzazUhDhA/gXXJBymqAquQe4hvz039pnstsNPTVEsv8p/8W27rDCXTLUz
-         Zsh4G1N2o1aEDs/2Po1ihGpmKslp3FwjRjJScVYntnBAMdOR5F3II2sn4ApkxWDpba
-         9FH9egj2YYDmw==
+        b=As08Jclf8S7kvXO14YaUqnkAMmNdoDqFP8sF74c3P82ds+AikGYomnfq3T17VLFoh
+         uY5p+K20akGybkhN/SHTqHDCxQ3InrLP7sLUZcVf08W081KWUTy/YjptP02WMTPCVA
+         GI4dwd8ptXEh1hHIRs+SBiHJUfrhDmB6VF5qJMUrK3fEVsFmCixlqGKf8R+nOCAVVG
+         ILSdGceDPOT5qaAoK1sVhj9MaxZq9fpoDmslyxHX0DDeuHhLeoX0y5q9VhsH3Hfcvv
+         FXbIZjz3RGPDj87sSCainGI4XUWOXIs/Y2bs8yerDmon+hYq5U8c79ArTSbC/O1y1O
+         Y9vFrt5/l2nBg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Grant Grundler <grundler@chromium.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/13] net: atlantic: reduce scope of is_rsc_complete
-Date:   Wed, 18 May 2022 08:28:40 -0400
-Message-Id: <20220518122844.343220-9-sashal@kernel.org>
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 3/6] selftests: add ping test with ping_group_range tuned
+Date:   Wed, 18 May 2022 08:29:26 -0400
+Message-Id: <20220518122929.343615-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
-References: <20220518122844.343220-1-sashal@kernel.org>
+In-Reply-To: <20220518122929.343615-1-sashal@kernel.org>
+References: <20220518122929.343615-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,66 +54,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grant Grundler <grundler@chromium.org>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-[ Upstream commit 79784d77ebbd3ec516b7a5ce555d979fb7946202 ]
+[ Upstream commit e71b7f1f44d3d88c677769c85ef0171caf9fc89f ]
 
-Don't defer handling the err case outside the loop. That's pointless.
+The 'ping' utility is able to manage two kind of sockets (raw or icmp),
+depending on the sysctl ping_group_range. By default, ping_group_range is
+set to '1 0', which forces ping to use an ip raw socket.
 
-And since is_rsc_complete is only used inside this loop, declare
-it inside the loop to reduce it's scope.
+Let's replay the ping tests by allowing 'ping' to use the ip icmp socket.
+After the previous patch, ipv4 tests results are the same with both kinds
+of socket. For ipv6, there are a lot a new failures (the previous patch
+fixes only two cases).
 
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ tools/testing/selftests/net/fcnal-test.sh | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 7cf5a48e9a7d..339efdfb1d49 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -345,7 +345,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		     int budget)
- {
- 	struct net_device *ndev = aq_nic_get_ndev(self->aq_nic);
--	bool is_rsc_completed = true;
- 	int err = 0;
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 157822331954..d2ac09b35dcf 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -757,10 +757,16 @@ ipv4_ping()
+ 	setup
+ 	set_sysctl net.ipv4.raw_l3mdev_accept=1 2>/dev/null
+ 	ipv4_ping_novrf
++	setup
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv4_ping_novrf
  
- 	for (; (self->sw_head != self->hw_head) && budget;
-@@ -365,6 +364,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		if (!buff->is_eop) {
- 			buff_ = buff;
- 			do {
-+				bool is_rsc_completed = true;
-+
- 				if (buff_->next >= self->size) {
- 					err = -EIO;
- 					goto err_exit;
-@@ -376,18 +377,16 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 							    next_,
- 							    self->hw_head);
+ 	log_subsection "With VRF"
+ 	setup "yes"
+ 	ipv4_ping_vrf
++	setup "yes"
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv4_ping_vrf
+ }
  
--				if (unlikely(!is_rsc_completed))
--					break;
-+				if (unlikely(!is_rsc_completed)) {
-+					err = 0;
-+					goto err_exit;
-+				}
+ ################################################################################
+@@ -2005,10 +2011,16 @@ ipv6_ping()
+ 	log_subsection "No VRF"
+ 	setup
+ 	ipv6_ping_novrf
++	setup
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv6_ping_novrf
  
- 				buff->is_error |= buff_->is_error;
- 				buff->is_cso_err |= buff_->is_cso_err;
+ 	log_subsection "With VRF"
+ 	setup "yes"
+ 	ipv6_ping_vrf
++	setup "yes"
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv6_ping_vrf
+ }
  
- 			} while (!buff_->is_eop);
- 
--			if (!is_rsc_completed) {
--				err = 0;
--				goto err_exit;
--			}
- 			if (buff->is_error ||
- 			    (buff->is_lro && buff->is_cso_err)) {
- 				buff_ = buff;
+ ################################################################################
 -- 
 2.35.1
 
