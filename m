@@ -2,166 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AE87C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 03:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 03:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbiERDiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 23:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47174 "EHLO
+        id S229814AbiERDjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 23:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiERDiB (ORCPT
+        with ESMTP id S229463AbiERDjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 23:38:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A562B644F6
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 20:37:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652845077;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rp7uqVujxqtD936CplEiX+9qE6BPd3wg3x7T97P4iFY=;
-        b=iq0Q5tMYWQMqR7eBnJvPBvD4WXrD2E9pQou7mmGUe5ogGKQOHpZR3i9/ZmM44gLTj9104b
-        7iPWrSBhwOudwFaCamrIZSMWh/p1G4pk4J/9yXxf++npiMx7BeAOAkBVwFycmRBte7m33+
-        3mYFJYyPURwUZ73vmtLJCD8PpkYSLxA=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-184-giz0KG6IMVitjjgfmugkjQ-1; Tue, 17 May 2022 23:37:16 -0400
-X-MC-Unique: giz0KG6IMVitjjgfmugkjQ-1
-Received: by mail-qk1-f200.google.com with SMTP id 63-20020a370c42000000b006a063777620so617577qkm.21
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 20:37:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Rp7uqVujxqtD936CplEiX+9qE6BPd3wg3x7T97P4iFY=;
-        b=g4skZCO1WILQ6ygUKHeT8TqyGVI/5pO7MTLe97s+MymQ1kX+Hb/voNchBMKa4+HGBe
-         OW7L1tQlbuoiPliJeCBOxN0HUCN2ycU0Npii2y0gGlry/QDwqviyqbJd0EbhtI8ZxAUU
-         saWwoQlR9vwnypKCtFPNVcIoqGjD6neXCRh0BcW9Ty1YMEg7QDvWKQMEdII+xlitTw9Z
-         cAbx430f2Xhr/beK2dAIZe3kPDKEHauXnXIUdO0GXQ0i9zVLMd3ZQJC98I1dyZ93X/ZO
-         fTYK6YNyKKyqHh2kX8DRxI4KZPacVYWrrxKAutrjnv+MKpsOLaKNv4eAtl574kiHV8sY
-         lEIg==
-X-Gm-Message-State: AOAM530dvIW/FW35pdYMFnvtvqSQjEcam7rgEArJQ4W8MEG3ChEZziPU
-        0WqESAdyZ7qKBbHYWXP37dYEb6cmyRi/4vRRWbPKbSo7N3+nPZctdlYqtPOIcx4CA9+HsnGB+Aq
-        NFcbFKAgXrAwih+C5Q+xaRgsf
-X-Received: by 2002:a05:6214:d03:b0:45a:8f81:d880 with SMTP id 3-20020a0562140d0300b0045a8f81d880mr23214302qvh.74.1652845035583;
-        Tue, 17 May 2022 20:37:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx/9A7C14loah6lY2fVyMP1BmiVDodKmFI5RSGHnntjwhf+yhhK9Mx/0P9xV44qcUkmXaKrvg==
-X-Received: by 2002:a05:6214:d03:b0:45a:8f81:d880 with SMTP id 3-20020a0562140d0300b0045a8f81d880mr23214286qvh.74.1652845035252;
-        Tue, 17 May 2022 20:37:15 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id c23-20020a379a17000000b0069fc13ce20fsm769063qke.64.2022.05.17.20.37.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 20:37:14 -0700 (PDT)
-Message-ID: <616dbc51-e87d-dd11-da73-e9d7229ed8ce@redhat.com>
-Date:   Tue, 17 May 2022 23:37:13 -0400
+        Tue, 17 May 2022 23:39:44 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3376AA75
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 20:39:39 -0700 (PDT)
+X-UUID: 6358dcc7e4dd41e68957bd720a839538-20220518
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:e7bc5091-a06b-4bbc-97ee-a232cdd72c8d,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.5,REQID:e7bc5091-a06b-4bbc-97ee-a232cdd72c8d,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:2a19b09,CLOUDID:6cba93e2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:f28b894eb590,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 6358dcc7e4dd41e68957bd720a839538-20220518
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1139438548; Wed, 18 May 2022 11:39:36 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 18 May 2022 11:39:35 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 18 May 2022 11:39:35 +0800
+Message-ID: <1bad78e79feb40a2e1e5b09e70438b15aff379ab.camel@mediatek.com>
+Subject: Re: [PATCH v6, 2/4] drm/mediatek: Separate poweron/poweroff from
+ enable/disable and define new funcs
+From:   CK Hu <ck.hu@mediatek.com>
+To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <matthias.bgg@gmail.com>
+CC:     <jitao.shi@mediatek.com>, <linux-kernel@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>, <rex-bc.chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Wed, 18 May 2022 11:39:34 +0800
+In-Reply-To: <1652337012-9053-3-git-send-email-xinlei.lee@mediatek.com>
+References: <1652337012-9053-1-git-send-email-xinlei.lee@mediatek.com>
+         <1652337012-9053-3-git-send-email-xinlei.lee@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [RFC net-next] bonding: netlink error message support for options
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-References: <5a6ba6f14b0fad6d4ba077a5230ee71cbf970934.1652819479.git.jtoppins@redhat.com>
- <20220517154419.44a1cb6a@hermes.local> <20220517165419.540f2dc8@kernel.org>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <20220517165419.540f2dc8@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/22 19:54, Jakub Kicinski wrote:
-> On Tue, 17 May 2022 15:44:19 -0700 Stephen Hemminger wrote:
->> On Tue, 17 May 2022 16:31:19 -0400
->> Jonathan Toppins <jtoppins@redhat.com> wrote:
->>
->>>      This is an RFC because the current NL_SET_ERR_MSG() macros do not support
->>>      printf like semantics so I rolled my own buffer setting in __bond_opt_set().
->>>      The issue is I could not quite figure out the life-cycle of the buffer, if
->>>      rtnl lock is held until after the text buffer is copied into the packet
->>>      then we are ok, otherwise, some other type of buffer management scheme will
->>>      be needed as this could result in corrupted error messages when modifying
->>>      multiple bonds.
->>
->> Might be better for others in long term if NL_SET_ERR_MSG() had printf like
->> semantics. Surely this isn't going to be first or last case.
->>
->> Then internally, it could print right to the netlink message.
+Hi, Xinlei:
+
+On Thu, 2022-05-12 at 14:30 +0800, xinlei.lee@mediatek.com wrote:
+> From: Jitao Shi <jitao.shi@mediatek.com>
 > 
-> Dunno. I think pointing at the bad attr + exposing per-attr netlink
-> parsing policy + a string for a human worked pretty well so far.
-> IMHO printf() is just a knee jerk reaction, especially when converting
-> from netdev_err().
-
-For some subsystems it is not a convert from netdev_err, it is an AND. 
-In this RFC there are instances where changing the message from 
-netdev_err() to the macro was trivial;
-
-@@ -240,12 +243,14 @@ static int bond_changelink(struct net_device 
-*bond_dev, st
-ruct nlattr *tb[],
-                 int arp_interval = 
-nla_get_u32(data[IFLA_BOND_ARP_INTERVAL]);
-
-                 if (arp_interval && miimon) {
--                       netdev_err(bond->dev, "ARP monitoring cannot be 
-used with MII monitoring\n");
-+                       NL_SET_ERR_MSG(extack,
-+                                      "ARP monitoring cannot be used 
-with MII monitoring");
-                         return -EINVAL;
-                 }
-
-These are trivial because the path does not have to care about sysfs or 
-some other legacy configuration interface. These macros become rather 
-annoying to use once a system needs to support multiple configuration 
-paths and is trying to utilize as much common configuration code[0] as 
-possible so that all interfaces largely operate the same way.
-
+> In order to match the changes of "Use the drm_panel_bridge API",
+> the poweron/poweroff of dsi is extracted from enable/disable and
+> defined as new funcs (atomic_pre_enable/atomic_post_disable).
 > 
-> Augmenting structured information is much, much better long term.
+> Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge
+> API")
 > 
-> To me the never ending stream of efforts to improve printk() is a
-> proof that once we let people printf() at will, efforts to contain
-> it will be futile.
+> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dsi.c | 53 +++++++++++++++++++---------
+> --
+>  1 file changed, 34 insertions(+), 19 deletions(-)
 > 
-At least for bonding I was trying to reuse the most amount of code which 
-needs to deal with both sysfs and netlink. And I don't think it is a 
-good idea to split the code paths, so if I am suppose to use statically 
-allocated strings to support netlink errors that basically means 
-anything that has to support multiple interfaces gets to sprinkle `if 
-(extack)` everywhere[0]. Not great. The ownership model of the error 
-buffer seems odd to me with the current macros, I am suppose to set a 
-pointer in a structure subsystem X didn't allocate and has no control 
-over its lifetime. Then netlink takes this pointer and does whatever 
-with it. And somehow subsystem X is suppose to guarantee the pointer's 
-lifetime exists forever, making a `const static char[]` buffer the only 
-option. I don't understand why netlink doesn't provide the buffer and a 
-subsystem just populates it. Using memcpy or snprintf doesn't matter, to 
-me its a lifetime issue that makes the API not great to work with when 
-you have to handle cases other than netlink.
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> index f880136cec09..d9a6b928dba8 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+> @@ -691,16 +691,6 @@ static void mtk_dsi_poweroff(struct mtk_dsi
+> *dsi)
+>  	if (--dsi->refcount != 0)
+>  		return;
+>  
+> -	/*
+> -	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
+> -	 * mtk_dsi_stop() should be called after
+> mtk_drm_crtc_atomic_disable(),
+> -	 * which needs irq for vblank, and mtk_dsi_stop() will disable
+> irq.
+> -	 * mtk_dsi_start() needs to be called in
+> mtk_output_dsi_enable(),
+> -	 * after dsi is fully set.
+> -	 */
+> -	mtk_dsi_stop(dsi);
+> -
+> -	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
+>  	mtk_dsi_reset_engine(dsi);
+>  	mtk_dsi_lane0_ulp_mode_enter(dsi);
+>  	mtk_dsi_clk_ulp_mode_enter(dsi);
+> @@ -715,17 +705,9 @@ static void mtk_dsi_poweroff(struct mtk_dsi
+> *dsi)
+>  
+>  static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
+>  {
+> -	int ret;
+> -
+>  	if (dsi->enabled)
+>  		return;
+>  
+> -	ret = mtk_dsi_poweron(dsi);
+> -	if (ret < 0) {
+> -		DRM_ERROR("failed to power on dsi\n");
+> -		return;
+> -	}
+> -
+>  	mtk_dsi_set_mode(dsi);
+>  	mtk_dsi_clk_hs_mode(dsi, 1);
+>  
+> @@ -739,7 +721,16 @@ static void mtk_output_dsi_disable(struct
+> mtk_dsi *dsi)
+>  	if (!dsi->enabled)
+>  		return;
+>  
+> -	mtk_dsi_poweroff(dsi);
+> +	/*
+> +	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
+> +	 * mtk_dsi_stop() should be called after
+> mtk_drm_crtc_atomic_disable(),
+> +	 * which needs irq for vblank, and mtk_dsi_stop() will disable
+> irq.
+> +	 * mtk_dsi_start() needs to be called in
+> mtk_output_dsi_enable(),
+> +	 * after dsi is fully set.
+> +	 */
+> +	mtk_dsi_stop(dsi);
+> +
+> +	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
+>  
+>  	dsi->enabled = false;
+>  }
+> @@ -776,13 +767,37 @@ static void mtk_dsi_bridge_atomic_enable(struct
+> drm_bridge *bridge,
+>  {
+>  	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+>  
+> +	if (dsi->refcount == 0)
+> +		return;
 
-Also as Joe Perches points out in this thread[1,2] the way the macros 
-are written it is bloating the kernel because the error messages are 
-getting duplicated for subsystems that need to support multiple 
-configuration interfaces.
+This seems not related to pre_enable()/post_disable(). So separate this
+to another patch.
 
--Jon
+Regards,
+CK
 
-[0] 
-https://lore.kernel.org/netdev/e6b78ce8f5904a5411a809cf4205d745f8af98cb.1628650079.git.jtoppins@redhat.com/
-[1] https://lore.kernel.org/netdev/cover.1628306392.git.jtoppins@redhat.com/
-[2] 
-https://lore.kernel.org/netdev/c8b69905c995ab887633ef11862705ee66c60aad.camel@perches.com/
+> +
+>  	mtk_output_dsi_enable(dsi);
+>  }
+>  
+> +static void mtk_dsi_bridge_atomic_pre_enable(struct drm_bridge
+> *bridge,
+> +					     struct drm_bridge_state
+> *old_bridge_state)
+> +{
+> +	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+> +	int ret;
+> +
+> +	ret = mtk_dsi_poweron(dsi);
+> +	if (ret < 0)
+> +		DRM_ERROR("failed to power on dsi\n");
+> +}
+> +
+> +static void mtk_dsi_bridge_atomic_post_disable(struct drm_bridge
+> *bridge,
+> +					       struct drm_bridge_state
+> *old_bridge_state)
+> +{
+> +	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
+> +
+> +	mtk_dsi_poweroff(dsi);
+> +}
+> +
+>  static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
+>  	.attach = mtk_dsi_bridge_attach,
+>  	.atomic_disable = mtk_dsi_bridge_atomic_disable,
+>  	.atomic_enable = mtk_dsi_bridge_atomic_enable,
+> +	.atomic_pre_enable = mtk_dsi_bridge_atomic_pre_enable,
+> +	.atomic_post_disable = mtk_dsi_bridge_atomic_post_disable,
+>  	.mode_set = mtk_dsi_bridge_mode_set,
+>  };
+>  
 
