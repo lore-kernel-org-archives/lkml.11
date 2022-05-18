@@ -2,160 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C375BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240663AbiERQ4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
+        id S240591AbiERQ5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240586AbiERQyk (ORCPT
+        with ESMTP id S240573AbiERQ5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:54:40 -0400
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF479201394;
-        Wed, 18 May 2022 09:54:36 -0700 (PDT)
-Received: by mail-ua1-x92f.google.com with SMTP id 90so1053905uam.8;
-        Wed, 18 May 2022 09:54:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=olguYhICHMpk2ctYiMxEpCHQEQIGnr/VO6tDtpsZhI4=;
-        b=evhgvtGZikjzHZh4O3xNSDiWD6D3AEmA1+RNqZ2K5y0E2agNcv001H7iUC3Zhd8+dF
-         L4xGeCtgjofqz9ru806hEF2EtlPJMeUmYAaDejjxeSZJCUafH4+sg7a6axt5Xc1aSkVN
-         0AYRnM1mUmxpN1t3BPNGjm7fZA7kvI6pJ0CasVvL/VmhZJUxi602KGVb96aBlAeKSrE2
-         nPCz2PvfbwOnEQG9Lem5EsX2Wa7e/ugBA29UDPJV+7aqd1ZALnWg50DJJvQ/83dareaC
-         CBLSBAaYaNewA3NqSn+pbBd2vkd1MCvptA67T+4OeyQBXNdrXdhV9QcK8gpbaCD1luUP
-         riXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=olguYhICHMpk2ctYiMxEpCHQEQIGnr/VO6tDtpsZhI4=;
-        b=Ed1fUtRpaIqhP0+KvUeYYMbu7hCxOtn4a4jFSAY+eJfnu0f7d0UcLriTtheUXWWfCn
-         k+hZIseC5TkE/JdEF5YpElkZoSIxCE8UzwLipJP6Fkt8qcECu3xEWov4rXSSCLK/Is9S
-         UNew9iEAZmGlNLHFqdhZQ1JGqP+rLTyoHKB2ogSlmXbCPWOlBEi4/aq0+4DkDBlbb8A0
-         bHrTDJ75DrgtZBFnT8CGfDcLgoddi/A9ydqf7cYsHqMKtKyRwjBpFs1iAJ0DcpoB8ir8
-         FUaTFobc2it+EiGFYq2BF3OENL2gPTKRW2Q0SmpWo908dWGjSonAaXMEJc7tWJW77M7n
-         uo4A==
-X-Gm-Message-State: AOAM532xxouWGlEdrCxGWmFtwjiFxh7tBU0AT3z9PYf0u2+ZXzp3MutY
-        XJB8LOUU5ubX6tEmX7WqywKzlF9/d0pQWeaI1EE=
-X-Google-Smtp-Source: ABdhPJxpr0Ba9x+SyqQxWYIRxlCA23EeQik362azVIbx1zBWRraLxOhiRXdlHoXPu29Z75Xqghi+NXJQGEDikvRW/88=
-X-Received: by 2002:ab0:72d5:0:b0:368:aad4:5ef8 with SMTP id
- g21-20020ab072d5000000b00368aad45ef8mr373535uap.27.1652892876048; Wed, 18 May
- 2022 09:54:36 -0700 (PDT)
+        Wed, 18 May 2022 12:57:11 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBA1B8BE8;
+        Wed, 18 May 2022 09:57:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652893030; x=1684429030;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Z/CTK7bNBAIerAtCFC6veGQRng0kyr18RgfO+QSHa/g=;
+  b=Y9l53pMFDiTdYdDYE6FL2tJC4axgvYfJ9aQ7EcFl+q2IFybBaJAmOzZd
+   mdTg2Xrmdhp5YHZBIicidP0eUkMviPda+Y42k/5E94Dgjs+0qQNfr14fg
+   zLr9WrkqoO9W7vsxmb3oDtHG8/RL5uDRCw0Xv4XFwZejp4tMEpK1JJlE5
+   6UM2XQ1TWQ3QgthwOxsWUWv2mYU/jp99Z05znctVuP9gPyslEr9V/16/I
+   Qy5Pt+Et20WAFcdCYVIdyIcaXe2tAcQCTILmgE02YBZwNzdPm763ZML8E
+   ww4fFR9i3mkk59f2lHW1JHGgvhPGNvIcuKvGAAqzSTisQ3rhr9z66/GZs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="271468778"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="271468778"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 09:56:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="639365223"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 18 May 2022 09:56:41 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrMyX-0002QL-2k;
+        Wed, 18 May 2022 16:56:41 +0000
+Date:   Thu, 19 May 2022 00:55:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-wireless@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Neo Jou <neojou@gmail.com>,
+        Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH 07/10] rtw88: Add rtw8723du chipset support
+Message-ID: <202205190028.z15SPbJx-lkp@intel.com>
+References: <20220518082318.3898514-8-s.hauer@pengutronix.de>
 MIME-Version: 1.0
-References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
- <20220518092619.1269111-15-chenhuacai@loongson.cn> <87ilq294mg.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <87ilq294mg.fsf@email.froward.int.ebiederm.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Thu, 19 May 2022 00:54:24 +0800
-Message-ID: <CAAhV-H5Aov1NVsbNWZa9psPhBiNssYWWEzNOyLooeXGKsYxN+w@mail.gmail.com>
-Subject: Re: [PATCH V11 14/22] LoongArch: Add signal handling support
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518082318.3898514-8-s.hauer@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Eric,
+Hi Sascha,
 
-On Thu, May 19, 2022 at 12:40 AM Eric W. Biederman
-<ebiederm@xmission.com> wrote:
->
-> Huacai Chen <chenhuacai@loongson.cn> writes:
->
-> > Add ucontext/sigcontext definition and signal handling support for
-> > LoongArch.
-> >
-> > Cc: Eric Biederman <ebiederm@xmission.com>
-> > Cc: Al Viro <viro@zeniv.linux.org.uk>
-> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> > ---
-> >  arch/loongarch/include/uapi/asm/sigcontext.h |  44 ++
-> >  arch/loongarch/include/uapi/asm/signal.h     |  13 +
-> >  arch/loongarch/include/uapi/asm/ucontext.h   |  35 ++
-> >  arch/loongarch/kernel/signal.c               | 566 +++++++++++++++++++
-> >  4 files changed, 658 insertions(+)
-> >  create mode 100644 arch/loongarch/include/uapi/asm/sigcontext.h
-> >  create mode 100644 arch/loongarch/include/uapi/asm/signal.h
-> >  create mode 100644 arch/loongarch/include/uapi/asm/ucontext.h
-> >  create mode 100644 arch/loongarch/kernel/signal.c
-> >
-> > diff --git a/arch/loongarch/include/uapi/asm/sigcontext.h b/arch/loongarch/include/uapi/asm/sigcontext.h
-> > new file mode 100644
-> > index 000000000000..be3d3c6ac83e
-> > --- /dev/null
-> > +++ b/arch/loongarch/include/uapi/asm/sigcontext.h
-> > @@ -0,0 +1,44 @@
-> > +/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-> > +/*
-> > + * Author: Hanlu Li <lihanlu@loongson.cn>
-> > + *         Huacai Chen <chenhuacai@loongson.cn>
-> > + *
-> > + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-> > + */
-> > +#ifndef _UAPI_ASM_SIGCONTEXT_H
-> > +#define _UAPI_ASM_SIGCONTEXT_H
-> > +
-> > +#include <linux/types.h>
-> > +#include <linux/posix_types.h>
-> > +
-> > +/* FP context was used */
-> > +#define SC_USED_FP           (1 << 0)
-> > +/* Address error was due to memory load */
-> > +#define SC_ADDRERR_RD                (1 << 30)
-> > +/* Address error was due to memory store */
-> > +#define SC_ADDRERR_WR                (1 << 31)
-> > +
-> > +struct sigcontext {
-> > +     __u64   sc_pc;
-> > +     __u64   sc_regs[32];
-> > +     __u32   sc_flags;
-> > +     __u64   sc_extcontext[0] __attribute__((__aligned__(16)));
-> > +};
-> > +
-> > +#define CONTEXT_INFO_ALIGN   16
-> > +struct _ctxinfo {
-> > +     __u32   magic;
-> > +     __u32   size;
-> > +     __u64   padding;        /* padding to 16 bytes */
-> > +};
->
-> This is probably something I a missing but what is struct _ctxinfo and
-> why is it in a uapi header?
->
-> I don't see anything else in the uapi implementation using it.
-This is used by get_ctx_through_ctxinfo() in signal.c and I think
-similar function is also needed by userspace.
+I love your patch! Perhaps something to improve:
 
-Its name is once before called context_info but conflict with another
-software, then I want to use ctx_info but conflict with another kernel
-struct. :(
->
-> Symbols that start with an underscore "_" are reserved and should not
-> be used in general, and especially not in uapi header files.
-Then, maybe we can use sctx_info here?
+[auto build test WARNING on wireless-next/main]
+[also build test WARNING on wireless/main v5.18-rc7 next-20220518]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Huacai
->
-> Eric
+url:    https://github.com/intel-lab-lkp/linux/commits/Sascha-Hauer/RTW88-Add-support-for-USB-variants/20220518-162621
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220519/202205190028.z15SPbJx-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/0a06adba364ef264404e3c7ae111a71f0d74c5a9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sascha-Hauer/RTW88-Add-support-for-USB-variants/20220518-162621
+        git checkout 0a06adba364ef264404e3c7ae111a71f0d74c5a9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/net/wireless/realtek/rtw88/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/net/wireless/realtek/rtw88/util.c:119:6: warning: no previous prototype for 'rtw_collect_sta_iter' [-Wmissing-prototypes]
+     119 | void rtw_collect_sta_iter(void *data, struct ieee80211_sta *sta)
+         |      ^~~~~~~~~~~~~~~~~~~~
+>> drivers/net/wireless/realtek/rtw88/util.c:165:6: warning: no previous prototype for 'rtw_collect_vif_iter' [-Wmissing-prototypes]
+     165 | void rtw_collect_vif_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
+         |      ^~~~~~~~~~~~~~~~~~~~
+
+
+vim +/rtw_collect_sta_iter +119 drivers/net/wireless/realtek/rtw88/util.c
+
+1c99f6652d3fbb Sascha Hauer 2022-05-18  118  
+1c99f6652d3fbb Sascha Hauer 2022-05-18 @119  void rtw_collect_sta_iter(void *data, struct ieee80211_sta *sta)
+1c99f6652d3fbb Sascha Hauer 2022-05-18  120  {
+1c99f6652d3fbb Sascha Hauer 2022-05-18  121  	struct rtw_iter_stas_data *iter_stas = data;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  122  	struct rtw_stas_entry *stas_entry;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  123  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  124  	stas_entry = kmalloc(sizeof(*stas_entry), GFP_ATOMIC);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  125  	if (!stas_entry)
+1c99f6652d3fbb Sascha Hauer 2022-05-18  126  		return;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  127  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  128  	stas_entry->sta = sta;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  129  	list_add_tail(&stas_entry->list, &iter_stas->list);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  130  }
+1c99f6652d3fbb Sascha Hauer 2022-05-18  131  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  132  void rtw_iterate_stas(struct rtw_dev *rtwdev,
+1c99f6652d3fbb Sascha Hauer 2022-05-18  133  		      void (*iterator)(void *data,
+1c99f6652d3fbb Sascha Hauer 2022-05-18  134  				       struct ieee80211_sta *sta),
+1c99f6652d3fbb Sascha Hauer 2022-05-18  135  				       void *data)
+1c99f6652d3fbb Sascha Hauer 2022-05-18  136  {
+1c99f6652d3fbb Sascha Hauer 2022-05-18  137  	struct rtw_iter_stas_data iter_data;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  138  	struct rtw_stas_entry *sta_entry, *tmp;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  139  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  140  	iter_data.rtwdev = rtwdev;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  141  	INIT_LIST_HEAD(&iter_data.list);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  142  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  143  	ieee80211_iterate_stations_atomic(rtwdev->hw, rtw_collect_sta_iter,
+1c99f6652d3fbb Sascha Hauer 2022-05-18  144  					  &iter_data);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  145  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  146  	list_for_each_entry_safe(sta_entry, tmp, &iter_data.list,
+1c99f6652d3fbb Sascha Hauer 2022-05-18  147  				 list) {
+1c99f6652d3fbb Sascha Hauer 2022-05-18  148  		list_del_init(&sta_entry->list);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  149  		iterator(data, sta_entry->sta);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  150  		kfree(sta_entry);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  151  	}
+1c99f6652d3fbb Sascha Hauer 2022-05-18  152  }
+1c99f6652d3fbb Sascha Hauer 2022-05-18  153  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  154  struct rtw_vifs_entry {
+1c99f6652d3fbb Sascha Hauer 2022-05-18  155  	struct list_head list;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  156  	struct ieee80211_vif *vif;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  157  	u8 mac[ETH_ALEN];
+1c99f6652d3fbb Sascha Hauer 2022-05-18  158  };
+1c99f6652d3fbb Sascha Hauer 2022-05-18  159  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  160  struct rtw_iter_vifs_data {
+1c99f6652d3fbb Sascha Hauer 2022-05-18  161  	struct rtw_dev *rtwdev;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  162  	struct list_head list;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  163  };
+1c99f6652d3fbb Sascha Hauer 2022-05-18  164  
+1c99f6652d3fbb Sascha Hauer 2022-05-18 @165  void rtw_collect_vif_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
+1c99f6652d3fbb Sascha Hauer 2022-05-18  166  {
+1c99f6652d3fbb Sascha Hauer 2022-05-18  167  	struct rtw_iter_vifs_data *iter_stas = data;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  168  	struct rtw_vifs_entry *vifs_entry;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  169  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  170  	vifs_entry = kmalloc(sizeof(*vifs_entry), GFP_ATOMIC);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  171  	if (!vifs_entry)
+1c99f6652d3fbb Sascha Hauer 2022-05-18  172  		return;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  173  
+1c99f6652d3fbb Sascha Hauer 2022-05-18  174  	vifs_entry->vif = vif;
+1c99f6652d3fbb Sascha Hauer 2022-05-18  175  	ether_addr_copy(vifs_entry->mac, mac);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  176  	list_add_tail(&vifs_entry->list, &iter_stas->list);
+1c99f6652d3fbb Sascha Hauer 2022-05-18  177  }
+1c99f6652d3fbb Sascha Hauer 2022-05-18  178  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
