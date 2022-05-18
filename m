@@ -2,47 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BEE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:05:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232997AbiERIAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32860 "EHLO
+        id S232649AbiERIFW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:05:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232861AbiERIAf (ORCPT
+        with ESMTP id S232629AbiERIFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:00:35 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FE212719D;
-        Wed, 18 May 2022 01:00:34 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id C8B2D68C7B; Wed, 18 May 2022 10:00:22 +0200 (CEST)
-Date:   Wed, 18 May 2022 10:00:20 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier.gonz@samsung.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
-        damien.lemoal@opensource.wdc.com, pankydev8@gmail.com,
-        dsterba@suse.com, linux-nvme@lists.infradead.org,
-        linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        jiangbo.365@bytedance.com, linux-block@vger.kernel.org,
-        gost.dev@samsung.com, linux-kernel@vger.kernel.org,
-        dm-devel@redhat.com
-Subject: Re: [PATCH v4 00/13] support non power of 2 zoned devices
-Message-ID: <20220518080020.GA3697@lst.de>
-References: <CGME20220516165418eucas1p2be592d9cd4b35f6b71d39ccbe87f3fef@eucas1p2.samsung.com> <20220516165416.171196-1-p.raghav@samsung.com> <20220517081048.GA13947@lst.de> <20220517091834.dvkrab5l63v3b2zn@ArmHalley.local>
+        Wed, 18 May 2022 04:05:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E90B115B
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:05:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652861118;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=29QeuCJvIYZX5IxA1A2tYSm/a0P9ltwNVD+SSkHIFlk=;
+        b=Pwic/Uz5w/Oo2nR4eJPPBhcIxTch9DQZuS2pC79lMo5Z6bT0uRG3bB+n5bYapyyc7MoeQ7
+        dW0THTLmLevrrbZy9sg33rVgxu+xNrxvF8UFL9aN0CJkGE/GsGTd6Xf8H3c8onQmgF+z9x
+        wvnpKGY+YGIOH3TD2BwesAbiIptw74k=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-518-Y7pGVLVfPF6DqA7BDYgjVQ-1; Wed, 18 May 2022 04:05:16 -0400
+X-MC-Unique: Y7pGVLVfPF6DqA7BDYgjVQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4A6C11D32371;
+        Wed, 18 May 2022 08:05:16 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 92575492C3B;
+        Wed, 18 May 2022 08:05:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220517210230.864239-1-keescook@chromium.org>
+References: <20220517210230.864239-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     dhowells@redhat.com, Jeff Layton <jlayton@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] netfs: Use container_of() for offset casting
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220517091834.dvkrab5l63v3b2zn@ArmHalley.local>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2692903.1652861114.1@warthog.procyon.org.uk>
+Date:   Wed, 18 May 2022 09:05:14 +0100
+Message-ID: <2692904.1652861114@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 11:18:34AM +0200, Javier González wrote:
-> Does the above help you reconsidering your interest in supporting this
-> in NVMe?
+I wonder if it would be worth making this explicit in the inode wrappers of
+the users of netfslib.  In afs, for instance, there is:
 
-Very little.  It just seems like a really bad idea.
+	struct afs_vnode {
+		struct {
+			/* These must be contiguous */
+			struct inode	vfs_inode;
+			struct netfs_i_context netfs_ctx;
+		};
+		...
+	};
+
+would it be worth making that:
+
+	struct afs_vnode {
+		union {
+			struct netfs_i_c_pair netfs_inode;
+			struct {
+				/* These must be contiguous */
+				struct inode	vfs_inode;
+				struct netfs_i_context netfs_ctx;
+			};
+		};
+		...
+	};
+
+I don't want to do the following, say:
+
+
+	struct afs_vnode {
+		struct netfs_i_c_pair ni;
+		...
+	};
+
+as that would then require a lot of s/->vfs_inode/->ni.vfs_inode/, but maybe
+it would be better to include a struct inode in struct netfs_i_context, and
+then do:
+
+	struct afs_vnode {
+		union {
+			struct netfs_i_context netfs_ctx;
+			struct inode vfs_inode;
+		};
+		...
+	};
+
+and perhaps rename netfs_i_context to netfs_inode (though that looks a bit
+close to nfs_inode).  It's just a shame I can't do:
+
+	struct netfs_inode : inode {
+		...
+	};
+
+	struct afs_vnode : netfs_inode {
+		...
+	};
+
+right? ;-)
+
+On the other hand:
+
+	warthog>git grep '[>.]vfs_inode' -- fs/{9p,afs,ceph,cifs,nfs} | wc -l
+	181
+
+so maybe a mass change to, say:
+
+	struct netfs_inode {
+		struct inode vfs_inode;
+		...
+	};
+
+	struct afs_vnode {
+		struct netfs_inode ni;
+		...
+	};
+
+wouldn't be so bad.
+
+David
+
