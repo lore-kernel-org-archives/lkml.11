@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E331C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 04:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 04:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230082AbiERE4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 00:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S230089AbiERE4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 00:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229981AbiERE4f (ORCPT
+        with ESMTP id S230077AbiERE4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 00:56:35 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 21:56:32 PDT
-Received: from esa7.hc1455-7.c3s2.iphmx.com (esa7.hc1455-7.c3s2.iphmx.com [139.138.61.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3FE103;
-        Tue, 17 May 2022 21:56:31 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="51985739"
+        Wed, 18 May 2022 00:56:37 -0400
+Received: from esa12.hc1455-7.c3s2.iphmx.com (esa12.hc1455-7.c3s2.iphmx.com [139.138.37.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB122E6AD
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 21:56:34 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="52840604"
 X-IronPort-AV: E=Sophos;i="5.91,234,1647270000"; 
-   d="scan'208";a="51985739"
-Received: from unknown (HELO yto-r3.gw.nic.fujitsu.com) ([218.44.52.219])
-  by esa7.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 13:55:25 +0900
-Received: from yto-m2.gw.nic.fujitsu.com (yto-nat-yto-m2.gw.nic.fujitsu.com [192.168.83.65])
-        by yto-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 5FA2ED5026;
-        Wed, 18 May 2022 13:55:25 +0900 (JST)
-Received: from m3003.s.css.fujitsu.com (m3003.s.css.fujitsu.com [10.128.233.114])
-        by yto-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id B7224E6627;
-        Wed, 18 May 2022 13:55:24 +0900 (JST)
-Received: from localhost.localdomain (unknown [10.19.3.107])
-        by m3003.s.css.fujitsu.com (Postfix) with ESMTP id 8D70520403C1;
-        Wed, 18 May 2022 13:55:24 +0900 (JST)
-From:   Daisuke Matsuda <matsuda-daisuke@fujitsu.com>
-To:     leonro@nvidia.com, jgg@nvidia.com
-Cc:     aharonl@nvidia.com, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org,
-        Daisuke Matsuda <matsuda-daisuke@fujitsu.com>
-Subject: [PATCH] RDMA/mlx5: Remove duplicate pointer assignment in mlx5_ib_alloc_implicit_mr()
-Date:   Wed, 18 May 2022 04:49:14 +0000
-Message-Id: <20220518044914.1903125-1-matsuda-daisuke@fujitsu.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="52840604"
+Received: from unknown (HELO yto-r1.gw.nic.fujitsu.com) ([218.44.52.217])
+  by esa12.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 13:56:32 +0900
+Received: from yto-m3.gw.nic.fujitsu.com (yto-nat-yto-m3.gw.nic.fujitsu.com [192.168.83.66])
+        by yto-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 1CEDBE5B22
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 13:56:31 +0900 (JST)
+Received: from oym-om3.fujitsu.com (oym-om3.o.css.fujitsu.com [10.85.58.163])
+        by yto-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 54204D96DE
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 13:56:30 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by oym-om3.fujitsu.com (Postfix) with ESMTP id 29000403E921D;
+        Wed, 18 May 2022 13:56:30 +0900 (JST)
+From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+To:     fenghua.yu@intel.com, reinette.chatre@intel.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] x86/resctrl: Fix to restore to original value when re-enabling hardware prefetch register
+Date:   Wed, 18 May 2022 13:55:17 +0900
+Message-Id: <20220518045517.2066518-1-tarumizu.kohei@fujitsu.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
@@ -46,26 +45,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pointer imr->umem is assigned twice. Fix this by removing the
-redundant one.
+The current pseudo_lock.c code overwrites the value of the
+MSR_MISC_FEATURE_CONTROL to 0 even if the original value is not 0.
+Therefore, modify it to save and restore the original values.
 
-Signed-off-by: Daisuke Matsuda <matsuda-daisuke@fujitsu.com>
+Fixes: 018961ae5579 ("x86/intel_rdt: Pseudo-lock region creation/removal core")
+Fixes: 443810fe6160 ("x86/intel_rdt: Create debugfs files for pseudo-locking testing")
+Fixes: 8a2fc0e1bc0c ("x86/intel_rdt: More precise L2 hit/miss measurements")
+Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 ---
- drivers/infiniband/hw/mlx5/odp.c | 1 -
- 1 file changed, 1 deletion(-)
+This patch was previously one of the following my patch series:.
 
-diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
-index 41c964a45f89..b501ba0d7717 100644
---- a/drivers/infiniband/hw/mlx5/odp.c
-+++ b/drivers/infiniband/hw/mlx5/odp.c
-@@ -510,7 +510,6 @@ struct mlx5_ib_mr *mlx5_ib_alloc_implicit_mr(struct mlx5_ib_pd *pd,
- 	imr->ibmr.lkey = imr->mmkey.key;
- 	imr->ibmr.rkey = imr->mmkey.key;
- 	imr->ibmr.device = &dev->ib_dev;
--	imr->umem = &umem_odp->umem;
- 	imr->is_odp_implicit = true;
- 	xa_init(&imr->implicit_children);
+https://lore.kernel.org/lkml/20220420030223.689259-7-tarumizu.kohei@fujitsu.com/
+
+However, it doesn't depend on my patch series, so I extracted it as a
+separate patch.
+
+Best regards,
+Kohei Tarumizu
+---
+ arch/x86/kernel/cpu/resctrl/pseudo_lock.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/resctrl/pseudo_lock.c b/arch/x86/kernel/cpu/resctrl/pseudo_lock.c
+index db813f819ad6..4d8398986f78 100644
+--- a/arch/x86/kernel/cpu/resctrl/pseudo_lock.c
++++ b/arch/x86/kernel/cpu/resctrl/pseudo_lock.c
+@@ -420,6 +420,7 @@ static int pseudo_lock_fn(void *_rdtgrp)
+ 	struct pseudo_lock_region *plr = rdtgrp->plr;
+ 	u32 rmid_p, closid_p;
+ 	unsigned long i;
++	u64 saved_msr;
+ #ifdef CONFIG_KASAN
+ 	/*
+ 	 * The registers used for local register variables are also used
+@@ -463,6 +464,7 @@ static int pseudo_lock_fn(void *_rdtgrp)
+ 	 * the buffer and evict pseudo-locked memory read earlier from the
+ 	 * cache.
+ 	 */
++	saved_msr = __rdmsr(MSR_MISC_FEATURE_CONTROL);
+ 	__wrmsr(MSR_MISC_FEATURE_CONTROL, prefetch_disable_bits, 0x0);
+ 	closid_p = this_cpu_read(pqr_state.cur_closid);
+ 	rmid_p = this_cpu_read(pqr_state.cur_rmid);
+@@ -514,7 +516,7 @@ static int pseudo_lock_fn(void *_rdtgrp)
+ 	__wrmsr(IA32_PQR_ASSOC, rmid_p, closid_p);
  
+ 	/* Re-enable the hardware prefetcher(s) */
+-	wrmsr(MSR_MISC_FEATURE_CONTROL, 0x0, 0x0);
++	wrmsrl(MSR_MISC_FEATURE_CONTROL, saved_msr);
+ 	local_irq_enable();
+ 
+ 	plr->thread_done = 1;
+@@ -871,6 +873,7 @@ bool rdtgroup_pseudo_locked_in_hierarchy(struct rdt_domain *d)
+ static int measure_cycles_lat_fn(void *_plr)
+ {
+ 	struct pseudo_lock_region *plr = _plr;
++	u32 saved_low, saved_high;
+ 	unsigned long i;
+ 	u64 start, end;
+ 	void *mem_r;
+@@ -879,6 +882,7 @@ static int measure_cycles_lat_fn(void *_plr)
+ 	/*
+ 	 * Disable hardware prefetchers.
+ 	 */
++	rdmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
+ 	wrmsr(MSR_MISC_FEATURE_CONTROL, prefetch_disable_bits, 0x0);
+ 	mem_r = READ_ONCE(plr->kmem);
+ 	/*
+@@ -895,7 +899,7 @@ static int measure_cycles_lat_fn(void *_plr)
+ 		end = rdtsc_ordered();
+ 		trace_pseudo_lock_mem_latency((u32)(end - start));
+ 	}
+-	wrmsr(MSR_MISC_FEATURE_CONTROL, 0x0, 0x0);
++	wrmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
+ 	local_irq_enable();
+ 	plr->thread_done = 1;
+ 	wake_up_interruptible(&plr->lock_thread_wq);
+@@ -940,6 +944,7 @@ static int measure_residency_fn(struct perf_event_attr *miss_attr,
+ 	u64 hits_before = 0, hits_after = 0, miss_before = 0, miss_after = 0;
+ 	struct perf_event *miss_event, *hit_event;
+ 	int hit_pmcnum, miss_pmcnum;
++	u32 saved_low, saved_high;
+ 	unsigned int line_size;
+ 	unsigned int size;
+ 	unsigned long i;
+@@ -973,6 +978,7 @@ static int measure_residency_fn(struct perf_event_attr *miss_attr,
+ 	/*
+ 	 * Disable hardware prefetchers.
+ 	 */
++	rdmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
+ 	wrmsr(MSR_MISC_FEATURE_CONTROL, prefetch_disable_bits, 0x0);
+ 
+ 	/* Initialize rest of local variables */
+@@ -1031,7 +1037,7 @@ static int measure_residency_fn(struct perf_event_attr *miss_attr,
+ 	 */
+ 	rmb();
+ 	/* Re-enable hardware prefetchers */
+-	wrmsr(MSR_MISC_FEATURE_CONTROL, 0x0, 0x0);
++	wrmsr(MSR_MISC_FEATURE_CONTROL, saved_low, saved_high);
+ 	local_irq_enable();
+ out_hit:
+ 	perf_event_release_kernel(hit_event);
 -- 
-2.25.1
+2.27.0
 
