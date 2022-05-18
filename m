@@ -2,135 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3568CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 20:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3CEC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 20:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242547AbiERUWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 16:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
+        id S242543AbiERUXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 16:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242520AbiERUW3 (ORCPT
+        with ESMTP id S242489AbiERUXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 16:22:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18CDEBA9D;
-        Wed, 18 May 2022 13:22:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 18 May 2022 16:23:12 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4328023F380;
+        Wed, 18 May 2022 13:23:11 -0700 (PDT)
+Received: from zn.tnic (p200300ea974657d0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:57d0:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D3DBB820BF;
-        Wed, 18 May 2022 20:22:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AFCBC385A9;
-        Wed, 18 May 2022 20:22:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652905346;
-        bh=hLHKO7qKN+i0jdECk57N3nCVEGIJesNQBGUeRkLQTrg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VWFxt0ChnONpIORLUPrOsDgokdX6XJ0Xl6IYDhrDqfY3CUFz+1iWrX1LrvC1T1vqv
-         2ZcFQLAmTPagIPJgoyk19yirlUorPByNN6hEzCKRotliwUJrvQdRxY0OxbP2l2KyYG
-         2JK267/LEIb13lanePjToO+EMGAThE6q+nYw8A7SSLwGSpQGlGNLvEU/UVgrMqQscR
-         K9tOuBqobzrLCo+TDFT7MP1vPRORTAoHw8E7OEHDh97MOmUXekCOR1I03wcz+2Z40k
-         g9OJOggQ7sSEFiF1HgMHzRjbKrm8shxyX5Uih3zvO1FhksBi8+orBbZcidxmKW7FDQ
-         Brdx2LQwcQ50A==
-From:   Dinh Nguyen <dinguyen@kernel.org>
-To:     jarkko.nikula@linux.intel.com
-Cc:     dinguyen@kernel.org, andriy.shevchenko@linux.intel.com,
-        mika.westerberg@linux.intel.com, robh+dt@kernel.org,
-        krzk+dt@kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 1/2] i2c: designware: introduce a custom scl recovery for SoCFPGA platforms
-Date:   Wed, 18 May 2022 15:22:16 -0500
-Message-Id: <20220518202217.85803-1-dinguyen@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8A6DB1EC03AD;
+        Wed, 18 May 2022 22:23:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652905385;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=kiP3CsxtGQt01zP15K1kxQEOaD5Egp8vF87dwKeKYL8=;
+        b=cfQxvj7SaeAWQCQZgNDAuheCGIvEi/o+BwUKpBXlQCx98/tzP4S1cxFICjF3KCwG83r3mO
+        tMgfYDjND/mIZQ0JHd2wD1TBCBrPqUWd4BMCiw0dw8M3Gm2435TeQVnQPiM3tnaj4Ww1+6
+        C2VzC/gIXuOFBVRrGEMeRkVj1TG1SAw=
+Date:   Wed, 18 May 2022 22:23:01 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Richard Hughes <hughsient@gmail.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Martin Fernandez <martin.fernandez@eclypsium.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, Linux MM <linux-mm@kvack.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, daniel.gutson@eclypsium.com,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, X86 ML <x86@kernel.org>,
+        "Schofield, Alison" <alison.schofield@intel.com>,
+        alex.bazhaniuk@eclypsium.com, Greg KH <gregkh@linuxfoundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        "Huang, Kai" <kai.huang@intel.com>
+Subject: Re: [PATCH v8 0/8] x86: Show in sysfs if a memory node is able to do
+ encryption
+Message-ID: <YoVVpRBGp23ZOMVf@zn.tnic>
+References: <6d90c832-af4a-7ed6-4f72-dae08bb69c37@intel.com>
+ <CAPcyv4i73m6iPPfJE9CBdxf-OWGXahvGqvh6G-pqVO=3LB6ktQ@mail.gmail.com>
+ <47140A56-D3F8-4292-B355-5F92E3BA9F67@alien8.de>
+ <6abea873-52a2-f506-b21b-4b567bee1874@intel.com>
+ <FDABC5C8-B80A-4977-9F97-5A8FC47F69D6@alien8.de>
+ <4bc56567-e2ce-40ec-19ab-349c8de8d969@intel.com>
+ <CE52D65A-C9F4-408D-B18A-72D87495A433@alien8.de>
+ <CAD2FfiHe3hCSNHEA0mSWPbH4LEWhj+FgxkhO83U1GgYEJR6wrw@mail.gmail.com>
+ <YoSlzqSGLrQ+jdnD@zn.tnic>
+ <CAPcyv4jv52nv=Q=gm783ysU8D56iHzh9-UJrqqkgUve0f_kyZw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAPcyv4jv52nv=Q=gm783ysU8D56iHzh9-UJrqqkgUve0f_kyZw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The I2C pins on the SoCFPGA platforms do not go through a GPIO module,
-thus cannot be recovered by the default method of by doing a GPIO access.
-Only a reset of the I2C IP block can a recovery be successful.
+On Wed, May 18, 2022 at 11:28:49AM -0700, Dan Williams wrote:
+> On Wed, May 18, 2022 at 12:53 AM Borislav Petkov <bp@alien8.de> wrote:
+> >
+> > On Mon, May 16, 2022 at 09:39:06AM +0100, Richard Hughes wrote:
+> > > This is still something consumers need; at the moment users have no
+> > > idea if data is *actually* being encrypted.
+> >
+> > As it was already pointed out - that's in /proc/cpuinfo.
+> 
+> For TME you still need to compare it against the EFI memory map as
+> there are exclusion ranges for things like persistent memory. Given
+> that persistent memory can be forced into volatile "System RAM"
+> operation by various command line options and driver overrides, you
+> need to at least trim the assumptions of what is encrypted to the
+> default "conventional memory" conveyed by platform firmware / BIOS.
 
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
----
- drivers/i2c/busses/i2c-designware-core.h    |  3 ++-
- drivers/i2c/busses/i2c-designware-master.c  | 19 +++++++++++++++++--
- drivers/i2c/busses/i2c-designware-platdrv.c |  2 ++
- 3 files changed, 21 insertions(+), 3 deletions(-)
+So SME/SEV also has some exceptions to which memory is encrypted and
+which not. Doing device IO would be one example where you simply cannot
+encrypt.
 
-diff --git a/drivers/i2c/busses/i2c-designware-core.h b/drivers/i2c/busses/i2c-designware-core.h
-index 70b80e710990..4e997e381fb6 100644
---- a/drivers/i2c/busses/i2c-designware-core.h
-+++ b/drivers/i2c/busses/i2c-designware-core.h
-@@ -303,7 +303,8 @@ struct dw_i2c_dev {
- #define MODEL_MSCC_OCELOT	BIT(8)
- #define MODEL_BAIKAL_BT1	BIT(9)
- #define MODEL_AMD_NAVI_GPU	BIT(10)
--#define MODEL_MASK		GENMASK(11, 8)
-+#define MODEL_SOCFPGA		BIT(11)
-+#define MODEL_MASK		GENMASK(12, 8)
- 
- /*
-  * Enable UCSI interrupt by writing 0xd at register
-diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
-index 44a94b225ed8..333ad17b967d 100644
---- a/drivers/i2c/busses/i2c-designware-master.c
-+++ b/drivers/i2c/busses/i2c-designware-master.c
-@@ -813,12 +813,29 @@ static void i2c_dw_unprepare_recovery(struct i2c_adapter *adap)
- 	i2c_dw_init_master(dev);
- }
- 
-+static int i2c_custom_scl_recovery(struct i2c_adapter *adap)
-+{
-+	i2c_dw_prepare_recovery(adap);
-+	i2c_dw_unprepare_recovery(adap);
-+	return 0;
-+}
-+
- static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
- {
- 	struct i2c_bus_recovery_info *rinfo = &dev->rinfo;
- 	struct i2c_adapter *adap = &dev->adapter;
- 	struct gpio_desc *gpio;
- 
-+	switch (dev->flags & MODEL_MASK) {
-+	case MODEL_SOCFPGA:
-+		rinfo->recover_bus = i2c_custom_scl_recovery;
-+		break;
-+	default:
-+		rinfo->recover_bus = i2c_generic_scl_recovery;
-+		break;
-+	}
-+	adap->bus_recovery_info = rinfo;
-+
- 	gpio = devm_gpiod_get_optional(dev->dev, "scl", GPIOD_OUT_HIGH);
- 	if (IS_ERR_OR_NULL(gpio))
- 		return PTR_ERR_OR_ZERO(gpio);
-@@ -830,10 +847,8 @@ static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
- 		return PTR_ERR(gpio);
- 	rinfo->sda_gpiod = gpio;
- 
--	rinfo->recover_bus = i2c_generic_scl_recovery;
- 	rinfo->prepare_recovery = i2c_dw_prepare_recovery;
- 	rinfo->unprepare_recovery = i2c_dw_unprepare_recovery;
--	adap->bus_recovery_info = rinfo;
- 
- 	dev_info(dev->dev, "running with gpio recovery mode! scl%s",
- 		 rinfo->sda_gpiod ? ",sda" : "");
-diff --git a/drivers/i2c/busses/i2c-designware-platdrv.c b/drivers/i2c/busses/i2c-designware-platdrv.c
-index 70ade5306e45..92dfe3456ca7 100644
---- a/drivers/i2c/busses/i2c-designware-platdrv.c
-+++ b/drivers/i2c/busses/i2c-designware-platdrv.c
-@@ -153,6 +153,8 @@ static const struct of_device_id dw_i2c_of_match[] = {
- 	{ .compatible = "snps,designware-i2c", },
- 	{ .compatible = "mscc,ocelot-i2c", .data = (void *)MODEL_MSCC_OCELOT },
- 	{ .compatible = "baikal,bt1-sys-i2c", .data = (void *)MODEL_BAIKAL_BT1 },
-+	{ .compatible = "intel,socfpga-i2c", .data = (void *)MODEL_SOCFPGA },
-+
- 	{},
- };
- MODULE_DEVICE_TABLE(of, dw_i2c_of_match);
+But that wasn't the original question - the original question is whether
+memory encryption is enabled on the system.
+
+Now, the nodes way of describing what is encrypted and what not is
+not enough either when you want to determine whether an arbitrary
+transaction is being done encrypted or not. You can do silly things
+as mapping a page decrypted even if the underlying hardware can do
+encryption and every other page is encrypted and still think that that
+page is encrypted too. But that would be a lie.
+
+So the whole problem space needs to be specified with a lot more detail
+as to what exact information userspace is going to need and how we can
+provide it to it.
+
 -- 
-2.25.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
