@@ -2,87 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F89AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236573AbiERM0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S236371AbiERM02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236532AbiERM0O (ORCPT
+        with ESMTP id S236527AbiERM0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:26:14 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146B523158
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:26:12 -0700 (PDT)
-Received: from mail-yb1-f176.google.com ([209.85.219.176]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MqK2d-1nVyQT2pzn-00nUHC; Wed, 18 May 2022 14:26:10 +0200
-Received: by mail-yb1-f176.google.com with SMTP id i11so3333506ybq.9;
-        Wed, 18 May 2022 05:26:10 -0700 (PDT)
-X-Gm-Message-State: AOAM532zG8E9QxeoYTjizOUDigvxGU9HqUSHGI1jRTih85ajn3BHMHGI
-        rQaScaRoTZF6W4B1Tmy1TWo6QeP0dssL3tGArYY=
-X-Google-Smtp-Source: ABdhPJzmVlopyCfoOGgm87Os5G3QW/G9c0usDcCbEYvhYj8aqb9XG0oZHtflqu+F8nKb6UZfd6bLOqHBJIobSYwhMHY=
-X-Received: by 2002:a25:5e09:0:b0:64d:8543:627d with SMTP id
- s9-20020a255e09000000b0064d8543627dmr16981158ybb.394.1652876769340; Wed, 18
- May 2022 05:26:09 -0700 (PDT)
+        Wed, 18 May 2022 08:26:23 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6FD5FF0D;
+        Wed, 18 May 2022 05:26:18 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 3618C5FD02;
+        Wed, 18 May 2022 15:26:15 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1652876775;
+        bh=sFH5idW86lWQdWvgqVFesZuStLdWb38v0wu7UBLxe5s=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=hZpoRYairtXzQsb9c6qOeMBgrb8K9oiH3VkZuemIMBxs5nKXZXTdbtviPfb4H5iZE
+         1U0jaQnb83VUKUBQrSJ19/alHHVHqV++bFrralWmYqg5pC6/+By+OCM+KRdx5F/jkq
+         5U6WeMTFmEx093VTdDHbY4mxBSsMCXzi9rh0nZAyuWOIABJHJ5I1WGuOkkVMkF3kxd
+         N2TM1n4NBzCjPvQg+00dPGlr3QoouZP0DwTLkblzcc8YCQNeIUSioAPg4fQcY2Ib83
+         +3HyBTbeTVSXF6eRzTQidNzeojsVWkpD1EeQkADFk9vOOe22JdXGsQgybKEufKQMqr
+         lb3sR67M5lemA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed, 18 May 2022 15:26:13 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Topic: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Index: AQHYVASOybrxT0DjfUWoYWuGUlWOX6z4bouAgAnb/gCAIkALgA==
+Date:   Wed, 18 May 2022 12:25:59 +0000
+Message-ID: <20220518122515.aby5lbb4xusr6pdt@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
+ <20220419154555.24191-3-ddrokosov@sberdevices.ru>
+ <20220420115023.00006a25@Huawei.com>
+ <20220426172406.s4h6g7nrpytaq263@CAB-WSD-L081021.sigma.sbrf.ru>
+In-Reply-To: <20220426172406.s4h6g7nrpytaq263@CAB-WSD-L081021.sigma.sbrf.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <AC753801DB3F2E4DBCBE5465066DECA8@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220518065639.2432213-1-gerg@linux-m68k.org> <20220518065639.2432213-2-gerg@linux-m68k.org>
-In-Reply-To: <20220518065639.2432213-2-gerg@linux-m68k.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 18 May 2022 13:26:12 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1gd6ggDgKu66bQ-qQ-K4g60uLo5VOuO5gOKsO99Bi0dw@mail.gmail.com>
-Message-ID: <CAK8P3a1gd6ggDgKu66bQ-qQ-K4g60uLo5VOuO5gOKsO99Bi0dw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] m68knommu: fix undefined reference to `mach_get_rtc_pll'
-To:     Greg Ungerer <gerg@linux-m68k.org>
-Cc:     "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:YNRhJGh9ToQapzUXgx/DrsuWRXMLxTSWN594wMBabhiJEIaIoeS
- JbVnnNCMNLEfckiqGecFNadSlbPCCyil7i90xj/Ayg/wvjd9DnNZByNqkwqcF+78UZvfp+A
- hLt0dPABrkdEMHvsT8NuRiJSbCPhdJqFhjA9MbCFzDpc2muSQeDdkYL0K9ECfL0FwRh9zu5
- +NHv+1iNt7lKbOGCSTyeA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:m388vcAbaoA=:kPUqBJp/V1dAvNOh2cwLo3
- 3DqU9MK3vhP0prNuzaGr+zso7z16bMQ6qbRDYRGXw5sGoVfstBckcR1Mk25TzgODrQgHmCX5i
- eAbVKI1PRklHay72FzRSRRh37x37IQ9MQ/31zV3lN2M5zefdOqYStwgfiASAmq114MG7NiNWl
- 3/j5G6jdYx/72DR1i2nbTVULyAYq+Bpbn0ujya0uJsV+PDDF3xquBu6tthstos0FGXzAokfKe
- aQnz2xbYB7FEyjMy8OMy4tL6jOMm/yOuYCE1NKUUCl3ML6go/yDeajjrmMkBZtjOmIxEeaRqJ
- YhldK4my9kLUzp7wPbyNUANEY6pR1BbheFaOSWzu3/y8gc6qoxkuHeyTI4+O1CoKmdStefTac
- F3UCbVIWH5wxM2O8Wr489yaCx8UHtzQRCZfKsX772VbprgnK/pVp5fIw6LJgLapSyR/nV4ghR
- Ihtm4xPwz9lp5iZSsA7wEOPWiv6TBxcRv1zc9M4xf3XTAiqYhAdJ0OfqjIYFy43k/s5XbIQSg
- JFncuPvIdLTB1F15tEr2pVyz1SmqmFg31Zx+kogj/MzyOXxWzOhXJl99GVLGFCfmP8r19WVMV
- fizGd94sKrr3S241aDiVvhl8UQjWZd9Gk7kh1NjHsGXdX/O2ymuIHuuzkK1KJL3K9dsVxQ2b8
- Oi0GQ0VOlPhXkFXYUM4apgHGqycICP+IU5DdIHYoRkoGmumrIjncAUT277AcboMaywAW2z5X7
- SdwO4dKKOYzxMx6DNIwRhDPHhBsdcl3r5EsvLstzUDG0TIr0Y0Ljkf/wuDMAhH9JeaMthR+1w
- k4EiiAB6V5NbNswnucISuulS4VA3D1wXyU/puliY1h3Q1V8pQLp5Q1QOo0aOxUGOePWMiotq5
- HVGW0JB+T2tM1Vz5aQvNVuFl1JWlyGINgcL3196N4=
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/18 09:28:00 #19466841
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 7:56 AM Greg Ungerer <gerg@linux-m68k.org> wrote:
->
-> Configuring for a nommu classic m68k target and enabling the generic rtc
-> driver (CONFIG_RTC_DRV_GENERIC) will result in the following compile
-> error:
->
->    m68k-linux-ld: arch/m68k/kernel/time.o: in function `rtc_ioctl':
->    time.c:(.text+0x82): undefined reference to `mach_get_rtc_pll'
->    m68k-linux-ld: time.c:(.text+0xbc): undefined reference to `mach_set_rtc_pll'
->    m68k-linux-ld: time.c:(.text+0xf4): undefined reference to `mach_set_rtc_pll'
->
-> There is no definitions of "mach_set_rtc_pll" and "mach_get_rtc_pll" in the
-> nommu code paths. Move these definitions and the associated "mach_hwclk",
-> so that they are around their use case in time.c. This means they will
-> always be defined on the builds that require them, and not on those that
-> cannot use them - such as ColdFire (both with and without MMU enabled).
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Hi Jonathan,
 
-Right, this seems to be the best solution
+I have two items to be discussed about iio_trigger_get().
+Please see my questions below and correct me if I'm wrong.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+On Tue, Apr 26, 2022 at 08:24:10PM +0300, Dmitry Rokosov wrote:
+> > > +							       "%s-new-data",
+> > > +							       indio_dev->name);
+> > > +		if (!msa311->new_data_trig) {
+> > > +			dev_err(&i2c->dev, "cannot allocate new data trig\n");
+> > > +			err =3D -ENOMEM;
+> > > +			goto err_lock_destroy;
+> > > +		}
+> > > +
+> > > +		msa311->new_data_trig->dev.parent =3D &i2c->dev;
+> > > +		msa311->new_data_trig->ops =3D &msa311_new_data_trig_ops;
+> > > +		iio_trigger_set_drvdata(msa311->new_data_trig, indio_dev);
+> > > +		indio_dev->trig =3D msa311->new_data_trig;
+> >=20
+> > This will create a double free if you were to change the trigger.
+> > 		indio_dev->trig =3D iio_trigger_get(trig);
+> >=20
+>=20
+> I didn't take into account other trigger usage.
+> I'll rework this place for the v2.
+>=20
+
+The first one problem is module_get() calling for trigger get()
+semantic.
+I've applied iio_trigger_get() function to acquire module refcnt,
+but I've faced with rmmod busy problem. IIO driver module doesn't want to
+stop and unload due to not having zero module refcnt.
+Syscall delete_module() tries to stop module first and after calls
+driver exit() function (which executes devm_* handlers inside, including II=
+O
+trigger unregister). It means we have the chicken or the egg dilemma here.
+Module can't be unloaded until module refcnt is not zero and we can't
+execute IIO trigger unregister (decrease module refcnt) only when module
+refcnt is zero.
+I suppose the possible solution to such a problem is a different semantic
+for internal triggers (inside driver itself) and external drivers (like
+hwtimer trigger). What do you think?
+
+The second one issue is located in the different IIO drivers. Some modules
+call iio_trigger_get() before iio_trigger_register(), trig->owner is not
+initialized to the right value (THIS_MODULE) and we don't acquire refcnt
+for proper driver object.
+I'm going to send patchset to problem driver set, but I can test only
+buildable status for such modules, are you okay with that?
+
+--=20
+Thank you,
+Dmitry
