@@ -2,86 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E98CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80AA2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240538AbiERQqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
+        id S240487AbiERQs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240495AbiERQpy (ORCPT
+        with ESMTP id S240453AbiERQsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:45:54 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5842AD;
-        Wed, 18 May 2022 09:45:48 -0700 (PDT)
+        Wed, 18 May 2022 12:48:25 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B258D84A29
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:48:23 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so6190579pjb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:48:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652892348; x=1684428348;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=K0rrbc0K5LUJV5eVcZxJAUi8zXPdq/0qpUyGoqFCMP4=;
-  b=d6towLlnaCDJLfyKtGKGr2JLj0EUP8z9iWRAanUwq8LcixuWEfVAhlfy
-   z+pBlaYWUzyfNke4eK9/y+2HQbfYnC4k7YEVxgrmB69ThLqQbRqmrWFTR
-   /KInc6OZ7z3cyrbsa2oknATrKKBWZ7UajjWcx41aLZihMwOdVGOKAEoSs
-   U=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 18 May 2022 09:45:48 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 09:45:47 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 18 May 2022 09:45:47 -0700
-Received: from [10.50.12.117] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 18 May
- 2022 09:45:43 -0700
-Message-ID: <ff0c9375-9e44-36fb-427e-37d53a6a7b98@quicinc.com>
-Date:   Wed, 18 May 2022 22:15:40 +0530
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=a/nioQD6LDBjjZNelJ71Lr4Cech0R4yZAq15sbuZJCc=;
+        b=jeUGHyeLcHxjHkIIKYZBSEirqL6+qcT+SwaKdSDH0eEuWJX91z8H+/NwOyFm6Q/3sg
+         L9XrfogqRU3oI6TnKgiJeHgrGw/oGUbpLfVj3kV+oLdnjWkaqqa+CybKP/FbOvy6F6IL
+         rluB6UJhiQou1qwfVR+KdqqKcIz4w0sEumbGOiWOpSUME/YbUFIDrk//wtIR8X9N1Jm4
+         NoDF8h/+RCgyROH58JFUlONkcnXtlIgRGqgWS0Jr9Wt4GrykPJjgvLd1ygMncVXda1mG
+         rfViXBsfd8QYhpJJ3lk8Is4meGwXFAnxnTZ0OKw7eHzYV0K2t1q7aYsfC3i03hntXNgU
+         GTGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=a/nioQD6LDBjjZNelJ71Lr4Cech0R4yZAq15sbuZJCc=;
+        b=mO4vXLjTt3Ct7+dDIl/yNVVvABOUrF5bGDRhXBLfEGsw01c62ZhafbrfSpK8KT8ZES
+         MEF0+lhO5Wam6HnDBt70fnTaeJ0kOTO47Z0zw74KMNvzd6y2+ZNdOoVPsTEnYZVwW72i
+         UisxT5uQa0jKSlfeACMqoJ6N+XcVwgdgV5o/jPNF+6x6z3p8Gj9ed20ZLpirf4cVtLOG
+         0JOPYpKpqRavSpre90GFHPwQlXOOhrFGn7MieAe3KLQzWS3EMTmiOyl25qOHkBdkXLkV
+         th6pJf3uY/JmbnqQbgFSkWEcWJXW3BnM+HDH7XnoDwUmoyrqceYLCwevtm1d0t5jJcJl
+         9xXQ==
+X-Gm-Message-State: AOAM533GWGqZBIy745QHhGm+9h1esN1EKhsYnwrTJn0R/A7jzIE1JTvU
+        HnP+89WyFU+ZtVBuEEyKeNR5sQ==
+X-Google-Smtp-Source: ABdhPJzGXQOlhE+1fEGAQ/pp1W/iTllR26Rke7t+R8GImSuPPuWzP7SqD51y8AElUN1y20JLBSwO9A==
+X-Received: by 2002:a17:902:d502:b0:161:bc5f:7b2d with SMTP id b2-20020a170902d50200b00161bc5f7b2dmr285451plg.140.1652892503221;
+        Wed, 18 May 2022 09:48:23 -0700 (PDT)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id r15-20020aa7988f000000b0050dc76281c4sm2226246pfl.158.2022.05.18.09.48.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 09:48:22 -0700 (PDT)
+Message-ID: <317701e1-20a7-206f-92cd-cd36d436eee2@linaro.org>
+Date:   Wed, 18 May 2022 09:48:21 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCHv14 5/9] lib: Add register read/write tracing support
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
+ pending
 Content-Language: en-US
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     <arnd@arndb.de>, <catalin.marinas@arm.com>,
-        <gregkh@linuxfoundation.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <maz@kernel.org>, <quic_psodagud@quicinc.com>,
-        <quic_tsoni@quicinc.com>, <will@kernel.org>,
-        Prasad Sodagudi <psodagud@codeaurora.org>
-References: <cover.1651663123.git.quic_saipraka@quicinc.com>
- <9827bae40f6f319f294d06859c9e3c7442f067f2.1651663123.git.quic_saipraka@quicinc.com>
- <20220518100721.18fb5876@gandalf.local.home>
- <c696ebfc-9a2a-7b12-7297-3be8a31a82d3@quicinc.com>
-In-Reply-To: <c696ebfc-9a2a-7b12-7297-3be8a31a82d3@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>
+Cc:     cgroups@vger.kernel.org, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
+ <20220414164409.GA5404@blackbody.suse.cz> <YmHwOAdGY2Lwl+M3@slm.duckdns.org>
+ <20220422100400.GA29552@blackbody.suse.cz>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+In-Reply-To: <20220422100400.GA29552@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/18/2022 8:48 PM, Sai Prakash Ranjan wrote:
-> Hi Steve,
->
-> On 5/18/2022 7:37 PM, Steven Rostedt wrote:
->>> +        (void *)(unsigned long)__entry->caller, __entry->width,
->> __entry->caller is already defined as "unsigned long", why the extra
->> typecast?
->
-> I remember seeing compilation errors without this change in early versions of
-> the series. Let me check this again.
->
->
+On 4/22/22 04:05, Michal Koutný wrote:
+> On Thu, Apr 21, 2022 at 02:00:56PM -1000, Tejun Heo <tj@kernel.org> wrote:
+>> If this is the case, we need to hold an extra reference to be put by the
+>> css_killed_work_fn(), right?
+> 
+> I looked into it a bit more lately and found that there already is such
+> a fuse in kill_css() [1].
+> 
+> At the same type syzbots stack trace demonstrates the fuse is
+> ineffective
+> 
+>> css_release+0xae/0xc0 kernel/cgroup/cgroup.c:5146                    (**)
+>> percpu_ref_put_many include/linux/percpu-refcount.h:322 [inline]
+>> percpu_ref_put include/linux/percpu-refcount.h:338 [inline]
+>> percpu_ref_call_confirm_rcu lib/percpu-refcount.c:162 [inline]        (*)
+>> percpu_ref_switch_to_atomic_rcu+0x5a2/0x5b0 lib/percpu-refcount.c:199
+>> rcu_do_batch+0x4f8/0xbc0 kernel/rcu/tree.c:2485
+>> rcu_core+0x59b/0xe30 kernel/rcu/tree.c:2722
+>> rcu_core_si+0x9/0x10 kernel/rcu/tree.c:2735
+>> __do_softirq+0x27e/0x596 kernel/softirq.c:305
+> 
+> (*) this calls css_killed_ref_fn confirm_switch
+> (**) zero references after confirmed kill?
+> 
+> So, I was also looking at the possible race with css_free_rwork_fn()
+> (from failed css_create()) but that would likely emit a warning from
+> __percpu_ref_exit().
+> 
+> So, I still think there's something fishy (so far possible only via
+> artificial ENOMEM injection) that needs an explanation...
 
-No warnings or errors without this extra cast, yay. New version posted.
+I can't reliably reproduce this issue on neither mainline nor v5.10, where
+syzbot originally found it. It still triggers for syzbot though.
 
+-- 
 Thanks,
-Sai
+Tadeusz
