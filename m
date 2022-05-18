@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 04:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76184C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 04:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbiEREFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 00:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
+        id S229460AbiEREGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 00:06:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiEREFA (ORCPT
+        with ESMTP id S229614AbiEREFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 00:05:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DF0813F1F3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 21:03:19 -0700 (PDT)
+        Wed, 18 May 2022 00:05:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D34713CA12
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 21:03:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652846497;
+        s=mimecast20190719; t=1652846524;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3j8V/vEI/36ghefVupR/9lhtH3fLXscz8V5BpOvUSdM=;
-        b=CYq2JXty3zorFH0XM+BapMt9O/yfaOxlp5H9XOO0jMfuDUxxLBD350/CbSHQTfOfAvIpPa
-        aeCHeV3ZTbuz5QbwVuQgKmBVfVijczzYuoco0QOzn8RRqq/oMzGxGyUwpYHgCDuL5QzyIz
-        RUS4HUhP2zNXTeGJCWDqkde5CXoM7s4=
+        bh=WrBOPE4oEId2dh/bBHbwVJzxUmHDMIkRN//SBUyJhtk=;
+        b=AjjEzgvpEcc267DRKT0fhmA2YVCCLpiKRe/J9mxHkBMb7JW56m3JdwBzmo8HOHyFuFiK7L
+        4/SSO7M6SzRzl0EmertpkCZTHYdKpFEsZq7m0hsTkNJcycusESiyrPsc3tcVvtdlzuQpLh
+        m8xiQYF6+GFxW+XJfh9txC+EPRLtpcg=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-327-bndQIv7dNaKHzYhwome3TA-1; Wed, 18 May 2022 00:01:33 -0400
-X-MC-Unique: bndQIv7dNaKHzYhwome3TA-1
+ us-mta-380-mljeMUe7MOOqttl8EqkYkw-1; Wed, 18 May 2022 00:01:58 -0400
+X-MC-Unique: mljeMUe7MOOqttl8EqkYkw-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D56868039D7;
-        Wed, 18 May 2022 04:01:32 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 94D67185A794;
+        Wed, 18 May 2022 04:01:57 +0000 (UTC)
 Received: from localhost.localdomain (ovpn-14-27.pek2.redhat.com [10.72.14.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F015B1121314;
-        Wed, 18 May 2022 04:01:20 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4307A1121314;
+        Wed, 18 May 2022 04:01:40 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     mst@redhat.com, jasowang@redhat.com,
         virtualization@lists.linux-foundation.org,
@@ -49,9 +49,9 @@ Cc:     tglx@linutronix.de, peterz@infradead.org, paulmck@kernel.org,
         Vineeth Vijayan <vneethv@linux.ibm.com>,
         Peter Oberparleiter <oberpar@linux.ibm.com>,
         linux-s390@vger.kernel.org
-Subject: [PATCH V5 5/9] virtio-mmio: implement synchronize_cbs()
-Date:   Wed, 18 May 2022 11:59:47 +0800
-Message-Id: <20220518035951.94220-6-jasowang@redhat.com>
+Subject: [PATCH V5 7/9] virtio: allow to unbreak virtqueue
+Date:   Wed, 18 May 2022 11:59:49 +0800
+Message-Id: <20220518035951.94220-8-jasowang@redhat.com>
 In-Reply-To: <20220518035951.94220-1-jasowang@redhat.com>
 References: <20220518035951.94220-1-jasowang@redhat.com>
 MIME-Version: 1.0
@@ -62,7 +62,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simply synchronize the platform irq that is used by us.
+This patch allows the new introduced __virtio_break_device() to
+unbreak the virtqueue.
 
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Peter Zijlstra <peterz@infradead.org>
@@ -73,39 +74,56 @@ Cc: Cornelia Huck <cohuck@redhat.com>
 Cc: Vineeth Vijayan <vneethv@linux.ibm.com>
 Cc: Peter Oberparleiter <oberpar@linux.ibm.com>
 Cc: linux-s390@vger.kernel.org
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/virtio/virtio_mmio.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/virtio/virtio_ring.c | 21 +++++++++++++++++++++
+ include/linux/virtio.h       |  1 +
+ 2 files changed, 22 insertions(+)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 56128b9c46eb..4a3b66e4e198 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -345,6 +345,14 @@ static void vm_del_vqs(struct virtio_device *vdev)
- 	free_irq(platform_get_irq(vm_dev->pdev, 0), vm_dev);
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index cfb028ca238e..5b7df7c455f0 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -2397,6 +2397,27 @@ void virtio_break_device(struct virtio_device *dev)
  }
+ EXPORT_SYMBOL_GPL(virtio_break_device);
  
-+
-+static void vm_synchronize_cbs(struct virtio_device *vdev)
++/*
++ * This should allow the device to be used by the driver. You may
++ * need to grab appropriate locks to flush. This should only be used
++ * in some specific case e.g (probing and restoring). Driver should
++ * not call this directly.
++ */
++void __virtio_unbreak_device(struct virtio_device *dev)
 +{
-+	struct virtio_mmio_device *vm_dev = to_virtio_mmio_device(vdev);
++	struct virtqueue *_vq;
 +
-+	synchronize_irq(platform_get_irq(vm_dev->pdev, 0));
++	spin_lock(&dev->vqs_list_lock);
++	list_for_each_entry(_vq, &dev->vqs, list) {
++		struct vring_virtqueue *vq = to_vvq(_vq);
++
++		/* Pairs with READ_ONCE() in virtqueue_is_broken(). */
++		WRITE_ONCE(vq->broken, false);
++	}
++	spin_unlock(&dev->vqs_list_lock);
 +}
++EXPORT_SYMBOL_GPL(__virtio_unbreak_device);
 +
- static struct virtqueue *vm_setup_vq(struct virtio_device *vdev, unsigned index,
- 				  void (*callback)(struct virtqueue *vq),
- 				  const char *name, bool ctx)
-@@ -541,6 +549,7 @@ static const struct virtio_config_ops virtio_mmio_config_ops = {
- 	.finalize_features = vm_finalize_features,
- 	.bus_name	= vm_bus_name,
- 	.get_shm_region = vm_get_shm_region,
-+	.synchronize_cbs = vm_synchronize_cbs,
- };
+ dma_addr_t virtqueue_get_desc_addr(struct virtqueue *_vq)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index 5464f398912a..d8fdf170637c 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -131,6 +131,7 @@ void unregister_virtio_device(struct virtio_device *dev);
+ bool is_virtio_device(struct device *dev);
  
+ void virtio_break_device(struct virtio_device *dev);
++void __virtio_unbreak_device(struct virtio_device *dev);
  
+ void virtio_config_changed(struct virtio_device *dev);
+ #ifdef CONFIG_PM_SLEEP
 -- 
 2.25.1
 
