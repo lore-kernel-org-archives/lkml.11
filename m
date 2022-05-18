@@ -2,87 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42367C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DCFC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233315AbiERBMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 21:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
+        id S233310AbiERBNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 21:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233350AbiERBK7 (ORCPT
+        with ESMTP id S229736AbiERBNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 21:10:59 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524FC10F7;
-        Tue, 17 May 2022 18:10:43 -0700 (PDT)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L2vtf5pMczCsYC;
-        Wed, 18 May 2022 09:05:46 +0800 (CST)
-Received: from [10.174.179.215] (10.174.179.215) by
- canpemm500007.china.huawei.com (7.192.104.62) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 09:10:40 +0800
-Subject: Re: [PATCH -next] serial: cpm_uart: Fix build error without
- CONFIG_SERIAL_CPM_CONSOLE
-To:     Jiri Slaby <jirislaby@kernel.org>, <gregkh@linuxfoundation.org>,
-        <geert@linux-m68k.org>
-CC:     <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220517081355.35456-1-yuehaibing@huawei.com>
- <2612fae5-e972-5c82-c44e-af1fb1d839fd@kernel.org>
-From:   YueHaibing <yuehaibing@huawei.com>
-Message-ID: <6fd7c506-3ab1-7f58-62fc-d02d41b81034@huawei.com>
-Date:   Wed, 18 May 2022 09:10:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        Tue, 17 May 2022 21:13:34 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5A951E4C;
+        Tue, 17 May 2022 18:13:28 -0700 (PDT)
+X-UUID: 0a14b6a7b94e48adb474547db5e70b92-20220518
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:e0c1e221-3d54-4bdd-a806-4867722f3970,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:389f8ce2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 0a14b6a7b94e48adb474547db5e70b92-20220518
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 948408978; Wed, 18 May 2022 09:13:23 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 18 May 2022 09:13:21 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 18 May 2022 09:13:20 +0800
+Message-ID: <1614c81e4975c5cfd19c8090d523b16116907389.camel@mediatek.com>
+Subject: Re: [PATCH 2/2] iommu: mtk_iommu: Add support for MT6795 Helio X10
+ M4Us
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <konrad.dybcio@somainline.org>, <marijn.suijten@somainline.org>,
+        <martin.botka@somainline.org>,
+        <~postmarketos/upstreaming@lists.sr.ht>,
+        <phone-devel@vger.kernel.org>, <paul.bouchara@somainline.org>,
+        <yf.wang@mediatek.com>, <mingyuan.ma@mediatek.com>,
+        <libo.kang@mediatek.com>, <youlin.pei@mediatek.com>
+Date:   Wed, 18 May 2022 09:13:20 +0800
+In-Reply-To: <9a67d3e8-8840-03b1-aec8-5a218e810eae@collabora.com>
+References: <20220513151411.395744-1-angelogioacchino.delregno@collabora.com>
+         <20220513151411.395744-3-angelogioacchino.delregno@collabora.com>
+         <38e38006662b52631a2145228444b9d70f9eb2c6.camel@mediatek.com>
+         <9a67d3e8-8840-03b1-aec8-5a218e810eae@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <2612fae5-e972-5c82-c44e-af1fb1d839fd@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/17 17:12, Jiri Slaby wrote:
-> On 17. 05. 22, 10:13, YueHaibing wrote:
->> drivers/tty/serial/cpm_uart/cpm_uart_core.c: In function ‘cpm_uart_init_port’:
->> drivers/tty/serial/cpm_uart/cpm_uart_core.c:1251:7: error: ‘udbg_port’ undeclared (first use in this function); did you mean ‘uart_port’?
->>    if (!udbg_port)
->>         ^~~~~~~~~
->>         uart_port
->>
->> commit d142585bceb3 leave this corner, wrap it with #ifdef block
->>
->> Fixes: d142585bceb3 ("serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->> ---
->>   drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
->> index d6d3db9c3b1f..ec3a8f768555 100644
->> --- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
->> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
->> @@ -1248,7 +1248,9 @@ static int cpm_uart_init_port(struct device_node *np,
->>     #ifdef CONFIG_PPC_EARLY_DEBUG_CPM
->>   #ifdef CONFIG_CONSOLE_POLL
->> +#ifdef CONFIG_SERIAL_CPM_CONSOLE
->>       if (!udbg_port)
->> +#endif
->>   #endif
-> 
-> That's ugly, could you merge the two to
->   #if defined(ONE) && defined(TWO)
+On Tue, 2022-05-17 at 11:26 +0200, AngeloGioacchino Del Regno wrote:
+> Il 17/05/22 11:08, Yong Wu ha scritto:
+> > On Fri, 2022-05-13 at 17:14 +0200, AngeloGioacchino Del Regno
+> > wrote:
+> > > Add support for the M4Us found in the MT6795 Helio X10 SoC.
+> > > 
+> > > Signed-off-by: AngeloGioacchino Del Regno <
+> > > angelogioacchino.delregno@collabora.com>
+> > > ---
+> > >   drivers/iommu/mtk_iommu.c | 20 +++++++++++++++++++-
+> > >   1 file changed, 19 insertions(+), 1 deletion(-)
 
-Ok, will do this in v2.
-> instead
-> ?
+[...]
+
+> > > +static const struct mtk_iommu_plat_data mt6795_data = {
+> > > +	.m4u_plat     = M4U_MT6795,
+> > > +	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI |
+> > > +			HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM,
+> > > +	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+> > > +	.banks_num    = 1,
+> > > +	.banks_enable = {true},
+> > > +	.iova_region  = single_domain,
+> > > +	.iova_region_nr = ARRAY_SIZE(single_domain),
+> > > +	.larbid_remap = {{0}, {1}, {2}, {3}, {4}}, /* Linear mapping.
+> > > */
+> > > +};
+> > 
+> > This is nearly same with mt8173_data. mt8173 has one more larb than
+> > mt6795, its larbid_remap is also ok for mt6795.
+> > 
 > 
->>           udbg_putc = NULL;
->>   #endif
+> I think that we should be explicit about the larbid_remap property,
+> since mt6795 has one less larb, we should explicitly say that like
+> I did there... that's only for human readability I admit ... but,
+> still, I wouldn't want to see people thinking that MT6795 has 6 LARBs
+> because they've read that larbid_remap having 6 entries.
+
+In the linear mapping case, It does help. Strictly larbid_remap is two-
+dimensional array now, It doesn't indicate how many larbs this SoC
+has. If someone would like to know this, he could read the mtxxx-larb-
+port.h. We also could document the larb numbers in the binding
+for readability.
+
+Anyway, It is not a big problem. A new structure is ok for me. I just
+complain there are too many structures, specially in the internal
+branch which contains many non-upstream SoCs, and there may be several
+IOMMU HWs in one SoC. thus I'd like to group it personally.
+
 > 
+> > thus it looks we could use mt8173 as the backward compatible.
+> >      compatible = "mediatek,mt6795-m4u",
+> >                   "mediatek,mt8173-m4u";
+> > 
+> > After this, the only thing is about "mediatek,mt6795-infracfg". we
+> > have
+> > to try again with mediatek,mt6795-infracfg after mediatek,mt8173-
+> > infracfg fail. I think we should allow the backward case in 4GB
+> > mode
+> > judgment if we have.
+> > 
+> > What's your opinion? or some other suggestion?
+> > Thanks.
 > 
+> I know, I may have a plan for that, but I wanted to have a good
+> reason to
+> propose such a thing, as if it's just about two SoCs needing that,
+> there
+> would be no good reason to get things done differently.
+> 
+> ...so, in order to provide a good cleanup, we have two possible roads
+> to
+> follow here: either we add a generic "mediatek,infracfg" compatible
+> to the
+> infra node (but I don't like that), or we can do it like it was
+> previously
+> done in mtk-pm-domains.c (I prefer that approach):
+> 
+> iommu: iommu@somewhere {
+> 	... something ...
+> 	mediatek,infracfg = <&infracfg>;
+
+We like this too. But this was not suggested from Rob long before.
+
+https://lore.kernel.org/linux-mediatek/20200715205120.GA778876@bogus/
+
+> };
+> 
+> infracfg = syscon_regmap_lookup_by_compatible(node,
+> "mediatek,infracfg");
+> if (IS_ERR(infracfg)) {
+> 	/* try with the older way */
+> 	switch (...) {
+> 	case .... p = "mediatek,mt2712-infracfg";
+> 	... blah blah ...
+> 	}
+> 	/* legacy also failed, ouch! */
+> 	if (IS_ERR(infracfg))
+> 		return PTR_ERR(infracfg);
+> }
+> 
+> ret = regmap_read ... etc etc etc
+> 
+> Cheers,
+> Angelo
+
