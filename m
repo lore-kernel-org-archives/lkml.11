@@ -2,82 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 087F9C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4984EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237625AbiERNSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
+        id S237634AbiERNSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236559AbiERNSC (ORCPT
+        with ESMTP id S236559AbiERNSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:18:02 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDE1ABF49;
-        Wed, 18 May 2022 06:18:01 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3D6q27SbzhZ6R;
-        Wed, 18 May 2022 21:17:23 +0800 (CST)
-Received: from dggpeml500010.china.huawei.com (7.185.36.155) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 21:17:59 +0800
-Received: from huawei.com (10.67.175.33) by dggpeml500010.china.huawei.com
- (7.185.36.155) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 21:17:58 +0800
-From:   Lin Yujun <linyujun809@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <gustavoars@kernel.org>, <johnny.chenyi@huawei.com>,
-        <chenjiahao16@huawei.com>, <chenlifu@huawei.com>,
-        <lizhengyu3@huawei.com>, <liaochang1@huawei.com>,
-        <linyujun809@huawei.com>, <wangzhu9@huawei.com>,
-        <xuyihang@huawei.com>, <chris.zjh@huawei.com>,
-        <zouyipeng@huawei.com>
-Subject: [PATCH -next] x86/events:Use struct_size() helper in kzalloc()
-Date:   Wed, 18 May 2022 21:16:26 +0800
-Message-ID: <20220518131626.109123-1-linyujun809@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 18 May 2022 09:18:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9247B0A64;
+        Wed, 18 May 2022 06:18:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79712B82032;
+        Wed, 18 May 2022 13:18:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D865C385AA;
+        Wed, 18 May 2022 13:18:12 +0000 (UTC)
+Message-ID: <adb0c664-a662-4823-9e54-0daab22932a0@linux-m68k.org>
+Date:   Wed, 18 May 2022 23:18:09 +1000
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.33]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500010.china.huawei.com (7.185.36.155)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 3/3] m68knommu: fix 68000 CPU link with no platform
+ selected
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux/m68k <linux-m68k@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+References: <20220518065639.2432213-1-gerg@linux-m68k.org>
+ <20220518065639.2432213-4-gerg@linux-m68k.org>
+ <CAMuHMdWADK4d-OxKYdnRvbtVsGtbZ_+vF2D70S-5hXNt0rqg9w@mail.gmail.com>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <CAMuHMdWADK4d-OxKYdnRvbtVsGtbZ_+vF2D70S-5hXNt0rqg9w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace sizeof() with struct_size() to avoid potential integer
-or heap overflow.
+Hi Geert,
 
-Also, address the following sparse warnings:
-arch/x86/events/rapl.c:685:16: warning: using sizeof on a
-flexible structure
+On 18/5/22 19:20, Geert Uytterhoeven wrote:
+> Hi Greg.
+> 
+> On Wed, May 18, 2022 at 8:56 AM Greg Ungerer <gerg@linux-m68k.org> wrote:
+>> If building for a nommu m68k classic CPU and no platform (board) is
+>> selected then the final link fails with:
+>>
+>>       LD      vmlinux.o
+>>     m68k-linux-ld: cannot find arch/m68k/kernel/head.o: No such file or directory
+>>     make: *** [Makefile:1158: vmlinux] Error 1
+>>
+>> Not selecting a platform is ok, that is a generic 68000 system build.
+>> All of the platform selections are for 68328 variants.
+>>
+>> The underlying problem is that the CPU config option (CONFIG_M68000)
+>> ends up not being set, it is currently only selected by one of the
+>> platform choices.
+>>
+>> Change CONFIG_M68000 so that it is always enabled for the nommu m68k
+>> classic configuration.
+>>
+>> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+> 
+> Thanks for your patch!
+> 
+>> --- a/arch/m68k/Kconfig.cpu
+>> +++ b/arch/m68k/Kconfig.cpu
+>> @@ -37,7 +37,7 @@ endchoice
+>>   if M68KCLASSIC
+>>
+>>   config M68000
+>> -       bool
+>> +       def_bool y
+> 
+> And then the selects can be removed, too, as the symbol is now always
+> enabled?
 
-Signed-off-by: Lin Yujun <linyujun809@huawei.com>
----
- arch/x86/events/rapl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes, I think that would be the case.
 
-diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-index 77e3a47af5ad..c7e79f0ac04f 100644
---- a/arch/x86/events/rapl.c
-+++ b/arch/x86/events/rapl.c
-@@ -685,7 +685,7 @@ static int __init init_rapl_pmus(void)
- 	int maxdie = topology_max_packages() * topology_max_die_per_package();
- 	size_t size;
- 
--	size = sizeof(*rapl_pmus) + maxdie * sizeof(struct rapl_pmu *);
-+	size = struct_size(rapl_pmus, pmus, maxdie);
- 	rapl_pmus = kzalloc(size, GFP_KERNEL);
- 	if (!rapl_pmus)
- 		return -ENOMEM;
--- 
-2.17.1
 
+> I'm wondering how to handle this when another nommu-m68k-classic
+> platform shows up (again, cfr. the removed 68360 support) , that
+> would need a different head.S?  Of course that's something to be
+> solved later...
+
+Yes, indeed. I am kinda kicking that can down the road :-)
+
+It probably doesn't make a lot of sense to be able to select
+multiple platform types in this specific nommu m68k classic setup.
+The startup config code does not support probing of platform type,
+it has hard coded #if conditionals that mean it only supports a
+single platform selection anyway.
+
+Anyway, a problem to deal with when we have more choices here.
+
+
+>>          depends on !MMU
+>>          select CPU_HAS_NO_BITFIELDS
+>>          select CPU_HAS_NO_CAS
+> 
+> Note that mmu-m68k-classic (e.g. CONFIG_MMU=y + allnonfig) has the
+> same problem.  That config does need other fixes too.  E.g. I have
+> a local patch to make sure NR_IRQS is never zero, but never got to
+> solve the missing head.o problem in an acceptable way.
+
+Yep, ok.
+
+Regards
+Greg
+
+
+
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
