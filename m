@@ -2,108 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B186C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE50CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237020AbiERMd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49276 "EHLO
+        id S237038AbiERMeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236983AbiERMcz (ORCPT
+        with ESMTP id S237000AbiERMdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:32:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4B960A8B;
+        Wed, 18 May 2022 08:33:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5AF16D49D;
         Wed, 18 May 2022 05:29:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB0F86164C;
-        Wed, 18 May 2022 12:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F600C36AE2;
-        Wed, 18 May 2022 12:29:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB13961610;
+        Wed, 18 May 2022 12:28:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DFACC385A5;
+        Wed, 18 May 2022 12:28:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876964;
-        bh=9RWIWCvzw+luvshpZOAHRIXd41n81v/delU1wx/HP5I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EgMD9d9CLHUeRbPJrdX5livRw/SLuoZuy+CA4hhgeDhQpxONjLQ0MEH/n6yNuULu1
-         o1fHtg7BNpv4xZm8hG2UVle5EGz157P05TJh+81sOOBuK/Y7UjqT2kf7natbH8aS2B
-         kibrFJwtOH1leP03l3nGAF4p9nrMayRb7SdWxYe9N5BCS03ktbQk19dWlJvQn3N3bG
-         8iIGhqzQ5QHayOkUE2X2w2H+A3gFZVR8eN+BP9tXgiuVRlifp2gKXMkPpH35ZAWCO9
-         3ZoxYa+o92PKiqaKVGLMgX3nTfgwgpttJfXHl7enwJw8uFIafJlz1YEr4X6mHi/ro5
-         8L9rezlU92tqw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shreyas K K <quic_shrekk@quicinc.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        catalin.marinas@arm.com, corbet@lwn.net, anshuman.khandual@arm.com,
-        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
-        james.morse@arm.com, arnd@arndb.de, lcherian@marvell.com,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 12/13] arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs
-Date:   Wed, 18 May 2022 08:28:43 -0400
-Message-Id: <20220518122844.343220-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
-References: <20220518122844.343220-1-sashal@kernel.org>
+        s=k20201202; t=1652876927;
+        bh=eeWVzhQfZJawr1ulEAO9X0x7Zypu4MY/8i2DFCdQrGk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eRSlZlMmxxnz0bwRoFeeMIHJqkS2ZfUOkw3rqmoXZ2sC0wTlh7vNSl3xrjViNfFQe
+         4e5iob2b3GDummc18pz2lYDwzKinm+Lc3e/p6ZWqWRkcH3eR8igaU9T8X3pPsu72rQ
+         ehpVjsEdjGdzL0OHoCisLXdPo5Ap7eJlVeg5VGIh90jS2baGtfCdPwZ5b73k/nFxZU
+         uCNAtY7HnCgVnEfArVut7x51iEd6wmPEYwpLubScDTEpa3GL962yWjxq3hX8LdgjBo
+         bIhASvwmyRVH+3mp1IfuQk77gG/TWwUGnUR71Q2zgViPMMSQ7eRw10Qbus7ld0ugAl
+         +gTZktWi7hc3g==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH v5] f2fs: fix to do sanity check for inline inode
+Date:   Wed, 18 May 2022 20:28:41 +0800
+Message-Id: <20220518122841.12323-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreyas K K <quic_shrekk@quicinc.com>
+Yanming reported a kernel bug in Bugzilla kernel [1], which can be
+reproduced. The bug message is:
 
-[ Upstream commit 51f559d66527e238f9a5f82027bff499784d4eac ]
+The kernel message is shown below:
 
-Add KRYO4XX gold/big cores to the list of CPUs that need the
-repeat TLBI workaround. Apply this to the affected
-KRYO4XX cores (rcpe to rfpe).
+kernel BUG at fs/inode.c:611!
+Call Trace:
+ evict+0x282/0x4e0
+ __dentry_kill+0x2b2/0x4d0
+ dput+0x2dd/0x720
+ do_renameat2+0x596/0x970
+ __x64_sys_rename+0x78/0x90
+ do_syscall_64+0x3b/0x90
 
-The variant and revision bits are implementation defined and are
-different from the their Cortex CPU counterparts on which they are
-based on, i.e., (r0p0 to r3p0) is equivalent to (rcpe to rfpe).
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=215895
 
-Signed-off-by: Shreyas K K <quic_shrekk@quicinc.com>
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Link: https://lore.kernel.org/r/20220512110134.12179-1-quic_shrekk@quicinc.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The bug is due to fuzzed inode has both inline_data and encrypted flags.
+During f2fs_evict_inode(), as the inode was deleted by rename(), it
+will cause inline data conversion due to conflicting flags. The page
+cache will be polluted and the panic will be triggered in clear_inode().
+
+Try fixing the bug by doing more sanity checks for inline data inode in
+sanity_check_inode().
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
 ---
- Documentation/arm64/silicon-errata.rst | 3 +++
- arch/arm64/kernel/cpu_errata.c         | 2 ++
- 2 files changed, 5 insertions(+)
+v5:
+- clean up codes.
+ fs/f2fs/f2fs.h   |  1 +
+ fs/f2fs/inline.c | 29 ++++++++++++++++++++++++-----
+ fs/f2fs/inode.c  |  3 +--
+ 3 files changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index 719510247292..f01eed0ee23a 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -160,6 +160,9 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | Qualcomm Tech. | Kryo4xx Silver  | N/A             | ARM64_ERRATUM_1024718       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| Qualcomm Tech. | Kryo4xx Gold    | N/A             | ARM64_ERRATUM_1286807       |
-++----------------+-----------------+-----------------+-----------------------------+
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index e9e32bc814df..000468bf06ca 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4019,6 +4019,7 @@ extern struct kmem_cache *f2fs_inode_entry_slab;
+  * inline.c
+  */
+ bool f2fs_may_inline_data(struct inode *inode);
++bool f2fs_sanity_check_inline_data(struct inode *inode);
+ bool f2fs_may_inline_dentry(struct inode *inode);
+ void f2fs_do_read_inline_data(struct page *page, struct page *ipage);
+ void f2fs_truncate_inline_inode(struct inode *inode,
+diff --git a/fs/f2fs/inline.c b/fs/f2fs/inline.c
+index a578bf83b803..bf46a7dfbea2 100644
+--- a/fs/f2fs/inline.c
++++ b/fs/f2fs/inline.c
+@@ -14,21 +14,40 @@
+ #include "node.h"
+ #include <trace/events/f2fs.h>
+ 
+-bool f2fs_may_inline_data(struct inode *inode)
++static bool support_inline_data(struct inode *inode)
+ {
+ 	if (f2fs_is_atomic_file(inode))
+ 		return false;
+-
+ 	if (!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))
+ 		return false;
+-
+ 	if (i_size_read(inode) > MAX_INLINE_DATA(inode))
+ 		return false;
++	return true;
++}
+ 
+-	if (f2fs_post_read_required(inode))
++bool f2fs_may_inline_data(struct inode *inode)
++{
++	if (!support_inline_data(inode))
+ 		return false;
+ 
+-	return true;
++	return !f2fs_post_read_required(inode);
++}
 +
- +----------------+-----------------+-----------------+-----------------------------+
- | Fujitsu        | A64FX           | E#010001        | FUJITSU_ERRATUM_010001      |
- +----------------+-----------------+-----------------+-----------------------------+
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 533559c7d2b3..ca42d58e8c82 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -220,6 +220,8 @@ static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
- #ifdef CONFIG_ARM64_ERRATUM_1286807
- 	{
- 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
-+		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
-+		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
- 	},
- #endif
- 	{},
++bool f2fs_sanity_check_inline_data(struct inode *inode)
++{
++	if (!f2fs_has_inline_data(inode))
++		return false;
++
++	if (!support_inline_data(inode))
++		return true;
++
++	/*
++	 * used by sanity_check_inode(), when disk layout fields has not
++	 * been synchronized to inmem fields.
++	 */
++	return (S_ISREG(inode->i_mode) &&
++		(file_is_encrypt(inode) || file_is_verity(inode) ||
++		(F2FS_I(inode)->i_flags & F2FS_COMPR_FL)));
+ }
+ 
+ bool f2fs_may_inline_dentry(struct inode *inode)
+diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
+index 2fce8fa0dac8..938961a9084e 100644
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -276,8 +276,7 @@ static bool sanity_check_inode(struct inode *inode, struct page *node_page)
+ 		}
+ 	}
+ 
+-	if (f2fs_has_inline_data(inode) &&
+-			(!S_ISREG(inode->i_mode) && !S_ISLNK(inode->i_mode))) {
++	if (f2fs_sanity_check_inline_data(inode)) {
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+ 		f2fs_warn(sbi, "%s: inode (ino=%lx, mode=%u) should not have inline_data, run fsck to fix",
+ 			  __func__, inode->i_ino, inode->i_mode);
 -- 
-2.35.1
+2.25.1
 
