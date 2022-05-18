@@ -2,138 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA12C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CCDC43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240681AbiERRBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34388 "EHLO
+        id S240694AbiERRBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240653AbiERRBc (ORCPT
+        with ESMTP id S240596AbiERRBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 13:01:32 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F354333E1E;
-        Wed, 18 May 2022 10:01:29 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id i1so2349627plg.7;
-        Wed, 18 May 2022 10:01:29 -0700 (PDT)
+        Wed, 18 May 2022 13:01:43 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177DC56FA0
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:01:39 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id c205-20020a254ed6000000b0064d5bd93479so2211166ybb.17
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:01:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RcLHuOHV+RcpwGuZbYj1dwn0uVanHpALeVRluvJ4g1I=;
-        b=K04yJM6DTJUgL8ulQk9SeqQC4aMUlA0X9pcm/57phnuJEd8CJpCNkJ53QfDFtTCd29
-         1z4efV2UH/LoajUWyy9G98L46LR0FKlvEA3JC/fC9f0fGvu84OcftYWXlfNTowf5VFOT
-         GzlVf8UhUQSW9CtN4neQwhArRRFr2C7oZiGsL0FnruJF0tkpJMSr71FIwFk27Qpk2zsm
-         vQwoSZm2vgRaMuyqYsEaFVFJ7ea+XatN1hnmzpGBstBCq16R8txpKOlzHtKDvRoJZQpC
-         TqeOrnGnQHDGypzLstsrySlutf/CBsGfqEOslSTa6b0GsBiMFBQP1atedfF7w7tjb4YH
-         47VA==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=21gji5A7fyf+LOH7W7vX2Ngr8AGXxxWBQWpGLTWRGhA=;
+        b=GTzkF8O5vkR1Lt+Fnw7LR/ngt2HqSyPnypaoqbXSyP+l0zND+UX2I0KppXnl1YZi6I
+         03baXp65KNEbOp+bqVWwVIBpZpkzPzYSrsYgzkjBGT3tSZ1qmttFgx3AwVGDCbEdJ8Nk
+         TRVb/htkvdsqFa/k2tSEAefow55INRy1eJMxSjlVtQrpBLjC1y3k6B15D8J+y15khDS0
+         3sZ/3NciSAL4YcN5zUE2nW3wbrdeS0l7Y3vSQwU/XD6RNkKP3vR2rqYFzdno8wUK2PBK
+         9BCc2PRT+x06Z+qc/Tx+Db/tL9sxXLOz5VyT8X+kLlGTQ3l0efVDXJKBgpDhevgDT24b
+         ocEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RcLHuOHV+RcpwGuZbYj1dwn0uVanHpALeVRluvJ4g1I=;
-        b=bN4Kl9WEyiETuVgM64Z6V7qb6CIooimgLKwJv3ALXFjUIPap2sKw/Hc5SX0xHQzgdV
-         2jer88HyuG5aP2zQMkU/uNolXo/8qq13iLkt4xhjZKxIjiktEajoxbftS9QRElt0+jOg
-         zlrwKEtkYcTclhJOfJ0pWxokztlaUH9/pHmo01Kw8//Z0KifxWxXA0GxVcAXSVXesxYx
-         CU1dYSIXJhxD7RJ5PRcRTZNiq1NppHNQfrJhDk4F/+LVIAafPDVC+Y7OFAWZG8MVKz1Z
-         DqL1B1fnEf714vMflp7BHYh1mvpE/8xn9V4SiE4fMRfhS2wFbwl5uXBP6CjjkSH1oOfa
-         w3PA==
-X-Gm-Message-State: AOAM532uBtvD6pZwJmGnO6eDpE3gQEHNzuc3hiijlYuR0KVFoXUPOEvx
-        R8ADIC7ldzX7PXgr7e2aqSE=
-X-Google-Smtp-Source: ABdhPJx0XLUuLwYHCSHly5djoS/xd+ihCGXyWkcmfhvIY5k20ccuv0i5oQYvMkcbWEEftuSU5Zlbog==
-X-Received: by 2002:a17:902:f64c:b0:156:7ceb:b579 with SMTP id m12-20020a170902f64c00b001567cebb579mr496428plg.73.1652893288645;
-        Wed, 18 May 2022 10:01:28 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.117])
-        by smtp.gmail.com with ESMTPSA id p42-20020a056a0026ea00b0050dc762818dsm2283240pfw.103.2022.05.18.10.01.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 10:01:28 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] KVM: x86/pmu: Update global enable_pmu when PMU is undetected
-Date:   Thu, 19 May 2022 01:01:18 +0800
-Message-Id: <20220518170118.66263-3-likexu@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518170118.66263-1-likexu@tencent.com>
-References: <20220518170118.66263-1-likexu@tencent.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=21gji5A7fyf+LOH7W7vX2Ngr8AGXxxWBQWpGLTWRGhA=;
+        b=pXuXUKwhuBAPTzjpe83s6h1ItLjPcyAm9fdiYyya0mVMuORzOhxiOl5RXFt4c7/J+r
+         KfjwSTRvljpRZ1BY3vz92laS9F+9FGvJZI9D6gubrisdZ/GBPyr32L5t4P3APRcWy2JO
+         WQMTZ5BcQdAprPU2Xxc5MOWyyhQ4iicJDpj67yPtBmBIOJ0iA5L75kMNQa1NAsTCBUMx
+         wSyt/uDek1qVv+xjYqeef8CofX1cpkBZfD7y5wqWDPU93FWxF+S4gQgMiyIuM+31ZGmo
+         j1nZuRB7mZu1kcyXFpJs0dsdXddtEsNmnozFW4NPtsN5cVh/iW7OBWL2kL3ldwlVqec9
+         mEEQ==
+X-Gm-Message-State: AOAM531A6ofEhmLHzDC1Iz4DwthdGW4QNbz6ZcHwR2kIYFHYBRG9CNEA
+        ZO9Px/xqjYHKX3AIFWUF4X/GiWJadCSCrw==
+X-Google-Smtp-Source: ABdhPJy5L9IdIUF+kc9lONmkwtmBOtrGteA3jV3FIp+O1wzAgxcgJV3U+0y/By+Qa0bPGIbZ2l3+jMPy66fGaw==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:a94f:2cb3:f298:ec1b])
+ (user=dlatypov job=sendgmr) by 2002:a81:2f8c:0:b0:2fe:ed42:21ca with SMTP id
+ v134-20020a812f8c000000b002feed4221camr399767ywv.120.1652893298194; Wed, 18
+ May 2022 10:01:38 -0700 (PDT)
+Date:   Wed, 18 May 2022 10:01:22 -0700
+In-Reply-To: <20220518170124.2849497-1-dlatypov@google.com>
+Message-Id: <20220518170124.2849497-2-dlatypov@google.com>
+Mime-Version: 1.0
+References: <20220518170124.2849497-1-dlatypov@google.com>
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+Subject: [PATCH 1/3] Documentation: kunit: fix example run_kunit func to allow
+ spaces in args
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     elver@google.com, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+Without the quoting, the example will mess up invocations like
+$ run_kunit "Something with spaces"
 
-On some virt platforms (L1 guest w/o PMU), the value of module parameter
-'enable_pmu' for nested L2 guests should be updated at initialisation.
+Note: this example isn't valid, but if ever a usecase arises where a
+flag argument might have spaces in it, it'll break.
 
-Considering that there is no concept of "architecture pmu" in AMD or Hygon
-and that the versions (prior to Zen 4) are all 0, but that the theoretical
-available counters are at least AMD64_NUM_COUNTERS, the utility
-check_hw_exists() is reused in the initialisation call path.
-
-Opportunistically update Intel specific comments.
-
-Fixes: 8eeac7e999e8 ("KVM: x86/pmu: Add kvm_pmu_cap to optimize perf_get_x86_pmu_capability")
-Signed-off-by: Like Xu <likexu@tencent.com>
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
 ---
- arch/x86/events/core.c |  6 ++++++
- arch/x86/kvm/pmu.h     | 15 ++++++++++-----
- 2 files changed, 16 insertions(+), 5 deletions(-)
+ Documentation/dev-tools/kunit/running_tips.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index 7f1d10dbabc0..865eeb500a71 100644
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -2982,6 +2982,12 @@ unsigned long perf_misc_flags(struct pt_regs *regs)
+diff --git a/Documentation/dev-tools/kunit/running_tips.rst b/Documentation/dev-tools/kunit/running_tips.rst
+index c36f6760087d..da8677c32aee 100644
+--- a/Documentation/dev-tools/kunit/running_tips.rst
++++ b/Documentation/dev-tools/kunit/running_tips.rst
+@@ -15,7 +15,7 @@ It can be handy to create a bash function like:
+ .. code-block:: bash
  
- void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
- {
-+	if (!check_hw_exists(&pmu, x86_pmu.num_counters,
-+			     x86_pmu.num_counters_fixed)) {
-+		memset(cap, 0, sizeof(*cap));
-+		return;
-+	}
-+
- 	cap->version		= x86_pmu.version;
- 	/*
- 	 * KVM doesn't support the hybrid PMU yet.
-diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
-index ecf2962510e4..b200d080a8a3 100644
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -150,14 +150,19 @@ extern struct x86_pmu_capability kvm_pmu_cap;
+ 	function run_kunit() {
+-	  ( cd "$(git rev-parse --show-toplevel)" && ./tools/testing/kunit/kunit.py run $@ )
++	  ( cd "$(git rev-parse --show-toplevel)" && ./tools/testing/kunit/kunit.py run "$@" )
+ 	}
  
- static inline void kvm_init_pmu_capability(void)
- {
-+	bool is_intel = boot_cpu_data.x86_vendor == X86_VENDOR_INTEL;
-+
- 	perf_get_x86_pmu_capability(&kvm_pmu_cap);
- 
--	/*
--	 * Only support guest architectural pmu on
--	 * a host with architectural pmu.
--	 */
--	if (!kvm_pmu_cap.version)
-+	 /*
-+	  * For Intel, only support guest architectural pmu
-+	  * on a host with architectural pmu.
-+	  */
-+	if ((is_intel && !kvm_pmu_cap.version) || !kvm_pmu_cap.num_counters_gp) {
- 		memset(&kvm_pmu_cap, 0, sizeof(kvm_pmu_cap));
-+		enable_pmu = false;
-+		return;
-+	}
- 
- 	kvm_pmu_cap.version = min(kvm_pmu_cap.version, 2);
- 	kvm_pmu_cap.num_counters_fixed = min(kvm_pmu_cap.num_counters_fixed,
+ .. note::
 -- 
-2.36.1
+2.36.1.124.g0e6072fb45-goog
 
