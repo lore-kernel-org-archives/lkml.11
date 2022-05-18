@@ -2,134 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C23D6C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE537C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 18:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241479AbiERSkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 14:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
+        id S241535AbiERSlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 14:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241280AbiERSj6 (ORCPT
+        with ESMTP id S241489AbiERSkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 14:39:58 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B641DB588;
-        Wed, 18 May 2022 11:39:57 -0700 (PDT)
+        Wed, 18 May 2022 14:40:52 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A23CDBB
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 11:40:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652899197; x=1684435197;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=M/oKhYTcnY4myTpFoegzGHopmAVVEEzgyLwyapl7tQQ=;
-  b=gjifRWwVI7atM6NqpjKQjmIIKSpRRAvJjla4cCLFkc5/c5LeqQwiOPmq
-   KraYXLAeeWMDecMyFyPbwEQmu6QVzhfBD4Hd4SB08h24jDQYLaRJLuxx7
-   pjF7eRU/yHmf59EaRXYMnU/rPUSBRa4MX9HccnwP6e0fyZfpvttn1MxNX
-   wsT4o+PKpfOs/kDGJwK7KvG9kE3pe3tj9IL21ilIWyXUDj82f3hAkVyOv
-   FoLIc49hjSoHw+0zgbbwnHXDI2/dseCwKpZMheoqbvy+0sSrLVbq4Q7Jd
-   aoB2iW2VBrHyQVI1D40EAELe/wapHYj7LJYfbfUmg35oiJeXyUNI+eKym
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="269425271"
+  t=1652899249; x=1684435249;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4WtiDK54AT5D3xJgbES/KqYOfqBsw80Ux8SMTshx1Sk=;
+  b=VWLiWaEUwQiCYpTlGyPo42/ClISZ8jfdmDM/+OjI1SvlwD5Hg8AH/Z+D
+   4UGFeJfL1RdrHD3qRpdXYfHMVlpLtcntelwR3NXm3fO39/KxVvbOkkfjb
+   COdKmv099OxcbdqfgtTvD8+qVwKxa3EJGyjh6+wtQR7XYgSRL7lzbDvMC
+   7O/scRrvmHf3+NXRlOHX2yQQY9crtZDag4Cf1MqwDEW0jkfM8zEat0mnT
+   rcRKqLqtubVpuh9A8gXwSSNJOYmrnJZOFT5gRD73bwIG25bXuu6QUMhW4
+   Vxdp+BZi8bPa/nksAy5CEz4EbcqdMdyTekxsxXLtpQ3V3FfnqDmxmcSeO
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="270663372"
 X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="269425271"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:38:14 -0700
+   d="scan'208";a="270663372"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:38:46 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="569686074"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:38:14 -0700
-Date:   Wed, 18 May 2022 11:42:04 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     iommu@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, vkoul@kernel.org,
-        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        Raj Ashok <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
- attach_dev_pasid
-Message-ID: <20220518114204.4d251b41@jacob-builder>
-In-Reply-To: <20220511182908.GK49344@nvidia.com>
-References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
-        <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
-        <20220510232121.GP49344@nvidia.com>
-        <20220510172309.3c4e7512@jacob-builder>
-        <20220511115427.GU49344@nvidia.com>
-        <20220511082958.79d5d8ee@jacob-builder>
-        <20220511161237.GB49344@nvidia.com>
-        <20220511100216.7615e288@jacob-builder>
-        <20220511170025.GF49344@nvidia.com>
-        <20220511102521.6b7c578c@jacob-builder>
-        <20220511182908.GK49344@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+   d="scan'208";a="597972314"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 18 May 2022 11:38:44 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrOZI-0002W0-5H;
+        Wed, 18 May 2022 18:38:44 +0000
+Date:   Thu, 19 May 2022 02:38:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [hare-scsi-devel:auth.v12 10/11] <command-line>: warning: format
+ '%lu' expects argument of type 'long unsigned int', but argument 9 has type
+ 'size_t' {aka 'unsigned int'}
+Message-ID: <202205190200.Z1ecsIW1-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git auth.v12
+head:   94e00927012f48bfff384a6e5e40d8e6a34a1ae5
+commit: e858b89b4b9d5cbe4d533c16feaf4c5bfca10e5b [10/11] nvmet-auth: Diffie-Hellman key exchange support
+config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220519/202205190200.Z1ecsIW1-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=e858b89b4b9d5cbe4d533c16feaf4c5bfca10e5b
+        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
+        git fetch --no-tags hare-scsi-devel auth.v12
+        git checkout e858b89b4b9d5cbe4d533c16feaf4c5bfca10e5b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/nvme/target/
 
-On Wed, 11 May 2022 15:29:08 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> On Wed, May 11, 2022 at 10:25:21AM -0700, Jacob Pan wrote:
-> > Hi Jason,
-> > 
-> > On Wed, 11 May 2022 14:00:25 -0300, Jason Gunthorpe <jgg@nvidia.com>
-> > wrote: 
-> > > On Wed, May 11, 2022 at 10:02:16AM -0700, Jacob Pan wrote:  
-> > > > > > If not global, perhaps we could have a list of pasids (e.g.
-> > > > > > xarray) attached to the device_domain_info. The TLB flush logic
-> > > > > > would just go through the list w/o caring what the PASIDs are
-> > > > > > for. Does it make sense to you?      
-> > > > > 
-> > > > > Sort of, but we shouldn't duplicate xarrays - the group already
-> > > > > has this xarray - need to find some way to allow access to it
-> > > > > from the driver.
-> > > > >     
-> > > > I am not following,  here are the PASIDs for devTLB flush which is
-> > > > per device. Why group?    
-> > > 
-> > > Because group is where the core code stores it.  
-> > I see, with singleton group. I guess I can let dma-iommu code call
-> > 
-> > iommu_attach_dma_pasid {
-> > 	iommu_attach_device_pasid();
-> > Then the PASID will be stored in the group xa.  
-> 
-> Yes, again, the dma-iommu should not be any different from the normal
-> unmanaged path. At this point there is no longer any difference, we
-> should not invent new ones.
-> 
-> > The flush code can retrieve PASIDs from device_domain_info.device ->
-> > group -> pasid_array.  Thanks for pointing it out, I missed the new
-> > pasid_array.  
-> 
-> Yes.. It seems inefficient to iterate over that xarray multiple times
-> on the flush hot path, but maybe there is little choice. Try to use
-> use the xas iterators under the xa_lock spinlock..
-> 
-xas_for_each takes a max range, here we don't really have one. So I posted
-v4 w/o using the xas advanced API. Please let me know if you have
-suggestions.
-xa_for_each takes RCU read lock, it should be fast for tlb flush, right? The
-worst case maybe over flush when we have stale data but should be very rare.
+All warnings (new ones prefixed by >>):
 
-> The challenge will be accessing the group xa in the first place, but
-> maybe the core code can gain a function call to return a pointer to
-> that XA or something..
-> 
-I added a helper function to find the matching DMA API PASID in v4.
+   drivers/nvme/target/fabrics-cmd-auth.c: In function 'nvmet_auth_challenge':
+>> <command-line>: warning: format '%lu' expects argument of type 'long unsigned int', but argument 9 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+   drivers/nvme/target/fabrics-cmd-auth.c:7:21: note: in expansion of macro 'KBUILD_MODNAME'
+       7 | #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+         |                     ^~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:134:29: note: in expansion of macro 'pr_fmt'
+     134 |                 func(&id, ##__VA_ARGS__);               \
+         |                             ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:570:9: note: in expansion of macro 'dynamic_pr_debug'
+     570 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   drivers/nvme/target/fabrics-cmd-auth.c:371:9: note: in expansion of macro 'pr_debug'
+     371 |         pr_debug("%s: ctrl %d qid %d seq %d transaction %d hl %d dhvlen %lu\n",
+         |         ^~~~~~~~
 
-
-Thanks,
-
-Jacob
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
