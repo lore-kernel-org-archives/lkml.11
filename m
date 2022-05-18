@@ -2,68 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6333AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231495AbiERGo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
+        id S231517AbiERGpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbiERGoy (ORCPT
+        with ESMTP id S231521AbiERGpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:44:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF2A56771
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:44:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C9E760B59
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 06:44:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3902BC385A9;
-        Wed, 18 May 2022 06:44:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652856293;
-        bh=txZ4z5P32rfkA6Qk2rJ6GxCKmY0Sp1SypywZSzeV0iM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IyNzP+QXv4E8NGBYrVExSrcrfy/AG8MOTmHfU+SHQWuxtDlZCyH8MRidSFNd30g0G
-         yNFoGkGvDEYKh4D8r20z1KlSqQH7bSAU1cbKBujM3QGMHrzy399hmoHskSMm4/fu5G
-         OmEopLm7xURtxDkTQdP6EcwYFHRjjUQA8OkBk6mE=
-Date:   Wed, 18 May 2022 08:44:48 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, rafael@kernel.org,
-        mchehab+huawei@kernel.org, eugenis@google.com, tony.luck@intel.com,
-        pcc@google.com, peterz@infradead.org, marcos@orca.pet,
-        conor.dooley@microchip.com, nicolas.ferre@microchip.com,
-        marcan@marcan.st, linus.walleij@linaro.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 6/8] x86: Add hardware prefetch control support for x86
-Message-ID: <YoSV4CPBXbNlj0Cq@kroah.com>
-References: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
- <20220518063032.2377351-7-tarumizu.kohei@fujitsu.com>
+        Wed, 18 May 2022 02:45:09 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35174DE338
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:45:08 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id x3-20020a056e021bc300b002d13f8bad89so738562ilv.18
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:45:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=bbNknpHMvvRBOmWc8Xg3T+LYindwAK7z0wniwQ/gaIk=;
+        b=Czh9u47BpXuE+Mge9zyNWkQ5Zy1BqRj/bUPw3GlfqUJNVkgZbI1jKJXwgk2GIzMG2D
+         CpDj3Vsx4g+llho6Mygq/uL+8sG8faIinCqmZfFMSoL7f9a1t1tcV2+AzPXU35WzGsIk
+         HChWgQf+Tfk3mA48D/YtgHx1/StW6g8eFaDRVZbBGTOcPPBjqU/TX5C837g9my2D81lE
+         suZwlWX2bDNaemUowT5BUliFCs0pWKMFJglsI9moYOtiHPWREZWFarLNriTBKZkqggZv
+         NXVP/GgetzzURm5M8rPDBidBCEMacKrwzNxsiyv6CvFfvdAUjWMwkKlAf3/XP26hG7LX
+         G3Lw==
+X-Gm-Message-State: AOAM531Xgae4+1D8rV+mNvJxnlaO6gzXvi/WB3/ZK+oJ9QlQwmV0Qndx
+        fjDG9hXlLdIUaWjmNm/Irjbsnp14+Gp8VhbR2Ko5PX2btA3X
+X-Google-Smtp-Source: ABdhPJx/0yH3kyKaF/QZJcNSwH2Q3v9poWe68iePLJnroqJoqiM3lg/+Ivn7R++RLGMwx4HPQb03JnaMFcFY3BVcNv/q30v9cauc
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518063032.2377351-7-tarumizu.kohei@fujitsu.com>
+X-Received: by 2002:a05:6638:3711:b0:32b:ca0b:8a32 with SMTP id
+ k17-20020a056638371100b0032bca0b8a32mr14405686jav.267.1652856307625; Tue, 17
+ May 2022 23:45:07 -0700 (PDT)
+Date:   Tue, 17 May 2022 23:45:07 -0700
+In-Reply-To: <YoSRPP1n26hmDuzn@zeniv-ca.linux.org.uk>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000014b2d605df43994d@google.com>
+Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
+From:   syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 03:30:30PM +0900, Kohei Tarumizu wrote:
-> Adds module init/exit code to create sysfs attributes for x86 with
-> "hardware_prefetcher_enable", "ip_prefetcher_enable" and
-> "adjacent_cache_line_prefetcher_enable".
-> 
-> This driver works only if a CPU model is mapped to type of register
-> specification(e.g. TYPE_L12_BASE) in pfctl_match[].
+Hello,
 
-How will the driver be automatically loaded if this is the case or not?
-You can not rely on userspace knowing to load a driver on its own,
-please tie into the proper device discovery.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-thanks,
+Reported-and-tested-by: syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com
 
-greg k-h
+Tested on:
+
+commit:         a9171431 percpu_ref_init(): clean ->percpu_count_ref o..
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git proposed-fix
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
+dashboard link: https://syzkaller.appspot.com/bug?extid=5b1e53987f858500ec00
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Note: no patches were applied.
+Note: testing is done by a robot and is best-effort only.
