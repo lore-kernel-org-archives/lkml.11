@@ -2,212 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 20:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3568CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 20:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242540AbiERUWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 16:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
+        id S242547AbiERUWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 16:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242519AbiERUW3 (ORCPT
+        with ESMTP id S242520AbiERUW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 16:22:29 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724E9EBA95
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 13:22:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652905348; x=1684441348;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zfinHO01vWOPtOxZWxrIzOT3r9XunQO1hDgu+y1iql4=;
-  b=lJVqHHOPq4WTD7sNqIXvUxfE2Am90bTqRlHAV+OEc/UK15CFKweq/pTc
-   K3xwAjaGf8Gk64x8OyBKB4LcVeKVbesvEnQYhiDpguEYuStY0zqq+Viv+
-   TTTrlIH1lG1nD3HUaQvqhu4SZ/WEeU15SZcZNmxG8/RjdnkQt0kckDmZ8
-   aeKDzEF0gdi18kPFt9rAllEFZeIJwRsiYtETOZMY+GP+DNXoxO9j1W4Jv
-   Zv3AkGgcmyjDrEg3dU6wUMzt+FhDtwVMPe+O6WSBO0QD72UCEAZhR2lYP
-   xwxgrmigR533IgEZmATa5j7aLFRCKGGvGC5qwpZp+m4L9taCAjgH4Jl7L
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="269463061"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="269463061"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 13:22:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="714642847"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 18 May 2022 13:22:27 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrQBe-0002bF-E7;
-        Wed, 18 May 2022 20:22:26 +0000
-Date:   Thu, 19 May 2022 04:21:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/core] BUILD SUCCESS
- a7fed5c0431dbfa707037848830f980e0f93cfb3
-Message-ID: <62855561.6+DQgagDTd3W+A+T%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18CDEBA9D;
+        Wed, 18 May 2022 13:22:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D3DBB820BF;
+        Wed, 18 May 2022 20:22:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AFCBC385A9;
+        Wed, 18 May 2022 20:22:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652905346;
+        bh=hLHKO7qKN+i0jdECk57N3nCVEGIJesNQBGUeRkLQTrg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VWFxt0ChnONpIORLUPrOsDgokdX6XJ0Xl6IYDhrDqfY3CUFz+1iWrX1LrvC1T1vqv
+         2ZcFQLAmTPagIPJgoyk19yirlUorPByNN6hEzCKRotliwUJrvQdRxY0OxbP2l2KyYG
+         2JK267/LEIb13lanePjToO+EMGAThE6q+nYw8A7SSLwGSpQGlGNLvEU/UVgrMqQscR
+         K9tOuBqobzrLCo+TDFT7MP1vPRORTAoHw8E7OEHDh97MOmUXekCOR1I03wcz+2Z40k
+         g9OJOggQ7sSEFiF1HgMHzRjbKrm8shxyX5Uih3zvO1FhksBi8+orBbZcidxmKW7FDQ
+         Brdx2LQwcQ50A==
+From:   Dinh Nguyen <dinguyen@kernel.org>
+To:     jarkko.nikula@linux.intel.com
+Cc:     dinguyen@kernel.org, andriy.shevchenko@linux.intel.com,
+        mika.westerberg@linux.intel.com, robh+dt@kernel.org,
+        krzk+dt@kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 1/2] i2c: designware: introduce a custom scl recovery for SoCFPGA platforms
+Date:   Wed, 18 May 2022 15:22:16 -0500
+Message-Id: <20220518202217.85803-1-dinguyen@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/core
-branch HEAD: a7fed5c0431dbfa707037848830f980e0f93cfb3  x86/nmi: Make register_nmi_handler() more robust
+The I2C pins on the SoCFPGA platforms do not go through a GPIO module,
+thus cannot be recovered by the default method of by doing a GPIO access.
+Only a reset of the I2C IP block can a recovery be successful.
 
-elapsed time: 2185m
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+---
+ drivers/i2c/busses/i2c-designware-core.h    |  3 ++-
+ drivers/i2c/busses/i2c-designware-master.c  | 19 +++++++++++++++++--
+ drivers/i2c/busses/i2c-designware-platdrv.c |  2 ++
+ 3 files changed, 21 insertions(+), 3 deletions(-)
 
-configs tested: 134
-configs skipped: 4
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                 randconfig-c001-20220516
-m68k                        m5407c3_defconfig
-m68k                             allmodconfig
-arm                        multi_v7_defconfig
-sh                           se7721_defconfig
-sh                           se7780_defconfig
-arm                      jornada720_defconfig
-mips                  decstation_64_defconfig
-powerpc                      pasemi_defconfig
-m68k                       m5208evb_defconfig
-sh                             sh03_defconfig
-m68k                       m5249evb_defconfig
-sparc                       sparc64_defconfig
-s390                             allyesconfig
-sh                ecovec24-romimage_defconfig
-sh                          r7780mp_defconfig
-powerpc                       ppc64_defconfig
-arc                        nsimosci_defconfig
-powerpc                     pq2fads_defconfig
-sh                         ecovec24_defconfig
-mips                            gpr_defconfig
-m68k                       bvme6000_defconfig
-sh                               j2_defconfig
-mips                           ci20_defconfig
-openrisc                            defconfig
-arm                            mps2_defconfig
-mips                       bmips_be_defconfig
-sh                            hp6xx_defconfig
-m68k                          sun3x_defconfig
-arm                  randconfig-c002-20220516
-x86_64               randconfig-c001-20220516
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                             allyesconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64               randconfig-a012-20220516
-x86_64               randconfig-a011-20220516
-x86_64               randconfig-a013-20220516
-x86_64               randconfig-a014-20220516
-x86_64               randconfig-a016-20220516
-x86_64               randconfig-a015-20220516
-i386                 randconfig-a016-20220516
-i386                 randconfig-a013-20220516
-i386                 randconfig-a015-20220516
-i386                 randconfig-a012-20220516
-i386                 randconfig-a014-20220516
-i386                 randconfig-a011-20220516
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220516
-riscv                randconfig-r042-20220516
-s390                 randconfig-r044-20220516
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-powerpc              randconfig-c003-20220516
-riscv                randconfig-c006-20220516
-mips                 randconfig-c004-20220516
-arm                  randconfig-c002-20220516
-x86_64               randconfig-c007-20220516
-i386                 randconfig-c001-20220516
-powerpc              randconfig-c003-20220518
-x86_64                        randconfig-c007
-riscv                randconfig-c006-20220518
-mips                 randconfig-c004-20220518
-i386                          randconfig-c001
-arm                  randconfig-c002-20220518
-powerpc                     pseries_defconfig
-mips                         tb0287_defconfig
-powerpc                      ppc44x_defconfig
-powerpc                    mvme5100_defconfig
-arm                     davinci_all_defconfig
-arm                       mainstone_defconfig
-arm                          pxa168_defconfig
-arm                           omap1_defconfig
-x86_64               randconfig-a001-20220516
-x86_64               randconfig-a006-20220516
-x86_64               randconfig-a003-20220516
-x86_64               randconfig-a005-20220516
-x86_64               randconfig-a002-20220516
-x86_64               randconfig-a004-20220516
-i386                 randconfig-a001-20220516
-i386                 randconfig-a003-20220516
-i386                 randconfig-a005-20220516
-i386                 randconfig-a004-20220516
-i386                 randconfig-a006-20220516
-i386                 randconfig-a002-20220516
-hexagon              randconfig-r045-20220516
-hexagon              randconfig-r041-20220516
-
+diff --git a/drivers/i2c/busses/i2c-designware-core.h b/drivers/i2c/busses/i2c-designware-core.h
+index 70b80e710990..4e997e381fb6 100644
+--- a/drivers/i2c/busses/i2c-designware-core.h
++++ b/drivers/i2c/busses/i2c-designware-core.h
+@@ -303,7 +303,8 @@ struct dw_i2c_dev {
+ #define MODEL_MSCC_OCELOT	BIT(8)
+ #define MODEL_BAIKAL_BT1	BIT(9)
+ #define MODEL_AMD_NAVI_GPU	BIT(10)
+-#define MODEL_MASK		GENMASK(11, 8)
++#define MODEL_SOCFPGA		BIT(11)
++#define MODEL_MASK		GENMASK(12, 8)
+ 
+ /*
+  * Enable UCSI interrupt by writing 0xd at register
+diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
+index 44a94b225ed8..333ad17b967d 100644
+--- a/drivers/i2c/busses/i2c-designware-master.c
++++ b/drivers/i2c/busses/i2c-designware-master.c
+@@ -813,12 +813,29 @@ static void i2c_dw_unprepare_recovery(struct i2c_adapter *adap)
+ 	i2c_dw_init_master(dev);
+ }
+ 
++static int i2c_custom_scl_recovery(struct i2c_adapter *adap)
++{
++	i2c_dw_prepare_recovery(adap);
++	i2c_dw_unprepare_recovery(adap);
++	return 0;
++}
++
+ static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
+ {
+ 	struct i2c_bus_recovery_info *rinfo = &dev->rinfo;
+ 	struct i2c_adapter *adap = &dev->adapter;
+ 	struct gpio_desc *gpio;
+ 
++	switch (dev->flags & MODEL_MASK) {
++	case MODEL_SOCFPGA:
++		rinfo->recover_bus = i2c_custom_scl_recovery;
++		break;
++	default:
++		rinfo->recover_bus = i2c_generic_scl_recovery;
++		break;
++	}
++	adap->bus_recovery_info = rinfo;
++
+ 	gpio = devm_gpiod_get_optional(dev->dev, "scl", GPIOD_OUT_HIGH);
+ 	if (IS_ERR_OR_NULL(gpio))
+ 		return PTR_ERR_OR_ZERO(gpio);
+@@ -830,10 +847,8 @@ static int i2c_dw_init_recovery_info(struct dw_i2c_dev *dev)
+ 		return PTR_ERR(gpio);
+ 	rinfo->sda_gpiod = gpio;
+ 
+-	rinfo->recover_bus = i2c_generic_scl_recovery;
+ 	rinfo->prepare_recovery = i2c_dw_prepare_recovery;
+ 	rinfo->unprepare_recovery = i2c_dw_unprepare_recovery;
+-	adap->bus_recovery_info = rinfo;
+ 
+ 	dev_info(dev->dev, "running with gpio recovery mode! scl%s",
+ 		 rinfo->sda_gpiod ? ",sda" : "");
+diff --git a/drivers/i2c/busses/i2c-designware-platdrv.c b/drivers/i2c/busses/i2c-designware-platdrv.c
+index 70ade5306e45..92dfe3456ca7 100644
+--- a/drivers/i2c/busses/i2c-designware-platdrv.c
++++ b/drivers/i2c/busses/i2c-designware-platdrv.c
+@@ -153,6 +153,8 @@ static const struct of_device_id dw_i2c_of_match[] = {
+ 	{ .compatible = "snps,designware-i2c", },
+ 	{ .compatible = "mscc,ocelot-i2c", .data = (void *)MODEL_MSCC_OCELOT },
+ 	{ .compatible = "baikal,bt1-sys-i2c", .data = (void *)MODEL_BAIKAL_BT1 },
++	{ .compatible = "intel,socfpga-i2c", .data = (void *)MODEL_SOCFPGA },
++
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, dw_i2c_of_match);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
