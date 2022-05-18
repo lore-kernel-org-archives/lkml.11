@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB85C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD227C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236817AbiERMcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48032 "EHLO
+        id S236847AbiERMcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236948AbiERM3w (ORCPT
+        with ESMTP id S236709AbiERM3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:29:52 -0400
+        Wed, 18 May 2022 08:29:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB9D19668F;
-        Wed, 18 May 2022 05:28:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB43C170675;
+        Wed, 18 May 2022 05:27:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D936B6168C;
-        Wed, 18 May 2022 12:28:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 272BBC36AEC;
-        Wed, 18 May 2022 12:28:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EF9E61610;
+        Wed, 18 May 2022 12:27:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD8ADC34100;
+        Wed, 18 May 2022 12:27:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876897;
-        bh=k+ohMeJjp2tFo/hvSvVUArrdssbnYwApznZxYrJaEVc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TqqcHjOOYg92O/2IgN/NOwN8niBMZFERxwevQbXrsLoL3cOkZkCpRp4dnxWQloDLl
-         G9IagM6KPzyeBN/ghXk8iJpOO3cRLndvyUZJDxtdRYq1SoDjY0TH9LdHWWf0rcZd1Y
-         0I3VlIp58noyp9EfL20AQPVhn9kXdl+kHC7DTdT50G99JN/iHuYwNS2XxPbAMy/314
-         oXK4K1d8yvwIlGTHinjJ9lbdU61eaF3mVle3zwFx0ePHAdbJBUdUcTLZEXpif8jvzp
-         HvWB43dHC/XYHouWvYSx9hMIkj7TxskrmKLDQoHqOZWgawxIE3qREmfiLoSkrQbcDh
-         D8nMYJL/r7yJg==
+        s=k20201202; t=1652876876;
+        bh=Q6WGn+T2IYOJX+pYvJtK4Xq4x5ALfQD1/9ZqxdvFrkU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HuTI6Uz//aFPyA8Z6jvOUA/F2E1YVjroJA8yMngxLg69X1DztYVoiH5ycJ1rOLyJI
+         X5ucyTU2Sw0RTiBzfNcEKmcJqF/FPXg9olOCXUrE6r+rFFmvo5y16wNpC8sWQMML0H
+         5cKDjOi5nHfxttgWgKuUw3Z6eody4i0XuXZSsO3M370k7Q6iEOV6v4ACAkrbnYRF79
+         c689G7prdPnESW7p9t1x76ugYHpCyTWc7S6BvYrGNYO3xC41cU9l1/F9asZRlnF+d0
+         uCGwkWUoGm06sBBvI3WyCHvZV/xdBI5ihbmFQgEScWEw7bCifWI1/t1RXK4Ko26bNH
+         50ASbj+/yEdbw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 09/17] nl80211: fix locking in nl80211_set_tx_bitrate_mask()
-Date:   Wed, 18 May 2022 08:27:43 -0400
-Message-Id: <20220518122753.342758-9-sashal@kernel.org>
+Cc:     Brian Bunker <brian@purestorage.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Krishna Kant <krishna.kant@purestorage.com>,
+        Seamus Connor <sconnor@purestorage.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        mwilck@suse.com, dan.carpenter@oracle.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/17] scsi: scsi_dh_alua: Properly handle the ALUA transitioning state
+Date:   Wed, 18 May 2022 08:27:35 -0400
+Message-Id: <20220518122753.342758-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
-References: <20220518122753.342758-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,51 +54,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Brian Bunker <brian@purestorage.com>
 
-[ Upstream commit f971e1887fdb3ab500c9bebf4b98f62d49a20655 ]
+[ Upstream commit 6056a92ceb2a7705d61df7ec5370548e96aee258 ]
 
-This accesses the wdev's chandef etc., so cannot safely
-be used without holding the lock.
+The handling of the ALUA transitioning state is currently broken. When a
+target goes into this state, it is expected that the target is allowed to
+stay in this state for the implicit transition timeout without a path
+failure. The handler has this logic, but it gets skipped currently.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220506102136.06b7205419e6.I2a87c05fbd8bc5e565e84d190d4cfd2e92695a90@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+When the target transitions, there is in-flight I/O from the initiator. The
+first of these responses from the target will be a unit attention letting
+the initiator know that the ALUA state has changed.  The remaining
+in-flight I/Os, before the initiator finds out that the portal state has
+changed, will return not ready, ALUA state is transitioning. The portal
+state will change to SCSI_ACCESS_STATE_TRANSITIONING. This will lead to all
+new I/O immediately failing the path unexpectedly. The path failure happens
+in less than a second instead of the expected successes until the
+transition timer is exceeded.
+
+Allow I/Os to continue while the path is in the ALUA transitioning
+state. The handler already takes care of a target that stays in the
+transitioning state for too long by changing the state to ALUA state
+standby once the transition timeout is exceeded at which point the path
+will fail.
+
+Link: https://lore.kernel.org/r/CAHZQxy+4sTPz9+pY3=7VJH+CLUJsDct81KtnR2be8ycN5mhqTg@mail.gmail.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Acked-by: Krishna Kant <krishna.kant@purestorage.com>
+Acked-by: Seamus Connor <sconnor@purestorage.com>
+Signed-off-by: Brian Bunker <brian@purestorage.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/scsi/device_handler/scsi_dh_alua.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 9fae09e860e1..7c65ad17bf50 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -11341,18 +11341,23 @@ static int nl80211_set_tx_bitrate_mask(struct sk_buff *skb,
- 	struct cfg80211_bitrate_mask mask;
- 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
- 	struct net_device *dev = info->user_ptr[1];
-+	struct wireless_dev *wdev = dev->ieee80211_ptr;
- 	int err;
- 
- 	if (!rdev->ops->set_bitrate_mask)
- 		return -EOPNOTSUPP;
- 
-+	wdev_lock(wdev);
- 	err = nl80211_parse_tx_bitrate_mask(info, info->attrs,
- 					    NL80211_ATTR_TX_RATES, &mask,
- 					    dev, true);
- 	if (err)
--		return err;
-+		goto out;
- 
--	return rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
-+	err = rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
-+out:
-+	wdev_unlock(wdev);
-+	return err;
- }
- 
- static int nl80211_register_mgmt(struct sk_buff *skb, struct genl_info *info)
+diff --git a/drivers/scsi/device_handler/scsi_dh_alua.c b/drivers/scsi/device_handler/scsi_dh_alua.c
+index 37d06f993b76..1d9be771f3ee 100644
+--- a/drivers/scsi/device_handler/scsi_dh_alua.c
++++ b/drivers/scsi/device_handler/scsi_dh_alua.c
+@@ -1172,9 +1172,8 @@ static blk_status_t alua_prep_fn(struct scsi_device *sdev, struct request *req)
+ 	case SCSI_ACCESS_STATE_OPTIMAL:
+ 	case SCSI_ACCESS_STATE_ACTIVE:
+ 	case SCSI_ACCESS_STATE_LBA:
+-		return BLK_STS_OK;
+ 	case SCSI_ACCESS_STATE_TRANSITIONING:
+-		return BLK_STS_AGAIN;
++		return BLK_STS_OK;
+ 	default:
+ 		req->rq_flags |= RQF_QUIET;
+ 		return BLK_STS_IOERR;
 -- 
 2.35.1
 
