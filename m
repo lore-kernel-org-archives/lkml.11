@@ -2,121 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA202C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240943AbiERRhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34536 "EHLO
+        id S241030AbiERRiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240945AbiERRhG (ORCPT
+        with ESMTP id S241013AbiERRiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 13:37:06 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 891AA11E1E3
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:37:04 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1CB6723A;
-        Wed, 18 May 2022 10:37:04 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1BC3F3F718;
-        Wed, 18 May 2022 10:37:03 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org, will@kernel.org
-Cc:     iommu@lists.linux-foundation.org, john.garry@huawei.com,
-        hch@lst.de, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/dma: Add config for PCI SAC address trick
-Date:   Wed, 18 May 2022 18:36:59 +0100
-Message-Id: <ef8abf1c6b0839e39b272738fc7bc4d9699c8bcb.1652895419.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.35.3.dirty
+        Wed, 18 May 2022 13:38:15 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2052.outbound.protection.outlook.com [40.107.237.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DC91F0DCF;
+        Wed, 18 May 2022 10:38:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EV3o6abbYWD7CwcPoOdyiItBpxRhQ2ButSo9TJ95Ug1gHEzPR8K2Yu3p9xyjMfu/M9qiolGXYec0eT4c/6RduUkJV/CFDB/mtFHy+DIYvP9xM7W+DBDHW5c6w1R21h/A811/XYOPkh7Si7HTCSk1DaY0fWjwN3pH/ETwHcMVZleBJ+7IdzKThJjcYlW64mlCdhBRqUI9OrNVGQFsHOOOo7t9nxcoV7yKxLixOJo3onQZS9xfYKNcjiOfAO75CsfskTL7QCSWChqtq8Zt6MTQfH2AKNbWrOrIFLTcarY8/wZ0H9TmDgVESKXNxVKDeRd05qRqkaZF5IJwTY046Q4QQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e1A2hNy9E98SvlA6Wzsr37Lzh6ZVajuFic7X+cU6E4M=;
+ b=Wmt06Iqx+WEIB3jhh0WwWx5I/m9w9Acv+XS+0J7Lulw2ij5Lq1RF8CpP3PrC753xo5M4hPFUawnY6S/dM8L8+s+b08DFq0AzJEImz1aUsKV792hIrnKk1pdFdsd9NdRKf0ODAjARAgtQkCOYgLhB9FhT6lSY4FTSaN16YuHk/sfUZ6pTnNIv62v7QB8s6nroyNE62PU4rvvzv/UJD0fM+WILbY/rOQ1GqKSpurHxlVe/9Di7Ux2ITEE9NmTvKh5ptR8Kbeo5EJrHCT4WI5Nxha33klq8DCM6QYzpEuCO3NCu5sYGni4J/6amz0p72X2kTsQ2HRUVpE4S0WgQBF867w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e1A2hNy9E98SvlA6Wzsr37Lzh6ZVajuFic7X+cU6E4M=;
+ b=I8eQ9w9X3Hs5Z+J3JP384sZ6+gnqmUJCuHVS5FPMxWR3DILaELk+JW9K/n7lpUQgSs98eo+dILI4WT1wAYEv9WjfDXo4pPL3mS9lfEI+02Y4vuJaaUasM5LP9UTwHbwNPaFwx25p9RMd/rOLoqpW+Sm578BfC079cugRfjzT473hzgEL1ZNS7hqwnNDRBpO4rKGh2c8zObgkS3+B0VH+CSrrAWUy7E1ecOS/DFAFL8oIpAhm9s7BnNXLgi9ee2Uquri9+pX+Ut10KE+z5wWRRsyONx6f1kT7HIoKw2ScqBKN4G6BoxkzMTaNEzGMqP/vBzcj4FY3N7uwk2OLUm3XFA==
+Received: from DM6PR03CA0025.namprd03.prod.outlook.com (2603:10b6:5:40::38) by
+ BYAPR12MB3462.namprd12.prod.outlook.com (2603:10b6:a03:ad::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5273.14; Wed, 18 May 2022 17:38:11 +0000
+Received: from DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:40:cafe::d2) by DM6PR03CA0025.outlook.office365.com
+ (2603:10b6:5:40::38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.15 via Frontend
+ Transport; Wed, 18 May 2022 17:38:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT041.mail.protection.outlook.com (10.13.172.98) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5273.14 via Frontend Transport; Wed, 18 May 2022 17:38:11 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 18 May
+ 2022 17:38:10 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 18 May
+ 2022 10:38:09 -0700
+Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Wed, 18 May
+ 2022 10:38:06 -0700
+From:   Sameer Pujar <spujar@nvidia.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <thierry.reding@gmail.com>,
+        <catalin.marinas@arm.com>, <will@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>
+CC:     <jonathanh@nvidia.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Sameer Pujar <spujar@nvidia.com>
+Subject: [PATCH 0/6] OPE support on Tegra210 and later
+Date:   Wed, 18 May 2022 23:06:06 +0530
+Message-ID: <1652895372-29885-1-git-send-email-spujar@nvidia.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a37d564a-5be1-4908-5258-08da38f52dd5
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3462:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3462C1A7866BC9FAEB906FD0A7D19@BYAPR12MB3462.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tSJ7mkmed8ReRJoJBCvWn0HrNBdujDvffrLNKpFId4DdrT8mkLDrF+xUeL0/Y8MuDKzeczHwANPPo/1I1hmw4LuGiGG6mO+AnlFCP870Wp9jqiWbTikaIeamWYkBWSSRsj3pKsLPf6INeUnj1O4zuk5gNtfbcKQQF3KoUxOEEbWwybxVda/FbTdZ7qfJohRjGix+JcYwNOwmoW4ToWzlZUfBAt44C9+0glaMsUp+yivKrXfAmQloqROe/tI3pqcdP4dHhVryh92lLne1u+m2UF23qSlcVUxOAhRJ5oo473TaNOIDCFo3Top0rfnZlNkN/Us2C7MLhA6Q7uYCIdyTWsnY2qU0gP1c/DRoMDJHqHRkIi8pahDd32U7cek6x91/KNRWGYB++D5rD4oSDRHz1aGr7l6ta65MS+SLKDG44rwFclqCfI0dsjdhbskO2n+OCmiU6/pTjOFf6cTerJBL8yTkRVJAv1cl6TkbPTx7Of7PM5dwtmREQnBBBzgrjT9YOK6tY12sM8ddGYbCbluIx2rtmBN3Q9aG+xWnvsfJUcA7dCNhFvTiz3M1LBV9S5GFdTX1kBqHsAkDw+tmAZDB4umFgPf0DfsPPoSz84+jS95WDXmX9viqTBEDOo0hAa2LX0rbxucbxoZC5f+pGa8qnOYvK7tTbLl86R6AussFdkkPZwUrAJtucFmwh0dqUBFbSX2DtlXXUZtHDQkoGnA9Jg==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(82310400005)(7416002)(316002)(8676002)(70586007)(70206006)(4326008)(40460700003)(5660300002)(110136005)(54906003)(7696005)(508600001)(81166007)(2906002)(26005)(356005)(336012)(83380400001)(86362001)(36756003)(186003)(426003)(47076005)(8936002)(36860700001)(107886003)(2616005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2022 17:38:11.1725
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a37d564a-5be1-4908-5258-08da38f52dd5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT041.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3462
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For devices stuck behind a conventional PCI bus, saving extra cycles at
-33MHz is probably fairly significant. However since native PCI Express
-is now the norm for high-performance devices, the optimisation to always
-prefer 32-bit addresses for the sake of avoiding DAC is starting to look
-rather anachronistic. Technically 32-bit addresses do have shorter TLPs
-on PCIe, but unless the device is saturating its link bandwidth with
-small transfers it seems unlikely that the difference is appreciable.
+This series adds support for Output Prcoessing Module (OPE) module on
+Tegra210 and later generations of SoCs. OPE is a client of AHUB and it
+has sub blocks of PEQ (Parametric Equalizer) and MBDRC (Multi Band
+Dynamic Range Compressor) for data processing.
 
-What definitely is appreciable, however, is that the IOVA allocator
-doesn't behave all that well once the 32-bit space starts getting full.
-As DMA working sets get bigger, this optimisation increasingly backfires
-and adds considerable overhead to the dma_map path for use-cases like
-high-bandwidth networking. We've increasingly bandaged the allocator
-in attempts to mitigate this, but it remains fundamentally at odds with
-other valid requirements to try as hard as possible to satisfy a request
-within the given limit; what we really need is to just avoid this odd
-notion of a speculative allocation when it isn't beneficial anyway.
+An ASoC component is registered for OPE, which includes PEQ and MBDRC
+functions as well. This can be plugged in audio path using ALSA mixer
+controls. The series adds necessary binding documentaion, driver and
+DT binding patches to enable OPE module on Jetson platforms.
 
-Unfortunately that's where things get awkward... Having been present on
-x86 for 15 years or so now, it turns out there are systems which fail to
-properly define the upper limit of usable IOVA space for certain devices
-and this trick was the only thing letting them work OK. I had a similar
-ulterior motive for a couple of early arm64 systems when originally
-adding it to iommu-dma, but those really should now be fixed with proper
-firmware bindings, and other arm64 users really need it out of the way,
-so let's just leave it default-on for x86.
+Sameer Pujar (6):
+  ASoC: tegra: Add binding doc for OPE module
+  ASoC: tegra: Add Tegra210 based OPE driver
+  ASoC: tegra: AHUB routes for OPE module
+  arm64: defconfig: Build Tegra OPE module
+  arm64: tegra: Add OPE device on Tegra210 and later
+  arm64: tegra: Enable OPE on various platforms
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/Kconfig     | 24 ++++++++++++++++++++++++
- drivers/iommu/dma-iommu.c |  2 +-
- 2 files changed, 25 insertions(+), 1 deletion(-)
+ .../bindings/sound/nvidia,tegra210-ahub.yaml       |    4 +
+ .../bindings/sound/nvidia,tegra210-mbdrc.yaml      |   51 +
+ .../bindings/sound/nvidia,tegra210-ope.yaml        |   91 ++
+ .../bindings/sound/nvidia,tegra210-peq.yaml        |   52 +
+ arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts |   43 +
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi           |   23 +
+ arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dts |   43 +
+ .../arm64/boot/dts/nvidia/tegra194-p3509-0000.dtsi |   43 +
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi           |   23 +
+ arch/arm64/boot/dts/nvidia/tegra210-p2371-2180.dts |   84 ++
+ arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts |   84 ++
+ arch/arm64/boot/dts/nvidia/tegra210.dtsi           |   40 +
+ .../dts/nvidia/tegra234-p3737-0000+p3701-0000.dts  |   43 +
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi           |   23 +
+ arch/arm64/configs/defconfig                       |    1 +
+ sound/soc/tegra/Kconfig                            |    9 +
+ sound/soc/tegra/Makefile                           |    2 +
+ sound/soc/tegra/tegra210_ahub.c                    |   39 +-
+ sound/soc/tegra/tegra210_mbdrc.c                   | 1012 ++++++++++++++++++++
+ sound/soc/tegra/tegra210_mbdrc.h                   |  215 +++++
+ sound/soc/tegra/tegra210_ope.c                     |  419 ++++++++
+ sound/soc/tegra/tegra210_ope.h                     |   90 ++
+ sound/soc/tegra/tegra210_peq.c                     |  434 +++++++++
+ sound/soc/tegra/tegra210_peq.h                     |   56 ++
+ 24 files changed, 2920 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/sound/nvidia,tegra210-mbdrc.yaml
+ create mode 100644 Documentation/devicetree/bindings/sound/nvidia,tegra210-ope.yaml
+ create mode 100644 Documentation/devicetree/bindings/sound/nvidia,tegra210-peq.yaml
+ create mode 100644 sound/soc/tegra/tegra210_mbdrc.c
+ create mode 100644 sound/soc/tegra/tegra210_mbdrc.h
+ create mode 100644 sound/soc/tegra/tegra210_ope.c
+ create mode 100644 sound/soc/tegra/tegra210_ope.h
+ create mode 100644 sound/soc/tegra/tegra210_peq.c
+ create mode 100644 sound/soc/tegra/tegra210_peq.h
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c79a0df090c0..bf9b295f1c89 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -144,6 +144,30 @@ config IOMMU_DMA
- 	select IRQ_MSI_IOMMU
- 	select NEED_SG_DMA_LENGTH
- 
-+config IOMMU_DMA_PCI_SAC_OPT
-+	bool "Enable 64-bit legacy PCI optimisation by default"
-+	depends on IOMMU_DMA
-+	default X86
-+	help
-+	  Enable by default an IOMMU optimisation for 64-bit legacy PCI devices,
-+	  wherein the DMA API layer will always first try to allocate a 32-bit
-+	  DMA address suitable for a single address cycle, before falling back
-+	  to allocating from the full usable address range. If your system has
-+	  64-bit legacy PCI devices in 32-bit slots where using dual address
-+	  cycles reduces DMA throughput significantly, this optimisation may be
-+	  beneficial to overall performance.
-+
-+	  If you have a modern PCI Express based system, it should usually be
-+	  safe to say "n" here and avoid the potential extra allocation overhead.
-+	  However, beware that this optimisation has also historically papered
-+	  over bugs where the IOMMU address range above 32 bits is not fully
-+	  usable. If device DMA problems and/or IOMMU faults start occurring
-+	  with IOMMU translation enabled after disabling this option, it is
-+	  likely a sign of a latent driver or firmware/BIOS bug.
-+
-+	  If this option is not set, the optimisation can be enabled at
-+	  boot time with the "iommu.forcedac=0" command-line argument.
-+
- # Shared Virtual Addressing
- config IOMMU_SVA
- 	bool
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 09f6e1c0f9c0..c8d409d3f861 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -66,7 +66,7 @@ struct iommu_dma_cookie {
- };
- 
- static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
--bool iommu_dma_forcedac __read_mostly;
-+bool iommu_dma_forcedac __read_mostly = !IS_ENABLED(CONFIG_IOMMU_DMA_PCI_SAC_OPT);
- 
- static int __init iommu_dma_forcedac_setup(char *str)
- {
 -- 
-2.35.3.dirty
+2.7.4
 
