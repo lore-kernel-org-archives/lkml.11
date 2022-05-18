@@ -2,89 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 19:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2047DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 19:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241915AbiERTXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 15:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56436 "EHLO
+        id S241970AbiERT0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 15:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241901AbiERTXQ (ORCPT
+        with ESMTP id S241962AbiERT0o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 15:23:16 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525BE230225
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 12:23:12 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so6569545pjb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 12:23:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=azN0WpbB56teBoeHRiX8ZF8theRa9wuUdenPzDm2W0A=;
-        b=Rn4CYF1ACF2cOUsSFeF5ggKBSZkleVil0ZiQ9WxVlhUOV+db6WXvI9Zi6EGX8zOZZq
-         58JBNUW6nh58qGonn1ZzSL+Rw3U7Y8oYTpnAZAyS8ri/tz45+BP4VpH/V1BYQVobDRCc
-         IB4ZRG892jsRkd1WR7/H+ZAt+ibPl6VGuvX4E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=azN0WpbB56teBoeHRiX8ZF8theRa9wuUdenPzDm2W0A=;
-        b=EWzyJWSA0EYXKUQ6k9f/NhTBtcLBUaNASHXk7xE76MvBjrbYOxnNVNmbe/hVv0Dxp9
-         ttIuaob075N4Z9WwduSKMoLCwJbbMXhcIwH6HPwFCgOGBa72dGchL4PZ4aD6HEg1ncNI
-         NolAKkUOa8NM2toM4KmTPYQOdu4tS2Gf7iPBFXDQy1rIpKbWo5vfZd0U8wHnVwCjt1x9
-         G/+SK8pIx0FyubmjtKd3Osr7+UPAVcQJ+gE6rybgpH4bY+rSlVnvOx+Sl/999WdRP7al
-         nvIX3QNuSSl3Bl1mf0bms+JyknQTCkI6m+aSu4fswnHFhmiBIlCf91sBF1lLfpYU6V0a
-         LDNg==
-X-Gm-Message-State: AOAM531cxtHqaBI0tU97b8kkl10a9sMgeoIuzyqlxtuyNbE+MSpa4nJJ
-        gDLYSRFhcyJAZypV9Dmru+WmTA==
-X-Google-Smtp-Source: ABdhPJxxZN/NR10p8Wr/541BkyIcKrJcnoJoUiHqQDum/hfEMTs1nrTf898+1jlCrtMSQOkhw1YXoA==
-X-Received: by 2002:a17:90b:4f86:b0:1df:28c5:e89a with SMTP id qe6-20020a17090b4f8600b001df28c5e89amr1016434pjb.66.1652901791534;
-        Wed, 18 May 2022 12:23:11 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id l17-20020a170902d05100b0016168e90f2dsm2055410pll.219.2022.05.18.12.23.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 12:23:11 -0700 (PDT)
-Date:   Wed, 18 May 2022 12:23:10 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        linux-security-module@vger.kernel.org, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v4 0/3] LoadPin: Enable loading from trusted dm-verity
- devices
-Message-ID: <202205181221.F02CF5A9D2@keescook>
-References: <20220517233457.1123309-1-mka@chromium.org>
+        Wed, 18 May 2022 15:26:44 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B6C3969C;
+        Wed, 18 May 2022 12:26:43 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IJC4um000631;
+        Wed, 18 May 2022 19:26:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=0fMn5fcB8WBRcgKZhrh/fmqe4B2CE1yWRHyP0K9nFUE=;
+ b=d5Hw3Ux6clt7+X8qJL+wWkhc8kyJWI02/p47nu4FtHdwKc5z6DYhh032c/gETITbK7/v
+ 4OsweJXUjKPYnc8Cgy7Bf6LNVCN3pERdYoTSNAG6WUdv5R9fD2KUD5ulFLKgRYkdRm9/
+ NeCQ5wTQU9vOSmF+Vd8UrX6blP8MwGz6JGDFvtAMPoikazVe4qgifg1EItdGNMFmuKrJ
+ QuKu3hmt9TB+aRSb/ED8onCLcURcHaGcZNDocsq5hRn1muEx5FxnK4Df9G4g4xaQifJf
+ RF3tv65X425+S6SiEahypbe+qu2xMhNsHCXgCivO/MWIlFOOH3YCqe+FcCWDP+Q+dEMA cA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g56rb09kh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 19:26:37 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IJFlJs012622;
+        Wed, 18 May 2022 19:26:37 GMT
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g56rb09k3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 19:26:37 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IJMpdO012327;
+        Wed, 18 May 2022 19:26:36 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma04wdc.us.ibm.com with ESMTP id 3g4wp5bbsx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 19:26:36 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IJQZaU30212370
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 19:26:35 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 256D0C6055;
+        Wed, 18 May 2022 19:26:35 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A3087C6059;
+        Wed, 18 May 2022 19:26:34 +0000 (GMT)
+Received: from [9.211.84.41] (unknown [9.211.84.41])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed, 18 May 2022 19:26:34 +0000 (GMT)
+Message-ID: <e5327191-50c5-85b5-6c01-3f43cffc142b@linux.vnet.ibm.com>
+Date:   Wed, 18 May 2022 15:26:34 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] tpm: sleep at least <...> ms in tpm_msleep()
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        Johannes Holland <johannes.holland@infineon.com>
+Cc:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, peterhuewe@gmx.de, jgg@ziepe.ca
+References: <20220510112902.23213-1-johannes.holland@infineon.com>
+ <YnvTSqRgYkWu0qgp@kernel.org>
+ <99541f08e8b554dea59334005cafb0af978f9a05.camel@linux.ibm.com>
+ <eb9ef8aeab4c0284028c013a2c86b248719a46ae.camel@HansenPartnership.com>
+ <YoKQchfJ//FUws7i@kernel.org>
+From:   Nayna <nayna@linux.vnet.ibm.com>
+In-Reply-To: <YoKQchfJ//FUws7i@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: W2-w1RYqYKLES2lZ4X-4HgpuJmeqtaTu
+X-Proofpoint-GUID: xFsCr7f6tHpE9XZGLchG5KdWriWfSirK
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517233457.1123309-1-mka@chromium.org>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
+ mlxlogscore=999 adultscore=0 spamscore=0 priorityscore=1501 malwarescore=0
+ mlxscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205180110
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 04:34:54PM -0700, Matthias Kaehlcke wrote:
-> As of now LoadPin restricts loading of kernel files to a single pinned
-> filesystem, typically the rootfs. This works for many systems, however it
-> can result in a bloated rootfs (and OTA updates) on platforms where
-> multiple boards with different hardware configurations use the same rootfs
-> image. Especially when 'optional' files are large it may be preferable to
-> download/install them only when they are actually needed by a given board.
-> Chrome OS uses Downloadable Content (DLC) [1] to deploy certain 'packages'
-> at runtime. As an example a DLC package could contain firmware for a
-> peripheral that is not present on all boards. DLCs use dm-verity [2] to
-> verify the integrity of the DLC content.
 
-For the coming v5 (which will fix the 0-day reports), if I can get some
-Acks from the dm folks, I can carry this with other loadpin changes in
-my tree. Though I'm fine with this going via the dm tree, too:
+On 5/16/22 13:57, Jarkko Sakkinen wrote:
+> On Thu, May 12, 2022 at 08:32:55AM -0400, James Bottomley wrote:
+>> On Thu, 2022-05-12 at 08:21 -0400, Mimi Zohar wrote:
+>>> On Wed, 2022-05-11 at 18:16 +0300, Jarkko Sakkinen wrote:
+>>>> On Tue, May 10, 2022 at 01:29:03PM +0200, Johannes Holland wrote:
+>>>>> To comply with protocol requirements, minimum polling times must
+>>>>> often
+>>>>> be adhered to. Therefore, a macro like tpm_msleep() should sleep
+>>>>> at
+>>>>> least the given amount of time (not up to the given period). Have
+>>>>> tpm_msleep() sleep at least the given number of milliseconds.
+>>>>>
+>>>>> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+>>>>> ---
+>>>>>   drivers/char/tpm/tpm.h | 4 ++--
+>>>>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
+>>>>> index 2163c6ee0d36..0971b55fffe3 100644
+>>>>> --- a/drivers/char/tpm/tpm.h
+>>>>> +++ b/drivers/char/tpm/tpm.h
+>>>>> @@ -185,8 +185,8 @@ int tpm_pm_resume(struct device *dev);
+>>>>>   
+>>>>>   static inline void tpm_msleep(unsigned int delay_msec)
+>>>>>   {
+>>>>> -	usleep_range((delay_msec * 1000) - TPM_TIMEOUT_RANGE_US,
+>>>>> -		     delay_msec * 1000);
+>>>>> +	usleep_range(delay_msec * 1000, (delay_msec * 1000)
+>>>>> +		     + TPM_TIMEOUT_RANGE_US);
+>>>>>   };
+>>>>>   
+>>>>>   int tpm_chip_start(struct tpm_chip *chip);
+>>>>> -- 
+>>>>> 2.34.1
+>>>>>
+>>>> For this I would really like to hear a 2nd opinion from Nayna and
+>>>> Mimi.
+>>> This patch reverts commit 5ef924d9e2e8 ("tpm: use tpm_msleep() value
+>>> as max delay").    Are you experiencing TPM issues that require it?
+>> I am:
+>>
+>> https://lore.kernel.org/linux-integrity/1531328689.3260.8.camel@HansenPartnership.com/
+>>
+>> I'm about 24h into a soak test of the patch with no TPM failure so far.
+>> I think it probably needs to run another 24h just to be sure, but it
+>> does seem the theory is sound (my TPM gets annoyed by being poked too
+>> soon) so reverting 5ef924d9e2e8 looks to be the correct action.  The
+>> only other ways I've found to fix this are either revert the
+>> usleep_range patch altogether or increase the timings:
+>>
+>> https://lore.kernel.org/linux-integrity/1531329074.3260.9.camel@HansenPartnership.com/
+>>
+>> Which obviously pushes the min past whatever issue my TPM is having
+>> even with 5ef924d9e2e8 applied.
+>>
+>> Given that even the commit message for 5ef924d9e2e8 admits it only
+>> shaves about 12% off the TPM response time, that would appear to be an
+>> optimization too far if it's going to cause some TPMs to fail.
+>>
+>> James
+> What if TPM started with the timings as they are now and use the
+> "reverted" timings if coming up too early?  The question here is
+> though,  is such complexity worth of anything or should we just
+> revert and do nothing else.
 
-Acked-by: Kees Cook <keescook@chromium.org>
+TCG Specification(TCG PC Client Device Driver Design Principles, Section 
+10), says - General control timeouts, denoted as TIMEOUT_A (A), 
+TIMEOUT_B (B), TIMEOUT_C (C) and TIMEOUT_D (D), are the maximum waiting 
+time from a certain control operation from the DD until the TPM shows 
+the expected status change.
 
--- 
-Kees Cook
+usleep_range(min, max) takes second parameter as max value which is same 
+as maximum delay in our case. Thus the code is in compliance with the 
+standard already. We still haven't heard back yet as to the reason for 
+this change, nor if the problem is pervasive.
+
+Lastly, a 12% improvement makes a difference or not depends on usecase. 
+It did at least in our case.
+
+Thanks & Regards,
+
+      - Nayna
+
