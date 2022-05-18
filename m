@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC10DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 23:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 23:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiERXyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 19:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
+        id S231866AbiERXyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 19:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231597AbiERXxf (ORCPT
+        with ESMTP id S229925AbiERXxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 19:53:35 -0400
+        Wed, 18 May 2022 19:53:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B999BAFC;
-        Wed, 18 May 2022 16:53:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B4860A96;
+        Wed, 18 May 2022 16:53:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 463A4B8225C;
-        Wed, 18 May 2022 23:53:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A28C3411C;
-        Wed, 18 May 2022 23:53:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26E76B81C03;
+        Wed, 18 May 2022 23:53:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76052C385A9;
+        Wed, 18 May 2022 23:53:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652918012;
-        bh=mHfaNK/yqtCaO/YT1VZcqJFlQSMjauSczWDdIigQbH4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X9OLn4uN0IO4WyRABB3ByikS4qWBMsqFglNa8PeQ72cZC0adZSBvyLrplspqEtJRX
-         mZxZJWuw2e0+J9G4KOg8g+NuMV3eMDe6MRLVhA2PXNtqgJ/22jaYPwmRJBuar7XPkV
-         BZMEX5DB0YvhDEVWNjqSNgnIYGirlIO+VpWpNzNKoRiCPTwZ013i1D1hEWsq+odUQ0
-         jqK5EGlKizkZblHmj0qlIhshRQvVwH+kkUcnm3PZiENEHBLFjoXOZL42G3moRRaLxh
-         iMIuOcvo/Xjrlh0wnusnqJd4zv9t2f8C4dAh8KR9Ee024Rmn8spgTVzaebA0uQzBKl
-         AGm4vyf4h8/Mg==
+        s=k20201202; t=1652918008;
+        bh=urChUY7g9muzenao6Op/35xCF3MRcXpVDil5q1s0Oy4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OV61lWEayn3LYEHqqYjdbT4rDnSYkojA/uBcYiviKrLQosTqoljlBxdyQuag4D38t
+         QD3252d92imOW+XVDTj0qjrOJ+PoJ1FHyjBnZPYlsp6uvQj29AfMW/W9l/rAHYKyz1
+         EIhGcaMmM0JN4aG/HcXCFiYrX6jbcm36zLqiheYnoEV/n8g93nWWuHGTHlbljGZIyW
+         DwtikEg30uOxeLh6dEvCADQkuEKd5jCOvDNzz3suRYVpoI0hAgf8LBxjbIdG8fLEMv
+         52a1BO/Ce+DjZrrYEzZcYdQZR3Zhx1bno/f/yNbVWXKZAiVyJNYG5rA6eoaqmksXog
+         K4HSm1NvPH8FA==
 From:   Eric Biggers <ebiggers@kernel.org>
 To:     linux-fsdevel@vger.kernel.org
 Cc:     linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
         linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
         linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
         linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
-Subject: [RFC PATCH v2 7/7] f2fs: support STATX_IOALIGN
-Date:   Wed, 18 May 2022 16:50:11 -0700
-Message-Id: <20220518235011.153058-8-ebiggers@kernel.org>
+Subject: [RFC PATCH v2 0/7] make statx() return I/O alignment information
+Date:   Wed, 18 May 2022 16:50:04 -0700
+Message-Id: <20220518235011.153058-1-ebiggers@kernel.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518235011.153058-1-ebiggers@kernel.org>
-References: <20220518235011.153058-1-ebiggers@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+This patchset makes the statx() system call return I/O alignment
+information, roughly following the design that was suggested at
+https://lore.kernel.org/linux-fsdevel/20220120071215.123274-1-ebiggers@kernel.org/T/#u
 
-Add support for STATX_IOALIGN to f2fs, so that I/O alignment information
-is exposed to userspace in a consistent and easy-to-use way.
+This feature solves two problems: (a) it allows userspace to determine
+when a file supports direct I/O, and with what alignment restrictions;
+and (b) it allows userspace to determine the optimum I/O alignment for a
+file.  For more details, see patch 1.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
----
- fs/f2fs/file.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+This is an RFC.  I'd greatly appreciate any feedback on the UAPI, as
+that obviously needs to be gotten right from the beginning.  E.g., does
+the proposed set of fields make sense?  Am I including the right
+information in stx_offset_align_optimal?
 
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index c32f7722ba6b0..f89a190949c59 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -835,6 +835,21 @@ static bool f2fs_force_buffered_io(struct inode *inode)
- 	return false;
- }
- 
-+/* Return the maximum value of io_opt across all the filesystem's devices. */
-+static unsigned int f2fs_max_io_opt(struct inode *inode)
-+{
-+	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-+	int io_opt = 0;
-+	int i;
-+
-+	if (!f2fs_is_multi_device(sbi))
-+		return bdev_io_opt(sbi->sb->s_bdev);
-+
-+	for (i = 0; i < sbi->s_ndevs; i++)
-+		io_opt = max(io_opt, bdev_io_opt(FDEV(i).bdev));
-+	return io_opt;
-+}
-+
- int f2fs_getattr(struct user_namespace *mnt_userns, const struct path *path,
- 		 struct kstat *stat, u32 request_mask, unsigned int query_flags)
- {
-@@ -851,6 +866,22 @@ int f2fs_getattr(struct user_namespace *mnt_userns, const struct path *path,
- 		stat->btime.tv_nsec = fi->i_crtime.tv_nsec;
- 	}
- 
-+	/*
-+	 * Return the I/O alignment information if requested.  We only return
-+	 * this information when requested, since on encrypted files it might
-+	 * take a fair bit of work to get if the file wasn't opened recently.
-+	 */
-+	if ((request_mask & STATX_IOALIGN) && S_ISREG(inode->i_mode)) {
-+		unsigned int bsize = i_blocksize(inode);
-+
-+		stat->result_mask |= STATX_IOALIGN;
-+		if (!f2fs_force_buffered_io(inode)) {
-+			stat->mem_align_dio = bsize;
-+			stat->offset_align_dio = bsize;
-+		}
-+		stat->offset_align_optimal = max(f2fs_max_io_opt(inode), bsize);
-+	}
-+
- 	flags = fi->i_flags;
- 	if (flags & F2FS_COMPR_FL)
- 		stat->attributes |= STATX_ATTR_COMPRESSED;
+Patch 1 adds the VFS support for STATX_IOALIGN.  The remaining patches
+wire it up to ext4 and f2fs.  Support for other filesystems can be added
+later.  We could also support this on block device files; however, since
+block device nodes have different inodes from the block devices
+themselves, it wouldn't apply to statx("/dev/$foo") but rather just to
+'fd = open("/dev/foo"); statx(fd)'.  I'm unsure how useful that would be.
+
+Note, f2fs has one corner case where DIO reads are allowed but not DIO
+writes.  The proposed statx fields can't represent this.  My proposal
+(patch 5) is to just eliminate this case, as it seems much too weird.
+But I'd appreciate any feedback on that part.
+
+This patchset applies to v5.18-rc7.
+
+No changes since v1, which I sent a few months ago; I'm resending this
+because people seem interested in it again
+(https://lore.kernel.org/r/20220518171131.3525293-1-kbusch@fb.com).
+
+Eric Biggers (7):
+  statx: add I/O alignment information
+  fscrypt: change fscrypt_dio_supported() to prepare for STATX_IOALIGN
+  ext4: support STATX_IOALIGN
+  f2fs: move f2fs_force_buffered_io() into file.c
+  f2fs: don't allow DIO reads but not DIO writes
+  f2fs: simplify f2fs_force_buffered_io()
+  f2fs: support STATX_IOALIGN
+
+ fs/crypto/inline_crypt.c  | 48 +++++++++++++++---------------
+ fs/ext4/ext4.h            |  1 +
+ fs/ext4/file.c            | 10 +++----
+ fs/ext4/inode.c           | 31 ++++++++++++++++++++
+ fs/f2fs/f2fs.h            | 45 -----------------------------
+ fs/f2fs/file.c            | 61 ++++++++++++++++++++++++++++++++++++++-
+ fs/stat.c                 |  3 ++
+ include/linux/fscrypt.h   |  7 ++---
+ include/linux/stat.h      |  3 ++
+ include/uapi/linux/stat.h |  9 ++++--
+ 10 files changed, 136 insertions(+), 82 deletions(-)
+
+
+base-commit: 42226c989789d8da4af1de0c31070c96726d990c
 -- 
 2.36.1
 
