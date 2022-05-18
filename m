@@ -2,131 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A617C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D4EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240423AbiERQkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        id S240390AbiERQnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240398AbiERQkK (ORCPT
+        with ESMTP id S240334AbiERQnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:40:10 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2B51FB574;
-        Wed, 18 May 2022 09:40:03 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:40784)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nrMiN-000aXg-N2; Wed, 18 May 2022 10:39:59 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38670 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nrMiM-000int-IO; Wed, 18 May 2022 10:39:59 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Huacai Chen <chenhuacai@loongson.cn>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Al Viro <viro@zeniv.linux.org.uk>
-References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
-        <20220518092619.1269111-15-chenhuacai@loongson.cn>
-Date:   Wed, 18 May 2022 11:39:51 -0500
-In-Reply-To: <20220518092619.1269111-15-chenhuacai@loongson.cn> (Huacai Chen's
-        message of "Wed, 18 May 2022 17:26:11 +0800")
-Message-ID: <87ilq294mg.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 18 May 2022 12:43:13 -0400
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5152D60AB7;
+        Wed, 18 May 2022 09:43:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=Juc744IBDe0/YlnjwfVrcCw9F1+WRXzjcPzfaEDrEQs=; b=u95C2A0MeWd+0tomPwWSEfB5Vx
+        odYGsMh6kbUIWaOqxhRSdu76ciEwYQrqo3YTYW3y4s9PwYR/crfV++hRzQ6+eiwHnfnurAiAtyYyB
+        FthrILmgkwA0QCV5u1x0Yfx7vG5f1dungjyRGRZk3rOthSqpeSmcP3XHUzB3dx1tnZ5NGUo9wvdt1
+        1ouqD+oUS2l51PXGtMtNUHR7pOpfRnynPsZtB3+PWkcCpi2AvSZFgy9Mi2mcZGwVIUQCaReX2hVk2
+        pC/xsN9ZiDMqL6yGhVV3Q0ie0IN0GYsBXlGk53wV9gARinfmX6e6jZDWi4okMXYHGtHcqnh9pvS/k
+        /qBnPgFQ==;
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nrMlS-00G4od-SG; Wed, 18 May 2022 16:43:11 +0000
+Date:   Wed, 18 May 2022 16:43:10 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [git pull] a couple of fixes
+Message-ID: <YoUiHhz1NsTbN5Vo@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nrMiM-000int-IO;;;mid=<87ilq294mg.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/loKgiIQkjiUDPfvi+iuLWDLAFJas94Fw=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH V11 14/22] LoongArch: Add signal handling support
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Huacai Chen <chenhuacai@loongson.cn> writes:
+	vhost race fix + percpu_ref_init-caused cgroup double-free fix
+(the latter had manifested as buggered struct mount refcounting -
+those are also using percpu data structures, but anything that does
+percpu allocations could be hit)
 
-> Add ucontext/sigcontext definition and signal handling support for
-> LoongArch.
->
-> Cc: Eric Biederman <ebiederm@xmission.com>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> ---
->  arch/loongarch/include/uapi/asm/sigcontext.h |  44 ++
->  arch/loongarch/include/uapi/asm/signal.h     |  13 +
->  arch/loongarch/include/uapi/asm/ucontext.h   |  35 ++
->  arch/loongarch/kernel/signal.c               | 566 +++++++++++++++++++
->  4 files changed, 658 insertions(+)
->  create mode 100644 arch/loongarch/include/uapi/asm/sigcontext.h
->  create mode 100644 arch/loongarch/include/uapi/asm/signal.h
->  create mode 100644 arch/loongarch/include/uapi/asm/ucontext.h
->  create mode 100644 arch/loongarch/kernel/signal.c
->
-> diff --git a/arch/loongarch/include/uapi/asm/sigcontext.h b/arch/loongarch/include/uapi/asm/sigcontext.h
-> new file mode 100644
-> index 000000000000..be3d3c6ac83e
-> --- /dev/null
-> +++ b/arch/loongarch/include/uapi/asm/sigcontext.h
-> @@ -0,0 +1,44 @@
-> +/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-> +/*
-> + * Author: Hanlu Li <lihanlu@loongson.cn>
-> + *         Huacai Chen <chenhuacai@loongson.cn>
-> + *
-> + * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-> + */
-> +#ifndef _UAPI_ASM_SIGCONTEXT_H
-> +#define _UAPI_ASM_SIGCONTEXT_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/posix_types.h>
-> +
-> +/* FP context was used */
-> +#define SC_USED_FP		(1 << 0)
-> +/* Address error was due to memory load */
-> +#define SC_ADDRERR_RD		(1 << 30)
-> +/* Address error was due to memory store */
-> +#define SC_ADDRERR_WR		(1 << 31)
-> +
-> +struct sigcontext {
-> +	__u64	sc_pc;
-> +	__u64	sc_regs[32];
-> +	__u32	sc_flags;
-> +	__u64	sc_extcontext[0] __attribute__((__aligned__(16)));
-> +};
-> +
-> +#define CONTEXT_INFO_ALIGN	16
-> +struct _ctxinfo {
-> +	__u32	magic;
-> +	__u32	size;
-> +	__u64	padding;	/* padding to 16 bytes */
-> +};
+The following changes since commit feb9c5e19e913b53cb536a7aa7c9f20107bb51ec:
 
-This is probably something I a missing but what is struct _ctxinfo and
-why is it in a uapi header?
+  Merge tag 'for_linus' of git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost (2022-05-10 11:15:05 -0700)
 
-I don't see anything else in the uapi implementation using it.
+are available in the Git repository at:
 
-Symbols that start with an underscore "_" are reserved and should not
-be used in general, and especially not in uapi header files.
+  git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git fixes
 
-Eric
+for you to fetch changes up to fb4554c2232e44d595920f4d5c66cf8f7d13f9bc:
+
+  Fix double fget() in vhost_net_set_backend() (2022-05-18 12:33:51 -0400)
+
+----------------------------------------------------------------
+Al Viro (2):
+      percpu_ref_init(): clean ->percpu_count_ref on failure
+      Fix double fget() in vhost_net_set_backend()
+
+ drivers/vhost/net.c   | 15 +++++++--------
+ lib/percpu-refcount.c |  1 +
+ 2 files changed, 8 insertions(+), 8 deletions(-)
