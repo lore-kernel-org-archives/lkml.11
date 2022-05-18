@@ -2,146 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39309C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD93AC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236239AbiERMMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48560 "EHLO
+        id S236282AbiERMMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236220AbiERMMd (ORCPT
+        with ESMTP id S236220AbiERMMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:12:33 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF2314AC8E;
-        Wed, 18 May 2022 05:12:31 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8CFA121AEF;
-        Wed, 18 May 2022 12:12:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652875950; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qDlHrU3r3WkkvVR64fwd1Zr3oMvZyUV2mIKqOQiXpTE=;
-        b=AnTgfMZm+3RaT1xBqSHySU0xpR8z7lq2slsyESumUNkucTTUUfFzpLg/M9vmdEToUrnwea
-        AjcCs6WsxXEokyu+zhYyG1Oaz11rPQ2yt01Hcg6ojP5uuIzjr+2bDaH2KVZNPhwDYd0Gj0
-        Pqbo7FDUs75p0t4IKQq6U4inSjr/m8o=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C375B2C141;
-        Wed, 18 May 2022 12:12:29 +0000 (UTC)
-Date:   Wed, 18 May 2022 14:12:26 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     akpm@linux-foundation.org, ammarfaizi2@gnuweeb.org,
-        oleksandr@natalenko.name, willy@infradead.org, linux-mm@kvack.org,
-        corbet@lwn.net, linux-kernel@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        wangyong <wang.yong12@zte.com.cn>,
-        Yunkai Zhang <zhang.yunkai@zte.com.cn>,
-        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
-        Hugh Dickins <hughd@google.com>, linux-api@vger.kernel.org
-Subject: Re: [PATCH] mm/ksm: introduce ksm_enabled for each process
-Message-ID: <YoTiqm4sQCtq8C1C@dhcp22.suse.cz>
-References: <20220517092701.1662641-1-xu.xin16@zte.com.cn>
- <YoOrdh85+AqJH8w1@dhcp22.suse.cz>
- <62845e2b.1c69fb81.cbf4a.1200@mx.google.com>
+        Wed, 18 May 2022 08:12:39 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CAA14AF73;
+        Wed, 18 May 2022 05:12:37 -0700 (PDT)
+Received: from kwepemi100021.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L3Bch6M3gzQkBC;
+        Wed, 18 May 2022 20:09:40 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100021.china.huawei.com (7.221.188.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 18 May 2022 20:12:35 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 20:12:34 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <josef@toxicpanda.com>, <axboe@kernel.dk>, <ming.lei@redhat.com>
+CC:     <linux-block@vger.kernel.org>, <nbd@other.debian.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next v2 0/6] nbd: bugfix and cleanup patches
+Date:   Wed, 18 May 2022 20:26:12 +0800
+Message-ID: <20220518122618.1702997-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62845e2b.1c69fb81.cbf4a.1200@mx.google.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 18-05-22 02:47:06, CGEL wrote:
-> On Tue, May 17, 2022 at 04:04:38PM +0200, Michal Hocko wrote:
-> > [CCing Hugh and linux-api]
-> > 
-> > On Tue 17-05-22 09:27:01, cgel.zte@gmail.com wrote:
-> > > From: xu xin <xu.xin16@zte.com.cn>
-> > > 
-> > > For now, if we want to use KSM to merge pages of some apps, we have to
-> > > explicitly call madvise() in application code, which means installed
-> > > apps on OS needs to be uninstall and source code needs to be modified.
-> > > It is very inconvenient because sometimes users or app developers are not
-> > > willing to modify their app source codes for any reasons.
-> 
-> Hello, Michal.
-> > 
-> > Would it help to allow external control by process_madvise?
-> >
-> 
-> Maybe, but it will be much more complicated to achieve this by
-> process_madvise(). process_madvise works on a serires of VMAs in
-> essential, So all the eligible VMAs have to be traversed. The problem
-> about this has been discussed in [1],[2].
-> [1]https://lore.kernel.org/lkml/1835064.A2aMcgg3dW@natalenko.name/
-> [2]https://lore.kernel.org/lkml/20220513133210.9dd0a4216bd8baaa1047562c@linux-foundation.org/
+Changes in v2:
+ - in patch 3, instead of clear and then reset the flag if rq is not
+ completed, test first and clear if rq is going to complete.
 
-I can see that this is not a trivial interface to use but I do not
-think this would be too hard to be usable. There is certainly some
-coordination required between the external and the target tasks. But
-that is to be expected IMHO. You do not really want to configure merging
-without actually understanding what the application does and whether
-that is really OK. Right?
+path 1-2 fix races between nbd setup and module removal.
+patch 3 fix io can't be completed in some error path.
+patch 4 fix io hung when disconnecting failed.
+patch 5 fix sysfs warning about duplicate creation.
+patch 6 use pr_err to output error message.
 
-Besides that, as far as I remember, the process_madvise interface
-doesn't really require exact vmas to be provided and a single range can
-span multiple VMAs.
+Previous versions:
+v1: https://patchwork.kernel.org/project/linux-block/cover/20220426130746.885140-1-yukuai3@huawei.com/
 
-> > > So to use KSM more flexibly, we provide a new proc file "ksm_enabled" under
-> > > /proc/<pid>/. We can pass parameter into this file with one of three values
-> > > as follows:
-> > > 
-> > > 	always:
-> > > 		force all anonymous and eligible VMAs of this process to be
-> > > 		scanned by ksmd.
-> > > 	madvise:
-> > > 		the default state, unless user code call madvise, ksmd
-> > > 		doesn't scan this process.
-> > > 	never:
-> > > 		this process will never be scanned by ksmd and no merged
-> > > 		pages occurred in this process.
-> > > 
-> > > With this patch, we can control KSM with ``/proc/<pid>/ksm_enabled``
-> > > based on every process. KSM for each process can be entirely disabled
-> > > (mostly for debugging purposes) or only enabled inside MADV_MERGEABLE
-> > > regions (to avoid the risk of consuming more cpu resources to scan for
-> > > ksmd) or enabled entirely for a process.
-> > 
-> > I am not really familiar with KSM much but I am wondering whether the
-> > proc based interface is really the best fit. We have a very similar
-> > concern with THP where processes would like to override the global setup
-> > and that has been done with prctl interface. Is there any reason why
-> > this should be any different?
-> > 
-> At least for now, I can't find a simpler implementation than proc file,
-> unless we add a new syscall used for changing another process mm's flag
-> in user space.
+Yu Kuai (5):
+  nbd: call genl_unregister_family() first in nbd_cleanup()
+  nbd: fix race between nbd_alloc_config() and module removal
+  nbd: don't clear 'NBD_CMD_INFLIGHT' flag if request is not completed
+  nbd: fix io hung while disconnecting device
+  nbd: use pr_err to output error message
 
-What is the problem with the prctl extension?
+Zhang Wensheng (1):
+  nbd: fix possible overflow on 'first_minor' in nbd_dev_add()
 
-> Speaking to THP, the interactive UI of KSM is relatively simpler because
-> KSM dosen't have global knob like THP. OTOH, THP trades space for time
-> (consume memory) while KSM trades time for space (save memory), so THP
-> tends to be enabled system wide while KSM not.
-> 
-> > Another question I have is about the interaction of the per-process
-> > tunable with any explicit madvise calls. AFAICS you have made this knob
-> > per mm but the actual implementation currently relies on the per-vma
-> > flags. That means that one can explicitly disallow merging by madvise
-> > for a range. Is it wise to override that by a per-process knob? I mean
-> > there might be a very good reason why a particular memory ranges should
-> > never be merged but a per-process knob could easily ignore that hint
-> > from the application. Or am I just confuse?
-> For now, there is no any hints for letting KSM never merge some memory
-> ranges.
+ drivers/block/nbd.c | 110 +++++++++++++++++++++++++++-----------------
+ 1 file changed, 68 insertions(+), 42 deletions(-)
 
-I am not sure I understand. Could you be more specific?
 -- 
-Michal Hocko
-SUSE Labs
+2.31.1
+
