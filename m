@@ -2,257 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 151ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0192DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbiERGS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
+        id S230495AbiERGUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiERGSY (ORCPT
+        with ESMTP id S230421AbiERGUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:18:24 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A796C0F6
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:18:21 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id g184so1282354pgc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:18:21 -0700 (PDT)
+        Wed, 18 May 2022 02:20:13 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6FE6C0F4
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:20:11 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so2554500wmj.1
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:20:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aUOQzQyLSHKVQOfQejrKZ7S+QnrjtQ35FqsfQcAvXog=;
-        b=WsGeYJfMcSxk4MYbJFe2TMgOQzdkL4z8XDiQDGcluOyGJa8J/YvBAc/vaA9YPkaZy3
-         tbEaMb73C+bMB87ftWp+y81QWZMLI8Klz3MLGf2PIHC8eGZxz7oBscOqKsyD7orXuPgw
-         ZbsuY9CBwSFOg0eLFK/1+b8pvMqeE/bYFjbmfOVg8IjbXna2qU6HjhqTWOhUilE3rAKy
-         s7DQ9IbMdMHWEMMDUDkQFmxcQgIgbegid5YgCE0ipMC/HKvV4jICkygWtZ6iArt+K3Cr
-         3T00j0lI8AOHUtAejyMLyAvUSb84eq24cNJqrOAPzu6gE4QPCMVO6sfNzV33X+5QcSEW
-         dNwQ==
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NY8GpNn3ouqYPF3eic3S/ZQvlCNUF5XAtgPk9wl+rm0=;
+        b=b8c46vdYjeWBbn0XMdRJguDoxnmC5sZgPyGV4+/mX8+WOLitHXwcKu1OKRIVtijzxg
+         DWaVcdVj1CJHc8VV888C2pNoxc4NXxYGoPFfYTWN072HzrAxgt7K5EKXhBe8U0WX49tj
+         DDyUxOo1q2sARKc/5wxojJqa0NVRmJ4RgLgyg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aUOQzQyLSHKVQOfQejrKZ7S+QnrjtQ35FqsfQcAvXog=;
-        b=a0ykL4bXMgEQHsKT16bLd7aDkgV7jCwDvWe3EYYvwGFTmNf3H4eox0LZcULv9iOs8e
-         h6hCdo8BcIOZt0aqtTbh+vTyg+BMm6XIhXAORB3Fn6N3qIS2rJR2q3bwZbnGKLAfhzcX
-         RZ0h1E5pvL8cTVP7xScA9H/Y7RrBImKRT/EXWyVmvl3CVAQ6vVCx6jYLYVlBYBotSicR
-         QfZDJqfWlHNuDAv53/2KBJLcVDhO2X39ysJfrlhdK3IfhuTzlSqsQiooOueu2wxapxMT
-         MZoqFd0m8Mqq8ScyTlegzs0ASHFXr/zYNh3ZKuoTCy0YX16LfrKsr3HD6Q8657sOLNF2
-         ujTg==
-X-Gm-Message-State: AOAM533WkFpuZPJ7M9Zkw0uBKH6NeK1RVcKTHypZKGw6/sqONa1HaBch
-        ZeYbU4H6vPilZGmfC6/hfo8FQ0mU4XtdrcEZEMKOUg==
-X-Google-Smtp-Source: ABdhPJxjiKwSU9gCwVfFIUmqgLbgZrBYEKGKkYGn+85rlJIdtYzmFtJMxk5NUCc7B7OTS4buwPcTZSWZLilb97hrmrQ=
-X-Received: by 2002:a63:693:0:b0:3f5:ef4e:d359 with SMTP id
- 141-20020a630693000000b003f5ef4ed359mr3001601pgg.540.1652854701461; Tue, 17
- May 2022 23:18:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NY8GpNn3ouqYPF3eic3S/ZQvlCNUF5XAtgPk9wl+rm0=;
+        b=kzL+M9dybepRRd5qStFXu0el8sXcKDyl0E63GAPnDMrF1EbPiG4xGGxcpRCRcEUeFI
+         GUOg7qLgMaviOrv4VnMfqk2e5mQwydJI5e3SD/bR256enk6MWABAqvN70cN5fnhab8Om
+         wO/g0V+KE5G5MJokfLObxfAbRkaUdsu+WU0jud9OhRbq4FvB9IjwH6OwSrVreiY5t4cp
+         e3oBl6d9gMhAbpL6pEESnggZ1sS9tzHWHtbENpOYKyZh/l/lJ4DiocLf25RfZ6qfA5Y1
+         uCQOQzh2kiYpdrRXexoyeN+pLdtIrdnrSlLAvoeyWYiNicUFjgsoBc5QjSBR3D25ohCZ
+         1/4g==
+X-Gm-Message-State: AOAM5307lmbm8pRddDav/O1cdH8kcH1mEXzi6W/PHAb9Fs/7gl2EYhT/
+        dyiD9k4xN+kGsMLc4bV/mSpsPg==
+X-Google-Smtp-Source: ABdhPJwOzfUZghq0VDBdWhiOnXKgqnB9u9p8Iq0u1TSE0tbyeZdUma+QuQzT+kW4AWR+SvRpVDySPw==
+X-Received: by 2002:a05:600c:3d8b:b0:397:87e:c8df with SMTP id bi11-20020a05600c3d8b00b00397087ec8dfmr11998118wmb.187.1652854810094;
+        Tue, 17 May 2022 23:20:10 -0700 (PDT)
+Received: from localhost.localdomain (mob-37-180-41-238.net.vodafone.it. [37.180.41.238])
+        by smtp.gmail.com with ESMTPSA id u23-20020a05600c00d700b003942a244f42sm4105169wmm.27.2022.05.17.23.20.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 23:20:09 -0700 (PDT)
+From:   Michael Trimarchi <michael@amarulasolutions.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: fec: Avoid allocating rx buffer using ATOMIC in ndo_open
+Date:   Wed, 18 May 2022 08:20:07 +0200
+Message-Id: <20220518062007.10056-1-michael@amarulasolutions.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220516005412.4844-1-chiawei_wang@aspeedtech.com> <20220516005412.4844-2-chiawei_wang@aspeedtech.com>
-In-Reply-To: <20220516005412.4844-2-chiawei_wang@aspeedtech.com>
-From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-Date:   Wed, 18 May 2022 08:18:10 +0200
-Message-ID: <CALNFmy1pM4ZQ0BLDwHykxDCpR=Dv3sVaYq5QLLA_w0L+mzq7iQ@mail.gmail.com>
-Subject: Re: [PATCH v5 1/4] dt-bindings: aspeed: Add eSPI controller
-To:     Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-Cc:     robh+dt@kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        jk@codeconstruct.com.au, a.kartashev@yadro.com,
-        dphadke@linux.microsoft.com, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        ryan_chen@aspeedtech.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2022 at 2:55 AM Chia-Wei Wang
-<chiawei_wang@aspeedtech.com> wrote:
->
-> Add dt-bindings for Aspeed eSPI controller
->
-> Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-> ---
->  .../devicetree/bindings/soc/aspeed/espi.yaml  | 162 ++++++++++++++++++
->  1 file changed, 162 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/aspeed/espi.yaml
->
-> diff --git a/Documentation/devicetree/bindings/soc/aspeed/espi.yaml b/Documentation/devicetree/bindings/soc/aspeed/espi.yaml
-> new file mode 100644
-> index 000000000000..aa91ec8caf6a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/aspeed/espi.yaml
-> @@ -0,0 +1,162 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# # Copyright (c) 2021 Aspeed Technology Inc.
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/soc/aspeed/espi.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Aspeed eSPI Controller
-> +
-> +maintainers:
-> +  - Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-> +  - Ryan Chen <ryan_chen@aspeedtech.com>
-> +
-> +description:
-> +  Aspeed eSPI controller implements a slave side eSPI endpoint device
-> +  supporting the four eSPI channels, namely peripheral, virtual wire,
-> +  out-of-band, and flash.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - aspeed,ast2500-espi
-> +          - aspeed,ast2600-espi
-> +      - const: simple-mfd
-> +      - const: syscon
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 1
-> +
-> +  ranges: true
-> +
-> +patternProperties:
-> +  "^espi-ctrl@[0-9a-f]+$":
-> +    type: object
-> +
-> +    description: Control of the four basic eSPI channels
-> +
-> +    properties:
-> +      compatible:
-> +        items:
-> +          - enum:
-> +              - aspeed,ast2500-espi-ctrl
-> +              - aspeed,ast2600-espi-ctrl
-> +
-> +      interrupts:
-> +        maxItems: 1
-> +
-> +      clocks:
-> +        maxItems: 1
-> +
-> +      perif,memcyc-enable:
-> +        type: boolean
-> +        description: Enable memory cycle over eSPI peripheral channel
-> +
-> +      perif,memcyc-src-addr:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: The Host side address to be decoded into the memory cycle over eSPI peripheral channel
-> +
-> +      perif,memcyc-size:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: The size of the memory region allocated for the memory cycle over eSPI peripheral channel
-> +        minimum: 65536
-> +
-> +      perif,dma-mode:
-> +        type: boolean
-> +        description: Enable DMA support for eSPI peripheral channel
-> +
-> +      oob,dma-mode:
-> +        type: boolean
-> +        description: Enable DMA support for eSPI out-of-band channel
-> +
-> +      oob,dma-tx-desc-num:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        minimum: 2
-> +        maximum: 1023
-> +        description: The number of TX descriptors available for eSPI OOB DMA engine
-> +
-> +      oob,dma-rx-desc-num:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        minimum: 2
-> +        maximum: 1023
-> +        description: The number of RX descriptors available for eSPI OOB DMA engine
-> +
-> +      flash,dma-mode:
-> +        type: boolean
-> +        description: Enable DMA support for eSPI flash channel
-> +
-In my tests using this driver the FIFO mode didn't work, but the DMA
-mode worked fine.
-IMHO you should always use DMA mode to reduce CPU load and get rid of
-this property.
+Make ndo_open less sensitive to memory pressure.
 
-> +      flash,safs-mode:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        enum: [ 0, 1, 2 ]
-> +        default: 0
-> +        description: Slave-Attached-Sharing-Flash mode, 0->Mix, 1->SW, 2->HW
-> +
-On the AST2500 the HW mode is not supported, is it?
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+---
+Change:
+	- Adjust the commit message addressing the comments in RFC version
+---
+ drivers/net/ethernet/freescale/fec_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +    dependencies:
-> +      perif,memcyc-src-addr: [ "perif,memcyc-enable" ]
-> +      perif,memcyc-size: [ "perif,memcyc-enable" ]
-> +      oob,dma-tx-desc-num: [ "oob,dma-mode" ]
-> +      oob,dma-rx-desc-num: [ "oob,dma-mode" ]
-> +
-> +    required:
-> +      - compatible
-> +      - interrupts
-> +      - clocks
-> +
-> +  "^espi-mmbi@[0-9a-f]+$":
-> +    type: object
-> +
-> +    description: Control of the PCH-BMC data exchange over eSPI peripheral memory cycle
-> +
-> +    properties:
-> +      compatible:
-> +        const: aspeed,ast2600-espi-mmbi
-> +
-> +      interrupts:
-> +        maxItems: 1
-> +
-> +    required:
-> +      - compatible
-> +      - interrupts
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +  - ranges
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/ast2600-clock.h>
-> +
-> +    espi: espi@1e6ee000 {
-> +        compatible = "aspeed,ast2600-espi", "simple-mfd", "syscon";
-> +        reg = <0x1e6ee000 0x1000>;
-> +
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        ranges = <0x0 0x1e6ee000 0x1000>;
-> +
-> +        espi_ctrl: espi-ctrl@0 {
-> +            compatible = "aspeed,ast2600-espi-ctrl";
-> +            reg = <0x0 0x800>;
-> +            interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
-> +            clocks = <&syscon ASPEED_CLK_GATE_ESPICLK>;
-> +        };
-> +
-> +        espi_mmbi: espi-mmbi@800 {
-> +            compatible = "aspeed,ast2600-espi-mmbi";
-> +            reg = <0x800 0x50>;
-> +            interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
-> +        };
-> +    };
-> --
-> 2.25.1
->
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 9f33ec838b52..09eb6ea9a584 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3076,7 +3076,7 @@ fec_enet_alloc_rxq_buffers(struct net_device *ndev, unsigned int queue)
+ 	rxq = fep->rx_queue[queue];
+ 	bdp = rxq->bd.base;
+ 	for (i = 0; i < rxq->bd.ring_size; i++) {
+-		skb = netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE);
++		skb = __netdev_alloc_skb(ndev, FEC_ENET_RX_FRSIZE, GFP_KERNEL);
+ 		if (!skb)
+ 			goto err_alloc;
+ 
+-- 
+2.25.1
 
-Regards,
-Patrick
