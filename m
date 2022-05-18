@@ -2,108 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7467EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233111AbiERBCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 21:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50496 "EHLO
+        id S233116AbiERBDU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 21:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233077AbiERBCP (ORCPT
+        with ESMTP id S233101AbiERBDS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 21:02:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2396325
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 18:02:14 -0700 (PDT)
+        Tue, 17 May 2022 21:03:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A175A53E23;
+        Tue, 17 May 2022 18:03:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1103B819D2
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:02:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28C7C34116;
-        Wed, 18 May 2022 01:02:10 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="mQPCCfqG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652835729;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EwK9iYZioy8uS/wkcAol0jY2RzNpH6Zi8zhygVBATws=;
-        b=mQPCCfqGYJZ1T6m0TR++PjXuliDZHnpU9ww5bi2lk9dGsIecY3ESl8StVGLNqIyC8/zgKw
-        6GEsTssVuTiMvMFLN3dH0qVSI6m5un8/ahjn6/+1YDjC9c4sefYJFqwbHqRCcj/06RXb/b
-        /ZpLJTqySAIJKm63TzcIPsVnsxosALk=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3b5780c0 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 18 May 2022 01:02:08 +0000 (UTC)
-Date:   Wed, 18 May 2022 03:02:05 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        Filipe Manana <fdmanana@suse.com>,
-        Vadim Galitsin <vadim.galitsyn@oracle.com>
-Subject: Re: [patch 0/3] x86/fpu: Prevent FPU state corruption
-Message-ID: <YoRFjTIzMYZu8Hq8@zx2c4.com>
-References: <20220501192740.203963477@linutronix.de>
- <YnKeag3Ulg0NR58Q@zx2c4.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BBAC61500;
+        Wed, 18 May 2022 01:03:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950EEC385B8;
+        Wed, 18 May 2022 01:03:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652835796;
+        bh=Aad3FvNG8f1IOJNzdY4J3bfreB6ONcOeWJBpa+/vJqQ=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=LKN3Rrkr+IosL+ZpSPpclcjFsWCeV+z4X1e0dUoi+zOJja3YIRETBXXGcsYWUrmUC
+         z9R4xRpoL6GXd3Fyx4vmEuXpWsFc9MXyLMcI2NzwfP+jpL8J1IiyrytbBpKXQPo/LB
+         CfIRlN5Ql26yrpudu1klxwfYuypX83Qb5d8sV8PTKYGj888JJ4RFUIrRr3LC8DtAHm
+         axOzZfWJFiNlXtXSvSklQ0RHd0ab1h5RVDdTzULASOJXPBW8pXkSptpNC/s3djbtTv
+         AmzZ8TK+SeFryjInLR6B0T43Gu0K9cHud/srxkcNRKm6FNqejpCrfUn1Gj+LaUbRXx
+         MxAn087s/J5wQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 2F7DE5C051B; Tue, 17 May 2022 18:03:16 -0700 (PDT)
+Date:   Tue, 17 May 2022 18:03:16 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     "frederic@kernel.org" <frederic@kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] rcu: Direct boosting gp_tasks for strict grace periods
+Message-ID: <20220518010316.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220513004256.465233-1-qiang1.zhang@intel.com>
+ <20220513010651.GD1790663@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB588012EC5E5DFD3FFDA49401DACA9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20220513141445.GF1790663@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB58802D034A41626D88F44BEEDACE9@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnKeag3Ulg0NR58Q@zx2c4.com>
+In-Reply-To: <PH0PR11MB58802D034A41626D88F44BEEDACE9@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Thomas,
-
-On Wed, May 04, 2022 at 05:40:26PM +0200, Jason A. Donenfeld wrote:
-> Hi Thomas,
+On Tue, May 17, 2022 at 12:32:10PM +0000, Zhang, Qiang1 wrote:
+> On Fri, May 13, 2022 at 01:17:16PM +0000, Zhang, Qiang1 wrote:
+> > 
+> > On Fri, May 13, 2022 at 08:42:55AM +0800, Zqiang wrote:
+> > > If the CONFIG_RCU_STRICT_GRACE_PERIOD option is enabled, the normal 
+> > > grace period will be treated as expedited grace period, the gp_tasks 
+> > > that block current grace period needs to be boosted unconditionally, 
+> > > therefore this commit adds Kconfig check in rcu_initiate_boost().
+> > > 
+> > > Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> > 
+> > >Good eyes!  I have queued this for further review and testing, thank you!
+> > >
+> > >What sorts of tests did you run on it?
+> > 
+> > Hi Paul
+> > 
+> > I didn't think of  suitable test method, Can you provide me with a 
+> > test method to test it, I will be happy to test.
+> >
+> >Here is one possibility:
+> >
+> >tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 60 --configs "TREE01 TREE02 TREE03 TREE04 TREE05 TREE07 TREE09 TREE10" --kconfig "CONFIG_NR_CPUS=4 CONFIG_RCU_STRICT_GRACE_PERIOD=y" --trust-make
+> >
+> >On a 16-CPU system, this will do eight kernel builds and run about two hours of testing.
 > 
-> On Sun, May 01, 2022 at 09:31:42PM +0200, Thomas Gleixner wrote:
-> > The recent changes in the random code unearthed a long standing FPU state
-> > corruption due do a buggy condition for granting in-kernel FPU usage.
->  
-> Thanks for working that out. I've been banging my head over [1] for a
-> few days now trying to see if it's a mis-bisect or a real thing. I'll
-> ask Larry to retry with this patchset.
+> Hi Paul
+> 
+> I tested according to the above command, and the results are as follows:
+> 
+> tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 60 --configs TREE01 TREE02 TREE03 TREE04 TREE05 TREE07 TREE09 TREE10 --kconfig CONFIG_NR_CPUS=4 CONFIG_RCU_STRICT_GRACE_PERIOD=y --trust-make
+> TREE01 ------- 154236 GPs (42.8433/s) [rcu: g1986553 f0x0 total-gps=496930]
+> :CONFIG_NR_CPUS=4: improperly set
+> :CONFIG_RCU_STRICT_GRACE_PERIOD=y: improperly set
 
-So, Larry's debugging was inconsistent and didn't result in anything I
-could piece together into basic cause and effect. But luckily Vadim, who
-maintains the VirtualBox drivers for Oracle, was able to reproduce the
-issue and was able to conduct some real debugging. I've CC'd him here.
-From talking with Vadim, here are some findings thus far:
+This one didn't cooperate because other Kconfig setting force a minimum
+CONFIG_NR_CPUS of 8192, so OK.
 
-  - Certain Linux guest processes crash under high load.
-  - Windows kernel guest panics.
+> TREE02 ------- 410546 GPs (114.041/s) [rcu: g196373325 f0x2 total-gps=49093612] n_max_cbs: 805081
+> TREE03 ------- 160648 GPs (44.6244/s) [rcu: g128673793 f0x0 total-gps=32168735] n_max_cbs: 646284
+> TREE04 ------- 347059 GPs (96.4053/s) [rcu: g539425233 f0x2 total-gps=134856594] n_max_cbs: 205907
+> TREE05 ------- 360973 GPs (100.27/s) [rcu: g77594645 f0x0 total-gps=19398951] n_max_cbs: 31033
+> :CONFIG_RCU_FANOUT_LEAF=6: improperly set
 
-Observation: the Windows kernel uses SSSE3 in their kernel all over the
-place, generated by the compiler.
+This is harmless -- CONFIG_RCU_STRICT_GRACE_PERIOD sets an upper limit
+of 3 for CONFIG_RCU_FANOUT_LEAF.
 
-  - Moving the mouse around helps induce the crash.
+> TREE07 ------- 355903 GPs (98.8619/s) [rcu: g639182469 f0x0 total-gps=159795908] n_max_cbs: 259737
+> TREE09 ------- 305700 GPs (84.9167/s) [rcu: g9668841 f0x0 total-gps=2417506] n_max_cbs: 2498623
+> :CONFIG_NR_CPUS=4: improperly set
+> :CONFIG_RCU_STRICT_GRACE_PERIOD=y: improperly set
 
-Observation: add_input_randomness() -> .. -> kernel_fpu_begin() -> blake2s_compress().
+This one is because TREE09 does not define CONFIG_RCU_EXPERT, on which
+CONFIG_RCU_STRICT_GRACE_PERIOD depends.
 
-  - The problem exhibits itself in rc7, so this patchset does not fix
-    the issue.
-  - Applying https://xn--4db.cc/ttEUSvdC fixes the issue.
+> TREE10 ------- 220566 GPs (61.2683/s) [rcu: g3456465 f0x0 total-gps=864409] n_max_cbs: 507348
+> :CONFIG_RCU_STRICT_GRACE_PERIOD=y: improperly set
 
-Observation: the problem is definitely related to using the FPU in a
-hard IRQ.
+This one is because TREE10 also does not define CONFIG_RCU_EXPERT,
+on which CONFIG_RCU_STRICT_GRACE_PERIOD depends.
 
-I went reading KVM to get some idea of why KVM does *not* have this
-problem, and it looks like there's some careful code there about doing
-xsave and such around IRQs. So my current theory is that VirtualBox's
-VMM just forgot to do this, and until now this bug went unnoticed.
+So very good, and thank you!
 
-Since VirtualBox is out of tree (and extremely messy of a codebase), and
-this appears to be an out of tree module problem rather than a kernel
-problem, I'm inclined to think that there's not much for us to do, at
-least until we receive information to the contrary of this presumption.
+							Thanx, Paul
 
-But in case you do want to do something proactively, I don't have any
-objections to just disabling the FPU in hard IRQ for 5.18. And in 5.19,
-add_input_randomness() isn't going to hit that path anyway. But also,
-doing nothing and letting the VirtualBox people figure out their bug
-would be fine with me too. Either way, just wanted to give you a heads
-up.
-
-Jason
+> Thanks
+> Zqiang
+> 
+> >
+> >							Thanx, Paul
+> 
+> > Thanks,
+> > Zqiang
+> > 
+> > >
+> > >As usual, I could not resist the urge to wordsmith, so could you please check the version shown below?
+> > >
+> > >							Thanx, Paul
+> > 
+> > ----------------------------------------------------------------------
+> > --
+> > 
+> > commit 079e0f894c5d887c678f94332c1fa7287abfd6bc
+> > Author: Zqiang <qiang1.zhang@intel.com>
+> > Date:   Fri May 13 08:42:55 2022 +0800
+> > 
+> >     rcu: Immediately boost preempted readers for strict grace periods
+> >     
+> >     The intent of the CONFIG_RCU_STRICT_GRACE_PERIOD Konfig option is to
+> >     cause normal grace periods to complete quickly in order to better catch
+> >     errors resulting from improperly leaking pointers from RCU read-side
+> >     critical sections.  However, kernels built with this option enabled still
+> >     wait for some hundreds of milliseconds before boosting RCU readers that
+> >     have been preempted within their current critical section.  The value
+> >     of this delay is set by the CONFIG_RCU_BOOST_DELAY Kconfig option,
+> >     which defaults to 500 milliseconds.
+> >     
+> >     This commit therefore causes kernels build with strict grace periods
+> >     to ignore CONFIG_RCU_BOOST_DELAY.  This causes rcu_initiate_boost()
+> >     to start boosting immediately after all CPUs on a given leaf rcu_node
+> >     structure have passed through their quiescent states.
+> >     
+> >     Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > 
+> > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h index 
+> > 99cde4c947699..b4ab952f04ea6 100644
+> > --- a/kernel/rcu/tree_plugin.h
+> > +++ b/kernel/rcu/tree_plugin.h
+> > @@ -1159,7 +1159,8 @@ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags)
+> >  	    (rnp->gp_tasks != NULL &&
+> >  	     rnp->boost_tasks == NULL &&
+> >  	     rnp->qsmask == 0 &&
+> > -	     (!time_after(rnp->boost_time, jiffies) || rcu_state.cbovld))) {
+> > +	     (!time_after(rnp->boost_time, jiffies) || rcu_state.cbovld ||
+> > +	      IS_ENABLED(CONFIG_RCU_STRICT_GRACE_PERIOD)))) {
+> >  		if (rnp->exp_tasks == NULL)
+> >  			WRITE_ONCE(rnp->boost_tasks, rnp->gp_tasks);
+> >  		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
