@@ -2,130 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F37C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:26:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236371AbiERM02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        id S236414AbiERM0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236527AbiERM0X (ORCPT
+        with ESMTP id S236379AbiERM0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:26:23 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6FD5FF0D;
-        Wed, 18 May 2022 05:26:18 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 3618C5FD02;
-        Wed, 18 May 2022 15:26:15 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1652876775;
-        bh=sFH5idW86lWQdWvgqVFesZuStLdWb38v0wu7UBLxe5s=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=hZpoRYairtXzQsb9c6qOeMBgrb8K9oiH3VkZuemIMBxs5nKXZXTdbtviPfb4H5iZE
-         1U0jaQnb83VUKUBQrSJ19/alHHVHqV++bFrralWmYqg5pC6/+By+OCM+KRdx5F/jkq
-         5U6WeMTFmEx093VTdDHbY4mxBSsMCXzi9rh0nZAyuWOIABJHJ5I1WGuOkkVMkF3kxd
-         N2TM1n4NBzCjPvQg+00dPGlr3QoouZP0DwTLkblzcc8YCQNeIUSioAPg4fQcY2Ib83
-         +3HyBTbeTVSXF6eRzTQidNzeojsVWkpD1EeQkADFk9vOOe22JdXGsQgybKEufKQMqr
-         lb3sR67M5lemA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 18 May 2022 15:26:13 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Topic: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Index: AQHYVASOybrxT0DjfUWoYWuGUlWOX6z4bouAgAnb/gCAIkALgA==
-Date:   Wed, 18 May 2022 12:25:59 +0000
-Message-ID: <20220518122515.aby5lbb4xusr6pdt@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
- <20220419154555.24191-3-ddrokosov@sberdevices.ru>
- <20220420115023.00006a25@Huawei.com>
- <20220426172406.s4h6g7nrpytaq263@CAB-WSD-L081021.sigma.sbrf.ru>
-In-Reply-To: <20220426172406.s4h6g7nrpytaq263@CAB-WSD-L081021.sigma.sbrf.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <AC753801DB3F2E4DBCBE5465066DECA8@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Wed, 18 May 2022 08:26:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E7F69B5B;
+        Wed, 18 May 2022 05:26:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51F3B61627;
+        Wed, 18 May 2022 12:26:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EB36C34100;
+        Wed, 18 May 2022 12:26:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652876804;
+        bh=Q6WGn+T2IYOJX+pYvJtK4Xq4x5ALfQD1/9ZqxdvFrkU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OMhCNOuFtmdf295e2cSWuHc1odNkmt9gZejZIdAi+F1LOeQMvNVgd0QcDC4ES6KMy
+         YlEhxamD3b2ruDxZFx5cpv6wjlZ/JSV2QwLhQ8s7p2kDZQO8phxj3D93rI6+Bw6FcB
+         NnFiwQjcu7GYtbqJq4lYuNSuDxP4sOOkL3edBn7AnvBUuB5/d/vano7FsIeyYGg9Wv
+         KskFvIIKiIinf9j3oj3JJHL4F7LbJw8tfzc+PXQ6Lj2UYjXOCvWevfHCvIHIBpd8Jf
+         1IbG21fa1o9iBp+DA2XgAmI8HveFaVybsz2QJ8fVEPUQK2AepGCal8Hat5kTozB17H
+         4EfbLZBl+7F1w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Brian Bunker <brian@purestorage.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Krishna Kant <krishna.kant@purestorage.com>,
+        Seamus Connor <sconnor@purestorage.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        mwilck@suse.com, dan.carpenter@oracle.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 01/23] scsi: scsi_dh_alua: Properly handle the ALUA transitioning state
+Date:   Wed, 18 May 2022 08:26:14 -0400
+Message-Id: <20220518122641.342120-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/18 09:28:00 #19466841
-X-KSMG-AntiVirus-Status: Clean, skipped
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jonathan,
+From: Brian Bunker <brian@purestorage.com>
 
-I have two items to be discussed about iio_trigger_get().
-Please see my questions below and correct me if I'm wrong.
+[ Upstream commit 6056a92ceb2a7705d61df7ec5370548e96aee258 ]
 
-On Tue, Apr 26, 2022 at 08:24:10PM +0300, Dmitry Rokosov wrote:
-> > > +							       "%s-new-data",
-> > > +							       indio_dev->name);
-> > > +		if (!msa311->new_data_trig) {
-> > > +			dev_err(&i2c->dev, "cannot allocate new data trig\n");
-> > > +			err =3D -ENOMEM;
-> > > +			goto err_lock_destroy;
-> > > +		}
-> > > +
-> > > +		msa311->new_data_trig->dev.parent =3D &i2c->dev;
-> > > +		msa311->new_data_trig->ops =3D &msa311_new_data_trig_ops;
-> > > +		iio_trigger_set_drvdata(msa311->new_data_trig, indio_dev);
-> > > +		indio_dev->trig =3D msa311->new_data_trig;
-> >=20
-> > This will create a double free if you were to change the trigger.
-> > 		indio_dev->trig =3D iio_trigger_get(trig);
-> >=20
->=20
-> I didn't take into account other trigger usage.
-> I'll rework this place for the v2.
->=20
+The handling of the ALUA transitioning state is currently broken. When a
+target goes into this state, it is expected that the target is allowed to
+stay in this state for the implicit transition timeout without a path
+failure. The handler has this logic, but it gets skipped currently.
 
-The first one problem is module_get() calling for trigger get()
-semantic.
-I've applied iio_trigger_get() function to acquire module refcnt,
-but I've faced with rmmod busy problem. IIO driver module doesn't want to
-stop and unload due to not having zero module refcnt.
-Syscall delete_module() tries to stop module first and after calls
-driver exit() function (which executes devm_* handlers inside, including II=
-O
-trigger unregister). It means we have the chicken or the egg dilemma here.
-Module can't be unloaded until module refcnt is not zero and we can't
-execute IIO trigger unregister (decrease module refcnt) only when module
-refcnt is zero.
-I suppose the possible solution to such a problem is a different semantic
-for internal triggers (inside driver itself) and external drivers (like
-hwtimer trigger). What do you think?
+When the target transitions, there is in-flight I/O from the initiator. The
+first of these responses from the target will be a unit attention letting
+the initiator know that the ALUA state has changed.  The remaining
+in-flight I/Os, before the initiator finds out that the portal state has
+changed, will return not ready, ALUA state is transitioning. The portal
+state will change to SCSI_ACCESS_STATE_TRANSITIONING. This will lead to all
+new I/O immediately failing the path unexpectedly. The path failure happens
+in less than a second instead of the expected successes until the
+transition timer is exceeded.
 
-The second one issue is located in the different IIO drivers. Some modules
-call iio_trigger_get() before iio_trigger_register(), trig->owner is not
-initialized to the right value (THIS_MODULE) and we don't acquire refcnt
-for proper driver object.
-I'm going to send patchset to problem driver set, but I can test only
-buildable status for such modules, are you okay with that?
+Allow I/Os to continue while the path is in the ALUA transitioning
+state. The handler already takes care of a target that stays in the
+transitioning state for too long by changing the state to ALUA state
+standby once the transition timeout is exceeded at which point the path
+will fail.
 
---=20
-Thank you,
-Dmitry
+Link: https://lore.kernel.org/r/CAHZQxy+4sTPz9+pY3=7VJH+CLUJsDct81KtnR2be8ycN5mhqTg@mail.gmail.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Acked-by: Krishna Kant <krishna.kant@purestorage.com>
+Acked-by: Seamus Connor <sconnor@purestorage.com>
+Signed-off-by: Brian Bunker <brian@purestorage.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/device_handler/scsi_dh_alua.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/device_handler/scsi_dh_alua.c b/drivers/scsi/device_handler/scsi_dh_alua.c
+index 37d06f993b76..1d9be771f3ee 100644
+--- a/drivers/scsi/device_handler/scsi_dh_alua.c
++++ b/drivers/scsi/device_handler/scsi_dh_alua.c
+@@ -1172,9 +1172,8 @@ static blk_status_t alua_prep_fn(struct scsi_device *sdev, struct request *req)
+ 	case SCSI_ACCESS_STATE_OPTIMAL:
+ 	case SCSI_ACCESS_STATE_ACTIVE:
+ 	case SCSI_ACCESS_STATE_LBA:
+-		return BLK_STS_OK;
+ 	case SCSI_ACCESS_STATE_TRANSITIONING:
+-		return BLK_STS_AGAIN;
++		return BLK_STS_OK;
+ 	default:
+ 		req->rq_flags |= RQF_QUIET;
+ 		return BLK_STS_IOERR;
+-- 
+2.35.1
+
