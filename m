@@ -2,83 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238689AbiEROeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47992 "EHLO
+        id S238735AbiEROga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 10:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238567AbiEROeW (ORCPT
+        with ESMTP id S238673AbiEROgW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:34:22 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7D3134E2B;
-        Wed, 18 May 2022 07:34:22 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="269284214"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="269284214"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 07:34:21 -0700
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="627067527"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 07:34:20 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nrKkj-000EtI-Gj;
-        Wed, 18 May 2022 17:34:17 +0300
-Date:   Wed, 18 May 2022 17:34:17 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 1/2] pinctrl: intel: make irq_chip immutable
-Message-ID: <YoUD6QeWZWqLdX94@smile.fi.intel.com>
-References: <20220517163820.86768-1-andriy.shevchenko@linux.intel.com>
- <YoR/QXuS+VlLVWto@lahna>
- <YoSyTq2908EptTGd@smile.fi.intel.com>
- <YoS6EkfU1TdggKS/@lahna>
- <CAHp75VenknSRSUkGj9rKfzw2q1Mm-+zRrzAmcYRLdK1GJHDoHw@mail.gmail.com>
- <YoTGXmxTMFTBgwy9@lahna>
+        Wed, 18 May 2022 10:36:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F5031931
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:36:19 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nrKmd-0000Bl-4q; Wed, 18 May 2022 16:36:15 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 17E5B81582;
+        Wed, 18 May 2022 14:36:14 +0000 (UTC)
+Date:   Wed, 18 May 2022 16:36:13 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Max Staudt <max@enpas.org>, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Message-ID: <20220518143613.2a7alnw6vtkw7ct2@pengutronix.de>
+References: <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+ <20220517141404.578d188a.max@enpas.org>
+ <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+ <20220517143921.08458f2c.max@enpas.org>
+ <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+ <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
+ <43768ff7-71f8-a6c3-18f8-28609e49eedd@hartkopp.net>
+ <20220518132811.xfmwms2cu3bfxgrp@pengutronix.de>
+ <CAMZ6RqJqeNjAtoDWADHsWocgbSXqQixcebJBhiBFS8BVeKCb3g@mail.gmail.com>
+ <3dbe135e-d13c-5c5d-e7e4-b9c13b820fb8@hartkopp.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wrv6rczef3xtxlyw"
 Content-Disposition: inline
-In-Reply-To: <YoTGXmxTMFTBgwy9@lahna>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <3dbe135e-d13c-5c5d-e7e4-b9c13b820fb8@hartkopp.net>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 01:11:42PM +0300, Mika Westerberg wrote:
-> On Wed, May 18, 2022 at 12:05:38PM +0200, Andy Shevchenko wrote:
-> > On Wed, May 18, 2022 at 11:19 AM Mika Westerberg
-> > <mika.westerberg@linux.intel.com> wrote:
-> > > On Wed, May 18, 2022 at 11:46:06AM +0300, Andy Shevchenko wrote:
 
-...
+--wrv6rczef3xtxlyw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > > Hope this explains.
-> > 
-> > Yes, thanks!
-> > 
-> > Okay, can you give your conditional Ack if there are no other
-> > comments? I will fix it locally.
-> 
-> Sure. There was typo also in the second patch $subject, please fix it
-> too while you apply them.
+On 18.05.2022 16:33:58, Oliver Hartkopp wrote:
+> > > > And what about the LEDS support depending on BROKEN?
+> > > > That was introduced by commit 30f3b42147ba6f ("can: mark led trigge=
+r as
+> > > > broken") from Uwe as it seems there were some changes in 2018.
+> > >=20
+> > > There's a proper generic LED trigger now for network devices. So remo=
+ve
+> > > LED triggers, too.
+> >=20
+> > Yes, the broken LED topic also popped-up last year:
+> >=20
+> > https://lore.kernel.org/linux-can/20210906143057.zrpor5fkh67uqwi2@pengu=
+tronix.de/ > I am OK to add one patch to the series for LED removal.
+>=20
+> Hm. We have several drivers that support LED triggers:
+>=20
+> $ git grep led.h
+> at91_can.c:#include <linux/can/led.h>
+> c_can/c_can_main.c:#include <linux/can/led.h>
+> ctucanfd/ctucanfd_base.c:#include <linux/can/led.h>
+> dev/dev.c:#include <linux/can/led.h>
+> flexcan/flexcan-core.c:#include <linux/can/led.h>
+> led.c:#include <linux/can/led.h>
+> m_can/m_can.h:#include <linux/can/led.h>
+> rcar/rcar_can.c:#include <linux/can/led.h>
+> rcar/rcar_canfd.c:#include <linux/can/led.h>
+> sja1000/sja1000.c:#include <linux/can/led.h>
+> spi/hi311x.c:#include <linux/can/led.h>
+> spi/mcp251x.c:#include <linux/can/led.h>
+> sun4i_can.c:#include <linux/can/led.h>
+> ti_hecc.c:#include <linux/can/led.h>
+> usb/mcba_usb.c:#include <linux/can/led.h>
+> usb/usb_8dev.c:#include <linux/can/led.h>
+> xilinx_can.c:#include <linux/can/led.h>
+>=20
+> And I personally like the ability to be able to fire some LEDS (either as
+> GPIO or probably in a window manager).
+>=20
+> I would suggest to remove the Kconfig entry but not all the code inside t=
+he
+> drivers, so that a volunteer can convert the LED support based on the
+> existing trigger points in the drivers code later.
 
-Fixed.
+The generic netdev LED trigger code doesn't need any support in the
+netdev driver.
 
-> For both,
-> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Marc
 
-Pushed to my review and testing queue, thanks!
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
--- 
-With Best Regards,
-Andy Shevchenko
+--wrv6rczef3xtxlyw
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKFBFsACgkQrX5LkNig
+012tlQf+LT2ROunCO3x7zZZLFd/l4EUXwAtDbMP3DxdGpd2XNnDUYupag0EPPojc
+dAghmn07jvCZiV/jhC1UPhtq0LZ4vRVNQ+66NaROXooBo7eH31MALEvCaytYnfhh
+/cGz0VzzhhnyZTf7pcFL3NXXffrLvFtVG93TXMOLQcS19ucysg7AVWP5mU3wI9K4
+c+ZyeNpZ+17oQlYYOqb8p1uN6xKqJXuU4CU6bfcTEF9pBzimQZj0hFT+EIR7oo3F
+J2LuqbV12IBoyPJalGnHgmrGU8Hk6qC9IVjKC2NwZa8JIdmUKFEPHhq3e8CkCi9U
+FHgeZRMYaypDzsYmsyoWmgrHM8y8hQ==
+=rdYd
+-----END PGP SIGNATURE-----
+
+--wrv6rczef3xtxlyw--
