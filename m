@@ -2,141 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71406C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF044C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240367AbiERQg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        id S240391AbiERQhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240526AbiERQga (ORCPT
+        with ESMTP id S240376AbiERQhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:36:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C84D205C6
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652891789; x=1684427789;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nfxk6QHzxTv2778lb7oSutOL+8TQsowLGTPneGlEfdk=;
-  b=np1D3I2P8vPJU91+uO9KSc4MtyVPqitXnHHMGgUq8J2YNJtiNhCsG/az
-   U2h2bSUBA1yodBowRjvDP+uNsPSOErfwk8CmHZQvopOYQ0j7/KlvjWA2n
-   hIut5T+YIfTNArKd61QCMFxbWNjNfo1qh2fi6i53xP0R4SiS360GIT+bi
-   jSTdtuHdGxbeKmQLxaH3pfdWQEjRlcb0gV1CJFuPWO0Qrn8Wjs8saQNWV
-   bjMt1wawr4/pIubll45Vk5mHBtWIQLH7TUoHAEsg4T0TAcuCl1fBdzdbm
-   coYv7AcLkvCiD+P11+imZ0K4c9CJTjLbtGqXBf4RTgGUy97iNwjpAJnhE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="259332717"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="259332717"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 09:34:21 -0700
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="605971356"
-Received: from fyu1.sc.intel.com ([172.25.103.126])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 09:34:21 -0700
-Date:   Wed, 18 May 2022 09:34:48 -0700
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     Stephane Eranian <eranian@google.com>,
-        linux-kernel@vger.kernel.org, babu.moger@amd.com, x86@kernel.org
-Subject: Re: [PATCH v2] x86/resctrl: Fix zero cbm for AMD in cbm_validate
-Message-ID: <YoUgKB5svdI/blZa@fyu1.sc.intel.com>
-References: <20220517001234.3137157-1-eranian@google.com>
- <YoPOWC0waMuSlvI6@fyu1.sc.intel.com>
- <5a634c10-103e-6f3e-e51b-db26b2bc90a5@intel.com>
- <YoPa5L2jNYl/sFhw@fyu1.sc.intel.com>
- <0077efdf-ab64-2924-c290-cd940977b818@intel.com>
+        Wed, 18 May 2022 12:37:47 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F4B1A076D;
+        Wed, 18 May 2022 09:37:41 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IGO5D3019597;
+        Wed, 18 May 2022 16:37:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=OwaaPn3eTFYQ3Q5Amp/y0UpxotIGatx97i4xISD2eY0=;
+ b=URrCEZP2TAtALmvr7UGDq88RFLd5dLeAXCxpPtXMxZbnh3zUJ4o1u3o9fZb+AeylBIn9
+ 0JH+QxWJXMXAHtp2wgidTp/2x7iESVpSA5EIB5rYt56pwok125EAq0pqJyCbgb2IcUUO
+ csi4wW5igfApscJ/JpFaZaoRCGJUZcRw5s2T6W++O5+6E5bZwXKpUEYiP9+OFsA/2PM6
+ bfHaGQJtia7YXYjXlRkX7OTZDUyh6fLHuc5Jp8iH5w9gyoAglJR2sSyXrQnAKMiN2wCF
+ SOHrXM1UUGD0lCniLIk/agrEz0A0PxsXJCm6Xg/gfLXn4bdbLWVAHczJT93wDdipVv+1 4A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrcxm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 16:37:40 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IGSCTQ008094;
+        Wed, 18 May 2022 16:37:40 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g549rrcw1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 16:37:40 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IGY0Xb012243;
+        Wed, 18 May 2022 16:37:38 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3g2428vvev-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 16:37:38 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IGaxWx31261064
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 16:36:59 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BD6754203F;
+        Wed, 18 May 2022 16:37:34 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0883642041;
+        Wed, 18 May 2022 16:37:34 +0000 (GMT)
+Received: from [9.171.6.188] (unknown [9.171.6.188])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 18 May 2022 16:37:33 +0000 (GMT)
+Message-ID: <5ff3feee-63ff-b5f0-5b96-456a7e2514e1@linux.ibm.com>
+Date:   Wed, 18 May 2022 18:41:22 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0077efdf-ab64-2924-c290-cd940977b818@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v9 0/3] s390x: KVM: CPU Topology
+Content-Language: en-US
+To:     Christian Borntraeger <borntraeger@de.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        frankja@linux.ibm.com, cohuck@redhat.com, david@redhat.com,
+        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
+        nrb@linux.ibm.com
+References: <20220506092403.47406-1-pmorel@linux.ibm.com>
+ <f9cb28d5-2aa5-f902-53ab-592b08672c62@de.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <f9cb28d5-2aa5-f902-53ab-592b08672c62@de.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: gKJ5lT6lGAjn_2OB776ywvFlbYh25qAq
+X-Proofpoint-GUID: Gu2X3N1w3CtPCxABOK7wBQ9-ugvhvqSu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 malwarescore=0 phishscore=0 suspectscore=0 spamscore=0
+ mlxscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=740 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205180099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Babu,
 
-On Tue, May 17, 2022 at 11:10:40AM -0700, Reinette Chatre wrote:
-> On 5/17/2022 10:27 AM, Fenghua Yu wrote:
-> > On Tue, May 17, 2022 at 09:49:22AM -0700, Reinette Chatre wrote:
-> >> On 5/17/2022 9:33 AM, Fenghua Yu wrote:
-> >>> On Mon, May 16, 2022 at 05:12:34PM -0700, Stephane Eranian wrote:
-> >>>> AMD supports cbm with no bits set as reflected in rdt_init_res_defs_amd() by:
-> >>> ...
-> >>>> @@ -107,6 +107,10 @@ static bool cbm_validate(char *buf, u32 *data, struct rdt_resource *r)
-> >>>>  	first_bit = find_first_bit(&val, cbm_len);
-> >>>>  	zero_bit = find_next_zero_bit(&val, cbm_len, first_bit);
-> >>>>  
-> >>>> +	/* no need to check bits if arch supports no bits set */
-> >>>> +	if (r->cache.arch_has_empty_bitmaps && val == 0)
-> >>>> +		goto done;
-> >>>> +
-> >>>>  	/* Are non-contiguous bitmaps allowed? */
-> >>>>  	if (!r->cache.arch_has_sparse_bitmaps &&
-> >>>>  	    (find_next_bit(&val, cbm_len, zero_bit) < cbm_len)) {
-> >>>> @@ -119,7 +123,7 @@ static bool cbm_validate(char *buf, u32 *data, struct rdt_resource *r)
-> >>>>  				    r->cache.min_cbm_bits);
-> >>>>  		return false;
-> >>>>  	}
-> >>>> -
-> >>>> +done:
-> >>>>  	*data = val;
-> >>>>  	return true;
-> >>>>  }
-> >>>
-> >>> Isn't it AMD supports 0 minimal CBM bits? Then should set its min_cbm_bits as 0.
-> >>> Is the following patch a better fix? I don't have AMD machine and cannot
-> >>> test the patch.
-> >>>
-> >>> diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
-> >>> index 6055d05af4cc..031d77dd982d 100644
-> >>> --- a/arch/x86/kernel/cpu/resctrl/core.c
-> >>> +++ b/arch/x86/kernel/cpu/resctrl/core.c
-> >>> @@ -909,6 +909,7 @@ static __init void rdt_init_res_defs_amd(void)
-> >>>  			r->cache.arch_has_sparse_bitmaps = true;
-> >>>  			r->cache.arch_has_empty_bitmaps = true;
-> >>>  			r->cache.arch_has_per_cpu_cfg = true;
-> >>> +			r->cache.min_cbm_bits = 0;
-> >>>  		} else if (r->rid == RDT_RESOURCE_MBA) {
-> >>>  			hw_res->msr_base = MSR_IA32_MBA_BW_BASE;
-> >>>  			hw_res->msr_update = mba_wrmsr_amd;
-> >>
-> >> That is actually what Stephane's V1 [1] did and I proposed that
-> >> he fixes it with (almost) what he has in V2 (I think the check
-> >> can be moved earlier before any bits are searched for).
-> >>
-> >> The reasons why I proposed this change are:
-> >> - min_cbm_bits is a value that is exposed to user space and from the
-> >>   time AMD was supported this has always been 1 for those systems. I
-> >>   do not know how user space uses this value and unless I can be certain
-> >>   making this 0 will not affect user space I would prefer not to
-> >>   make such a change.
-> > 
-> > But a user visible mismatch is created by the V2 patch:
+On 5/18/22 17:26, Christian Borntraeger wrote:
+> Pierre,
 > 
-> No. V2 does not create a user visible change, it restores original behavior.
-> 
-> > User queries min_cbm_bits and finds it is 1 but turns out 0 can be written
-> > to the schemata.
-> > 
-> > Is it an acceptable behavior? Shouldn't user read right min_cbm_bits (0)
-> > on AMD?
-> 
-> Original AMD enabling set min_cbm_bits as 1 while also supporting 0 to
-> be written to schemata file. Supporting 0 to be written to schemata file
-> was unintentionally broken during one of the MPAM prep patches. This
-> patch fixes that.
-> 
-> You are proposing a change to original AMD support that impacts user
-> space API while I find fixing to restore original behavior to
-> be the safest option. Perhaps Babu could pick the preferred solution
-> and I would step aside if you prefer to go with (an improved) V1.
+> please use "KVM: s390x:" and not "s390x: KVM:" for future series.
 
-Is it OK for you to set min_cbm_bits to 0 on AMD?
 
-Thanks.
+OK, thanks
 
--Fenghua
+-- 
+Pierre Morel
+IBM Lab Boeblingen
