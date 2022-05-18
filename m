@@ -2,80 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37726C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237601AbiERNK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
+        id S237574AbiERNKn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237535AbiERNKR (ORCPT
+        with ESMTP id S237535AbiERNKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:10:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D26817B851;
-        Wed, 18 May 2022 06:10:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2EE5B82032;
-        Wed, 18 May 2022 13:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7CB1CC36AE2;
-        Wed, 18 May 2022 13:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652879413;
-        bh=yopJBrymAGv8hrzx/cz6109W5zx6EL0S7W74oPz0Wbo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fcSFyseC494l5VnUIljp4rWVTPPPPLOQhkBv1zOWTy60KACoKERcsKD+8fseJ1FZU
-         VVZRYnvGb8VFq8ujyE6MWZF3FhiIApfRd6vP1YACfziuf2s80i5T1JSLcCRsVPqbG2
-         F7UlIhgNfkkzHOQ9BPVwyXns5ato1EqzvfowipptGr0X7IUuqawsw4pCQs20Nh44Fn
-         l1PkKHN+Y+sekcXhnbxum8IqoE40mI8Uf5m5cvVm1CO4iLAMS5rng97kCQWZi6OHa7
-         wyM7sUXFp0X0mMJ2lX/8WdVyVdaTAjMP4TgX+KQTHgemzjhqcZpoaXNq9jU5uRGhPn
-         qhF62JcLIvMdw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5DAA8F03935;
-        Wed, 18 May 2022 13:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 18 May 2022 09:10:31 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4A219FB2A;
+        Wed, 18 May 2022 06:10:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Du0yR9uhHpKwWrKsjoqMfifs7bCXApVmJcTLKS159Q8=; b=KR8Ca3qzn6Prru2b2ovD3a5c88
+        3Yl32PXNgwJAzJv1K+GwtALbIi3R7PHWPogPI//mjA46BacEdcFlczlu7VgbqBbi0iRFln4dhAmL3
+        5vAwoEH2Y5npRXnrsBS0Pt1IPEFHpxBOrNJbK+CGAUFY1mpA/Xk/bDS+XL+ITQtGq3i57YSw2ze27
+        6u/aeZyJiDji8Ld6K9lb+iY/t9E1NA5TGk8rCRjPY8WXYQAQH85dDOYmikTTt80JzPDf76BhHmUH/
+        IE+yGx2cI+Y6f449JTeHotkEOnM9AIr+trG8kHtj2MTTykTHXqJtKMQ7SzJhAjeP0O52jetyt0xPW
+        XVvP+JXg==;
+Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nrJR1-009xZP-0G; Wed, 18 May 2022 15:09:51 +0200
+Message-ID: <8a1159c6-b4c1-87b9-8a09-6d5696f8f3f4@igalia.com>
+Date:   Wed, 18 May 2022 10:09:06 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next v2] net: ethernet: sunplus: add missing of_node_put() in
- spl2sw_mdio_init()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165287941338.26952.5380355560504992321.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 May 2022 13:10:13 +0000
-References: <20220518020812.2626293-1-yangyingliang@huawei.com>
-In-Reply-To: <20220518020812.2626293-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        wellslutw@gmail.com, andrew@lunn.ch, pabeni@redhat.com,
-        davem@davemloft.net, kuba@kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Scott Branden <scott.branden@broadcom.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Gow <davidgow@google.com>,
+        Evan Green <evgreen@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+        akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        zhenwei pi <pizhenwei@bytedance.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com> <YoOpyW1+q+Z5as78@alley>
+ <d72b9aab-675c-ac89-b73a-b1de4a0b722d@igalia.com> <YoSijKwuwbY9uHxG@alley>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <YoSijKwuwbY9uHxG@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 18 May 2022 10:08:12 +0800 you wrote:
-> of_get_child_by_name() returns device node pointer with refcount
-> incremented. The refcount should be decremented before returning
-> from spl2sw_mdio_init().
-> 
-> Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> 
+On 18/05/2022 04:38, Petr Mladek wrote:
 > [...]
+> I have answered this in more detail in the other reply, see
+> https://lore.kernel.org/r/YoShZVYNAdvvjb7z@alley
+> 
+> I agree that both notifiers in
+> 
+>     drivers/soc/bcm/brcmstb/pm/pm-arm.c
+>     drivers/firmware/google/gsmi.c
+> 
+> better fit into the hypervisor list after all.
+> 
+> Best Regards,
+> Petr
 
-Here is the summary with links:
-  - [-next,v2] net: ethernet: sunplus: add missing of_node_put() in spl2sw_mdio_init()
-    https://git.kernel.org/netdev/net-next/c/223153ea6c79
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Perfect, thanks - will keep both in such list for V2.
