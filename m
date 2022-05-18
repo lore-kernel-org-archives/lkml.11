@@ -2,115 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39485C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 07:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231895AbiERHDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 03:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        id S231862AbiERHE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 03:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiERHCv (ORCPT
+        with ESMTP id S231805AbiERHE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 03:02:51 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D964F5253C;
-        Wed, 18 May 2022 00:02:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652857371; x=1684393371;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=W2A1GkyCkwdVeBEfAustBrxgJCxJqGetxADq0juG2ao=;
-  b=Zk84XKLgJmnapzTtVhX4Bq7p97mtlGcV0wthnn2/zPp7s9fIQMhoknhN
-   GHXrS8X4JxyP042fJ2yrfFV6L9pb/gAryCE5+LwaXKK1cGiPk5CxBCwpl
-   wuUdZy7GS6KmfURLMgAamtK3E0K+2W8XngpRFVLQJF1O9vC396dUhrqCb
-   E=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 18 May 2022 00:02:50 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 18 May 2022 00:02:49 -0700
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 18 May 2022 12:32:28 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 4CBB8176D; Wed, 18 May 2022 12:32:27 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     adrian.hunter@intel.com, ulf.hansson@linaro.org,
-        wsa+renesas@sang-engineering.com, shawn.lin@rock-chips.com,
-        yoshihiro.shimoda.uh@renesas.com, digetx@gmail.com,
-        quic_asutoshd@quicinc.com
-Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
-        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
-        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        Liangliang Lu <quic_luliang@quicinc.com>,
-        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
-Subject: [PATCH V6 4/5] mmc: debugfs: Add debug fs error state entry for mmc driver
-Date:   Wed, 18 May 2022 12:32:19 +0530
-Message-Id: <1652857340-6040-5-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652857340-6040-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1652857340-6040-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        Wed, 18 May 2022 03:04:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933A3985AD
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 00:04:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 513A3B81E9B
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 07:04:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C4AC385A5;
+        Wed, 18 May 2022 07:04:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652857493;
+        bh=5/SVsqjHtSz5a25oyFP2C2XiAM7dJCptaoUIfgrtXDY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sWw3wk+yMKhbEONY1F/y8qGpl/BwzUVdexM1njLQMEgLiXxY4+mUMrZ1As5X/Mnv1
+         +kZAV7pQ/zQ7FDrP3EuH/NazlpUs661Ge8h5LH5Tf0wDIM8vRiCN7+2WRwPMrgoAQn
+         44T1z4qccxjiIcLBR4T5qqKeIsuWMbDKITQP/GU4=
+Date:   Wed, 18 May 2022 09:04:44 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, rafael@kernel.org,
+        mchehab+huawei@kernel.org, eugenis@google.com, tony.luck@intel.com,
+        pcc@google.com, peterz@infradead.org, marcos@orca.pet,
+        conor.dooley@microchip.com, nicolas.ferre@microchip.com,
+        marcan@marcan.st, linus.walleij@linaro.org, arnd@arndb.de,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 2/8] drivers: base: Add Kconfig/Makefile to build
+ hardware prefetch control core driver
+Message-ID: <YoSajCpRsxlrHXcS@kroah.com>
+References: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
+ <20220518063032.2377351-3-tarumizu.kohei@fujitsu.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518063032.2377351-3-tarumizu.kohei@fujitsu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add debug fs entry error state to query eMMC and SD card errors statistics.
-If any errors occurred in eMMC and SD card driver level then
-err_state value will be set to 1.
+On Wed, May 18, 2022 at 03:30:26PM +0900, Kohei Tarumizu wrote:
+> Adds Kconfig/Makefile to build hardware prefetch control core driver,
+> and also adds a MAINTAINERS entry.
+> 
+> Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+> ---
+>  MAINTAINERS           | 6 ++++++
+>  drivers/base/Kconfig  | 9 +++++++++
+>  drivers/base/Makefile | 1 +
+>  3 files changed, 16 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d6d879cb0afd..f188403bc2e9 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -8620,6 +8620,12 @@ F:	include/linux/hwmon*.h
+>  F:	include/trace/events/hwmon*.h
+>  K:	(devm_)?hwmon_device_(un)?register(|_with_groups|_with_info)
+>  
+> +HARDWARE PREFETCH CONTROL DRIVERS
+> +M:	Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+> +S:	Maintained
+> +F:	drivers/base/pfctl.c
+> +F:	include/linux/pfctl.h
+> +
+>  HARDWARE RANDOM NUMBER GENERATOR CORE
+>  M:	Matt Mackall <mpm@selenic.com>
+>  M:	Herbert Xu <herbert@gondor.apana.org.au>
+> diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+> index 6f04b831a5c0..8f8a69e7f645 100644
+> --- a/drivers/base/Kconfig
+> +++ b/drivers/base/Kconfig
+> @@ -230,4 +230,13 @@ config GENERIC_ARCH_NUMA
+>  	  Enable support for generic NUMA implementation. Currently, RISC-V
+>  	  and ARM64 use it.
+>  
+> +config HWPF_CONTROL
 
-Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
-Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
-Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
----
- drivers/mmc/core/debugfs.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+Shouldn't this have "GENERIC" in the name liks the other generic
+implementations in this directory?
 
-diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
-index 6aa5a60..3c7908d 100644
---- a/drivers/mmc/core/debugfs.c
-+++ b/drivers/mmc/core/debugfs.c
-@@ -223,6 +223,27 @@ static int mmc_clock_opt_set(void *data, u64 val)
- DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
- 	"%llu\n");
- 
-+static int mmc_err_state_get(void *data, u64 *val)
-+{
-+	struct mmc_host *host = data;
-+	int i;
-+
-+	if (!host)
-+		return -EINVAL;
-+
-+	*val = 0;
-+	for (i = 0; i < MMC_ERR_MAX; i++) {
-+		if (host->err_stats[i]) {
-+			*val = 1;
-+			break;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+DEFINE_DEBUGFS_ATTRIBUTE(mmc_err_state, mmc_err_state_get, NULL, "%llu\n");
-+
- static int mmc_err_stats_show(struct seq_file *file, void *data)
- {
- 	struct mmc_host *host = (struct mmc_host *)file->private;
-@@ -289,6 +310,8 @@ void mmc_add_host_debugfs(struct mmc_host *host)
- 	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
- 				   &mmc_clock_fops);
- 
-+	debugfs_create_file("err_state", 0600, root, host,
-+			    &mmc_err_state);
- 	debugfs_create_file("err_stats", 0600, root, host,
- 			    &mmc_err_stats_fops);
- 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
 
+> +	bool "Hardware Prefetch Control driver"
+> +	help
+> +	  This driver allows user to control CPU's Hardware Prefetch behavior.
+> +	  If the machine supports this behavior, it provides a sysfs interface.
+
+But this is not a driver, it's a core function that a driver uses.  On
+its own, this code does nothing.
+
+thanks,
+
+greg k-h
