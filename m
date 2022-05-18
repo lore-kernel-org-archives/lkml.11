@@ -2,185 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB624C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD1CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 10:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234970AbiERKH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 06:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
+        id S234974AbiERKIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 06:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234959AbiERKHy (ORCPT
+        with ESMTP id S234871AbiERKIt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 06:07:54 -0400
-Received: from 6.mo548.mail-out.ovh.net (6.mo548.mail-out.ovh.net [188.165.58.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 072DD20F52
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 03:07:51 -0700 (PDT)
-Received: from mxplan5.mail.ovh.net (unknown [10.108.1.6])
-        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id A88812369D;
-        Wed, 18 May 2022 08:52:00 +0000 (UTC)
-Received: from kaod.org (37.59.142.107) by DAG4EX1.mxp5.local (172.16.2.31)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.6; Wed, 18 May
- 2022 10:51:59 +0200
-Authentication-Results: garm.ovh; auth=pass (GARM-107S0014f754fc7-15cb-49af-bbdd-8a187c23a99f,
-                    DB10E105899AAE3BCA8ABEF0D93527152A7ECCF8) smtp.auth=clg@kaod.org
-X-OVh-ClientIp: 82.64.250.170
-Message-ID: <b3bfa5a6-caac-94ed-6741-04db9c2a9ee0@kaod.org>
-Date:   Wed, 18 May 2022 10:51:58 +0200
+        Wed, 18 May 2022 06:08:49 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8EE158955
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 03:08:47 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id i17so1308504pla.10
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 03:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0AISLwiGo1fKv8O+f+qFCUVpBkv1G8j+nuhHa4bKM0U=;
+        b=aTiOlVUCRysQ6EdAlT9QX6NXLbQEKSGApC3rgjFEq+XFsAq6wS/O2fVE9q9NMxMKr0
+         QE2HvhyR7/FO79cbjpDtKOy1BYGyexxL0f2gvyarNMFm5UWsVZN4a6UcpKPyKSkKsIkL
+         voCRvzaLvb/Awv67C4wdPdaaG6mRmoptoysiYK16RYeibn2lptOCHtq1noYUGn/BJhrh
+         JMMg1u0bthT56FRxhY3njMEPQ77u8s5e1/UKv2XfAvEU1zh95oZbyiLKTVe+C0WjLW+E
+         zmzfQyCFhYVLa4pjkfGF7PT3SkjgaaOlvQSs/7OXL2SoJEH5nR4tI5QBXtIhiixoB5V0
+         N6Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0AISLwiGo1fKv8O+f+qFCUVpBkv1G8j+nuhHa4bKM0U=;
+        b=ddEUYYdLPevQSQxNYvqcdgWMZ+txllbhD9UP+CNuJEgCuWY2QfWAIY19YYWk205UUg
+         tKTWgzpq7D6ytlc8C12divMgOJOm1+Ls95QdzrGGDRWarGRcGxCiygfsAJOPcYiNVJ4U
+         tP9h5/Si2/M7CrGBRD6b10VrVS/zAJ1oVgYPlDsPIyYO+oASSfFFHmska9l0+FnaKc93
+         NXs3OsLfX3uAqKv2FAv1B8m3qT+TlEkGzruAI74eWSSIvUdG1XiCv4Qc8U/jGCmisCvB
+         NDx/IkKiB0bPqchL9dJqB3sTjA6BMGo2FZU5mFub2CEZvBoT/8DubY/sUPMdU8zzFU+Z
+         YOzw==
+X-Gm-Message-State: AOAM533agkZkViNG2bfH8cy15w47J0Tt/QdqgpD/ytTob6AaElRpdn/M
+        NIQcF/WBjtY6CzMDQUG84U+JaW6kXTO8tw==
+X-Google-Smtp-Source: ABdhPJyOLr9ENpyofj8YiB675pWCS82np9F+62WZI0ucmAv+ZHeP4s9OW16B1+jOlqhOCReNk04Dxg==
+X-Received: by 2002:a17:902:ecd0:b0:161:9ccf:f3f4 with SMTP id a16-20020a170902ecd000b001619ccff3f4mr9557830plh.19.1652868526734;
+        Wed, 18 May 2022 03:08:46 -0700 (PDT)
+Received: from localhost (153.185.242.35.bc.googleusercontent.com. [35.242.185.153])
+        by smtp.gmail.com with ESMTPSA id t10-20020a170902dcca00b001619fbb0e6dsm1232907pll.40.2022.05.18.03.08.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 03:08:46 -0700 (PDT)
+From:   Fam Zheng <fam.zheng@bytedance.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        zhouchengming@bytedance.com,
+        Vincent Guittot <vincent.guittot@linaro.org>, fam@euphon.net,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>, Ingo Molnar <mingo@redhat.com>,
+        songmuchun@bytedance.com, Juri Lelli <juri.lelli@redhat.com>,
+        Fam Zheng <fam.zheng@bytedance.com>
+Subject: [RFC PATCH] sched: Enable root level cgroup bandwidth control
+Date:   Wed, 18 May 2022 11:08:41 +0100
+Message-Id: <20220518100841.1497391-1-fam.zheng@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [RFC PATCH 3/6] mtd: spi-nor: core: run calibration when
- initialization is done
-Content-Language: en-US
-To:     Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-CC:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Michael Walle <michael@walle.cc>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mtd@lists.infradead.org>, <linux-spi@vger.kernel.org>,
-        Joel Stanley <joel@jms.id.au>
-References: <20210311191216.7363-1-p.yadav@ti.com>
- <20210311191216.7363-4-p.yadav@ti.com> <20220517160226.4107f282@xps-13>
- <20220518060640.os5fp5rez4ie7qc4@ti.com> <20220518091931.279c5398@xps-13>
- <20220518075651.mvdhfnfbgutecgyq@ti.com>
-From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
-In-Reply-To: <20220518075651.mvdhfnfbgutecgyq@ti.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [37.59.142.107]
-X-ClientProxiedBy: DAG1EX2.mxp5.local (172.16.2.2) To DAG4EX1.mxp5.local
- (172.16.2.31)
-X-Ovh-Tracer-GUID: 37372b08-b3f9-44cc-83f6-bcc565d4553b
-X-Ovh-Tracer-Id: 12947848930754923396
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrheelgddtjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfhisehtjeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepleelieeigfekfeeitddvieegteeuteekffekleehuefgteetgedvkefghefggfeknecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutdejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtohepjhhovghlsehjmhhsrdhiugdrrghu
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+In the data center there sometimes comes a need to throttle down a
+server, cgroup is a natural choice to reduce cpu quota for running task
+but there is no interface for the root group.
 
-On 5/18/22 09:56, Pratyush Yadav wrote:
-> On 18/05/22 09:19AM, Miquel Raynal wrote:
->> Hi Pratyush,
->>
->> p.yadav@ti.com wrote on Wed, 18 May 2022 11:37:05 +0530:
->>
->>> +Cedric
->>>
->>> On 17/05/22 04:02PM, Miquel Raynal wrote:
->>>> Hi Pratyush,
->>>>
->>>> p.yadav@ti.com wrote on Fri, 12 Mar 2021 00:42:13 +0530:
->>>>    
->>>>> Once the flash is initialized tell the controller it can run
->>>>> calibration procedures if needed. This can be useful when calibration is
->>>>> needed to run at higher clock speeds.
->>>>>
->>>>> Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
->>>>> ---
->>>>>   drivers/mtd/spi-nor/core.c | 12 ++++++++++--
->>>>>   1 file changed, 10 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
->>>>> index 88888df009f0..e0cbcaf1be89 100644
->>>>> --- a/drivers/mtd/spi-nor/core.c
->>>>> +++ b/drivers/mtd/spi-nor/core.c
->>>>> @@ -3650,6 +3650,7 @@ static int spi_nor_probe(struct spi_mem *spimem)
->>>>>   	 * checking what's really supported using spi_mem_supports_op().
->>>>>   	 */
->>>>>   	const struct spi_nor_hwcaps hwcaps = { .mask = SNOR_HWCAPS_ALL };
->>>>> +	struct spi_mem_op op;
->>>>>   	char *flash_name;
->>>>>   	int ret;
->>>>>   
->>>>> @@ -3709,8 +3710,15 @@ static int spi_nor_probe(struct spi_mem *spimem)
->>>>>   	if (ret)
->>>>>   		return ret;
->>>>>   
->>>>> -	return mtd_device_register(&nor->mtd, data ? data->parts : NULL,
->>>>> -				   data ? data->nr_parts : 0);
->>>>> +	ret = mtd_device_register(&nor->mtd, data ? data->parts : NULL,
->>>>> +				  data ? data->nr_parts : 0);
->>>>> +	if (ret)
->>>>> +		return ret;
->>>>> +
->>>>> +	op = spi_nor_spimem_get_read_op(nor);
->>>>
->>>> Isn't this too specific? I really don't know much about spi-nors, but I
->>>> find odd to have this op being created here, why not moving this into
->>>> the _do_calibration() helper?
->>>
->>> Maybe the naming confused you but this is a function in the SPI NOR
->>> core, not in SPI MEM. SPI NOR supports both SPI MEM based controllers
->>> and "legacy" controllers, so the convention is to add the "spimem"
->>> prefix before SPI MEM specific functions. So I don't get the comment
->>> about it being too specific. It is too specific to what?
->>
->> Mmh right, it's fine then.
->>
->>>
->>> And how can spi_mem_do_calibration() know what op the flash uses to read
->>> data? SPI NOR or SPI NAND would know it, but not SPI MEM. That is why we
->>> pass in that information to spi_mem_do_calibration().
->>
->> But here the op is "spi-nor wide", I would have expected a
->> per-device op. But that is not a big deal, that is something that can
->> also be updated later if needed I guess.
-> 
-> It is per-device. The op is generated using nor->read_opcode,
-> nor->addr_width, nor->read_dummy, etc. So if you have 2 NOR flashes on
-> your system with different opcodes, it would work for both.
-> 
->>
->> One last question, is there something that mtd_device_register() does
->> that is really needed for the calibration to work? Otherwise I would
->> rather prefer to have that calibration happening before the user gets
->> access to the device.
+Alternative solution such as cpufreq controlling exists, with the help
+of e.g. intel-pstate or acpi-cpufreq; but that is not always available,
+depending on the hardware and BIOS.
 
-Which would mean calling it right after :
+This patch allows capping the global cpu utilization.
 
-	ret = spi_nor_create_read_dirmap(nor);
-	if (ret)
-		return ret;
+Currently, writing a positive integer to the v1 root cgroup:
 
-	ret = spi_nor_create_write_dirmap(nor);
-	if (ret)
-		return ret;
+        /sys/fs/cgroup/cpu/cpu.cfs_quota_ns
 
-> The calibration works by reading a known pattern that is already written
-> to the flash again and again and seeing what delays work and what don't.
-> For that to happen, the controller driver needs to know where the
-> pattern is stored. 
+will be rejected by kernel (-EINVAL). And there is no such entries in v2
+either because of CFTYPE_NOT_ON_ROOT flags.
 
-Why don't you simply choose some random place, first 16KB for instance,
-and check that the data is random enough ? If not, declare calibration
-not possible and choose a default safe setting which is anyhow a
-requirement for calibration. Retry at reboot as data might have changed.
+Remove this limitation by checking the root node's throttled state.
 
-> This series does that by looking at the MTD
-> partitions. For that to happen, we need to create those partitions
-> first, which happens after mtd_device_register().
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
+---
+ kernel/sched/core.c | 13 ++++---------
+ kernel/sched/fair.c |  2 +-
+ 2 files changed, 5 insertions(+), 10 deletions(-)
 
-hmm, that might work for some boards. This is not at all the case for
-the BMC boards. Vendors can put any kind of flash model and/or layout
-and the driver needs to be more generic.
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index d58c0389eb23..c30c8a4d006a 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -10402,9 +10402,6 @@ static int tg_set_cfs_bandwidth(struct task_group *tg, u64 period, u64 quota,
+ 	int i, ret = 0, runtime_enabled, runtime_was_enabled;
+ 	struct cfs_bandwidth *cfs_b = &tg->cfs_bandwidth;
+ 
+-	if (tg == &root_task_group)
+-		return -EINVAL;
+-
+ 	/*
+ 	 * Ensure we have at some amount of bandwidth every period.  This is
+ 	 * to prevent reaching a state of large arrears when throttled via
+@@ -10632,12 +10629,10 @@ static int tg_cfs_schedulable_down(struct task_group *tg, void *data)
+ 	struct cfs_bandwidth *cfs_b = &tg->cfs_bandwidth;
+ 	s64 quota = 0, parent_quota = -1;
+ 
+-	if (!tg->parent) {
+-		quota = RUNTIME_INF;
+-	} else {
++	quota = normalize_cfs_quota(tg, d);
++	if (tg->parent) {
+ 		struct cfs_bandwidth *parent_b = &tg->parent->cfs_bandwidth;
+ 
+-		quota = normalize_cfs_quota(tg, d);
+ 		parent_quota = parent_b->hierarchical_quota;
+ 
+ 		/*
+@@ -10983,13 +10978,13 @@ static struct cftype cpu_files[] = {
+ #ifdef CONFIG_CFS_BANDWIDTH
+ 	{
+ 		.name = "max",
+-		.flags = CFTYPE_NOT_ON_ROOT,
++		.flags = 0,
+ 		.seq_show = cpu_max_show,
+ 		.write = cpu_max_write,
+ 	},
+ 	{
+ 		.name = "max.burst",
+-		.flags = CFTYPE_NOT_ON_ROOT,
++		.flags = 0,
+ 		.read_u64 = cpu_cfs_burst_read_u64,
+ 		.write_u64 = cpu_cfs_burst_write_u64,
+ 	},
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index a68482d66535..dd8c7eb9b648 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -7310,7 +7310,7 @@ pick_next_task_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf
+ 			if (unlikely(check_cfs_rq_runtime(cfs_rq))) {
+ 				cfs_rq = &rq->cfs;
+ 
+-				if (!cfs_rq->nr_running)
++				if (!cfs_rq->nr_running || cfs_rq_throttled(cfs_rq))
+ 					goto idle;
+ 
+ 				goto simple;
+-- 
+2.25.1
 
-> But I am planning to use device tree to get that information now so this
-> should no longer be needed and we can do calibration before registering
-> the device with MTD.
-
-Perfect, we can move the calibration hook in spi_nor_create_read_dirmap()
-then, or in devm_spi_mem_dirmap_create(), which would make more sense IMHO.
-
-Thanks,
-
-C.
