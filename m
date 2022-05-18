@@ -2,72 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 08:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232833AbiERISP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 04:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
+        id S232840AbiERIS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 04:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232820AbiERISM (ORCPT
+        with ESMTP id S232820AbiERIS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 04:18:12 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB49798588
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:18:09 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 5D2ED206BF;
-        Wed, 18 May 2022 10:12:39 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fIlEGlifOAuS; Wed, 18 May 2022 10:12:38 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id E545A206B0;
-        Wed, 18 May 2022 10:12:38 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id DFD8C80004A;
-        Wed, 18 May 2022 10:12:38 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 10:12:38 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 10:12:38 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 1466E3182D02; Wed, 18 May 2022 10:12:38 +0200 (CEST)
-Date:   Wed, 18 May 2022 10:12:38 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: af_key: add check for pfkey_broadcast in function
- pfkey_process
-Message-ID: <20220518081238.GT680067@gauss3.secunet.de>
-References: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
+        Wed, 18 May 2022 04:18:26 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E2F996B1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:18:25 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id i24so1464738pfa.7
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 01:18:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f22cXTNsoYn514XVAs+A0nZ4R63LnXxUaMnO5yshFsc=;
+        b=mUJJaZznPXm2bEg7PPxlgx7o3QntT81XPFfYXi4PPvdVoRy4k1G9xOeSgyJt4jpWfg
+         QE+A17kzFEKij01JyspqP1UXEAZaYitG0T4NmR7aoptr1Y3Ayr37p24GgnDWxynwDg2U
+         bxOuwGcq90qqgJv8MdBu/3h123882KI1Kn4EHIBP2A9eu9LKGhXMIqc7W8rLmuuWQllt
+         FESfWEd84TzBbbdEpYJcpcQL6ar4rpy+DlqZRBXS3kTiXWzW68YMR54dCwAeFO1wioca
+         eIrnaqwuz3PPYImQlcs+d0J/C9PWbrxA9Jjy3LfC46XuO4BhqjJ1Gb8nalaWbrLhKbqw
+         OMmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f22cXTNsoYn514XVAs+A0nZ4R63LnXxUaMnO5yshFsc=;
+        b=Nc/2Ous2IEKu0fDdqSR76ipAlfuRmBxyAkdZdKwORsGBmoTNYm0FMBjsD28pYcNmyU
+         NKho38xiLuIZuwNpvNLG43ad141oFBFWcyIrAL8+5+fAnitbxF/R1hiyG1rr8iHyjjQU
+         myCS/7k2UqEi7JBvECv7L7Yx4/vPDWFwROYmbbajRdbiImukjl82dCqj9r+RNbLj0nNv
+         zEfb2XhCgFGIK0Wv5NXOhwluc0U06MuFcmVhE8yMjfMiQ8e9FgN0HCK1DDmZRhkmB58V
+         Mst1P4hsCo3nun+ydt29fcn+he3cLURENCZcrZ50uoTJn9HCIUna/yr+NnUkUjDMRvau
+         Yf5A==
+X-Gm-Message-State: AOAM533Ou57271ytsyDRkeUhzEIaSW/xv+yAQSE2ZCfVqYJknyuhfWU3
+        CKVTlGZYXmtq5UNSegYKzBUhFw==
+X-Google-Smtp-Source: ABdhPJzx8V6y2Rr4Fth9lL0g63c1SH5CDRzTfNW+60mdSK5B8TxPN0VIhHLmLBbA2PUNJIH5856MJg==
+X-Received: by 2002:a63:5b13:0:b0:3c2:163c:b9cb with SMTP id p19-20020a635b13000000b003c2163cb9cbmr22699800pgb.145.1652861904658;
+        Wed, 18 May 2022 01:18:24 -0700 (PDT)
+Received: from hsinchu01.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id y23-20020a1709027c9700b001619cebbad4sm989560pll.148.2022.05.18.01.18.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 01:18:24 -0700 (PDT)
+From:   Po-Kai Chi <po-kai.chi@sifive.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Po-Kai Chi <po-kai.chi@sifive.com>
+Subject: [PATCH] riscv: Invalid instruction cache after copy the xol area
+Date:   Wed, 18 May 2022 16:17:53 +0800
+Message-Id: <20220518081753.29589-1-po-kai.chi@sifive.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 05:42:31PM +0800, Jiasheng Jiang wrote:
-> If skb_clone() returns null pointer, pfkey_broadcast() will
-> return error.
-> Therefore, it should be better to check the return value of
-> pfkey_broadcast() and return error if fails.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+We need to invalid the relevant instruction cache after
+copying the xol area, to ensure the changes takes effect.
 
-Applied, thanks!
+Signed-off-by: Po-Kai Chi <po-kai.chi@sifive.com>
+---
+ arch/riscv/kernel/probes/uprobes.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/riscv/kernel/probes/uprobes.c b/arch/riscv/kernel/probes/uprobes.c
+index 7a057b5f0adc..9d52beeac73c 100644
+--- a/arch/riscv/kernel/probes/uprobes.c
++++ b/arch/riscv/kernel/probes/uprobes.c
+@@ -165,6 +165,7 @@ void arch_uprobe_copy_ixol(struct page *page, unsigned long vaddr,
+ 	/* Initialize the slot */
+ 	void *kaddr = kmap_atomic(page);
+ 	void *dst = kaddr + (vaddr & ~PAGE_MASK);
++	unsigned long addr = (unsigned long)dst;
+ 
+ 	memcpy(dst, src, len);
+ 
+@@ -177,10 +178,9 @@ void arch_uprobe_copy_ixol(struct page *page, unsigned long vaddr,
+ 	kunmap_atomic(kaddr);
+ 
+ 	/*
+-	 * We probably need flush_icache_user_page() but it needs vma.
+-	 * This should work on most of architectures by default. If
+-	 * architecture needs to do something different it can define
+-	 * its own version of the function.
++	 * Flush both I/D cache to ensure instruction modification
++	 * takes effect.
+ 	 */
+ 	flush_dcache_page(page);
++	flush_icache_range(addr, addr + len);
+ }
+-- 
+2.36.1
+
