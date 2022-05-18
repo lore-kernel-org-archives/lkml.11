@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BE6C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237340AbiERMfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49276 "EHLO
+        id S237414AbiERMfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237132AbiERMeH (ORCPT
+        with ESMTP id S236971AbiERMeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:34:07 -0400
+        Wed, 18 May 2022 08:34:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29BC01957A5;
-        Wed, 18 May 2022 05:29:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D406170641;
+        Wed, 18 May 2022 05:29:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99651B81FBE;
-        Wed, 18 May 2022 12:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6250C36AE3;
-        Wed, 18 May 2022 12:29:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0142B81FBA;
+        Wed, 18 May 2022 12:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2971CC385AA;
+        Wed, 18 May 2022 12:29:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876996;
-        bh=U3MCaPU4KcqqPQx9TyAhzv+aeX5+rNSIakb60lLPjGQ=;
+        s=k20201202; t=1652876979;
+        bh=T4OxzCgaUBm2DqSHVnJ48Imayt8DaPfRZpxmkuNlJUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YEgGsavpmFNllTJ6A+A7tcwVo7yC9fEykOE7ieN0uDPU/CdRY+pvkLwVQ6mdWU0pv
-         gIjX3vLxq1280a9V478u7Z5H+I9ZLffmHALU3zIyB6E5bPVnQDv9j3dI9DcMX09lrz
-         RkgGPYSCir78QgYesO3Dx99FKXUSk/+bYaA8LasIyZF7III/7vETbz4Os+viOu7B3g
-         8NkJIG3Rx4OQraqmlA1Fiemrclm9mhiM1gnbvjfdPgP5A8ONfDTU2/dk8Tg9Kj8dYK
-         /cNsVhfJwOUv2lQw0oeb6mAicbwXoTP4JTg1yO9FuRYuMbH0icVbqvbQk65lUzn+jf
-         5/Ix+D49PQvzA==
+        b=O4Gwy2CLaxkWGYPlfjE1xp8IMfIBQ+EP+i4O99KjWycwZG2QpL7WZDKreU3OiEr+S
+         2mDfdUcKVi/foTYTaUup6PEPF1hC9zHr8xQBZ9fapi6bsF7WsDdndDxw9C0bxac8Sc
+         smBi4cnwHY+mDmpK1yRj/Q2IDSHzc2koOnC+vUoOEgb5Bk6qyGp3N+zDnDIX5Ojf4Q
+         NzjlFFfsa+3rxfHKxDCghwzeJPb9cZLqq0zmQFhLWTHeQZHKtbzyS0X7AEif0qAR17
+         P4I0Gr0ErirOPDFcjnIhGF7aufGAxfXhdum/xYx3uk1XC9523kymQgo8mPHck04ZRZ
+         MsO0aeo7Lpb6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Yang Yingliang <yangyingliang@huawei.com>,
         Hulk Robot <hulkci@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 4/5] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
-Date:   Wed, 18 May 2022 08:29:44 -0400
-Message-Id: <20220518122946.343712-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, arnd@arndb.de,
+        jgg@ziepe.ca, netdev@vger.kernel.org, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 4/6] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+Date:   Wed, 18 May 2022 08:29:27 -0400
+Message-Id: <20220518122929.343615-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122946.343712-1-sashal@kernel.org>
-References: <20220518122946.343712-1-sashal@kernel.org>
+In-Reply-To: <20220518122929.343615-1-sashal@kernel.org>
+References: <20220518122929.343615-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,41 +56,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
+[ Upstream commit 51ca86b4c9c7c75f5630fa0dbe5f8f0bd98e3c3e ]
 
-Switch to using pcim_enable_device() to avoid missing pci_disable_device().
+Fix the missing pci_disable_device() before return
+from tulip_init_one() in the error handling case.
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
+Link: https://lore.kernel.org/r/20220506094250.3630615-1-yangyingliang@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index cc1e887e47b5..3dec109251ad 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -261,7 +261,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
+index 3e3e08698876..fea4223ad6f1 100644
+--- a/drivers/net/ethernet/dec/tulip/tulip_core.c
++++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
+@@ -1410,8 +1410,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	/* Enable pci device */
--	ret = pci_enable_device(pdev);
-+	ret = pcim_enable_device(pdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
- 			__func__);
-@@ -313,8 +313,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
- 		pcim_iounmap_regions(pdev, BIT(i));
- 		break;
- 	}
--
--	pci_disable_device(pdev);
+ 	/* alloc_etherdev ensures aligned and zeroed private structures */
+ 	dev = alloc_etherdev (sizeof (*tp));
+-	if (!dev)
++	if (!dev) {
++		pci_disable_device(pdev);
+ 		return -ENOMEM;
++	}
+ 
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
+@@ -1788,6 +1790,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ err_out_free_netdev:
+ 	free_netdev (dev);
++	pci_disable_device(pdev);
+ 	return -ENODEV;
  }
  
- static int __maybe_unused stmmac_pci_suspend(struct device *dev)
 -- 
 2.35.1
 
