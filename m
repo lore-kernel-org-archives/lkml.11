@@ -2,1741 +2,466 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C55D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F345C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbiERGW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
+        id S231276AbiERGZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231189AbiERGWV (ORCPT
+        with ESMTP id S231266AbiERGY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:22:21 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D05CEBB8;
-        Tue, 17 May 2022 23:22:17 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 24I6790e080863;
-        Wed, 18 May 2022 14:07:10 +0800 (GMT-8)
-        (envelope-from neal_liu@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 May
- 2022 14:20:50 +0800
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "Andrew Jeffery" <andrew@aj.id.au>,
-        Felipe Balbi <balbi@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Li Yang" <leoyang.li@nxp.com>
-CC:     Neal Liu <neal_liu@aspeedtech.com>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linaro-mm-sig@lists.linaro.org>, kernel test robot <lkp@intel.com>
-Subject: [PATCH v3 1/3] usb: gadget: add Aspeed ast2600 udc driver
-Date:   Wed, 18 May 2022 14:20:41 +0800
-Message-ID: <20220518062043.1075360-2-neal_liu@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220518062043.1075360-1-neal_liu@aspeedtech.com>
-References: <20220518062043.1075360-1-neal_liu@aspeedtech.com>
+        Wed, 18 May 2022 02:24:58 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D40D4104
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:24:56 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id bx33so1283984ljb.12
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:24:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :content-language:reply-to:content-transfer-encoding;
+        bh=Ewk55++Gp6T3M6fiW+YquVxP2Y8LxYJuTsNlyW8yg58=;
+        b=y5TZgbNXfIKFhAeTtAb0TIQmSB0lf7vl88Yz/NTIT1eQVb7lZDFQgK1EebJik0Nq11
+         vmR6wmium6CKW3e0CQFmWkHt8H5fXw2XagvCt80A3cZqfNNGh+lKG8yyTw5tiOo/qMTD
+         Wg3f+d3fAyWSTY/a5k8fGtMbBR1iLmQ73WAYgc98A81sTu0BarkhFdvxwllAmBZ+VugB
+         Jxo04Mi7cQg77UNLfc1xagyWqJ6WSzyzQ3FVKlidx23pTZ1olXBZ+3uzSrpJZPIUQu1X
+         KlmdC27Ed86qEDObW84moEABAyTSdZlJfcn8C8PWitr5hRELqwfak1hkReNUKDfoElZl
+         9h+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:content-language:reply-to:content-transfer-encoding;
+        bh=Ewk55++Gp6T3M6fiW+YquVxP2Y8LxYJuTsNlyW8yg58=;
+        b=ZSUGlSTSlkvVQgoPoqy+7pqiQ2v4I4iCBou1VazVEUe4nxrlccG3glKdeAJ8yDjXeO
+         gAUanHM7Sx7SsffPoz3eTidSREHV5o2yopa+sxgqja1pxRqCivxsPypQHQ7PVJOnMpnK
+         5i1uDczx10lcZrW8dvNvQ8VtVxOLFSndQCwMkPLVROFNuF57yXKGj0+PE2zYzmFibe72
+         aay1ehz7eHzKUDv0Ea3lkfUNipWR//w1KBRgQvSGf5wEPA12Ch1dq1DUizMPuUNb5ghR
+         ya2QYZK2DsY4E3X9gY2VcC5JM19TR86lrlf3ejDMNKszandCu++DVPMNe+mt4CRZ5Zll
+         VTcA==
+X-Gm-Message-State: AOAM530OhLi13jM+TYCR+p+4o2YmslpcuSxb0BGPFkK0Bttu+1GTBLgW
+        txXGaEEeixmtw8H/vtqOYv3P3Q==
+X-Google-Smtp-Source: ABdhPJwye7N4TdFIN8h49zvhWdAJKKNU8LM9HWhLYiE44Mgc4w/96poV4HI+BcjSuLzlQgwebeB9Vg==
+X-Received: by 2002:a05:651c:4cb:b0:24f:5201:b2ca with SMTP id e11-20020a05651c04cb00b0024f5201b2camr15854605lji.173.1652855094566;
+        Tue, 17 May 2022 23:24:54 -0700 (PDT)
+Received: from [192.168.43.196] ([185.174.128.243])
+        by smtp.gmail.com with ESMTPSA id q17-20020a2e7511000000b0024f3d1daed1sm107627ljc.89.2022.05.17.23.24.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 23:24:54 -0700 (PDT)
+Message-ID: <f6625cd8-90f9-6d48-50f6-7bb052bf479f@openvz.org>
+Date:   Wed, 18 May 2022 09:24:51 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.10.10]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 24I6790e080863
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+From:   Vasily Averin <vvs@openvz.org>
+Subject: [PATCH v3] tracing: add 'accounted' entry into output of allocation
+ tracepoints
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Matthew Wilcox <willy@infradead.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Muchun Song <songmuchun@bytedance.com>
+Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Michal Hocko <mhocko@suse.com>
+Content-Language: en-US
+Reply-To: YoPOhRctb8wwbmY5@carbon
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Aspeed udc is compliant with USB2.0, supports USB High Speed
-and Full Speed, backward compatible with USB1.1.
+Slab caches marked with SLAB_ACCOUNT force accounting for every
+allocation from this cache even if __GFP_ACCOUNT flag is not passed.
+Unfortunately, at the moment this flag is not visible in ftrace output,
+and this makes it difficult to analyze the accounted allocations.
 
-Supports independent DMA channel for each generic endpoint.
-Supports 32/256 stages descriptor mode for all generic endpoints.
+This patch adds boolean "allocated" entry into trace output,
+and set it to 'true' for calls used __GFP_ACCOUNT flag and
+for allocations from caches marked with SLAB_ACCOUNT.
 
-This driver supports full functionality including single/multiple
-stages descriptor mode, and exposes 1 UDC gadget driver.
-
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Vasily Averin <vvs@openvz.org>
 ---
- MAINTAINERS                         |    7 +
- drivers/usb/gadget/udc/Kconfig      |   13 +
- drivers/usb/gadget/udc/Makefile     |    1 +
- drivers/usb/gadget/udc/aspeed_udc.c | 1601 +++++++++++++++++++++++++++
- 4 files changed, 1622 insertions(+)
- create mode 100644 drivers/usb/gadget/udc/aspeed_udc.c
+v3:
+ 1) rework kmem_cache_alloc* tracepoints once again,
+    added struct kmem_cache argument into existing templates,
+	thanks to Matthew Wilcox
+ 2) updated the corresponding ding trace_* calls
+ 3) added boolean "allocated" entry into trace output,
+	thanks to Roman
+ 4) updated patch subject and description
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e8c52d0192a6..784d8d8e7b22 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3109,6 +3109,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/media/aspeed-video.txt
- F:	drivers/media/platform/aspeed/
+v2:
+ 1) handle kmem_cache_alloc_node(), thanks to Shakeel
+ 2) rework kmem_cache_alloc* tracepoints to use cachep instead
+    of current cachep->*size parameters.
+    NB: kmem_cache_alloc_node tracepoint in SLOB cannot use cachep,
+        and therefore it was replaced by kmalloc_node.
+---
+Now kmem tracing output looks like this:
+
+kmem_cache_alloc:     (getname_flags.part.0+0x2c) call_site=getname_flags.part.0+0x2c ptr=0xffff8fff022e9000 bytes_req=4096 bytes_alloc=4096 gfp_flags=GFP_KERNEL accounted=false
+kmalloc:              (alloc_bprm+0x32) call_site=alloc_bprm+0x32 ptr=0xffff8fff2b408a00 bytes_req=416 bytes_alloc=512 gfp_flags=GFP_KERNEL|__GFP_ZERO accounted=false
+kmem_cache_alloc:     (mm_alloc+0x16) call_site=mm_alloc+0x16 ptr=0xffff8fff0894d500 bytes_req=1048 bytes_alloc=1088 gfp_flags=GFP_KERNEL accounted=true
+mm_page_alloc:        page=0xffffffffa4ab8d42 pfn=0x12ad72 order=1 migratetype=0 gfp_flags=GFP_USER|__GFP_ZERO|__GFP_ACCOUNT
+kmem_cache_alloc:     (vm_area_alloc+0x1a) call_site=vm_area_alloc+0x1a ptr=0xffff8fff2af27000 bytes_req=200 bytes_alloc=200 gfp_flags=GFP_KERNEL accounted=true
+---
+ include/trace/events/kmem.h | 38 +++++++++++++++++++++++--------------
+ mm/slab.c                   | 10 +++++-----
+ mm/slab_common.c            |  9 ++++-----
+ mm/slob.c                   |  8 ++++----
+ mm/slub.c                   | 20 +++++++++----------
+ 5 files changed, 47 insertions(+), 38 deletions(-)
+
+diff --git a/include/trace/events/kmem.h b/include/trace/events/kmem.h
+index 71c141804222..5bfeb6f276f1 100644
+--- a/include/trace/events/kmem.h
++++ b/include/trace/events/kmem.h
+@@ -13,11 +13,12 @@ DECLARE_EVENT_CLASS(kmem_alloc,
  
-+ASPEED USB UDC DRIVER
-+M:	Neal Liu <neal_liu@aspeedtech.com>
-+L:	linux-aspeed@lists.ozlabs.org (moderated for non-subscribers)
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/usb/aspeed,udc.yaml
-+F:	drivers/usb/gadget/udc/aspeed_udc.c
-+
- ASUS NOTEBOOKS AND EEEPC ACPI/WMI EXTRAS DRIVERS
- M:	Corentin Chary <corentin.chary@gmail.com>
- L:	acpi4asus-user@lists.sourceforge.net
-diff --git a/drivers/usb/gadget/udc/Kconfig b/drivers/usb/gadget/udc/Kconfig
-index 69394dc1cdfb..03535f33511b 100644
---- a/drivers/usb/gadget/udc/Kconfig
-+++ b/drivers/usb/gadget/udc/Kconfig
-@@ -463,6 +463,19 @@ config USB_TEGRA_XUDC
- 	 dynamically linked module called "tegra_xudc" and force all
- 	 gadget drivers to also be dynamically linked.
+ 	TP_PROTO(unsigned long call_site,
+ 		 const void *ptr,
++		 struct kmem_cache *s,
+ 		 size_t bytes_req,
+ 		 size_t bytes_alloc,
+ 		 gfp_t gfp_flags),
  
-+config USB_ASPEED_UDC
-+	tristate "Aspeed UDC driver support"
-+	depends on ARCH_ASPEED || COMPILE_TEST
-+	depends on USB_LIBCOMPOSITE
-+	help
-+	  Enables Aspeed USB2.0 Device Controller driver for AST260x
-+	  family SoCs. The controller supports 1 control endpoint and
-+	  4 programmable endpoints.
-+
-+	  Say "y" to link the driver statically, or "m" to build a
-+	  dynamically linked module called "aspeed_udc" and force all
-+	  gadget drivers to also be dynamically linked.
-+
- source "drivers/usb/gadget/udc/aspeed-vhub/Kconfig"
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags),
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags),
  
- #
-diff --git a/drivers/usb/gadget/udc/Makefile b/drivers/usb/gadget/udc/Makefile
-index a21f2224e7eb..12f9e4c9eb0c 100644
---- a/drivers/usb/gadget/udc/Makefile
-+++ b/drivers/usb/gadget/udc/Makefile
-@@ -40,5 +40,6 @@ obj-$(CONFIG_USB_GR_UDC)	+= gr_udc.o
- obj-$(CONFIG_USB_GADGET_XILINX)	+= udc-xilinx.o
- obj-$(CONFIG_USB_SNP_UDC_PLAT) += snps_udc_plat.o
- obj-$(CONFIG_USB_ASPEED_VHUB)	+= aspeed-vhub/
-+obj-$(CONFIG_USB_ASPEED_UDC)	+= aspeed_udc.o
- obj-$(CONFIG_USB_BDC_UDC)	+= bdc/
- obj-$(CONFIG_USB_MAX3420_UDC)	+= max3420_udc.o
-diff --git a/drivers/usb/gadget/udc/aspeed_udc.c b/drivers/usb/gadget/udc/aspeed_udc.c
-new file mode 100644
-index 000000000000..271015142210
---- /dev/null
-+++ b/drivers/usb/gadget/udc/aspeed_udc.c
-@@ -0,0 +1,1601 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (c) 2021 Aspeed Technology Inc.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/prefetch.h>
-+#include <linux/usb/ch9.h>
-+#include <linux/usb/gadget.h>
-+#include <linux/slab.h>
-+
-+#define AST_UDC_NUM_ENDPOINTS		(1 + 4)
-+#define AST_UDC_EP0_MAX_PACKET		64	/* EP0's max packet size */
-+#define AST_UDC_EPn_MAX_PACKET		1024	/* Generic EPs max packet size */
-+#define AST_UDC_DESCS_COUNT		256	/* Use 256 stages descriptor mode (32/256) */
-+#define AST_UDC_DESC_MODE		1	/* Single/Multiple Stage(s) Descriptor Mode */
-+
-+#define AST_UDC_EP_DMA_SIZE		(AST_UDC_EPn_MAX_PACKET + 8 * AST_UDC_DESCS_COUNT)
-+
-+/*****************************
-+ *                           *
-+ * UDC register definitions  *
-+ *                           *
-+ *****************************/
-+
-+#define AST_UDC_FUNC_CTRL		0x00	/* Root Function Control & Status Register */
-+#define AST_UDC_CONFIG			0x04	/* Root Configuration Setting Register */
-+#define AST_UDC_IER			0x08	/* Interrupt Control Register */
-+#define AST_UDC_ISR			0x0C	/* Interrupt Status Register */
-+#define AST_UDC_EP_ACK_IER		0x10	/* Programmable ep Pool ACK Interrupt Enable Reg */
-+#define AST_UDC_EP_NAK_IER		0x14	/* Programmable ep Pool NAK Interrupt Enable Reg */
-+#define AST_UDC_EP_ACK_ISR		0x18	/* Programmable ep Pool ACK Interrupt Status Reg */
-+#define AST_UDC_EP_NAK_ISR		0x1C	/* Programmable ep Pool NAK Interrupt Status Reg */
-+#define AST_UDC_DEV_RESET		0x20	/* Device Controller Soft Reset Enable Register */
-+#define AST_UDC_STS			0x24	/* USB Status Register */
-+#define AST_VHUB_EP_DATA		0x28	/* Programmable ep Pool Data Toggle Value Set */
-+#define AST_VHUB_ISO_TX_FAIL		0x2C	/* Isochronous Transaction Fail Accumulator */
-+#define AST_UDC_EP0_CTRL		0x30	/* Endpoint 0 Control/Status Register */
-+#define AST_UDC_EP0_DATA_BUFF		0x34	/* Base Address of ep0 IN/OUT Data Buffer Reg */
-+#define AST_UDC_SETUP0			0x80    /* Root Device Setup Data Buffer0 */
-+#define AST_UDC_SETUP1			0x84    /* Root Device Setup Data Buffer1 */
-+
-+
-+/* Main control reg */
-+#define USB_PHY_CLK_EN			BIT(31)
-+#define USB_FIFO_DYN_PWRD_EN		BIT(19)
-+#define USB_EP_LONG_DESC		BIT(18)
-+#define USB_BIST_TEST_PASS		BIT(13)
-+#define USB_BIST_TURN_ON		BIT(12)
-+#define USB_PHY_RESET_DIS		BIT(11)
-+#define USB_TEST_MODE(x)		((x) << 8)
-+#define USB_FORCE_TIMER_HS		BIT(7)
-+#define USB_FORCE_HS			BIT(6)
-+#define USB_REMOTE_WAKEUP_12MS		BIT(5)
-+#define USB_REMOTE_WAKEUP_EN		BIT(4)
-+#define USB_AUTO_REMOTE_WAKEUP_EN	BIT(3)
-+#define USB_STOP_CLK_IN_SUPEND		BIT(2)
-+#define USB_UPSTREAM_FS			BIT(1)
-+#define USB_UPSTREAM_EN			BIT(0)
-+
-+/* Main config reg */
-+#define UDC_CFG_SET_ADDR(x)		((x) & 0x3f)
-+#define UDC_CFG_ADDR_MASK		(0x3f)
-+
-+/* Interrupt ctrl & status reg */
-+#define UDC_IRQ_EP_POOL_NAK		BIT(17)
-+#define UDC_IRQ_EP_POOL_ACK_STALL	BIT(16)
-+#define UDC_IRQ_BUS_RESUME		BIT(8)
-+#define UDC_IRQ_BUS_SUSPEND		BIT(7)
-+#define UDC_IRQ_BUS_RESET		BIT(6)
-+#define UDC_IRQ_EP0_IN_DATA_NAK		BIT(4)
-+#define UDC_IRQ_EP0_IN_ACK_STALL	BIT(3)
-+#define UDC_IRQ_EP0_OUT_NAK		BIT(2)
-+#define UDC_IRQ_EP0_OUT_ACK_STALL	BIT(1)
-+#define UDC_IRQ_EP0_SETUP		BIT(0)
-+#define UDC_IRQ_ACK_ALL			(0x1ff)
-+
-+/* EP isr reg */
-+#define USB_EP3_ISR			BIT(3)
-+#define USB_EP2_ISR			BIT(2)
-+#define USB_EP1_ISR			BIT(1)
-+#define USB_EP0_ISR			BIT(0)
-+#define UDC_IRQ_EP_ACK_ALL		(0xf)
-+
-+/*Soft reset reg */
-+#define ROOT_UDC_SOFT_RESET		BIT(0)
-+
-+/* USB status reg */
-+#define UDC_STS_HIGHSPEED		BIT(27)
-+
-+/* Programmable EP data toggle */
-+#define EP_TOGGLE_SET_EPNUM(x)		((x) & 0x3)
-+
-+/* EP0 ctrl reg */
-+#define EP0_GET_RX_LEN(x)		((x >> 16) & 0x7f)
-+#define EP0_TX_LEN(x)			((x & 0x7f) << 8)
-+#define EP0_RX_BUFF_RDY			BIT(2)
-+#define EP0_TX_BUFF_RDY			BIT(1)
-+#define EP0_STALL			BIT(0)
-+
-+/*************************************
-+ *                                   *
-+ * per-endpoint register definitions *
-+ *                                   *
-+ *************************************/
-+
-+#define AST_UDC_EP_CONFIG		0x00	/* Endpoint Configuration Register */
-+#define AST_UDC_EP_DMA_CTRL		0x04	/* DMA Descriptor List Control/Status Register */
-+#define AST_UDC_EP_DMA_BUFF		0x08	/* DMA Descriptor/Buffer Base Address */
-+#define AST_UDC_EP_DMA_STS		0x0C	/* DMA Descriptor List R/W Pointer and Status */
-+
-+#define AST_UDC_EP_BASE			0x200
-+#define AST_UDC_EP_OFFSET		0x10
-+
-+/* EP config reg */
-+#define EP_SET_MAX_PKT(x)		((x & 0x3ff) << 16)
-+#define EP_DATA_FETCH_CTRL(x)		((x & 0x3) << 14)
-+#define EP_AUTO_DATA_DISABLE		(0x1 << 13)
-+#define EP_SET_EP_STALL			(0x1 << 12)
-+#define EP_SET_EP_NUM(x)		((x & 0xf) << 8)
-+#define EP_SET_TYPE_MASK(x)		((x) << 5)
-+#define EP_TYPE_BULK			(0x1)
-+#define EP_TYPE_INT			(0x2)
-+#define EP_TYPE_ISO			(0x3)
-+#define EP_DIR_OUT			(0x1 << 4)
-+#define EP_ALLOCATED_MASK		(0x7 << 1)
-+#define EP_ENABLE			BIT(0)
-+
-+/* EP DMA ctrl reg */
-+#define EP_DMA_CTRL_GET_PROC_STS(x)	((x >> 4) & 0xf)
-+#define EP_DMA_CTRL_STS_RX_IDLE		0x0
-+#define EP_DMA_CTRL_STS_TX_IDLE		0x8
-+#define EP_DMA_CTRL_IN_LONG_MODE	(0x1 << 3)
-+#define EP_DMA_CTRL_RESET		(0x1 << 2)
-+#define EP_DMA_SINGLE_STAGE		(0x1 << 1)
-+#define EP_DMA_DESC_MODE		(0x1 << 0)
-+
-+/* EP DMA status reg */
-+#define EP_DMA_SET_TX_SIZE(x)		((x & 0x7ff) << 16)
-+#define EP_DMA_GET_TX_SIZE(x)		(((x) >> 16) & 0x7ff)
-+#define EP_DMA_GET_RPTR(x)		(((x) >> 8) & 0xff)
-+#define EP_DMA_GET_WPTR(x)		((x) & 0xff)
-+#define EP_DMA_SINGLE_KICK		(1 << 0) /* WPTR = 1 for single mode */
-+
-+/* EP desc reg */
-+#define AST_EP_DMA_DESC_INTR_ENABLE	BIT(31)
-+#define AST_EP_DMA_DESC_PID_DATA0	(0 << 14)
-+#define AST_EP_DMA_DESC_PID_DATA2	BIT(14)
-+#define AST_EP_DMA_DESC_PID_DATA1	(2 << 14)
-+#define AST_EP_DMA_DESC_PID_MDATA	(3 << 14)
-+#define EP_DESC1_IN_LEN(x)		((x) & 0x1fff)
-+#define AST_EP_DMA_DESC_MAX_LEN		(7680) /* Max packet length for trasmit in 1 desc */
-+
-+struct ast_udc_request {
-+	struct usb_request	req;
-+	struct list_head	queue;
-+	unsigned		mapped:1;
-+	unsigned int		actual_dma_length;
-+	u32			saved_dma_wptr;
-+};
-+
-+#define to_ast_req(__req) container_of(__req, struct ast_udc_request, req)
-+
-+struct ast_dma_desc {
-+	u32	des_0;
-+	u32	des_1;
-+};
-+
-+struct ast_udc_ep {
-+	struct usb_ep			ep;
-+
-+	/* Request queue */
-+	struct list_head		queue;
-+
-+	struct ast_udc_dev		*udc;
-+	void __iomem			*ep_reg;
-+	void				*epn_buf;
-+	dma_addr_t			epn_buf_dma;
-+	const struct usb_endpoint_descriptor	*desc;
-+
-+	/* DMA Descriptors */
-+	struct ast_dma_desc		*descs;
-+	dma_addr_t			descs_dma;
-+	u32				descs_wptr;
-+	u32				chunk_max;
-+
-+	bool				dir_in:1;
-+	unsigned			stopped:1;
-+	bool				desc_mode:1;
-+};
-+
-+#define to_ast_ep(__ep) container_of(__ep, struct ast_udc_ep, ep)
-+
-+struct ast_udc_dev {
-+	struct platform_device		*pdev;
-+	void __iomem			*reg;
-+	int				irq;
-+	spinlock_t			lock;
-+	struct clk			*clk;
-+	struct work_struct		wake_work;
-+
-+	/* EP0 DMA buffers allocated in one chunk */
-+	void				*ep0_buf;
-+	dma_addr_t			ep0_buf_dma;
-+	struct ast_udc_ep		ep[AST_UDC_NUM_ENDPOINTS];
-+
-+	struct usb_gadget		gadget;
-+	struct usb_gadget_driver	*driver;
-+	void __iomem			*creq;
-+	enum usb_device_state		suspended_from;
-+	int				desc_mode;
-+
-+	/* Force full speed only */
-+	bool				force_usb1:1;
-+	unsigned			is_control_tx:1;
-+	bool				wakeup_en:1;
-+};
-+
-+#define to_ast_dev(__g) container_of(__g, struct ast_udc_dev, gadget)
-+
-+static const char * const ast_ep_name[] = {
-+	"ep0", "ep1", "ep2", "ep3", "ep4"
-+};
-+
-+#ifdef AST_UDC_DEBUG_ALL
-+#define AST_UDC_DEBUG
-+#define AST_SETUP_DEBUG
-+#define AST_EP_DEBUG
-+#define AST_ISR_DEBUG
-+#endif
-+
-+#ifdef AST_SETUP_DEBUG
-+#define SETUP_DBG(u, fmt, ...)	\
-+	dev_dbg(&(u)->pdev->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
-+#else
-+#define SETUP_DBG(u, fmt, ...)
-+#endif
-+
-+#ifdef AST_EP_DEBUG
-+#define EP_DBG(e, fmt, ...)	\
-+	dev_dbg(&(e)->udc->pdev->dev, "%s():%s " fmt, __func__,	\
-+		 (e)->ep.name, ##__VA_ARGS__)
-+#else
-+#define EP_DBG(ep, fmt, ...)	((void)(ep))
-+#endif
-+
-+#ifdef AST_UDC_DEBUG
-+#define UDC_DBG(u, fmt, ...)	\
-+	dev_dbg(&(u)->pdev->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
-+#else
-+#define UDC_DBG(u, fmt, ...)
-+#endif
-+
-+#ifdef AST_ISR_DEBUG
-+#define ISR_DBG(u, fmt, ...)	\
-+	dev_dbg(&(u)->pdev->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
-+#else
-+#define ISR_DBG(u, fmt, ...)
-+#endif
-+
-+/*-------------------------------------------------------------------------*/
-+#define ast_udc_read(udc, offset) \
-+	readl((udc)->reg + (offset))
-+#define ast_udc_write(udc, val, offset) \
-+	writel((val), (udc)->reg + (offset))
-+
-+#define ast_ep_read(ep, reg) \
-+	readl((ep)->ep_reg + (reg))
-+#define ast_ep_write(ep, val, reg) \
-+	writel((val), (ep)->ep_reg + (reg))
-+
-+/*-------------------------------------------------------------------------*/
-+
-+static void ast_udc_done(struct ast_udc_ep *ep, struct ast_udc_request *req,
-+			 int status)
-+{
-+	struct ast_udc_dev *udc = ep->udc;
-+
-+	EP_DBG(ep, "req @%p, len (%d/%d), buf:0x%x, dir:0x%x\n",
-+	       req, req->req.actual, req->req.length,
-+	       (u32)req->req.buf, ep->dir_in);
-+
-+	list_del(&req->queue);
-+
-+	if (req->req.status == -EINPROGRESS)
-+		req->req.status = status;
-+	else
-+		status = req->req.status;
-+
-+	if (status && status != -ESHUTDOWN)
-+		EP_DBG(ep, "done req:%p, status:%d\n", req, status);
-+
-+	spin_unlock(&udc->lock);
-+	usb_gadget_giveback_request(&ep->ep, &req->req);
-+	spin_lock(&udc->lock);
-+}
-+
-+static void ast_udc_nuke(struct ast_udc_ep *ep, int status)
-+{
-+	int count = 0;
-+
-+	/* Sanity check */
-+	if (&ep->queue == NULL)
-+		return;
-+
-+	while (!list_empty(&ep->queue)) {
-+		struct ast_udc_request *req;
-+
-+		req = list_entry(ep->queue.next, struct ast_udc_request,
-+				 queue);
-+		ast_udc_done(ep, req, status);
-+		count++;
-+	}
-+
-+	if (count)
-+		EP_DBG(ep, "Nuked %d request(s)\n", count);
-+}
-+
-+/*
-+ * Stop activity on all endpoints.
-+ * Device controller for which EP activity is to be stopped.
-+ *
-+ * All the endpoints are stopped and any pending transfer requests if any on
-+ * the endpoint are terminated.
-+ */
-+static void ast_udc_stop_activity(struct ast_udc_dev *udc)
-+{
-+	struct ast_udc_ep *ep;
-+	int i;
-+
-+	for (i = 0; i < AST_UDC_NUM_ENDPOINTS; i++) {
-+		ep = &udc->ep[i];
-+		ep->stopped = 1;
-+		ast_udc_nuke(ep, -ESHUTDOWN);
-+	}
-+}
-+
-+static int ast_udc_ep_enable(struct usb_ep *_ep,
-+			     const struct usb_endpoint_descriptor *desc)
-+{
-+	u16 maxpacket = usb_endpoint_maxp(desc);
-+	struct ast_udc_ep *ep = to_ast_ep(_ep);
-+	struct ast_udc_dev *udc = ep->udc;
-+	u8 epnum = usb_endpoint_num(desc);
-+	unsigned long flags;
-+	u32 ep_conf = 0;
-+	u8 dir_in;
-+	u8 type;
-+
-+	if (!_ep || !ep || !desc || desc->bDescriptorType != USB_DT_ENDPOINT ||
-+	    maxpacket == 0 || maxpacket > ep->ep.maxpacket) {
-+		EP_DBG(ep, "Failed, invalid EP enable param\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!udc->driver) {
-+		EP_DBG(ep, "bogus device state\n");
-+		return -ESHUTDOWN;
-+	}
-+
-+	EP_DBG(ep, "maxpacket:0x%x\n", maxpacket);
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	ep->desc = desc;
-+	ep->stopped = 0;
-+	ep->ep.maxpacket = maxpacket;
-+	ep->chunk_max = AST_EP_DMA_DESC_MAX_LEN;
-+
-+	if (maxpacket < AST_UDC_EPn_MAX_PACKET)
-+		ep_conf = EP_SET_MAX_PKT(maxpacket);
-+
-+	ep_conf |= EP_SET_EP_NUM(epnum);
-+
-+	type = usb_endpoint_type(desc);
-+	dir_in = usb_endpoint_dir_in(desc);
-+	ep->dir_in = dir_in;
-+	if (!ep->dir_in)
-+		ep_conf |= EP_DIR_OUT;
-+
-+	EP_DBG(ep, "type %d, dir_in %d\n", type, dir_in);
-+	switch (type) {
-+	case USB_ENDPOINT_XFER_ISOC:
-+		ep_conf |= EP_SET_TYPE_MASK(EP_TYPE_ISO);
-+		break;
-+
-+	case USB_ENDPOINT_XFER_BULK:
-+		ep_conf |= EP_SET_TYPE_MASK(EP_TYPE_BULK);
-+		break;
-+
-+	case USB_ENDPOINT_XFER_INT:
-+		ep_conf |= EP_SET_TYPE_MASK(EP_TYPE_INT);
-+		break;
-+	}
-+
-+	ep->desc_mode = udc->desc_mode && ep->descs_dma && ep->dir_in;
-+	if (ep->desc_mode) {
-+		ast_ep_write(ep, EP_DMA_CTRL_RESET, AST_UDC_EP_DMA_CTRL);
-+		ast_ep_write(ep, 0, AST_UDC_EP_DMA_STS);
-+		ast_ep_write(ep, ep->descs_dma, AST_UDC_EP_DMA_BUFF);
-+
-+		/* Enable Long Descriptor Mode */
-+		ast_ep_write(ep, EP_DMA_CTRL_IN_LONG_MODE | EP_DMA_DESC_MODE,
-+			     AST_UDC_EP_DMA_CTRL);
-+
-+		ep->descs_wptr = 0;
-+
-+	} else {
-+		ast_ep_write(ep, EP_DMA_CTRL_RESET, AST_UDC_EP_DMA_CTRL);
-+		ast_ep_write(ep, EP_DMA_SINGLE_STAGE, AST_UDC_EP_DMA_CTRL);
-+		ast_ep_write(ep, 0, AST_UDC_EP_DMA_STS);
-+	}
-+
-+	/* Cleanup data toggle just in case */
-+	ast_udc_write(udc, EP_TOGGLE_SET_EPNUM(epnum), AST_VHUB_EP_DATA);
-+
-+	/* Enable EP */
-+	ast_ep_write(ep, ep_conf | EP_ENABLE, AST_UDC_EP_CONFIG);
-+
-+	EP_DBG(ep, "ep_config: 0x%x\n", ast_ep_read(ep, AST_UDC_EP_CONFIG));
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int ast_udc_ep_disable(struct usb_ep *_ep)
-+{
-+	struct ast_udc_ep *ep = to_ast_ep(_ep);
-+	struct ast_udc_dev *udc = ep->udc;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	ep->ep.desc = NULL;
-+	ep->stopped = 1;
-+
-+	ast_udc_nuke(ep, -ESHUTDOWN);
-+	ast_ep_write(ep, 0, AST_UDC_EP_CONFIG);
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return 0;
-+}
-+
-+static struct usb_request *ast_udc_ep_alloc_request(struct usb_ep *_ep,
-+						    gfp_t gfp_flags)
-+{
-+	struct ast_udc_ep *ep = to_ast_ep(_ep);
-+	struct ast_udc_request *req;
-+
-+	req = kzalloc(sizeof(struct ast_udc_request), gfp_flags);
-+	if (!req) {
-+		EP_DBG(ep, "request allocation failed\n");
-+		return NULL;
-+	}
-+
-+	INIT_LIST_HEAD(&req->queue);
-+
-+	return &req->req;
-+}
-+
-+static void ast_udc_ep_free_request(struct usb_ep *_ep,
-+				    struct usb_request *_req)
-+{
-+	struct ast_udc_request *req = to_ast_req(_req);
-+
-+	kfree(req);
-+}
-+
-+static int ast_dma_descriptor_setup(struct ast_udc_ep *ep, u32 dma_buf,
-+				    u16 tx_len, struct ast_udc_request *req)
-+{
-+	struct ast_udc_dev *udc = ep->udc;
-+	struct device *dev = &udc->pdev->dev;
-+	u32 offset, chunk;
-+	int count, last;
-+
-+	if (!ep->descs) {
-+		dev_warn(dev, "%s: Empty DMA descs list failure\n",
-+			 ep->ep.name);
-+		return -EINVAL;
-+	}
-+
-+	chunk = tx_len;
-+	offset = count = last = 0;
-+
-+	EP_DBG(ep, "req @%p, %s:%d, %s:0x%x, %s:0x%x\n", req,
-+	       "wptr", ep->descs_wptr, "dma_buf", dma_buf,
-+	       "tx_len", tx_len);
-+
-+	/* Create Descriptor Lists */
-+	while (chunk >= 0 && !last && count < AST_UDC_DESCS_COUNT) {
-+
-+		ep->descs[ep->descs_wptr].des_0 = dma_buf + offset;
-+
-+		if (chunk <= ep->chunk_max) {
-+			ep->descs[ep->descs_wptr].des_1 = chunk;
-+			last = 1;
-+		} else {
-+			ep->descs[ep->descs_wptr].des_1 = ep->chunk_max;
-+			chunk -= ep->chunk_max;
-+		}
-+
-+		EP_DBG(ep, "descs[%d]: 0x%x 0x%x, last:%d\n",
-+		       ep->descs_wptr,
-+		       ep->descs[ep->descs_wptr].des_0,
-+		       ep->descs[ep->descs_wptr].des_1,
-+		       last);
-+
-+		if (count == 0)
-+			req->saved_dma_wptr = ep->descs_wptr;
-+
-+		ep->descs_wptr++;
-+		count++;
-+
-+		if (ep->descs_wptr >= AST_UDC_DESCS_COUNT)
-+			ep->descs_wptr = 0;
-+
-+		offset = ep->chunk_max * count;
-+	}
-+
-+	return 0;
-+}
-+
-+static void ast_udc_epn_kick(struct ast_udc_ep *ep, struct ast_udc_request *req)
-+{
-+	u32 tx_len;
-+	u32 last;
-+
-+	last = req->req.length - req->req.actual;
-+	tx_len = last > ep->ep.maxpacket ? ep->ep.maxpacket : last;
-+
-+	EP_DBG(ep, "kick req @%p, len:%d, dir:%d\n",
-+	       req, tx_len, ep->dir_in);
-+
-+	ast_ep_write(ep, req->req.dma + req->req.actual, AST_UDC_EP_DMA_BUFF);
-+
-+	/* Start DMA */
-+	ast_ep_write(ep, EP_DMA_SET_TX_SIZE(tx_len), AST_UDC_EP_DMA_STS);
-+	ast_ep_write(ep, EP_DMA_SET_TX_SIZE(tx_len) | EP_DMA_SINGLE_KICK,
-+		     AST_UDC_EP_DMA_STS);
-+}
-+
-+static void ast_udc_epn_kick_desc(struct ast_udc_ep *ep,
-+				  struct ast_udc_request *req)
-+{
-+	u32 descs_max_size;
-+	u32 tx_len;
-+	u32 last;
-+
-+	descs_max_size = AST_EP_DMA_DESC_MAX_LEN * AST_UDC_DESCS_COUNT;
-+
-+	last = req->req.length - req->req.actual;
-+	tx_len = last > descs_max_size ? descs_max_size : last;
-+
-+	EP_DBG(ep, "kick req @%p, %s:%d, %s:0x%x, %s:0x%x (%d/%d), %s:0x%x\n",
-+	       req, "tx_len", tx_len, "dir_in", ep->dir_in,
-+	       "dma", req->req.dma + req->req.actual,
-+	       req->req.actual, req->req.length,
-+	       "descs_max_size", descs_max_size);
-+
-+	if (!ast_dma_descriptor_setup(ep, req->req.dma + req->req.actual,
-+				      tx_len, req))
-+		req->actual_dma_length += tx_len;
-+
-+	/* make sure CPU done everything before triggering DMA */
-+	mb();
-+
-+	ast_ep_write(ep, ep->descs_wptr, AST_UDC_EP_DMA_STS);
-+
-+	EP_DBG(ep, "descs_wptr:%d, dstat:0x%x, dctrl:0x%x\n",
-+	       ep->descs_wptr,
-+	       ast_ep_read(ep, AST_UDC_EP_DMA_STS),
-+	       ast_ep_read(ep, AST_UDC_EP_DMA_CTRL));
-+}
-+
-+static void ast_udc_ep0_queue(struct ast_udc_ep *ep,
-+			      struct ast_udc_request *req)
-+{
-+	struct ast_udc_dev *udc = ep->udc;
-+	u32 tx_len;
-+	u32 last;
-+
-+	last = req->req.length - req->req.actual;
-+	tx_len = last > ep->ep.maxpacket ? ep->ep.maxpacket : last;
-+
-+	ast_udc_write(udc, req->req.dma + req->req.actual,
-+		      AST_UDC_EP0_DATA_BUFF);
-+
-+	if (ep->dir_in) {
-+		/* IN requests, send data */
-+		SETUP_DBG(udc, "IN: %s:0x%x, %s:0x%x, %s:%d (%d/%d), %s:%d\n",
-+			  "buf", (u32)req->req.buf,
-+			  "dma", req->req.dma + req->req.actual,
-+			  "tx_len", tx_len,
-+			  req->req.actual, req->req.length,
-+			  "dir_in", ep->dir_in);
-+
-+		req->req.actual += tx_len;
-+		ast_udc_write(udc, EP0_TX_LEN(tx_len), AST_UDC_EP0_CTRL);
-+		ast_udc_write(udc, EP0_TX_LEN(tx_len) | EP0_TX_BUFF_RDY,
-+			      AST_UDC_EP0_CTRL);
-+
-+	} else {
-+		/* OUT requests, receive data */
-+		SETUP_DBG(udc, "OUT: %s:%x, %s:%x, %s:(%d/%d), %s:%d\n",
-+			  "buf", (u32)req->req.buf,
-+			  "dma", req->req.dma + req->req.actual,
-+			  "len", req->req.actual, req->req.length,
-+			  "dir_in", ep->dir_in);
-+
-+		if (!req->req.length) {
-+			/* 0 len request, send tx as completion */
-+			ast_udc_write(udc, EP0_TX_BUFF_RDY, AST_UDC_EP0_CTRL);
-+			ep->dir_in = 0x1;
-+		} else
-+			ast_udc_write(udc, EP0_RX_BUFF_RDY, AST_UDC_EP0_CTRL);
-+	}
-+}
-+
-+static int ast_udc_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
-+			    gfp_t gfp_flags)
-+{
-+	struct ast_udc_request *req = to_ast_req(_req);
-+	struct ast_udc_ep *ep = to_ast_ep(_ep);
-+	struct ast_udc_dev *udc = ep->udc;
-+	struct device *dev = &udc->pdev->dev;
-+	unsigned long flags;
-+	int rc;
-+
-+	if (unlikely(!_req || !_req->complete || !_req->buf || !_ep)) {
-+		dev_warn(dev, "Invalid EP request !\n");
-+		return -EINVAL;
-+	}
-+
-+	if (ep->stopped) {
-+		dev_warn(dev, "%s is already stopped !\n", _ep->name);
-+		return -ESHUTDOWN;
-+	}
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	list_add_tail(&req->queue, &ep->queue);
-+
-+	req->req.actual = 0;
-+	req->req.status = -EINPROGRESS;
-+	req->actual_dma_length = 0;
-+
-+	rc = usb_gadget_map_request(&udc->gadget, &req->req, ep->dir_in);
-+	if (rc) {
-+		EP_DBG(ep, "Request mapping failure %d\n", rc);
-+		dev_warn(dev, "Request mapping failure %d\n", rc);
-+		goto end;
-+	}
-+
-+	EP_DBG(ep, "enqueue req @%p\n", req);
-+	EP_DBG(ep, "l=%d, dma:0x%x, zero:%d, is_in:%d\n",
-+		_req->length, _req->dma, _req->zero, ep->dir_in);
-+
-+	/* EP0 request enqueue */
-+	if (ep->ep.desc == NULL) {
-+		if ((req->req.dma % 4) != 0) {
-+			dev_warn(dev, "EP0 req dma alignment error\n");
-+			return -ESHUTDOWN;
-+		}
-+
-+		ast_udc_ep0_queue(ep, req);
-+		goto end;
-+	}
-+
-+	/* EPn request enqueue */
-+	if (list_is_singular(&ep->queue)) {
-+		if (ep->desc_mode)
-+			ast_udc_epn_kick_desc(ep, req);
-+		else
-+			ast_udc_epn_kick(ep, req);
-+	}
-+
-+end:
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return rc;
-+}
-+
-+static int ast_udc_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
-+{
-+	struct ast_udc_ep *ep = to_ast_ep(_ep);
-+	struct ast_udc_dev *udc = ep->udc;
-+	struct ast_udc_request *req;
-+	unsigned long flags;
-+	int rc = 0;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	/* make sure it's actually queued on this endpoint */
-+	list_for_each_entry(req, &ep->queue, queue) {
-+		if (&req->req == _req) {
-+			list_del_init(&req->queue);
-+			ast_udc_done(ep, req, -ESHUTDOWN);
-+			_req->status = -ECONNRESET;
-+			break;
-+		}
-+	}
-+
-+	/* dequeue request not found */
-+	if (&req->req != _req)
-+		rc = -EINVAL;
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return rc;
-+}
-+
-+static int ast_udc_ep_set_halt(struct usb_ep *_ep, int value)
-+{
-+	struct ast_udc_ep *ep = to_ast_ep(_ep);
-+	struct ast_udc_dev *udc = ep->udc;
-+	unsigned long flags;
-+	int epnum;
-+	u32 ctrl;
-+
-+	EP_DBG(ep, "val:%d\n", value);
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	epnum = usb_endpoint_num(ep->desc);
-+
-+	/* EP0 */
-+	if (epnum == 0) {
-+		ctrl = ast_udc_read(udc, AST_UDC_EP0_CTRL);
-+		if (value)
-+			ctrl |= EP0_STALL;
-+		else
-+			ctrl &= ~EP0_STALL;
-+
-+		ast_udc_write(udc, ctrl, AST_UDC_EP0_CTRL);
-+
-+	} else {
-+	/* EPn */
-+		ctrl = ast_udc_read(udc, AST_UDC_EP_CONFIG);
-+		if (value)
-+			ctrl |= EP_SET_EP_STALL;
-+		else
-+			ctrl &= ~EP_SET_EP_STALL;
-+
-+		ast_ep_write(ep, ctrl, AST_UDC_EP_CONFIG);
-+
-+		/* only epn is stopped and waits for clear */
-+		ep->stopped = value ? 1 : 0;
-+	}
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return 0;
-+}
-+
-+static const struct usb_ep_ops ast_udc_ep_ops = {
-+	.enable		= ast_udc_ep_enable,
-+	.disable	= ast_udc_ep_disable,
-+	.alloc_request	= ast_udc_ep_alloc_request,
-+	.free_request	= ast_udc_ep_free_request,
-+	.queue		= ast_udc_ep_queue,
-+	.dequeue	= ast_udc_ep_dequeue,
-+	.set_halt	= ast_udc_ep_set_halt,
-+	/* there's only imprecise fifo status reporting */
-+};
-+
-+static void ast_udc_ep0_rx(struct ast_udc_dev *udc)
-+{
-+	ast_udc_write(udc, udc->ep0_buf_dma, AST_UDC_EP0_DATA_BUFF);
-+	ast_udc_write(udc, EP0_RX_BUFF_RDY, AST_UDC_EP0_CTRL);
-+}
-+
-+static void ast_udc_ep0_tx(struct ast_udc_dev *udc)
-+{
-+	ast_udc_write(udc, udc->ep0_buf_dma, AST_UDC_EP0_DATA_BUFF);
-+	ast_udc_write(udc, EP0_TX_BUFF_RDY, AST_UDC_EP0_CTRL);
-+}
-+
-+static void ast_udc_ep0_out(struct ast_udc_dev *udc)
-+{
-+	struct device *dev = &udc->pdev->dev;
-+	struct ast_udc_ep *ep = &udc->ep[0];
-+	struct ast_udc_request *req;
-+	u16 rx_len;
-+
-+	if (list_empty(&ep->queue))
-+		return;
-+
-+	req = list_entry(ep->queue.next, struct ast_udc_request, queue);
-+
-+	rx_len = EP0_GET_RX_LEN(ast_udc_read(udc, AST_UDC_EP0_CTRL));
-+	req->req.actual += rx_len;
-+
-+	SETUP_DBG(udc, "req %p (%d/%d)\n", req,
-+		  req->req.actual, req->req.length);
-+
-+	if ((rx_len < ep->ep.maxpacket) ||
-+	    (req->req.actual == req->req.length)) {
-+		ast_udc_ep0_tx(udc);
-+		if (!ep->dir_in)
-+			ast_udc_done(ep, req, 0);
-+
-+	} else {
-+		if (rx_len > req->req.length) {
-+			// Issue Fix
-+			dev_warn(dev, "Something wrong (%d/%d)\n",
-+				 req->req.actual, req->req.length);
-+			ast_udc_ep0_tx(udc);
-+			ast_udc_done(ep, req, 0);
-+			return;
-+		}
-+
-+		ep->dir_in = 0;
-+
-+		/* More works */
-+		ast_udc_ep0_queue(ep, req);
-+	}
-+}
-+
-+static void ast_udc_ep0_in(struct ast_udc_dev *udc)
-+{
-+	struct ast_udc_ep *ep = &udc->ep[0];
-+	struct ast_udc_request *req;
-+
-+	if (list_empty(&ep->queue)) {
-+		if (udc->is_control_tx) {
-+			ast_udc_ep0_rx(udc);
-+			udc->is_control_tx = 0;
-+		}
-+
-+		return;
-+	}
-+
-+	req = list_entry(ep->queue.next, struct ast_udc_request, queue);
-+
-+	SETUP_DBG(udc, "req %p (%d/%d)\n", req,
-+		  req->req.actual, req->req.length);
-+
-+	if (req->req.length == req->req.actual) {
-+		if (req->req.length)
-+			ast_udc_ep0_rx(udc);
-+
-+		if (ep->dir_in)
-+			ast_udc_done(ep, req, 0);
-+
-+	} else {
-+		/* More works */
-+		ast_udc_ep0_queue(ep, req);
-+	}
-+}
-+
-+static void ast_udc_epn_handle(struct ast_udc_dev *udc, u16 ep_num)
-+{
-+	struct ast_udc_ep *ep = &udc->ep[ep_num];
-+	struct ast_udc_request *req;
-+	u16 len = 0;
-+
-+	if (list_empty(&ep->queue))
-+		return;
-+
-+	req = list_first_entry(&ep->queue, struct ast_udc_request, queue);
-+
-+	len = EP_DMA_GET_TX_SIZE(ast_ep_read(ep, AST_UDC_EP_DMA_STS));
-+	req->req.actual += len;
-+
-+	EP_DBG(ep, "req @%p, length:(%d/%d), %s:0x%x\n", req,
-+		req->req.actual, req->req.length, "len", len);
-+
-+	/* Done this request */
-+	if (req->req.length == req->req.actual) {
-+		ast_udc_done(ep, req, 0);
-+		req = list_first_entry_or_null(&ep->queue,
-+					       struct ast_udc_request,
-+					       queue);
-+
-+	} else {
-+		/* Check for short packet */
-+		if (len < ep->ep.maxpacket) {
-+			ast_udc_done(ep, req, 0);
-+			req = list_first_entry_or_null(&ep->queue,
-+						       struct ast_udc_request,
-+						       queue);
-+		}
-+	}
-+
-+	/* More requests */
-+	if (req)
-+		ast_udc_epn_kick(ep, req);
-+}
-+
-+static void ast_udc_epn_handle_desc(struct ast_udc_dev *udc, u16 ep_num)
-+{
-+	struct ast_udc_ep *ep = &udc->ep[ep_num];
-+	struct device *dev = &udc->pdev->dev;
-+	struct ast_udc_request *req;
-+	u32 proc_sts, wr_ptr, rd_ptr;
-+	u32 len_in_desc, ctrl;
-+	u16 total_len = 0;
-+	u16 len;
-+	int i;
-+
-+	if (list_empty(&ep->queue)) {
-+		dev_warn(dev, "%s reqest queue empty !\n", ep->ep.name);
-+		return;
-+	}
-+
-+	req = list_first_entry(&ep->queue, struct ast_udc_request, queue);
-+
-+	ctrl = ast_ep_read(ep, AST_UDC_EP_DMA_CTRL);
-+	proc_sts = EP_DMA_CTRL_GET_PROC_STS(ctrl);
-+
-+	/* Check processing status is idle */
-+	if (proc_sts != EP_DMA_CTRL_STS_RX_IDLE &&
-+	    proc_sts != EP_DMA_CTRL_STS_TX_IDLE) {
-+		dev_warn(dev, "EP DMA CTRL: 0x%x, PS:0x%x\n",
-+			 ast_ep_read(ep, AST_UDC_EP_DMA_CTRL),
-+			 proc_sts);
-+		return;
-+	}
-+
-+	ctrl = ast_ep_read(ep, AST_UDC_EP_DMA_STS);
-+	rd_ptr = EP_DMA_GET_RPTR(ctrl);
-+	wr_ptr = EP_DMA_GET_WPTR(ctrl);
-+
-+	if (rd_ptr != wr_ptr) {
-+		dev_warn(dev, "desc list is not empty ! %s:%d, %s:%d\n",
-+		"rptr", rd_ptr, "wptr", wr_ptr);
-+		return;
-+	}
-+
-+	EP_DBG(ep, "rd_ptr:%d, wr_ptr:%d\n", rd_ptr, wr_ptr);
-+	i = req->saved_dma_wptr;
-+
-+	do {
-+		len_in_desc = EP_DESC1_IN_LEN(ep->descs[i].des_1);
-+		EP_DBG(ep, "desc[%d] len: %d\n", i, len_in_desc);
-+		total_len += len_in_desc;
-+		i++;
-+		if (i >= AST_UDC_DESCS_COUNT)
-+			i = 0;
-+
-+	} while (i != wr_ptr);
-+
-+	req->req.actual += total_len;
-+
-+	EP_DBG(ep, "req @%p, length:(%d/%d), %s:0x%x\n", req,
-+		req->req.actual, req->req.length, "len", total_len);
-+
-+	/* Done this request */
-+	if (req->req.length == req->req.actual) {
-+		ast_udc_done(ep, req, 0);
-+		req = list_first_entry_or_null(&ep->queue,
-+					       struct ast_udc_request,
-+					       queue);
-+
-+	} else {
-+		/* Check for short packet */
-+		if (len < ep->ep.maxpacket) {
-+			ast_udc_done(ep, req, 0);
-+			req = list_first_entry_or_null(&ep->queue,
-+						       struct ast_udc_request,
-+						       queue);
-+		}
-+	}
-+
-+	/* More requests & dma descs not setup yet */
-+	if (req && (req->actual_dma_length == req->req.actual)) {
-+		EP_DBG(ep, "More requests\n");
-+		ast_udc_epn_kick_desc(ep, req);
-+	}
-+}
-+
-+static void ast_udc_ep0_data_tx(struct ast_udc_dev *udc, u8 *tx_data, u32 len)
-+{
-+	if (len) {
-+		memcpy(udc->ep0_buf, tx_data, len);
-+
-+		ast_udc_write(udc, udc->ep0_buf_dma, AST_UDC_EP0_DATA_BUFF);
-+		ast_udc_write(udc, EP0_TX_LEN(len), AST_UDC_EP0_CTRL);
-+		ast_udc_write(udc, EP0_TX_LEN(len) | EP0_TX_BUFF_RDY,
-+			      AST_UDC_EP0_CTRL);
-+		udc->is_control_tx = 1;
-+
-+	} else
-+		ast_udc_write(udc, EP0_TX_BUFF_RDY, AST_UDC_EP0_CTRL);
-+}
-+
-+static void ast_udc_getstatus(struct ast_udc_dev *udc)
-+{
-+	struct usb_ctrlrequest crq;
-+	struct ast_udc_ep *ep;
-+	u16 status = 0;
-+	u16 epnum;
-+
-+	memcpy_fromio(&crq, udc->creq, sizeof(crq));
-+
-+	switch (crq.bRequestType & USB_RECIP_MASK) {
-+	case USB_RECIP_DEVICE:
-+		/* Get device status */
-+		status = 1 << USB_DEVICE_SELF_POWERED;
-+		break;
-+	case USB_RECIP_INTERFACE:
-+		break;
-+	case USB_RECIP_ENDPOINT:
-+		epnum = crq.wIndex & USB_ENDPOINT_NUMBER_MASK;
-+		status = udc->ep[epnum].stopped;
-+		break;
-+	default:
-+		goto stall;
-+	}
-+
-+	ep = &udc->ep[epnum];
-+	EP_DBG(ep, "status: 0x%x\n", status);
-+	ast_udc_ep0_data_tx(udc, (u8 *)&status, sizeof(status));
-+
-+	return;
-+
-+stall:
-+	EP_DBG(ep, "Can't respond request\n");
-+	ast_udc_write(udc, ast_udc_read(udc, AST_UDC_EP0_CTRL) | EP0_STALL,
-+		      AST_UDC_EP0_CTRL);
-+}
-+
-+static void ast_udc_ep0_handle_setup(struct ast_udc_dev *udc)
-+{
-+	struct ast_udc_ep *ep = &udc->ep[0];
-+	struct ast_udc_request *req;
-+	struct usb_ctrlrequest crq;
-+	int req_num = 0;
-+	int rc;
-+	u32 reg;
-+
-+	memcpy_fromio(&crq, udc->creq, sizeof(crq));
-+
-+	SETUP_DBG(udc, "SETEUP packet: %02x/%02x/%04x/%04x/%04x\n",
-+		  crq.bRequestType, crq.bRequest, le16_to_cpu(crq.wValue),
-+		  le16_to_cpu(crq.wIndex), le16_to_cpu(crq.wLength));
-+
-+	/*
-+	 * Cleanup ep0 request(s) in queue because
-+	 * there is a new control setup comes.
-+	 */
-+	list_for_each_entry(req, &udc->ep[0].queue, queue) {
-+		req_num++;
-+		EP_DBG(ep, "there is req %p in ep0 queue !\n", req);
-+	}
-+
-+	if (req_num)
-+		ast_udc_nuke(&udc->ep[0], -ETIMEDOUT);
-+
-+	udc->ep[0].dir_in = crq.bRequestType & USB_DIR_IN;
-+
-+	if ((crq.bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD) {
-+		switch (crq.bRequest) {
-+		case USB_REQ_SET_ADDRESS:
-+			if (ast_udc_read(udc, AST_UDC_STS) & UDC_STS_HIGHSPEED)
-+				udc->gadget.speed = USB_SPEED_HIGH;
-+			else
-+				udc->gadget.speed = USB_SPEED_FULL;
-+
-+			SETUP_DBG(udc, "set addr: 0x%x\n", crq.wValue);
-+			reg = ast_udc_read(udc, AST_UDC_CONFIG);
-+			reg &= ~UDC_CFG_ADDR_MASK;
-+			reg |= UDC_CFG_SET_ADDR(crq.wValue);
-+			ast_udc_write(udc, reg, AST_UDC_CONFIG);
-+			goto req_complete;
-+
-+		case USB_REQ_CLEAR_FEATURE:
-+			SETUP_DBG(udc, "ep0: CLEAR FEATURE\n");
-+			goto req_driver;
-+
-+		case USB_REQ_SET_FEATURE:
-+			SETUP_DBG(udc, "ep0: SET FEATURE\n");
-+			goto req_driver;
-+
-+		case USB_REQ_GET_STATUS:
-+			ast_udc_getstatus(udc);
-+			return;
-+
-+		default:
-+			goto req_driver;
-+		}
-+
-+	}
-+
-+req_driver:
-+	if (udc->driver) {
-+		SETUP_DBG(udc, "Forwarding %s to gadget...\n",
-+			  udc->gadget.name);
-+
-+		spin_unlock(&udc->lock);
-+		rc = udc->driver->setup(&udc->gadget, &crq);
-+		spin_lock(&udc->lock);
-+
-+	} else {
-+		SETUP_DBG(udc, "No gadget for request !\n");
-+	}
-+
-+	if (rc >= 0)
-+		return;
-+
-+	/* Stall if gadget failed */
-+	SETUP_DBG(udc, "Stalling, rc:0x%x\n", rc);
-+	ast_udc_write(udc, ast_udc_read(udc, AST_UDC_EP0_CTRL) | EP0_STALL,
-+		      AST_UDC_EP0_CTRL);
-+	return;
-+
-+req_complete:
-+	SETUP_DBG(udc, "ep0: Sending IN status without data\n");
-+	ast_udc_write(udc, EP0_TX_BUFF_RDY, AST_UDC_EP0_CTRL);
-+}
-+
-+static irqreturn_t ast_udc_isr(int irq, void *data)
-+{
-+	struct ast_udc_dev *udc = (struct ast_udc_dev *)data;
-+	struct ast_udc_ep *ep;
-+	u32 isr, ep_isr;
-+	int i;
-+
-+	spin_lock(&udc->lock);
-+
-+	isr = ast_udc_read(udc, AST_UDC_ISR);
-+	if (!isr)
-+		goto done;
-+
-+	/* Ack interrupts */
-+	ast_udc_write(udc, isr, AST_UDC_ISR);
-+
-+	if (isr & UDC_IRQ_BUS_RESET) {
-+		ISR_DBG(udc, "UDC_IRQ_BUS_RESET\n");
-+		udc->gadget.speed = USB_SPEED_UNKNOWN;
-+
-+		ep = &udc->ep[1];
-+		EP_DBG(ep, "dctrl:0x%x\n",
-+		       ast_ep_read(ep, AST_UDC_EP_DMA_CTRL));
-+
-+		if (udc->driver && udc->driver->reset) {
-+			spin_unlock(&udc->lock);
-+			udc->driver->reset(&udc->gadget);
-+			spin_lock(&udc->lock);
-+		}
-+	}
-+
-+	if (isr & UDC_IRQ_BUS_SUSPEND) {
-+		ISR_DBG(udc, "UDC_IRQ_BUS_SUSPEND\n");
-+		udc->suspended_from = udc->gadget.state;
-+		usb_gadget_set_state(&udc->gadget, USB_STATE_SUSPENDED);
-+
-+		if (udc->driver && udc->driver->suspend) {
-+			spin_unlock(&udc->lock);
-+			udc->driver->suspend(&udc->gadget);
-+			spin_lock(&udc->lock);
-+		}
-+	}
-+
-+	if (isr & UDC_IRQ_BUS_RESUME) {
-+		ISR_DBG(udc, "UDC_IRQ_BUS_RESUME\n");
-+		usb_gadget_set_state(&udc->gadget, udc->suspended_from);
-+
-+		if (udc->driver && udc->driver->resume) {
-+			spin_unlock(&udc->lock);
-+			udc->driver->resume(&udc->gadget);
-+			spin_lock(&udc->lock);
-+		}
-+	}
-+
-+	if (isr & UDC_IRQ_EP0_IN_ACK_STALL) {
-+		ISR_DBG(udc, "UDC_IRQ_EP0_IN_ACK_STALL\n");
-+		ast_udc_ep0_in(udc);
-+	}
-+
-+	if (isr & UDC_IRQ_EP0_OUT_ACK_STALL) {
-+		ISR_DBG(udc, "UDC_IRQ_EP0_OUT_ACK_STALL\n");
-+		ast_udc_ep0_out(udc);
-+	}
-+
-+	if (isr & UDC_IRQ_EP0_SETUP) {
-+		ISR_DBG(udc, "UDC_IRQ_EP0_SETUP\n");
-+		ast_udc_ep0_handle_setup(udc);
-+	}
-+
-+	if (isr & UDC_IRQ_EP_POOL_ACK_STALL) {
-+		ISR_DBG(udc, "UDC_IRQ_EP_POOL_ACK_STALL\n");
-+		ep_isr = ast_udc_read(udc, AST_UDC_EP_ACK_ISR);
-+
-+		/* Ack EP interrupts */
-+		ast_udc_write(udc, ep_isr, AST_UDC_EP_ACK_ISR);
-+
-+		/* Handle each EP */
-+		for (i = 0; i < AST_UDC_NUM_ENDPOINTS - 1; i++) {
-+			if (ep_isr & (0x1 << i)) {
-+				ep = &udc->ep[i + 1];
-+				if (ep->desc_mode)
-+					ast_udc_epn_handle_desc(udc, i + 1);
-+				else
-+					ast_udc_epn_handle(udc, i + 1);
-+			}
-+		}
-+	}
-+
-+done:
-+	spin_unlock(&udc->lock);
-+	return IRQ_HANDLED;
-+}
-+
-+static int ast_udc_gadget_getframe(struct usb_gadget *gadget)
-+{
-+	struct ast_udc_dev *udc = to_ast_dev(gadget);
-+
-+	return (ast_udc_read(udc, AST_UDC_STS) >> 16) & 0x7ff;
-+}
-+
-+static void ast_udc_wake_work(struct work_struct *work)
-+{
-+	struct ast_udc_dev *udc = container_of(work, struct ast_udc_dev,
-+					       wake_work);
-+	unsigned long flags;
-+	u32 ctrl;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	UDC_DBG(udc, "Wakeup Host !\n");
-+	ctrl = ast_udc_read(udc, AST_UDC_FUNC_CTRL);
-+	ast_udc_write(udc, ctrl | USB_REMOTE_WAKEUP_EN, AST_UDC_FUNC_CTRL);
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+}
-+
-+static void ast_udc_wakeup_all(struct ast_udc_dev *udc)
-+{
-+	/*
-+	 * A device is trying to wake the world, because this
-+	 * can recurse into the device, we break the call chain
-+	 * using a work queue
-+	 */
-+	schedule_work(&udc->wake_work);
-+}
-+
-+static int ast_udc_wakeup(struct usb_gadget *gadget)
-+{
-+	struct ast_udc_dev *udc = to_ast_dev(gadget);
-+	unsigned long flags;
-+	int rc = 0;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	if (!udc->wakeup_en) {
-+		UDC_DBG(udc, "Remote Wakeup is disabled\n");
-+		rc = -EINVAL;
-+		goto err;
-+	}
-+
-+	UDC_DBG(udc, "Device initiated wakeup\n");
-+	ast_udc_wakeup_all(udc);
-+
-+err:
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+	return rc;
-+}
-+
-+/*
-+ * Activate/Deactivate link with host
-+ */
-+static int ast_udc_pullup(struct usb_gadget *gadget, int is_on)
-+{
-+	struct ast_udc_dev *udc = to_ast_dev(gadget);
-+	unsigned long flags;
-+	u32 ctrl;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	UDC_DBG(udc, "is_on: %d\n", is_on);
-+	if (is_on)
-+		ctrl = ast_udc_read(udc, AST_UDC_FUNC_CTRL) | USB_UPSTREAM_EN;
-+	else
-+		ctrl = ast_udc_read(udc, AST_UDC_FUNC_CTRL) & ~USB_UPSTREAM_EN;
-+
-+	ast_udc_write(udc, ctrl, AST_UDC_FUNC_CTRL);
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int ast_udc_start(struct usb_gadget *gadget,
-+			 struct usb_gadget_driver *driver)
-+{
-+	struct ast_udc_dev *udc = to_ast_dev(gadget);
-+	struct ast_udc_ep *ep;
-+	unsigned long flags;
-+	int i;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	UDC_DBG(udc, "\n");
-+	udc->driver = driver;
-+	udc->gadget.dev.of_node = udc->pdev->dev.of_node;
-+
-+	for (i = 0; i < AST_UDC_NUM_ENDPOINTS; i++) {
-+		ep = &udc->ep[i];
-+		ep->stopped = 0;
-+	}
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int ast_udc_stop(struct usb_gadget *gadget)
-+{
-+	struct ast_udc_dev *udc = to_ast_dev(gadget);
-+	unsigned long flags;
-+	u32 ctrl;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	UDC_DBG(udc, "\n");
-+	ctrl = ast_udc_read(udc, AST_UDC_FUNC_CTRL) & ~USB_UPSTREAM_EN;
-+	ast_udc_write(udc, ctrl, AST_UDC_FUNC_CTRL);
-+
-+	udc->gadget.speed = USB_SPEED_UNKNOWN;
-+	udc->driver = NULL;
-+
-+	ast_udc_stop_activity(udc);
-+	usb_gadget_set_state(&udc->gadget, USB_STATE_NOTATTACHED);
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	return 0;
-+}
-+
-+static const struct usb_gadget_ops ast_udc_ops = {
-+	.get_frame		= ast_udc_gadget_getframe,
-+	.wakeup			= ast_udc_wakeup,
-+	.pullup			= ast_udc_pullup,
-+	.udc_start		= ast_udc_start,
-+	.udc_stop		= ast_udc_stop,
-+};
-+
-+/*
-+ * Support 1 Control Endpoint.
-+ * Support multiple programmable endpoints that can be configured to
-+ * Bulk IN/OUT, Interrupt IN/OUT, and Isochronous IN/OUT type endpoint.
-+ */
-+static void ast_udc_init_ep(struct ast_udc_dev *udc)
-+{
-+	struct ast_udc_ep *ep;
-+	int i;
-+
-+	for (i = 0; i < AST_UDC_NUM_ENDPOINTS; i++) {
-+		ep = &udc->ep[i];
-+		ep->ep.name = ast_ep_name[i];
-+		if (i == 0) {
-+			ep->ep.caps.type_control = true;
-+		} else {
-+			ep->ep.caps.type_iso = true;
-+			ep->ep.caps.type_bulk = true;
-+			ep->ep.caps.type_int = true;
-+		}
-+		ep->ep.caps.dir_in = true;
-+		ep->ep.caps.dir_out = true;
-+
-+		ep->ep.ops = &ast_udc_ep_ops;
-+		ep->udc = udc;
-+
-+		INIT_LIST_HEAD(&ep->queue);
-+
-+		if (i == 0) {
-+			usb_ep_set_maxpacket_limit(&ep->ep,
-+						   AST_UDC_EP0_MAX_PACKET);
-+			continue;
-+		}
-+
-+		ep->ep_reg = udc->reg + AST_UDC_EP_BASE +
-+				(AST_UDC_EP_OFFSET * (i - 1));
-+
-+		ep->epn_buf = udc->ep0_buf + (i * AST_UDC_EP_DMA_SIZE);
-+		ep->epn_buf_dma = udc->ep0_buf_dma + (i * AST_UDC_EP_DMA_SIZE);
-+		usb_ep_set_maxpacket_limit(&ep->ep, AST_UDC_EPn_MAX_PACKET);
-+
-+		ep->descs = ep->epn_buf + AST_UDC_EPn_MAX_PACKET;
-+		ep->descs_dma = ep->epn_buf_dma + AST_UDC_EPn_MAX_PACKET;
-+		ep->descs_wptr = 0;
-+
-+		list_add_tail(&ep->ep.ep_list, &udc->gadget.ep_list);
-+	}
-+}
-+
-+static void ast_udc_init_dev(struct ast_udc_dev *udc)
-+{
-+	INIT_WORK(&udc->wake_work, ast_udc_wake_work);
-+}
-+
-+static void ast_udc_init_hw(struct ast_udc_dev *udc)
-+{
-+	u32 ctrl;
-+
-+	/* Enable PHY */
-+	ctrl = USB_PHY_CLK_EN | USB_PHY_RESET_DIS;
-+	ast_udc_write(udc, ctrl, AST_UDC_FUNC_CTRL);
-+
-+	udelay(1);
-+	ast_udc_write(udc, 0, AST_UDC_DEV_RESET);
-+
-+	/* Set descriptor ring size */
-+	if (AST_UDC_DESCS_COUNT == 256) {
-+		ctrl |= USB_EP_LONG_DESC;
-+		ast_udc_write(udc, ctrl, AST_UDC_FUNC_CTRL);
-+	}
-+
-+	/* Mask & ack all interrupts before installing the handler */
-+	ast_udc_write(udc, 0, AST_UDC_IER);
-+	ast_udc_write(udc, UDC_IRQ_ACK_ALL, AST_UDC_ISR);
-+
-+	/* Enable some interrupts */
-+	ctrl = UDC_IRQ_EP_POOL_ACK_STALL | UDC_IRQ_BUS_RESUME |
-+	       UDC_IRQ_BUS_SUSPEND | UDC_IRQ_BUS_RESET |
-+	       UDC_IRQ_EP0_IN_ACK_STALL | UDC_IRQ_EP0_OUT_ACK_STALL |
-+	       UDC_IRQ_EP0_SETUP;
-+	ast_udc_write(udc, ctrl, AST_UDC_IER);
-+
-+	/* Cleanup and enable ep ACK interrupts */
-+	ast_udc_write(udc, UDC_IRQ_EP_ACK_ALL, AST_UDC_EP_ACK_IER);
-+	ast_udc_write(udc, UDC_IRQ_EP_ACK_ALL, AST_UDC_EP_ACK_ISR);
-+
-+	ast_udc_write(udc, 0, AST_UDC_EP0_CTRL);
-+}
-+
-+static int ast_udc_remove(struct platform_device *pdev)
-+{
-+	struct ast_udc_dev *udc = platform_get_drvdata(pdev);
-+	unsigned long flags;
-+	u32 ctrl;
-+
-+	usb_del_gadget_udc(&udc->gadget);
-+	if (udc->driver)
-+		return -EBUSY;
-+
-+	spin_lock_irqsave(&udc->lock, flags);
-+
-+	/* Disable upstream port connection */
-+	ctrl = ast_udc_read(udc, AST_UDC_FUNC_CTRL) & ~USB_UPSTREAM_EN;
-+	ast_udc_write(udc, ctrl, AST_UDC_FUNC_CTRL);
-+
-+	clk_disable_unprepare(udc->clk);
-+
-+	spin_unlock_irqrestore(&udc->lock, flags);
-+
-+	if (udc->ep0_buf)
-+		dma_free_coherent(&pdev->dev,
-+				  AST_UDC_EP_DMA_SIZE * AST_UDC_NUM_ENDPOINTS,
-+				  udc->ep0_buf,
-+				  udc->ep0_buf_dma);
-+
-+	udc->ep0_buf = NULL;
-+
-+	return 0;
-+}
-+
-+static int ast_udc_probe(struct platform_device *pdev)
-+{
-+	enum usb_device_speed max_speed;
-+	struct device *dev = &pdev->dev;
-+	struct ast_udc_dev *udc;
-+	struct resource *res;
-+	int rc;
-+
-+	udc = devm_kzalloc(&pdev->dev, sizeof(struct ast_udc_dev), GFP_KERNEL);
-+	if (!udc)
-+		return -ENOMEM;
-+
-+	udc->gadget.dev.parent = dev;
-+	udc->pdev = pdev;
-+	spin_lock_init(&udc->lock);
-+
-+	udc->gadget.ops = &ast_udc_ops;
-+	udc->gadget.ep0 = &udc->ep[0].ep;
-+	udc->gadget.name = "aspeed-udc";
-+	udc->gadget.dev.init_name = "gadget";
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	udc->reg = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(udc->reg)) {
-+		dev_err(&pdev->dev, "Failed to map resources\n");
-+		return PTR_ERR(udc->reg);
-+	}
-+
-+	platform_set_drvdata(pdev, udc);
-+
-+	udc->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(udc->clk)) {
-+		rc = PTR_ERR(udc->clk);
-+		goto err;
-+	}
-+	rc = clk_prepare_enable(udc->clk);
-+	if (rc) {
-+		dev_err(&pdev->dev, "Failed to enable clock (0x%x)\n", rc);
-+		goto err;
-+	}
-+
-+	/* Check if we need to limit the HW to USB1 */
-+	max_speed = usb_get_maximum_speed(&pdev->dev);
-+	if (max_speed != USB_SPEED_UNKNOWN && max_speed < USB_SPEED_HIGH)
-+		udc->force_usb1 = true;
-+
-+	/*
-+	 * Allocate DMA buffers for all EPs in one chunk
-+	 */
-+	udc->ep0_buf = dma_alloc_coherent(&pdev->dev,
-+					  AST_UDC_EP_DMA_SIZE *
-+					  AST_UDC_NUM_ENDPOINTS,
-+					  &udc->ep0_buf_dma, GFP_KERNEL);
-+
-+	udc->gadget.speed = USB_SPEED_UNKNOWN;
-+	udc->gadget.max_speed = USB_SPEED_HIGH;
-+	udc->creq = udc->reg + AST_UDC_SETUP0;
-+
-+	/*
-+	 * Support single stage mode or 32/256 stages descriptor mode.
-+	 * Set default as Descriptor Mode.
-+	 */
-+	udc->desc_mode = AST_UDC_DESC_MODE;
-+
-+	dev_info(&pdev->dev, "DMA %s\n", udc->desc_mode ?
-+		 "descriptor mode" : "single mode");
-+
-+	INIT_LIST_HEAD(&udc->gadget.ep_list);
-+	INIT_LIST_HEAD(&udc->gadget.ep0->ep_list);
-+
-+	/* Initialized udc ep */
-+	ast_udc_init_ep(udc);
-+
-+	/* Initialized udc device */
-+	ast_udc_init_dev(udc);
-+
-+	/* Initialized udc hardware */
-+	ast_udc_init_hw(udc);
-+
-+	/* Find interrupt and install handler */
-+	udc->irq = platform_get_irq(pdev, 0);
-+	if (udc->irq < 0) {
-+		dev_err(&pdev->dev, "Failed to get interrupt\n");
-+		rc = udc->irq;
-+		goto err;
-+	}
-+
-+	rc = devm_request_irq(&pdev->dev, udc->irq, ast_udc_isr, 0,
-+			      KBUILD_MODNAME, udc);
-+	if (rc) {
-+		dev_err(&pdev->dev, "Failed to request interrupt\n");
-+		goto err;
-+	}
-+
-+	rc = usb_add_gadget_udc(&pdev->dev, &udc->gadget);
-+	if (rc) {
-+		dev_err(&pdev->dev, "Failed to add gadget udc\n");
-+		goto err;
-+	}
-+
-+	dev_info(&pdev->dev, "Initialized udc in USB%s mode\n",
-+		 udc->force_usb1 ? "1" : "2");
-+
-+	return 0;
-+
-+err:
-+	dev_err(&pdev->dev, "Failed to udc probe, rc:0x%x\n", rc);
-+	ast_udc_remove(pdev);
-+
-+	return rc;
-+}
-+
-+static const struct of_device_id ast_udc_of_dt_ids[] = {
-+	{ .compatible = "aspeed,ast2600-udc", },
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(of, ast_udc_of_dt_ids);
-+
-+static struct platform_driver ast_udc_driver = {
-+	.probe			= ast_udc_probe,
-+	.remove			= ast_udc_remove,
-+	.driver			= {
-+		.name			= KBUILD_MODNAME,
-+		.of_match_table		= ast_udc_of_dt_ids,
-+	},
-+};
-+
-+module_platform_driver(ast_udc_driver);
-+
-+MODULE_DESCRIPTION("ASPEED UDC driver");
-+MODULE_AUTHOR("Neal Liu <neal_liu@aspeedtech.com>");
-+MODULE_LICENSE("GPL");
+ 	TP_STRUCT__entry(
+ 		__field(	unsigned long,	call_site	)
+@@ -25,6 +26,7 @@ DECLARE_EVENT_CLASS(kmem_alloc,
+ 		__field(	size_t,		bytes_req	)
+ 		__field(	size_t,		bytes_alloc	)
+ 		__field(	unsigned long,	gfp_flags	)
++		__field(	bool,		accounted	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -33,42 +35,46 @@ DECLARE_EVENT_CLASS(kmem_alloc,
+ 		__entry->bytes_req	= bytes_req;
+ 		__entry->bytes_alloc	= bytes_alloc;
+ 		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
++		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
++					  (s && s->flags & SLAB_ACCOUNT);
+ 	),
+ 
+-	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s",
++	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s accounted=%s",
+ 		(void *)__entry->call_site,
+ 		__entry->ptr,
+ 		__entry->bytes_req,
+ 		__entry->bytes_alloc,
+-		show_gfp_flags(__entry->gfp_flags))
++		show_gfp_flags(__entry->gfp_flags),
++		__entry->accounted ? "true" : "false")
+ );
+ 
+ DEFINE_EVENT(kmem_alloc, kmalloc,
+ 
+-	TP_PROTO(unsigned long call_site, const void *ptr,
++	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
+ 		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
+ );
+ 
+ DEFINE_EVENT(kmem_alloc, kmem_cache_alloc,
+ 
+-	TP_PROTO(unsigned long call_site, const void *ptr,
++	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
+ 		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
+ );
+ 
+ DECLARE_EVENT_CLASS(kmem_alloc_node,
+ 
+ 	TP_PROTO(unsigned long call_site,
+ 		 const void *ptr,
++		 struct kmem_cache *s,
+ 		 size_t bytes_req,
+ 		 size_t bytes_alloc,
+ 		 gfp_t gfp_flags,
+ 		 int node),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node),
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(	unsigned long,	call_site	)
+@@ -77,6 +83,7 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
+ 		__field(	size_t,		bytes_alloc	)
+ 		__field(	unsigned long,	gfp_flags	)
+ 		__field(	int,		node		)
++		__field(	bool,		accounted	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -86,33 +93,36 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
+ 		__entry->bytes_alloc	= bytes_alloc;
+ 		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
+ 		__entry->node		= node;
++		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
++					  (s && s->flags & SLAB_ACCOUNT);
+ 	),
+ 
+-	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s node=%d",
++	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s node=%d accounted=%s",
+ 		(void *)__entry->call_site,
+ 		__entry->ptr,
+ 		__entry->bytes_req,
+ 		__entry->bytes_alloc,
+ 		show_gfp_flags(__entry->gfp_flags),
+-		__entry->node)
++		__entry->node,
++		__entry->accounted ? "true" : "false")
+ );
+ 
+ DEFINE_EVENT(kmem_alloc_node, kmalloc_node,
+ 
+ 	TP_PROTO(unsigned long call_site, const void *ptr,
+-		 size_t bytes_req, size_t bytes_alloc,
++		 struct kmem_cache *s, size_t bytes_req, size_t bytes_alloc,
+ 		 gfp_t gfp_flags, int node),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node)
+ );
+ 
+ DEFINE_EVENT(kmem_alloc_node, kmem_cache_alloc_node,
+ 
+ 	TP_PROTO(unsigned long call_site, const void *ptr,
+-		 size_t bytes_req, size_t bytes_alloc,
++		 struct kmem_cache *s, size_t bytes_req, size_t bytes_alloc,
+ 		 gfp_t gfp_flags, int node),
+ 
+-	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
++	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node)
+ );
+ 
+ TRACE_EVENT(kfree,
+diff --git a/mm/slab.c b/mm/slab.c
+index 0edb474edef1..e5802445c7d6 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3492,7 +3492,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *lru,
+ {
+ 	void *ret = slab_alloc(cachep, lru, flags, cachep->object_size, _RET_IP_);
+ 
+-	trace_kmem_cache_alloc(_RET_IP_, ret,
++	trace_kmem_cache_alloc(_RET_IP_, ret, cachep,
+ 			       cachep->object_size, cachep->size, flags);
+ 
+ 	return ret;
+@@ -3581,7 +3581,7 @@ kmem_cache_alloc_trace(struct kmem_cache *cachep, gfp_t flags, size_t size)
+ 	ret = slab_alloc(cachep, NULL, flags, size, _RET_IP_);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+-	trace_kmalloc(_RET_IP_, ret,
++	trace_kmalloc(_RET_IP_, ret, cachep,
+ 		      size, cachep->size, flags);
+ 	return ret;
+ }
+@@ -3606,7 +3606,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid)
+ {
+ 	void *ret = slab_alloc_node(cachep, flags, nodeid, cachep->object_size, _RET_IP_);
+ 
+-	trace_kmem_cache_alloc_node(_RET_IP_, ret,
++	trace_kmem_cache_alloc_node(_RET_IP_, ret, cachep,
+ 				    cachep->object_size, cachep->size,
+ 				    flags, nodeid);
+ 
+@@ -3625,7 +3625,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *cachep,
+ 	ret = slab_alloc_node(cachep, flags, nodeid, size, _RET_IP_);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+-	trace_kmalloc_node(_RET_IP_, ret,
++	trace_kmalloc_node(_RET_IP_, ret, cachep,
+ 			   size, cachep->size,
+ 			   flags, nodeid);
+ 	return ret;
+@@ -3708,7 +3708,7 @@ static __always_inline void *__do_kmalloc(size_t size, gfp_t flags,
+ 	ret = slab_alloc(cachep, NULL, flags, size, caller);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+-	trace_kmalloc(caller, ret,
++	trace_kmalloc(caller, ret, cachep,
+ 		      size, cachep->size, flags);
+ 
+ 	return ret;
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 2b3206a2c3b5..a345e8600e00 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -25,13 +25,12 @@
+ #include <asm/page.h>
+ #include <linux/memcontrol.h>
+ 
+-#define CREATE_TRACE_POINTS
+-#include <trace/events/kmem.h>
+-
+ #include "internal.h"
+-
+ #include "slab.h"
+ 
++#define CREATE_TRACE_POINTS
++#include <trace/events/kmem.h>
++
+ enum slab_state slab_state;
+ LIST_HEAD(slab_caches);
+ DEFINE_MUTEX(slab_mutex);
+@@ -967,7 +966,7 @@ EXPORT_SYMBOL(kmalloc_order);
+ void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
+ {
+ 	void *ret = kmalloc_order(size, flags, order);
+-	trace_kmalloc(_RET_IP_, ret, size, PAGE_SIZE << order, flags);
++	trace_kmalloc(_RET_IP_, ret, NULL, size, PAGE_SIZE << order, flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(kmalloc_order_trace);
+diff --git a/mm/slob.c b/mm/slob.c
+index 40ea6e2d4ccd..dbefa0da0dfc 100644
+--- a/mm/slob.c
++++ b/mm/slob.c
+@@ -505,7 +505,7 @@ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
+ 		*m = size;
+ 		ret = (void *)m + minalign;
+ 
+-		trace_kmalloc_node(caller, ret,
++		trace_kmalloc_node(caller, ret, NULL,
+ 				   size, size + minalign, gfp, node);
+ 	} else {
+ 		unsigned int order = get_order(size);
+@@ -514,7 +514,7 @@ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
+ 			gfp |= __GFP_COMP;
+ 		ret = slob_new_pages(gfp, order, node);
+ 
+-		trace_kmalloc_node(caller, ret,
++		trace_kmalloc_node(caller, ret, NULL,
+ 				   size, PAGE_SIZE << order, gfp, node);
+ 	}
+ 
+@@ -610,12 +610,12 @@ static void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
+ 
+ 	if (c->size < PAGE_SIZE) {
+ 		b = slob_alloc(c->size, flags, c->align, node, 0);
+-		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
++		trace_kmem_cache_alloc_node(_RET_IP_, b, NULL, c->object_size,
+ 					    SLOB_UNITS(c->size) * SLOB_UNIT,
+ 					    flags, node);
+ 	} else {
+ 		b = slob_new_pages(flags, get_order(c->size), node);
+-		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
++		trace_kmem_cache_alloc_node(_RET_IP_, b, NULL, c->object_size,
+ 					    PAGE_SIZE << get_order(c->size),
+ 					    flags, node);
+ 	}
+diff --git a/mm/slub.c b/mm/slub.c
+index ed5c2c03a47a..9b10591646dd 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3231,7 +3231,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
+ {
+ 	void *ret = slab_alloc(s, lru, gfpflags, _RET_IP_, s->object_size);
+ 
+-	trace_kmem_cache_alloc(_RET_IP_, ret, s->object_size,
++	trace_kmem_cache_alloc(_RET_IP_, ret, s, s->object_size,
+ 				s->size, gfpflags);
+ 
+ 	return ret;
+@@ -3254,7 +3254,7 @@ EXPORT_SYMBOL(kmem_cache_alloc_lru);
+ void *kmem_cache_alloc_trace(struct kmem_cache *s, gfp_t gfpflags, size_t size)
+ {
+ 	void *ret = slab_alloc(s, NULL, gfpflags, _RET_IP_, size);
+-	trace_kmalloc(_RET_IP_, ret, size, s->size, gfpflags);
++	trace_kmalloc(_RET_IP_, ret, s, size, s->size, gfpflags);
+ 	ret = kasan_kmalloc(s, ret, size, gfpflags);
+ 	return ret;
+ }
+@@ -3266,7 +3266,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *s, gfp_t gfpflags, int node)
+ {
+ 	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, s->object_size);
+ 
+-	trace_kmem_cache_alloc_node(_RET_IP_, ret,
++	trace_kmem_cache_alloc_node(_RET_IP_, ret, s,
+ 				    s->object_size, s->size, gfpflags, node);
+ 
+ 	return ret;
+@@ -3280,7 +3280,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *s,
+ {
+ 	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, size);
+ 
+-	trace_kmalloc_node(_RET_IP_, ret,
++	trace_kmalloc_node(_RET_IP_, ret, s,
+ 			   size, s->size, gfpflags, node);
+ 
+ 	ret = kasan_kmalloc(s, ret, size, gfpflags);
+@@ -4409,7 +4409,7 @@ void *__kmalloc(size_t size, gfp_t flags)
+ 
+ 	ret = slab_alloc(s, NULL, flags, _RET_IP_, size);
+ 
+-	trace_kmalloc(_RET_IP_, ret, size, s->size, flags);
++	trace_kmalloc(_RET_IP_, ret, s, size, s->size, flags);
+ 
+ 	ret = kasan_kmalloc(s, ret, size, flags);
+ 
+@@ -4443,7 +4443,7 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
+ 	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
+ 		ret = kmalloc_large_node(size, flags, node);
+ 
+-		trace_kmalloc_node(_RET_IP_, ret,
++		trace_kmalloc_node(_RET_IP_, ret, NULL,
+ 				   size, PAGE_SIZE << get_order(size),
+ 				   flags, node);
+ 
+@@ -4457,7 +4457,7 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
+ 
+ 	ret = slab_alloc_node(s, NULL, flags, node, _RET_IP_, size);
+ 
+-	trace_kmalloc_node(_RET_IP_, ret, size, s->size, flags, node);
++	trace_kmalloc_node(_RET_IP_, ret, s, size, s->size, flags, node);
+ 
+ 	ret = kasan_kmalloc(s, ret, size, flags);
+ 
+@@ -4916,7 +4916,7 @@ void *__kmalloc_track_caller(size_t size, gfp_t gfpflags, unsigned long caller)
+ 	ret = slab_alloc(s, NULL, gfpflags, caller, size);
+ 
+ 	/* Honor the call site pointer we received. */
+-	trace_kmalloc(caller, ret, size, s->size, gfpflags);
++	trace_kmalloc(caller, ret, s, size, s->size, gfpflags);
+ 
+ 	return ret;
+ }
+@@ -4932,7 +4932,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
+ 	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
+ 		ret = kmalloc_large_node(size, gfpflags, node);
+ 
+-		trace_kmalloc_node(caller, ret,
++		trace_kmalloc_node(caller, ret, NULL,
+ 				   size, PAGE_SIZE << get_order(size),
+ 				   gfpflags, node);
+ 
+@@ -4947,7 +4947,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
+ 	ret = slab_alloc_node(s, NULL, gfpflags, node, caller, size);
+ 
+ 	/* Honor the call site pointer we received. */
+-	trace_kmalloc_node(caller, ret, size, s->size, gfpflags, node);
++	trace_kmalloc_node(caller, ret, s, size, s->size, gfpflags, node);
+ 
+ 	return ret;
+ }
 -- 
-2.25.1
+2.31.1
 
