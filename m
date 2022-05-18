@@ -2,95 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C834EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234069AbiERB5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 21:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        id S234092AbiERB6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 21:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234054AbiERB47 (ORCPT
+        with ESMTP id S234076AbiERB6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 21:56:59 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5166030579;
-        Tue, 17 May 2022 18:56:56 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2wyJ2fvlzGppJ;
-        Wed, 18 May 2022 09:54:00 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 09:56:54 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 09:56:54 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <wellslutw@gmail.com>, <andrew@lunn.ch>, <pabeni@redhat.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH -next v2] net: ethernet: sunplus: add missing of_node_put() in spl2sw_mdio_init()
-Date:   Wed, 18 May 2022 10:08:12 +0800
-Message-ID: <20220518020812.2626293-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 17 May 2022 21:58:46 -0400
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0804F340C6
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 18:58:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=j23IKT8AReeydsEeJtOMrkt6EF8d6kyrYRtSyXUiq64=; b=QiacaCmmX72WLCEwp4mJWLgQkl
+        WBDDDMyVrQvQPO3rLcU8gb4rFcX7QDR5SkbU8rt1Z64UqB3PZTuSf8ZCIVioNk3VmJk1426lWv5IA
+        Ietp4fomDkXKbdEtiJpvNb9g+qwrG7MVcS6pzH7L6O0iH55JMUq3wxbC83YEXlucJKiUjM0WDUk+W
+        bxHl1P/XkNZzmtHRkRktR8dc7FA8m2H+CqrHQ9aCpvIpLWoAxOu6MS8g4alDS4AZWwkScPkTED4BW
+        3ONiBlRom1bEO4nwyiNDPHF/sj8xPDJpM5pH9rGHhNyaCYii/XGS98bI+fA4lhRjGBYx2MywdZouL
+        hWUB/f3g==;
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nr8xU-00FtoS-Ci; Wed, 18 May 2022 01:58:40 +0000
+Date:   Wed, 18 May 2022 01:58:40 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
+Cc:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
+Message-ID: <YoRS0L0ywSZkflq7@zeniv-ca.linux.org.uk>
+References: <20220517223806.2299-1-hdanton@sina.com>
+ <000000000000be329205df3cf252@google.com>
+ <YoQohxAFD3EPujRC@zeniv-ca.linux.org.uk>
+ <YoRFAoe99ob/YzD5@zeniv-ca.linux.org.uk>
+ <YoRHfB7lEGUwQBGU@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoRHfB7lEGUwQBGU@zeniv-ca.linux.org.uk>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_get_child_by_name() returns device node pointer with refcount
-incremented. The refcount should be decremented before returning
-from spl2sw_mdio_init().
+On Wed, May 18, 2022 at 01:10:20AM +0000, Al Viro wrote:
+> On Wed, May 18, 2022 at 12:59:46AM +0000, Al Viro wrote:
+> > On Tue, May 17, 2022 at 10:58:15PM +0000, Al Viro wrote:
+> > > On Tue, May 17, 2022 at 03:49:07PM -0700, syzbot wrote:
+> > > > Hello,
+> > > > 
+> > > > syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+> > > > WARNING in mntput_no_expire
+> > > 
+> > > Obvious question: which filesystem it is?
+> > 
+> > FWIW, can't reproduce here - at least not with C reproducer +
+> > -rc7^ kernel + .config from report + debian kvm image (bullseye,
+> > with systemd shite replaced with sysvinit, which might be relevant).
+> > 
+> > In case systemd-specific braindamage is needed to reproduce it...
+> > Hell knows; at least mount --make-rshared / doesn't seem to suffice.
+> 
+> ... doesn't reproduce with genuine systemd either.  FWIW, 4-way SMP
+> setup here.
 
-Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  add fix tag.
----
- drivers/net/ethernet/sunplus/spl2sw_mdio.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_mdio.c b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-index 139ac8f2685e..733ae1704269 100644
---- a/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-+++ b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-@@ -97,8 +97,10 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
- 
- 	/* Allocate and register mdio bus. */
- 	mii_bus = devm_mdiobus_alloc(&comm->pdev->dev);
--	if (!mii_bus)
--		return -ENOMEM;
-+	if (!mii_bus) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
- 
- 	mii_bus->name = "sunplus_mii_bus";
- 	mii_bus->parent = &comm->pdev->dev;
-@@ -110,10 +112,13 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
- 	ret = of_mdiobus_register(mii_bus, mdio_np);
- 	if (ret) {
- 		dev_err(&comm->pdev->dev, "Failed to register mdiobus!\n");
--		return ret;
-+		goto out;
- 	}
- 
- 	comm->mii_bus = mii_bus;
-+
-+out:
-+	of_node_put(mdio_np);
- 	return ret;
- }
- 
--- 
-2.25.1
-
+OK, reproduced...
