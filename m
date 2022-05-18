@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC55C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236478AbiERM1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
+        id S236497AbiERM1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236438AbiERM1D (ORCPT
+        with ESMTP id S236487AbiERM1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:27:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56056FD38;
-        Wed, 18 May 2022 05:27:02 -0700 (PDT)
+        Wed, 18 May 2022 08:27:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D1EAFB15;
+        Wed, 18 May 2022 05:27:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E83AB81F40;
-        Wed, 18 May 2022 12:27:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BC80C385AA;
-        Wed, 18 May 2022 12:26:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D6F0B81FB6;
+        Wed, 18 May 2022 12:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB71C34115;
+        Wed, 18 May 2022 12:27:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876820;
-        bh=Y3HnaIdwRzgm8ZRIpbxNDktGkEgObnYgq8LHzhYZ0eI=;
+        s=k20201202; t=1652876828;
+        bh=ylNL2KoBbgg1rlNKg/jmvhK/PANiXZGeYbNkevaViIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YEtTQDy1ls12EXMY2VUAn9vTOABUghXAcdTppGrVNbRG5+Rm4O66odduxQLaBRZSs
-         +esDo8m2vLki+p17KcHqhMRgL7nJFbtZx124q324AU4XBZSck+K4EiPZZZbLJnCq3E
-         JICw+/G9IXDHw+vE7JwBlgiQScbbhFS3uOcegWFmOlI0M1JELornrmpywxATyUIipI
-         AlxaKkPR4yE1UG0V/A2aTKTDprNQvSew6kwhRq2s35x05duin4RT0EZoISSHYAXb9A
-         DXG2R9tVcgG4c89rZGo6Bb6X+21bzBK19sSQwMb8qyXSH+waGX/w3x97OEeJGe2xeJ
-         mrUjZgW2hzEww==
+        b=JS9Npbuc7Jm6FwtiopPVD5EKXjbYS7qEsBlVir7X7MOnbDA0bW6s7svEQpLLi+uFW
+         Y4iguSzszUm6coaUVH2vm6fFq/6ApLvRpeykim1HYzfCDrX9Hc0W+PqBrZNapsVUJw
+         Kc/WiJQrTsp3ScdCA3VjSANsALaSq87rFXjST9KzZ/KVeooTKEXSfnfqI1Qai34SRq
+         aJFE5+8pbTH2HMhB2R4qxA0WEXP0k04MPBcGO//OswkTBu8W6t1kLGJKmz/SmLvivJ
+         pLYigroyt+flQXTGsK//pyofEj4DvQTTSDEpzjUn31pu7zHZHjjo9y35xzDPPlPQqv
+         TkII8lg5iGcrQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sasha Levin <sashal@kernel.org>, daniel@ffwll.ch,
-        deller@gmx.de, sam@ravnborg.org, tzimmermann@suse.de,
-        thunder.leizhen@huawei.com, xiyuyang19@fudan.edu.cn,
-        willy@infradead.org, alexander.deucher@amd.com,
-        penguin-kernel@i-love.sakura.ne.jp, deng.changcheng@zte.com.cn,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.17 07/23] Revert "fbdev: Make fb_release() return -ENODEV if fbdev was unregistered"
-Date:   Wed, 18 May 2022 08:26:20 -0400
-Message-Id: <20220518122641.342120-7-sashal@kernel.org>
+Cc:     Mark Pearson <markpearson@lenovo.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, hmh@hmh.eng.br,
+        markgross@kernel.org, ibm-acpi-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 10/23] platform/x86: thinkpad_acpi: Correct dual fan probe
+Date:   Wed, 18 May 2022 08:26:23 -0400
+Message-Id: <20220518122641.342120-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122641.342120-1-sashal@kernel.org>
 References: <20220518122641.342120-1-sashal@kernel.org>
@@ -56,54 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Mark Pearson <markpearson@lenovo.com>
 
-[ Upstream commit 135332f34ba2662bc1e32b5c612e06a8cc41a053 ]
+[ Upstream commit aa2fef6f40e6ccc22e932b36898f260f0e5a021a ]
 
-This reverts commit aafa025c76dcc7d1a8c8f0bdefcbe4eb480b2f6a. That commit
-attempted to fix a NULL pointer dereference, caused by the struct fb_info
-associated with a framebuffer device to not longer be valid when the file
-descriptor was closed.
+There was an issue with the dual fan probe whereby the probe was
+failing as it assuming that second_fan support was not available.
 
-The issue was exposed by commit 27599aacbaef ("fbdev: Hot-unplug firmware
-fb devices on forced removal"), which added a new path that goes through
-the struct device removal instead of directly unregistering the fb.
+Corrected the logic so the probe works correctly. Cleaned up so
+quirks only used if 2nd fan not detected.
 
-Most fbdev drivers have issues with the fb_info lifetime, because call to
-framebuffer_release() from their driver's .remove callback, rather than
-doing from fbops.fb_destroy callback. This meant that due to this switch,
-the fb_info was now destroyed too early, while references still existed,
-while before it was simply leaked.
+Tested on X1 Carbon 10 (2 fans), X1 Carbon 9 (2 fans) and T490 (1 fan)
 
-The patch we're reverting here reinstated that leak, hence "fixed" the
-regression. But the proper solution is to fix the drivers to not release
-the fb_info too soon.
-
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220504115917.758787-1-javierm@redhat.com
+Signed-off-by: Mark Pearson <markpearson@lenovo.com>
+Link: https://lore.kernel.org/r/20220502191200.63470-1-markpearson@lenovo.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbmem.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/platform/x86/thinkpad_acpi.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index 10a9369c9dea..00f0f282e7a1 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1438,10 +1438,7 @@ fb_release(struct inode *inode, struct file *file)
- __acquires(&info->lock)
- __releases(&info->lock)
- {
--	struct fb_info * const info = file_fb_info(file);
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index c43586f1cb4b..0ea71416d292 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -8766,24 +8766,27 @@ static int __init fan_init(struct ibm_init_struct *iibm)
+ 			fan_status_access_mode = TPACPI_FAN_RD_TPEC;
+ 			if (quirks & TPACPI_FAN_Q1)
+ 				fan_quirk1_setup();
+-			if (quirks & TPACPI_FAN_2FAN) {
+-				tp_features.second_fan = 1;
+-				pr_info("secondary fan support enabled\n");
+-			}
+-			if (quirks & TPACPI_FAN_2CTL) {
+-				tp_features.second_fan = 1;
+-				tp_features.second_fan_ctl = 1;
+-				pr_info("secondary fan control enabled\n");
+-			}
+ 			/* Try and probe the 2nd fan */
++			tp_features.second_fan = 1; /* needed for get_speed to work */
+ 			res = fan2_get_speed(&speed);
+ 			if (res >= 0) {
+ 				/* It responded - so let's assume it's there */
+ 				tp_features.second_fan = 1;
+ 				tp_features.second_fan_ctl = 1;
+ 				pr_info("secondary fan control detected & enabled\n");
++			} else {
++				/* Fan not auto-detected */
++				tp_features.second_fan = 0;
++				if (quirks & TPACPI_FAN_2FAN) {
++					tp_features.second_fan = 1;
++					pr_info("secondary fan support enabled\n");
++				}
++				if (quirks & TPACPI_FAN_2CTL) {
++					tp_features.second_fan = 1;
++					tp_features.second_fan_ctl = 1;
++					pr_info("secondary fan control enabled\n");
++				}
+ 			}
 -
--	if (!info)
--		return -ENODEV;
-+	struct fb_info * const info = file->private_data;
- 
- 	lock_fb_info(info);
- 	if (info->fbops->fb_release)
+ 		} else {
+ 			pr_err("ThinkPad ACPI EC access misbehaving, fan status and control unavailable\n");
+ 			return -ENODEV;
 -- 
 2.35.1
 
