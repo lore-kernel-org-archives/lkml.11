@@ -2,87 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237487AbiERMr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
+        id S237170AbiERMrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:47:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237369AbiERMpx (ORCPT
+        with ESMTP id S237776AbiERMqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:45:53 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102E615EA52
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:42:19 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id h29so3428467lfj.2
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:42:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2vgkcgkvD6wC0cwxlemq7x356q295GLVNbkOBzA2YxE=;
-        b=rlTF2pGNUZ9xLVv7e1nEF+Z3G5BSfstynEyJnmTmPoeV6RSyZbW1LUGnGw1Q7IYPXM
-         Q+VzTkQIlFuiGJ6IdMs+bx3r9/FZIZFKzAqWB4Dt4Si32pe5pXa3Zw7e5I3st9+Ia10B
-         TfrsXjgZNHD8xT3A7CyE8qHgCIZr/9xpUKl1Hccz5PUGAB+6Ht3fVRQYbT2vo4ND0JYN
-         DcJxaYIV2oSE2Ken3soy+f+wSqSWffY1hf1YTcY0YePoZOFGILCjpP+pbTN24wWQpiAU
-         24efTgUqyn4IT6TP0hPnqKM67GA2FdJoheXSM4ncMif9/BKtWp87b+PvDSCEoTGaYZqg
-         yFng==
+        Wed, 18 May 2022 08:46:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C7E41796C4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:43:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652877790;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8sp1AZTsVwKlhQc+YaMhxHvmVTkY1Ldp+tQJ/IC5G3M=;
+        b=iZ5QASfTGD5gt+sBfljrNgRJNtJzkIyRMG0bZaYnirEK6k9abbu6QsW2z+9zLJFYuhiaKN
+        eoyG/bkjcWGDaLsQ5j10C7dPw7PIhTD37sMpUIYPCQlAzNnp79OEBEwb5ARmKL+2tXTR96
+        E++zzvGH9sUvhzOjzahtvDfwc+Kupiw=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-316-onblDNiXPrqPGT-mI8UN6A-1; Wed, 18 May 2022 08:43:09 -0400
+X-MC-Unique: onblDNiXPrqPGT-mI8UN6A-1
+Received: by mail-wr1-f71.google.com with SMTP id z5-20020a5d4d05000000b0020e6457f2b4so103403wrt.1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:43:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2vgkcgkvD6wC0cwxlemq7x356q295GLVNbkOBzA2YxE=;
-        b=oeRQUQa2v4+5xu374oGmm1AhISM/KSFHunoCGLhuDxJDsZyshASCXRUyZktLU05IRk
-         yD58iVbTJQOEDtVDKGz76pNAEnh15Xr/J1CO6V6oQ02JgBQb/g1q7GWTuqkswiqgJa7b
-         CgK79n1HMK6+9PSjK09OlnkzHuWOhoOKNcOG2d3UCxIFtuQ8nyca8t4xEU80qPTS9TiV
-         fBWV7wnW08R3QCVRBJaXpSt36AKnPJPd4KLzsbjuXLnFBF6XYY+p1oIFvcZwnNF/LlI/
-         fx3dflUwne107K6tthrEviVOzVqjlDr3Rox5fmNEnq0wiWGXnAMbG1RqNJOvuwIh3M7e
-         2k8w==
-X-Gm-Message-State: AOAM530o8Po3dVbXa+hFXly6AOYrxwa9KpZO7n7hFPWYIbybs8xCWkSZ
-        Dsu2IDnaGP4C760+TzDdRwv9QVoHp12/nIYw
-X-Google-Smtp-Source: ABdhPJxN+RYfgFZsiy+AoktspD9yuD3bHCCzUdtzXetU8hXThMYhg4oVLuLhwc6T+t+3H8Oe3L/TQg==
-X-Received: by 2002:a05:6512:3f96:b0:477:c0fe:9b05 with SMTP id x22-20020a0565123f9600b00477c0fe9b05mr103111lfa.109.1652877738130;
-        Wed, 18 May 2022 05:42:18 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id r10-20020a2e994a000000b0024f3d1dae7dsm210967ljj.5.2022.05.18.05.42.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 05:42:17 -0700 (PDT)
-Message-ID: <9417e665-c1d4-e82c-5c55-a2c5860cc453@linaro.org>
-Date:   Wed, 18 May 2022 14:42:16 +0200
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=8sp1AZTsVwKlhQc+YaMhxHvmVTkY1Ldp+tQJ/IC5G3M=;
+        b=nzNLvm67+fFRLzlUQkkIPrIix+AdDE5TLyMtgAq6ncbO2Vzt3tSUkIUzWCf15+oXmC
+         HeJKIlD+JgdpUc27DTjipkoMcyHcQtrXDPmOISf4tQ3B60J/G6Pfux9QQbg9IfHZ4FTd
+         bDDnqZKBOM0egfNN5tioVHdlZUjUJ8cFWdyZqATo3oB0SE459+R9hDFOugbCR9aIbHmX
+         eHc3KureU9tRYIBSQ1Sfq4eIyVg5lCKe9z8Pmo1m2Ix1r3UR8kjy32izxXZ/t+L5Eu98
+         RIguM+2K/fE8IGIY+h3Yj5i+KgfSxkdHihwuOHc/TkEP1pQwoTTht5M1uYYTDxO7Cc4i
+         PNqA==
+X-Gm-Message-State: AOAM530mAabuzbaPW/ziuvBGyzI7Fbf+gIteiBxp2JGjkpbN9leG3qSP
+        W4cUdfUxIyOqn9kNxpOc3x4zs5A0By9Q1xNSE2r4UVcqBniZhbTmrzZ5Ksy0qtHBqRJDdeovBz7
+        oC6e1wwhkBbgKKCY6Qr/6C/BJ
+X-Received: by 2002:a05:600c:4f15:b0:394:8ea0:bb45 with SMTP id l21-20020a05600c4f1500b003948ea0bb45mr25964704wmq.206.1652877788566;
+        Wed, 18 May 2022 05:43:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyhEfV7UD7ccFso+2Cr2aFdjNKyFXmOetoImfKzVeTI8YIwgYAJmh/GUkPIje9ETqc0ZXPaMw==
+X-Received: by 2002:a05:600c:4f15:b0:394:8ea0:bb45 with SMTP id l21-20020a05600c4f1500b003948ea0bb45mr25964676wmq.206.1652877788335;
+        Wed, 18 May 2022 05:43:08 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id f1-20020a5d64c1000000b0020c5253d927sm1990018wri.115.2022.05.18.05.43.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 05:43:07 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v3 14/34] KVM: x86: Introduce .post_hv_l2_tlb_flush()
+ nested hook
+In-Reply-To: <deae695da02d7f22dcfa4635eec53ab61baf9026.camel@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+ <20220414132013.1588929-15-vkuznets@redhat.com>
+ <deae695da02d7f22dcfa4635eec53ab61baf9026.camel@redhat.com>
+Date:   Wed, 18 May 2022 14:43:07 +0200
+Message-ID: <871qwrui3o.fsf@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v9 1/2] dt-bindings: thermal: k3-j72xx: Add VTM bindings
- documentation
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Keerthy <j-keerthy@ti.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, rui.zhang@intel.com,
-        amitk@kernel.org, kristo@kernel.org
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org, vigneshr@ti.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220517172920.10857-1-j-keerthy@ti.com>
- <20220517172920.10857-2-j-keerthy@ti.com>
- <783127cf-79cf-90f2-4200-30db56a1fd7c@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <783127cf-79cf-90f2-4200-30db56a1fd7c@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/05/2022 10:27, Daniel Lezcano wrote:
-> 
-> Hi Krzysztof,
-> 
-> I would like to pick this series, does the DT bindings have your blessing ?
+Maxim Levitsky <mlevitsk@redhat.com> writes:
 
+> On Thu, 2022-04-14 at 15:19 +0200, Vitaly Kuznetsov wrote:
+>> Hyper-V supports injecting synthetic L2->L1 exit after performing
+>> L2 TLB flush operation but the procedure is vendor specific.
+>> Introduce .post_hv_l2_tlb_flush() nested hook for it.
+>> 
+>> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+>> ---
+>>  arch/x86/include/asm/kvm_host.h |  1 +
+>>  arch/x86/kvm/Makefile           |  3 ++-
+>>  arch/x86/kvm/svm/hyperv.c       | 11 +++++++++++
+>>  arch/x86/kvm/svm/hyperv.h       |  2 ++
+>>  arch/x86/kvm/svm/nested.c       |  1 +
+>>  arch/x86/kvm/vmx/evmcs.c        |  4 ++++
+>>  arch/x86/kvm/vmx/evmcs.h        |  1 +
+>>  arch/x86/kvm/vmx/nested.c       |  1 +
+>>  8 files changed, 23 insertions(+), 1 deletion(-)
+>>  create mode 100644 arch/x86/kvm/svm/hyperv.c
+>> 
+>> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+>> index 8b2a52bf26c0..ce62fde5f4ff 100644
+>> --- a/arch/x86/include/asm/kvm_host.h
+>> +++ b/arch/x86/include/asm/kvm_host.h
+>> @@ -1558,6 +1558,7 @@ struct kvm_x86_nested_ops {
+>>  	int (*enable_evmcs)(struct kvm_vcpu *vcpu,
+>>  			    uint16_t *vmcs_version);
+>>  	uint16_t (*get_evmcs_version)(struct kvm_vcpu *vcpu);
+>> +	void (*post_hv_l2_tlb_flush)(struct kvm_vcpu *vcpu);
+>>  };
+>>  
+>>  struct kvm_x86_init_ops {
+>> diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
+>> index 30f244b64523..b6d53b045692 100644
+>> --- a/arch/x86/kvm/Makefile
+>> +++ b/arch/x86/kvm/Makefile
+>> @@ -25,7 +25,8 @@ kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
+>>  			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o
+>>  kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
+>>  
+>> -kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
+>> +kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o \
+>> +			   svm/sev.o svm/hyperv.o
+>>  
+>>  ifdef CONFIG_HYPERV
+>>  kvm-amd-y		+= svm/svm_onhyperv.o
+>> diff --git a/arch/x86/kvm/svm/hyperv.c b/arch/x86/kvm/svm/hyperv.c
+>> new file mode 100644
+>> index 000000000000..c0749fc282fe
+>> --- /dev/null
+>> +++ b/arch/x86/kvm/svm/hyperv.c
+>> @@ -0,0 +1,11 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * AMD SVM specific code for Hyper-V on KVM.
+>> + *
+>> + * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+>> + */
+>> +#include "hyperv.h"
+>> +
+>> +void svm_post_hv_l2_tlb_flush(struct kvm_vcpu *vcpu)
+>> +{
+>> +}
+>> diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
+>> index 8cf702fed7e5..a2b0d7580b0d 100644
+>> --- a/arch/x86/kvm/svm/hyperv.h
+>> +++ b/arch/x86/kvm/svm/hyperv.h
+>> @@ -48,4 +48,6 @@ static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
+>>  	hv_vcpu->nested.vp_id = hve->hv_vp_id;
+>>  }
+>>  
+>> +void svm_post_hv_l2_tlb_flush(struct kvm_vcpu *vcpu);
+>> +
+>>  #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
+>> diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+>> index 2d1a76343404..de3f27301b5c 100644
+>> --- a/arch/x86/kvm/svm/nested.c
+>> +++ b/arch/x86/kvm/svm/nested.c
+>> @@ -1665,4 +1665,5 @@ struct kvm_x86_nested_ops svm_nested_ops = {
+>>  	.get_nested_state_pages = svm_get_nested_state_pages,
+>>  	.get_state = svm_get_nested_state,
+>>  	.set_state = svm_set_nested_state,
+>> +	.post_hv_l2_tlb_flush = svm_post_hv_l2_tlb_flush,
+>>  };
+>> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+>> index 87e3dc10edf4..e390e67496df 100644
+>> --- a/arch/x86/kvm/vmx/evmcs.c
+>> +++ b/arch/x86/kvm/vmx/evmcs.c
+>> @@ -437,3 +437,7 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+>>  
+>>  	return 0;
+>>  }
+>> +
+>> +void vmx_post_hv_l2_tlb_flush(struct kvm_vcpu *vcpu)
+>> +{
+>> +}
+>> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+>> index 8d70f9aea94b..b120b0ead4f3 100644
+>> --- a/arch/x86/kvm/vmx/evmcs.h
+>> +++ b/arch/x86/kvm/vmx/evmcs.h
+>> @@ -244,5 +244,6 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+>>  			uint16_t *vmcs_version);
+>>  void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata);
+>>  int nested_evmcs_check_controls(struct vmcs12 *vmcs12);
+>> +void vmx_post_hv_l2_tlb_flush(struct kvm_vcpu *vcpu);
+>>  
+>>  #endif /* __KVM_X86_VMX_EVMCS_H */
+>> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+>> index ee88921c6156..cc6c944b5815 100644
+>> --- a/arch/x86/kvm/vmx/nested.c
+>> +++ b/arch/x86/kvm/vmx/nested.c
+>> @@ -6850,4 +6850,5 @@ struct kvm_x86_nested_ops vmx_nested_ops = {
+>>  	.write_log_dirty = nested_vmx_write_pml_buffer,
+>>  	.enable_evmcs = nested_enable_evmcs,
+>>  	.get_evmcs_version = nested_get_evmcs_version,
+>> +	.post_hv_l2_tlb_flush = vmx_post_hv_l2_tlb_flush,
+>>  };
+>
+>
+> I think that the name of the function is misleading, since it is not called
+> after each L2 HV tlb flush, but only after a flush which needs to inject
+> that synthetic VM exit.
+>
+> I think something like 'inject_synthetic_l2_hv_tlb_flush_vmexit' 
+> (not a good name IMHO, but you get the idea) would be better.
+>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Naming is hard indeed,
 
+hv_inject_synthetic_vmexit_post_tlb_flush()
 
-Best regards,
-Krzysztof
+seems to be accurate.
+
+-- 
+Vitaly
+
