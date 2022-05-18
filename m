@@ -2,168 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A33C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E89FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237929AbiERN0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
+        id S238095AbiERN0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237801AbiERNZt (ORCPT
+        with ESMTP id S237800AbiERNZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:25:49 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47086B7D6;
-        Wed, 18 May 2022 06:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=aBHSQ74cshobrBoDeAcAwH8dbmp4ORux6n0j1EJ9zhs=; b=PbQX6jJxrSTFYuY1QkUAm5HHAj
-        4zjhUqw9dZUmp+/h7FpyGsMd9T7KC01Lk8wihlfsVt15sYS07bd4AGqx/olI4ChlgEfTgoKgt6ghF
-        u4Ul+3a/u8AC1yN3var2ePdBq3yJ0QNuCnzFCU2AsJ1yN+Ew0qnuNx0AKJJMSgaFsHSKjAS/RJyRX
-        nQBP35ba/Mxst73B+b2bL1GyLemevCz0TIExKe/iFre2S2JyltNIOuuqHTXgx4xNR3AtqS8MDXev4
-        Htu1aPv+rb/vlxpa70azlfd8R3qZ4EjVERsEcfu9NCpHDF7PwWBcLltMr6Fz/cDtJaPv3zZndTfPs
-        +f+vkTJA==;
-Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nrJg7-009yTw-Of; Wed, 18 May 2022 15:25:27 +0200
-Message-ID: <5ed2ca7a-5bf3-f101-a1f4-9a320c79f5a0@igalia.com>
-Date:   Wed, 18 May 2022 10:24:39 -0300
+        Wed, 18 May 2022 09:25:48 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B011AF;
+        Wed, 18 May 2022 06:25:47 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 31so2122890pgp.8;
+        Wed, 18 May 2022 06:25:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fWq2dft195z67E3HmJbQS7CQHaiqAGijLUxUajn85g8=;
+        b=SAmoBGLWGdD9VZvDpKQEOA25kznLhwkX3Asno5SON222ZqJ9OTUZOmLCwDXVCbqJpm
+         AIHkHTKIH78SItD9TV/qOxSkrghPH7RMSjApSt57Rbl8XW1wEH0SK/8+nfGrPVnoqqkX
+         17HnINiFrua8UMbdX0QUj0NCDbQgPvQ9qAjOsHBWPNaHXof7UMyTSaotuk6jsWxT95hm
+         e/2L+og0C73hUEQuh82ExL6ud3w1m910srRYWkjLd6teA1OQ5zOAt9+yeEfFnhhKXjwK
+         a4F1lXvsW6132LJrnhJ8U5nNSCkqKvcrWZQ+yLMSYZOrdoGJFi8BMriSKrqodjH3gvNW
+         S6hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fWq2dft195z67E3HmJbQS7CQHaiqAGijLUxUajn85g8=;
+        b=0b4MVa4q7NHGGEiBUScVbpn3hOpEJQQd+yw51Liej1TMYlJCAtXqNWMe5KOuswxr/8
+         D4sVKukh8YX51WgoPuNCpyqLk1dKoznmnvELjoJbBnTS6JuCf+78SixTRu4jCaKZ2EWY
+         X4rQuKxud+NK+2ICXdLxeo3meCkxbb3Un9k4NnP4QEZ0ahrLgf7FK/DUvT/sHnS1pe8f
+         oTkUGLqOxsVN+wbhI2k6psvcx+XG214WQC3YK1HxMT66j2u/1R68g+mzdWGbjyu+RNoh
+         JgkZA6OeASSzEwidW6QorarCDmc9ViXTV1+dUpQGUxxyiVojxNEpJGhQiz3kr5TAvp/W
+         6XLg==
+X-Gm-Message-State: AOAM533ZcpaG1kOVCGrE6aBRLwCCDoZxGH070ho7tK4WuHxTUWG9sL3m
+        QKLDJyaU+HxTbohZuV+xx28=
+X-Google-Smtp-Source: ABdhPJxCiW4vNidQr8d3khFMkKX2tm2oQM/WD8vaW3HKyU18UDKF1u8TMcdp4aq/dq6zQW78s0K6nQ==
+X-Received: by 2002:a62:c545:0:b0:50d:2d0f:2e8a with SMTP id j66-20020a62c545000000b0050d2d0f2e8amr28009615pfg.12.1652880346560;
+        Wed, 18 May 2022 06:25:46 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.117])
+        by smtp.gmail.com with ESMTPSA id s13-20020a17090302cd00b0015e8d4eb244sm1625549plk.142.2022.05.18.06.25.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 06:25:46 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v3 10/11] KVM: x86/pmu: Replace pmc_perf_hw_id() with perf_get_hw_event_config()
+Date:   Wed, 18 May 2022 21:25:11 +0800
+Message-Id: <20220518132512.37864-11-likexu@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220518132512.37864-1-likexu@tencent.com>
+References: <20220518132512.37864-1-likexu@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Evan Green <evgreen@chromium.org>, David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Sebastian Reichel <sre@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de,
-        Kees Cook <keescook@chromium.org>, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        zhenwei pi <pizhenwei@bytedance.com>,
-        Stephen Boyd <swboyd@chromium.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
- <CAE=gft7ds+dHfEkRz8rnSH1EbTpGTpKbi5Wxj9DW0Jr5mX_j4w@mail.gmail.com>
- <YoOi9PFK/JnNwH+D@alley> <b9ec2fc8-216f-f261-8417-77b6dd95e25c@igalia.com>
- <YoShZVYNAdvvjb7z@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YoShZVYNAdvvjb7z@alley>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/05/2022 04:33, Petr Mladek wrote:
-> [...]
-> Anyway, I would distinguish it the following way.
-> 
->   + If the notifier is preserving kernel log then it should be ideally
->     treated as kmsg_dump().
-> 
->   + It the notifier is saving another debugging data then it better
->     fits into the "hypervisor" notifier list.
-> 
->
+From: Like Xu <likexu@tencent.com>
 
-Definitely, I agree - it's logical, since we want more info in the logs,
-and happens some notifiers running in the informational list do that,
-like ftrace_on_oops for example.
+With the help of perf_get_hw_event_config(), KVM could query the correct
+EVENTSEL_{EVENT, UMASK} pair of a kernel-generic hw event directly from
+the different *_perfmon_event_map[] by the kernel's pre-defined perf_hw_id.
 
+Also extend the bit range of the comparison field to
+AMD64_RAW_EVENT_MASK_NB to prevent AMD from
+defining EventSelect[11:8] into perfmon_event_map[] one day.
 
-> Regarding the reliability. From my POV, any panic notifier enabled
-> in a generic kernel should be reliable with more than 99,9%.
-> Otherwise, they should not be in the notifier list at all.
-> 
-> An exception would be a platform-specific notifier that is
-> called only on some specific platform and developers maintaining
-> this platform agree on this.
-> 
-> The value "99,9%" is arbitrary. I am not sure if it is realistic
-> even in the other code, for example, console_flush_on_panic()
-> or emergency_restart(). I just want to point out that the border
-> should be rather high. Otherwise we would back in the situation
-> where people would want to disable particular notifiers.
-> 
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ arch/x86/kvm/pmu.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Totally agree, these percentages are just an example, 50% is ridiculous
-low reliability in my example heheh
-
-But some notifiers deep dive in abstraction layers (like regmap or GPIO
-stuff) and it's hard to determine the probability of a lock issue (take
-a spinlock already taken inside regmap code and live-lock forever, for
-example). These are better to run, if possible, later than kdump or even
-info list.
-
-Thanks again for the good analysis Petr!
-Cheers,
-
-
-Guilherme
-
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 33bf08fc0282..7dc949f6a92c 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -517,13 +517,8 @@ static void kvm_pmu_incr_counter(struct kvm_pmc *pmc)
+ static inline bool eventsel_match_perf_hw_id(struct kvm_pmc *pmc,
+ 	unsigned int perf_hw_id)
+ {
+-	u64 old_eventsel = pmc->eventsel;
+-	unsigned int config;
+-
+-	pmc->eventsel &= (ARCH_PERFMON_EVENTSEL_EVENT | ARCH_PERFMON_EVENTSEL_UMASK);
+-	config = static_call(kvm_x86_pmu_pmc_perf_hw_id)(pmc);
+-	pmc->eventsel = old_eventsel;
+-	return config == perf_hw_id;
++	return !((pmc->eventsel ^ perf_get_hw_event_config(perf_hw_id)) &
++		AMD64_RAW_EVENT_MASK_NB);
+ }
+ 
+ static inline bool cpl_is_matched(struct kvm_pmc *pmc)
+-- 
+2.36.1
 
