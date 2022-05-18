@@ -2,79 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA310C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 00:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF78C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 00:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232824AbiERAkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 20:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
+        id S232827AbiERArN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 20:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbiERAkP (ORCPT
+        with ESMTP id S230250AbiERArK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 20:40:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4E53D1CA;
-        Tue, 17 May 2022 17:40:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C5C0B81D99;
-        Wed, 18 May 2022 00:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F31A1C34116;
-        Wed, 18 May 2022 00:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652834412;
-        bh=cXcmOxyB5b3qaFF0Us2S/2kRrZZ+zgv6w74wxsm8ZUk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=O1/MxTzLciw7w1CMQH9q8dTY82xaMyBN5BClFv844HRUjNdtvi47k8hFUYDswIIIG
-         prNN7DPQdJGU7V0Qbzdnmi/gIWTeXDxcdSeAzeplJNp+D0/azig7T7JoGb54H3PdkR
-         hPKXxYtacQ3VLH8hLYYdg5EHmy996fKwL+QByKTm82Wm5ywgRw10Mvf7+AaMhY6Eun
-         +GMPGeQeE/aBA/HHsUxZgYwvW0T95mM+AitKs5bAzjl1PVZo7/57Jv7g3bslP9sqdX
-         udqk0PmgdlfnmVjvtHv0Cla/sceUnBTSl9cibGtWj11IPBSkIZpIiJHYSNu5D54kZ4
-         Fk2KK4aR9zLEA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D468CF0383D;
-        Wed, 18 May 2022 00:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 17 May 2022 20:47:10 -0400
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F57439BB0;
+        Tue, 17 May 2022 17:47:09 -0700 (PDT)
+Received: by mail-oi1-f175.google.com with SMTP id j12so942668oie.1;
+        Tue, 17 May 2022 17:47:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0ivlprhS2h/cMofiRva12AAeDajNBcseyKIWCyP6GFM=;
+        b=2TOC8YnmtUvBEg6BhN+HHW2IohzYYc2px0w3JHYL8P/gvRgy5H1WP/xJBbI7xyzJKG
+         nYytWXoIMXQHqKtnyBSGMPz4bd6A+z0rcud1+K0KJrAGZHdTpsc9ILOJNEPJb/Wt4u4v
+         zQP9wmo/R+EpCWM3cjySTnomNfGaAUfCA7lilo4XV1+D5cXrp55lbA7I0gY6dfcnvSQx
+         XsGTcAydGfpPE3LgTtV0BQ3VJNS78ctad/ufVXgr3UfaLHELqKlD46jVu1BKDn/hkjGD
+         npt/Xn2ofnXp2R05qkkkKXmm3ShvimeUbsWnwkfdy7LxSjSW0HlD62MkQ5Fjtot+cxAM
+         9QJQ==
+X-Gm-Message-State: AOAM530AKgXBXC1+UzqGtkE3IFnlNd1jZMsKPGW8hKMfqpBZhj7kTCoa
+        sRPmqrs12JxUbYavnSY5yA==
+X-Google-Smtp-Source: ABdhPJxK2fsakt9+qAEinnu8Nr0SM6/F4v16Hx09go8CdR87lPDVyRjaWRPTxV3yCRv0iS+00W8Uvw==
+X-Received: by 2002:a05:6808:1525:b0:326:c179:1b1 with SMTP id u37-20020a056808152500b00326c17901b1mr11887569oiw.69.1652834828532;
+        Tue, 17 May 2022 17:47:08 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w10-20020aca620a000000b00325cda1ffb9sm290734oib.56.2022.05.17.17.47.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 17:47:07 -0700 (PDT)
+Received: (nullmailer pid 1965783 invoked by uid 1000);
+        Wed, 18 May 2022 00:47:06 -0000
+Date:   Tue, 17 May 2022 19:47:06 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        y.oudjana@protonmail.com, jason-jh.lin@mediatek.com,
+        ck.hu@mediatek.com, fparent@baylibre.com, rex-bc.chen@mediatek.com,
+        tinghan.shen@mediatek.com, chun-jie.chen@mediatek.com,
+        weiyi.lu@mediatek.com, ikjn@chromium.org, miles.chen@mediatek.com,
+        sam.shih@mediatek.com, wenst@chromium.org,
+        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com
+Subject: Re: [PATCH 0/5] MediaTek Helio X10 MT6795 - Clock drivers
+Message-ID: <20220518004706.GA1950724-robh@kernel.org>
+References: <20220513165050.500831-1-angelogioacchino.delregno@collabora.com>
+ <7ed1b785-389f-9730-4686-bc6b85cc8f6d@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/qla3xxx: Fix a test in ql_reset_work()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165283441186.18628.4616423734096658366.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 May 2022 00:40:11 +0000
-References: <80e73e33f390001d9c0140ffa9baddf6466a41a2.1652637337.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <80e73e33f390001d9c0140ffa9baddf6466a41a2.1652637337.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        akpm@osdl.org, ron.mercer@qlogic.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7ed1b785-389f-9730-4686-bc6b85cc8f6d@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sun, 15 May 2022 20:07:02 +0200 you wrote:
-> test_bit() tests if one bit is set or not.
-> Here the logic seems to check of bit QL_RESET_PER_SCSI (i.e. 4) OR bit
-> QL_RESET_START (i.e. 3) is set.
+On Fri, May 13, 2022 at 06:54:49PM +0200, AngeloGioacchino Del Regno wrote:
+> Il 13/05/22 18:50, AngeloGioacchino Del Regno ha scritto:
+> > In an effort to give some love to the apparently forgotten MT6795 SoC,
+> > I am upstreaming more components that are necessary to support platforms
+> > powered by this one apart from a simple boot to serial console.
+> > 
+> > This (very big) series introduces system clock, multimedia clock drivers
+> > (including resets) for this SoC.
+> > 
+> > Tested on a MT6795 Sony Xperia M5 (codename "Holly") smartphone.
+> > 
 > 
-> In fact, it checks if bit 7 (4 | 3 = 7) is set, that is to say
-> QL_ADAPTER_UP.
+> I forgot to add context to the cover letter for this series, so I'm adding that
+> in reply to myself.
 > 
-> [...]
+> This series depends on Chen-Yu's clocks cleanup series (clk_hw) [1] *and* on
+> Rex-BC's MTK reset binding-cleanup series [2].
+> 
+> [1] https://patchwork.kernel.org/project/linux-mediatek/list/?series=640122
+> [2] https://patchwork.kernel.org/project/linux-mediatek/list/?series=637849
 
-Here is the summary with links:
-  - net/qla3xxx: Fix a test in ql_reset_work()
-    https://git.kernel.org/netdev/net/c/5361448e45fa
+As well as the schema conversions in my tree. So I need to apply some of 
+this? Provide maintainers with details on how exactly a series should 
+be applied if there's a mixture of subsystems, dependencies already 
+applied, and dependencies not yet applied. I'm just going to wait for 
+explicit requests of what I need to apply as there's already too much 
+Mediatek stuff floating around. Last merge window was a mess too.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Rob
