@@ -2,82 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7112EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 13:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238072AbiERNkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 09:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53412 "EHLO
+        id S238080AbiERNkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 09:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238017AbiERNjz (ORCPT
+        with ESMTP id S238056AbiERNj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 09:39:55 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43241BE11E;
-        Wed, 18 May 2022 06:39:53 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id o190so2215743iof.10;
-        Wed, 18 May 2022 06:39:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i3wCNJS1xVIXYkjKAZEqtCPgrHMfsRF2KDMYD/Qfh2o=;
-        b=G/2T0pKpcaTtQD2cozzEKNQfmpP+fLiCMtg08W6X+S/zAf9leWjqHhH25LLBWj0CA8
-         Ys+4s1yVLPpV0OZom7Bp/bOJmTyoGYib8wq/R1ZhdNK8KQ+JALZ/2Cbf6ks0YJ4/GRTT
-         NMwmXCN6p9iQz3DBmN7crU3x07urlOqlJ6B+ZSaSqMnCfkxWNlKs+cZeuIM85V3IZq5W
-         Wi4zA/VFcUIPTDIh2FUFKVhWtspDr0p56saRRNz5z6OZcA0fg79zzU92QjRS4z61YLdb
-         2IZbpttTJQL9BFdWRyaj7mC9f/FHR/NxJXanYVhDJ6jkGU6CDF3Gavj74uCItXvgNBhh
-         bDnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i3wCNJS1xVIXYkjKAZEqtCPgrHMfsRF2KDMYD/Qfh2o=;
-        b=e2pyOqlxaM5FS7Q6Fu4EwV0YnDofD2vPJMADnSJKmKNl0ObzdbWbBAVdEgHmV1GXcR
-         8VwNK5Cps0crQFVyEEGaQWKxOYr35reRc8I0si+Cn6xTIM84UJGeynBNqf2Cs4v4MncP
-         PJZ2sBGPBWLI84DnjXbzz76TteAbOFnzIy2C5YGYiC+uJN3GZTcNROkdTmwYE/qKlCKq
-         hXCWPo90H7oDlkFJqijvcVjsPAQS8Wk5xMMm5ejeQZkGGrK2s3dvsN7lO6BPpNoewgkz
-         TUk5/k4lmpp6v7Gr5F5bcvGASaKpGlPmS1RZ61WnCXlyI1KgJ9a46VV4PfU42f/+8NY1
-         wIiQ==
-X-Gm-Message-State: AOAM533766Qkdxx0H4WxugZ3eCeRjqXpRceInfBfOCOG57WR88yniYC9
-        2jdKRsSEpjoNIHWEVHxxBKRqgo5DaOVeAnBOD7g=
-X-Google-Smtp-Source: ABdhPJz0N+uS74zL79CKwv8mnFznYe60VTPPYBux2feKAib04z3vsvVPYBHfax/sYpXqsz8QdLGlVp3TUgbcCQv9KG4=
-X-Received: by 2002:a05:6638:16d2:b0:32b:ebfe:8672 with SMTP id
- g18-20020a05663816d200b0032bebfe8672mr14890357jat.199.1652881193347; Wed, 18
- May 2022 06:39:53 -0700 (PDT)
+        Wed, 18 May 2022 09:39:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18171BE11D;
+        Wed, 18 May 2022 06:39:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5296DB820BF;
+        Wed, 18 May 2022 13:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9E96C385A5;
+        Wed, 18 May 2022 13:39:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652881195;
+        bh=YAGu07lD7nk9Sec8Z4RqDJGNVMRvtX91QuhoK9EteBM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qBhRzGBkhJ/WS21W8UymKR/Yj7C9/5Idf0bT5jKtz2m/7qX77Ydy3/D/Gxt8mpFAy
+         m7Gn+S6iy7zsm/GjIuSiU5gYw/mQHit5V4radJO3h6m0NTmPcjR+sxljfoKN/zCRsn
+         gLo0ACR7qA1u9iAjrB+Yw5DroprSEp96IOtSkJPmxN5JTuO2iTv7ki6DofkfRFdJss
+         DwK2WK13qd4UTb65ZRR13MQedDzJIYWleNj5RI/J7Cn9rJdMMwFprNq6gWogWl2HmX
+         dDjSgKkTOwo+xaOfo9hILAgFvEW9QbTfTvUxOLuca4HAMquqajnPjg4tIBzoIgIFQj
+         mZRdk6/KEVTvw==
+Date:   Wed, 18 May 2022 08:49:20 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Lin Yujun <linyujun809@huawei.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org, tglx@linutronix.de,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, johnny.chenyi@huawei.com,
+        chenjiahao16@huawei.com, chenlifu@huawei.com,
+        lizhengyu3@huawei.com, liaochang1@huawei.com, wangzhu9@huawei.com,
+        xuyihang@huawei.com, chris.zjh@huawei.com, zouyipeng@huawei.com
+Subject: Re: [PATCH -next] x86/events:Use struct_size() helper in kzalloc()
+Message-ID: <20220518134920.GA8361@embeddedor>
+References: <20220518131626.109123-1-linyujun809@huawei.com>
 MIME-Version: 1.0
-References: <20220517102813.10310-1-ojeda@kernel.org>
-In-Reply-To: <20220517102813.10310-1-ojeda@kernel.org>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Wed, 18 May 2022 15:39:42 +0200
-Message-ID: <CANiq72=4YKUoUjbs3484mdjsDCXX1V6qf8MrzhW0FN3ZbbDaAg@mail.gmail.com>
-Subject: Re: [PATCH v2] binder: convert `BINDER_*` ioctl `#define`s into an `enum`
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Li Li <dualli@google.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518131626.109123-1-linyujun809@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Wed, May 18, 2022 at 09:16:26PM +0800, Lin Yujun wrote:
+> Replace sizeof() with struct_size() to avoid potential integer
+> or heap overflow.
 
-On Tue, May 17, 2022 at 12:28 PM Miguel Ojeda <ojeda@kernel.org> wrote:
->
-> bindgen (a tool which generates the "raw" C bindings for Rust) only
-> works (so far) with "simple" C `#define`s. In order to avoid having
-> to manually maintain these constants in the (potential) Rust side,
-> this patch converts them into an `enum`.
+This is not exactly what the patch does.
 
-Given the discussion in v1's thread [0], I think we should hold on
-applying the patch (just letting you know here in v2).
+Your patch is replacing the open-coded calculation of the total amount
+of memory to be allocated for rapl_pmus with struct_size().
 
-[0] https://lore.kernel.org/lkml/CANiq72=_UAF5DRHCmW4qNt-Wi3yV6vPEjdLhBTijG_ZGgfpaTA@mail.gmail.com/
+> 
+> Also, address the following sparse warnings:
+> arch/x86/events/rapl.c:685:16: warning: using sizeof on a
+> flexible structure
 
-Cheers,
-Miguel
+This does not address this warning because struct_size()
+still make use of sizeof on the struct-with-flex-array,
+internally.
+
+So, the mention to the sparse warning should be removed from
+this changelog text.
+
+> 
+> Signed-off-by: Lin Yujun <linyujun809@huawei.com>
+> ---
+>  arch/x86/events/rapl.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
+> index 77e3a47af5ad..c7e79f0ac04f 100644
+> --- a/arch/x86/events/rapl.c
+> +++ b/arch/x86/events/rapl.c
+> @@ -685,7 +685,7 @@ static int __init init_rapl_pmus(void)
+>  	int maxdie = topology_max_packages() * topology_max_die_per_package();
+>  	size_t size;
+>  
+> -	size = sizeof(*rapl_pmus) + maxdie * sizeof(struct rapl_pmu *);
+> +	size = struct_size(rapl_pmus, pmus, maxdie);
+>  	rapl_pmus = kzalloc(size, GFP_KERNEL);
+
+It seems that in this case, size could be entirely replaced by
+struct_size().
+
+Thanks
+--
+Gustavo
