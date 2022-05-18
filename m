@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F91DC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D41C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237046AbiERMeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
+        id S237059AbiERMeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236999AbiERMdJ (ORCPT
+        with ESMTP id S237005AbiERMdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 18 May 2022 08:33:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15CF14D7A4;
-        Wed, 18 May 2022 05:29:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DA8115CAD;
+        Wed, 18 May 2022 05:29:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14CEB61678;
-        Wed, 18 May 2022 12:28:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 104CCC34100;
-        Wed, 18 May 2022 12:28:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F638B81FB8;
+        Wed, 18 May 2022 12:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DDE2C385A5;
+        Wed, 18 May 2022 12:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876934;
-        bh=chbWy/TEaB5WRdwytyMUcR6JYaAww5Sa6VH1cBD2hdE=;
+        s=k20201202; t=1652876917;
+        bh=bmNDXt0dhhCHvZC50SZNQe0bZ4XDsvewzFJ1e8Dm0K0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lY07lkQ5DbsmA44y4GcRc3PPLRKLKaaWePOVPGuiY1lMORgSqig4YM7yYENxOnH3m
-         ebd38wRqK9//k0mG1s+pPAFTrW6fCa4ggj03ySt8Cp6egSQqMuUP9WNZxChmdHipql
-         s5cJuEZ/cjhze1a9d0QXddIDHydp7X4SxoCNIkJGaprVlyIAjinOEXkGfuM6U7ExJp
-         pT1gBx42r5MWlb9vIlL6PNavAotrgdTjlbHjJ2+nyqAHeZMPpLfpyg8F+qzbeVVICP
-         unA4UbImZLTa0ds6cRbzYLmRG7IXMmivU/4V3rc/pXvtvCzrb7A0X/RExvIgzKr/pQ
-         W8VxHJj07ODxQ==
+        b=m8bue/yyLBC0cbGjkjP0wCmVfY13c088dqmnuandPg1YJu1jJofIlj8paojZIlXQo
+         6px7iMnbugbaNAwnCW1gooVKKaKLswXIioULnuHFAF7Kl4nDy/J3GLK1ze4Z2IBbAG
+         hy/5OF+YQePXgoIVoxwMTDXoGHNfFpBZvacvXIM5xmsu3DsUL5t7gpr86JABRGuSiB
+         W4WO2yJm1792k4gQmrnk66coMB1zIEUSHjJaRbn06XyBYouw2AFmtIg2Yo9V+K0tvc
+         YZ3furQ1pP3Wj0pEDHcHzFW1kXiD7KcVTF0N+OAHB8IStebKFAGiSYhwsVl+qmW4A4
+         UneyNoGljeSEA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 02/13] mac80211: fix rx reordering with non explicit / psmp ack policy
-Date:   Wed, 18 May 2022 08:28:33 -0400
-Message-Id: <20220518122844.343220-2-sashal@kernel.org>
+Cc:     Shreyas K K <quic_shrekk@quicinc.com>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        catalin.marinas@arm.com, corbet@lwn.net, anshuman.khandual@arm.com,
+        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
+        james.morse@arm.com, lcherian@marvell.com, maz@kernel.org,
+        arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 16/17] arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs
+Date:   Wed, 18 May 2022 08:27:50 -0400
+Message-Id: <20220518122753.342758-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
-References: <20220518122844.343220-1-sashal@kernel.org>
+In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
+References: <20220518122753.342758-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,36 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Shreyas K K <quic_shrekk@quicinc.com>
 
-[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
+[ Upstream commit 51f559d66527e238f9a5f82027bff499784d4eac ]
 
-When the QoS ack policy was set to non explicit / psmp ack, frames are treated
-as not being part of a BA session, which causes extra latency on reordering.
-Fix this by only bypassing reordering for packets with no-ack policy
+Add KRYO4XX gold/big cores to the list of CPUs that need the
+repeat TLBI workaround. Apply this to the affected
+KRYO4XX cores (rcpe to rfpe).
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+The variant and revision bits are implementation defined and are
+different from the their Cortex CPU counterparts on which they are
+based on, i.e., (r0p0 to r3p0) is equivalent to (rcpe to rfpe).
+
+Signed-off-by: Shreyas K K <quic_shrekk@quicinc.com>
+Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Link: https://lore.kernel.org/r/20220512110134.12179-1-quic_shrekk@quicinc.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ Documentation/arm64/silicon-errata.rst | 3 +++
+ arch/arm64/kernel/cpu_errata.c         | 2 ++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 1e7614abd947..e991abb45f68 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1387,8 +1387,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
- 		goto dont_reorder;
- 
- 	/* not part of a BA session */
--	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
--	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
-+	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
- 		goto dont_reorder;
- 
- 	/* new, potentially un-ordered, ampdu frame - process it */
+diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+index d410a47ffa57..7c1750bcc5bd 100644
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -163,6 +163,9 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | Qualcomm Tech. | Kryo4xx Silver  | N/A             | ARM64_ERRATUM_1024718       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| Qualcomm Tech. | Kryo4xx Gold    | N/A             | ARM64_ERRATUM_1286807       |
+++----------------+-----------------+-----------------+-----------------------------+
++
+ +----------------+-----------------+-----------------+-----------------------------+
+ | Fujitsu        | A64FX           | E#010001        | FUJITSU_ERRATUM_010001      |
+ +----------------+-----------------+-----------------+-----------------------------+
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index a33d7b8f3b93..c67c19d70159 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -208,6 +208,8 @@ static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
+ #ifdef CONFIG_ARM64_ERRATUM_1286807
+ 	{
+ 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
++		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
++		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
+ 	},
+ #endif
+ 	{},
 -- 
 2.35.1
 
