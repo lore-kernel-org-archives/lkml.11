@@ -2,125 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79899C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235735AbiERLo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46362 "EHLO
+        id S235806AbiERLqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232124AbiERLoy (ORCPT
+        with ESMTP id S235731AbiERLqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:44:54 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670911796D9;
-        Wed, 18 May 2022 04:44:52 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id c22so1920685pgu.2;
-        Wed, 18 May 2022 04:44:52 -0700 (PDT)
+        Wed, 18 May 2022 07:46:00 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBCBF6D;
+        Wed, 18 May 2022 04:45:58 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id g12so2645647edq.4;
+        Wed, 18 May 2022 04:45:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=e46I4qIXdzquI9xFD+cV1ACVVNgw+INdEKQ9QEnr4OI=;
-        b=Nh0/Gtjh+a2IoDWF2IsH6LjJsbfFa2ls+RGo/YWXGFgUkeucd2niQ5WCVQPYpf7y/U
-         Cmx7pTzDQ9PP7tNRsnHmU/9qAi3OmK/wmyx0mwTd43+fQjvAPKpQvyRobrqOUIpfYS0F
-         BG2A7C0p12X4zCfzNvUX5A+eLouTQSkWu6dcUMwnQ2ue1CqLrYL2cG3libYJjprTw7Y1
-         YW1N3/mdmXaPY+HtNABFX05KqegIBIotIqJyW45Y/6gv7g3Oi/bfNhZpark+UsHId/tA
-         A5xAUzQaT2R2SzuL34L0HlW73CMoooDFXUTKbqr8g4DPAY7oQY8GzPPfXhe2JfYajuaH
-         fytg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iKmftTACwKl85v+K7ODpphTsqLyA4iR1rRxXpV4eOs8=;
+        b=OTSJdAYA1KWzJgDZibIIZi44eBvyBBU+GntJp9Kn9Mo9tJQL2SfuwRTyiv1i+cd5rK
+         VwNusikmeqNOAi0eo75fc19WaBXjuWE7C6ZYoM0jOTR9XIAF15mFZCCwRDXHTM7WJmip
+         VVa1DifM/bSXJbeNIO8yZPJ0XuKAKSfnfA+dIQmhCgwoeH+t7Qq74my4EWPEETnhgHee
+         qAR9PC1AzCvWBXNUaQJsOnjN6E2ab98GlgfTjGwFfTFMZ46DLkDUCp3JBmzIrA+9mmQt
+         B8gcY3dQKxraHEvV8IWnTLA6zacZvT6UdNtNBTefFLSTDVZeB6CICLFlK286JumzAr4w
+         akeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=e46I4qIXdzquI9xFD+cV1ACVVNgw+INdEKQ9QEnr4OI=;
-        b=50S2kJLIdjQLHDyfy9IG6aVH6+HX2GN+et8fyqsdwPhvVIdZJfUY4OhhPsBJCTgHbN
-         KJ+xTFdN+q7wzDOJXlBpKfujEo+0ULwUDDUXPLUYn4/r0ufOzyOvJBdOqPOvJG2TfPeE
-         R9RfkHand7w8do90ozUJfj25gpO/De3swDDrdZ+Vl/lQzlekLijPs9B3WFpO5/D4bCqf
-         sKUF1I+LPCHD8/6FGETHNAXz3LoZlPMMa5tGYyc0aiLIWbx8iBtnAROgamROIrBTSAP8
-         /e4wG81IWT65WH83dUPFiSc/aEhu5fR5QCRZcowoFbJ4e39F7yr7dW2gZMy5mpy2BFmG
-         oe5g==
-X-Gm-Message-State: AOAM530p3Hp+Xc0kwcl4b45Z8CTEiRajrMe+Wfwy79ILDI2gp8TyClhH
-        e1TdwIbi3BzGoU6HQBo6f6k=
-X-Google-Smtp-Source: ABdhPJzYBLHwICpNdU1uIc/fY0ueEsP71iwvxE76n7L9d8J1eiIBw//HBvohkbNgfUiutXbkZMTFNA==
-X-Received: by 2002:a05:6a00:14cf:b0:510:5549:ad8a with SMTP id w15-20020a056a0014cf00b005105549ad8amr27233402pfu.24.1652874291646;
-        Wed, 18 May 2022 04:44:51 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id 23-20020a631557000000b003db8691008esm1332158pgv.12.2022.05.18.04.44.49
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iKmftTACwKl85v+K7ODpphTsqLyA4iR1rRxXpV4eOs8=;
+        b=t7UVWZuohSElUzssJz7YWY3Bs4GDWCUKYw8CVcOsZxdTMEHQqmSiO6QXdLRDeo20yu
+         uh6plrJFJcxqyiHcEKHPqvC6yUJz37ON/ZX95BDufUWdiS4hsttlJIx0AV4WBMNcw2c4
+         gWqTvOtlV87+Y8PLGyLn1Oe0oC8adCOm+O6hDMBtr8j0S/PQyLLvNeF1+KsPsz9P+uhy
+         xzO7oNuDrOGdQO+XJXiFC1BkxKJNkJYhfL+03jqkrhljN/0DXpt2ORcySJqg+4nu+RHj
+         ikuDZkopkL2pAkmVNWtg19INOmn0THi8tlWGdw+pOloiEUO5ZnZlB+4INpfRrcuh5+f8
+         C43Q==
+X-Gm-Message-State: AOAM530rYUNqTY9zh7dSei7RpdCHaM3vIFLsUHyiHBdb0qWV9Fgg7DeJ
+        h4gkZYJx0xuXEMcELdrqr18=
+X-Google-Smtp-Source: ABdhPJxtHHqAaTTw9fc9OqZBLQtF7b+D+6qCrGLXMnMRiG6X8TMHrG84h4r6VCDiEXYAY7K99pOK6w==
+X-Received: by 2002:a05:6402:90e:b0:425:a4bc:db86 with SMTP id g14-20020a056402090e00b00425a4bcdb86mr23675838edz.98.1652874357203;
+        Wed, 18 May 2022 04:45:57 -0700 (PDT)
+Received: from skbuf ([188.25.255.186])
+        by smtp.gmail.com with ESMTPSA id f9-20020a170906738900b006fe8ec44461sm366774ejl.101.2022.05.18.04.45.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 04:44:51 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        kernel test robot <lkp@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH] can: mcp251xfd: silence clang's -Wunaligned-access warning
-Date:   Wed, 18 May 2022 20:43:57 +0900
-Message-Id: <20220518114357.55452-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518070517.q53bjzo6lbnq3f2i@pengutronix.de>
-References: <20220518070517.q53bjzo6lbnq3f2i@pengutronix.de>
+        Wed, 18 May 2022 04:45:56 -0700 (PDT)
+Date:   Wed, 18 May 2022 14:45:55 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Hauke Mehrtens <hauke@hauke-m.de>
+Subject: Re: [PATCH net v1 1/2] net: dsa: lantiq_gswip: Fix start index in
+ gswip_port_fdb()
+Message-ID: <20220518114555.piutpdmdzvst2cvu@skbuf>
+References: <20220517194015.1081632-1-martin.blumenstingl@googlemail.com>
+ <20220517194015.1081632-2-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517194015.1081632-2-martin.blumenstingl@googlemail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clang emits a -Wunaligned-access warning on union
-mcp251xfd_tx_ojb_load_buf.
+Hi Martin,
 
-The reason is that field hw_tx_obj (not declared as packed) is being
-packed right after a 16 bits field inside a packed struct:
+On Tue, May 17, 2022 at 09:40:14PM +0200, Martin Blumenstingl wrote:
+> The first N entries in priv->vlans are reserved for managing ports which
+> are not part of a bridge. Use priv->hw_info->max_ports to consistently
+> access per-bridge entries at index 7. Starting at
+> priv->hw_info->cpu_port (6) is harmless in this case because
+> priv->vlan[6].bridge is always NULL so the comparison result is always
+> false (which results in this entry being skipped).
+> 
+> Fixes: 58c59ef9e930c4 ("net: dsa: lantiq: Add Forwarding Database access")
+> Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
 
-| union mcp251xfd_tx_obj_load_buf {
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd cmd;
-| 		  /* ^ 16 bits fields */
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		  /* ^ not declared as packed */
-| 	} nocrc;
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd_crc cmd;
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		__be16 crc;
-| 	} crc;
-| } ____cacheline_aligned;
+The patch, as well as other improvements you might want to bring to the gswip driver
+(we have more streamlined support in DSA now for FDB isolation, see ds->fdb_isolation)
+is appreciated.
 
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
-
-This is a false positive because the field is always being accessed
-with the relevant put_unaligned_*() function. Adding __packed to the
-structure declaration silences the warning.
-
-[1] https://github.com/llvm/llvm-project/issues/55520
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-Actually, I do not have llvm 14 installed so I am not able to test
-(this check was introduced in v14). But as explained in [1], adding
-__packed should fix the warning.
-
-Because this is a false positive, I did not add a Fixes tag, nor a
-Reported-by: kernel test robot.
----
- drivers/net/can/spi/mcp251xfd/mcp251xfd.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-index 1d43bccc29bf..2b0309fedfac 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-@@ -441,7 +441,7 @@ struct mcp251xfd_hw_tef_obj {
- /* The tx_obj_raw version is used in spi async, i.e. without
-  * regmap. We have to take care of endianness ourselves.
-  */
--struct mcp251xfd_hw_tx_obj_raw {
-+struct __packed mcp251xfd_hw_tx_obj_raw {
- 	__le32 id;
- 	__le32 flags;
- 	u8 data[sizeof_field(struct canfd_frame, data)];
--- 
-2.35.1
-
+But I don't think that a code cleanup patch that makes no functional
+difference, and isn't otherwise needed by other backported patches,
+should be sent to the "net" tree, and be backported to "stable" later?
