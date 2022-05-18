@@ -2,212 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17424C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 16:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240050AbiERQVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 12:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
+        id S240051AbiERQX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 12:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240218AbiERQVZ (ORCPT
+        with ESMTP id S239398AbiERQX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 12:21:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83CCA640E;
-        Wed, 18 May 2022 09:21:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F2D2B82181;
-        Wed, 18 May 2022 16:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C308DC385A5;
-        Wed, 18 May 2022 16:21:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652890878;
-        bh=mQx13ixPFfWmjCAZU7uaysFnjiR4jCHG6AlzgZSAi/U=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=EcgDfoAWfVDJIKzpQO2IzMSEHrGnMocac6QKzqeRnBW2XjhnFMxshF02q/moTM/tV
-         O3ySnbRmS89B77xq7osKUnXInCdLVNhciQPSH+lueT4SEc/NrrJxD1xY6Ct8kbZmrN
-         x2os08lf3x08Y1Iu8FyFsWA1GhF/OZJ/882UJPvPJf7F4qGa7NYHOFO1llg718jyCv
-         ebpW5r913UKsKMat7BcpxuavdQr2IWiqdrflZrOSOgriA93t6sumY47eLOpPlop43O
-         w8I3+aetWJr3S1NTztdJhFnWN0skMqsXzy9L7IaJvgQkOb7jMaWBuKTXIZO8+u9OCw
-         RODUb2XdO29lw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 609835C042D; Wed, 18 May 2022 09:21:18 -0700 (PDT)
-Date:   Wed, 18 May 2022 09:21:18 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH bpf-next 1/2] cpuidle/rcu: Making arch_cpu_idle and
- rcu_idle_exit noinstr
-Message-ID: <20220518162118.GA2661055@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220515203653.4039075-1-jolsa@kernel.org>
- <20220516042535.GV1790663@paulmck-ThinkPad-P17-Gen-1>
- <20220516114922.GA349949@lothringen>
- <YoN1WULUoKtMKx8v@krava>
+        Wed, 18 May 2022 12:23:26 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAB21DFDB7
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:23:21 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id a10so2832684ioe.9
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:23:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZMsRoI4KrjHlDEKqoEe/GvbetyAMCIzixojKRxrV6BU=;
+        b=IrWUtN8Gw5fp1BODZDdvMtTFT909fmx7BVUrRA5LnACeXOXOFJQIVAEU8aHS+sIgsZ
+         8XqOF6A76YUXmBfqpMaIAnLpA6BnFPYw8+oeGEGM92eytIfksBkbrZY4egC5+PuLD+zV
+         c4W4NO/W6oIgiqKFv8fyRDE4iW6VVmUaMNfNIwQH0Uboa4T2l2MjybZ7OVOeVEQFOaVN
+         VlO6Zh/MA7n7uQgU6rq0J6ZKXO6Bq13PBwa9F64ClIdTyupim9AYkN0yU8tM2+eCmkpg
+         DmIkl6C9VOuZqzg9gwJw+FQpKPCuZLc3vaB9+rmGgou+hJXjPs/EJQn78Ygln76T/Ap6
+         1wyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZMsRoI4KrjHlDEKqoEe/GvbetyAMCIzixojKRxrV6BU=;
+        b=4mJTgIA5yhm2CxvkMjP8IOmFcXd73sxPw+Vg1qcswqp7gBN10hl3aLGVTiLcZh1xSx
+         Xg68NR/eIu5ZLHawoTzTOsV/PD1OZiBeuxypw8ItMirvu3wNY8qIeFjJaYAijbisRkvV
+         dHYHu+u3dE0BR2PgkhXmqcY8+BgyeSLl+hMt57n7p0aD8YXj9Ue/776fKOG3EsyhNH6E
+         HnjSKJVvpOmG6grtrrtKOHHT4WYTrPQiN4ORekeZAdtd1ACLx7sBgC5fgGbk3NXtGupZ
+         VQuMhfN5QZmDGA4pixHuJ25IcR0sGzetJBioO5ou0ybxm5WKsxGYDaqKAyiDJz1AK9o/
+         G9Kg==
+X-Gm-Message-State: AOAM5331Qy3eNeIn9vh2aSJc7wF4ML6qqj8uOP3XN5pkdmgS3UX6FS3l
+        OQmZoYBYCS2ZWoht96IgznIw+Q==
+X-Google-Smtp-Source: ABdhPJxrykWSB+g83T/y/HW4GFRqEVUddjLGoyn8EjivMQzsYVNt+NniJE6eMd5Lk537ZYTfOeybrQ==
+X-Received: by 2002:a05:6602:1687:b0:65a:cc6a:91f5 with SMTP id s7-20020a056602168700b0065acc6a91f5mr192093iow.191.1652891000472;
+        Wed, 18 May 2022 09:23:20 -0700 (PDT)
+Received: from [192.168.1.170] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id k8-20020a0566022a4800b0065a47e16f55sm754840iov.39.2022.05.18.09.23.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 09:23:17 -0700 (PDT)
+Message-ID: <1e64d20a-42cc-31cd-0fd8-2718dd8b1f31@kernel.dk>
+Date:   Wed, 18 May 2022 10:23:16 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoN1WULUoKtMKx8v@krava>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [REPORT] Use-after-free Read in __fdget_raw in v5.10.y
+Content-Language: en-US
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <YoOW2+ov8KF1YcYF@google.com>
+ <3d271554-9ddc-07ad-3ff8-30aba31f8bf2@kernel.dk>
+ <YoOcYR15Jhkw2XwL@google.com>
+ <f34c85cc-71a5-59d4-dd7a-cc07e2af536c@kernel.dk>
+ <YoTrmjuct3ctvFim@google.com>
+ <b7dc2992-e2d6-8e76-f089-b33561f8471f@kernel.dk>
+ <f821d544-78d5-a227-1370-b5f0895fb184@kernel.dk>
+ <06710b30-fec8-b593-3af4-1318515b41d8@kernel.dk>
+ <YoUNQlzU0W4ShA85@google.com>
+ <49609b89-f2f0-44b3-d732-dfcb4f73cee1@kernel.dk>
+ <YoUTPIVOhLlnIO04@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <YoUTPIVOhLlnIO04@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 12:13:45PM +0200, Jiri Olsa wrote:
-> On Mon, May 16, 2022 at 01:49:22PM +0200, Frederic Weisbecker wrote:
-> > On Sun, May 15, 2022 at 09:25:35PM -0700, Paul E. McKenney wrote:
-> > > On Sun, May 15, 2022 at 10:36:52PM +0200, Jiri Olsa wrote:
-> > > > Making arch_cpu_idle and rcu_idle_exit noinstr. Both functions run
-> > > > in rcu 'not watching' context and if there's tracer attached to
-> > > > them, which uses rcu (e.g. kprobe multi interface) it will hit RCU
-> > > > warning like:
-> > > > 
-> > > >   [    3.017540] WARNING: suspicious RCU usage
-> > > >   ...
-> > > >   [    3.018363]  kprobe_multi_link_handler+0x68/0x1c0
-> > > >   [    3.018364]  ? kprobe_multi_link_handler+0x3e/0x1c0
-> > > >   [    3.018366]  ? arch_cpu_idle_dead+0x10/0x10
-> > > >   [    3.018367]  ? arch_cpu_idle_dead+0x10/0x10
-> > > >   [    3.018371]  fprobe_handler.part.0+0xab/0x150
-> > > >   [    3.018374]  0xffffffffa00080c8
-> > > >   [    3.018393]  ? arch_cpu_idle+0x5/0x10
-> > > >   [    3.018398]  arch_cpu_idle+0x5/0x10
-> > > >   [    3.018399]  default_idle_call+0x59/0x90
-> > > >   [    3.018401]  do_idle+0x1c3/0x1d0
-> > > > 
-> > > > The call path is following:
-> > > > 
-> > > > default_idle_call
-> > > >   rcu_idle_enter
-> > > >   arch_cpu_idle
-> > > >   rcu_idle_exit
-> > > > 
-> > > > The arch_cpu_idle and rcu_idle_exit are the only ones from above
-> > > > path that are traceble and cause this problem on my setup.
-> > > > 
-> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > 
-> > > From an RCU viewpoint:
-> > > 
-> > > Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
-> > > 
-> > > [ I considered asking for an instrumentation_on() in rcu_idle_exit(),
-> > > but there is no point given that local_irq_restore() isn't something
-> > > you instrument anyway. ]
-> > 
-> > So local_irq_save() in the beginning of rcu_idle_exit() is unsafe because
-> > it is instrumentable by the function (graph)  tracers and the irqsoff tracer.
-> > 
-> > Also it calls into lockdep that might make use of RCU.
-> > 
-> > That's why rcu_idle_exit() is not noinstr yet. See this patch:
-> > 
-> > https://lore.kernel.org/lkml/20220503100051.2799723-4-frederic@kernel.org/
+On 5/18/22 09:39, Lee Jones wrote:
+> On Wed, 18 May 2022, Jens Axboe wrote:
 > 
-> I see, could we mark it at least with notrace meanwhile?
+>> On 5/18/22 9:14 AM, Lee Jones wrote:
+>>> On Wed, 18 May 2022, Jens Axboe wrote:
+>>>
+>>>> On 5/18/22 6:54 AM, Jens Axboe wrote:
+>>>>> On 5/18/22 6:52 AM, Jens Axboe wrote:
+>>>>>> On 5/18/22 6:50 AM, Lee Jones wrote:
+>>>>>>> On Tue, 17 May 2022, Jens Axboe wrote:
+>>>>>>>
+>>>>>>>> On 5/17/22 7:00 AM, Lee Jones wrote:
+>>>>>>>>> On Tue, 17 May 2022, Jens Axboe wrote:
+>>>>>>>>>
+>>>>>>>>>> On 5/17/22 6:36 AM, Lee Jones wrote:
+>>>>>>>>>>> On Tue, 17 May 2022, Jens Axboe wrote:
+>>>>>>>>>>>
+>>>>>>>>>>>> On 5/17/22 6:24 AM, Lee Jones wrote:
+>>>>>>>>>>>>> On Tue, 17 May 2022, Jens Axboe wrote:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>>> On 5/17/22 5:41 AM, Lee Jones wrote:
+>>>>>>>>>>>>>>> Good afternoon Jens, Pavel, et al.,
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> Not sure if you are presently aware, but there appears to be a
+>>>>>>>>>>>>>>> use-after-free issue affecting the io_uring worker driver (fs/io-wq.c)
+>>>>>>>>>>>>>>> in Stable v5.10.y.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> The full sysbot report can be seen below [0].
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> The C-reproducer has been placed below that [1].
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> I had great success running this reproducer in an infinite loop.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> My colleague reverse-bisected the fixing commit to:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>   commit fb3a1f6c745ccd896afadf6e2d6f073e871d38ba
+>>>>>>>>>>>>>>>   Author: Jens Axboe <axboe@kernel.dk>
+>>>>>>>>>>>>>>>   Date:   Fri Feb 26 09:47:20 2021 -0700
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>        io-wq: have manager wait for all workers to exit
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>        Instead of having to wait separately on workers and manager, just have
+>>>>>>>>>>>>>>>        the manager wait on the workers. We use an atomic_t for the reference
+>>>>>>>>>>>>>>>        here, as we need to start at 0 and allow increment from that. Since the
+>>>>>>>>>>>>>>>        number of workers is naturally capped by the allowed nr of processes,
+>>>>>>>>>>>>>>>        and that uses an int, there is no risk of overflow.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>        Signed-off-by: Jens Axboe <axboe@kernel.dk>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>     fs/io-wq.c | 30 ++++++++++++++++++++++--------
+>>>>>>>>>>>>>>>     1 file changed, 22 insertions(+), 8 deletions(-)
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Does this fix it:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> commit 886d0137f104a440d9dfa1d16efc1db06c9a2c02
+>>>>>>>>>>>>>> Author: Jens Axboe <axboe@kernel.dk>
+>>>>>>>>>>>>>> Date:   Fri Mar 5 12:59:30 2021 -0700
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>     io-wq: fix race in freeing 'wq' and worker access
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Looks like it didn't make it into 5.10-stable, but we can certainly
+>>>>>>>>>>>>>> rectify that.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Thanks for your quick response Jens.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> This patch doesn't apply cleanly to v5.10.y.
+>>>>>>>>>>>>
+>>>>>>>>>>>> This is probably why it never made it into 5.10-stable :-/
+>>>>>>>>>>>
+>>>>>>>>>>> Right.  It doesn't apply at all unfortunately.
+>>>>>>>>>>>
+>>>>>>>>>>>>> I'll have a go at back-porting it.  Please bear with me.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Let me know if you into issues with that and I can help out.
+>>>>>>>>>>>
+>>>>>>>>>>> I think the dependency list is too big.
+>>>>>>>>>>>
+>>>>>>>>>>> Too much has changed that was never back-ported.
+>>>>>>>>>>>
+>>>>>>>>>>> Actually the list of patches pertaining to fs/io-wq.c alone isn't so
+>>>>>>>>>>> bad, I did start to back-port them all but some of the big ones have
+>>>>>>>>>>> fs/io_uring.c changes incorporated and that list is huge (256 patches
+>>>>>>>>>>> from v5.10 to the fixing patch mentioned above).
+>>>>>>>>>>
+>>>>>>>>>> The problem is that 5.12 went to the new worker setup, and this patch
+>>>>>>>>>> landed after that even though it also applies to the pre-native workers.
+>>>>>>>>>> Hence the dependency chain isn't really as long as it seems, probably
+>>>>>>>>>> just a few patches backporting the change references and completions.
+>>>>>>>>>>
+>>>>>>>>>> I'll take a look this afternoon.
+>>>>>>>>>
+>>>>>>>>> Thanks Jens.  I really appreciate it.
+>>>>>>>>
+>>>>>>>> Can you see if this helps? Untested...
+>>>>>>>
+>>>>>>> What base does this apply against please?
+>>>>>>>
+>>>>>>> I tried Mainline and v5.10.116 and both failed.
+>>>>>>
+>>>>>> It's against 5.10.116, so that's puzzling. Let me double check I sent
+>>>>>> the right one...
+>>>>>
+>>>>> Looks like I sent the one from the wrong directory, sorry about that.
+>>>>> This one should be better:
+>>>>
+>>>> Nope, both are the right one. Maybe your mailer is mangling the patch?
+>>>> I'll attach it gzip'ed here in case that helps.
+>>>
+>>> Okay, that applied, thanks.
+>>>
+>>> Unfortunately, I am still able to crash the kernel in the same way.
+>>
+>> Alright, maybe it's not enough. I can't get your reproducer to crash,
+>> unfortunately. I'll try on a different box.
+> 
+> You need to have fuzzing and kasan enabled.
 
-For the RCU part, how about as follows?
+I do have kasan enabled. What's fuzzing?
 
-If this approach is reasonable, my guess would be that Frederic will pull
-it into his context-tracking series, perhaps using a revert of this patch
-to maintain sanity in the near term.
+-- 
+Jens Axboe
 
-If this approach is unreasonable, well, that is Murphy for you!
-
-For the x86 idle part, my feeling is still that the rcu_idle_enter()
-and rcu_idle_exit() need to be pushed deeper into the code.  Perhaps
-an ongoing process as the idle loop continues to be dug deeper?
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-commit cd338be719a0a692e0d50e1a8438e1f6c7165d9c
-Author: Paul E. McKenney <paulmck@kernel.org>
-Date:   Tue May 17 21:00:04 2022 -0700
-
-    rcu: Apply noinstr to rcu_idle_enter() and rcu_idle_exit()
-    
-    This commit applies the "noinstr" tag to the rcu_idle_enter() and
-    rcu_idle_exit() functions, which are invoked from portions of the idle
-    loop that cannot be instrumented.  These tags require reworking the
-    rcu_eqs_enter() and rcu_eqs_exit() functions that these two functions
-    invoke in order to cause them to use normal assertions rather than
-    lockdep.  In addition, within rcu_idle_exit(), the raw versions of
-    local_irq_save() and local_irq_restore() are used, again to avoid issues
-    with lockdep in uninstrumented code.
-    
-    This patch is based in part on an earlier patch by Jiri Olsa, discussions
-    with Peter Zijlstra and Frederic Weisbecker, earlier changes by Thomas
-    Gleixner, and off-list discussions with Yonghong Song.
-    
-    Link: https://lore.kernel.org/lkml/20220515203653.4039075-1-jolsa@kernel.org/
-    Reported-by: Jiri Olsa <jolsa@kernel.org>
-    Reported-by: Alexei Starovoitov <ast@kernel.org>
-    Reported-by: Andrii Nakryiko <andrii@kernel.org>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-    Reviewed-by: Yonghong Song <yhs@fb.com>
-
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 222d59299a2af..02233b17cce0e 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -635,8 +635,8 @@ static noinstr void rcu_eqs_enter(bool user)
- 		return;
- 	}
- 
--	lockdep_assert_irqs_disabled();
- 	instrumentation_begin();
-+	lockdep_assert_irqs_disabled();
- 	trace_rcu_dyntick(TPS("Start"), rdp->dynticks_nesting, 0, atomic_read(&rdp->dynticks));
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
- 	rcu_preempt_deferred_qs(current);
-@@ -663,9 +663,9 @@ static noinstr void rcu_eqs_enter(bool user)
-  * If you add or remove a call to rcu_idle_enter(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_idle_enter(void)
-+void noinstr rcu_idle_enter(void)
- {
--	lockdep_assert_irqs_disabled();
-+	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
- 	rcu_eqs_enter(false);
- }
- EXPORT_SYMBOL_GPL(rcu_idle_enter);
-@@ -865,7 +865,7 @@ static void noinstr rcu_eqs_exit(bool user)
- 	struct rcu_data *rdp;
- 	long oldval;
- 
--	lockdep_assert_irqs_disabled();
-+	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
- 	rdp = this_cpu_ptr(&rcu_data);
- 	oldval = rdp->dynticks_nesting;
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && oldval < 0);
-@@ -900,13 +900,13 @@ static void noinstr rcu_eqs_exit(bool user)
-  * If you add or remove a call to rcu_idle_exit(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_idle_exit(void)
-+void noinstr rcu_idle_exit(void)
- {
- 	unsigned long flags;
- 
--	local_irq_save(flags);
-+	raw_local_irq_save(flags);
- 	rcu_eqs_exit(false);
--	local_irq_restore(flags);
-+	raw_local_irq_restore(flags);
- }
- EXPORT_SYMBOL_GPL(rcu_idle_exit);
- 
