@@ -2,107 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58552C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6713C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233998AbiERJQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34028 "EHLO
+        id S233969AbiERJSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233888AbiERJQc (ORCPT
+        with ESMTP id S233951AbiERJSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:16:32 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C9813FA7;
-        Wed, 18 May 2022 02:16:31 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id t6so1783093wra.4;
-        Wed, 18 May 2022 02:16:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AJ/PeRbastM8KtwKP00d5Dtpk6YYbHWpbi26hK6kis8=;
-        b=Sb6MUDzpI3Do12SoVOog4trxfn9HkOWzjeJE76NDXkSoA5+fRAmSg1quRuL0EaHHMq
-         m6AxmVYU7qZ4kUOuIhQsD2r+4H7X/eY9MdaLsZClCj+chZ/DoiVRhX9q9MC9cVk+qB2u
-         rKLz50JW6LMpRFFumwP9Jdf2NLUMxYBb39/m7I1paORnMA76t7UYktiptr2D7kQNW9fM
-         Ilp+EyfIAquY2zUojfnFJBq50LF3ol0dyv8ykoL/ce1uU9ZpB3AJf2RGUb5yvijmFIHy
-         vhOOAZG3Pzx1dZuw2baXFhCQfbnqUvTEPayqaYHkt2lviWQdjqQoRKNEAeblCa+BKcYt
-         CR+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AJ/PeRbastM8KtwKP00d5Dtpk6YYbHWpbi26hK6kis8=;
-        b=a4XKxsy+u8fWQHs+030ujNOLIKQvfKHQcOX5dwthkazViDlEgysV0a+cQHNED8iIOe
-         bDsguvUsALfhzx9cyDVL49kyb8mGRtFc27P7t70/k6rNDXX6Ttv0KEGo9M/E/xIcWfv0
-         TXd8Gr4rJKBn7/gVF779S5tIAA+jzZ8WgsyaoD2Cel8PUaPrc1XsAPWQFyOxq3pU3jkg
-         gYGI8yeGAPEfrxTWVIobtniHX6+aDcunIgKcRX+0tJAIFQL3g+p3YiV+pvFzMeBsg+Tk
-         WSSW7jIjNl5gihA/1jM8Jj1QHItbWGLsOxa9DFlABgPrEbKlPApUTl823LDCW6Ng/n7g
-         fb3g==
-X-Gm-Message-State: AOAM530syC9Z2OKC14XH7X+G15H2l2UwDbGPgYNPdTUObMl9n7NHkoWr
-        /W7Jj4EG1aQF+tKtiEnpsv6vg65sFt4=
-X-Google-Smtp-Source: ABdhPJwEWT0S1cQNRyp2Os4DAQEhukNT425BpsOswVM115DyQwaHDTQ4H/1aAl9xuumtGy5hK18drg==
-X-Received: by 2002:a05:6000:1a45:b0:20e:6164:d86c with SMTP id t5-20020a0560001a4500b0020e6164d86cmr1405752wry.561.1652865390262;
-        Wed, 18 May 2022 02:16:30 -0700 (PDT)
-Received: from [192.168.0.36] ([5.225.216.194])
-        by smtp.gmail.com with ESMTPSA id p18-20020a05600c1d9200b00397122e63b6sm1227595wms.29.2022.05.18.02.16.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 02:16:29 -0700 (PDT)
-Message-ID: <ad4aac8a-ef1b-d4eb-7045-a46bd39ad3fc@gmail.com>
-Date:   Wed, 18 May 2022 11:16:28 +0200
+        Wed, 18 May 2022 05:18:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26241A051
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:18:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86E4D616F9
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 09:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4ADC385A5;
+        Wed, 18 May 2022 09:18:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652865512;
+        bh=6rLezUzKWqLKI6DG7y/Y4pd3Z/CMgk7TBbjkXlTm+bI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tiHDPQCAGNn7tl+lYKAdpfAzId9qq0doC26nQk5npNanuU06Ur7/SgEOp7JHo0UPM
+         uUxABiSkTi6bBAFjfcjJEuOOuHaSuPJJ23gV4h/NbFTJ2b/m6GVBT76h7WggpGGFyK
+         v/gqsA6kAqPHh0bQgj5CdoDFajvoBcXSQoBnV27S1D9dhW1Zjc/M9W7Jc5ArqRGZ3V
+         N09Atl4MgfP5egu8wnxoaLFLekxUJmjrugkcM1EgdHDe8Uzek8AuNaDFxeVvM2UHd0
+         PZktenEhT/FMv07fZbzkMyUEgft3WYVMk34R8IzOlzK3KLaa4U4AaEWdnkNkVheoh4
+         TWgMeWSYAlFXw==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org
+Cc:     chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        tzungbi@kernel.org, dianders@chromium.org
+Subject: [PATCH 1/4] platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_prepare_tx()
+Date:   Wed, 18 May 2022 17:18:11 +0800
+Message-Id: <20220518091814.2028579-2-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+In-Reply-To: <20220518091814.2028579-1-tzungbi@kernel.org>
+References: <20220518091814.2028579-1-tzungbi@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/8] dt-bindings: iommu: mediatek: Add mediatek,infracfg
- phandle
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, yong.wu@mediatek.com
-Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220517132107.195932-1-angelogioacchino.delregno@collabora.com>
- <20220517132107.195932-2-angelogioacchino.delregno@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220517132107.195932-2-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+cros_ec_prepare_tx() is used to fill the protocol headers according to
+the requested protocol version.
 
+Add Kunit tests cros_ec_prepare_tx() for each version.
 
-On 17/05/2022 15:21, AngeloGioacchino Del Regno wrote:
-> Add property "mediatek,infracfg" to let the mtk_iommu driver retrieve
-> a phandle to the infracfg syscon instead of performing a per-soc
-> compatible lookup.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->   Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> index 2ae3bbad7f1a..78c72c22740b 100644
-> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> @@ -101,6 +101,10 @@ properties:
->       items:
->         - const: bclk
->   
-> +  mediatek,infracfg:
-> +    $ref: "/schemas/types.yaml#/definitions/phandle"
-> +    description: The phandle to the mediatek infracfg syscon
-> +
->     mediatek,larbs:
->       $ref: /schemas/types.yaml#/definitions/phandle-array
->       minItems: 1
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
+ drivers/platform/chrome/Kconfig              |   9 +
+ drivers/platform/chrome/Makefile             |   3 +
+ drivers/platform/chrome/cros_ec_proto_test.c | 173 +++++++++++++++++++
+ 3 files changed, 185 insertions(+)
+ create mode 100644 drivers/platform/chrome/cros_ec_proto_test.c
 
-I think we can squash patch 7 in here. Same holds for pericfg
+diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
+index 717299cbccac..4b3d2427e8dd 100644
+--- a/drivers/platform/chrome/Kconfig
++++ b/drivers/platform/chrome/Kconfig
+@@ -267,4 +267,13 @@ config CHROMEOS_PRIVACY_SCREEN
+ 
+ source "drivers/platform/chrome/wilco_ec/Kconfig"
+ 
++# Kunit test cases
++config CROS_EC_PROTO_KUNIT_TEST
++	tristate "Kunit tests for ChromeOS EC protocol" if !KUNIT_ALL_TESTS
++	depends on KUNIT && CROS_EC
++	default KUNIT_ALL_TESTS
++	select CROS_EC_PROTO
++	help
++	  Kunit tests for the ChromeOS Embedded Controller protocol.
++
+ endif # CHROMEOS_PLATFORMS
+diff --git a/drivers/platform/chrome/Makefile b/drivers/platform/chrome/Makefile
+index 52f5a2dde8b8..3c380066c6b6 100644
+--- a/drivers/platform/chrome/Makefile
++++ b/drivers/platform/chrome/Makefile
+@@ -30,3 +30,6 @@ obj-$(CONFIG_CROS_USBPD_LOGGER)		+= cros_usbpd_logger.o
+ obj-$(CONFIG_CROS_USBPD_NOTIFY)		+= cros_usbpd_notify.o
+ 
+ obj-$(CONFIG_WILCO_EC)			+= wilco_ec/
++
++# Kunit test cases
++obj-$(CONFIG_CROS_EC_PROTO_KUNIT_TEST)	+= cros_ec_proto_test.o
+diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+new file mode 100644
+index 000000000000..61abb18ac00b
+--- /dev/null
++++ b/drivers/platform/chrome/cros_ec_proto_test.c
+@@ -0,0 +1,173 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Kunit tests for ChromeOS Embedded Controller protocol.
++ */
++
++#include <kunit/test.h>
++
++#include <linux/platform_data/cros_ec_commands.h>
++#include <linux/platform_data/cros_ec_proto.h>
++
++#include "cros_ec.h"
++
++#define BUFSIZE 512
++
++struct cros_ec_proto_test_priv {
++	struct cros_ec_device ec_dev;
++	u8 dout[BUFSIZE];
++	u8 din[BUFSIZE];
++	struct cros_ec_command *msg;
++	u8 _msg[BUFSIZE];
++};
++
++static void cros_ec_proto_test_prepare_tx_legacy_normal(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	struct cros_ec_command *msg = priv->msg;
++	int ret, i;
++	u8 csum;
++
++	ec_dev->proto_version = 2;
++
++	msg->command = EC_CMD_HELLO;
++	msg->outsize = EC_PROTO2_MAX_PARAM_SIZE;
++	msg->data[0] = 0xde;
++	msg->data[1] = 0xad;
++	msg->data[2] = 0xbe;
++	msg->data[3] = 0xef;
++
++	ret = cros_ec_prepare_tx(ec_dev, msg);
++
++	KUNIT_EXPECT_EQ(test, ret, EC_MSG_TX_PROTO_BYTES + EC_PROTO2_MAX_PARAM_SIZE);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[0], EC_CMD_VERSION0);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[1], EC_CMD_HELLO);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[2], EC_PROTO2_MAX_PARAM_SIZE);
++	KUNIT_EXPECT_EQ(test, EC_MSG_TX_HEADER_BYTES, 3);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[EC_MSG_TX_HEADER_BYTES + 0], 0xde);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[EC_MSG_TX_HEADER_BYTES + 1], 0xad);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[EC_MSG_TX_HEADER_BYTES + 2], 0xbe);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[EC_MSG_TX_HEADER_BYTES + 3], 0xef);
++	for (i = 4; i < EC_PROTO2_MAX_PARAM_SIZE; ++i)
++		KUNIT_EXPECT_EQ(test, ec_dev->dout[EC_MSG_TX_HEADER_BYTES + i], 0);
++
++	csum = EC_CMD_VERSION0;
++	csum += EC_CMD_HELLO;
++	csum += EC_PROTO2_MAX_PARAM_SIZE;
++	csum += 0xde;
++	csum += 0xad;
++	csum += 0xbe;
++	csum += 0xef;
++	KUNIT_EXPECT_EQ(test,
++			ec_dev->dout[EC_MSG_TX_HEADER_BYTES + EC_PROTO2_MAX_PARAM_SIZE],
++			csum);
++}
++
++static void cros_ec_proto_test_prepare_tx_legacy_bad_msg_outsize(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	struct cros_ec_command *msg = priv->msg;
++	int ret;
++
++	ec_dev->proto_version = 2;
++
++	msg->outsize = EC_PROTO2_MAX_PARAM_SIZE + 1;
++
++	ret = cros_ec_prepare_tx(ec_dev, msg);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++}
++
++static void cros_ec_proto_test_prepare_tx_normal(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	struct cros_ec_command *msg = priv->msg;
++	struct ec_host_request *request = (struct ec_host_request *)ec_dev->dout;
++	int ret, i;
++	u8 csum;
++
++	msg->command = EC_CMD_HELLO;
++	msg->outsize = 0x88;
++	msg->data[0] = 0xde;
++	msg->data[1] = 0xad;
++	msg->data[2] = 0xbe;
++	msg->data[3] = 0xef;
++
++	ret = cros_ec_prepare_tx(ec_dev, msg);
++
++	KUNIT_EXPECT_EQ(test, ret, sizeof(*request) + 0x88);
++
++	KUNIT_EXPECT_EQ(test, request->struct_version, EC_HOST_REQUEST_VERSION);
++	KUNIT_EXPECT_EQ(test, request->command, EC_CMD_HELLO);
++	KUNIT_EXPECT_EQ(test, request->command_version, 0);
++	KUNIT_EXPECT_EQ(test, request->data_len, 0x88);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[sizeof(*request) + 0], 0xde);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[sizeof(*request) + 1], 0xad);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[sizeof(*request) + 2], 0xbe);
++	KUNIT_EXPECT_EQ(test, ec_dev->dout[sizeof(*request) + 3], 0xef);
++	for (i = 4; i < 0x88; ++i)
++		KUNIT_EXPECT_EQ(test, ec_dev->dout[sizeof(*request) + i], 0);
++
++	csum = EC_HOST_REQUEST_VERSION;
++	csum += EC_CMD_HELLO;
++	csum += 0x88;
++	csum += 0xde;
++	csum += 0xad;
++	csum += 0xbe;
++	csum += 0xef;
++	KUNIT_EXPECT_EQ(test, request->checksum, (u8)-csum);
++}
++
++static void cros_ec_proto_test_prepare_tx_bad_msg_outsize(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	struct cros_ec_command *msg = priv->msg;
++	int ret;
++
++	msg->outsize = ec_dev->dout_size - sizeof(struct ec_host_request) + 1;
++
++	ret = cros_ec_prepare_tx(ec_dev, msg);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++}
++
++static int cros_ec_proto_test_init(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv;
++	struct cros_ec_device *ec_dev;
++
++	priv = kunit_kzalloc(test, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++	test->priv = priv;
++
++	ec_dev = &priv->ec_dev;
++	ec_dev->dout = (u8 *)priv->dout;
++	ec_dev->dout_size = ARRAY_SIZE(priv->dout);
++	ec_dev->din = (u8 *)priv->din;
++	ec_dev->din_size = ARRAY_SIZE(priv->din);
++	ec_dev->proto_version = EC_HOST_REQUEST_VERSION;
++
++	priv->msg = (struct cros_ec_command *)priv->_msg;
++
++	return 0;
++}
++
++static struct kunit_case cros_ec_proto_test_cases[] = {
++	KUNIT_CASE(cros_ec_proto_test_prepare_tx_legacy_normal),
++	KUNIT_CASE(cros_ec_proto_test_prepare_tx_legacy_bad_msg_outsize),
++	KUNIT_CASE(cros_ec_proto_test_prepare_tx_normal),
++	KUNIT_CASE(cros_ec_proto_test_prepare_tx_bad_msg_outsize),
++	{}
++};
++
++static struct kunit_suite cros_ec_proto_test_suite = {
++	.name = "cros_ec_proto_test",
++	.init = cros_ec_proto_test_init,
++	.test_cases = cros_ec_proto_test_cases,
++};
++
++kunit_test_suite(cros_ec_proto_test_suite);
++
++MODULE_LICENSE("GPL");
+-- 
+2.36.0.550.gb090851708-goog
 
-Regards,
-Matthias
