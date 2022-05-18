@@ -2,133 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD25C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 20:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF80C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 20:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242578AbiERUZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 16:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
+        id S242583AbiERUZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 16:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242524AbiERUZE (ORCPT
+        with ESMTP id S242524AbiERUZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 16:25:04 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1D424989D;
-        Wed, 18 May 2022 13:25:01 -0700 (PDT)
+        Wed, 18 May 2022 16:25:32 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F590939E0
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 13:25:30 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id x143so3151517pfc.11
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 13:25:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652905502; x=1684441502;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=8/s2dNbvTLItLbBVjvgMpNUrnwHhyEBEmZ4Jx5EdNLA=;
-  b=zSX86CRL1+aToNyurDJvUNJejQZ39xhY7ngd8mEHzrPHOsEndESYFD+6
-   JA0xDJy3tJhh87gQHkry0UhPDGXFmGFTQaQipPyldn6CL4z2GPcrRggtp
-   Bn1N5JCTagVTb57wpQPQOI3TNrzm7oocwhFk1Ofx5nDmst4wzlcxW0m1G
-   k=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 18 May 2022 13:25:02 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 13:25:01 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 18 May 2022 13:24:20 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 18 May 2022 13:24:20 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 2/3] phy/qualcomm: add regulator_set_load to dp phy
-Date:   Wed, 18 May 2022 13:24:03 -0700
-Message-ID: <1652905444-10130-3-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652905444-10130-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1652905444-10130-1-git-send-email-quic_khsieh@quicinc.com>
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=T0RUFEAAb0EUvAvgjmVhvNXqgIl2634hQPp6NyaB/BE=;
+        b=L6sJM823YSYGCEu5Vx6kyBcGRMkDtvbRk1g3zMveNTQGmV1rJUbhpDm7tL9Sx53GdH
+         9BrG2SjuHMe2C+hS937ohWm4LWCp73Kyg7h/TnDUfPe5ubtQDzsM0mbu8ovx+iAubhfz
+         4oTampAzdwVEv+3BeGvkjx4CzH4EErl0TPsPw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T0RUFEAAb0EUvAvgjmVhvNXqgIl2634hQPp6NyaB/BE=;
+        b=JLPrPGb2/AH2fA39EaFgfyllPOdXuLdHeDk1Xh9B3CcUv34D/GRyEt+uMY099vDvbn
+         kiXwRtrZh84tIjkjTdedNdv8/GlvqmpEMWQvg39rmQM/PztpYOlRWEGN5W4YEcgT8bUT
+         luwd0FfHyi0Hn4uQG6jNto0E+VQ+XniPy8BdQ9KiEI+RnitFk0ERXuO5liIlptdqcFcv
+         qLEAeMGZAZ8DzTcckcrYaqPgxIymdjYtt3u9nWlbUW18Z81XImw90Yw6RynHZA7L6WBZ
+         oBW1T0z+g09o4mu3lxyPav0yETGTT0N+EkcKXQqyWkkTxvAESjx9+CopIS1kqVZuc69B
+         j9Nw==
+X-Gm-Message-State: AOAM531AB3DREU8DRS+9h3dwTj/ncg2YcoIlDein9jpw8QJH3AbgvawA
+        viK13sogDTa6WFxSWAUDJfzPWQ==
+X-Google-Smtp-Source: ABdhPJwFG8w1ZTkhJXaj8JxUZLxZnFHlyBsxl5a7UPCmYkYRpDDj0B2yfmzhsYf7Q7TqK6uD1CEWqw==
+X-Received: by 2002:a63:e40c:0:b0:3f2:5729:eace with SMTP id a12-20020a63e40c000000b003f25729eacemr998455pgi.384.1652905530072;
+        Wed, 18 May 2022 13:25:30 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id ji15-20020a170903324f00b001616e13fccdsm2114121plb.221.2022.05.18.13.25.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 13:25:29 -0700 (PDT)
+Date:   Wed, 18 May 2022 13:25:28 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "GONG, Ruiqi" <gongruiqi1@huawei.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Wang Weiyang <wangweiyang2@huawei.com>,
+        Xiu Jianfeng <xiujianfeng@huawei.com>
+Subject: Re: [PATCH] security: keys: add __randomize_layout to
+ keyring_search_context
+Message-ID: <202205181325.0D772A54@keescook>
+References: <20220518091841.141441-1-gongruiqi1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518091841.141441-1-gongruiqi1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add regulator_set_load() before enable regulator at
-DP phy driver.
+On Wed, May 18, 2022 at 09:18:41AM +0000, GONG, Ruiqi wrote:
+> Struct keyring_search_context contains a pointer to `struct cred`, which
+> is a security-critical structure and whose layout is randomized already.
+> Apply __randomize_layout to struct keyring_search_context as well, as
+> suggested in [1].
+> 
+> [1]: https://github.com/KSPP/linux/issues/188
+> 
+> Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
 
-Changes in v2:
--- no regulator_set_load() before disable regulator
+Seems reasonable to me; it's an entirely internal structure.
 
-Changes in v3:
---  split into two patches
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/phy/qualcomm/phy-qcom-qmp.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+> ---
+>  security/keys/internal.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/security/keys/internal.h b/security/keys/internal.h
+> index 9b9cf3b6fcbb..3e3def5fbaa4 100644
+> --- a/security/keys/internal.h
+> +++ b/security/keys/internal.h
+> @@ -136,7 +136,7 @@ struct keyring_search_context {
+>  	bool			possessed;
+>  	key_ref_t		result;
+>  	time64_t		now;
+> -};
+> +} __randomize_layout;
+>  
+>  extern bool key_default_cmp(const struct key *key,
+>  			    const struct key_match_data *match_data);
+> -- 
+> 2.17.1
+> 
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index b144ae1..20ac446 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -3130,6 +3130,7 @@ struct qmp_phy_cfg {
- 	int num_resets;
- 	/* regulators to be requested */
- 	const char * const *vreg_list;
-+	const unsigned int *vreg_enable_load;
- 	int num_vregs;
- 
- 	/* array of registers with different offsets */
-@@ -3346,6 +3347,10 @@ static const char * const qmp_phy_vreg_l[] = {
- 	"vdda-phy", "vdda-pll",
- };
- 
-+static const unsigned int qmp_phy_vreg_enable_load[] = {
-+	21800, 36000
-+};
-+
- static const struct qmp_phy_cfg ipq8074_usb3phy_cfg = {
- 	.type			= PHY_TYPE_USB3,
- 	.nlanes			= 1,
-@@ -4072,6 +4077,7 @@ static const struct qmp_phy_cfg sm8250_usb3phy_cfg = {
- 	.reset_list		= msm8996_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v4_usb3phy_regs_layout,
- 
-@@ -4139,6 +4145,7 @@ static const struct qmp_phy_cfg sm8250_dpphy_cfg = {
- 	.reset_list		= msm8996_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v4_usb3phy_regs_layout,
- 
-@@ -5008,6 +5015,11 @@ static int qcom_qmp_phy_com_init(struct qmp_phy *qphy)
- 		return 0;
- 	}
- 
-+	if (cfg->vreg_enable_load) {
-+		for (i = cfg->num_vregs - 1; i >= 0; --i)
-+			regulator_set_load(qmp->vregs[i].consumer, cfg->vreg_enable_load[i]);
-+	}
-+
- 	/* turn on regulator supplies */
- 	ret = regulator_bulk_enable(cfg->num_vregs, qmp->vregs);
- 	if (ret) {
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+Kees Cook
