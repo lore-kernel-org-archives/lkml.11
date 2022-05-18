@@ -2,126 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239615AbiERPv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
+        id S239737AbiERPvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239625AbiERPvD (ORCPT
+        with ESMTP id S239593AbiERPvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:51:03 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9602791541
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:51:01 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id eg11so3538804edb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 08:51:01 -0700 (PDT)
+        Wed, 18 May 2022 11:51:41 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2073.outbound.protection.outlook.com [40.107.100.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D716D1BE11C;
+        Wed, 18 May 2022 08:51:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DNK4EStW9zZ4m1gYAtuHAmq4OcONA9LExasdaBNDrpr1DNa8D5ZMmnK8PXJHTl39P2cSWX9FtjvA1il3lxl5IgLCDe+ijlHL46/tbfkVagW8vqb2RFrSV2Iryl7S9LBXzRKqH+eO/FWNO0JUUB63+zWMybOWHFYgWBHcO3HV2FpEaYTKX1AMqN0DdNoMfDJ3CXwec13ROtwaz4WCuhIebSETQ1jsI3OqXRsZuXVN+UpOtGQYKxA1zwkvuGyJBfPHeCK+3kMZG5foK6tGDmYH9WG+oeGyzfPSgQaRlYXbFdd3HKpUtS8onPDuMnOZmnVXp47BM1x5bhXtd0yTwnxg8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YMgK8aQjXqU3M4XHbxlduLXqQLhIXMpQDr/DIkwNNfU=;
+ b=SFel1T1MRfJhl8PYgQINxZfwXsPjrHhpYgUIjO67ixRpH48pqAa4tAgEES4WzbmhqTW/tTPzhVnxIIUZ7+OfdeastOv/XQpH8m+zfK17mn2w4KMGn0AmJz9K/p7UbcGbxgas6HHMDLqglX1bUsiqEEJ7onkbMSEGKocOZJ8nlD2uim3WmUTcb4VYt5gqdYA9kJOtC/xl93V3Kn/JMtbPjuyNja7L29jIHdjnQVcF0A2LT/0QwXfdVl0XZGuwc60pAImctdlBAPLPRAtkMi0YDFqEgVG11/57d4ghNv6U7pCY5DXA/MaifUehBN0Gv1Tw3xVg1KAJfndLo0K9Y2LWoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cqJvUd681sz/Rpj3bROR5w8jszwa8bJSwwyEmSegot4=;
-        b=cPb1tJ1h/ExxwGcfPisCk9cYxVkxu4zTnNyhm8MU3HLzkkedyyXQHCZcS+39qSREQW
-         bZQblEk4puk1CLb2hzJKwRCkaqKnSkOZhhO9SsNZwlh4fSWbl2yIL4PeyF/w48jOyDVb
-         sJan6jKTe8TlxVRFkIrZ62DO3vNuYmkk+32E1Do9LyRqkO/ws+tYsD0PxWGzCzT1Yfv+
-         d1nRUuirNV3+t0eF2vwIgKY1izNmGxkJiTPA/4/TOAbCMKd/7gUj02TQvyNm7xhMGOQP
-         ACm7bA4BBpmmam8X+adli4IzDzD3AjeKxNzRue4T9B/2PJC/mByNGKw9EBAuh2EC/ONI
-         zkLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cqJvUd681sz/Rpj3bROR5w8jszwa8bJSwwyEmSegot4=;
-        b=o3z+DLgG4JL5JiMGd6IyoBDa3sUnXAMj4bNHtaZJlz9aKwROzieKOVa5xYsK4ayFqk
-         NjXBe/JYWdf7T+z3Nt/d8C492Qemn79N3k0LDN4UUseX/mruZvirignxXSNl1+C2C5XZ
-         yHMTllIf1K6kDFklaLOGiOTPnAsi95mPCboIP3RbRVRmoFyvTcV1HaT3GUaTGnCWXvmO
-         bNv2JYtypfuXhZq5/O8kOrmx3ZOlvfzodipIAsxD80Wvdym8MIlvFb8bi2gepyaDODUW
-         Lm3VVdDzjNCecKNNa7us2mDVL90EZsK6+mJofjbfs4dsYElpNSXA/QJgI+EqRCAjA49I
-         usqQ==
-X-Gm-Message-State: AOAM530geBlLv4z8rOY9liylApAluRUsW9KTWzxEsIoQT8jqqpqdUS4d
-        Ook1RiLuVUsxgDX6nB13f9pCOKP2XAO8D5xFutpMKw==
-X-Google-Smtp-Source: ABdhPJz9BjdO5Rzu/CX+M/2TdhMlwR3/Hv2vNRt9DPqIBxsRJeE1O37QbIGWPl+oOoM0PQiWjNO7ghXa3Ggvq6LCJUk=
-X-Received: by 2002:aa7:cb48:0:b0:42a:addf:4bf1 with SMTP id
- w8-20020aa7cb48000000b0042aaddf4bf1mr392612edt.283.1652889059935; Wed, 18 May
- 2022 08:50:59 -0700 (PDT)
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YMgK8aQjXqU3M4XHbxlduLXqQLhIXMpQDr/DIkwNNfU=;
+ b=kz7gzG8gqfUDT+IfPbNtCB+znNuxJvduPK+K5M1Xtzlkvp8WVM/17Pa74WT5wX0NG0tfh14MO0W/Tr/FVni7uYHYGn3CRijH9GdIuEFVmBO/+4JibTKSuY9kFEhAOxGDH/4SohUghW7AnFNrKeVl9AMGt/DYWooekrsai9i2Bcs=
+Received: from SA1PR02MB8560.namprd02.prod.outlook.com (2603:10b6:806:1fb::24)
+ by DM6PR02MB4219.namprd02.prod.outlook.com (2603:10b6:5:98::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Wed, 18 May
+ 2022 15:51:37 +0000
+Received: from SA1PR02MB8560.namprd02.prod.outlook.com
+ ([fe80::94f0:32be:367b:1798]) by SA1PR02MB8560.namprd02.prod.outlook.com
+ ([fe80::94f0:32be:367b:1798%7]) with mapi id 15.20.5273.014; Wed, 18 May 2022
+ 15:51:37 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        Harini Katakam <harinik@xilinx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        git <git@xilinx.com>
+Subject: RE: [RFC net-next] dt-bindings: net: xilinx: document xilinx emaclite
+ driver binding
+Thread-Topic: [RFC net-next] dt-bindings: net: xilinx: document xilinx
+ emaclite driver binding
+Thread-Index: AQHYZh7/W5aBkbqlHkqbu5HcsW4/mq0j0VEAgAD/x+A=
+Date:   Wed, 18 May 2022 15:51:37 +0000
+Message-ID: <SA1PR02MB85603BDDF6DD3D8182A74915C7D19@SA1PR02MB8560.namprd02.prod.outlook.com>
+References: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+ <20220518003240.GA1942137-robh@kernel.org>
+In-Reply-To: <20220518003240.GA1942137-robh@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=xilinx.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5555ac54-b326-4d32-02c1-08da38e64a8b
+x-ms-traffictypediagnostic: DM6PR02MB4219:EE_
+x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+x-microsoft-antispam-prvs: <DM6PR02MB42193BB995F51525B2BCD363C7D19@DM6PR02MB4219.namprd02.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yM4bKUUiYsZlixHSB7/0ID7YRnlnf5qrG6Mx1uAzk15Mwre+THW+5f3ygUMae04O0ReWnTkQ52JC2ofUlCAG8p2v/VCRn2Q79wgOc+BhvDnSjYMjtiosthtRmvpLzDqu3qQwfSxui+gMMghwNRv2cJswgIPJGdg6KjQ1gCLVHU2HVdJ+PeqJ5bSWVLVstuWNk179U+JE2i41AX29FkCQxFeuj2N3JcEeN77jQTVxlVoyIkNdQQfco7wIIMrAcBXN8z3JGtoGY4Rz25qua0B/2Wt9SuoZ5InPrBlzROTSn056YBR3/Mv7/puSxEySA9WAowHqdxMaVRbQIhTXXl0CRPzRk3UyQLC/tpJLN4gG2aNc2AmK5atjw/zOefDTQ3SmsGS3yk+1ua5exmoSo/lsy4J2OrpvgqZbfZS71iN99c+MxvML4dEgFZljTSifhJpAh9WpjXnsKIjYnAPzV+NALEgRlr3PceMFld6mohULjUtsO6GbXpAUaNg8iIYTVjsfD0HFVzsNQu8Zwfkfja7o8WwqNUDTkq5VGn1CoP7/2cL6kjjBfEPGz5AbYEal2bbzv+TNIPpPzbCFyy0K2xTI8HSsUMTSK0IAId6Sqa6kF2uXmasxM6OuFACRuPvAAy3JVS4bxvFzpqUgUjyKe/uujmRbsNtltN7bH48No2Q9RKFnybmOwm/0H/frQiMV6ophvYlX0R/vbnPhdKTWYLeMm8FhtdsF48OUbEur3J6XQKQoVleVdyHOWdMUTym3+zURHmvh5L0i4dFNTCd8PbWJQnTyVWcqnzuJZZFbfu1EkG9YVAZVR4FL/FJz0Q4mt/2jxSSae0CCpgZmkQXCWG98NA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR02MB8560.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(66476007)(5660300002)(7416002)(86362001)(9686003)(8676002)(66446008)(76116006)(4326008)(52536014)(64756008)(66556008)(122000001)(38100700002)(6916009)(54906003)(33656002)(8936002)(38070700005)(316002)(55016003)(53546011)(508600001)(6506007)(966005)(83380400001)(186003)(71200400001)(107886003)(7696005)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?153MjGMb+jXK6Xk95kPrU3gzeZMYQSG2XyJNT9QToZULkGmfLyORr+td3Lax?=
+ =?us-ascii?Q?EYQY9OpiW3s648CKWjKOWQQ9s2PIJlpo/OhOV3WhtXL+R9hvZl0He4fYd7tZ?=
+ =?us-ascii?Q?gY2RaxPhcv34cMubbVdlK4xSF0A4F/rWsdyZYyx2ka0JTNkcQDRXMiMtrVSX?=
+ =?us-ascii?Q?TjrsenYfSyOAgFfC7J3m0ebaiDHhcrp0DYeZKf20FX16WD52Rh4kpuFOdGNw?=
+ =?us-ascii?Q?ep64O7VtZ4bdLhIibKQbBZHdOVxCV6QOCpHVylUmxDVmCwrLrYldYSoMUCzh?=
+ =?us-ascii?Q?GuNUs3XYN6tV71M7o8nq5ImSXJ3f71ugxJGH+a38QR5Z37Qt66x3GN53njER?=
+ =?us-ascii?Q?/65h5r0FOXCVWEyzP81so1GsSC8Wcvjb20OF71j0udOVWNjr7RAmDzztXrX9?=
+ =?us-ascii?Q?O0cVVW+cy45W89tmF5Fm13Jt5Dwdk7bE/MTXZj4zTpUq+F3l/eWiy+iQRsH7?=
+ =?us-ascii?Q?kfA6JeFvS060YagZywUviYlUSobzrKhWGGLxgEvBpBOFzcNPbgvqsN9sq2RC?=
+ =?us-ascii?Q?h817F+ShNA6bIsvqjSmwa+PILlciWmYJeRxABSf9LOoIca6924dXJ7HtkmEW?=
+ =?us-ascii?Q?A+U2fWT41CxmmZa7mM1ZMBlFmuOQzDsb3J2zh6K9tLPD45zB3kG4F5GANEc/?=
+ =?us-ascii?Q?Zh4DTO2F9kOveWDib4p6ZxwcBm3lbXLV6626xwYP+pXI/vH/GhhjQMx1DZ0X?=
+ =?us-ascii?Q?u6SEPIhcng19pkwWBaF9mIC8P1Owim/p6sBoRHJ1T53cN5+spxqfPt6XAIw0?=
+ =?us-ascii?Q?nTzIGoLoqSmOT/hAJF60bRVbxBimRiNv6ayI6bBpZka0RUuS/c42LaQZQaJO?=
+ =?us-ascii?Q?z68rSYMotcjLSwfIQ3OjpgRqVB5dQTaq/lVDIBvGrB5gGO17nEgs2qMYXz3i?=
+ =?us-ascii?Q?uGrlCwvFnuvWYAwi4lNqc9q07NlZa+b62XIX3TlLw6U1rMSoPRi0iWPy70Ez?=
+ =?us-ascii?Q?FKNq4OgHpFKNAuQr9+XFvzCY8Nbc/JQnjp9NSF3o5h5NsGmik8kO9Z80QHl5?=
+ =?us-ascii?Q?nAFntjZulHSr3w7pW3oQuZpcVumTX6wvweS8krWmYH9CRgIU3Qodg/axbuK9?=
+ =?us-ascii?Q?CZgZoTi4BB7xFiuZ0Zb3njVlzbZp35mN3l1hVjf0fEC/8ML7oVM6zCA3tKDV?=
+ =?us-ascii?Q?kU1505F1kM5mD8cuARP/VEKgCwF5UkitHGG2mZB0qfhX1L3T2o1spEEY7Q/Y?=
+ =?us-ascii?Q?NIlPptgjinPpNPLgKeHkqD7sjW/IYt5F3RBfu9Iw/Wwj5BJC8lfme+sV6WHX?=
+ =?us-ascii?Q?zGdzxrwOjZe4FW2P82RlaBdhCz6aJeXAD/8US+33aSPV5grkeHaA49tTmEKI?=
+ =?us-ascii?Q?eZ1PZ3w9sCtnaGsVgv0PWs0Z3k7//nNBwAI1GjFtH7mLKnI3NDeIz5SCptyO?=
+ =?us-ascii?Q?N1yo8ADWrfxxIw2HaOL7wXZX7Bo0fXPVJOGpBw757YIf+oTXuvO0BDldPlTh?=
+ =?us-ascii?Q?0n6ipNzMrZ0xzJKroJqA0PiT8/gKeMIt/ShP0l3tq+uyZT1/ahzZBQRSe7bz?=
+ =?us-ascii?Q?mWRW8O9IawZU6zllmlnlKBD07T5YIb9Odd/9HOsI5cy6Svk5H0Sf0d8HOgYH?=
+ =?us-ascii?Q?DKPEmGkZodVJa8SEsuQ2iPy/rU4gi11iz60P8Ugv8UEHHFHMq/vBJTauVpBl?=
+ =?us-ascii?Q?bhuttwpLTFsVjQ2dIFLViQxSP7DIzKPoIA6UZges8xx30AS5XVgYOrovb4Ey?=
+ =?us-ascii?Q?Gxr5SYeCPlP1E2z5xijv0ookdhiK92qhRfD93u5VzS/I+yS+54AxL0PzRFXg?=
+ =?us-ascii?Q?xOOz6LvQ4VCSyGkX4nPHjc+s90lt/TR8642JQ7pRq4r260PbIOywTELkI7mL?=
+x-ms-exchange-antispam-messagedata-1: 78zCmErWNsYeDQ==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220516194730.1546328-1-dlatypov@google.com> <20220516194730.1546328-3-dlatypov@google.com>
- <CABVgOSn1Hq6AX-+=+m_uLwKne3wuUadrsE=uPRsgYH3+TFBEuA@mail.gmail.com>
-In-Reply-To: <CABVgOSn1Hq6AX-+=+m_uLwKne3wuUadrsE=uPRsgYH3+TFBEuA@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Wed, 18 May 2022 08:50:48 -0700
-Message-ID: <CAGS_qxqJNpoZkv0==q_yMTuWzATTtUsXw3o1ZOR=n+fjVS+ghA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] kunit: tool: refactoring printing logic into kunit_printer.py
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR02MB8560.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5555ac54-b326-4d32-02c1-08da38e64a8b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2022 15:51:37.0448
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: maZ6mv4U0gVmhC5RKB3/UoF0wndwo4IWWOlST+iLEHtmJXMt8vDOIqcGYtxnFNibPGJeDJXxj57rm5/eQrul0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB4219
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 12:48 AM David Gow <davidgow@google.com> wrote:
->
-> On Tue, May 17, 2022 at 3:48 AM Daniel Latypov <dlatypov@google.com> wrote:
+> -----Original Message-----
+> From: Rob Herring <robh@kernel.org>
+> Sent: Wednesday, May 18, 2022 6:03 AM
+> To: Radhey Shyam Pandey <radheys@xilinx.com>
+> Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> pabeni@redhat.com; krzysztof.kozlowski+dt@linaro.org; Harini Katakam
+> <harinik@xilinx.com>; netdev@vger.kernel.org; devicetree@vger.kernel.org;
+> linux-kernel@vger.kernel.org; git <git@xilinx.com>
+> Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx ema=
+clite
+> driver binding
+>=20
+> On Thu, May 12, 2022 at 10:09:56PM +0530, Radhey Shyam Pandey wrote:
+> > Add basic description for the xilinx emaclite driver DT bindings.
 > >
-> > Context:
-> > * kunit_kernel.py is importing kunit_parser.py just to use the
-> >   print_with_timestamp() function
-> > * the parser is directly printing to stdout, which will become an issue
-> >   if we ever try to run multiple kernels in parallel
-> >
-> > This patch introduces a kunit_printer.py file and migrates callers of
-> > kunit_parser.print_with_timestamp() to call
-> > kunit_printer.stdout.print_with_timestamp() instead.
-> >
-> > Future changes:
-> > If we want to support showing results for parallel runs, we could then
-> > create new Printer's that don't directly write to stdout and refactor
-> > the code to pass around these Printer objects.
-> >
-> > Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 > > ---
->
-> I agree that this will be useful down the line, as running multiple
-> kernels in parallel is definitely something which could be useful. I
-> know the original idea for that was to have multiple parsers, and just
-> to combine the results they gave after the fact, but given that
-> incremental output is so useful, I agree that this is the better path.
->
-> My only super-minor gripe (which I can live with) is that importing
-> 'stdout' and using it as 'stdout.print_with_timestamp()' is a little
-> confusing: I'd've assumed an stdout variable imported into the global
-> namespace was sys.stdout, not a wrapper. Explicitly using
-> kunit_printer.stdout would be a little clearer, IMO. Up to you,
-> though.
+> >  .../bindings/net/xlnx,emaclite.yaml           | 60 +++++++++++++++++++
+> >  1 file changed, 60 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> > b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> > new file mode 100644
+> > index 000000000000..a3e2a0e89b24
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> > @@ -0,0 +1,60 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) %YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/xlnx,emaclite.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Xilinx Emaclite Ethernet controller
+> > +
+> > +maintainers:
+> > +  - Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> > +  - Harini Katakam <harini.katakam@xilinx.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - xlnx,opb-ethernetlite-1.01.a
+> > +      - xlnx,opb-ethernetlite-1.01.b
+> > +      - xlnx,xps-ethernetlite-1.00.a
+> > +      - xlnx,xps-ethernetlite-2.00.a
+> > +      - xlnx,xps-ethernetlite-2.01.a
+> > +      - xlnx,xps-ethernetlite-3.00.a
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  phy-handle: true
+> > +
+> > +  local-mac-address: true
+> > +
+> > +  xlnx,tx-ping-pong:
+> > +    type: boolean
+> > +    description: hardware supports tx ping pong buffer.
+> > +
+> > +  xlnx,rx-ping-pong:
+> > +    type: boolean
+> > +    description: hardware supports rx ping pong buffer.
+>=20
+> Are these based on IP version or configuration of IP?
 
-I was initially writing it that way, but then the following pattern
-got super long
-
-Old:
-print_with_timestamp(red("[ERROR]") + " some error")
-
-New options:
-stdout.print_with_timestamp(stdout.red("[ERROR]") + " some error")
-kunit_printer.stdout.print_with_timestamp(kunit_printer.stdout.red("[ERROR]")
-+ " some error")
-
-But yeah, I see what you mean about potential confusion with sys.stdout.
-I couldn't think of a better (while still short name) for it.
-E.g. "default_printer", "stdout_printer", etc.
-
-FWIW, I have a local patch that drops 99% of the direct uses of
-kunit_printer.stdout in the parser and passes around buffered
-printers.
-And in that case, the use of stdout becomes small enough that we could
-do `kunit_printer.stdout` w/o as much pain/noise.
-
-But I have no plans of sending that out until we need it, since it
-muddies up the code quite a bit.
-And I don't have a clear idea of what the interface to parallel
-testing should look like, so that day is still far off.
+These properties doesn't depend on IP version and are=20
+related to IP configuration.
+=20
+>=20
+> Rob
