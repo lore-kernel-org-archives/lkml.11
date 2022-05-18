@@ -2,123 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 404CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238513AbiERMrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
+        id S236917AbiERMsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237191AbiERMpt (ORCPT
+        with ESMTP id S237572AbiERMqF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:45:49 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92065E02;
-        Wed, 18 May 2022 05:42:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652877731; x=1684413731;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=g12NRS8alSxAMdjIZ7FyL80YifoKRkRmio1kwZZ1BfQ=;
-  b=BfbxW1gcSO24QVRvo6ssEedhk1lu9c77zNq8gfdaTQaftojY2dtHhTg5
-   IaqToqJnFaI/aQDUiEt8GqiWXx9zF8a86UN8P0+bY066Scx8rAAO11bIn
-   Ql0EngWZneimo9rfH5MwestFV48oHE6ZbXmJLP9PfVFCX6LKDPfuESc4Z
-   wNJnP3eaB9k5Qt5DQ6TlMmtccHFvztTs7ZLNAMgPzQwZKdzEIQcXTos2+
-   RHPIR8s7ElhyoNuoeVldnab9W7OFaI7XbeOnvrysotcqJ2LUVCz1lpkca
-   r5lkKcVsU4xgaNbr/UFj64e1RCQ6/aW93cLhu0iioE3hrC7BntSAaIe1D
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="332270387"
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="332270387"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:41:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="639243416"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 18 May 2022 05:41:33 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrIzd-0002BR-4H;
-        Wed, 18 May 2022 12:41:33 +0000
-Date:   Wed, 18 May 2022 20:40:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matthias Kaehlcke <mka@chromium.org>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     kbuild-all@lists.01.org, linux-security-module@vger.kernel.org,
-        dm-devel@redhat.com, linux-kernel@vger.kernel.org,
-        linux-raid@vger.kernel.org, Song Liu <song@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>
-Subject: Re: [PATCH v4 2/3] LoadPin: Enable loading from trusted dm-verity
- devices
-Message-ID: <202205182059.6QY3zspw-lkp@intel.com>
-References: <20220517163437.v4.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
+        Wed, 18 May 2022 08:46:05 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87511632AC;
+        Wed, 18 May 2022 05:43:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652877785; x=1684413785;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=s1haGoMzWn+D78/Wjs5Eo95uLM9lSkcETlTB2+3u46w=;
+  b=hnpwlAkkzVzs23vGtWnOfs/wUZonfu7p2syRxT77kFgjRaBgptaGyWRy
+   YYYiBm8r2Oajs5yr+k9fV8Xhg4g7sBXtbvnNC+CC+2Vf3zZNLQg0WYlG3
+   dxcU+71xKU3D09DqeYMl7Ix3sgK4GFLhl4PTJQ1/2cnTmDp/Nq87w0ki4
+   4=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 18 May 2022 05:43:03 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:43:03 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 18 May 2022 05:43:02 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 18 May 2022 05:42:56 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <vkoul@kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v2] ASoC: qcom: soundwire: Add support for controlling audio CGCR from HLOS
+Date:   Wed, 18 May 2022 18:12:35 +0530
+Message-ID: <1652877755-25120-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517163437.v4.2.I01c67af41d2f6525c6d023101671d7339a9bc8b5@changeid>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matthias,
+Add support for controlling soundwire audio CGCR interface using clock
+framework to make hclk ungating with software. As per new hardware
+changes, software has to always ungate hclk if soundwire is operational
+and keep it running. This requirement is for latest LPASS chipsets for
+RX, TX and WSA path to work.
 
-Thank you for the patch! Yet something to improve:
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+---
+This patch set depends on:
+    -- Clock driver patches for CGCR reset control support.
+	--- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638002
+	--- https://patchwork.kernel.org/project/linux-arm-msm/list/?series=637998	
 
-[auto build test ERROR on device-mapper-dm/for-next]
-[also build test ERROR on song-md/md-next kees/for-next/pstore linus/master v5.18-rc7 next-20220517]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Changes since v1:
+    -- Add audio cgcr reset control in runtime PM resume handler.
+    -- Update dependency list.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220518-073635
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/device-mapper/linux-dm.git for-next
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220518/202205182059.6QY3zspw-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/755e5d82e4d054b2b58a54c94681080cc8cb4582
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Matthias-Kaehlcke/LoadPin-Enable-loading-from-trusted-dm-verity-devices/20220518-073635
-        git checkout 755e5d82e4d054b2b58a54c94681080cc8cb4582
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash security/
+ drivers/soundwire/qcom.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from security/loadpin/loadpin.c:21:
->> include/linux/dm-verity-loadpin.h:22:1: error: expected identifier or '(' before '{' token
-      22 | {
-         | ^
-   include/linux/dm-verity-loadpin.h:21:20: warning: 'dm_verity_loadpin_is_sb_trusted' used but never defined
-      21 | static inline bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +22 include/linux/dm-verity-loadpin.h
-
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  17  
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  18  #if IS_ENABLED(CONFIG_SECURITY_LOADPIN) && IS_BUILTIN(CONFIG_DM_VERITY)
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  19  bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  20  #else
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  21  static inline bool dm_verity_loadpin_is_sb_trusted(struct super_block *sb);
-afd03270f57b8c Matthias Kaehlcke 2022-05-17 @22  {
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  23  	return false;
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  24  }
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  25  #endif
-afd03270f57b8c Matthias Kaehlcke 2022-05-17  26  
-
+diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+index da1ad7e..445e481 100644
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -13,6 +13,7 @@
+ #include <linux/of_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
++#include <linux/reset.h>
+ #include <linux/slab.h>
+ #include <linux/pm_wakeirq.h>
+ #include <linux/slimbus.h>
+@@ -142,6 +143,7 @@ struct qcom_swrm_ctrl {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+ 	void __iomem *mmio;
++	struct reset_control *audio_cgcr;
+ #ifdef CONFIG_DEBUG_FS
+ 	struct dentry *debugfs;
+ #endif
+@@ -656,6 +658,8 @@ static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
+ 	val = FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_ROW_CTRL_BMSK, ctrl->rows_index);
+ 	val |= FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_COL_CTRL_BMSK, ctrl->cols_index);
+ 
++	reset_control_reset(ctrl->audio_cgcr);
++
+ 	ctrl->reg_write(ctrl, SWRM_MCP_FRAME_CTRL_BANK_ADDR(0), val);
+ 
+ 	/* Enable Auto enumeration */
+@@ -1333,6 +1337,10 @@ static int qcom_swrm_probe(struct platform_device *pdev)
+ 	ctrl->bus.compute_params = &qcom_swrm_compute_params;
+ 	ctrl->bus.clk_stop_timeout = 300;
+ 
++	ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, "swr_audio_cgcr");
++	if (IS_ERR(ctrl->audio_cgcr))
++		dev_err(dev, "Failed to get audio_cgcr reset required for soundwire-v1.6.0\n");
++
+ 	ret = qcom_swrm_get_port_config(ctrl);
+ 	if (ret)
+ 		goto err_clk;
+@@ -1486,6 +1494,8 @@ static int __maybe_unused swrm_runtime_resume(struct device *dev)
+ 		qcom_swrm_get_device_status(ctrl);
+ 		sdw_handle_slave_status(&ctrl->bus, ctrl->status);
+ 	} else {
++		reset_control_reset(ctrl->audio_cgcr);
++
+ 		ctrl->reg_write(ctrl, SWRM_MCP_BUS_CTRL, SWRM_MCP_BUS_CLK_START);
+ 		ctrl->reg_write(ctrl, SWRM_INTERRUPT_CLEAR,
+ 			SWRM_INTERRUPT_STATUS_MASTER_CLASH_DET);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.7.4
+
