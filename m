@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1466BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A44C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235500AbiERLRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
+        id S235519AbiERLRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235372AbiERLRI (ORCPT
+        with ESMTP id S235471AbiERLRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:17:08 -0400
+        Wed, 18 May 2022 07:17:12 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8326EC7D;
-        Wed, 18 May 2022 04:17:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7906FA39;
+        Wed, 18 May 2022 04:17:10 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id D074B1F44F21
+        with ESMTPSA id 698371F44F26
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652872625;
-        bh=GKsA2sowh5zETh3IdEBedNaUz2n5kLBfuDV0nmxxWQE=;
+        s=mail; t=1652872629;
+        bh=ed21MxQBys0eLKmWDwmejvGmdOdkFhFLW6SX1N40rec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KYdru4ci2eHtf4cWsXlGKYNZnR1HplnCWpN6mLvSKTMUb2jt/oL+20thHkhp7RtNc
-         og7mXsfpE8i2KsF27I8LTHWgUDSpnIy4iNvNE4ei/linoVW2Rh4yhO1mCRhlWCI4rc
-         529v03hk67SHPnRrZKiZNmdS8kRWIOeo6TIjUjIGaqpu2bvamD5pTSUvsXGGfvcyeN
-         xLB5Njl/AYuNITFBmbrtHh4CskwyKnL3erGJfgp9ZUZjw8Pj2VPdNzl9Gswp9S2wG7
-         Pkg7auU2D6zj/J6YnthMFb5QVNE1PSMovQXV/2vFN4Psd6UOYJGTVN/4cyWfdpfSoA
-         ZiMZ9lZA8s0Cg==
+        b=aAYVeaVpRGNpnK7K1rMus17w1kFCl3LUYG91K0kD28S36a8XsUrw1y+vA9JP+lfGm
+         uqldoPrL7vcpA2gis7rnT+MUAuxD38amDbfLdd669bWIsZV/jCmwdyO3fsXPpUWNC+
+         CUlWitQppVodbyimMcdSwqLYWryK06YeT/gb0tTStwV/XM/n8hRriLiUNc2G8iXjrB
+         +YYILvOJUsY/4k1npTZ2piZV4gnDV9SSpnhlfSFIhUjtqKW2L3qbIpR706PrptzGOu
+         5uATAPiEgZdkaO/mvMgmu/YIOHH4E8rEVsEQs2fwS5TuUkthoAMjklwDTj6OhsehDD
+         xu2rii6BJRc4A==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     robh+dt@kernel.org
@@ -46,9 +46,9 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
         martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
         phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
         kernel@collabora.com
-Subject: [PATCH v2 3/7] dt-bindings: reset: Add bindings for MT6795 Helio X10 reset controllers
-Date:   Wed, 18 May 2022 13:16:48 +0200
-Message-Id: <20220518111652.223727-4-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v2 5/7] clk: mediatek: clk-apmixed: Remove unneeded __init annotation
+Date:   Wed, 18 May 2022 13:16:50 +0200
+Message-Id: <20220518111652.223727-6-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518111652.223727-1-angelogioacchino.delregno@collabora.com>
 References: <20220518111652.223727-1-angelogioacchino.delregno@collabora.com>
@@ -58,70 +58,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the reset controller bindings for MT6795.
+Remove an unneeded __init annotation from the declaration of function
+mtk_clk_register_ref2usb_tx(): this avoids section mismatch warnings
+during modpost phase when called from functions that have no such
+annotation (useful when clocks are platform drivers).
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- include/dt-bindings/reset/mt6795-resets.h | 50 +++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
- create mode 100644 include/dt-bindings/reset/mt6795-resets.h
+ drivers/clk/mediatek/clk-apmixed.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/dt-bindings/reset/mt6795-resets.h b/include/dt-bindings/reset/mt6795-resets.h
-new file mode 100644
-index 000000000000..0a6514884eae
---- /dev/null
-+++ b/include/dt-bindings/reset/mt6795-resets.h
-@@ -0,0 +1,50 @@
-+/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause) */
-+/*
-+ * Copyright (c) 2022 Collabora Ltd.
-+ * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-+ */
-+
-+#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT6795
-+#define _DT_BINDINGS_RESET_CONTROLLER_MT6795
-+
-+/* INFRACFG resets */
-+#define MT6795_INFRA_SCPSYS_RST			0
-+#define MT6795_INFRA_PMIC_WRAP_RST		1
-+
-+/* MMSYS resets */
-+#define MT6795_MMSYS_SW0_RST_B_SMI_COMMON	0
-+#define MT6795_MMSYS_SW0_RST_B_SMI_LARB		1
-+#define MT6795_MMSYS_SW0_RST_B_CAM_MDP		2
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RDMA0	3
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RDMA1	4
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RSZ0		5
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RSZ1		6
-+#define MT6795_MMSYS_SW0_RST_B_MDP_RSZ2		7
-+#define MT6795_MMSYS_SW0_RST_B_MDP_TDSHP0	8
-+#define MT6795_MMSYS_SW0_RST_B_MDP_TDSHP1	9
-+#define MT6795_MMSYS_SW0_RST_B_MDP_WDMA		10
-+#define MT6795_MMSYS_SW0_RST_B_MDP_WROT0	11
-+#define MT6795_MMSYS_SW0_RST_B_MDP_WROT1	12
-+#define MT6795_MMSYS_SW0_RST_B_MDP_CROP		13
-+
-+/*  PERICFG resets */
-+#define MT6795_PERI_NFI_SW_RST			0
-+#define MT6795_PERI_THERM_SW_RST		1
-+#define MT6795_PERI_MSDC1_SW_RST		2
-+
-+/* TOPRGU resets */
-+#define MT6795_TOPRGU_INFRA_SW_RST		0
-+#define MT6795_TOPRGU_MM_SW_RST			1
-+#define MT6795_TOPRGU_MFG_SW_RST		2
-+#define MT6795_TOPRGU_VENC_SW_RST		3
-+#define MT6795_TOPRGU_VDEC_SW_RST		4
-+#define MT6795_TOPRGU_IMG_SW_RST		5
-+#define MT6795_TOPRGU_DDRPHY_SW_RST		6
-+#define MT6795_TOPRGU_MD_SW_RST			7
-+#define MT6795_TOPRGU_INFRA_AO_SW_RST		8
-+#define MT6795_TOPRGU_MD_LITE_SW_RST		9
-+#define MT6795_TOPRGU_APMIXED_SW_RST		10
-+#define MT6795_TOPRGU_PWRAP_SPI_CTL_RST		11
-+#define MT6795_TOPRGU_SW_RST_NUM		12
-+
-+#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT6795 */
+diff --git a/drivers/clk/mediatek/clk-apmixed.c b/drivers/clk/mediatek/clk-apmixed.c
+index fc3d4146f482..6b0ab0a346e8 100644
+--- a/drivers/clk/mediatek/clk-apmixed.c
++++ b/drivers/clk/mediatek/clk-apmixed.c
+@@ -70,7 +70,7 @@ static const struct clk_ops mtk_ref2usb_tx_ops = {
+ 	.unprepare	= mtk_ref2usb_tx_unprepare,
+ };
+ 
+-struct clk_hw * __init mtk_clk_register_ref2usb_tx(const char *name,
++struct clk_hw *mtk_clk_register_ref2usb_tx(const char *name,
+ 			const char *parent_name, void __iomem *reg)
+ {
+ 	struct mtk_ref2usb_tx *tx;
 -- 
 2.35.1
 
