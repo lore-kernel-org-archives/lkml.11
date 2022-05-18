@@ -2,91 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C51C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC92C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 11:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235277AbiERLCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 07:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S235302AbiERLD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 07:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235271AbiERLC2 (ORCPT
+        with ESMTP id S235271AbiERLDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 07:02:28 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DED91668A5;
-        Wed, 18 May 2022 04:02:24 -0700 (PDT)
-Received: from zn.tnic (p200300ea974657d0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:57d0:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6EC811EC0622;
-        Wed, 18 May 2022 13:02:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1652871738;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=3KZplAhi7nPL7UxT3WtozJ9AVTOwoLDcqlHiNy8Et8I=;
-        b=SLGBz714A+zFjmiQKQHnOoWGuLqxTYj4vzgEuNsPIxgJ3GEzpCl0Ib8BLUWgf5R1Zgtn24
-        iOj7CFzKLvh4o2ZF/rVSIeQqIQBNCYqJGo0oeEIITIpO6GG+Dq7grQMi6omW4rRMwqpVHE
-        XQMqfmHZ8osvN5vDJ//8WIN980urIqg=
-Date:   Wed, 18 May 2022 13:02:13 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Smita.KoralahalliChannabasappa@amd.com, muralidhara.mk@amd.com,
-        naveenkrishna.chatradhi@amd.com
-Subject: Re: [PATCH 10/18] EDAC/amd64: Add read_mc_regs() into pvt->ops
-Message-ID: <YoTSNajDepFS6Wxp@zn.tnic>
-References: <20220509145534.44912-1-yazen.ghannam@amd.com>
- <20220509145534.44912-11-yazen.ghannam@amd.com>
+        Wed, 18 May 2022 07:03:24 -0400
+X-Greylist: delayed 556 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 04:03:19 PDT
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8DE50166D7C;
+        Wed, 18 May 2022 04:03:18 -0700 (PDT)
+Received: from localhost.localdomain (unknown [183.157.163.156])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCXfUwv0IRiHWB1AA--.24950S4;
+        Wed, 18 May 2022 18:53:36 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     krzysztof.kozlowski@linaro.org, dan.carpenter@oracle.com,
+        cyeaa@connect.ust.hk, rikard.falkeborn@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH v0] nfc: pn533: Fix buggy cleanup order
+Date:   Wed, 18 May 2022 18:53:21 +0800
+Message-Id: <20220518105321.32746-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220509145534.44912-11-yazen.ghannam@amd.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: cC_KCgCXfUwv0IRiHWB1AA--.24950S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7AF1rGw4ftr1rZw1UAF1UWrg_yoW8Zr4xp3
+        9Iva4ayw4kJr4jkF4DWw4kX343Gan7JFyxKr4xGw4Uurn5JF1UJFWftFyjqayxJrWkGr43
+        ArZ5Wr98KFZ8AF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUym14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
+        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
+        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
+        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
+        AvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E
+        14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 02:55:26PM +0000, Yazen Ghannam wrote:
-> @@ -3766,6 +3751,7 @@ static struct low_ops umc_ops = {
->  	.read_base_mask			= umc_read_base_mask,
->  	.determine_memory_type		= umc_determine_memory_type,
->  	.determine_ecc_sym_sz		= umc_determine_ecc_sym_sz,
-> +	.read_mc_regs			= umc_read_mc_regs,
->  };
->  
->  /* Use Family 16h versions for defaults and adjust as needed below. */
-> @@ -3777,6 +3763,7 @@ static struct low_ops dct_ops = {
->  	.read_base_mask			= dct_read_base_mask,
->  	.determine_memory_type		= dct_determine_memory_type,
->  	.determine_ecc_sym_sz		= dct_determine_ecc_sym_sz,
-> +	.read_mc_regs			= dct_read_mc_regs,
+When removing the pn533 device (i2c or USB), there is a logic error. The
+original code first cancels the worker (flush_delayed_work) and then
+destroys the workqueue (destroy_workqueue), leaving the timer the last
+one to be deleted (del_timer). This result in a possible race condition
+in a multi-core preempt-able kernel. That is, if the cleanup
+(pn53x_common_clean) is concurrently run with the timer handler
+(pn533_listen_mode_timer), the timer can queue the poll_work to the
+already destroyed workqueue, causing use-after-free.
 
-Aha, good, here you do that split I mentioned earlier.
+This patch reorder the cleanup: it uses the del_timer_sync to make sure
+the handler is finished before the routine will destroy the workqueue.
+Note that the timer cannot be activated by the worker again.
 
->  static int per_family_init(struct amd64_pvt *pvt)
-> @@ -3938,7 +3925,15 @@ static int hw_info_get(struct amd64_pvt *pvt)
->  	if (ret)
->  		return ret;
->  
-> -	read_mc_regs(pvt);
-> +	pvt->ops->read_mc_regs(pvt);
-> +
-> +	pvt->ops->prep_chip_selects(pvt);
-> +
-> +	pvt->ops->read_base_mask(pvt);
-> +
-> +	pvt->ops->determine_memory_type(pvt);
-> +
-> +	pvt->ops->determine_ecc_sym_sz(pvt);
->  
+static void pn533_wq_poll(struct work_struct *work)
+...
+ rc = pn533_send_poll_frame(dev);
+ if (rc)
+   return;
 
-Yeah, no need for the spaces.
+ if (cur_mod->len == 0 && dev->poll_mod_count > 1)
+   mod_timer(&dev->listen_timer, ...);
 
-Thx.
+That is, the mod_timer can be called only when pn533_send_poll_frame()
+returns no error, which is impossible because the device is detaching
+and the lower driver should return ENODEV code.
 
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+---
+ drivers/nfc/pn533/pn533.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
+index a491db46e3bd..a0532647b040 100644
+--- a/drivers/nfc/pn533/pn533.c
++++ b/drivers/nfc/pn533/pn533.c
+@@ -2787,13 +2787,14 @@ void pn53x_common_clean(struct pn533 *priv)
+ {
+ 	struct pn533_cmd *cmd, *n;
+ 
++	/* delete the timer before cleanup the worker */
++	del_timer_sync(&priv->listen_timer);
++
+ 	flush_delayed_work(&priv->poll_work);
+ 	destroy_workqueue(priv->wq);
+ 
+ 	skb_queue_purge(&priv->resp_q);
+ 
+-	del_timer(&priv->listen_timer);
+-
+ 	list_for_each_entry_safe(cmd, n, &priv->cmd_queue, queue) {
+ 		list_del(&cmd->queue);
+ 		kfree(cmd);
 -- 
-Regards/Gruss,
-    Boris.
+2.35.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
