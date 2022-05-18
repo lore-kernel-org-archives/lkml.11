@@ -2,99 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC11C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA400C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234582AbiERJns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
+        id S234660AbiERJqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234659AbiERJn0 (ORCPT
+        with ESMTP id S234729AbiERJqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:43:26 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4F013275A
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:42:46 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id e28so1285169wra.10
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:42:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=gQeDrLBWkTthIjKLMPftLueNJFyuc1zAuTQfNmleBh8=;
-        b=YhQ42338sEPxyQWIPPpsfEgsH63XcEroBX/csmLaXpqSyPeUunLrRnEL40ild6uR7Y
-         xT5zTjkzOyvJ0Z4QqhWop5dD1JqLRXSO95t8pGzTND97qGEJwifuOdsd95tC9ywkKuke
-         wYRtuWIdZ87VUjWjIEqGrBIYUwpUVjaCXK43kO7LpeBjHfWykkXXm9vGN0s+C+3DtjZ5
-         7qhGx9xI05dhgde69gPCMuxlgGSjkudx5ygNe7/YKjWeBuPQ2zLR+Gbe8vYWrZ+Q5SfP
-         ReECSngKQ9+d59vSspRrH3xG5U7AFDZhF/KiJkAxdJX3AT9ByRAedLsUuImFHqfPkH3r
-         4acQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=gQeDrLBWkTthIjKLMPftLueNJFyuc1zAuTQfNmleBh8=;
-        b=sDvbwpBQGnc1u92qb9KD37wvvgFj0vsM49cfbQ+BKMOvMWTWg39Jvq5AC+2DzRHfUp
-         cbXWWY108Sgf7fGsg8YWipdO8mHNtN8pHxvadXXqxlDTPbENGjA32NvPF1oYp89Gq7wg
-         gp65+n8QKEVbeg1FWfA1oY9Z3b0rAS7sVLXiDUe57fRnlCZ8Km58uVuhUddgNogHCNmB
-         D3oCEC2rW75ZpboPnqBT+SQIQNQDNlOS+Skd/gjlk17mhWkpml4dpVC5/6riCdbQzszg
-         IzDAKDGeN2UL77PNGG+ADGykeMwOG31PW85FbxXV10pQdRZ4zSaPoaAggYEXUu84WiuJ
-         loyQ==
-X-Gm-Message-State: AOAM5307QxExJeRTAYgB+xfrWdLYoehQxez06Zq9qAgTZOXA4HKYv1WV
-        yljdrEr+TzGi+EKLhsfmvd0vFA==
-X-Google-Smtp-Source: ABdhPJx+qYdbNUGfgI+n6Dl/d8Yo4rdszaJhtt5MqE1x5NeYcp7yxPz7hQTDzoYkS0z1LmOVy4cTyg==
-X-Received: by 2002:a5d:6041:0:b0:20d:8e4:7bb8 with SMTP id j1-20020a5d6041000000b0020d08e47bb8mr11908908wrt.652.1652866964698;
-        Wed, 18 May 2022 02:42:44 -0700 (PDT)
-Received: from localhost ([193.117.214.243])
-        by smtp.gmail.com with ESMTPSA id y21-20020a7bcd95000000b0039489e1bbd6sm3808025wmj.47.2022.05.18.02.42.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 02:42:44 -0700 (PDT)
-Date:   Wed, 18 May 2022 10:42:43 +0100
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Pierre Gondois <pierre.gondois@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
-        dietmar.eggemann@arm.com, sudeep.holla@arm.com,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Robert Moore <robert.moore@intel.com>,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        devel@acpica.org
-Subject: Re: [PATCH v2 1/5] ACPI: CPPC: Check _OSC for flexible address space
-Message-ID: <20220518094243.6oxbdmf226jvqoef@viresh-thinkpad>
-References: <20220518090901.2724518-1-pierre.gondois@arm.com>
+        Wed, 18 May 2022 05:46:00 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2C7513CC8;
+        Wed, 18 May 2022 02:45:42 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 33AD61FB;
+        Wed, 18 May 2022 02:45:01 -0700 (PDT)
+Received: from [10.57.4.200] (unknown [10.57.4.200])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 872E13F66F;
+        Wed, 18 May 2022 02:44:58 -0700 (PDT)
+Message-ID: <ca02e8f5-04bd-01ff-7b57-0fd08a1e2359@arm.com>
+Date:   Wed, 18 May 2022 10:44:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220518090901.2724518-1-pierre.gondois@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 4/4] perf tools: arm64: Add support for VG register
+Content-Language: en-US
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        broonie@kernel.org, acme@kernel.org, german.gomez@arm.com,
+        mathieu.poirier@linaro.org, john.garry@huawei.com,
+        Will Deacon <will@kernel.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+References: <20220517102005.3022017-1-james.clark@arm.com>
+ <20220517102005.3022017-5-james.clark@arm.com>
+ <20220517131952.GE153558@leoy-ThinkPad-X240s>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <20220517131952.GE153558@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18-05-22, 11:08, Pierre Gondois wrote:
-> ACPI 6.2 Section 6.2.11.2 'Platform-Wide OSPM Capabilities':
->   Starting with ACPI Specification 6.2, all _CPC registers can be in
->   PCC, System Memory, System IO, or Functional Fixed Hardware address
->   spaces. OSPM support for this more flexible register space scheme is
->   indicated by the “Flexible Address Space for CPPC Registers” _OSC bit
-> 
-> Otherwise (cf ACPI 6.1, s8.4.7.1.1.X), _CPC registers must be in:
-> - PCC or Functional Fixed Hardware address space if defined
-> - SystemMemory address space (NULL register) if not defined
-> 
-> Add the corresponding _OSC bit and check it when parsing _CPC objects.
-> 
-> Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
-> Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-> ---
->  drivers/acpi/bus.c       | 18 ++++++++++++++++++
->  drivers/acpi/cppc_acpi.c |  9 +++++++++
->  include/linux/acpi.h     |  2 ++
->  3 files changed, 29 insertions(+)
 
-It would be much useful to get a cover letter for this series with
-what you have changed since the previous version. It is almost
-impossible to find that out otherwise.
 
--- 
-viresh
+On 17/05/2022 14:19, Leo Yan wrote:
+> On Tue, May 17, 2022 at 11:20:05AM +0100, James Clark wrote:
+>> Add the name of the VG register so it can be used in --user-regs
+>>
+>> The event will fail to open if the register is requested but not
+>> available so only add it to the mask if the kernel supports sve and also
+>> if it supports that specific register.
+>>
+>> Signed-off-by: James Clark <james.clark@arm.com>
+>> ---
+>>  tools/perf/arch/arm64/util/perf_regs.c | 34 ++++++++++++++++++++++++++
+>>  tools/perf/util/perf_regs.c            |  2 ++
+>>  2 files changed, 36 insertions(+)
+>>
+>> diff --git a/tools/perf/arch/arm64/util/perf_regs.c b/tools/perf/arch/arm64/util/perf_regs.c
+>> index 476b037eea1c..c0a921512a90 100644
+>> --- a/tools/perf/arch/arm64/util/perf_regs.c
+>> +++ b/tools/perf/arch/arm64/util/perf_regs.c
+>> @@ -2,9 +2,11 @@
+>>  #include <errno.h>
+>>  #include <regex.h>
+>>  #include <string.h>
+>> +#include <sys/auxv.h>
+>>  #include <linux/kernel.h>
+>>  #include <linux/zalloc.h>
+>>  
+>> +#include "../../../perf-sys.h"
+>>  #include "../../../util/debug.h"
+>>  #include "../../../util/event.h"
+>>  #include "../../../util/perf_regs.h"
+>> @@ -43,6 +45,7 @@ const struct sample_reg sample_reg_masks[] = {
+>>  	SMPL_REG(lr, PERF_REG_ARM64_LR),
+>>  	SMPL_REG(sp, PERF_REG_ARM64_SP),
+>>  	SMPL_REG(pc, PERF_REG_ARM64_PC),
+>> +	SMPL_REG(vg, PERF_REG_ARM64_VG),
+>>  	SMPL_REG_END
+>>  };
+>>  
+>> @@ -131,3 +134,34 @@ int arch_sdt_arg_parse_op(char *old_op, char **new_op)
+>>  
+>>  	return SDT_ARG_VALID;
+>>  }
+>> +
+>> +uint64_t arch__user_reg_mask(void)
+>> +{
+>> +	struct perf_event_attr attr = {
+>> +		.type                   = PERF_TYPE_HARDWARE,
+>> +		.config                 = PERF_COUNT_HW_CPU_CYCLES,
+>> +		.sample_type            = PERF_SAMPLE_REGS_USER,
+>> +		.disabled               = 1,
+>> +		.exclude_kernel         = 1,
+>> +		.sample_period		= 1,
+>> +		.sample_regs_user	= PERF_REGS_MASK
+>> +	};
+>> +	int fd;
+>> +
+>> +	if (getauxval(AT_HWCAP) & HWCAP_SVE)
+>> +		attr.sample_regs_user |= SMPL_REG_MASK(PERF_REG_ARM64_VG);
+>> +
+>> +	/*
+>> +	 * Check if the pmu supports perf extended regs, before
+>> +	 * returning the register mask to sample.
+>> +	 */
+>> +	if (attr.sample_regs_user != PERF_REGS_MASK) {
+>> +		event_attr_init(&attr);
+>> +		fd = sys_perf_event_open(&attr, 0, -1, -1, 0);
+>> +		if (fd != -1) {
+>> +			close(fd);
+>> +			return attr.sample_regs_user;
+>> +		}
+>> +	}
+> 
+> Just curious, since we can know SVE is supported from reading
+> auxiliary value, can we directly return the register mask as below?
+> 
+>   PERF_REGS_MASK | SMPL_REG_MASK(PERF_REG_ARM64_VG);
+
+I was trying to cover the case where the system supports SVE, but
+the kernel doesn't have my changes to add the VG register yet.
+
+Technically I could just attempt to open the event without checking
+for SVE first and see if it works or not. But I preferred to be
+explicit so it's obvious why we're doing that.
+
+James
+
+> 
+> Except this question, this patch looks good to me.
+> 
+> Thanks,
+> Leo
+> 
+>> +	return PERF_REGS_MASK;
+>> +}
+>> diff --git a/tools/perf/util/perf_regs.c b/tools/perf/util/perf_regs.c
+>> index a982e40ee5a9..872dd3d38782 100644
+>> --- a/tools/perf/util/perf_regs.c
+>> +++ b/tools/perf/util/perf_regs.c
+>> @@ -103,6 +103,8 @@ static const char *__perf_reg_name_arm64(int id)
+>>  		return "lr";
+>>  	case PERF_REG_ARM64_PC:
+>>  		return "pc";
+>> +	case PERF_REG_ARM64_VG:
+>> +		return "vg";
+>>  	default:
+>>  		return NULL;
+>>  	}
+>> -- 
+>> 2.28.0
+>>
