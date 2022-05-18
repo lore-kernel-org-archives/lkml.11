@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C1AC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 337FAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236886AbiERMde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54796 "EHLO
+        id S236789AbiERMdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236803AbiERMcs (ORCPT
+        with ESMTP id S236901AbiERMct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:32:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21655DA59;
+        Wed, 18 May 2022 08:32:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21BD5F8CB;
         Wed, 18 May 2022 05:29:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00BB96164C;
-        Wed, 18 May 2022 12:28:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1499DC385AA;
-        Wed, 18 May 2022 12:28:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB66AB81FBA;
+        Wed, 18 May 2022 12:29:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE314C34100;
+        Wed, 18 May 2022 12:29:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876912;
-        bh=IUN29lJ+JAwPbvxgjq8dqn4ODUTyFTt6/A5kJgrGy2w=;
+        s=k20201202; t=1652876949;
+        bh=QthLUezj51OHIH/d94GCmVVj5dFJwmK1Ae4LYtY9Z2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EKVPJ26QzvGYxde8mGPji/q82kmOJoyS6MPQqckY/K6vZSmFOd+Ed1kkgxD8BDj1g
-         rkYKqzXB4VL40LQFdYNGZLok1ooLzritr5NHRE5suCgarMnQQ10lvCJC4EaJAS7jii
-         O6M1HIsRPJXthLjhuRqsGi/agOKSevdlKW+uDf5kzwwL2aABLdxt2EQDs1ynbkXUQ7
-         Krzue4Rybgyr1ASQ12K5r9eWEcVGOQl+/Cuxf8Ea41kO48cM8DX/fNadaXOdsl3+mI
-         +QQ4yxNnkYkqgyKuo2EpekmwZ/e86wmL6oXw+RkCYNCcQJ9Zgm1AJWoZsrlY1hgK0l
-         IT7LARBt9csdw==
+        b=L7NZRIjammru5Nzsj74RanplxE/6Y3JqszqztuUcflTeARHcqLF+TjCssTUyBOEhr
+         slnmbyT2WPph4qz3sSwFDGCjiVJ9TAtScTm5pJryhw6CTFX9f9r8JeYFD4JqL/3GDH
+         5xaRfpWZwGsYVSbUVH+wi5sF3TbM/tO4WiaPLWCpbmzQvWgYf/Ls3uPlTF9coqRxED
+         oBnoBE0tLhR/BA0mj+NwGnCjHt8D0Y1AgFjQG/m+LnBb2/nP5bhcjl35QOLjgIHE4k
+         4dxS1jUiCksX404d9B3qmne0dIwfsJJ16PfJx87aI+Rp4toelvv+o2my3uM09kj3H9
+         pbBBP7DbxEZlw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Grant Grundler <grundler@chromium.org>,
@@ -42,12 +42,12 @@ Cc:     Grant Grundler <grundler@chromium.org>,
         Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 15/17] net: atlantic: verify hw_head_ lies within TX buffer ring
-Date:   Wed, 18 May 2022 08:27:49 -0400
-Message-Id: <20220518122753.342758-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 08/13] net: atlantic: fix "frag[0] not initialized"
+Date:   Wed, 18 May 2022 08:28:39 -0400
+Message-Id: <20220518122844.343220-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
-References: <20220518122753.342758-1-sashal@kernel.org>
+In-Reply-To: <20220518122844.343220-1-sashal@kernel.org>
+References: <20220518122844.343220-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,10 +58,17 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
+[ Upstream commit 62e0ae0f4020250f961cf8d0103a4621be74e077 ]
 
-Bounds check hw_head index provided by NIC to verify it lies
-within the TX buffer ring.
+In aq_ring_rx_clean(), if buff->is_eop is not set AND
+buff->len < AQ_CFG_RX_HDR_SIZE, then hdr_len remains equal to
+buff->len and skb_add_rx_frag(xxx, *0*, ...) is not called.
+
+The loop following this code starts calling skb_add_rx_frag() starting
+with i=1 and thus frag[0] is never initialized. Since i is initialized
+to zero at the top of the primary loop, we can just reference and
+post-increment i instead of hardcoding the 0 when calling
+skb_add_rx_frag() the first time.
 
 Reported-by: Aashay Shringarpure <aashay@google.com>
 Reported-by: Yi Chou <yich@google.com>
@@ -70,27 +77,30 @@ Signed-off-by: Grant Grundler <grundler@chromium.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 9f1b15077e7d..45c17c585d74 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -889,6 +889,13 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
- 		err = -ENXIO;
- 		goto err_exit;
- 	}
-+
-+	/* Validate that the new hw_head_ is reasonable. */
-+	if (hw_head_ >= ring->size) {
-+		err = -ENXIO;
-+		goto err_exit;
-+	}
-+
- 	ring->hw_head = hw_head_;
- 	err = aq_hw_err_from_flags(self);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 72f8751784c3..7cf5a48e9a7d 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -445,7 +445,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		       ALIGN(hdr_len, sizeof(long)));
  
+ 		if (buff->len - hdr_len > 0) {
+-			skb_add_rx_frag(skb, 0, buff->rxdata.page,
++			skb_add_rx_frag(skb, i++, buff->rxdata.page,
+ 					buff->rxdata.pg_off + hdr_len,
+ 					buff->len - hdr_len,
+ 					AQ_CFG_RX_FRAME_MAX);
+@@ -454,7 +454,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 
+ 		if (!buff->is_eop) {
+ 			buff_ = buff;
+-			i = 1U;
+ 			do {
+ 				next_ = buff_->next;
+ 				buff_ = &self->buff_ring[next_];
 -- 
 2.35.1
 
