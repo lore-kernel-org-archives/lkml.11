@@ -2,106 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE88C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD547C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231699AbiERGux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
+        id S231927AbiERGvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231665AbiERGup (ORCPT
+        with ESMTP id S231639AbiERGuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:50:45 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08882314E;
-        Tue, 17 May 2022 23:50:32 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso1166626pjg.0;
-        Tue, 17 May 2022 23:50:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=dJi7DyL08jLb0JerJmEdQTHN+3oTFu1F6uZ7CfAP2l8=;
-        b=QoWjQpN4B1ybyGss5uqphvodb+BZPe7VNEv34NpKZEOkctrmfA7J/H+MPSjRNAigod
-         jQB14L5lTX9KRToUQEi5L9UsCtPf3xyp4GOoV5vdEAeoyqfiq7+ZFVhFia1ExbBTi1FB
-         Cjs8dDBhqoB6HeB+B7mTUBTfdBg29YYKDu/WDjRSIJYob9fOxiD1xKWw1sSsu4317HSv
-         tDYtU0W73ehiMsPR1k05QaMPrxEi3OcUc0gSRUGEHB1MmAPcT5CsTFDRETFGAmCrxrUc
-         7L6Z3u1GwltF9nBr7MSB9a37E5tOtvWeElzsBWeV63MQtl0P4D13Q5Ymnbk+wxDaZnfq
-         pBSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=dJi7DyL08jLb0JerJmEdQTHN+3oTFu1F6uZ7CfAP2l8=;
-        b=3YpTeux8Q2YxrFWfhnE77gl5Em3lxNFM/1PLce8i7CCcXqHfQ4c/QqRV32zv/mqEQ9
-         aLG3g8exBEUHPD04f7iaOwgp0QHWH3cW/DoTtO3d+WSusV+g+UGEQXGH+BYujryOCPia
-         Hx0fSAqFlKNr2U6/Oh3Fteqa9bqpVcZyJXYPI+WsAczB1sVpZUOoohsNpjPza88H1knR
-         aK96D4wp9PHNJhwVq++xd67nAkQA89WCPi0ikASeAXT01/HagEz6oN4R6fPLAEvOeVrs
-         HmoKBy5G4A54cMpn7GO06Ttxv+fYc2PszNveU2J3rvgzA1DRtWo0+B39omPEhJ58PgG8
-         5D8w==
-X-Gm-Message-State: AOAM533jVz8Tk+FinGvKkwr/TvENfxFNmQwrHjMumQuaPG2BNBRpyDzN
-        jKLEzopQLwL6+SnOYNrhZEo=
-X-Google-Smtp-Source: ABdhPJweIjKiVSRSYmEAghlVfkmU36X6uzXxS/q8JyZMABQpv9hL8DzRYEz3YmZnwUQMuLfEN7PmKA==
-X-Received: by 2002:a17:902:82c7:b0:161:4936:f068 with SMTP id u7-20020a17090282c700b001614936f068mr19888302plz.145.1652856632366;
-        Tue, 17 May 2022 23:50:32 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-19.three.co.id. [180.214.232.19])
-        by smtp.gmail.com with ESMTPSA id q9-20020a170902a3c900b00161b50c3db4sm786019plb.94.2022.05.17.23.50.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 23:50:31 -0700 (PDT)
-Message-ID: <2816e961-08f9-407b-e8f8-b63f844d864c@gmail.com>
-Date:   Wed, 18 May 2022 13:50:26 +0700
+        Wed, 18 May 2022 02:50:19 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557FA23BFA;
+        Tue, 17 May 2022 23:50:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652856609; x=1684392609;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qLSSlJQUcJ7Jk5kyK0nA+TPrGxree8c3irzJ5UAVEoI=;
+  b=fvZ86t9nKG2FzoVmnfT/jjPlUlhxc9Ag4PEOQH4NWiQX0XPZtYlv82Um
+   Nh8+1+xvgS250c8FyN9gAQbh8C2YzhUFK2qB+hVgsDD3KfBJ4ukHEEDmP
+   B6kZyHYEaQ3vfoYxkcG+UPTHCeQ6pncX2K6YVF066jjlLMQMpKj2A59d5
+   dBe8q04YzRCcT0pO4WGFIasFw7fmRaZT/S5yZ57pzaMul1paCWC99yqqO
+   BNkWlQBRXaAQa1Llj1VZazqhfQBI2hAYbZpw91M+NhlJO0ud7oYQmFuHP
+   FI6DYFVwwxYRQkwoH/f8e7WIxdhG1nQg/ou7ykGxJEJYJqS/H7PfNt56+
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357920239"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="357920239"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 23:50:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="817295163"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.90])
+  by fmsmga006.fm.intel.com with ESMTP; 17 May 2022 23:50:06 -0700
+From:   tien.sung.ang@intel.com
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com
+Cc:     linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ang Tien Sung <tien.sung.ang@intel.com>
+Subject: [PATCH] fpga: altera-cvp: Truncated bitstream error support
+Date:   Wed, 18 May 2022 14:48:44 +0800
+Message-Id: <20220518064844.2694651-1-tien.sung.ang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/2] platform/chrome: Use tables for values lists of
- ChromeOS ACPI sysfs ABI
-Content-Language: en-US
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     linux-doc@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Benson Leung <bleung@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220518031750.21923-1-bagasdotme@gmail.com>
- <20220518031750.21923-2-bagasdotme@gmail.com> <YoRp/49OA9tqMd9N@google.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <YoRp/49OA9tqMd9N@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/18/22 10:37, Tzung-Bi Shih wrote:
-> On Wed, May 18, 2022 at 10:17:50AM +0700, Bagas Sanjaya wrote:
->>  What:		/sys/bus/platform/devices/GGL0001:*/CHSW
->>  Date:		May 2022
->>  KernelVersion:	5.19
->>  Description:
->>  		This file shows the switch position for the Chrome OS specific
->> -		hardware switches.
->> -		  * 0   - No changes.
->> -		  * 2   - Recovery button was pressed when firmware booted.
->> -		  * 4   - Recovery button was pressed when EC firmware booted.
->> -		  * 32  - Developer switch was enabled when firmware booted.
->> -		  * 512 - Firmware write protection was disabled when firmware
->> -			  booted.
->> +		hardware switches when the firmare is booted.
-> 
-> s/firmare/firmware/.
-> 
-> Could you fix it in v2 and also Cc to <chrome-platform@lists.linux.dev>?
+From: Ang Tien Sung <tien.sung.ang@intel.com>
 
-OK, but regarding the schedule, we are on -rc7 (official mainline release
-will be imminent). Maybe I can send the v2 immediately, or should I wait
-for a day?
+To support the error handling of a truncated bitstream sent.
+The current AIB CvP firmware is not capable of handling a
+data stream smaller than 4096bytes. The firmware's limitation
+causes a hung-up as it's DMA engine waits forever for the
+completion of the instructed 4096bytes.
+To resolve this design limitation, both firmware and CvP
+driver made several changes. At the CvP driver, we just
+have to ensure that anything lesser than 4096bytes are
+padded with extra bytes. The CvP will then, initiate the
+tear-down by clearing the START_XFER and CVP_CONFIG bits.
+We should also check for CVP_ERROR during the CvP completion.
+A send_buf which is always 4096bytes is used to copy the
+data during every transaction.
 
+Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
+---
+ drivers/fpga/altera-cvp.c | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/fpga/altera-cvp.c b/drivers/fpga/altera-cvp.c
+index 4ffb9da537d8..80edcfb5e5fc 100644
+--- a/drivers/fpga/altera-cvp.c
++++ b/drivers/fpga/altera-cvp.c
+@@ -81,6 +81,7 @@ struct altera_cvp_conf {
+ 	u8			numclks;
+ 	u32			sent_packets;
+ 	u32			vsec_offset;
++	u8			*send_buf;
+ 	const struct cvp_priv	*priv;
+ };
+ 
+@@ -453,7 +454,11 @@ static int altera_cvp_write(struct fpga_manager *mgr, const char *buf,
+ 		}
+ 
+ 		len = min(conf->priv->block_size, remaining);
+-		altera_cvp_send_block(conf, data, len);
++		/* Copy the requested host data into the transmit buffer */
++
++		memcpy(conf->send_buf, data, len);
++		altera_cvp_send_block(conf, (const u32 *)conf->send_buf,
++		conf->priv->block_size);
+ 		data += len / sizeof(u32);
+ 		done += len;
+ 		remaining -= len;
+@@ -492,10 +497,13 @@ static int altera_cvp_write_complete(struct fpga_manager *mgr,
+ 	if (ret)
+ 		return ret;
+ 
+-	/* STEP 16 - check CVP_CONFIG_ERROR_LATCHED bit */
+-	altera_read_config_dword(conf, VSE_UNCOR_ERR_STATUS, &val);
+-	if (val & VSE_UNCOR_ERR_CVP_CFG_ERR) {
+-		dev_err(&mgr->dev, "detected CVP_CONFIG_ERROR_LATCHED!\n");
++	/*
++	 * STEP 16 - If bitstream error (truncated/miss-matched),
++	 * we shall exit here.
++	 */
++	ret = altera_read_config_dword(conf, VSE_CVP_STATUS, &val);
++	if (ret || (val & VSE_CVP_STATUS_CFG_ERR)) {
++		dev_err(&mgr->dev, "CVP_CONFIG_ERROR!\n");
+ 		return -EPROTO;
+ 	}
+ 
+@@ -661,6 +669,12 @@ static int altera_cvp_probe(struct pci_dev *pdev,
+ 
+ 	pci_set_drvdata(pdev, mgr);
+ 
++	/* Allocate the 4096 block size transmit buffer */
++	conf->send_buf = devm_kzalloc(&pdev->dev, conf->priv->block_size, GFP_KERNEL);
++	if (!conf->send_buf) {
++		ret = -ENOMEM;
++		goto err_unmap;
++	}
+ 	return 0;
+ 
+ err_unmap:
 -- 
-An old man doll... just what I always wanted! - Clara
+2.25.1
+
