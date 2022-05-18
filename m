@@ -2,132 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BD52C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD88C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231185AbiERGan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
+        id S231419AbiERGbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230512AbiERGal (ORCPT
+        with ESMTP id S230512AbiERGau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:30:41 -0400
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B04172AC3
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:30:38 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowAA3PZGDkoRi2FJxCA--.25107S2;
-        Wed, 18 May 2022 14:30:29 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     dan.carpenter@oracle.com
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org, straube.linux@gmail.com,
-        fmdefrancesco@gmail.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v2] staging: r8188eu: add check for kzalloc
-Date:   Wed, 18 May 2022 14:30:24 +0800
-Message-Id: <20220518063024.514280-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 18 May 2022 02:30:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90612DFF49
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:30:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652855447;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=HiUpgPTTlKwXv4we5H4dCAID8KOjBHxi0Xtt24lk5jI=;
+        b=gCsHJ7NndDTq3S/1d08gvXS7/f26u1OZae55U4+tKOZk/cUE830XQzmkeBZn+cwygdqQOO
+        cQnmKgr1rAYk+GzmpxX6XfHaCTr7IAwNPdq6/Ap6NNyMqxFJ/koEMWj30aY0PRdIddnvw2
+        asO63bqc3EgI/nzK5JObFFKB4/O0nFY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-41-guaH5da3M3KxDG2S8TfNzQ-1; Wed, 18 May 2022 02:30:42 -0400
+X-MC-Unique: guaH5da3M3KxDG2S8TfNzQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 472348032EA;
+        Wed, 18 May 2022 06:30:42 +0000 (UTC)
+Received: from localhost (unknown [10.39.192.212])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D72E6492C3B;
+        Wed, 18 May 2022 06:30:41 +0000 (UTC)
+Date:   Wed, 18 May 2022 07:30:40 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Kirill Tkhai <kirill.tkhai@openvz.org>
+Cc:     qemu-devel@nongnu.org, dm-devel@redhat.com,
+        linux-kernel@vger.kernel.org, Kevin Wolf <kwolf@redhat.com>,
+        hreitz@redhat.com, Xie Yongji <xieyongji@bytedance.com>,
+        sgarzare@redhat.com
+Subject: Attaching qcow2 images to containers
+Message-ID: <YoSSkOQaGL0sBNOI@stefanha-x1.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowAA3PZGDkoRi2FJxCA--.25107S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGrW5Jw1kuw4ftFyUArW3Awb_yoW5Ary7pF
-        s5u34rCFsYvr12kr4DKF1UAry3ua4rGFyUtFyxtwn09FyIyF1UGryYy3WYvr4fZrs29wn8
-        Kr92g34Uua1DCFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
-        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0E
-        wIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E74
-        80Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0
-        I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04
-        k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY
-        1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="VxVmuJGtHcUMbdkL"
+Content-Disposition: inline
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As kzalloc() may return null pointer, it should be better to
-check the return value and return error if fails in order
-to avoid dereference of null pointer.
-Moreover, the return value of rtw_alloc_hwxmits() should also
-be dealt with.
 
-Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog
+--VxVmuJGtHcUMbdkL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-v1 -> v2:
+Hi Kirill,
+I saw your "[PATCH 0/4] dm: Introduce dm-qcow2 driver to attach QCOW2
+files as block device" patch series:
+https://lore.kernel.org/linux-kernel/YkME5ZS2CpXuNmN6@infradead.org/T/
 
-*Change 1. Make rtw_alloc_hwxmits() return -ENOMEM on failure
-and zero on success.
----
- drivers/staging/r8188eu/core/rtw_xmit.c    | 11 +++++++++--
- drivers/staging/r8188eu/include/rtw_xmit.h |  2 +-
- 2 files changed, 10 insertions(+), 3 deletions(-)
+There has been recent work in vDPA (VIRTIO Data Path Acceleration) to
+achieve similar functionality. The qemu-storage-daemon VDUSE export
+attaches a virtio-blk device to the host kernel and QEMU's qcow2
+implementation can be used:
+https://patchew.org/QEMU/20220504074051.90-1-xieyongji@bytedance.com/
 
-diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-index c2a550e7250e..0b3bcfbf22f7 100644
---- a/drivers/staging/r8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-@@ -178,7 +178,10 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 
- 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
- 
--	rtw_alloc_hwxmits(padapter);
-+	res = rtw_alloc_hwxmits(padapter);
-+	if (res)
-+		goto exit;
-+
- 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
- 
- 	for (i = 0; i < 4; i++)
-@@ -1474,7 +1477,7 @@ s32 rtw_xmit_classifier(struct adapter *padapter, struct xmit_frame *pxmitframe)
- 	return res;
- }
- 
--void rtw_alloc_hwxmits(struct adapter *padapter)
-+int rtw_alloc_hwxmits(struct adapter *padapter)
- {
- 	struct hw_xmit *hwxmits;
- 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-@@ -1482,6 +1485,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
- 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
- 
- 	pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
-+	if (!pxmitpriv->hwxmits)
-+		return -ENOMEM;
- 
- 	hwxmits = pxmitpriv->hwxmits;
- 
-@@ -1498,6 +1503,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
- 		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
- 	} else {
- 	}
-+
-+	return 0;
- }
- 
- void rtw_free_hwxmits(struct adapter *padapter)
-diff --git a/drivers/staging/r8188eu/include/rtw_xmit.h b/drivers/staging/r8188eu/include/rtw_xmit.h
-index b2df1480d66b..e73632972900 100644
---- a/drivers/staging/r8188eu/include/rtw_xmit.h
-+++ b/drivers/staging/r8188eu/include/rtw_xmit.h
-@@ -341,7 +341,7 @@ s32 rtw_txframes_sta_ac_pending(struct adapter *padapter,
- void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry);
- s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter);
- void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv);
--void rtw_alloc_hwxmits(struct adapter *padapter);
-+int rtw_alloc_hwxmits(struct adapter *padapter);
- void rtw_free_hwxmits(struct adapter *padapter);
- s32 rtw_xmit(struct adapter *padapter, struct sk_buff **pkt);
- 
--- 
-2.25.1
+A container can then access this virtio-blk device (/dev/vda). Note that
+the virtio-blk device is implemented in software using vDPA/VDUSE, there
+is no virtio-pci device.
+
+As a quick comparison with a dm-qcow2 target, this approach keeps the
+qcow2 code in QEMU userspace and can take advantage of QEMU block layer
+features (storage migration/mirroring/backup, snapshots, etc). On the
+other hand, it's likely to be more heavyweight because bounce buffers
+are required in VDUSE for security reasons, there is a separate
+userspace process involved, and there's the virtio_blk.ko driver and an
+emulated virtio-blk device involved.
+
+Another similar feature that was recently added to QEMU is the
+qemu-storage-daemon FUSE export:
+
+  $ qemu-storage-daemon \
+        --blockdev file,filename=test.img,node-name=drive0 \
+	--export fuse,node-name=drive0,id=fuse0,mountpoint=/tmp/foo
+  $ ls -alF /tmp/foo
+  -r--------. 1 me me 10737418240 May 18 07:22 /tmp/foo
+
+This exports a disk image as a file via FUSE. Programs can access it
+like a regular file and qemu-storage-daemon will do the qcow2 I/O on the
+underlying file.
+
+I wanted to mention these options for exposing qcow2 disk images to
+processes/containers on the host. Depending on your use cases they might
+be interesting. Performance comparisons against VDUSE and FUSE exports
+would be interesting since these new approaches seem to be replacing
+qemu-nbd.
+
+Can you share more about your use cases for the dm-qcow2 target? It
+could be useful for everyone I've CCed to be aware of various efforts in
+this area.
+
+Thanks,
+Stefan
+
+--VxVmuJGtHcUMbdkL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmKEkpAACgkQnKSrs4Gr
+c8hBOggAjwLYdNLqHIo1rQgUfb93kau+ER5YddjUvSxG65CLZGYWeB86JOUfT+rR
+hVi2bBGX1OkL1a66tWLK2Tcbakc6XfQXQ6JCbzJUoKCTI9gIA9i3ztjqrQEzoagn
+liMWkk89XmdrLE8gsA7MOKHdFELKRiFds8JKU0Pny/VDJkOlYO/6gcqCw5fcXkrv
+58PTohwKlOgOVdQ1wzlkFGRtTPtc5/JeFzJOIUs4i+GnqtjubKl4VfbjRiAoqTEj
+uOO5gsJ9mdTHyWd1lugxiSqttqVVZZb6VEQvsnZUwFUoNkB/KHoILTcMWd9GWRn0
+HNO2R2xD/zhG2j+x7dw6n7RBczgUdw==
+=Wa4Q
+-----END PGP SIGNATURE-----
+
+--VxVmuJGtHcUMbdkL--
 
