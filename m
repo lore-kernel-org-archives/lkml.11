@@ -2,134 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD547C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231927AbiERGvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35184 "EHLO
+        id S231622AbiERGvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231639AbiERGuT (ORCPT
+        with ESMTP id S231768AbiERGvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:50:19 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557FA23BFA;
-        Tue, 17 May 2022 23:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652856609; x=1684392609;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=qLSSlJQUcJ7Jk5kyK0nA+TPrGxree8c3irzJ5UAVEoI=;
-  b=fvZ86t9nKG2FzoVmnfT/jjPlUlhxc9Ag4PEOQH4NWiQX0XPZtYlv82Um
-   Nh8+1+xvgS250c8FyN9gAQbh8C2YzhUFK2qB+hVgsDD3KfBJ4ukHEEDmP
-   B6kZyHYEaQ3vfoYxkcG+UPTHCeQ6pncX2K6YVF066jjlLMQMpKj2A59d5
-   dBe8q04YzRCcT0pO4WGFIasFw7fmRaZT/S5yZ57pzaMul1paCWC99yqqO
-   BNkWlQBRXaAQa1Llj1VZazqhfQBI2hAYbZpw91M+NhlJO0ud7oYQmFuHP
-   FI6DYFVwwxYRQkwoH/f8e7WIxdhG1nQg/ou7ykGxJEJYJqS/H7PfNt56+
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357920239"
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="357920239"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 23:50:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
-   d="scan'208";a="817295163"
-Received: from unknown (HELO localhost.localdomain) ([10.226.216.90])
-  by fmsmga006.fm.intel.com with ESMTP; 17 May 2022 23:50:06 -0700
-From:   tien.sung.ang@intel.com
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com
-Cc:     linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ang Tien Sung <tien.sung.ang@intel.com>
-Subject: [PATCH] fpga: altera-cvp: Truncated bitstream error support
-Date:   Wed, 18 May 2022 14:48:44 +0800
-Message-Id: <20220518064844.2694651-1-tien.sung.ang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 18 May 2022 02:51:19 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A126B1F9
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:50:47 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24I1jmj6019084;
+        Wed, 18 May 2022 06:50:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=dv3ylftw1IpqylyssMnizwMF1U3yaF3Pe6VVN9iKL3Y=;
+ b=kE403unOyWJzsl5AiD2Gv7rhRqIXpQG8xHNeiCmTGe/pUINzLeTid2r2LWREeP9XzkED
+ 1vspLDfoXniKLt2JptWwO5uil0KT8mnWW+w93H8MnAPQTFaq0EPnbaJMLMusKOqk0SWU
+ 7tPWt94014FHKk5wd7WIhVt8smSu6jjqmP59lriLBArtbBx2rwuXVmD9ONG2qznrFZZ0
+ clz/Dr+M5D7+/RofZ83CfurJx+GZt9aJz6xUWIo+U/8LYdJVqwXmpftX8OLhqV7M6qVe
+ Mo4hKBGztXSlS5/u+f+fJ1BbrWU4GcEafin6k1JlEbz+1dMzbAal8NqpUtmBIz432M4P XQ== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g23720efe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 06:50:12 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24I6TxEj001228;
+        Wed, 18 May 2022 06:50:11 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2176.outbound.protection.outlook.com [104.47.55.176])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g22v9fm9q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 06:50:11 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E3BNZRxUu9vYuAufo46Q3TpLbggm9o0DKAHS1JvFIl9W50GOD6asLlZiRlBo/3CtuAsJBCKwv+1hARo6aNXuubF9t4iLMGLqTMv4Ttclu/gCrBpVupVvdOWXuxFD9nJW2D9gQhVMghbcv5mXiDdbUkQcEQfJRoeEaB9vpngnCxTzSwjjc9A9jBZa1Ng/tnKnscmzeAdfQie1GaTFUXblhHtgjzuqyqsxduGa9j/LT7FC02O3cysZJSjwIqBTaBqIjCZqAn9M7zZuHYThrYTjuXZmcmktvltlriwWAlohmf8fy9yX1zOgzSMuFf33JZxVgwfRatC7ZddqyUkLf5Ly4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dv3ylftw1IpqylyssMnizwMF1U3yaF3Pe6VVN9iKL3Y=;
+ b=RhJUpdJRJEro9gnmfAroBMZtRFfDXpSL+5WO2HW4qeFlYTDSo6C7kxB7mFJS/k3F0fh3Exp73yrTKQ9oAX2Ocf5IBI8Xcn4B5K9U+0sgOqHaLHvigPw1sl97UIrYPfgqq/BKp3M3ZELlRkcXm1yUxEYDsBiX0xAS0J9T0v3lQsH4yvtoomXYbsifjutD5TibkNdNP0Ku7QpFcwyLZP9hfLpfJKy9GXceQcJUHhKslSA8pM8GbJnDuQcT5Oy9HzMYKDXECRD8oA6Zu+Ix6YOCqyGPOLc/QMLRc5ClzGFsRRh0PB/sb4JcUbkCH9SPqyxIFiBywmO9KwaLdtJ1DOatHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dv3ylftw1IpqylyssMnizwMF1U3yaF3Pe6VVN9iKL3Y=;
+ b=fySYO3DNlJxblCcvS1NcymUvpo+6PO9Tx9XCTmMlANdgQTItKRTedWLVuHYMjI9oe79T5hkjk6np5W4VUl79PTHMvRxWTKzjIyYcqXve0Y/OHokVQBdKwfZ3dDeeB0gs0YL1uWAps5On9jxmUMviS8WzQrki3lqZV8CFNlknvFk=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BN7PR10MB2642.namprd10.prod.outlook.com
+ (2603:10b6:406:c4::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13; Wed, 18 May
+ 2022 06:50:10 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5273.014; Wed, 18 May 2022
+ 06:50:10 +0000
+Date:   Wed, 18 May 2022 09:49:59 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        gregkh@linuxfoundation.org, straube.linux@gmail.com,
+        fmdefrancesco@gmail.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: r8188eu: add check for kzalloc
+Message-ID: <20220518064959.GP29930@kadam>
+References: <20220518063024.514280-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518063024.514280-1-jiasheng@iscas.ac.cn>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MR2P264CA0055.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:31::19) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b3df0540-5faa-4d46-8c49-08da389aa6b0
+X-MS-TrafficTypeDiagnostic: BN7PR10MB2642:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR10MB2642A87D477DC66FE8E5B3DB8ED19@BN7PR10MB2642.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: egxV+UsQRYDynxRZp0yeJLMqeQVuEnP+9q28IrWJtN1r/A2rIYi/B9LaUl9zcRLjhSASwvv+G7DNrs6suALkxViOsH1dytSC4XSKoGDO5AIbvdgsksmoujf0/GxAmlttwgKrTOYWi7Mei7AtG2t2jsPZqFhktvFxx1gLXxexsW4wAPVmCjDSDg1RVA9Pxnk+EJoeu+YTymJ0RVRDhMp+KzPTe302sxyKWYor88nIpfMSaaA/HrkGo++wykdQ9CKQQLfVAFoJ8TsCCvNrJZf79DoPAzXBwgGJQ8WWwt4/WR8/K4nxc9rleZf68LWmyC5Q+5R8/Fa70uy2FVu5a2cxgMYVRPC8pZYx9rdTo1nyIar+a6dhiRipd0YYcPWDTJtAINIw1Nk7zXWNvJ9buG6F5N5IF5wgzW2YTS4cU5LlhtYKWu6l8lAwSyPlKRidNQ4ihDAqvES36kjkbwuSab2exV4wC8P7KIS9JRjH9h70Qr/1+GDj2h3NKCiD9qt+AkUI4/1jQk/9B+tWRGrmLDa0At70sXOk8yF4EAPrytgtAis7F6/M9GRZPwi4ud/Uvg77+dDDUM56diF0mGugybCKRIvsuXNpocAZmTpNd3KE7ZLFnENfv34UMg7Z/XU0MxKEIzZaCxVtm2eF/kbUhyRVzej6OfrdM6W0Oz+JInXjhLHG+2gQRN8Bwy3yVABkLOtsbr4+kW+uNSTjNiyQ5JGcFQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(508600001)(5660300002)(6666004)(2906002)(66476007)(6486002)(4326008)(8676002)(6916009)(86362001)(44832011)(6506007)(6512007)(26005)(8936002)(4744005)(38350700002)(33716001)(9686003)(52116002)(66556008)(316002)(66946007)(38100700002)(33656002)(186003)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3QTtIwD7rZZ1P9USCMt0t++FM6al95hcR8kzz09zefEyQQCy8qTeq46tzrBi?=
+ =?us-ascii?Q?sDkHr+UYyaGOzjTMGlKU1wy1P5FzeOu3NhvGZKn2bhKzjDL4RIzqObLuA/2Q?=
+ =?us-ascii?Q?j4cK9aIHH+Cv266QHUs8HD3IuxLk4/bz9TapjlmvVoN+wzY7ClTZo+tP6qWj?=
+ =?us-ascii?Q?QXWJhD8lE7h1FZEJfsG80KJau60CRtKAgYmN5XvGO5Cyrc1n/8OTW5SluA1g?=
+ =?us-ascii?Q?7Z0JJm/QlZV6+DyxVOf0x3SO6amvqn7JjISS4gD/PFnB94xP0shJyMnl9LfV?=
+ =?us-ascii?Q?Xq7OUC2uZyvV3LCJEEvfNIHpAwly3+pm1a5dUKySJ/3e6yKZQkfR+SRnCd3v?=
+ =?us-ascii?Q?RoNKaj18YHQYnQHTiqWEIBBdZs7mPO7esavzxyETLWTd+mTU3mFuY3vuqkHM?=
+ =?us-ascii?Q?0VhoaPpDk5I2MmZGHlmoMxcaubTGMORH4SOk1IaHqwAdFls6t90yGfoCzFt1?=
+ =?us-ascii?Q?75Bs0IM/bjpgqfrrg9px1+4A3iE9QOP1qCW/aKDlZ27OHH9/XLuuUx6Qt0+w?=
+ =?us-ascii?Q?x+ZSPchpv3RJMSpeKl1kzpCWJF+/DDs6xvyGIc9mIwaUjB54ma8VZuwRlyVq?=
+ =?us-ascii?Q?XcIWzk7gbny538BkN0Q0CJwB16lBxe4cLyj3LDmSE2Fb5iPhqwbWOIeQTt62?=
+ =?us-ascii?Q?ye1uO0CWxMXnkXa2dq48WpPs7f5ABBgkEVc2C8uRU1BYE1Thx71DVC1hxldc?=
+ =?us-ascii?Q?6Eo0mBeSktsML2g5Gee5lv/YjnkiNmf8In6T/JOhMka90IC1NW73a+QpgrIq?=
+ =?us-ascii?Q?yCnQMTAQeM5C1nsafRtbB0qHCZO0esntPvnpTRPb2ebh1hZt0ZmRzxATsXgo?=
+ =?us-ascii?Q?+6bPy/elzQFBj3YL+7kC9vHG+r99J4uFJpFQP13Ekyfz+gaiqC4H8xYk9pfQ?=
+ =?us-ascii?Q?Qk8cSneNmjuTCQr29n7jP+IvhNT5ff1AngaCQ4OfqTY0VYKZcAgxmdplHNcI?=
+ =?us-ascii?Q?AZ0jvOxGrK3kUX6jT1RpCrRYYr0+fRjtY0jfCSn5KVYZpCAdLpsvbL5VrEqt?=
+ =?us-ascii?Q?AWTOmyIoDFjDKRbqIo5EAsMZ7pCELzH2cNCKJIgCx8ZU+Zp900LkNX7yLuoQ?=
+ =?us-ascii?Q?51qx4EI8IInn3P3SivTnW7NNezIHSsSo/7F2PxY0IpzFLH+7jrYdMrqE2Bq2?=
+ =?us-ascii?Q?OzarO2Zv7Af0tWVSb7jcsrXdLvoX0t8KLLtWApRtbfiSbzi0aLZwm0BOw2Bd?=
+ =?us-ascii?Q?aXJgBmcDGgVXv84UBk9x6uUdSWso2WXKmBfYzperpvpFPdHYGwHEYA8kf1j4?=
+ =?us-ascii?Q?UIuwRFDxkKKWcNwZb7rW/q7hj9+ydY7aPMwfqsLd9qC9He1bedAxDB86f6W+?=
+ =?us-ascii?Q?1uRe/SChe3rn4RrkVFiZPaI4/eAbzTfY54jjzW3v6zKPSDxx0wN2sGCKLORI?=
+ =?us-ascii?Q?jJqG4VcWbw58ne2B97UmI648/yWJLlDy55Mj1rmiRd1jd+AMNjeHhbiZnfeo?=
+ =?us-ascii?Q?M42bNTL5SiqOOwEe3cqj1/oP1Bozd2zRNdmBpIM5uyWpawXOoAzIyX00tOZh?=
+ =?us-ascii?Q?s6h+rmvXMmFU/IX7dpPWQMkzzvIpShON5kP1pAQ9aZPen42itEyJW2ER+ygY?=
+ =?us-ascii?Q?6JAG0ZAtyqIWjO0QzCfnhLzfjAGkn2zf1l3EeJXPP+QZybUHN5G246icB9nk?=
+ =?us-ascii?Q?ybkfiFuLcERvtrYbs1Isv6xPIuLUcHjCTi7GpVHMHECaInCNIrOr9tK28zg3?=
+ =?us-ascii?Q?Oeq9sOrql48BRyvrtBNuKwFzDiMjRj2bVAOSfxcW9KLrVvR4sd4lItn1V0+9?=
+ =?us-ascii?Q?3gT0U4B6TIQgz4BZ9lHRWTMvqgIsvM0=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3df0540-5faa-4d46-8c49-08da389aa6b0
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2022 06:50:10.0928
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WesNqB34wDnjrMFAzBvEjYEgbfNvlqxVBLD67h2sD/U0LUp1jFF98rxLhz5CPHXHw5cELBu9WAXRbiFnLX/dwPg47MMUTbiL50BytV4XxnI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR10MB2642
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
+ definitions=2022-05-18_02:2022-05-17,2022-05-18 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 mlxscore=0
+ phishscore=0 suspectscore=0 mlxlogscore=999 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205180035
+X-Proofpoint-GUID: cYUhx2mlCFKtZsL67o3zuv8bWLJciwzO
+X-Proofpoint-ORIG-GUID: cYUhx2mlCFKtZsL67o3zuv8bWLJciwzO
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ang Tien Sung <tien.sung.ang@intel.com>
+On Wed, May 18, 2022 at 02:30:24PM +0800, Jiasheng Jiang wrote:
+> diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+> index c2a550e7250e..0b3bcfbf22f7 100644
+> --- a/drivers/staging/r8188eu/core/rtw_xmit.c
+> +++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+> @@ -178,7 +178,10 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+>  
+>  	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
+>  
+> -	rtw_alloc_hwxmits(padapter);
+> +	res = rtw_alloc_hwxmits(padapter);
+> +	if (res)
+> +		goto exit;
 
-To support the error handling of a truncated bitstream sent.
-The current AIB CvP firmware is not capable of handling a
-data stream smaller than 4096bytes. The firmware's limitation
-causes a hung-up as it's DMA engine waits forever for the
-completion of the instructed 4096bytes.
-To resolve this design limitation, both firmware and CvP
-driver made several changes. At the CvP driver, we just
-have to ensure that anything lesser than 4096bytes are
-padded with extra bytes. The CvP will then, initiate the
-tear-down by clearing the START_XFER and CVP_CONFIG bits.
-We should also check for CVP_ERROR during the CvP completion.
-A send_buf which is always 4096bytes is used to copy the
-data during every transaction.
+Unfortunately this needs to be:
 
-Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
----
- drivers/fpga/altera-cvp.c | 24 +++++++++++++++++++-----
- 1 file changed, 19 insertions(+), 5 deletions(-)
+	if (res) {
+		res = _FAIL;
+		goto exit;
+	}
 
-diff --git a/drivers/fpga/altera-cvp.c b/drivers/fpga/altera-cvp.c
-index 4ffb9da537d8..80edcfb5e5fc 100644
---- a/drivers/fpga/altera-cvp.c
-+++ b/drivers/fpga/altera-cvp.c
-@@ -81,6 +81,7 @@ struct altera_cvp_conf {
- 	u8			numclks;
- 	u32			sent_packets;
- 	u32			vsec_offset;
-+	u8			*send_buf;
- 	const struct cvp_priv	*priv;
- };
- 
-@@ -453,7 +454,11 @@ static int altera_cvp_write(struct fpga_manager *mgr, const char *buf,
- 		}
- 
- 		len = min(conf->priv->block_size, remaining);
--		altera_cvp_send_block(conf, data, len);
-+		/* Copy the requested host data into the transmit buffer */
-+
-+		memcpy(conf->send_buf, data, len);
-+		altera_cvp_send_block(conf, (const u32 *)conf->send_buf,
-+		conf->priv->block_size);
- 		data += len / sizeof(u32);
- 		done += len;
- 		remaining -= len;
-@@ -492,10 +497,13 @@ static int altera_cvp_write_complete(struct fpga_manager *mgr,
- 	if (ret)
- 		return ret;
- 
--	/* STEP 16 - check CVP_CONFIG_ERROR_LATCHED bit */
--	altera_read_config_dword(conf, VSE_UNCOR_ERR_STATUS, &val);
--	if (val & VSE_UNCOR_ERR_CVP_CFG_ERR) {
--		dev_err(&mgr->dev, "detected CVP_CONFIG_ERROR_LATCHED!\n");
-+	/*
-+	 * STEP 16 - If bitstream error (truncated/miss-matched),
-+	 * we shall exit here.
-+	 */
-+	ret = altera_read_config_dword(conf, VSE_CVP_STATUS, &val);
-+	if (ret || (val & VSE_CVP_STATUS_CFG_ERR)) {
-+		dev_err(&mgr->dev, "CVP_CONFIG_ERROR!\n");
- 		return -EPROTO;
- 	}
- 
-@@ -661,6 +669,12 @@ static int altera_cvp_probe(struct pci_dev *pdev,
- 
- 	pci_set_drvdata(pdev, mgr);
- 
-+	/* Allocate the 4096 block size transmit buffer */
-+	conf->send_buf = devm_kzalloc(&pdev->dev, conf->priv->block_size, GFP_KERNEL);
-+	if (!conf->send_buf) {
-+		ret = -ENOMEM;
-+		goto err_unmap;
-+	}
- 	return 0;
- 
- err_unmap:
--- 
-2.25.1
+Eventually someone will get rid of the _FAIL garbage but for now the
+caller expects it.
+
+regards,
+dan carpenter
 
