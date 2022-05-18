@@ -2,67 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E67C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 102A2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 01:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233487AbiERBLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 21:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
+        id S233294AbiERBMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 21:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233293AbiERBKf (ORCPT
+        with ESMTP id S233394AbiERBLE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 21:10:35 -0400
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CC454037
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 18:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=cLufi8C/pq1tC35Pcp/4ka+TGfK85l6KoqVAtPpSvf4=; b=UUgPsBo7H8EQXUiXLMMgVdFODt
-        R+qLt6G/xo3toa9DRsheJZ7XCypnVf0M5oiHiqVSfqFSxTqeEnHTfTevPqcPZgqfaoBj0VmZofA5E
-        KCGVmctdp7Z17cq2ori14obWPglUN+r9uXPy1r9vZl6VK7IW/L+CFgZrXPhSTHe3XFRfJ6njo+YEK
-        orEQczb/TilzQTsbYr7qUrusWB3MN/4Bmz92D7sqjAK4WiKHN5Y2nZHF+PPtMf+z+1CMvAeo6ed4H
-        hVyV5rlLjlyEr8UjnnBlrZjqFnX+J1im86n0PLCZbmyI50/n17VpK7+gHJPITn7UiXHpMRwT0JVc2
-        hR2zsigg==;
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nr8Ci-00FtLQ-S6; Wed, 18 May 2022 01:10:20 +0000
-Date:   Wed, 18 May 2022 01:10:20 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
-Cc:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
-Message-ID: <YoRHfB7lEGUwQBGU@zeniv-ca.linux.org.uk>
-References: <20220517223806.2299-1-hdanton@sina.com>
- <000000000000be329205df3cf252@google.com>
- <YoQohxAFD3EPujRC@zeniv-ca.linux.org.uk>
- <YoRFAoe99ob/YzD5@zeniv-ca.linux.org.uk>
+        Tue, 17 May 2022 21:11:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CEFDBE;
+        Tue, 17 May 2022 18:11:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D6F661592;
+        Wed, 18 May 2022 01:11:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9471AC385B8;
+        Wed, 18 May 2022 01:11:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652836261;
+        bh=0JohyQWS56e9PsJ/aORrWTbXqvcpO0LM4k4hDLaFxSc=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=mLIfT9w9lPhfdw9FKFVlZVkdTmBxuuusCSUEyodBbq+pJnMSrBSJy8XXuyRwLyRia
+         Qot+dznXqo4P5ZnAcmGr9OtuW6I38udInffyXceCjESIAJfHhf2njRgj1RfSSOirAp
+         tQvhq1+8QM2LwwENv67K2GIAy2juTmUiR2Mr4ugevZ4gvcpWsV12uhtM30/Dnh78gg
+         Iv1R1Ino0+RjXba1EPwBX5XaiYPGU+x82E9FmkEVEQUPYlXjEEIkQjXLXV0xi1f+HJ
+         UMO0InwYprDxMrYeGGdjyrEcHr7cyCZmsuWb96s+30VVhGLm7ooLuN9+B8L5iP9QKO
+         v8djKpv1v1BKw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 349865C051B; Tue, 17 May 2022 18:11:01 -0700 (PDT)
+Date:   Tue, 17 May 2022 18:11:01 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arch@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        stable@vger.kernel.org, peterz@infradead.org, tglx@linutronix.de,
+        namit@vmware.com, gor@linux.ibm.com, rdunlap@infradead.org,
+        mingo@kernel.org, jgross@suse.com, gregkh@linuxfoundation.org,
+        mpe@ellerman.id.au
+Subject: Re: [PATCH v4] locking/csd_lock: change csdlock_debug from
+ early_param to __setup
+Message-ID: <20220518011101.GK1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220510094639.106661-1-chenzhongjin@huawei.com>
+ <9b3e61b8-ecab-08ff-a3b6-83d6862ead77@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YoRFAoe99ob/YzD5@zeniv-ca.linux.org.uk>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9b3e61b8-ecab-08ff-a3b6-83d6862ead77@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 12:59:46AM +0000, Al Viro wrote:
-> On Tue, May 17, 2022 at 10:58:15PM +0000, Al Viro wrote:
-> > On Tue, May 17, 2022 at 03:49:07PM -0700, syzbot wrote:
-> > > Hello,
-> > > 
-> > > syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-> > > WARNING in mntput_no_expire
+On Tue, May 17, 2022 at 11:22:04AM +0800, Chen Zhongjin wrote:
+> On 2022/5/10 17:46, Chen Zhongjin wrote:
+> > csdlock_debug uses early_param and static_branch_enable() to enable
+> > csd_lock_wait feature, which triggers a panic on arm64 with config:
+> > CONFIG_SPARSEMEM=y
+> > CONFIG_SPARSEMEM_VMEMMAP=n
 > > 
-> > Obvious question: which filesystem it is?
+> > With CONFIG_SPARSEMEM_VMEMMAP=n, __nr_to_section is called in
+> > static_key_enable() and returns NULL which makes NULL dereference
+> > because mem_section is initialized in sparse_init() which is later
+> > than parse_early_param() stage.
+> > 
+> > For powerpc this is also broken, because early_param stage is
+> > earlier than jump_label_init() so static_key_enable won't work.
+> > powerpc throws an warning: "static key 'xxx' used before call
+> > to jump_label_init()".
+> > 
+> > Thus, early_param is too early for csd_lock_wait to run
+> > static_branch_enable(), so changes it to __setup to fix these.
+> > 
+> > Fixes: 8d0968cc6b8f ("locking/csd_lock: Add boot parameter for controlling CSD lock debugging")
+> > Cc: stable@vger.kernel.org
+> > Reported-by: Chen jingwen <chenjingwen6@huawei.com>
+> > Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+> > ---
+> > Change v3 -> v4:
+> > Fix title and description because this fix is also applied
+> > to powerpc.
+> > For more detailed arm64 bug report see:
+> > https://lore.kernel.org/linux-arm-kernel/e8715911-f835-059d-27f8-cc5f5ad30a07@huawei.com/t/
+> > 
+> > Change v2 -> v3:
+> > Add module name in title
+> > 
+> > Change v1 -> v2:
+> > Fix return 1 for __setup
+> > ---
+> >  kernel/smp.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/kernel/smp.c b/kernel/smp.c
+> > index 65a630f62363..381eb15cd28f 100644
+> > --- a/kernel/smp.c
+> > +++ b/kernel/smp.c
+> > @@ -174,9 +174,9 @@ static int __init csdlock_debug(char *str)
+> >  	if (val)
+> >  		static_branch_enable(&csdlock_debug_enabled);
+> >  
+> > -	return 0;
+> > +	return 1;
+> >  }
+> > -early_param("csdlock_debug", csdlock_debug);
+> > +__setup("csdlock_debug=", csdlock_debug);
+> >  
+> >  static DEFINE_PER_CPU(call_single_data_t *, cur_csd);
+> >  static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
 > 
-> FWIW, can't reproduce here - at least not with C reproducer +
-> -rc7^ kernel + .config from report + debian kvm image (bullseye,
-> with systemd shite replaced with sysvinit, which might be relevant).
-> 
-> In case systemd-specific braindamage is needed to reproduce it...
-> Hell knows; at least mount --make-rshared / doesn't seem to suffice.
+> Ping for review. Thanks！
 
-... doesn't reproduce with genuine systemd either.  FWIW, 4-way SMP
-setup here.
+I have pulled it into -rcu for testing and further review.  It might
+well need to go through some other path, though.
+
+								Thanx, Paul
