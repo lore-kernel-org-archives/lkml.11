@@ -2,100 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C87CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 154B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236002AbiERMAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53340 "EHLO
+        id S236067AbiERMA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236025AbiERMAS (ORCPT
+        with ESMTP id S236082AbiERMAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:00:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E319B17CC8D;
-        Wed, 18 May 2022 05:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81C11614CA;
-        Wed, 18 May 2022 12:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EAADBC385AA;
-        Wed, 18 May 2022 12:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652875217;
-        bh=N4CG7P7J9ehtboZnNyL/3NxpilnwBDhxeUiHl3WY8Pg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OAddG33cgq4t0ZylC/4RmOyP80rj1uUtjRHVjMivYZbQE1NROZrzXOVKHiWgUkFV9
-         TC18Yp5dC6Ahp+C7ZHx4qo5HsswUkxHldDJRFdaGxj6VsTLf6r5rFKPLLJmGkz2Rfd
-         UMuth1bWF1gMpDrMrRuOqZLwaH8T/mNwYKFxEZjGZtNRAxQe/tHv2qxCLrC2ZngO43
-         pFtxr0v/7U38x5b28kP4Fh+WHFWU+Tie1mPv5iI9V3z08x28d0DGly4iLGfN8I2Die
-         sll9hNv0YNMrJAqlDDYD6gd1/FmHFk3f5/NZJE+noLqSnN+hnq1GFD6PDMfUPViHMS
-         QwwJPLfnJEDig==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D65CFF0383D;
-        Wed, 18 May 2022 12:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 18 May 2022 08:00:48 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46FF17EC24
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:00:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652875238; x=1684411238;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=WSHYkAR+Y/Y+J1/L7sMqFG8zyvb2KyZc7KeydJa4rlY=;
+  b=gh4kXC2TyOvZ0OcwvpA3WJjjpXMRinsN2VwlxE2nOnyhCoSP6NtEak4/
+   SYdoCbvmuK+eSjhVTTNGpN9JksJoC0B0p2y9JN0f56DHbM1grEXL9cw1D
+   PIV9k08rYGkA5xoknK6QVFsj74L6uShq78TdgA5rbu7ZID26T+OgohB8k
+   XtjU/ETitOKIgYDxsMVI7PTsaxwBoNPuF828Px9iSVTCHnjNsWerGXgIR
+   A6wxYqPawnrATUH2S4qeUPaePbday4jY//kBr8nYkj/AN2dEpTLU49JhM
+   GK+2X9o2JQ263Gd9QFcB92Dd9/ubGP9cFMFSpdglC7sa8oFTDeyHQGijc
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271585323"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="271585323"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:00:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="661115225"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 18 May 2022 05:00:32 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrILw-00029N-0G;
+        Wed, 18 May 2022 12:00:32 +0000
+Date:   Wed, 18 May 2022 20:00:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:paulmck/linux-rcu/dev 43/51] ERROR: modpost:
+ "rcu_tasks_trace_qs_blkd" [kernel/torture.ko] undefined!
+Message-ID: <202205181919.oILbHBZa-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Patch net-next 0/9] net: dsa: microchip: refactor the ksz switch
- init function
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165287521687.18230.9206117173490674365.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 May 2022 12:00:16 +0000
-References: <20220517094333.27225-1-arun.ramadoss@microchip.com>
-In-Reply-To: <20220517094333.27225-1-arun.ramadoss@microchip.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux@armlinux.org.uk, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux@rempel-privat.de, marex@denx.de, m.grzeschik@pengutronix.de,
-        edumazet@google.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev
+head:   9a9671fb7a3966dfc7dc67f6aa80acdfe185d72d
+commit: 7c98805ebf93263213dac7b52846d73cebe983f3 [43/51] tasks-rcu: Track blocked RCU Tasks Trace readers
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220518/202205181919.oILbHBZa-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/7c98805ebf93263213dac7b52846d73cebe983f3
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/dev
+        git checkout 7c98805ebf93263213dac7b52846d73cebe983f3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Tue, 17 May 2022 15:13:24 +0530 you wrote:
-> During the ksz_switch_register function, it calls the individual switches init
-> functions (ksz8795.c and ksz9477.c). Both these functions have few things in
-> common like, copying the chip specific data to struct ksz_dev, allocating
-> ksz_port memory and mib_names memory & cnt. And to add the new LAN937x series
-> switch, these allocations has to be replicated.
-> Based on the review feedback of LAN937x part support patch, refactored the
-> switch init function to move allocations to switch register.
-> 
-> [...]
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-Here is the summary with links:
-  - [net-next,1/9] net: dsa: microchip: ksz8795: update the port_cnt value in ksz_chip_data
-    https://git.kernel.org/netdev/net-next/c/a30bf805592e
-  - [net-next,2/9] net: dsa: microchip: move ksz_chip_data to ksz_common
-    https://git.kernel.org/netdev/net-next/c/462d525018f0
-  - [net-next,3/9] net: dsa: microchip: perform the compatibility check for dev probed
-    https://git.kernel.org/netdev/net-next/c/eee16b147121
-  - [net-next,4/9] net: dsa: microchip: move struct mib_names to ksz_chip_data
-    https://git.kernel.org/netdev/net-next/c/a530e6f2204a
-  - [net-next,5/9] net: dsa: microchip: move port memory allocation to ksz_common
-    https://git.kernel.org/netdev/net-next/c/198b34783ab1
-  - [net-next,6/9] net: dsa: microchip: move get_strings to ksz_common
-    https://git.kernel.org/netdev/net-next/c/997d2126ac61
-  - [net-next,7/9] net: dsa: move mib->cnt_ptr reset code to ksz_common.c
-    https://git.kernel.org/netdev/net-next/c/b094c679662c
-  - [net-next,8/9] net: dsa: microchip: add the phylink get_caps
-    https://git.kernel.org/netdev/net-next/c/65ac79e18120
-  - [net-next,9/9] net: dsa: microchip: remove unused members in ksz_device
-    https://git.kernel.org/netdev/net-next/c/008db08b64f4
+>> ERROR: modpost: "rcu_tasks_trace_qs_blkd" [kernel/torture.ko] undefined!
+>> ERROR: modpost: "rcu_tasks_trace_qs_blkd" [kernel/rcu/rcuscale.ko] undefined!
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
