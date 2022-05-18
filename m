@@ -2,122 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F36B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39900C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 17:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241115AbiERR2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 13:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36694 "EHLO
+        id S241129AbiERRaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 13:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241081AbiERR2s (ORCPT
+        with ESMTP id S241081AbiERRaA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 13:28:48 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B60A0D0C
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 10:28:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652894928; x=1684430928;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kpb7BRUtuQc+iJCuUBD1Lroyy3qbPng6bV/1KdEa27o=;
-  b=brv+AGKmhbYnY3r+qLWbhog61Sj/IuwffptSrxZ2po70yBmY8fHc0Jtf
-   VV5pmuGmRlhLxSINtqBLClJfTRoa2Bud5jxNWvkoO3LTtj6kkeQ0k76ll
-   1mb2ddhvNdFkQOVR8sSyQ7nxL3Ct9SR9KSHVqUt63XI/6gwlIePpVX7qb
-   cHik3O6sRX5nT+6jZwdWI9gluDvF8gTe5BrzecEBMwAYY+O/u/+Pl7iRT
-   +yvTHVA8U+7uRUdmhK8e65dp9qPKRmKvrgMw2K0Hj5ybepIy5qlpOskBd
-   jAa9KXtJXSStbdP5DhtGXXHDmH/FoiVYJJo5CBS5iuObdfYmlGVOyRmWB
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="251686963"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="251686963"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 10:08:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="817538239"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 18 May 2022 10:08:15 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 6DDA3109; Wed, 18 May 2022 20:08:15 +0300 (EEST)
-Date:   Wed, 18 May 2022 20:08:15 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Bharata B Rao <bharata@amd.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFCv2 08/10] x86/mm: Make LAM_U48 and mappings above 47-bits
- mutually exclusive
-Message-ID: <20220518170815.4ivbuw7d6vmzh3u7@black.fi.intel.com>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511022751.65540-10-kirill.shutemov@linux.intel.com>
- <e6664140-934a-915d-9d16-f14500ec275e@amd.com>
+        Wed, 18 May 2022 13:30:00 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F56719FF43;
+        Wed, 18 May 2022 10:29:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652894999; x=1684430999;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FjJ+9xSrC3MzYALAqvbVXtyf2yB1lnVWdTlBlRcSlBc=;
+  b=ycjzq0C/pLYzMmGGHYZKA7RiBrWB+24+r6xjmgMxWdMs9tLCtUu2HOeq
+   uMyI3r/xqCsJYADkgYI5IGJ8fxwW4w9z6rtSOa8oFL6EcIJRVCTKmdxKB
+   +lE1yzIlpwRRiS60FBb5ips9dR0cljxb1qSxtbZwZ7r+UmUcxyu3z+XxV
+   c=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 18 May 2022 10:29:59 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 10:29:58 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 18 May 2022 10:29:58 -0700
+Received: from [10.110.42.114] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 18 May
+ 2022 10:29:57 -0700
+Message-ID: <98295144-2e05-674b-4983-5f1738480c86@quicinc.com>
+Date:   Wed, 18 May 2022 10:29:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e6664140-934a-915d-9d16-f14500ec275e@amd.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 0/2] eDP/DP Phy vdda realted function
+Content-Language: en-US
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1652892186-22346-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAA8EJpqq4fxxgY0mj0JBans3GE-HAuad4Zsf7Ntwy1WW3bHbTQ@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAA8EJpqq4fxxgY0mj0JBans3GE-HAuad4Zsf7Ntwy1WW3bHbTQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 02:13:06PM +0530, Bharata B Rao wrote:
-> On 5/11/2022 7:57 AM, Kirill A. Shutemov wrote:
-> > LAM_U48 steals bits above 47-bit for tags and makes it impossible for
-> > userspace to use full address space on 5-level paging machine.
-> > 
-> > Make these features mutually exclusive: whichever gets enabled first
-> > blocks the othe one.
-> > 
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > ---
-> >  arch/x86/include/asm/elf.h         |  3 ++-
-> >  arch/x86/include/asm/mmu_context.h | 13 +++++++++++++
-> >  arch/x86/kernel/sys_x86_64.c       |  5 +++--
-> >  arch/x86/mm/hugetlbpage.c          |  6 ++++--
-> >  arch/x86/mm/mmap.c                 |  9 ++++++++-
-> >  5 files changed, 30 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/arch/x86/include/asm/elf.h b/arch/x86/include/asm/elf.h
-> > index 29fea180a665..53b96b0c8cc3 100644
-> > --- a/arch/x86/include/asm/elf.h
-> > +++ b/arch/x86/include/asm/elf.h
-> > @@ -328,7 +328,8 @@ static inline int mmap_is_ia32(void)
-> >  extern unsigned long task_size_32bit(void);
-> >  extern unsigned long task_size_64bit(int full_addr_space);
-> >  extern unsigned long get_mmap_base(int is_legacy);
-> > -extern bool mmap_address_hint_valid(unsigned long addr, unsigned long len);
-> > +extern bool mmap_address_hint_valid(struct mm_struct *mm,
-> > +				    unsigned long addr, unsigned long len);
-> >  extern unsigned long get_sigframe_size(void);
-> >  
-> >  #ifdef CONFIG_X86_32
-> > diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-> > index 27516046117a..c8a6d80dfec3 100644
-> > --- a/arch/x86/include/asm/mmu_context.h
-> > +++ b/arch/x86/include/asm/mmu_context.h
-> > @@ -218,6 +218,19 @@ static inline bool arch_vma_access_permitted(struct vm_area_struct *vma,
-> >  
-> >  unsigned long __get_current_cr3_fast(void);
-> >  
-> > +#ifdef CONFIG_X86_5LEVEL
-> > +static inline bool full_va_allowed(struct mm_struct *mm)
-> > +{
-> > +	/* LAM_U48 steals VA bits abouve 47-bit for tags */
-> > +	return mm->context.lam != LAM_U48;
-> > +}
-> > +#else
-> 
-> This is called from X86 common code but appears to be LAM-specific.
-> What would mm->context.lam contain if X86_FEATURE_LAM isn't set?
 
-0. So full_va_allowed() will always return true.
+On 5/18/2022 10:16 AM, Dmitry Baryshkov wrote:
+> On Wed, 18 May 2022 at 19:43, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
+>> 1) add regulator_set_load() to eDP/DP phy
+>> 2) remove vdda related function out of eDP/DP controller
+> These patches touch two subsystems and have a dependency between them.
+> How do we merge them?
 
--- 
- Kirill A. Shutemov
+currently, both phy and controller are vote for regulator. The last vote 
+will just increase count.
+
+Therefore the dependency should be very loose.
+
+
+>> Kuogee Hsieh (2):
+>>    phy/qcom: add regulator_set_load to edp/dp phy
+>>    drm/msm/dp: delete vdda regulator related functions from eDP/DP
+>>      controller
+>>
+>>   drivers/gpu/drm/msm/dp/dp_parser.c  | 14 ------
+>>   drivers/gpu/drm/msm/dp/dp_parser.h  |  6 ---
+>>   drivers/gpu/drm/msm/dp/dp_power.c   | 95 +------------------------------------
+>>   drivers/phy/qualcomm/phy-qcom-edp.c | 25 ++++++++--
+>>   drivers/phy/qualcomm/phy-qcom-qmp.c | 13 +++++
+>>   5 files changed, 36 insertions(+), 117 deletions(-)
+>>
+>> --
+>> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+>> a Linux Foundation Collaborative Project
+>>
+>
