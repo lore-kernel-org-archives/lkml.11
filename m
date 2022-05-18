@@ -2,123 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81372C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0854DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 12:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236277AbiERMPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 08:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35604 "EHLO
+        id S236295AbiERMSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 08:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236253AbiERMPT (ORCPT
+        with ESMTP id S232400AbiERMS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 08:15:19 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C637D188E77;
-        Wed, 18 May 2022 05:15:17 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id C929E1F45027
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652876116;
-        bh=FtVu2AuXw/AthOSnF4m9ZOeWkCS8FD3CfCIxTGildz4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=aW57lKMy568QDyibKHFp8KIuYtoEcTU9ZlysDg7TgOISJeQkR21ZzG6i6rm7EdkXp
-         imamVhyO/QUhVa/GJhgXyfjHbhKOAWr7n0NB13CmQGEkiW6E8fmUXOy3Rl0Mc7A01I
-         dUeRGME6DL6YM55g6xEdzyawSTicaFE99npv3YmHrfNlSDiqE32AIrR2uu6uO8ZE1C
-         sC1bgLitM8tZY4IOPt1yeCXAtgs6YIG6WBneFohHm2TH9xUuQPXOsUbjE+qARBVU4l
-         5tHC/JSN11roernrhQW2ggVmJnnDtWG3KVXUhO9RhmT+9G1lN04eNRIvS0EUkNSUo9
-         pAkVqgogKF3jw==
-Message-ID: <ead37cb0-c841-df1a-ca10-a396b5e9951c@collabora.com>
-Date:   Wed, 18 May 2022 14:15:13 +0200
+        Wed, 18 May 2022 08:18:27 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B4C4A92E
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 05:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652876306; x=1684412306;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2nABVGMDBjJQn3wpWnl4igBSwF2dgP+uLdUJBkuxeuk=;
+  b=XjW6WQDq6Y4lKf9wcAZa274Mu5i1HQFCg+d7K0Wc3JMIwrQQNW0/S8qq
+   VlktU/plcCDcsz1t/nLIIzbiRBHjQ2DaAoUrF54b//NT68QVZzCRtdYqm
+   ilrjPjnQ6d2eXfsqYjss8oYis6F642ug/dLBxG+Om+DEgybjVs1xNU3J3
+   Q8vMSVWgt6kC8ovZQuz5FjXbAMezdQv8hit3xDOmGOuoVPZ0D096o9i/6
+   q/GCWGtW7UR4+o9g2OsRe/EZDqlt6K2nkK0Ks5d5jer8Szw2hyb2BseKz
+   oFbUvQr2nl6/IMuuXqjkAvhRHBKwv7WKob4nKbuFM0Z4hWAJok4f9KywL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="269224128"
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="269224128"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 05:18:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,234,1647327600"; 
+   d="scan'208";a="605860787"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 18 May 2022 05:18:22 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 7B24E109; Wed, 18 May 2022 15:18:22 +0300 (EEST)
+Date:   Wed, 18 May 2022 15:18:22 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "david@redhat.com" <david@redhat.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a
+ shared page
+Message-ID: <20220518121822.znaw5pwdsdxbjrlg@black.fi.intel.com>
+References: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
+ <70df6e274d4a40e78f11ef93521edab6@AcuMS.aculab.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] clk: mediatek: Fix unused 'ops' field in mtk_pll_data
-Content-Language: en-US
-To:     Boris Lysov <arz65xx@gmail.com>, arzamas-16@mail.ee,
-        mturquette@baylibre.com, sboyd@kernel.org, matthias.bgg@gmail.com,
-        wenst@chromium.org, miles.chen@mediatek.com
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220515122409.13423-1-arzamas-16@mail.ee>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220515122409.13423-1-arzamas-16@mail.ee>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <70df6e274d4a40e78f11ef93521edab6@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 15/05/22 14:24, Boris Lysov ha scritto:
-> From: Boris Lysov <arzamas-16@mail.ee>
+On Wed, May 18, 2022 at 08:39:45AM +0000, David Laight wrote:
+> From: Kirill A. Shutemov
+> > Sent: 17 May 2022 16:30
+> > 
+> > load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
+> > The unwanted loads are typically harmless. But, they might be made to
+> > totally unrelated or even unmapped memory. load_unaligned_zeropad()
+> > relies on exception fixup (#PF, #GP and now #VE) to recover from these
+> > unwanted loads.
+> > 
+> > In TDX guest the second page can be shared page and VMM may configure it
+> > to trigger #VE.
+> > 
+> > Kernel assumes that #VE on a shared page is MMIO access and tries to
+> > decode instruction to handle it. In case of load_unaligned_zeropad() it
+> > may result in confusion as it is not MMIO access.
+> > 
+> > Check fixup table before trying to handle MMIO.
 > 
-> Allow to specify optional clk_ops in mtk_pll_data which will be picked up in
-> mtk_clk_register_pll. So far no already supported Mediatek SoC needs
-> non-default clk_ops for PLLs but instead of removing this field it will be
-> actually used in the future for supporting older SoCs (see [1] for details)
-> with quirky PLLs.
+> Is it best to avoid that all happening by avoiding mapping
+> 'normal memory' below anything that isn't normal memory.
 > 
-
-Hello Boris,
-
-I disagree about this change and would rather see the ops pointer removed
-with fire.
-
-I got that you're trying to do something about "quirky PLLs", but is it
-really about the PLLs that you're mentioning being "quirky", or are they
-simply a different IP?
-
-Also, if it's just about a bit inversion and a bigger delay:
-1. Bigger delay: Depending on how bigger, we may simply delay more by default
-    for all PLLs, even the ones that aren't requiring us to wait for longer...
-    ...after all, if it's about waiting for 10/20 *microseconds* more, that's
-    really not going to affect anyone's UX, nor make things slower for real,
-    as the .prepare() ops for MediaTek PLLs are seldom called.. and even if
-    that wasn't true, I don't think that a total of 30uS would be that much
-    detrimental to the system's overall operation latency.
-    Besides, if you see a case of a PLL not just switching on and off, but
-    preparing and unpreparing continuously, there must be some big issue in
-    some driver, or in the clock framework somewhere (and that ain't the case);
-
-2. Bit inversion: that can be solved simply with a flag in the prepare/unprepare
-    ops for this driver... and if you want something that performs even better,
-    sparing you a nanosecond or two, you can always assign an "inverted" callback
-    for managing that single bit;
-
-3. Different IP: mtk_clk_register_(name-of-the-new-ip)_pll() - I don't think that
-    there's anything to explain to that one.
-
-Regards,
-Angelo
-
-> This patch depends on series "clk: mediatek: Move to struct clk_hw provider
-> APIs" [2] by Chen-Yu Tsai.
+> Even on a normal system it is potentially possibly that the
+> second page might be MMIO and reference a target that doesn't
+> want to see non-word sized reads.
+> (Or the first location might be a fifo and the read consumes
+> some data.)
 > 
-> [1] https://lists.infradead.org/pipermail/linux-mediatek/2022-February/035093.html
-> [2] https://lists.infradead.org/pipermail/linux-mediatek/2022-May/040921.html
+> In that case the cpu won't fault the access, but the hardware
+> access might have rather unexpected side effects.
 > 
-> Signed-off-by: Boris Lysov <arzamas-16@mail.ee>
-> ---
->   drivers/clk/mediatek/clk-pll.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
-> index cabdf25a27f3..509959a325f0 100644
-> --- a/drivers/clk/mediatek/clk-pll.c
-> +++ b/drivers/clk/mediatek/clk-pll.c
-> @@ -347,7 +347,10 @@ static struct clk_hw *mtk_clk_register_pll(const struct mtk_pll_data *data,
->   
->   	init.name = data->name;
->   	init.flags = (data->flags & PLL_AO) ? CLK_IS_CRITICAL : 0;
-> -	init.ops = &mtk_pll_ops;
-> +	if (data->ops)
-> +		init.ops = data->ops;
-> +	else
-> +		init.ops = &mtk_pll_ops;
->   	if (data->parent_name)
->   		init.parent_names = &data->parent_name;
->   	else
-> 
+> Now the way MMIO pages are allocated probably makes that
+> impossible - but load_unaligned_zeropad() relies on
+> it not happening or not breaking anything.
 
+Normally MMIO mappings comes from ioremap() and it does not land next to
+normal pages in virtual memory. So I don't think there's high risk of MMIO
+being a problem on normal machines.
+
+What makes TDX (and other confidential computing platforms) different is
+security model: host and VMM considered hostile and we need protect
+against it. In TDX case, VMM can make any shared memory (such as DMA
+buffers) to trigger #VE that kernel interprets as MMIO access. We need to
+make sure host cannot exploit it.
+
+-- 
+ Kirill A. Shutemov
