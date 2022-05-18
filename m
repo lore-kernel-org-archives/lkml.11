@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A55C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 06:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231431AbiERGbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 02:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
+        id S231352AbiERGeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 02:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230512AbiERGb2 (ORCPT
+        with ESMTP id S231436AbiERGbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 02:31:28 -0400
-Received: from esa7.hc1455-7.c3s2.iphmx.com (esa7.hc1455-7.c3s2.iphmx.com [139.138.61.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FAA65DF
-        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:31:24 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="51998538"
+        Wed, 18 May 2022 02:31:31 -0400
+Received: from esa9.hc1455-7.c3s2.iphmx.com (esa9.hc1455-7.c3s2.iphmx.com [139.138.36.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16754A473
+        for <linux-kernel@vger.kernel.org>; Tue, 17 May 2022 23:31:29 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="61256555"
 X-IronPort-AV: E=Sophos;i="5.91,234,1647270000"; 
-   d="scan'208";a="51998538"
-Received: from unknown (HELO oym-r1.gw.nic.fujitsu.com) ([210.162.30.89])
-  by esa7.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 15:31:21 +0900
-Received: from oym-m4.gw.nic.fujitsu.com (oym-nat-oym-m4.gw.nic.fujitsu.com [192.168.87.61])
-        by oym-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 19A296C969
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:21 +0900 (JST)
+   d="scan'208";a="61256555"
+Received: from unknown (HELO yto-r1.gw.nic.fujitsu.com) ([218.44.52.217])
+  by esa9.hc1455-7.c3s2.iphmx.com with ESMTP; 18 May 2022 15:31:27 +0900
+Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
+        by yto-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id D0D32D687B
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:26 +0900 (JST)
 Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
-        by oym-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 3B2E5E0CDB
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:20 +0900 (JST)
+        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 0D550F0FE5
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:31:26 +0900 (JST)
 Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om4.fujitsu.com (Postfix) with ESMTP id AC5054007E8A3;
-        Wed, 18 May 2022 15:31:19 +0900 (JST)
+        by yto-om4.fujitsu.com (Postfix) with ESMTP id 924EB4007E8A3;
+        Wed, 18 May 2022 15:31:25 +0900 (JST)
 From:   Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
 To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
@@ -40,10 +40,12 @@ To:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
         linus.walleij@linaro.org, arnd@arndb.de,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     tarumizu.kohei@fujitsu.com
-Subject: [PATCH v4 0/8] Add hardware prefetch control driver for A64FX and x86
-Date:   Wed, 18 May 2022 15:30:24 +0900
-Message-Id: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
+Subject: [PATCH v4 3/8] soc: fujitsu: Add hardware prefetch control support for A64FX
+Date:   Wed, 18 May 2022 15:30:27 +0900
+Message-Id: <20220518063032.2377351-4-tarumizu.kohei@fujitsu.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
+References: <20220518063032.2377351-1-tarumizu.kohei@fujitsu.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
@@ -51,228 +53,402 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series add sysfs interface to control CPU's hardware
-prefetch behavior for performance tuning from userspace for the
-processor A64FX and x86 (on supported CPU).
+Adds module init/exit code to create sysfs attributes for A64FX with
+"stream_detect_prefetcher_enable", "stream_detect_prefetcher_strong"
+and "stream_detect_prefetcher_dist".
 
-Changes from v3: https://lore.kernel.org/lkml/20220420030223.689259-1-tarumizu.kohei@fujitsu.com/
-  - remove hardware-dependent code from core driver
-    (driver/base/pfctl.c)
-  - simplifies implementation of register bit operations
-  - extract the pseudo_lock patch as a separate patch
-    https://lore.kernel.org/lkml/20220518045517.2066518-1-tarumizu.kohei@fujitsu.com/
+This driver works only if part number is FUJITSU_CPU_PART_A64FX. The
+details of the registers to be read and written in this patch are
+described below.
 
-[Background]
-============
-A64FX and some Intel processors have implementation-dependent register
-for controlling CPU's hardware prefetch behavior. A64FX has
-IMP_PF_STREAM_DETECT_CTRL_EL0[1], and Intel processors have MSR 0x1a4
-(MSR_MISC_FEATURE_CONTROL)[2]. These registers cannot be accessed from
-userspace.
+"https://github.com/fujitsu/A64FX/tree/master/doc/"
+    A64FX_Specification_HPC_Extension_v1_EN.pdf
 
-[1]https://github.com/fujitsu/A64FX/tree/master/doc/
-   A64FX_Specification_HPC_Extension_v1_EN.pdf
-
-[2]https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
-    Volume 4
-
-The advantage of using this is improved performance. As an example of
-performance improvements, the results of running the Stream benchmark
-on the A64FX are described in section [Merit].
-
-For MSR 0x1a4, it is also possible to change the value from userspace
-via the MSR driver. However, using MSR driver is not recommended, so
-it needs a proper kernel interface[3].
-
-[3]https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/about/
-
-For these reasons, we provide a new proper kernel interface to control
-both IMP_PF_STREAM_DETECT_CTRL_EL0 and MSR 0x1a4.
-
-[Overall design]
-================
-The source code for this driver is divided into common parts
-(driver/base/pfctl.c) and hardware dependent parts
-(arch/x86/kernel/cpu/x86-pfctl.c and drivers/soc/fujitsu/a64fx-pfctl.c).
-Architecture parts is described hardware-dependent processing. It must
-create attributes for a specific cache level/type.
-Common part is described hardware-independent processing. It create
-sysfs using the attributes from architecture part.
-
-This driver creates "prefetch_control" directory and some attributes
-in every CPU's cache/indexX directory, if CPU supports hardware
-prefetch control behavior.
-
-Detailed description of this sysfs interface is in
-Documentation/ABI/testing/sysfs-devices-system-cpu (patch8).
-
-This driver needs cache sysfs directory and cache level/type
-information. In ARM processor, these information can be obtained
-from registers even without ACPI PPTT.
-We add processing to create a cache/index directory using only the
-information from the register if the machine does not support ACPI
-PPTT and Kconfig for hardware prefetch control (CONFIG_HWPF_CONTROL)
-is true in patch5.
-This action caused a problem and is described in [Known problem].
-
-[Examples]
-==========
-This section provides an example of using this sysfs interface at the
-x86's model of INTEL_FAM6_BROADWELL_X.
-
-This model has the following register specifications:
-
-[0]    L2 Hardware Prefetcher Disable (R/W)
-[1]    L2 Adjacent Cache Line Prefetcher Disable (R/W)
-[2]    DCU Hardware Prefetcher Disable (R/W)
-[3]    DCU IP Prefetcher Disable (R/W)
-[63:4] Reserved
-
-In this case, index0 (L1d cache) corresponds to bit[2,3] and index2
-(L2 cache) corresponds to bit [0,1]. A list of attribute files of
-index0 and index2 in CPU1 at BROADWELL_X is following:
-
-```
-# ls /sys/devices/system/cpu/cpu1/cache/index0/prefetch_control/
-
-hardware_prefetcher_enable
-ip_prefetcher_enable
-
-# ls /sys/devices/system/cpu/cpu1/cache/index2/prefetch_control/
-
-adjacent_cache_line_prefetcher_enable
-hardware_prefetcher_enable
-```
-
-If user would like to disable the setting of "L2 Adjacent Cache Line
-Prefetcher Disable (R/W)" in CPU1, do the following:
-
-```
-# echo 0 >
-# /sys/devices/system/cpu/cpu1/cache/index2/prefetch_control/adjacent_cache_line_prefetcher_enable
-```
-
-In another example, a list of index0 at A64FX is following:
-
-```
-# ls /sys/devices/system/cpu/cpu1/cache/index0/prefetch_control/
-
-stream_detect_prefetcher_dist
-stream_detect_prefetcher_enable
-stream_detect_prefetcher_strength
-stream_detect_prefetcher_strength_available
-```
-
-[Patch organizations]
-=====================
-This patch series add hardware prefetch control core driver for A64FX
-and x86. Also, we add support for A64FX and BROADWELL_X at x86.
-
-- patch1: Add hardware prefetch core driver
-
-  Adds a register/unregister function to provide sysfs interface to
-  control CPU's hardware prefetch behavior. It creates the
-  "prefetch_control" sysfs directory and some attributes.
-
-- patch2: Add Kconfig/Makefile to build hardware prefetch control core
-  driver
-
-- patch3: Add support for A64FX
-
-  Adds module init/exit code to create sysfs attributes for A64FX with
-  "stream_detect_prefetcher_enable", "stream_detect_prefetcher_strong"
-  and "stream_detect_prefetcher_dist".
-
-- patch4: Add Kconfig/Makefile to build driver for A64FX
-
-- patch5: Create cache sysfs directory without ACPI PPTT for hardware
-  prefetch control
-
-  Hardware Prefetch control driver needs cache sysfs directory and cache
-  level/type information. In ARM processor, these information can be
-  obtained from register(CLIDR_EL1) even without PPTT. Therefore, we
-  set the cpu_map_populated to true to create cache sysfs directory, if
-  the machine doesn't have PPTT.
-
-- patch6: Add support for x86
-
-  Adds module init/exit code to create sysfs attributes for x86 with
-  "hardware_prefetcher_enable", "ip_prefetcher_enable" and
-  "adjacent_cache_line_prefetcher_enable".
-
-- patch7: Add Kconfig/Makefile to build driver for x86
-
-- patch8: Add documentation for the new sysfs interface
-
-[Known problem]
-===============
-- `lscpu` command terminates with -ENOENT because cache/index directory
-  is exists but shared_cpu_map file does not exist. This is due to
-  patch5, which creates a cache/index directory containing only level
-  and type without ACPI PPTT.
-
-[Merit]
-=======
-For reference, here is the result of STREAM Triad when tuning with
-the "s file in L1 and L2 cache on A64FX.
-
-| dist combination  | Pattern A   | Pattern B   |
-|-------------------|-------------|-------------|
-| L1:256,  L2:1024  | 234505.2144 | 114600.0801 |
-| L1:1536, L2:1024  | 279172.8742 | 118979.4542 |
-| L1:256,  L2:10240 | 247716.7757 | 127364.1533 |
-| L1:1536, L2:10240 | 283675.6625 | 125950.6847 |
-
-In pattern A, we set the size of the array to 174720, which is about
-half the size of the L1d cache. In pattern B, we set the size of the
-array to 10485120, which is about twice the size of the L2 cache.
-
-In pattern A, a change of dist at L1 has a larger effect. On the other
-hand, in pattern B, the change of dist at L2 has a larger effect.
-As described above, the optimal dist combination depends on the
-characteristics of the application. Therefore, such a sysfs interface
-is useful for performance tuning.
-
-Best regards,
-Kohei Tarumizu
-
-Kohei Tarumizu (8):
-  drivers: base: Add hardware prefetch control core driver
-  drivers: base: Add Kconfig/Makefile to build hardware prefetch control
-    core driver
-  soc: fujitsu: Add hardware prefetch control support for A64FX
-  soc: fujitsu: Add Kconfig/Makefile to build hardware prefetch control
-    driver
-  arm64: Create cache sysfs directory without ACPI PPTT for hardware
-    prefetch control
-  x86: Add hardware prefetch control support for x86
-  x86: Add Kconfig/Makefile to build hardware prefetch control driver
-  docs: ABI: Add sysfs documentation interface of hardware prefetch
-    control driver
-
- .../ABI/testing/sysfs-devices-system-cpu      |  98 +++++
- MAINTAINERS                                   |   8 +
- arch/arm64/kernel/cacheinfo.c                 |  29 ++
- arch/x86/Kconfig                              |   6 +
- arch/x86/kernel/cpu/Makefile                  |   2 +
- arch/x86/kernel/cpu/x86-pfctl.c               | 258 ++++++++++++
- drivers/base/Kconfig                          |   9 +
- drivers/base/Makefile                         |   1 +
- drivers/base/pfctl.c                          | 180 +++++++++
- drivers/soc/Kconfig                           |   1 +
- drivers/soc/Makefile                          |   1 +
- drivers/soc/fujitsu/Kconfig                   |  11 +
- drivers/soc/fujitsu/Makefile                  |   2 +
- drivers/soc/fujitsu/a64fx-pfctl.c             | 373 ++++++++++++++++++
- include/linux/pfctl.h                         |  14 +
- 15 files changed, 993 insertions(+)
- create mode 100644 arch/x86/kernel/cpu/x86-pfctl.c
- create mode 100644 drivers/base/pfctl.c
- create mode 100644 drivers/soc/fujitsu/Kconfig
- create mode 100644 drivers/soc/fujitsu/Makefile
+Signed-off-by: Kohei Tarumizu <tarumizu.kohei@fujitsu.com>
+---
+ drivers/soc/fujitsu/a64fx-pfctl.c | 373 ++++++++++++++++++++++++++++++
+ 1 file changed, 373 insertions(+)
  create mode 100644 drivers/soc/fujitsu/a64fx-pfctl.c
- create mode 100644 include/linux/pfctl.h
 
+diff --git a/drivers/soc/fujitsu/a64fx-pfctl.c b/drivers/soc/fujitsu/a64fx-pfctl.c
+new file mode 100644
+index 000000000000..f765f53987d4
+--- /dev/null
++++ b/drivers/soc/fujitsu/a64fx-pfctl.c
+@@ -0,0 +1,373 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright 2022 FUJITSU LIMITED
++ *
++ * A64FX Hardware Prefetch Control support
++ */
++
++#include <asm/cputype.h>
++#include <linux/cacheinfo.h>
++#include <linux/device.h>
++#include <linux/module.h>
++#include <linux/pfctl.h>
++#include <linux/smp.h>
++#include <linux/sysfs.h>
++
++/*
++ * Constants for these add the "A64FX_SDPF" prefix to the name described in
++ * section "1.3.4.2. IMP_PF_STREAM_DETECT_CTRL_EL0" of "A64FX specification".
++ * (https://github.com/fujitsu/A64FX/tree/master/doc/A64FX_Specification_HPC_Extension_v1_EN.pdf")
++ * See this document for register specification details.
++ */
++#define A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0	sys_reg(3, 3, 11, 4, 0)
++#define A64FX_SDPF_V					BIT_ULL(63)
++#define A64FX_SDPF_L1PF_DIS				BIT_ULL(59)
++#define A64FX_SDPF_L2PF_DIS				BIT_ULL(58)
++#define A64FX_SDPF_L1W					BIT_ULL(55)
++#define A64FX_SDPF_L2W					BIT_ULL(54)
++#define A64FX_SDPF_L1_DIST				GENMASK_ULL(27, 24)
++#define A64FX_SDPF_L2_DIST				GENMASK_ULL(19, 16)
++
++#define PFCTL_MIN_L1_DIST				256
++#define PFCTL_MIN_L2_DIST				1024
++#define PFCTL_DIST_AUTO_VAL				0
++#define PFCTL_STRONG_VAL				0
++#define PFCTL_WEAK_VAL					1
++
++/*
++ * Define bitfield access macros for non-constant mask, because macros such as
++ * FIELD_FIT defined in include/linux/bitfield.h require constant mask.
++ */
++#define NC_FIELD_FIT(_mask, _val)					\
++	!((((typeof(_mask))_val) << __bf_shf(_mask)) & ~(_mask))
++
++#define NC_FIELD_PREP(_mask, _val)					\
++	(((typeof(_mask))(_val) << __bf_shf(_mask)) & (_mask))
++
++#define NC_FIELD_GET(_mask, _reg)					\
++	((typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)))
++
++struct a64fx_pfctl_attr {
++	struct device_attribute	attr;
++	u64			mask;
++	void			*data;
++};
++
++static const char strength_strong_string[] = "strong";
++static const char strength_weak_string[] = "weak";
++static const char dist_auto_string[] = "auto";
++
++/*
++ * Returns the cpu number of the cpu_device(/sys/devices/system/cpu/cpuX)
++ * in the ancestor directory of prefetch_control.
++ *
++ * When initializing this driver, it is verified that the cache directory exists
++ * under cpuX device. Therefore, the third level up from prefetch_control is
++ * cpuX device as shown below.
++ *
++ * /sys/devices/system/cpu/cpuX/cache/indexX/prefetch_control
++ */
++static inline unsigned int pfctl_dev_get_cpu(struct device *pfctl_dev)
++{
++	return pfctl_dev->parent->parent->parent->id;
++}
++
++/* Enable the value written to the A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0 */
++static inline void enable_verify(u64 *reg)
++{
++	*reg |= NC_FIELD_PREP(A64FX_SDPF_V, 1);
++}
++
++static void _pfctl_read_mask(void *_reg)
++{
++	u64 *reg = (u64 *)_reg;
++
++	*reg = read_sysreg_s(A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0);
++}
++
++static u64 pfctl_read_mask(unsigned int cpu, u64 mask)
++{
++	u64 reg;
++
++	smp_call_function_single(cpu, _pfctl_read_mask, &reg, true);
++
++	return NC_FIELD_GET(mask, reg);
++}
++
++struct write_info {
++	u64 mask;
++	u64 val;
++};
++
++static void _pfctl_write_mask(void *info)
++{
++	struct write_info *winfo = info;
++	u64 reg;
++
++	reg = read_sysreg_s(A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0);
++
++	reg &= ~winfo->mask;
++	reg |= NC_FIELD_PREP(winfo->mask, winfo->val);
++
++	enable_verify(&reg);
++
++	write_sysreg_s(reg, A64FX_SDPF_IMP_PF_STREAM_DETECT_CTRL_EL0);
++}
++
++static int pfctl_write_mask(unsigned int cpu, u64 mask, u64 val)
++{
++	struct write_info info = {
++		.mask	= mask,
++		.val	= val,
++	};
++
++	if (!NC_FIELD_FIT(mask, val))
++		return -EINVAL;
++
++	smp_call_function_single(cpu, _pfctl_write_mask, &info, true);
++
++	return 0;
++}
++
++static ssize_t
++pfctl_enable_show(struct device *pfctl_dev, struct device_attribute *attr,
++		char *buf)
++{
++	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
++	struct a64fx_pfctl_attr *aa;
++	bool val;
++
++	aa = container_of(attr, struct a64fx_pfctl_attr, attr);
++
++	val = (bool)pfctl_read_mask(cpu, aa->mask);
++
++	return sysfs_emit(buf, "%d\n", val ? 0 : 1);
++}
++
++static ssize_t
++pfctl_enable_store(struct device *pfctl_dev, struct device_attribute *attr,
++		 const char *buf, size_t size)
++{
++	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
++	struct a64fx_pfctl_attr *aa;
++	bool val;
++	int ret;
++
++	aa = container_of(attr, struct a64fx_pfctl_attr, attr);
++
++	if (strtobool(buf, &val) < 0)
++		return -EINVAL;
++
++	ret = pfctl_write_mask(cpu, aa->mask, val ? 0 : 1);
++	if (ret < 0)
++		return ret;
++
++	return size;
++}
++
++#define A64FX_PFCTL_ENABLE_ATTR(_level, _mask)				\
++	struct a64fx_pfctl_attr attr_l##_level##_enable = {		\
++		.attr = __ATTR(stream_detect_prefetcher_enable, 0600,	\
++			       pfctl_enable_show, pfctl_enable_store),	\
++		.mask = _mask, }
++
++
++static A64FX_PFCTL_ENABLE_ATTR(1, A64FX_SDPF_L1PF_DIS);
++static A64FX_PFCTL_ENABLE_ATTR(2, A64FX_SDPF_L2PF_DIS);
++
++static ssize_t
++pfctl_dist_show(struct device *pfctl_dev, struct device_attribute *attr,
++		char *buf)
++{
++	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
++	struct a64fx_pfctl_attr *aa;
++	u64 val, min_dist;
++
++	aa = container_of(attr, struct a64fx_pfctl_attr, attr);
++	min_dist = (u64)aa->data;
++
++	val = pfctl_read_mask(cpu, aa->mask);
++
++	if (val == PFCTL_DIST_AUTO_VAL)
++		return sysfs_emit(buf, "%s\n", dist_auto_string);
++	else
++		return sysfs_emit(buf, "%llu\n", val * min_dist);
++}
++
++static ssize_t
++pfctl_dist_store(struct device *pfctl_dev, struct device_attribute *attr,
++		 const char *buf, size_t size)
++{
++	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
++	struct a64fx_pfctl_attr *aa;
++	u64 min_dist, val;
++	int ret;
++
++	aa = container_of(attr, struct a64fx_pfctl_attr, attr);
++	min_dist = (u64)aa->data;
++
++	if (sysfs_streq(buf, dist_auto_string)) {
++		val = PFCTL_DIST_AUTO_VAL;
++	} else {
++		ret = kstrtoull(buf, 10, &val);
++		if (ret < 0 || val < 1)
++			return -EINVAL;
++	}
++
++	val = roundup(val, min_dist) / min_dist;
++
++	if (!NC_FIELD_FIT(aa->mask, val))
++		return -EINVAL;
++
++	ret = pfctl_write_mask(cpu, aa->mask, val);
++	if (ret < 0)
++		return ret;
++
++	return size;
++}
++
++#define PFCTL_DIST_ATTR(_level, _mask, _min_dist)			\
++	struct a64fx_pfctl_attr attr_l##_level##_dist = {		\
++		.attr = __ATTR(stream_detect_prefetcher_dist, 0600,	\
++			       pfctl_dist_show, pfctl_dist_store),	\
++		.mask = _mask,						\
++		.data = (void *)(u64)_min_dist, }
++
++static PFCTL_DIST_ATTR(1, A64FX_SDPF_L1_DIST, PFCTL_MIN_L1_DIST);
++static PFCTL_DIST_ATTR(2, A64FX_SDPF_L2_DIST, PFCTL_MIN_L2_DIST);
++
++static ssize_t
++pfctl_strength_show(struct device *pfctl_dev, struct device_attribute *attr,
++		    char *buf)
++{
++	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
++	struct a64fx_pfctl_attr *aa;
++	u64 val;
++
++	aa = container_of(attr, struct a64fx_pfctl_attr, attr);
++
++	val = pfctl_read_mask(cpu, aa->mask);
++
++	switch (val) {
++	case PFCTL_STRONG_VAL:
++		return sysfs_emit(buf, "%s\n", strength_strong_string);
++	case PFCTL_WEAK_VAL:
++		return sysfs_emit(buf, "%s\n", strength_weak_string);
++	default:
++		return -EINVAL;
++	}
++}
++
++static ssize_t
++pfctl_strength_store(struct device *pfctl_dev, struct device_attribute *attr,
++		     const char *buf, size_t size)
++{
++	unsigned int cpu = pfctl_dev_get_cpu(pfctl_dev);
++	struct a64fx_pfctl_attr *aa;
++	u64 val;
++	int ret;
++
++	aa = container_of(attr, struct a64fx_pfctl_attr, attr);
++
++	if (sysfs_streq(buf, strength_strong_string))
++		val = PFCTL_STRONG_VAL;
++	else if (sysfs_streq(buf, strength_weak_string))
++		val = PFCTL_WEAK_VAL;
++	else
++		return -EINVAL;
++
++	ret = pfctl_write_mask(cpu, aa->mask, val);
++	if (ret < 0)
++		return ret;
++
++	return size;
++}
++
++#define PFCTL_STRENGTH_ATTR(_level, _mask)				\
++	struct a64fx_pfctl_attr attr_l##_level##_strength = {		\
++		.attr = __ATTR(stream_detect_prefetcher_strength, 0600, \
++			       pfctl_strength_show,			\
++			       pfctl_strength_store),			\
++		.mask = _mask, }
++
++static PFCTL_STRENGTH_ATTR(1, A64FX_SDPF_L1W);
++static PFCTL_STRENGTH_ATTR(2, A64FX_SDPF_L2W);
++
++static ssize_t
++pfctl_strength_available_show(struct device *dev, struct device_attribute *attr,
++			      char *buf)
++{
++	return sysfs_emit(buf, "%s %s\n", strength_strong_string,
++			  strength_weak_string);
++}
++
++/*
++ * A64FX has same kind of available strength for any caches, so define only one
++ * attribute.
++ */
++struct a64fx_pfctl_attr attr_strength_available = {
++	.attr = __ATTR(stream_detect_prefetcher_strength_available, 0400,
++		       pfctl_strength_available_show, NULL), };
++
++static struct device_attribute *l1_attrs[] __ro_after_init = {
++	&attr_l1_enable.attr,
++	&attr_l1_dist.attr,
++	&attr_l1_strength.attr,
++	&attr_strength_available.attr,
++	NULL,
++};
++
++static struct device_attribute *l2_attrs[] __ro_after_init = {
++	&attr_l2_enable.attr,
++	&attr_l2_dist.attr,
++	&attr_l2_strength.attr,
++	&attr_strength_available.attr,
++	NULL,
++};
++
++static const struct pfctl_group a64fx_pfctl_groups[] = {
++	{
++		.level = 1,
++		.type = CACHE_TYPE_DATA,
++		.attrs = l1_attrs,
++	},
++	{
++		.level = 2,
++		.type = CACHE_TYPE_UNIFIED,
++		.attrs = l2_attrs,
++	},
++	{
++		.attrs = NULL,
++	},
++};
++
++/*
++ * This driver returns a negative value if it does not support the Hardware
++ * Prefetch Control or if it is running on a VM guest.
++ */
++static int __init a64fx_pfctl_init(void)
++{
++	unsigned long implementor = read_cpuid_implementor();
++	unsigned long part_number = read_cpuid_part_number();
++
++	if (!is_kernel_in_hyp_mode())
++		return -EINVAL;
++
++	if ((implementor != ARM_CPU_IMP_FUJITSU) ||
++	    (part_number != FUJITSU_CPU_PART_A64FX))
++		return -ENODEV;
++
++	return pfctl_register_attrs(a64fx_pfctl_groups);
++}
++
++static void __exit a64fx_pfctl_exit(void)
++{
++	return pfctl_unregister_attrs(a64fx_pfctl_groups);
++}
++
++late_initcall(a64fx_pfctl_init);
++module_exit(a64fx_pfctl_exit);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("FUJITSU LIMITED");
++MODULE_DESCRIPTION("A64FX Hardware Prefetch Control Driver");
 -- 
 2.27.0
 
