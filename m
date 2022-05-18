@@ -2,120 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD752C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 14:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5097CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239044AbiERO4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 10:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
+        id S238982AbiERPAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239093AbiERO4d (ORCPT
+        with ESMTP id S238862AbiERPAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 10:56:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF5319FF45;
-        Wed, 18 May 2022 07:56:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3758B82124;
-        Wed, 18 May 2022 14:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 616F0C385A5;
-        Wed, 18 May 2022 14:56:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652885788;
-        bh=JoHYiEVfVna108Cm8DYUO6EeVHUhH/jsA2hx84cxhc4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YXloz30g2ROWJVE5AwCu6ZoycqVAtob21szWjAezE1juW3k44jgPVBlzoPpNtuRvo
-         FulCY7iLDeRngt1eLgkyV+EK2jWMlRvaC7TZrnBeRQGco3i5PE9l1IZn0smZdfHEpD
-         UNC5/YDJLLD4NcdQ9Bc+UwKTFXLZu/tJWPTS9WBLpP99RQVsnF3GP3ExVMeVW0MCB9
-         VUgQCtT2t8iN16fDAGHBL96TyetYvqsbhoPgrIuYXtk7GKSpv9m7WEboi56ITE+XQi
-         VoAcy6cVoubz5/pS3D+7QJ50FkmTSgFeda7uGNQRpBgZVUCvwgqyzmmHcVgZHsZn+O
-         qfumUFmSmYViA==
-Date:   Wed, 18 May 2022 17:58:09 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        James Bottomley <jejb@linux.ibm.com>, kernel@pengutronix.de,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        David Gstir <david@sigma-star.at>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Andreas Rammhold <andreas@rammhold.de>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Michael Walle <michael@walle.cc>,
-        John Ernberg <john.ernberg@actia.se>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: Re: [PATCH v10 0/7] KEYS: trusted: Introduce support for NXP
- CAAM-based trusted keys
-Message-ID: <YoUJgUbSRVnTfTj/@iki.fi>
-References: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
- <YoKZwFkfcl7ixTF4@kernel.org>
- <4d4ecd4b-9683-08a0-7a5f-11a7ff86ea6d@pengutronix.de>
- <c511995075cafb35bfefcbfe6fa6e84aa31c536f.camel@kernel.org>
- <6f6a5524-9661-9a9f-a674-915efa33f6f6@pengutronix.de>
+        Wed, 18 May 2022 11:00:40 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9031A0AFE;
+        Wed, 18 May 2022 08:00:39 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IEgr6V017549;
+        Wed, 18 May 2022 15:00:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=xW1COiFlwf0PL00R4GkXtkJN3M/L1hWKr4zjOB9Yp9M=;
+ b=pPZD/yxVLcy5VnDo5Jgh0tk0ovOcQbNqZ4LsoKnycLW3vfseSiMBUPwbrdCh3XYkBa3S
+ DgyFVqTWd5g0nrN7qw+VokS94G2YSTFqMANSmq4yIjq1wEGkkD8sZLyluuqf7Ue2Xuqe
+ kl/D3aV8yyOWgd3vWln/+e2hE53zPIedtzRhfg2lEgfHFpFKZh2LY1i0XqGLs4ob+dA/
+ O1lZb3Q649ODOCRETCAXcpb58oExMIG07klJQSGFLiRy+BUse1iyqnDV0953MQyCAFpS
+ PMU+PZ2Aw5ieGsVXdW+8SymNrZTZJVCbzoUDPNxTcZf19HekuYV1phtJXQKnAnxjtPnf Ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g52t70e0r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 15:00:21 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24IEhUDl019538;
+        Wed, 18 May 2022 15:00:19 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g52t70dwk-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 15:00:19 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IEbXS0011511;
+        Wed, 18 May 2022 14:37:53 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma02wdc.us.ibm.com with ESMTP id 3g2429w3t2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 14:37:53 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IEbrW721561800
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 14:37:53 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 172B3124058;
+        Wed, 18 May 2022 14:37:53 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7D0B0124052;
+        Wed, 18 May 2022 14:37:49 +0000 (GMT)
+Received: from [9.211.37.97] (unknown [9.211.37.97])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 18 May 2022 14:37:49 +0000 (GMT)
+Message-ID: <2e51b388-48d0-4689-07f4-65f607dbce59@linux.ibm.com>
+Date:   Wed, 18 May 2022 10:37:48 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6f6a5524-9661-9a9f-a674-915efa33f6f6@pengutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/1] vfio: remove VFIO_GROUP_NOTIFY_SET_KVM
+Content-Language: en-US
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     jgg@nvidia.com, alex.williamson@redhat.com
+Cc:     cohuck@redhat.com, borntraeger@linux.ibm.com,
+        jjherne@linux.ibm.com, akrowiak@linux.ibm.com, pasic@linux.ibm.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com, hch@infradead.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220517180851.166538-1-mjrosato@linux.ibm.com>
+ <20220517180851.166538-2-mjrosato@linux.ibm.com>
+In-Reply-To: <20220517180851.166538-2-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: XQrM_ApcMDR7ZDvn9Jz1fR-tTzTwQMqx
+X-Proofpoint-ORIG-GUID: OXJa_RJ2BtWJbsJAxvOQSjAKl28F0lCB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_05,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ lowpriorityscore=0 clxscore=1015 priorityscore=1501 spamscore=0
+ suspectscore=0 mlxscore=0 malwarescore=0 phishscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205180087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 06:36:18AM +0200, Ahmad Fatoum wrote:
-> On 18.05.22 03:08, Jarkko Sakkinen wrote:
-> > On Tue, 2022-05-17 at 14:44 +0200, Ahmad Fatoum wrote:
-> >> Hello Herbert,
-> >>
-> >> On 16.05.22 20:36, Jarkko Sakkinen wrote:
-> >>> On Fri, May 13, 2022 at 04:56:58PM +0200, Ahmad Fatoum wrote:
-> >>> I can probably pick these unless objections?
-> >>
-> >> Pankaj has given his Reviewed-by for the CAAM parts he co-maintains,
-> >> is it ok for this to go in via Jarkko's tree?
-> >>
-> >> Note that applying this series on top of jarkko/linux-tpmdd.git has a
-> >> trivial conflict when merged with herbert/cryptodev-2.6.git:
-> >> Two independently added Kconfig options need to coexist in
-> >> drivers/crypto/caam/Kconfig.
-> >>
-> >> I can resend my series rebased if needed.
-> >>
-> >> Cheers,
-> >> Ahmad
-> >>
-> >>>
-> >>> BR, Jarkko
-> >>>
-> >>
-> >>
-> > 
-> > This came up:
-> > 
-> > https://lore.kernel.org/keyrings/0e8da958a222e5c1dccaaf1600b08bdb8705b48e.camel@kernel.org/
+On 5/17/22 2:08 PM, Matthew Rosato wrote:
+> Rather than relying on a notifier for associating the KVM with
+> the group, let's assume that the association has already been
+> made prior to device_open.  The first time a device is opened
+> associate the group KVM with the device.
 > 
-> And it turned out to be a misunderstanding. Or do you think there is still anything
-> to do there?
-> 
-> Thanks,
-> Ahmad
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-Oops, you're right, sorry.
+...
 
-Yeah, I guess I can pick these patches now.
+> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> index cfcff7764403..c5d421eda275 100644
+> --- a/drivers/vfio/vfio.c
+> +++ b/drivers/vfio/vfio.c
+> @@ -10,6 +10,7 @@
+>    * Author: Tom Lyon, pugs@cisco.com
+>    */
+>   
+> +#include "linux/kvm_host.h"
+>   #include <linux/cdev.h>
+>   #include <linux/compat.h>
+>   #include <linux/device.h>
+> @@ -1083,6 +1084,13 @@ static struct file *vfio_device_open(struct vfio_device *device)
+>   
+>   	mutex_lock(&device->dev_set->lock);
+>   	device->open_count++;
+> +	down_write(&device->group->group_rwsem);
+> +	if (device->open_count == 1 && device->group->kvm) {
+> +		device->kvm = device->group->kvm;
+> +		kvm_get_kvm(device->kvm);
 
-BR, Jarkko
+Did some more compile testing, since vfio has no hard kvm dependency, 
+kvm_get_kvm and kvm_put_kvm are an issue if KVM is a module while vfio 
+is built-in...
