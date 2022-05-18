@@ -2,126 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06800C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 03:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1191C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 03:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiERDgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 17 May 2022 23:36:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38468 "EHLO
+        id S229706AbiERDhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 17 May 2022 23:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiERDfv (ORCPT
+        with ESMTP id S229463AbiERDhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 17 May 2022 23:35:51 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98A362A2E;
-        Tue, 17 May 2022 20:35:47 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L2zB823mRz1JCCQ;
-        Wed, 18 May 2022 11:34:24 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 11:35:44 +0800
-Message-ID: <c6dfe9bc-07ac-62a7-0a34-12fecf0dfdaa@huawei.com>
-Date:   Wed, 18 May 2022 11:35:43 +0800
+        Tue, 17 May 2022 23:37:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA66E527C9;
+        Tue, 17 May 2022 20:37:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BF87616E1;
+        Wed, 18 May 2022 03:37:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D641C385AA;
+        Wed, 18 May 2022 03:37:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652845060;
+        bh=MrXW9qQGHcgZhoXL6m8MOJ4Mp2j6g+aBVXG12fZqKEM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mBxEuVWeonS5rkVz4n7cTgTveOJLo1FG94xzjjla63iF7DZwYEUdNyoQARSNbv80Y
+         7muGJ53TtJO+cwwu57YGEZ2S4sS+OxXXgxQmSaIOvo3SGRpzRI+Q6zMV9H+6TAqSm+
+         BphGinIizjaFKziLMijBItXL2WFGDV3SLqMJz5hzi0qqEK0f3SFMQDc3AjJywPSdGV
+         12JxKWpdNpiiqyVr3XRbsHXphynSK9NpHmZROg8IN91W0al1QE8c1vNrn2SxaD8H3a
+         MSpfQMNYKGbbki3csRpBN1dd57Y5tkhTmdjSDPMraSH3xSjFN9gKEOXQ6OnMim1Ns+
+         KsAzIXn8hIoCA==
+Date:   Wed, 18 May 2022 11:37:35 +0800
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     linux-doc@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Benson Leung <bleung@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: [PATCH 1/2] platform/chrome: Use tables for values lists of
+ ChromeOS ACPI sysfs ABI
+Message-ID: <YoRp/49OA9tqMd9N@google.com>
+References: <20220518031750.21923-1-bagasdotme@gmail.com>
+ <20220518031750.21923-2-bagasdotme@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v4 3/6] bpf: Move is_valid_bpf_tramp_flags() to
- the public trampoline code
-Content-Language: en-US
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-References: <20220517071838.3366093-1-xukuohai@huawei.com>
- <20220517071838.3366093-4-xukuohai@huawei.com>
- <20220517155349.4jk5oymnjvrasw2p@MacBook-Pro.local>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <20220517155349.4jk5oymnjvrasw2p@MacBook-Pro.local>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518031750.21923-2-bagasdotme@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/17/2022 11:53 PM, Alexei Starovoitov wrote:
-> On Tue, May 17, 2022 at 03:18:35AM -0400, Xu Kuohai wrote:
->>  
->> +static bool is_valid_bpf_tramp_flags(unsigned int flags)
->> +{
->> +	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
->> +	    (flags & BPF_TRAMP_F_SKIP_FRAME))
->> +		return false;
->> +
->> +	/* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
->> +	 * and it must be used alone.
->> +	 */
->> +	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
->> +	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
->> +		return false;
->> +
->> +	return true;
->> +}
->> +
->> +int bpf_prepare_trampoline(struct bpf_tramp_image *tr, void *image,
->> +			   void *image_end, const struct btf_func_model *m,
->> +			   u32 flags, struct bpf_tramp_links *tlinks,
->> +			   void *orig_call)
->> +{
->> +	if (!is_valid_bpf_tramp_flags(flags))
->> +		return -EINVAL;
->> +
->> +	return arch_prepare_bpf_trampoline(tr, image, image_end, m, flags,
->> +					   tlinks, orig_call);
->> +}
-> 
-> It's an overkill to introduce a new helper function just to validate
-> flags that almost compile time constants.
-> The flags are not user supplied.
-> Please move /* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops ... */
-> comment to bpf_struct_ops.c right before it calls arch_prepare_bpf_trampoline()
-> And add a comment to trampoline.c saying that BPF_TRAMP_F_RESTORE_REGS
-> and BPF_TRAMP_F_SKIP_FRAME should not be set together.
-> We could add a warn_on there or in arch code, but feels like overkill.
-> .
+On Wed, May 18, 2022 at 10:17:50AM +0700, Bagas Sanjaya wrote:
+>  What:		/sys/bus/platform/devices/GGL0001:*/CHSW
+>  Date:		May 2022
+>  KernelVersion:	5.19
+>  Description:
+>  		This file shows the switch position for the Chrome OS specific
+> -		hardware switches.
+> -		  * 0   - No changes.
+> -		  * 2   - Recovery button was pressed when firmware booted.
+> -		  * 4   - Recovery button was pressed when EC firmware booted.
+> -		  * 32  - Developer switch was enabled when firmware booted.
+> -		  * 512 - Firmware write protection was disabled when firmware
+> -			  booted.
+> +		hardware switches when the firmare is booted.
 
-OK, will fix in next version.
+s/firmare/firmware/.
 
-
+Could you fix it in v2 and also Cc to <chrome-platform@lists.linux.dev>?
