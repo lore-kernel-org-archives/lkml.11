@@ -2,87 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E154C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C254AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 15:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239649AbiERPyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 11:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56702 "EHLO
+        id S239642AbiERPyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 11:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239636AbiERPyK (ORCPT
+        with ESMTP id S239726AbiERPy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 11:54:10 -0400
-Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11011CC98B;
-        Wed, 18 May 2022 08:54:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
-        t=1652889244; bh=hMCggXS20k24Moq7wq290Pu/SOhpPn396QOC64WwdqI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=SxZy8PzQ4+GMVnv56cYEsr8OB28rSz1WUAyequjrtQxAxAS6S2JnqeJ3DjfEjgtVm
-         LbAUe5iS3Z521gk53GogRUthr83+fJdQTXzPHiGy9XlK5wv5f7KUfmZo4P0iKma3in
-         OCN6PtCsAhh3SVmDN3a2MF0wFbpLCZS8HG5d/U+c=
-Received: from [192.168.9.172] (unknown [101.88.28.48])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        Wed, 18 May 2022 11:54:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F511CC9BB;
+        Wed, 18 May 2022 08:54:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 5709F60691;
-        Wed, 18 May 2022 23:54:04 +0800 (CST)
-Message-ID: <9b9df6a3-099f-4368-207f-5fe330e7f166@xen0n.name>
-Date:   Wed, 18 May 2022 23:54:04 +0800
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8CA3B82162;
+        Wed, 18 May 2022 15:54:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6101AC385A5;
+        Wed, 18 May 2022 15:54:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652889260;
+        bh=prv+Ye/H1mstl526vAK0JQj51CiNh01NdvehTiX0OrY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KL54s7+jyxQ1hiSfnf2oJBJo9yCTsB/6fsZAVfj4vEhnGh3Xrgk2KolU/7mHh+Wmm
+         wEVJaX0REY2vi8KE/n1rATu92AKEJJEN0/F0NexNz5CeB1T725/pJ1LprH2RzTD1D5
+         6LLRQ2Ss3tbygJUEFd9Vl5GJllQwWvEnie3/YBRHIoru49Jdc7kJ5n/89E8AvSwUmZ
+         rg2248jMnVt4UoY3CefYw0HMoS8O57IdQoN6otO2a/ET1KYfh8MnmbAP4WUv/W0MIa
+         CEMaVF/6fYZiNSUJgTPVTi9ROseGQSvBa8a5wRsmhoQxRt7A7dIvpDGkfc1L7U4SQD
+         jThtgEZl2X5PA==
+Date:   Wed, 18 May 2022 11:03:45 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Lin Yujun <linyujun809@huawei.com>, mingo@redhat.com,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        johnny.chenyi@huawei.com, chenjiahao16@huawei.com,
+        chenlifu@huawei.com, lizhengyu3@huawei.com, liaochang1@huawei.com,
+        wangzhu9@huawei.com, xuyihang@huawei.com, chris.zjh@huawei.com,
+        zouyipeng@huawei.com
+Subject: Re: [PATCH -next] x86/events:Use struct_size() helper in kzalloc()
+Message-ID: <20220518160345.GA43938@embeddedor>
+References: <20220518131626.109123-1-linyujun809@huawei.com>
+ <20220518134920.GA8361@embeddedor>
+ <YoT6tHWbBOchi29i@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0a1
-Subject: Re: [PATCH V11 07/22] LoongArch: Add atomic/locking headers
-Content-Language: en-US
-To:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
- <20220518092619.1269111-8-chenhuacai@loongson.cn>
-From:   WANG Xuerui <kernel@xen0n.name>
-In-Reply-To: <20220518092619.1269111-8-chenhuacai@loongson.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoT6tHWbBOchi29i@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/18/22 17:26, Huacai Chen wrote:
-> Add common headers (atomic, bitops, barrier and locking) for basic
-> LoongArch support.
->
-> Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> ---
->   arch/loongarch/include/asm/atomic.h  | 358 +++++++++++++++++++++++++++
->   arch/loongarch/include/asm/barrier.h |  51 ++++
->   arch/loongarch/include/asm/bitops.h  |  33 +++
->   arch/loongarch/include/asm/bitrev.h  |  34 +++
->   arch/loongarch/include/asm/cmpxchg.h | 121 +++++++++
->   arch/loongarch/include/asm/local.h   | 138 +++++++++++
->   arch/loongarch/include/asm/percpu.h  |  20 ++
->   7 files changed, 755 insertions(+)
->   create mode 100644 arch/loongarch/include/asm/atomic.h
->   create mode 100644 arch/loongarch/include/asm/barrier.h
->   create mode 100644 arch/loongarch/include/asm/bitops.h
->   create mode 100644 arch/loongarch/include/asm/bitrev.h
->   create mode 100644 arch/loongarch/include/asm/cmpxchg.h
->   create mode 100644 arch/loongarch/include/asm/local.h
->   create mode 100644 arch/loongarch/include/asm/percpu.h
+On Wed, May 18, 2022 at 03:55:00PM +0200, Peter Zijlstra wrote:
+> On Wed, May 18, 2022 at 08:49:20AM -0500, Gustavo A. R. Silva wrote:
+> 
+> > > Signed-off-by: Lin Yujun <linyujun809@huawei.com>
+> > > ---
+> > >  arch/x86/events/rapl.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
+> > > index 77e3a47af5ad..c7e79f0ac04f 100644
+> > > --- a/arch/x86/events/rapl.c
+> > > +++ b/arch/x86/events/rapl.c
+> > > @@ -685,7 +685,7 @@ static int __init init_rapl_pmus(void)
+> > >  	int maxdie = topology_max_packages() * topology_max_die_per_package();
+> > >  	size_t size;
+> > >  
+> > > -	size = sizeof(*rapl_pmus) + maxdie * sizeof(struct rapl_pmu *);
+> > > +	size = struct_size(rapl_pmus, pmus, maxdie);
+> > >  	rapl_pmus = kzalloc(size, GFP_KERNEL);
+> > 
+> > It seems that in this case, size could be entirely replaced by
+> > struct_size().
+> 
+> Except every time I look at struct_size() I go: WTF does that do; while
+> the code as-is is crystal clear, no de-obfucstaion required.
 
-No major problems here so:
+Naming it flex_struct_size() would be more informative?
 
-Reviewed-by: WANG Xuerui <git@xen0n.name>
+--
+Gustavo
 
