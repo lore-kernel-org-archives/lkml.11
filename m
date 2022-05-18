@@ -2,147 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 22:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A40CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 23:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbiERW6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 18:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
+        id S231256AbiERXAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 19:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbiERWzy (ORCPT
+        with ESMTP id S231267AbiERXAb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 18:55:54 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA4C22EA72;
-        Wed, 18 May 2022 15:55:22 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:33438)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nrSZd-00Ckcv-Nn; Wed, 18 May 2022 16:55:21 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38724 helo=localhost.localdomain)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nrSZc-002Z0O-KW; Wed, 18 May 2022 16:55:21 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
-        mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bigeasy@linutronix.de, Will Deacon <will@kernel.org>,
-        tj@kernel.org, linux-pm@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Douglas Miller <dougmill@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Wed, 18 May 2022 17:53:54 -0500
-Message-Id: <20220518225355.784371-15-ebiederm@xmission.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
-References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
+        Wed, 18 May 2022 19:00:31 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A4F2375DD
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:59:04 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id m6-20020a05683023a600b0060612720715so2383668ots.10
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 15:59:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kygPfhyErW7dvKH17CTT82TgIAgiLDQSd48duVgDxwo=;
+        b=O+ofcjZ731KvhGfJgQg10ps3UVFNc6LwD7fN9G3r2I0CQAE3XPw6a11H//xfRSdxMm
+         66tzSgCDJFgHSJGAf7O7bPtOVatqDLOsVQSAtuX7kalYG3WQ60yI1pdJ5HD/ZL1EYoZX
+         KnnLxumJcG4Y1voi72hkujqfGvIpVkEwo2KRk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kygPfhyErW7dvKH17CTT82TgIAgiLDQSd48duVgDxwo=;
+        b=sQnOwzXMMEvxSxTYsCu5/X84jFUrVcG4Gvq5SEOf+wWPhrdYXN92+6RbbRSnwOtC9+
+         nJLRq/p0Lkphiu24Wd+Mi8Vr/rKJXAZkyqe5lBRXXNVTWIezSOfr5/xEFc8o0qEIaQeo
+         U2yl7hVDX9A/f1hWBY46KsTR5swFPfDaQamraNhJYbqpyN51BLGzj7QHxwhXE6q8RmrO
+         5mmyZix+G1JuW8UQGI63lSLu2fIloiFPqnBa+09JZmGiK4+7e9bfLEfzcrcHETJr2ttR
+         w1R9EcdvRkhHnA6RzEqPAKUjQcGdQwssUxTrp3QAlHdQZZXiszWSpAr6m2/yoTv5guHV
+         dqig==
+X-Gm-Message-State: AOAM532jT+FtDNr/3w+OGqABEgTbfbjQSrYFJzxkpRrjJuDpW42lz2Ci
+        194IfUrVmMqhqPhHJrTkFbEG4g==
+X-Google-Smtp-Source: ABdhPJzcao+B0GJgFE10anN4Ws1SW5llNsEaaFkNV2yF+gALlyuED9RalqIh/OVY9Ws71U5cIpeNyA==
+X-Received: by 2002:a9d:34b:0:b0:605:f0f1:e28e with SMTP id 69-20020a9d034b000000b00605f0f1e28emr835845otv.304.1652914743981;
+        Wed, 18 May 2022 15:59:03 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id d188-20020acab4c5000000b00325f4f40f9esm1274522oif.22.2022.05.18.15.59.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 15:59:03 -0700 (PDT)
+Subject: Re: [PATCH v2] sign-file: Convert API usage to support OpenSSL v3
+To:     Kees Cook <keescook@chromium.org>,
+        David Howells <dhowells@redhat.com>
+Cc:     David Woodhouse <dwmw2@infradead.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Salvatore Bonaccorso <carnil@debian.org>,
+        keyrings@vger.kernel.org, Adam Langley <agl@google.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220518215129.264872-1-keescook@chromium.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <9e9a687e-3c72-fdf9-eb64-6be7b60b9706@linuxfoundation.org>
+Date:   Wed, 18 May 2022 16:59:02 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nrSZc-002Z0O-KW;;;mid=<20220518225355.784371-15-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19BX42rXAmEdeldIBaC1nvKtXoRgWt4/eg=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 15/16] ptrace: Use siglock instead of tasklist_lock in ptrace_check_attach
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+In-Reply-To: <20220518215129.264872-1-keescook@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that siglock protects tsk->parent and tsk->ptrace there is no need
-to grab tasklist_lock in ptrace_check_attach.  The siglock can handle
-all of the locking needs of ptrace_check_attach.
+On 5/18/22 3:51 PM, Kees Cook wrote:
+> OpenSSL's ENGINE API is deprecated in OpenSSL v3.0, along with some
+> other functions. Remove the ENGINE use and a macro work-around for
+> ERR_get_error_line().
+> 
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: Eric Biggers <ebiggers@kernel.org>
+> Cc: Shuah Khan <skhan@linuxfoundation.org>
+> Cc: Salvatore Bonaccorso <carnil@debian.org>
+> Cc: keyrings@vger.kernel.org
+> Suggested-by: Adam Langley <agl@google.com>
+> Co-developed-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> v1: https://lore.kernel.org/lkml/20211005161833.1522737-1-lee.jones@linaro.org/
+> v2: https://lore.kernel.org/lkml/Yicwb+Ceiu8JjVIS@google.com/
+> v3:
+>   - Eliminate all the build warnings with OpenSSL 3
+>   - Fully remove ENGINE usage, if it can be optional, just drop it.
+> ---
+>   scripts/sign-file.c | 49 ++++++++++-----------------------------------
+>   1 file changed, 11 insertions(+), 38 deletions(-)
 
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- kernel/ptrace.c | 23 +++++++++--------------
- 1 file changed, 9 insertions(+), 14 deletions(-)
+Worked for me on OpenSSL v3 and older version .
 
-diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index 77dfdb3d1ced..fa65841bbdbe 100644
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -194,17 +194,14 @@ static bool ptrace_freeze_traced(struct task_struct *task)
- {
- 	bool ret = false;
- 
--	/* Lockless, nobody but us can set this flag */
- 	if (task->jobctl & JOBCTL_LISTENING)
- 		return ret;
- 
--	spin_lock_irq(&task->sighand->siglock);
- 	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
- 	    !__fatal_signal_pending(task)) {
- 		task->jobctl |= JOBCTL_PTRACE_FROZEN;
- 		ret = true;
- 	}
--	spin_unlock_irq(&task->sighand->siglock);
- 
- 	return ret;
- }
-@@ -240,32 +237,30 @@ static void ptrace_unfreeze_traced(struct task_struct *task)
-  * state.
-  *
-  * CONTEXT:
-- * Grabs and releases tasklist_lock and @child->sighand->siglock.
-+ * Grabs and releases @child->sighand->siglock.
-  *
-  * RETURNS:
-  * 0 on success, -ESRCH if %child is not ready.
-  */
- static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
- {
-+	unsigned long flags;
- 	int ret = -ESRCH;
- 
- 	/*
--	 * We take the read lock around doing both checks to close a
-+	 * We take the siglock around doing both checks to close a
- 	 * possible race where someone else was tracing our child and
- 	 * detached between these two checks.  After this locked check,
- 	 * we are sure that this is our traced child and that can only
- 	 * be changed by us so it's not changing right after this.
- 	 */
--	read_lock(&tasklist_lock);
--	if (child->ptrace && child->parent == current) {
--		/*
--		 * child->sighand can't be NULL, release_task()
--		 * does ptrace_unlink() before __exit_signal().
--		 */
--		if (ignore_state || ptrace_freeze_traced(child))
--			ret = 0;
-+	if (lock_task_sighand(child, &flags)) {
-+		if (child->ptrace && child->parent == current) {
-+			if (ignore_state || ptrace_freeze_traced(child))
-+				ret = 0;
-+		}
-+		unlock_task_sighand(child, &flags);
- 	}
--	read_unlock(&tasklist_lock);
- 
- 	if (!ret && !ignore_state &&
- 	    WARN_ON_ONCE(!wait_task_inactive(child, __TASK_TRACED)))
--- 
-2.35.3
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
+thanks,
+-- Shuah
