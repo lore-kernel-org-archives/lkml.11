@@ -2,75 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77663C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0019C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 09:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234701AbiERJnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 05:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
+        id S234681AbiERJnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 05:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234846AbiERJlb (ORCPT
+        with ESMTP id S234934AbiERJly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 05:41:31 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681F31C123
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 02:41:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=WMIQhBjGQ1AyewOOSm+elcUwgB8iEM4v1qmvWm/lR2g=; b=XEvnqIPkN9Db3ze+a+4kzYnbOO
-        36gqGPjKECEBvvuiZf3efaGVETypr6da7xy2QUE8K9VsQMWKM9brv0hHVBnIgbCDZ8hm4CdhoHC3K
-        bsDPx205shVP5QeBFg4y55I1Mb8n6RE7jKC2P6NyVNL7tcL3UxmL8ND4yUAgfBn4/Dr0CWfMU6Qv/
-        sXGr4eWbTmf9y6hMHOv/G1s7VAbFBs3MntLSnHkJUebbCfkC6cVzT4jIJnTwaAkO1dLAHK3Bdz9rc
-        +Um+VridYpNhK1iAMGG0qcTfX9mlWjMXNtOe7vucFfTH6LMNla9br7o5coiJe7ti/SdVPEQDIKpIi
-        2oJO5MMQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrGB8-001V4E-Ux; Wed, 18 May 2022 09:41:15 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 5F2D5980DFF; Wed, 18 May 2022 11:41:12 +0200 (CEST)
-Date:   Wed, 18 May 2022 11:41:12 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 4/4] sched/numa: Adjust imb_numa_nr to a better
- approximation of memory channels
-Message-ID: <20220518094112.GE10117@worktop.programming.kicks-ass.net>
-References: <20220511143038.4620-1-mgorman@techsingularity.net>
- <20220511143038.4620-5-mgorman@techsingularity.net>
+        Wed, 18 May 2022 05:41:54 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D920B0D3D;
+        Wed, 18 May 2022 02:41:53 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 3CEE21FB1D;
+        Wed, 18 May 2022 09:41:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652866912; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Gvqmwd32pWfeTd+pQbb+XvmLC36shUm4oEYSUHUH/4s=;
+        b=VmbfWJ8JScNoKhmKbR4C9ZO64MZdKjOsfSFQ9u0TxeoN8yIcQbA8bSGDJAJiyjMeuWQkFm
+        bVjYMG/RGdqHikQV42UWgAuICyP0T1Rvn2DdLgPgwfWZKBN0A2esT9qSwLHxeZg+cP6ZSj
+        yhMwCwkyLfABT42xMpYxYSNy3CUExGA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F03E9133F5;
+        Wed, 18 May 2022 09:41:51 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qcvsOF+/hGLGFAAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 18 May 2022 09:41:51 +0000
+Message-ID: <642471c7-f717-2ef4-1d6d-6fabf57db08f@suse.com>
+Date:   Wed, 18 May 2022 11:41:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511143038.4620-5-mgorman@techsingularity.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 15/21] xen/tpmfront: use xenbus_setup_ring() and
+ xenbus_teardown_ring()
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     xen-devel@lists.xenproject.org, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
+        Jason Gunthorpe <jgg@ziepe.ca>
+References: <20220505081640.17425-1-jgross@suse.com>
+ <20220505081640.17425-16-jgross@suse.com> <YnWh6P7kBtPa2aTA@kernel.org>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <YnWh6P7kBtPa2aTA@kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------40zZX2QheKufpfo6R9R2UDWP"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 03:30:38PM +0100, Mel Gorman wrote:
-> For a single LLC per node, a NUMA imbalance is allowed up until 25%
-> of CPUs sharing a node could be active. One intent of the cut-off is
-> to avoid an imbalance of memory channels but there is no topological
-> information based on active memory channels. Furthermore, there can
-> be differences between nodes depending on the number of populated
-> DIMMs.
-> 
-> A cut-off of 25% was arbitrary but generally worked. It does have a severe
-> corner cases though when an parallel workload is using 25% of all available
-> CPUs over-saturates memory channels. This can happen due to the initial
-> forking of tasks that get pulled more to one node after early wakeups
-> (e.g. a barrier synchronisation) that is not quickly corrected by the
-> load balancer. The LB may fail to act quickly as the parallel tasks are
-> considered to be poor migrate candidates due to locality or cache hotness.
-> 
-> On a range of modern Intel CPUs, 12.5% appears to be a better cut-off
-> assuming all memory channels are populated and is used as the new cut-off
-> point. A minimum of 1 is specified to allow a communicating pair to
-> remain local even for CPUs with low numbers of cores. For modern AMDs,
-> there are multiple LLCs and are not affected.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------40zZX2QheKufpfo6R9R2UDWP
+Content-Type: multipart/mixed; boundary="------------TgxGHQPVJJUkPuHCpNDyxMvE";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: xen-devel@lists.xenproject.org, linux-integrity@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Peter Huewe <peterhuewe@gmx.de>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+Message-ID: <642471c7-f717-2ef4-1d6d-6fabf57db08f@suse.com>
+Subject: Re: [PATCH v3 15/21] xen/tpmfront: use xenbus_setup_ring() and
+ xenbus_teardown_ring()
+References: <20220505081640.17425-1-jgross@suse.com>
+ <20220505081640.17425-16-jgross@suse.com> <YnWh6P7kBtPa2aTA@kernel.org>
+In-Reply-To: <YnWh6P7kBtPa2aTA@kernel.org>
 
-Can the hardware tell us about memory channels?
+--------------TgxGHQPVJJUkPuHCpNDyxMvE
+Content-Type: multipart/mixed; boundary="------------GyGKEkcibCyskU997scHLe0C"
+
+--------------GyGKEkcibCyskU997scHLe0C
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+
+T24gMDcuMDUuMjIgMDA6MzIsIEphcmtrbyBTYWtraW5lbiB3cm90ZToNCj4gT24gVGh1LCBN
+YXkgMDUsIDIwMjIgYXQgMTA6MTY6MzRBTSArMDIwMCwgSnVlcmdlbiBHcm9zcyB3cm90ZToN
+Cj4+IFNpbXBsaWZ5IHRwbWZyb250J3MgcmluZyBjcmVhdGlvbiBhbmQgcmVtb3ZhbCB2aWEg
+eGVuYnVzX3NldHVwX3JpbmcoKQ0KPj4gYW5kIHhlbmJ1c190ZWFyZG93bl9yaW5nKCkuDQo+
+Pg0KPj4gU2lnbmVkLW9mZi1ieTogSnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuY29tPg0K
+PiANCj4gUGxlYXNlIGFkZCB0byB0aGUgY29tbWl0IG1lc3NhZ2Ugd2h5IHRoZXNlIHByb3Zp
+ZGUgYW4gZXF1aXZhbGVudA0KPiBmdW5jdGlvbmFsaXR5Lg0KDQpXb3VsZCB5b3UgYmUgZmlu
+ZSB3aXRoOg0KDQogICBTaW1wbGlmeSB0cG1mcm9udCdzIHJpbmcgY3JlYXRpb24gYW5kIHJl
+bW92YWwgdmlhIHhlbmJ1c19zZXR1cF9yaW5nKCkNCiAgIGFuZCB4ZW5idXNfdGVhcmRvd25f
+cmluZygpLCB3aGljaCBhcmUgcHJvdmlkZWQgZXhhY3RseSBmb3IgdGhlIHVzZQ0KICAgcGF0
+dGVybiBhcyBzZWVuIGluIHRoaXMgZHJpdmVyLg0KDQoNCkp1ZXJnZW4NCg==
+--------------GyGKEkcibCyskU997scHLe0C
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------GyGKEkcibCyskU997scHLe0C--
+
+--------------TgxGHQPVJJUkPuHCpNDyxMvE--
+
+--------------40zZX2QheKufpfo6R9R2UDWP
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmKEv18FAwAAAAAACgkQsN6d1ii/Ey+Q
+Gwf/ehwm6jUVpEx0+yC4NILAFBiMMpghweN7oXV0/HJir7zTTMMijxvTV8f7AbuBIcmB8vARGnsl
+WuftbUX84JXnTdadLZBDwu1GlMoopubDJdB7Y5Q3XVPEovNvsQYh/ImQ3Jlyj9UYz2mcFTTZ0sUk
+BJZeDn+vzF8sOnlLGcGwHPVCuBLLZlKqngtEoEHMpbpR0JKGR4+TzVnxrftnG9w8PYKuhgV/5X/v
+cKGD4Na6ulAuKU73AdUaaf21oxr0ptm9ZU66c1bA29Ttg9j01pBsc3u5qLldjrDXmViT0KwvVkVQ
+WbqyphGjTYqwCTcGorFhmvnbqGc3RLvoNYDA3vr8bg==
+=vI4g
+-----END PGP SIGNATURE-----
+
+--------------40zZX2QheKufpfo6R9R2UDWP--
