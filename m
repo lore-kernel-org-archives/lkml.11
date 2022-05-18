@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64978C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 22:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 18 May 2022 22:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230326AbiERWyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 18:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
+        id S230431AbiERWzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 18:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiERWyg (ORCPT
+        with ESMTP id S230303AbiERWyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 18:54:36 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD232265D0;
-        Wed, 18 May 2022 15:54:35 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:60712)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        Wed, 18 May 2022 18:54:44 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11E42265DA;
+        Wed, 18 May 2022 15:54:43 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:54926)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <ebiederm@xmission.com>)
-        id 1nrSYj-00CkVI-6u; Wed, 18 May 2022 16:54:25 -0600
+        id 1nrSYx-003baE-OK; Wed, 18 May 2022 16:54:39 -0600
 Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38724 helo=localhost.localdomain)
         by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <ebiederm@xmission.com>)
-        id 1nrSYf-002Z0O-Er; Wed, 18 May 2022 16:54:24 -0600
+        id 1nrSYu-002Z0O-LI; Wed, 18 May 2022 16:54:38 -0600
 From:   "Eric W. Biederman" <ebiederm@xmission.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
@@ -51,50 +51,55 @@ Cc:     rjw@rjwysocki.net, Oleg Nesterov <oleg@redhat.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Paul Mackerras <paulus@samba.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        linux-alpha@vger.kernel.org
-Date:   Wed, 18 May 2022 17:53:40 -0500
-Message-Id: <20220518225355.784371-1-ebiederm@xmission.com>
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Date:   Wed, 18 May 2022 17:53:43 -0500
+Message-Id: <20220518225355.784371-4-ebiederm@xmission.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
 References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-XM-SPF: eid=1nrSYf-002Z0O-Er;;;mid=<20220518225355.784371-1-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+VdHu+AQ1uu8lMLBODEbaBhkaz/j3E23I=
+X-XM-SPF: eid=1nrSYu-002Z0O-LI;;;mid=<20220518225355.784371-4-ebiederm@xmission.com>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/XPnwfZQEHyZ9WrXatAJldgaE0eiN7zxc=
 X-SA-Exim-Connect-IP: 68.227.174.4
 X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 01/16] signal/alpha: Remove unused definition of TASK_REAL_PARENT
+Subject: [PATCH 04/16] powerpc/xmon:  Use real_parent when displaying a list of processes
 X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
 X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rather than update this defition when I move tsk->real_parent into
-signal_struct remove it now.
+xmon has a bug (copied from kdb) that when showing a list of processes
+the debugger is listed as the parent, if a processes is being debugged.
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
+This is silly, and I expect it is rare enough no has noticed in
+practice.  Update the code to use real_parent so that it is clear xmon
+does not want to display a debugger as the parent of a process.
+
+Cc: Douglas Miller <dougmill@linux.vnet.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Fixes: 6dfb54049f9a ("powerpc/xmon: Add xmon command to dump process/task similar to ps(1)")
 Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- arch/alpha/kernel/asm-offsets.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/powerpc/xmon/xmon.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/asm-offsets.c b/arch/alpha/kernel/asm-offsets.c
-index 2e125e5c1508..0fca99dc5757 100644
---- a/arch/alpha/kernel/asm-offsets.c
-+++ b/arch/alpha/kernel/asm-offsets.c
-@@ -21,7 +21,6 @@ void foo(void)
+diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
+index fd72753e8ad5..b308ef9ce604 100644
+--- a/arch/powerpc/xmon/xmon.c
++++ b/arch/powerpc/xmon/xmon.c
+@@ -3282,7 +3282,7 @@ static void show_task(struct task_struct *volatile tsk)
  
-         DEFINE(TASK_BLOCKED, offsetof(struct task_struct, blocked));
-         DEFINE(TASK_CRED, offsetof(struct task_struct, cred));
--        DEFINE(TASK_REAL_PARENT, offsetof(struct task_struct, real_parent));
-         DEFINE(TASK_GROUP_LEADER, offsetof(struct task_struct, group_leader));
-         DEFINE(TASK_TGID, offsetof(struct task_struct, tgid));
-         BLANK();
+ 	printf("%16px %16lx %16px %6d %6d %c %2d %s\n", tsk,
+ 		tsk->thread.ksp, tsk->thread.regs,
+-		tsk->pid, rcu_dereference(tsk->parent)->pid,
++		tsk->pid, rcu_dereference(tsk->real_parent)->pid,
+ 		state, task_cpu(tsk),
+ 		tsk->comm);
+ }
 -- 
 2.35.3
 
