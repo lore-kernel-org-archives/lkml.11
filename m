@@ -2,125 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C5D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243869AbiESTVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 15:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37206 "EHLO
+        id S244422AbiESTVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 15:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiESTUz (ORCPT
+        with ESMTP id S244535AbiESTVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 15:20:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDBB12ACE
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:20:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652988051; x=1684524051;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=VG0I81Vi4zkACRITn2gr1QcUsNlLRmFAQtBwtwtd3ZI=;
-  b=lmZOEHRYycKGLigM5GiTuTgD6v+UrNOZ+QK+i65zZ1jcQFBd6+fhOxZ4
-   QMxH7rp5lnCEm7FaXQMEl1LV+eu5tjVUjpAtlifyL6HjooeC3wrV9hpP+
-   HcvjY9r74yQmNOnPTVxx7xb+HNDWgZEIyU+1q+fIhAh1TNY0VWUQsK2t1
-   kOdN4C24LWYQLnoRsSsApVwIMokMHfP3I0KdJ6f5er3CbeB7vqYk2F7zO
-   c3l/8JgFg4NLFXdJYpmpLhiY86cmuL8eR2z25xariAJQJcQsSbTSDsVjZ
-   J9PGwy17492LsMur7GotmGb9TZYz/JKDPV8hz/6NjKTx1RBZdf9iby0TO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="272306184"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="272306184"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 12:20:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="661870162"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 19 May 2022 12:20:33 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrlhH-0003sz-QO;
-        Thu, 19 May 2022 19:20:31 +0000
-Date:   Fri, 20 May 2022 03:19:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hans Verkuil <hverkuil@xs4all.nl>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Ricardo Ribalda <ribalda@chromium.org>
-Subject: [hverkuil-media-tree:for-v5.20a 23/29] stk-webcam.c:undefined
- reference to `usb_free_urb'
-Message-ID: <202205200316.4zqbkVU1-lkp@intel.com>
+        Thu, 19 May 2022 15:21:20 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2132.outbound.protection.outlook.com [40.107.113.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B4E49263;
+        Thu, 19 May 2022 12:21:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GkQ++glaLEazI+k9j10Pd3RaeKhSFxTMysiSOQwiWrk1Ct47OUbZNsr6eay4NDBqDzlOYm204wW6B8exoggR5xgBkuXzuBJgHBkJNE6+0eCIuZ91FMiPH/nPn+KO1xKiMurJa12Vi96XLETQ50kr557+FyRW/EDmGjKDyifeuuK/5dqw//y87OMEF/gdsdCPln9mjNfsN1yk7DKoBuIEIEgQDq2nu+pqHsUf/rnQqNDDOpme2XbbdIQjSjRMPRtYCGkeVZ8ZZ6480nMVdFGOk4P81EgFQBVXH7H2Tu2e2DyKEUkmW62k1/wjn8/PjXpk20Qu8Buhz3bM3pSnjVO/jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l/22aY2x8/5RXzx0SnwrcQGUnU9WcgpiFfyvYzUyKsw=;
+ b=lJw2og9an7G01IoDGaU4clzPtQkU3+XtQrfX5EUW8iM9KnvVQC3dtT1eWitqzlM15Inu0mx27m6jZYYLawVr4kHv+SOEIW4SuSXTdwporQ5lrS1USBOZ4aGLW+b+GGg0aYndNzTyMXQcZap0Z9B8bKAN7vUKniN7Bvz/E/Owm2KmkbsFSpwYlD0BUYKkoG1k/Dr1S7lLBSVtplZOucfi86dkN1LA3TOUxz8GPjmJ9j3BVOflp9slpDawK8qkZvBDuczq82vyzzqx8uVv5/CNxCCzcoGn+nxEDqP2ZkqkS85B03Mrwpa4k9gipcRLyEOd4h+gA9q4p1nMoB94nYrqmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l/22aY2x8/5RXzx0SnwrcQGUnU9WcgpiFfyvYzUyKsw=;
+ b=atDDnoHmNUgZX7LwZ2Upra79r9oXPKOMJvOoHRwQmIT3gR1eh64Al981Y2mE/EDhHxHNB+AkMbdprnccbfPHGOYUfJrdPKJlB82kAsHaH0VwFUU4z6pxSOwVJ6UDz8Q0yPBSPsP4kJy2JDIkaI5wNLXzlwlJotBrEwPmrnhBgNQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
+ by OSAPR01MB2820.jpnprd01.prod.outlook.com (2603:1096:604::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5273.15; Thu, 19 May 2022 19:21:16 +0000
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::89f3:ab98:2ab5:7dae]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::89f3:ab98:2ab5:7dae%7]) with mapi id 15.20.5273.017; Thu, 19 May 2022
+ 19:21:15 +0000
+From:   Min Li <min.li.xe@renesas.com>
+To:     richardcochran@gmail.com, lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net] ptp: ptp_clockmatrix: fix is_single_shot
+Date:   Thu, 19 May 2022 15:20:59 -0400
+Message-Id: <1652988059-8740-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-ClientProxiedBy: BN6PR13CA0006.namprd13.prod.outlook.com
+ (2603:10b6:404:10a::16) To OS3PR01MB6593.jpnprd01.prod.outlook.com
+ (2603:1096:604:101::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dba47b7e-0ab0-4467-1739-08da39ccbdf7
+X-MS-TrafficTypeDiagnostic: OSAPR01MB2820:EE_
+X-Microsoft-Antispam-PRVS: <OSAPR01MB2820D3CF8ACF57552A6F54E6BAD09@OSAPR01MB2820.jpnprd01.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FwJ5kZcfr5YHZE1EHO3R9oeCoCQKMbxOAgCptlZ44gjbB4Drsc4VXsPuXNl3rseKG9wEMIMZ1Ou4SduNwqWwYkxQQe4XQsLYlRLGGHatHw8b1KpCJ05HzNh+abckXFGWAkV6O9jAbL2AB0ePGZVu7Cn6MgNnGFnkc2YoL0MeRp7hApzChfpJVhw/o+JC5fLVtJNGhGIPH4DRHx3I6hgikulXLkoIz4g1O9n0oLr7x7B4aQD7aYHXsDbPAQcA/AR8BvKtPOo4CZvixCbKIYHwtfwXTgW7bRjGjjNClRilToLHWV3eZEEqOKqHpUfz87ZHDfFy2RhVyKzKx9mV34Vr88qrmjlceqTA+SsKqBIb2OZBabAnqgV+EZt1GIsdadhG2ezVt5Sjvcj8cfRVEQu3EFii95z+sZ1b9qnVrAl768ORraLIflemW6qx3to1N9uT2UUUHn20idyD8lBaoo7JWkbah2uNvfa91vrQKG3uBY5U1WT/aO4rABaPsQZz25Rzbe8g6HuHBhUtDAVB+PzDT4AsKUZ7v4R5/DCFH8ILQ6e3unQL12FaDHCu/83ilFkhrpfQNOif9H4XduHPBlGsYb0kP4HHnQOpmai0/U90a1hPJYriFYBmrO7SdiqIf+3oiFvOoV5aUtKInuQGpOZZINRYcRhId/38WDgzgKk7nZdrXoLoKJEAVECwmtLyvLhdFuWUqyAM5si3hDsRY+fv/Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(186003)(2906002)(83380400001)(86362001)(38350700002)(508600001)(26005)(2616005)(316002)(6512007)(107886003)(8936002)(66556008)(66946007)(66476007)(4326008)(6666004)(52116002)(8676002)(6506007)(5660300002)(38100700002)(4744005)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KZQfX57yqhp55OH7WnkMBJwxDXxei8QiMHJN4bQ09mQSbm0nYGyn8Ep/uEoA?=
+ =?us-ascii?Q?oBnhg+c2uVdBFh0Iq4KgS+TtMjqJX4ZwRAyR8b5kp95LyaGb5xH9f1+Ns0aP?=
+ =?us-ascii?Q?9twfQuYVJGZUvgVmubS8xjPbp/2qjZ/8u0CTiaGrAqDPO2T3ZPqDoic+QDen?=
+ =?us-ascii?Q?KRS/aNa4NafYAmaWIQn4FbutNRokjjSpX4+5S4Gp9zeutCnzVA8FxZsfRO2/?=
+ =?us-ascii?Q?B0NC+b+HTx9j24w8kLU6KB0SeIPzCeIS6xgkIswyask3VUTIaf6CuF1wraZm?=
+ =?us-ascii?Q?kedIFP8w5A4KabmyFc83E5cVeJUVgLE0zYJbkm0akCumGUzSOQyFOhVO5/2A?=
+ =?us-ascii?Q?I+0YiolMKWun9MHrP/xohJg2jvCqf+vaik7gWxQXxYBJHVzPLxrBUhnq/GSo?=
+ =?us-ascii?Q?f0pG7EfPvR1isF2kJ12Y8toCFtQyRtqHRhKLkUqZzgmJ5EjItD+upovAjUmG?=
+ =?us-ascii?Q?mBCnDdmkNJgESZFCHtw/h0VD/U2CRPWrFmB+wKO0TFK+l1BFxZdfsz1S7U33?=
+ =?us-ascii?Q?7lRG9Lt2Yrmhjd1dQhZKwP9ytpV2CmpskGsIpzy16rFJpDGGNVT59Gu40gwh?=
+ =?us-ascii?Q?m1jX8Tjm4CEhu9y/oshuGrR5bbJ+P+0McwvbK7+BOuJrAOFAHliNiEnCuCG6?=
+ =?us-ascii?Q?+23iwt0JBrOgwQc/koc+fa9k4nzpA3v9dmnhbyCOmiNwHBGGB0RfRf2P6mwd?=
+ =?us-ascii?Q?hVi5aFoxBzVWY2KECjgzGdSal5ASrDO+/r5y3dVzPD7km1LyuMsyKFivF3f8?=
+ =?us-ascii?Q?DRwR0IcmuBrLbTnkv2VZwoYELtYD0w9mypGQm/AoCtQeR8CyuZ01XymvUdys?=
+ =?us-ascii?Q?XlGMs/UHeizaSKa+A4hDsdNGKr12Fcw0At1SzB3JnORQNY/yJAbFbXqMey44?=
+ =?us-ascii?Q?/Re+0ir7AM4O25mlezx0onQYWDRgeK9F7J+25+skCX++r1Xmn8uA0PJ/Fz6b?=
+ =?us-ascii?Q?WmGM0YpRO7V0INSKvXv1lo23yTRDVAeO1O3lpgB9hZ2YB1UmqGFuzuffGbIq?=
+ =?us-ascii?Q?guY2985nsaWqYK1B69BQ2V/R4imr/vXoSwA82tAfU/Tl8C5/FDGFwyjgCzPQ?=
+ =?us-ascii?Q?/oTtm4KQQcdoIvWuiPslm+6SiHdTbt+NVl2Gf2jxDdWWWO05/+vAB+K1ZNye?=
+ =?us-ascii?Q?sUi1MeqmbywlOt3U9M1h7AOpIkuPHxMfa0gmTxZ0wvbHIr9NHa95V7zrYjnw?=
+ =?us-ascii?Q?43r6V7F3fOGHpqGIoGhu0lmN5+Udm0yxUTW67BAGeEyvo4gUYFw7qoztV4Bn?=
+ =?us-ascii?Q?/XaqdNCvVVI9r87+N3ZR1K/i9SRa41ALzXvnOHpoc4o1pv8+w8kRPqBeglBg?=
+ =?us-ascii?Q?ePcg2MVsUtK1NFGnsthWrL/s83Ob0csxzHIJCX7QU2h0dQ21kpIYBd9Wx9Rt?=
+ =?us-ascii?Q?R3f7IQtN1JIglZAlB1Us3ApYWQ3yian2zubKnxDyx6cYtQtEmDeSvYDgojZn?=
+ =?us-ascii?Q?Wvg7bdIL/Y93kO2LGEAlpJba6ffKINjeTDxBkTsZwcCYG8uC/3no0C2qeT2P?=
+ =?us-ascii?Q?+doJ6ia7PirVqLfrjNlDn1VeSNwyNGb4IwHDzz4HjbhZ3MjVCcD4Rt5oKClj?=
+ =?us-ascii?Q?Z5QQlObuM0Sef6/uEi6eDOOjiIb9U6lb+I0iB3epvDenluCZz6hFQ5Xnp2gp?=
+ =?us-ascii?Q?AJ2ZdvBbotZkPQ96J39/YDKCu2Gmz+r4jPqxH14Tue0SS2JqAN9H2mJOYAl5?=
+ =?us-ascii?Q?AXj0WQkPG3/L8n+/EL3kj/J3+3mRA4ak7LqngqnBmNVkYTnpdLNn6Z+ls1e1?=
+ =?us-ascii?Q?dokC/Q8/SYBJzwWiediOowiwPXJw9g0=3D?=
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dba47b7e-0ab0-4467-1739-08da39ccbdf7
+X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 19:21:15.2513
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DQr4fjX1Fr12ObNRq3prtegNtGt0NGOOXJypzTCdMRgYOcbI3qvqfXwIk04C1ZMK3H+kXO4W9rhG1GIHrNTXLQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2820
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://linuxtv.org/hverkuil/media_tree.git for-v5.20a
-head:   e481d316b60f1d57e770f21dc5398d5dcff13ee6
-commit: 308124c0301a5258078c2ffddd03cf3fb584d792 [23/29] media: stkwebcam: deprecate driver, move to staging
-config: m68k-randconfig-c004-20220519 (https://download.01.org/0day-ci/archive/20220520/202205200316.4zqbkVU1-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
-        git fetch --no-tags hverkuil-media-tree for-v5.20a
-        git checkout 308124c0301a5258078c2ffddd03cf3fb584d792
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+is_single_shot should return false for the power_of_2 mask
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/ptp_clockmatrix.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-All errors (new ones prefixed by >>):
-
-   m68k-linux-ld: drivers/macintosh/via-cuda.o: in function `cuda_set_rtc_time':
-   via-cuda.c:(.text+0xae2): undefined reference to `rtc_tm_to_time64'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_clean_iso':
->> stk-webcam.c:(.text+0x648): undefined reference to `usb_free_urb'
->> m68k-linux-ld: stk-webcam.c:(.text+0x64e): undefined reference to `usb_kill_urb'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_prepare_iso':
->> stk-webcam.c:(.text+0x111e): undefined reference to `usb_kill_urb'
->> m68k-linux-ld: stk-webcam.c:(.text+0x12a0): undefined reference to `usb_free_urb'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_start_stream':
->> stk-webcam.c:(.text+0x1ad2): undefined reference to `usb_submit_urb'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_v4l_dev_release':
->> stk-webcam.c:(.text+0x1f2): undefined reference to `usb_put_intf'
->> m68k-linux-ld: stk-webcam.c:(.text+0x1fc): undefined reference to `usb_put_dev'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_camera_probe':
->> stk-webcam.c:(.text+0xc04): undefined reference to `usb_get_dev'
->> m68k-linux-ld: stk-webcam.c:(.text+0xc14): undefined reference to `usb_get_intf'
->> m68k-linux-ld: stk-webcam.c:(.text+0xd84): undefined reference to `usb_put_intf'
-   m68k-linux-ld: stk-webcam.c:(.text+0xd8e): undefined reference to `usb_put_dev'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_isoc_handler':
-   stk-webcam.c:(.text+0x1096): undefined reference to `usb_submit_urb'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_prepare_iso':
->> stk-webcam.c:(.text+0x1124): undefined reference to `usb_alloc_urb'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_initialise':
->> stk-webcam.c:(.text+0x1420): undefined reference to `usb_control_msg'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `v4l_stk_open':
-   stk-webcam.c:(.text+0x1500): undefined reference to `usb_control_msg'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_vidioc_reqbufs':
-   stk-webcam.c:(.text+0x15ba): undefined reference to `usb_control_msg'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_vidioc_s_fmt_vid_cap':
-   stk-webcam.c:(.text+0x1862): undefined reference to `usb_control_msg'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_camera_write_reg':
-   stk-webcam.c:(.text+0x18c4): undefined reference to `usb_control_msg'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o:stk-webcam.c:(.text+0x1912): more undefined references to `usb_control_msg' follow
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_start_stream':
->> stk-webcam.c:(.text+0x1972): undefined reference to `usb_set_interface'
->> m68k-linux-ld: stk-webcam.c:(.text+0x19ee): undefined reference to `usb_control_msg'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_stop_stream.isra.0':
-   stk-webcam.c:(.text+0x1f58): undefined reference to `usb_control_msg'
-   m68k-linux-ld: stk-webcam.c:(.text+0x1f6c): undefined reference to `usb_kill_urb'
->> m68k-linux-ld: stk-webcam.c:(.text+0x1f9c): undefined reference to `usb_set_interface'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `v4l_stk_release':
-   stk-webcam.c:(.text+0x204c): undefined reference to `usb_control_msg'
-   m68k-linux-ld: drivers/staging/media/stkwebcam/stk-webcam.o: in function `stk_camera_driver_init':
->> stk-webcam.c:(.init.text+0x14): undefined reference to `usb_register_driver'
-
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index cb258e1..c9d451b 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -267,7 +267,7 @@ static int arm_tod_read_trig_sel_refclk(struct idtcm_channel *channel, u8 ref)
+ static bool is_single_shot(u8 mask)
+ {
+ 	/* Treat single bit ToD masks as continuous trigger */
+-	return mask <= 8 && is_power_of_2(mask);
++	return !(mask <= 8 && is_power_of_2(mask));
+ }
+ 
+ static int idtcm_extts_enable(struct idtcm_channel *channel,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.7.4
+
