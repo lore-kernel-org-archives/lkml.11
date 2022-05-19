@@ -2,77 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B39A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234861AbiESHjA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
+        id S234315AbiESHkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232733AbiESHi6 (ORCPT
+        with ESMTP id S234381AbiESHj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:38:58 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1398A7E29;
-        Thu, 19 May 2022 00:38:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=2WGn3U5iWYbqhAEYerCkhKo3tyszE5fO2isMfocp72s=; b=MqRC9ZtBC0maLPeCbKteZ8lGuo
-        /1I+a4DLnSkHaU6Ku3WgpUTD0sh0NOBM2nHYNQ/MoIen0wmdivi/AGROJYerl0XSwwmK0FTC9jtpM
-        uR8G03NFam87OKw8l2TL+1ynj4ud3YZUQkq4rAfC5UHTYasK1fyuupcqB+c33dmSSc+/uWMeq21Mh
-        mWboozwGQ5XQJvvsmomxwlk40EHk/NujNUwBefWCvBe9V9WvbMMUNJuA+Nit6VJu3yS3/wCfp1qNf
-        7PzSvwWJfyYutYO/d5sAc9iYvMN6DM9WbdNd7PBRTeBnNAjB+5JLcNJbPeJ68dbQY7poPQEYLXIlv
-        ypjazLKA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrajr-001leT-8U; Thu, 19 May 2022 07:38:27 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 084EC980BF7; Thu, 19 May 2022 09:38:25 +0200 (CEST)
-Date:   Thu, 19 May 2022 09:38:24 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        "Torvalds, Linus" <torvalds@linux-foundation.org>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 2/5] x86/alternative: introduce text_poke_set
-Message-ID: <20220519073824.GA2578@worktop.programming.kicks-ass.net>
-References: <20220516054051.114490-1-song@kernel.org>
- <20220516054051.114490-3-song@kernel.org>
- <20220518170934.GG10117@worktop.programming.kicks-ass.net>
- <A4019486-85F3-4900-8073-6879608706B1@fb.com>
+        Thu, 19 May 2022 03:39:59 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3076EA7E33
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:39:59 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id E21961FA13;
+        Thu, 19 May 2022 07:39:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652945997; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OvcEjdguxGnwRWakoTdTRdMP5F/4qelWY0PnvK8A6+M=;
+        b=oGgZM6lB6cAcir50cgUhVLfnt5gGSAUacckFWk5mt34xxqahj6uTk3MliVo5a7Fw3pYwwz
+        L5c9YoV+qWYwqW6Mad86XmXhg/5fJuZVYi20dyAFriMCnpt6Uf7ixCApNFUAQMDGDJUTAN
+        u5vzm/tGAqfM+PXdOHBayGlGY5IwQWw=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id AFE5E2C141;
+        Thu, 19 May 2022 07:39:57 +0000 (UTC)
+Date:   Thu, 19 May 2022 09:39:57 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     Balbir Singh <bsingharora@gmail.com>, akpm@linux-foundation.org,
+        ammarfaizi2@gnuweeb.org, oleksandr@natalenko.name,
+        willy@infradead.org, linux-mm@kvack.org, corbet@lwn.net,
+        linux-kernel@vger.kernel.org, xu xin <xu.xin16@zte.com.cn>,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        wangyong <wang.yong12@zte.com.cn>,
+        Yunkai Zhang <zhang.yunkai@zte.com.cn>,
+        Jiang Xuexin <jiang.xuexin@zte.com.cn>
+Subject: Re: [PATCH] mm/ksm: introduce ksm_enabled for each processg
+Message-ID: <YoX0TWoNw3HqH/X/@dhcp22.suse.cz>
+References: <20220517092701.1662641-1-xu.xin16@zte.com.cn>
+ <YoSZE7Iak3AYA4VE@balbir-desktop>
+ <6284a2ef.1c69fb81.e53cd.32b2@mx.google.com>
+ <YoTjJH7+QD+DSrW8@dhcp22.suse.cz>
+ <6285e519.1c69fb81.4f3fe.8057@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <A4019486-85F3-4900-8073-6879608706B1@fb.com>
+In-Reply-To: <6285e519.1c69fb81.4f3fe.8057@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 06:34:18PM +0000, Song Liu wrote:
-> 
-> 
-> > On May 18, 2022, at 10:09 AM, Peter Zijlstra <peterz@infradead.org> wrote:
+On Thu 19-05-22 06:35:03, CGEL wrote:
+> On Wed, May 18, 2022 at 02:14:28PM +0200, Michal Hocko wrote:
+> > On Wed 18-05-22 07:40:30, CGEL wrote:
+> > [...]
+> > > 2. process_madvise is still a kind of madvise. processs_madvise from
+> > > another process overrides the intention of origin app code ifself that
+> > > also calls madvise, which is unrecoverable. For example, if a process "A"
+> > > which madvises just one part of VMAs (not all) as MERGEABLE run on the OS
+> > > already, meanwhile, if another process which doesn't know the information
+> > > of "A" 's MERGEABLE areas, then call process_madvise to advise all VMAs of
+> > > "A" as MERGEABLE, the original MERGEABLE information of "A" calling madivse
+> > > is erasured permanently.
 > > 
-> > On Sun, May 15, 2022 at 10:40:48PM -0700, Song Liu wrote:
-> >> Introduce a memset like API for text_poke. This will be used to fill the
-> >> unused RX memory with illegal instructions.
-> > 
-> > FWIW, you're going to use it to set INT3 (0xCC), that's not an illegal
-> > instruction. INTO (0xCE) would be an illegal instruction (in 64bit
-> > mode).
+> > I do not really follow. How is this any different from an external
+> > process modifying the process wide policy via the proc or any other
+> > interface?
 > 
-> Hmm… we have been using INT3 as illegal/invalid/special instructions in 
-> the JIT. I guess they are equally good for this job?
+> In this patch, you can see that we didn't modify the flag of any VMA of
+> the target process, which is different from process_madvise. So it is
+> easy to keep the original MERGEABLE information of the target process
+> when we turn back to the default state from the state "always".
 
-INT3 is right, it's just not illegal. Terminology is everything :-)
+This means that /proc/<pid>/smaps doesn't show the real state, right?
 
-INT3 is the breakpoint instruction, it raises #BP, an illegal
-instruction would raise #UD. Different exception vectors and such.
+-- 
+Michal Hocko
+SUSE Labs
