@@ -2,252 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 00:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A445C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 00:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231644AbiESAGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 20:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
+        id S231710AbiESAHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 20:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231649AbiESAGc (ORCPT
+        with ESMTP id S231682AbiESAH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 20:06:32 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAE8BC6FB
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 17:06:27 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id a9so1535587pgv.12
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 17:06:27 -0700 (PDT)
+        Wed, 18 May 2022 20:07:29 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C223210570
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 17:07:28 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id i27so6815567ejd.9
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 17:07:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pnQRqfvUHTSGL+MLA9t/8T2xy8xvvnekkUHuEk3skW8=;
-        b=jy3/fWxlPzVkBZwxU0Cb4D51NdFdrc8bCdHTjUK3AUyQ0SUzspVzcPPpcdWmtHcUT5
-         VeTK8OA/6Jpr6rIy0/ZQL3c5JJXT8cmXbpj2+gxS9EoVkqR8DsqGxNlvoRwWb0KrLHlW
-         MZQYy4milqvCLBP37GR4pOjeeVQfl9FAk32JY=
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WYzl0vkutTLS0hzlFyrBMzDRdY+ph8j1AYEXBHgldcg=;
+        b=KwKF8C+a3lYh7TKvVdu1n8gevRU2AzOmIvfDcMSy+DEdFmcWxwGeh1VxE3LilvEONC
+         qKpj+AgORGrTVnZZiQkvAlh1SKWihwN9cKUyi295BuJtRpF3FRCTEtQ9y7GyxQTgqSMr
+         VF4oqiBd6OtNQIjXTjPxogigoRT/miEr7g5Ek=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pnQRqfvUHTSGL+MLA9t/8T2xy8xvvnekkUHuEk3skW8=;
-        b=wN3x4Mx8yJEEj3JRk48ax0p4/r3F5q4QyO8/z92FMhyjjGIk70ny4E6gMqvLzxrJdC
-         SO0t3WoBr8bIfUhEvCStLP7ps3/B3apOShmNy/4EpLRPEykgHEHew3wF9wsL5kCDD3Zf
-         FxOc1o+7+qNWD+c84d8kOdcZWPwWNtTxMK8zBMwFzEXwTAkDGaVHE1VtLf9hK13BJGHS
-         EgKw9C9aDrauUJgExoVK+GjHyoCMCHLvgZdMc+7QqgmAXza6trZTDIB9ik20Yl3rLo8C
-         /Tz1vbjUXrHeS2EZp+UVA+o1Sxj1ShNFTcFCeh6lixo7eoTmEnhbdQ2pW2MVP5y30Ib1
-         4Ovg==
-X-Gm-Message-State: AOAM532bJJm+Vjf+BYVnJmtgMgZs0JJP0Y5+2EHPau07mgxc3xLXnhwm
-        S9AoPd/z121cL/3IcFFQNNoHPA==
-X-Google-Smtp-Source: ABdhPJznyLNFCnwPxfChQnnEr/3S2bvgHhOj2K0A+O1h8onFnWKBc9aQY6l71hDSxXudWQY1yx3HnQ==
-X-Received: by 2002:a05:6a00:b56:b0:510:8107:5cf8 with SMTP id p22-20020a056a000b5600b0051081075cf8mr1870723pfo.2.1652918787205;
-        Wed, 18 May 2022 17:06:27 -0700 (PDT)
-Received: from li-cloudtop.c.googlers.com.com (132.111.125.34.bc.googleusercontent.com. [34.125.111.132])
-        by smtp.gmail.com with ESMTPSA id k1-20020a628e01000000b0050dc76281b1sm2396787pfe.139.2022.05.18.17.06.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 17:06:27 -0700 (PDT)
-From:   Li Li <dualli@chromium.org>
-To:     dualli@google.com, tkjos@google.com, gregkh@linuxfoundation.org,
-        christian@brauner.io, arve@android.com, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, maco@google.com, hridya@google.com,
-        surenb@google.com
-Cc:     joel@joelfernandes.org, kernel-team@android.com
-Subject: [PATCH v1] Binder: add TF_UPDATE_TXN
-Date:   Wed, 18 May 2022 17:06:23 -0700
-Message-Id: <20220519000623.1715899-1-dualli@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WYzl0vkutTLS0hzlFyrBMzDRdY+ph8j1AYEXBHgldcg=;
+        b=X95XNq5yrPAtIGSTpsxisef1CQHWW4HRuSydzuCFKwVqP29DKkoyGwOw7ygLt5SQpZ
+         vWvBDwCVrIqjhBVc71AFheL7WzXJUjKLn8u5GUYfbS0P2J/vZRl+JHyPwLuX/xEbrZvG
+         LWbmOSMpwngdMXlXFUZM1OJKpo7uxZSK9bv4xWQCQBolmLKF35gpqvJaEY8pR15SeBGz
+         i5W8/YJFeu2I801TD2YRza2r2sRQ0n6mqteBo/pO81OVSgDUm2NwD8vTfNtiGs5IPtCC
+         BnWV384anbXK30vcYBnDbODUVvLsM4XRUkSIdvKQPaoNuvQyYzQhc6ao4IigcOvKQDZn
+         2Z9w==
+X-Gm-Message-State: AOAM530Zr09mlnpGdngVknnCwYmPVX4lFiZ+UZMbwjcGBK2DGsZnU42z
+        olkIZFvH7Eaj84HSrBnVMLPXytdoxn0qNA==
+X-Google-Smtp-Source: ABdhPJyPBhD611JXdFcQQIK9WQpvXrzkZl1MZrUjKQreeehXXe0Z/pS6/IU5dNfrQBtmXOpZ+wVKIQ==
+X-Received: by 2002:a17:907:868e:b0:6fa:2fe2:92d6 with SMTP id qa14-20020a170907868e00b006fa2fe292d6mr1816564ejc.639.1652918847085;
+        Wed, 18 May 2022 17:07:27 -0700 (PDT)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id e18-20020a50fb92000000b0042ab8c5e99fsm2064536edq.14.2022.05.18.17.07.25
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 17:07:25 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id t6so4869698wra.4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 17:07:25 -0700 (PDT)
+X-Received: by 2002:a05:6000:2c2:b0:20c:7329:7c10 with SMTP id
+ o2-20020a05600002c200b0020c73297c10mr1658727wry.193.1652918845040; Wed, 18
+ May 2022 17:07:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YoUiHhz1NsTbN5Vo@zeniv-ca.linux.org.uk>
+In-Reply-To: <YoUiHhz1NsTbN5Vo@zeniv-ca.linux.org.uk>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 18 May 2022 14:07:09 -1000
+X-Gmail-Original-Message-ID: <CAHk-=wj4eF-HZc+uuVcD4EjLW_QN7_8OZ5gtAC9_6qY1-ZK4rg@mail.gmail.com>
+Message-ID: <CAHk-=wj4eF-HZc+uuVcD4EjLW_QN7_8OZ5gtAC9_6qY1-ZK4rg@mail.gmail.com>
+Subject: Re: [git pull] a couple of fixes
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Li <dualli@google.com>
+On Wed, May 18, 2022 at 6:43 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+>         vhost race fix + percpu_ref_init-caused cgroup double-free fix
+> (the latter had manifested as buggered struct mount refcounting -
+> those are also using percpu data structures, but anything that does
+> percpu allocations could be hit)
 
-When the target process is busy, incoming oneway transactions are
-queued in the async_todo list. If the clients continue sending extra
-oneway transactions while the target process is frozen, this queue can
-become too large to accommodate new transactions. That's why binder
-driver introduced ONEWAY_SPAM_DETECTION to detect this situation. It's
-helpful to debug the async binder buffer exhausting issue, but the
-issue itself isn't solved directly.
+Pulled.
 
-In real cases applications are designed to send oneway transactions
-repeatedly, delivering updated inforamtion to the target process.
-Typical examples are Wi-Fi signal strength and some real time sensor
-data. Even if the apps might only care about the lastet information,
-all outdated oneway transactions are still accumulated there until the
-frozen process is thawed later. For this kind of situations, there's
-no existing method to skip those outdated transactions and deliver the
-latest one only.
+I do note that you are one of the remaining people not using signed
+tags. Not the only one, but _almost_. I've cajoled almost everybody
+else to use them...
 
-This patch introduces a new transaction flag TF_UPDATE_TXN. To use it,
-use apps can set this new flag along with TF_ONE_WAY. When such an
-oneway transaction is to be queued into the async_todo list of a frozen
-process, binder driver will check if any previous pending transactions
-can be superseded by comparing their code, flags and target node. If
-such an outdated pending transaction is found, the latest transaction
-will supersede that outdated one. This effectively prevents the async
-binder buffer running out and saves unnecessary binder read workloads.
-
-Signed-off-by: Li Li <dualli@google.com>
----
- drivers/android/binder.c            | 90 ++++++++++++++++++++++++++++-
- drivers/android/binder_trace.h      |  4 ++
- include/uapi/linux/android/binder.h |  1 +
- 3 files changed, 92 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index f3b639e89dd8..153486a32d69 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -2594,6 +2594,60 @@ static int binder_fixup_parent(struct list_head *pf_head,
- 	return binder_add_fixup(pf_head, buffer_offset, bp->buffer, 0);
- }
- 
-+/**
-+ * binder_can_update_transaction() - Can a txn be superseded by an updated one?
-+ * @t1: the pending async txn in the frozen process
-+ * @t2: the new async txn to supersede the outdated pending one
-+ *
-+ * Return:  true if t2 can supersede t1
-+ *          false if t2 can not supersede t1
-+ */
-+static bool binder_can_update_transaction(struct binder_transaction *t1,
-+					  struct binder_transaction *t2)
-+{
-+	if ((t1->flags & t2->flags & (TF_ONE_WAY | TF_UPDATE_TXN))
-+			!= (TF_ONE_WAY | TF_UPDATE_TXN)
-+			|| t1->to_proc == NULL || t2->to_proc == NULL)
-+		return false;
-+	if (t1->to_proc->tsk == t2->to_proc->tsk && t1->code == t2->code
-+			&& t1->flags == t2->flags
-+			&& t1->buffer->pid == t2->buffer->pid
-+			&& t1->buffer->target_node->ptr
-+			== t2->buffer->target_node->ptr
-+			&& t1->buffer->target_node->cookie
-+			== t2->buffer->target_node->cookie)
-+		return true;
-+	return false;
-+}
-+
-+/**
-+ * binder_find_outdated_transaction_ilocked() - Find the outdated transaction
-+ * @t:		 new async transaction
-+ * @target_list: list to find outdated transaction
-+ *
-+ * Return: the outdated transaction if found
-+ *         NULL if no outdated transacton can be found
-+ *
-+ * Requires the proc->inner_lock to be held.
-+ */
-+static struct binder_transaction *
-+binder_find_outdated_transaction_ilocked(struct binder_transaction *t,
-+					 struct list_head *target_list)
-+{
-+	struct binder_work *w;
-+
-+	list_for_each_entry(w, target_list, entry) {
-+		struct binder_transaction *t_queued;
-+
-+		if (w->type != BINDER_WORK_TRANSACTION)
-+			continue;
-+		t_queued = container_of(w, struct binder_transaction, work);
-+		if (binder_can_update_transaction(t_queued, t))
-+			return t_queued;
-+	}
-+	return NULL;
-+}
-+
- /**
-  * binder_proc_transaction() - sends a transaction to a process and wakes it up
-  * @t:		transaction to send
-@@ -2619,6 +2673,7 @@ static int binder_proc_transaction(struct binder_transaction *t,
- 	struct binder_node *node = t->buffer->target_node;
- 	bool oneway = !!(t->flags & TF_ONE_WAY);
- 	bool pending_async = false;
-+	struct binder_transaction *t_outdated = NULL;
- 
- 	BUG_ON(!node);
- 	binder_node_lock(node);
-@@ -2646,12 +2701,25 @@ static int binder_proc_transaction(struct binder_transaction *t,
- 	if (!thread && !pending_async)
- 		thread = binder_select_thread_ilocked(proc);
- 
--	if (thread)
-+	if (thread) {
- 		binder_enqueue_thread_work_ilocked(thread, &t->work);
--	else if (!pending_async)
-+	} else if (!pending_async) {
- 		binder_enqueue_work_ilocked(&t->work, &proc->todo);
--	else
-+	} else {
-+		if ((t->flags & TF_UPDATE_TXN) && proc->is_frozen) {
-+			t_outdated = binder_find_outdated_transaction_ilocked(
-+					t, &node->async_todo);
-+			if (t_outdated) {
-+				binder_debug(BINDER_DEBUG_TRANSACTION,
-+						"txn %d supersedes %d\n",
-+						t->debug_id,
-+						t_outdated->debug_id);
-+				list_del_init(&t_outdated->work.entry);
-+				proc->outstanding_txns--;
-+			}
-+		}
- 		binder_enqueue_work_ilocked(&t->work, &node->async_todo);
-+	}
- 
- 	if (!pending_async)
- 		binder_wakeup_thread_ilocked(proc, thread, !oneway /* sync */);
-@@ -2660,6 +2728,22 @@ static int binder_proc_transaction(struct binder_transaction *t,
- 	binder_inner_proc_unlock(proc);
- 	binder_node_unlock(node);
- 
-+	/*
-+	 * To reduce potential contention, free the outdated transaction and
-+	 * buffer after releasing the locks.
-+	 */
-+	if (t_outdated) {
-+		struct binder_buffer *buffer = t_outdated->buffer;
-+
-+		t_outdated->buffer = NULL;
-+		buffer->transaction = NULL;
-+		trace_binder_transaction_update_buffer_release(buffer);
-+		binder_transaction_buffer_release(proc, NULL, buffer, 0, 0);
-+		binder_alloc_free_buf(&proc->alloc, buffer);
-+		kfree(t_outdated);
-+		binder_stats_deleted(BINDER_STAT_TRANSACTION);
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/android/binder_trace.h b/drivers/android/binder_trace.h
-index 8eeccdc64724..5b544f2aff4b 100644
---- a/drivers/android/binder_trace.h
-+++ b/drivers/android/binder_trace.h
-@@ -311,6 +311,10 @@ DEFINE_EVENT(binder_buffer_class, binder_transaction_failed_buffer_release,
- 	TP_PROTO(struct binder_buffer *buffer),
- 	TP_ARGS(buffer));
- 
-+DEFINE_EVENT(binder_buffer_class, binder_transaction_update_buffer_release,
-+	TP_PROTO(struct binder_buffer *buffer),
-+	TP_ARGS(buffer));
-+
- TRACE_EVENT(binder_update_page_range,
- 	TP_PROTO(struct binder_alloc *alloc, bool allocate,
- 		 void __user *start, void __user *end),
-diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
-index 11157fae8a8e..0b291b1d29d1 100644
---- a/include/uapi/linux/android/binder.h
-+++ b/include/uapi/linux/android/binder.h
-@@ -271,6 +271,7 @@ enum transaction_flags {
- 	TF_STATUS_CODE	= 0x08,	/* contents are a 32-bit status code */
- 	TF_ACCEPT_FDS	= 0x10,	/* allow replies with file descriptors */
- 	TF_CLEAR_BUF	= 0x20,	/* clear buffer on txn complete */
-+	TF_UPDATE_TXN	= 0x40,	/* update the outdated pending async txn */
- };
- 
- struct binder_transaction_data {
--- 
-2.36.1.124.g0e6072fb45-goog
-
+               Linus
