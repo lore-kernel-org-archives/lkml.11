@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D523C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 240C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240384AbiESPnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46434 "EHLO
+        id S232287AbiESPnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241391AbiESPlz (ORCPT
+        with ESMTP id S241245AbiESPlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:41:55 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF0B5B884;
-        Thu, 19 May 2022 08:41:54 -0700 (PDT)
+        Thu, 19 May 2022 11:41:16 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30EA12A82;
+        Thu, 19 May 2022 08:41:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652974914; x=1684510914;
+  t=1652974873; x=1684510873;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xibCq6JJQorznQt92fCArgufvi2t+qiQBqRcvVaVpXo=;
-  b=fCwl/r/RPlg3gyaEsOh2Laxmp+Sf+/oKexB82qBb9Ow/9iEVaOqIwQjc
-   K+Ytgtegx+qlovdZKH9kjepIyd9MaFlythqZ5lRnJQR6+3/BBKHkuv+LY
-   2p0Ha3ZT/jOP2iegSaywri6mJ/UeKkwKxOdq9Olp2ySxl9rs107BHa3YN
-   w4y7x89x8Ct82WbGd39eJfWm7Ugr4S/7Tpk77etaVfL528hh3NLjBKknf
-   0k5hXdUN1ri5frGeYFbVa2u81JFv8FoZ6p0Xuk7sL2E8SDBFQ1cQUg0Tz
-   ow1s3gETEjZdJyugq9CRfKKMDxjNmFlE83wzGnMpjkZDtOwtseRGpW1HT
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="252143283"
+  bh=bRcbOpClngbVMiu+0GkVBqXH3D1nHdRIvvjiJPwzM5U=;
+  b=Ovcyk7lajrWzlKyvlb6Go8n+kyVcJp38MJ7dRkB1Ihlb1mCvnqAGqhf5
+   cqW/xG9qoB+0eAZkUnwTfy3FWOiztz72CNq2nhmrHZ+aCd0jnWBQxR6Rc
+   nK2NXuDqCGX5wvD3dX9zrV7Yap8L+c4Afu6MsiwmJBS5WRlGnXCUayr3t
+   BkCMBim4agTxUxzkVAcvLoxREV7BGZ5kQxVrhx1s4vK4N33G57Kr2zRDr
+   tKEc7X7ADSnXNiSxXXOzCBVIao/CeoHdnVrE7EpfL/fvOpqdV9tlkIs1b
+   bmL3Z3qQGG9VKJ8xw9Zvy8EVf665wgV5kjsEvM+LBEkQJsJn/E6t4HZoP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="259828045"
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="252143283"
+   d="scan'208";a="259828045"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 08:41:53 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 08:41:12 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="598635417"
+   d="scan'208";a="598635123"
 Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 19 May 2022 08:41:43 -0700
+  by orsmga008.jf.intel.com with ESMTP; 19 May 2022 08:41:02 -0700
 From:   Chao Peng <chao.p.peng@linux.intel.com>
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
@@ -70,9 +70,9 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         ddutile@redhat.com, dhildenb@redhat.com,
         Quentin Perret <qperret@google.com>,
         Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Subject: [PATCH v6 6/8] KVM: Handle page fault for private memory
-Date:   Thu, 19 May 2022 23:37:11 +0800
-Message-Id: <20220519153713.819591-7-chao.p.peng@linux.intel.com>
+Subject: [PATCH v6 2/8] mm/shmem: Support memfile_notifier
+Date:   Thu, 19 May 2022 23:37:07 +0800
+Message-Id: <20220519153713.819591-3-chao.p.peng@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
 References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
@@ -82,265 +82,269 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A page fault can carry the information of whether the access if private
-or not for KVM_MEM_PRIVATE memslot, this can be filled by architecture
-code(like TDX code). To handle page faut for such access, KVM maps the
-page only when this private property matches host's view on this page
-which can be decided by checking whether the corresponding page is
-populated in the private fd or not. A page is considered as private when
-the page is populated in the private fd, otherwise it's shared.
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
-For a successful match, private pfn is obtained with memfile_notifier
-callbacks from private fd and shared pfn is obtained with existing
-get_user_pages.
+Implement shmem as a memfile_notifier backing store. Essentially it
+interacts with the memfile_notifier feature flags for userspace
+access/page migration/page reclaiming and implements the necessary
+memfile_backing_store callbacks.
 
-For a failed match, KVM causes a KVM_EXIT_MEMORY_FAULT exit to
-userspace. Userspace then can convert memory between private/shared from
-host's view then retry the access.
-
-Co-developed-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
 ---
- arch/x86/kvm/mmu.h              |  1 +
- arch/x86/kvm/mmu/mmu.c          | 70 +++++++++++++++++++++++++++++++--
- arch/x86/kvm/mmu/mmu_internal.h | 17 ++++++++
- arch/x86/kvm/mmu/mmutrace.h     |  1 +
- arch/x86/kvm/mmu/paging_tmpl.h  |  5 ++-
- include/linux/kvm_host.h        | 22 +++++++++++
- 6 files changed, 112 insertions(+), 4 deletions(-)
+ include/linux/shmem_fs.h |   2 +
+ mm/shmem.c               | 120 ++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 121 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 7e258cc94152..c84835762249 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -176,6 +176,7 @@ struct kvm_page_fault {
+diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
+index ab51d3cd39bd..a8e98bdd121e 100644
+--- a/include/linux/shmem_fs.h
++++ b/include/linux/shmem_fs.h
+@@ -9,6 +9,7 @@
+ #include <linux/percpu_counter.h>
+ #include <linux/xattr.h>
+ #include <linux/fs_parser.h>
++#include <linux/memfile_notifier.h>
  
- 	/* Derived from mmu and global state.  */
- 	const bool is_tdp;
-+	const bool is_private;
- 	const bool nx_huge_page_workaround_enabled;
+ /* inode in-kernel data */
  
- 	/*
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index afe18d70ece7..e18460e0d743 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2899,6 +2899,9 @@ int kvm_mmu_max_mapping_level(struct kvm *kvm,
- 	if (max_level == PG_LEVEL_4K)
- 		return PG_LEVEL_4K;
- 
-+	if (kvm_slot_is_private(slot))
-+		return max_level;
-+
- 	host_level = host_pfn_mapping_level(kvm, gfn, pfn, slot);
- 	return min(host_level, max_level);
- }
-@@ -3948,10 +3951,54 @@ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 				  kvm_vcpu_gfn_to_hva(vcpu, gfn), &arch);
- }
- 
-+static inline u8 order_to_level(int order)
-+{
-+	enum pg_level level;
-+
-+	for (level = KVM_MAX_HUGEPAGE_LEVEL; level > PG_LEVEL_4K; level--)
-+		if (order >= page_level_shift(level) - PAGE_SHIFT)
-+			return level;
-+	return level;
-+}
-+
-+static int kvm_faultin_pfn_private(struct kvm_vcpu *vcpu,
-+				   struct kvm_page_fault *fault)
-+{
-+	int order;
-+	struct kvm_memory_slot *slot = fault->slot;
-+	bool private_exist = !kvm_private_mem_get_pfn(slot, fault->gfn,
-+						      &fault->pfn, &order);
-+
-+	if (fault->is_private != private_exist) {
-+		if (private_exist)
-+			kvm_private_mem_put_pfn(slot, fault->pfn);
-+
-+		vcpu->run->exit_reason = KVM_EXIT_MEMORY_FAULT;
-+		if (fault->is_private)
-+			vcpu->run->memory.flags = KVM_MEMORY_EXIT_FLAG_PRIVATE;
-+		else
-+			vcpu->run->memory.flags = 0;
-+		vcpu->run->memory.padding = 0;
-+		vcpu->run->memory.gpa = fault->gfn << PAGE_SHIFT;
-+		vcpu->run->memory.size = PAGE_SIZE;
-+		return RET_PF_USER;
-+	}
-+
-+	if (fault->is_private) {
-+		fault->max_level = min(order_to_level(order), fault->max_level);
-+		fault->map_writable = !(slot->flags & KVM_MEM_READONLY);
-+		return RET_PF_FIXED;
-+	}
-+
-+	/* Fault is shared, fallthrough to the standard path. */
-+	return RET_PF_CONTINUE;
-+}
-+
- static int kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- {
- 	struct kvm_memory_slot *slot = fault->slot;
- 	bool async;
-+	int r;
- 
- 	/*
- 	 * Retry the page fault if the gfn hit a memslot that is being deleted
-@@ -3980,6 +4027,12 @@ static int kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 			return RET_PF_EMULATE;
- 	}
- 
-+	if (kvm_slot_is_private(slot)) {
-+		r = kvm_faultin_pfn_private(vcpu, fault);
-+		if (r != RET_PF_CONTINUE)
-+			return r == RET_PF_FIXED ? RET_PF_CONTINUE : r;
-+	}
-+
- 	async = false;
- 	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, false, &async,
- 					  fault->write, &fault->map_writable,
-@@ -4028,8 +4081,11 @@ static bool is_page_fault_stale(struct kvm_vcpu *vcpu,
- 	if (!sp && kvm_test_request(KVM_REQ_MMU_FREE_OBSOLETE_ROOTS, vcpu))
- 		return true;
- 
--	return fault->slot &&
--	       mmu_notifier_retry_hva(vcpu->kvm, mmu_seq, fault->hva);
-+	if (fault->is_private)
-+		return mmu_notifier_retry(vcpu->kvm, mmu_seq);
-+	else
-+		return fault->slot &&
-+			mmu_notifier_retry_hva(vcpu->kvm, mmu_seq, fault->hva);
- }
- 
- static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
-@@ -4088,7 +4144,12 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
- 		read_unlock(&vcpu->kvm->mmu_lock);
- 	else
- 		write_unlock(&vcpu->kvm->mmu_lock);
--	kvm_release_pfn_clean(fault->pfn);
-+
-+	if (fault->is_private)
-+		kvm_private_mem_put_pfn(fault->slot, fault->pfn);
-+	else
-+		kvm_release_pfn_clean(fault->pfn);
-+
- 	return r;
- }
- 
-@@ -5372,6 +5433,9 @@ int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa, u64 error_code,
- 			return -EIO;
- 	}
- 
-+	if (r == RET_PF_USER)
-+		return 0;
-+
- 	if (r < 0)
- 		return r;
- 	if (r != RET_PF_EMULATE)
-diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-index c0e502b17ef7..14932cf97655 100644
---- a/arch/x86/kvm/mmu/mmu_internal.h
-+++ b/arch/x86/kvm/mmu/mmu_internal.h
-@@ -147,6 +147,7 @@ unsigned int pte_list_count(struct kvm_rmap_head *rmap_head);
-  * RET_PF_RETRY: let CPU fault again on the address.
-  * RET_PF_EMULATE: mmio page fault, emulate the instruction directly.
-  * RET_PF_INVALID: the spte is invalid, let the real page fault path update it.
-+ * RET_PF_USER: need to exit to userspace to handle this fault.
-  * RET_PF_FIXED: The faulting entry has been fixed.
-  * RET_PF_SPURIOUS: The faulting entry was already fixed, e.g. by another vCPU.
-  *
-@@ -163,6 +164,7 @@ enum {
- 	RET_PF_RETRY,
- 	RET_PF_EMULATE,
- 	RET_PF_INVALID,
-+	RET_PF_USER,
- 	RET_PF_FIXED,
- 	RET_PF_SPURIOUS,
+@@ -25,6 +26,7 @@ struct shmem_inode_info {
+ 	struct simple_xattrs	xattrs;		/* list of xattrs */
+ 	atomic_t		stop_eviction;	/* hold when working on inode */
+ 	struct timespec64	i_crtime;	/* file creation time */
++	struct memfile_node	memfile_node;	/* memfile node */
+ 	struct inode		vfs_inode;
  };
-@@ -178,4 +180,19 @@ void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
- void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
- void unaccount_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
  
-+#ifndef CONFIG_HAVE_KVM_PRIVATE_MEM
-+static inline int kvm_private_mem_get_pfn(struct kvm_memory_slot *slot,
-+					  gfn_t gfn, kvm_pfn_t *pfn, int *order)
-+{
-+	WARN_ON_ONCE(1);
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void kvm_private_mem_put_pfn(struct kvm_memory_slot *slot,
-+					   kvm_pfn_t pfn)
-+{
-+	WARN_ON_ONCE(1);
-+}
-+#endif /* CONFIG_HAVE_KVM_PRIVATE_MEM */
-+
- #endif /* __KVM_X86_MMU_INTERNAL_H */
-diff --git a/arch/x86/kvm/mmu/mmutrace.h b/arch/x86/kvm/mmu/mmutrace.h
-index ae86820cef69..2d7555381955 100644
---- a/arch/x86/kvm/mmu/mmutrace.h
-+++ b/arch/x86/kvm/mmu/mmutrace.h
-@@ -58,6 +58,7 @@ TRACE_DEFINE_ENUM(RET_PF_CONTINUE);
- TRACE_DEFINE_ENUM(RET_PF_RETRY);
- TRACE_DEFINE_ENUM(RET_PF_EMULATE);
- TRACE_DEFINE_ENUM(RET_PF_INVALID);
-+TRACE_DEFINE_ENUM(RET_PF_USER);
- TRACE_DEFINE_ENUM(RET_PF_FIXED);
- TRACE_DEFINE_ENUM(RET_PF_SPURIOUS);
- 
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 7f8f1c8dbed2..1d857919a947 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -878,7 +878,10 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
- 
- out_unlock:
- 	write_unlock(&vcpu->kvm->mmu_lock);
--	kvm_release_pfn_clean(fault->pfn);
-+	if (fault->is_private)
-+		kvm_private_mem_put_pfn(fault->slot, fault->pfn);
-+	else
-+		kvm_release_pfn_clean(fault->pfn);
- 	return r;
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 529c9ad3e926..f97ae328c87a 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -905,6 +905,24 @@ static struct folio *shmem_get_partial_folio(struct inode *inode, pgoff_t index)
+ 	return page ? page_folio(page) : NULL;
  }
  
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 3fd168972ecd..b0a7910505ed 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -2241,4 +2241,26 @@ static inline void kvm_handle_signal_exit(struct kvm_vcpu *vcpu)
- /* Max number of entries allowed for each kvm dirty ring */
- #define  KVM_DIRTY_RING_MAX_ENTRIES  65536
++static void notify_populate(struct inode *inode, pgoff_t start, pgoff_t end)
++{
++	struct shmem_inode_info *info = SHMEM_I(inode);
++
++	memfile_notifier_populate(&info->memfile_node, start, end);
++}
++
++static void notify_invalidate(struct inode *inode, struct folio *folio,
++				   pgoff_t start, pgoff_t end)
++{
++	struct shmem_inode_info *info = SHMEM_I(inode);
++
++	start = max(start, folio->index);
++	end = min(end, folio->index + folio_nr_pages(folio));
++
++	memfile_notifier_invalidate(&info->memfile_node, start, end);
++}
++
+ /*
+  * Remove range of pages and swap entries from page cache, and free them.
+  * If !unfalloc, truncate or punch hole; if unfalloc, undo failed fallocate.
+@@ -948,6 +966,8 @@ static void shmem_undo_range(struct inode *inode, loff_t lstart, loff_t lend,
+ 			}
+ 			index += folio_nr_pages(folio) - 1;
  
-+#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM
-+static inline int kvm_private_mem_get_pfn(struct kvm_memory_slot *slot,
-+					  gfn_t gfn, kvm_pfn_t *pfn, int *order)
++			notify_invalidate(inode, folio, start, end);
++
+ 			if (!unfalloc || !folio_test_uptodate(folio))
+ 				truncate_inode_folio(mapping, folio);
+ 			folio_unlock(folio);
+@@ -1021,6 +1041,9 @@ static void shmem_undo_range(struct inode *inode, loff_t lstart, loff_t lend,
+ 					index--;
+ 					break;
+ 				}
++
++				notify_invalidate(inode, folio, start, end);
++
+ 				VM_BUG_ON_FOLIO(folio_test_writeback(folio),
+ 						folio);
+ 				truncate_inode_folio(mapping, folio);
+@@ -1092,6 +1115,13 @@ static int shmem_setattr(struct user_namespace *mnt_userns,
+ 		    (newsize > oldsize && (info->seals & F_SEAL_GROW)))
+ 			return -EPERM;
+ 
++		if (info->memfile_node.flags & MEMFILE_F_USER_INACCESSIBLE) {
++			if(oldsize)
++				return -EPERM;
++			if (!PAGE_ALIGNED(newsize))
++				return -EINVAL;
++		}
++
+ 		if (newsize != oldsize) {
+ 			error = shmem_reacct_size(SHMEM_I(inode)->flags,
+ 					oldsize, newsize);
+@@ -1340,6 +1370,8 @@ static int shmem_writepage(struct page *page, struct writeback_control *wbc)
+ 		goto redirty;
+ 	if (!total_swap_pages)
+ 		goto redirty;
++	if (info->memfile_node.flags & MEMFILE_F_UNRECLAIMABLE)
++		goto redirty;
+ 
+ 	/*
+ 	 * Our capabilities prevent regular writeback or sync from ever calling
+@@ -2234,6 +2266,9 @@ static int shmem_mmap(struct file *file, struct vm_area_struct *vma)
+ 	if (ret)
+ 		return ret;
+ 
++	if (info->memfile_node.flags & MEMFILE_F_USER_INACCESSIBLE)
++		return -EPERM;
++
+ 	/* arm64 - allow memory tagging on RAM-based files */
+ 	vma->vm_flags |= VM_MTE_ALLOWED;
+ 
+@@ -2274,6 +2309,7 @@ static struct inode *shmem_get_inode(struct super_block *sb, const struct inode
+ 		info->i_crtime = inode->i_mtime;
+ 		INIT_LIST_HEAD(&info->shrinklist);
+ 		INIT_LIST_HEAD(&info->swaplist);
++		memfile_node_init(&info->memfile_node);
+ 		simple_xattrs_init(&info->xattrs);
+ 		cache_no_acl(inode);
+ 		mapping_set_large_folios(inode->i_mapping);
+@@ -2442,6 +2478,8 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
+ 		if ((info->seals & F_SEAL_GROW) && pos + len > inode->i_size)
+ 			return -EPERM;
+ 	}
++	if (unlikely(info->memfile_node.flags & MEMFILE_F_USER_INACCESSIBLE))
++		return -EPERM;
+ 
+ 	ret = shmem_getpage(inode, index, pagep, SGP_WRITE);
+ 
+@@ -2518,6 +2556,13 @@ static ssize_t shmem_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 		end_index = i_size >> PAGE_SHIFT;
+ 		if (index > end_index)
+ 			break;
++
++		if (SHMEM_I(inode)->memfile_node.flags &
++				MEMFILE_F_USER_INACCESSIBLE) {
++			error = -EPERM;
++			break;
++		}
++
+ 		if (index == end_index) {
+ 			nr = i_size & ~PAGE_MASK;
+ 			if (nr <= offset)
+@@ -2649,6 +2694,12 @@ static long shmem_fallocate(struct file *file, int mode, loff_t offset,
+ 			goto out;
+ 		}
+ 
++		if ((info->memfile_node.flags & MEMFILE_F_USER_INACCESSIBLE) &&
++		    (!PAGE_ALIGNED(offset) || !PAGE_ALIGNED(len))) {
++			error = -EINVAL;
++			goto out;
++		}
++
+ 		shmem_falloc.waitq = &shmem_falloc_waitq;
+ 		shmem_falloc.start = (u64)unmap_start >> PAGE_SHIFT;
+ 		shmem_falloc.next = (unmap_end + 1) >> PAGE_SHIFT;
+@@ -2768,6 +2819,7 @@ static long shmem_fallocate(struct file *file, int mode, loff_t offset,
+ 	if (!(mode & FALLOC_FL_KEEP_SIZE) && offset + len > inode->i_size)
+ 		i_size_write(inode, offset + len);
+ 	inode->i_ctime = current_time(inode);
++	notify_populate(inode, start, end);
+ undone:
+ 	spin_lock(&inode->i_lock);
+ 	inode->i_private = NULL;
+@@ -3754,6 +3806,20 @@ static int shmem_error_remove_page(struct address_space *mapping,
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_MIGRATION
++static int shmem_migrate_page(struct address_space *mapping,
++			      struct page *newpage, struct page *page,
++			      enum migrate_mode mode)
 +{
-+	int ret;
-+	pfn_t pfnt;
-+	pgoff_t index = gfn - slot->base_gfn +
-+			(slot->private_offset >> PAGE_SHIFT);
++	struct inode *inode = mapping->host;
++	struct shmem_inode_info *info = SHMEM_I(inode);
 +
-+	ret = slot->notifier.bs->get_lock_pfn(slot->private_file, index, &pfnt,
-+						order);
-+	*pfn = pfn_t_to_pfn(pfnt);
-+	return ret;
++	if (info->memfile_node.flags & MEMFILE_F_UNMOVABLE)
++		return -ENOTSUPP;
++	return migrate_page(mapping, newpage, page, mode);
 +}
++#endif
 +
-+static inline void kvm_private_mem_put_pfn(struct kvm_memory_slot *slot,
-+					   kvm_pfn_t pfn)
-+{
-+	slot->notifier.bs->put_unlock_pfn(pfn_to_pfn_t(pfn));
-+}
-+#endif /* CONFIG_HAVE_KVM_PRIVATE_MEM */
-+
+ const struct address_space_operations shmem_aops = {
+ 	.writepage	= shmem_writepage,
+ 	.dirty_folio	= noop_dirty_folio,
+@@ -3762,7 +3828,7 @@ const struct address_space_operations shmem_aops = {
+ 	.write_end	= shmem_write_end,
  #endif
+ #ifdef CONFIG_MIGRATION
+-	.migratepage	= migrate_page,
++	.migratepage	= shmem_migrate_page,
+ #endif
+ 	.error_remove_page = shmem_error_remove_page,
+ };
+@@ -3879,6 +3945,54 @@ static struct file_system_type shmem_fs_type = {
+ 	.fs_flags	= FS_USERNS_MOUNT,
+ };
+ 
++#ifdef CONFIG_MEMFILE_NOTIFIER
++static struct memfile_node* shmem_lookup_memfile_node(struct file *file)
++{
++	struct inode *inode = file_inode(file);
++
++	if (!shmem_mapping(inode->i_mapping))
++		return NULL;
++
++	return  &SHMEM_I(inode)->memfile_node;
++}
++
++
++static int shmem_get_lock_pfn(struct file *file, pgoff_t offset, pfn_t *pfn,
++			      int *order)
++{
++	struct page *page;
++	int ret;
++
++	ret = shmem_getpage(file_inode(file), offset, &page, SGP_NOALLOC);
++	if (ret)
++		return ret;
++
++	*pfn = page_to_pfn_t(page);
++	*order = thp_order(compound_head(page));
++	return 0;
++}
++
++static void shmem_put_unlock_pfn(pfn_t pfn)
++{
++	struct page *page = pfn_t_to_page(pfn);
++
++	if (!page)
++		return;
++
++	VM_BUG_ON_PAGE(!PageLocked(page), page);
++
++	set_page_dirty(page);
++	unlock_page(page);
++	put_page(page);
++}
++
++static struct memfile_backing_store shmem_backing_store = {
++	.lookup_memfile_node = shmem_lookup_memfile_node,
++	.get_lock_pfn = shmem_get_lock_pfn,
++	.put_unlock_pfn = shmem_put_unlock_pfn,
++};
++#endif /* CONFIG_MEMFILE_NOTIFIER */
++
+ int __init shmem_init(void)
+ {
+ 	int error;
+@@ -3904,6 +4018,10 @@ int __init shmem_init(void)
+ 	else
+ 		shmem_huge = SHMEM_HUGE_NEVER; /* just in case it was patched */
+ #endif
++
++#ifdef CONFIG_MEMFILE_NOTIFIER
++	memfile_register_backing_store(&shmem_backing_store);
++#endif
+ 	return 0;
+ 
+ out1:
 -- 
 2.25.1
 
