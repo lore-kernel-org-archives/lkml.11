@@ -2,176 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20900C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 03:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6405CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 03:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232249AbiESDVW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 23:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
+        id S232364AbiESDZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 23:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233197AbiESDUm (ORCPT
+        with ESMTP id S230114AbiESDY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 23:20:42 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE094D9EAB
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 20:20:23 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2fede3f229cso35849267b3.8
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 20:20:23 -0700 (PDT)
+        Wed, 18 May 2022 23:24:57 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C9D31211
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 20:24:56 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id p26so5382292eds.5
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 20:24:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zOPOwprRKTfkv2cXPwTUV+M8mGP7sAVRSfOVmHTlIYc=;
-        b=WgulU1MbbPm1ebPPVzee939RrLS/wfdClBy6WBsf9AxICbC5Jn4XjlZn2jzTFpNpCt
-         cA1TFPFpox6xAhSvd2pr2XEpxu+K5vMcfO471UGnyxPePEvaDERSfh+RSH8uolfL4XN1
-         9ROqphMUPAw44LRD7MTSe+0oUcTe8FJrSqLGkhYJY2xh30dCJnUNpzxU1q+uv81GirGh
-         V3QH3DRXWAd1GenJoyU54JsP8CHQfayRQyyvyTKb7W/+a5lrSYHTm830EF/Av3Ob4u4j
-         VvQQ7p5q0HdTP/gcguhnhukM3bfWOVBjwoyVJrGIXLqO8vRMtVmNEwjcEaRq6Yb5GAW2
-         dGiw==
+        bh=S2HqOHyCOH+aXecOw9Zv3ZMvUKUSfSNo8l4zI5iNzrk=;
+        b=LiQobTU3TNZL9SkrZb+rYBVaCidXLtBkzOdKK7CSr24zY71YZLV0YNxq3dwIJ5wTaf
+         8pCQSw/rWZHX0FxmQa5erNJ59dr7+y63GelWm2bR9bgn6vk5w7JO7k4faAr3F7pmbZdt
+         zf+qN1kgIQ7EP6Xm0UkF1JR2NWlNl/uVUFR3c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=zOPOwprRKTfkv2cXPwTUV+M8mGP7sAVRSfOVmHTlIYc=;
-        b=LyZ8wcBO8OkDdp4CYkADdI0yhArGGExtLSTdb4a1tw8pijvi1CmVqiO8bM/JHNnF27
-         a+K9h9n75kPJngCW+7F37EPhlqO+pBe/hM0eHVpmnDaDGOGVwuRQuHIJN+dDHMXiIsOQ
-         MesZkgI9gKZ8W3qWucbrX/VP2vKpVpTfST+ZA5j6ilfwtrdhjuOyM85PrQ6e5KacTXgc
-         uFT1crsK4YG3eGmrpJ6jD4u2xCFMYV6FrKBys9fRMucmwKFF1K5MKEcBw+k1n5uPBfo8
-         CoHwJbKRWw3AHviEe/MriF9MOfWI7tXll8Qx6xNoEjtFjFy8v6ufqCjlipaO9HcVE+10
-         UHGA==
-X-Gm-Message-State: AOAM532Yb3K8kyYnl2R+4hekGEhKJTE47Z2wW2NNgbNAHC1zM5+UAKDK
-        Wjic3qphB9Yz6ZLtgjbHgHBWG+g55+TM
-X-Google-Smtp-Source: ABdhPJy7PWcWfvRRE3C2+0YljTgf2w/TKm+iAAXYj/ISK6hEj7VzZa35KP78WgH+HVtPpjpMIzDkfvY/bJ53
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:a233:bf3c:6ac:2a98])
- (user=irogers job=sendgmr) by 2002:a81:dd07:0:b0:2eb:f701:286e with SMTP id
- e7-20020a81dd07000000b002ebf701286emr2483795ywn.341.1652930422878; Wed, 18
- May 2022 20:20:22 -0700 (PDT)
-Date:   Wed, 18 May 2022 20:20:05 -0700
-In-Reply-To: <20220519032005.1273691-1-irogers@google.com>
-Message-Id: <20220519032005.1273691-6-irogers@google.com>
-Mime-Version: 1.0
-References: <20220519032005.1273691-1-irogers@google.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH 5/5] perf stat: Make use of index clearer with perf_counts
-From:   Ian Rogers <irogers@google.com>
-To:     Michael Petlan <mpetlan@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S2HqOHyCOH+aXecOw9Zv3ZMvUKUSfSNo8l4zI5iNzrk=;
+        b=hgnCeBYTiycaTTP834maJTCfLV123i0o4RNq5CIr3pi8QeaexRv4EsXsYQTXAiUozr
+         90RAidM+y4Lj3u75odYIiUAQ3lttfeE5BunJluHGzKv1aV4mgB26LuUYEgAVDldZCcDZ
+         B3yyutTwVOUYKp3kyI494iN9+hZaMUHw4y+RWq9Ys4hhJWm+voPwKX1J4/envo6f+Ix3
+         VT3sEmRMe0CskMyFbkCLBgO93VKmIlkVcFOH2LwXX01rin2nHba3JjkX4eFWq7q8+HhM
+         m/Ziqp8TC0arm8/+2jTic9f28jumd19YjIYTdEng2qsZKgt4kI4cGUsloyNWXMf5Lzfj
+         +3Vg==
+X-Gm-Message-State: AOAM533nvwgrol4EK277ALiPpNZmFI+d9Dh7exEYnGbz8RDpyN3Kyb5R
+        /58t/F12QZ81mdKAHlwRA4MyQAgQCrIBfp2/zDws6w==
+X-Google-Smtp-Source: ABdhPJycC/kcMRqj9Yp+21KxOPFPUKt1x2Mn3Ucbk4t8W/c6rs7YDemtgJmq33uTNBuI33Ko9RYP2l459pqKQI6OybU=
+X-Received: by 2002:a05:6402:290e:b0:42a:e401:6a07 with SMTP id
+ ee14-20020a056402290e00b0042ae4016a07mr2977441edb.99.1652930694760; Wed, 18
+ May 2022 20:24:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220513032832.17645-1-johnson.wang@mediatek.com>
+ <20220513032832.17645-3-johnson.wang@mediatek.com> <CAGXv+5Em2eq8g8phC7MVcEP-sCsSsKa9FQjOra2UN3pib_psLA@mail.gmail.com>
+ <7eec74e32bb482ba6984c6789f598ee9965f49b3.camel@mediatek.com>
+In-Reply-To: <7eec74e32bb482ba6984c6789f598ee9965f49b3.camel@mediatek.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Thu, 19 May 2022 11:24:43 +0800
+Message-ID: <CAGXv+5G-88zWSnic-AY2ANF9BYWCsZk29CeLxp+VuFKE_LH5Ug@mail.gmail.com>
+Subject: Re: [RESEND v4 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
+ devfreq driver
+To:     Johnson Wang <johnson.wang@mediatek.com>
+Cc:     cw00.choi@samsung.com, krzk+dt@kernel.org, robh+dt@kernel.org,
+        kyungmin.park@samsung.com, djakov@kernel.org, khilman@kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Try to disambiguate further when perf_counts is being accessed it is
-with a cpu map index rather than a CPU.
+On Wed, May 18, 2022 at 8:19 PM Johnson Wang <johnson.wang@mediatek.com> wrote:
+>
+> Hi Chen-Yu,
+>
+> On Fri, 2022-05-13 at 11:54 +0800, Chen-Yu Tsai wrote:
+> > On Fri, May 13, 2022 at 11:31 AM Johnson Wang <
+> > johnson.wang@mediatek.com> wrote:
+> > >
+> > > We introduce a devfreq driver for the MediaTek Cache Coherent
+> > > Interconnect
+> > > (CCI) used by some MediaTek SoCs.
+> > >
+> > > In this driver, we use the passive devfreq driver to get target
+> > > frequencies
+> > > and adjust voltages accordingly. In MT8183 and MT8186, the MediaTek
+> > > CCI
+> > > is supplied by the same regulators with the little core CPUs.
+> > >
+> > > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> > > Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> > > ---
+> > > This patch depends on "devfreq-testing"[1].
+> > > [1]
+> > > https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing__;!!CTRNKA9wMg0ARbw!zzOSoso9udvDV3h6kYlmizFtbn3ACA5aS2jCAjKyvtu4z0fobv1mD5uF9YbPSme8l_NnR05unTxkZfDdzohu8asWZQ$
+> > >
+> > > ---
+> > >  drivers/devfreq/Kconfig           |  10 +
+> > >  drivers/devfreq/Makefile          |   1 +
+> > >  drivers/devfreq/mtk-cci-devfreq.c | 474
+> > > ++++++++++++++++++++++++++++++
+> > >  3 files changed, 485 insertions(+)
+> > >  create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
+> > >
+> > > diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
+> > > index 87eb2b837e68..9754d8b31621 100644
+> > > --- a/drivers/devfreq/Kconfig
+> > > +++ b/drivers/devfreq/Kconfig
+> > > @@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
+> > >           It reads ACTMON counters of memory controllers and
+> > > adjusts the
+> > >           operating frequencies and voltages with OPP support.
+> > >
+> > > +config ARM_MEDIATEK_CCI_DEVFREQ
+> > > +       tristate "MEDIATEK CCI DEVFREQ Driver"
+> > > +       depends on ARM_MEDIATEK_CPUFREQ || COMPILE_TEST
+> > > +       select DEVFREQ_GOV_PASSIVE
+> > > +       help
+> > > +         This adds a devfreq driver for MediaTek Cache Coherent
+> > > Interconnect
+> > > +         which is shared the same regulators with the cpu cluster.
+> > > It can track
+> > > +         buck voltages and update a proper CCI frequency. Use the
+> > > notification
+> > > +         to get the regulator status.
+> > > +
+> > >  config ARM_RK3399_DMC_DEVFREQ
+> > >         tristate "ARM RK3399 DMC DEVFREQ Driver"
+> > >         depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
+> > > diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
+> > > index 0b6be92a25d9..bf40d04928d0 100644
+> > > --- a/drivers/devfreq/Makefile
+> > > +++ b/drivers/devfreq/Makefile
+> > > @@ -11,6 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)     +=
+> > > governor_passive.o
+> > >  obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)   += exynos-bus.o
+> > >  obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)      += imx-bus.o
+> > >  obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)   += imx8m-ddrc.o
+> > > +obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ) += mtk-cci-devfreq.o
+> > >  obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)   += rk3399_dmc.o
+> > >  obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)       += sun8i-a33-mbus.o
+> > >  obj-$(CONFIG_ARM_TEGRA_DEVFREQ)                += tegra30-
+> > > devfreq.o
+> > > diff --git a/drivers/devfreq/mtk-cci-devfreq.c
+> > > b/drivers/devfreq/mtk-cci-devfreq.c
+> > > new file mode 100644
+> > > index 000000000000..aa8c37eb4a06
+> > > --- /dev/null
+> > > +++ b/drivers/devfreq/mtk-cci-devfreq.c
+> > > @@ -0,0 +1,474 @@
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/util/stat-display.c | 22 ++++++++++++----------
- tools/perf/util/stat.c         | 10 ++++------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+[...]
 
-diff --git a/tools/perf/util/stat-display.c b/tools/perf/util/stat-display.c
-index 98669ca5a86b..606f09b09226 100644
---- a/tools/perf/util/stat-display.c
-+++ b/tools/perf/util/stat-display.c
-@@ -764,11 +764,11 @@ static int cmp_val(const void *a, const void *b)
- 
- static struct perf_aggr_thread_value *sort_aggr_thread(
- 					struct evsel *counter,
--					int nthreads, int ncpus,
- 					int *ret,
- 					struct target *_target)
- {
--	int cpu, thread, i = 0;
-+	int nthreads = perf_thread_map__nr(counter->core.threads);
-+	int i = 0;
- 	double uval;
- 	struct perf_aggr_thread_value *buf;
- 
-@@ -776,13 +776,17 @@ static struct perf_aggr_thread_value *sort_aggr_thread(
- 	if (!buf)
- 		return NULL;
- 
--	for (thread = 0; thread < nthreads; thread++) {
-+	for (int thread = 0; thread < nthreads; thread++) {
-+		int idx;
- 		u64 ena = 0, run = 0, val = 0;
- 
--		for (cpu = 0; cpu < ncpus; cpu++) {
--			val += perf_counts(counter->counts, cpu, thread)->val;
--			ena += perf_counts(counter->counts, cpu, thread)->ena;
--			run += perf_counts(counter->counts, cpu, thread)->run;
-+		perf_cpu_map__for_each_idx(idx, evsel__cpus(counter)) {
-+			struct perf_counts_values *counts =
-+				perf_counts(counter->counts, idx, thread);
-+
-+			val += counts->val;
-+			ena += counts->ena;
-+			run += counts->run;
- 		}
- 
- 		uval = val * counter->scale;
-@@ -817,13 +821,11 @@ static void print_aggr_thread(struct perf_stat_config *config,
- 			      struct evsel *counter, char *prefix)
- {
- 	FILE *output = config->output;
--	int nthreads = perf_thread_map__nr(counter->core.threads);
--	int ncpus = perf_cpu_map__nr(counter->core.cpus);
- 	int thread, sorted_threads;
- 	struct aggr_cpu_id id;
- 	struct perf_aggr_thread_value *buf;
- 
--	buf = sort_aggr_thread(counter, nthreads, ncpus, &sorted_threads, _target);
-+	buf = sort_aggr_thread(counter, &sorted_threads, _target);
- 	if (!buf) {
- 		perror("cannot sort aggr thread");
- 		return;
-diff --git a/tools/perf/util/stat.c b/tools/perf/util/stat.c
-index a77c28232298..37ea2d044708 100644
---- a/tools/perf/util/stat.c
-+++ b/tools/perf/util/stat.c
-@@ -237,14 +237,12 @@ void evlist__reset_prev_raw_counts(struct evlist *evlist)
- 
- static void evsel__copy_prev_raw_counts(struct evsel *evsel)
- {
--	int ncpus = evsel__nr_cpus(evsel);
--	int nthreads = perf_thread_map__nr(evsel->core.threads);
-+	int idx, nthreads = perf_thread_map__nr(evsel->core.threads);
- 
- 	for (int thread = 0; thread < nthreads; thread++) {
--		for (int cpu = 0; cpu < ncpus; cpu++) {
--			*perf_counts(evsel->counts, cpu, thread) =
--				*perf_counts(evsel->prev_raw_counts, cpu,
--					     thread);
-+		perf_cpu_map__for_each_idx(idx, evsel__cpus(evsel)) {
-+			*perf_counts(evsel->counts, idx, thread) =
-+				*perf_counts(evsel->prev_raw_counts, idx, thread);
- 		}
- 	}
- 
--- 
-2.36.1.124.g0e6072fb45-goog
+> > > +       if (IS_ERR(drv->sram_reg))
+> > > +               drv->sram_reg = NULL;
+> > > +       else {
+> > > +               ret = regulator_enable(drv->sram_reg);
+> > > +               if (ret) {
+> > > +                       dev_err(dev, "failed to enable sram
+> > > regulator\n");
+> > > +                       goto out_free_resources;
+> > > +               }
+> > > +       }
+> > > +
+> > > +       /*
+> > > +        * We assume min voltage is 0 and tracking target voltage
+> > > using
+> > > +        * min_volt_shift for each iteration.
+> > > +        * The retry_max is 3 times of expeted iteration count.
+> >
+> > expected?
+> >
+> Maybe "the maximum" will be more appropriate?
 
+
+I was merely pointing out a typo in "expeted".
+
+Looking at it again, I'm not sure why retry attempts are tied to the voltage.
+
+
+ChenYu
