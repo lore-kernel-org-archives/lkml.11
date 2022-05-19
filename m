@@ -2,379 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B384CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 06:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 224DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 06:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234460AbiESGxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 02:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40752 "EHLO
+        id S234478AbiESGxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 02:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbiESGxV (ORCPT
+        with ESMTP id S234421AbiESGxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 02:53:21 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849129859D
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 23:53:19 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L3gXB3kSbzhYlT;
-        Thu, 19 May 2022 14:52:26 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 14:53:17 +0800
-Received: from [10.174.179.234] (10.174.179.234) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 14:53:15 +0800
-Message-ID: <a2fd4f96-663a-c787-1393-855d94e0c53f@huawei.com>
-Date:   Thu, 19 May 2022 14:53:14 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH -next v4 4/7] arm64: add copy_{to, from}_user to machine
- check safe
-To:     Mark Rutland <mark.rutland@arm.com>
-CC:     James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Alexander Viro" <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-References: <20220420030418.3189040-1-tongtiangen@huawei.com>
- <20220420030418.3189040-5-tongtiangen@huawei.com> <Yn55uz52Hn3gF9Xe@lakrids>
-From:   Tong Tiangen <tongtiangen@huawei.com>
-In-Reply-To: <Yn55uz52Hn3gF9Xe@lakrids>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        Thu, 19 May 2022 02:53:48 -0400
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2136.outbound.protection.outlook.com [40.107.117.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C58B82CB;
+        Wed, 18 May 2022 23:53:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Uq1UKNOxUxOQMmjeB+t2nA7HAnmvOwA0m82cr8FJlkrOAqxXTuh6TpbW6mwtNCE0Ctz/LHPMOxWN+2WaX/YB0sgr8oRsJra92RA36nFevwv2x8K2miGdfkp56yANKyTmYEof3LdTQdH6waOd+gEJxdqixthcBNcVXr9ajfjo9vXvySNVsQywp4pk8T9P7fjmsj+5POtXJOxDnmxW8THPSq+pr7A3mcTyggJA8h2mYYih7LbTH+LZu/Ej7Yk4xpgXr6ON9faAtthtma9eU+Zm6TCcTztvkRh2cD88FaZ4WEHC9VoJfCMcS6uHDzqlzKGVUzbURPFiXqFH7ZrkgAE3hA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TBBDKg3sxToMFD6u2Ohw8dKcHPnGzFG3dkXR3dBHfxU=;
+ b=kIySWHtcaCcH+Wav1G9pYtQ08rTRs9UV5CsS4FLIJp/UvNx7JagnmSuneUNOPnA+qCrXnccu0NIuwQ6KjPl+5KZS1Hb/iG64rlOTroSU3gB92twUib7gk/jtQcv9+3ZzE0C8KhOgyGxy2p179KUjjwQCUuZA975Kz8eckM1jDvhPqpvLtn6WyG4egpyPhAZFOPuXHrqS7oWMh6bcMIdPgqrc6LfCPyOTiRSDjh4QLYrhbgvd/a2yTSNAdFvZ6jgUPvZBDNdetgNRTVPjkZD1QfO9bEcT7zGWJc993M1DbXK87Yia+M/fzWcXd4uwYamJdE0FUDVE8Zt+ovqY3UyN2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TBBDKg3sxToMFD6u2Ohw8dKcHPnGzFG3dkXR3dBHfxU=;
+ b=ip617xlGAJVpLfrs74C+1rKQ8PZ/MLa1G4+CbX3Dn0kiKA3D8RwLkW/Qv0ZeOhaZo6b6gCSTlKU4moqlYZVvJm6xOlCu72nwW/BF7PJGE8KzVKK5Yr6LaortKYtEk7K4OIgGAb1gRGVBvVhCt2wunY98VnZX5/3c0Qi/RkBWP5A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
+ by TYZPR06MB3966.apcprd06.prod.outlook.com (2603:1096:400:22::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Thu, 19 May
+ 2022 06:53:44 +0000
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::88e1:dc04:6851:ad08]) by HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::88e1:dc04:6851:ad08%7]) with mapi id 15.20.5273.016; Thu, 19 May 2022
+ 06:53:43 +0000
+From:   Guo Zhengkui <guozhengkui@vivo.com>
+To:     Eugen Hristev <eugen.hristev@microchip.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-media@vger.kernel.org (open list:MICROCHIP ISC DRIVER),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Microchip
+        (AT91) SoC support), linux-kernel@vger.kernel.org (open list)
+Cc:     zhengkui_guo@outlook.com, Guo Zhengkui <guozhengkui@vivo.com>
+Subject: [PATCH] media: atmel: atmel-isc: remove unneeded IS_ERR()
+Date:   Thu, 19 May 2022 14:52:33 +0800
+Message-Id: <20220519065234.127978-1-guozhengkui@vivo.com>
+X-Mailer: git-send-email 2.20.1
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.234]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR06CA0016.apcprd06.prod.outlook.com
+ (2603:1096:202:2e::28) To HK2PR06MB3492.apcprd06.prod.outlook.com
+ (2603:1096:202:2f::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1e166f79-79c5-4e6a-bf18-08da39644fd4
+X-MS-TrafficTypeDiagnostic: TYZPR06MB3966:EE_
+X-Microsoft-Antispam-PRVS: <TYZPR06MB396664E652E6E389A1C75F3CC7D09@TYZPR06MB3966.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: F98S2/2HQkSyeAuO0MWZMzXoQxeo4qE1gsXW3e3Dp9jqdLG4yOxzFcabov/ITwk/gsxkQhMDr6UZcxl9yeXUI+pSyu13rpe1ErxMCGUCyERCAUoriqhCpcdeANfM1dBUhIc4CvxmgFJsgSrrLvQOKXYxfcBpGzPY6Jb/GztqSkvKSBXYQ3pzoP6fDfGf9ql3Ia0Nb/D8w1y1lKbMZmeaeNLC8b80JWKACasV75Tj3saDDqovcHnSzmxnMe9egr/zKcBLrKKgZHiTvL4XxXIILW+pfLhwhltN6O9k405XJqK/EaZ4GTzi7M1vYU+dTSk7l2XlBiqDbsP/py0BB69GvizOxbrEcUiPahE5V5tejiZkAdfzhsQPCx2tRFkiXV+oE7pNkyR442TFtbCwEABmMSMIDapVSSXwS+q5JMStBKHvx7jpeqBA9DGFYFMpwII/GCgZyJCK4GsJcBiGKysMeVbJz0tcEu9LWS0t5qgzJAk5yHwxd2n1jzkSGXXxIF0T8o+e2a/jyzTVJucN/5GcjTpgm4+Ul8KlSRNTWYx7gDH/gSMYnMckI5DFcHmQbdzmavSdUwx4i1FHDHisNHBAKSRfpZEH+OfbyN6TyQ31tn9xvwWzZwWcCnZLKXFSD9ahwphZoZxl4dh/HG1Zo3C3YkXHgvYk8LuEfnCSBfoEbTg0uaUBjPc3cYY5iJPPbcPj3Ex7C7gewk39vdTdCHQujw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(107886003)(38350700002)(186003)(83380400001)(1076003)(86362001)(4326008)(316002)(6486002)(66476007)(66556008)(66946007)(508600001)(8936002)(8676002)(6666004)(4744005)(6506007)(38100700002)(36756003)(2616005)(52116002)(6512007)(26005)(2906002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NfLax/4b98LpVMsvbErVtrHtRMvndIQKW9fObAe7D8Q+r3r3hRusExEaIpLP?=
+ =?us-ascii?Q?7WnzxvyAgJ0LLc2dm0V0EqEql9kmvaKm5W7M0x9xVxHgdGllcGxkyD1hnApT?=
+ =?us-ascii?Q?lmqttT+4P+0OhujNClJjpD+KwdWqReqhXZyibFQUzHBZk2bkYXeCgl1xg/kd?=
+ =?us-ascii?Q?P/E5VVbPkqybN+THmkoO29ai0QHxoemiU5rxEqkiRo87IShA6vj7RDMwLUjd?=
+ =?us-ascii?Q?cOuZz4HoFqQ/BJljw1CNkOqbHLki8QsReEaNwQqKgpFugXC7hmEPctKnj9vs?=
+ =?us-ascii?Q?u+6TzOMejo+BZU7adL6SY2DT2oNIX+dONrQmGhU7tBCe1WYdaJs0sj8b/X4J?=
+ =?us-ascii?Q?DxSVqQzoYJEFtZRQ8ekSUHMuBqKQY5QJ+CUE5xD9Tvu52IrOwxtqAk7s18qQ?=
+ =?us-ascii?Q?ZQpRMIXTp5uw8ibr1sC6nXDUQHENX7elcd5SjFrooWkydgzpyaUUED3C8Sw6?=
+ =?us-ascii?Q?TtR2r/ZdM03jxuy2MFxvBAQh28iO4JUISOVe3xZbJ6qKOhrBSdd49l3/ug0c?=
+ =?us-ascii?Q?ruPoMYGO8t9ktyfvbeuASS7dzRLcJ0KQLvgai55RWcoohC8sHLALxsmHBTO+?=
+ =?us-ascii?Q?OojlHwSxrsyehT3wFQFgRATe3eceSlGouDI362ZjLWXgvMLTSzOCh2/p6Xx5?=
+ =?us-ascii?Q?FPddsoD9s8NgPXAdWV/8LFGio9syH3n1eachYL63n6DVQyJUlJIm01j3N3qm?=
+ =?us-ascii?Q?YSU7WdSAJTERaiCv0eDp5kmxI1zaM2jeS4h+agDi4vyOl+i53U9ZsgjzmjAp?=
+ =?us-ascii?Q?KnRIf2ehBCxnRhTOHxK0BuLEdlHxhbtSUWL/zML5f0a2YhWs6cvkKeYDumdP?=
+ =?us-ascii?Q?kFJl9Jc7uVgijfBN9ODDX5oqXTm2h7oES+O5HpWP3hkxU81SH1T73p//dUPb?=
+ =?us-ascii?Q?g+ohOLQKpF/ITm3lhoFvy2EKirLOCG652dm/3UQJECqrfmdxzMf7Un8IFn0O?=
+ =?us-ascii?Q?x1GBEjVsR/bDKUBt6ufuove7hUgZjbTTBbjJnSKD0+jDxMBDUCMC4yLdXa7G?=
+ =?us-ascii?Q?4ALqbxbOVHnBS1JbXZZUCc1ARXPjxhoB72zyyozUeDjmz/y6+3dkrTajta5k?=
+ =?us-ascii?Q?+9C0CEurHsyH+q1aP/vxlM37eHQKWTlrFI5aOEm+ByJAlHTvclX9cCoOMINi?=
+ =?us-ascii?Q?s5Hj76OMhvTeINoSSUCLVdboZ0eCy6MinOz4mt4DlOOzKvancd+OlRGSj1C/?=
+ =?us-ascii?Q?Ssl5EMFthYwt79UcIi8+9PmymDoTR9vk/X6/4SBF8eXC7aet4RXda4g1Ovnu?=
+ =?us-ascii?Q?IAIc/PW2Tn04EM3B/vpmLoiAbw2DFruSXLMWDBOmJITbp3jFW9gWxLu0Xjn9?=
+ =?us-ascii?Q?NLF5DjqpPidruCHOf38miWr6gcDQ9zwtE0St3nFaLW5/i7EEyslRUNjwN36Y?=
+ =?us-ascii?Q?9lT82+Niubwc5foP7TIkkEV78DXW/okB/aJEtD9rjq6u/eFvlPv02hEbv4M4?=
+ =?us-ascii?Q?PfDoq8CmifUB98Z8eYfUDcrmIcCUWm2s0zoKXiCLOWdz7dpQa02ldm12o868?=
+ =?us-ascii?Q?VJmqFkZtKq8vgqk25eMp0jL0063YPHd1PBzZfHw/lYmcFLXu2gQSCPQ/SsjD?=
+ =?us-ascii?Q?8dZlJvMTTjJLmZOziXJjnVlRBgD4BtiktJfWybPf+QsIls4Zvgpe4H0zxzxw?=
+ =?us-ascii?Q?6kEPWjFRW0v8uOJGXiYSaJ9RSVg5LYmy7EgWr9nUwl88iB8JI5J0cgv9A6PA?=
+ =?us-ascii?Q?qGS3tcP0Wfj3j7S3cf1z02a7O5Gwt1901zxXvsXhnUKC/BuOGMATkjB24MMv?=
+ =?us-ascii?Q?tK755VAQbw=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e166f79-79c5-4e6a-bf18-08da39644fd4
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 06:53:42.8795
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: k5wnaI8aDx3oR2yDMwcbzjYPC/MfcYWvlqk5sFP59ivuGjdRG9v2+63r626/Ux2OLwN/UN6ZrlfxAe9R5o+Dpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB3966
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+There has already been error check in clk_unregister(), so remove error
+check before calling clk_unregister().
 
+Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+---
+ drivers/media/platform/atmel/atmel-isc-clk.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-在 2022/5/13 23:31, Mark Rutland 写道:
-> On Wed, Apr 20, 2022 at 03:04:15AM +0000, Tong Tiangen wrote:
->> Add copy_{to, from}_user() to machine check safe.
->>
->> If copy fail due to hardware memory error, only the relevant processes are
->> affected, so killing the user process and isolate the user page with
->> hardware memory errors is a more reasonable choice than kernel panic.
->>
->> Add new extable type EX_TYPE_UACCESS_MC which can be used for uaccess that
->> can be recovered from hardware memory errors.
-> 
-> I don't understand why we need this.
-> 
-> If we apply EX_TYPE_UACCESS consistently to *all* user accesses, and
-> *only* to user accesses, that would *always* indicate that we can
-> recover, and that seems much simpler to deal with.
-> 
-> Today we use EX_TYPE_UACCESS_ERR_ZERO for kernel accesses in a couple of
-> cases, which we should clean up, and we user EX_TYPE_FIXUP for a couple
-> of user accesses, but those could easily be converted over.
-> 
->> The x16 register is used to save the fixup type in copy_xxx_user which
->> used extable type EX_TYPE_UACCESS_MC.
+diff --git a/drivers/media/platform/atmel/atmel-isc-clk.c b/drivers/media/platform/atmel/atmel-isc-clk.c
+index 2059fe376b00..9decd8fb03d5 100644
+--- a/drivers/media/platform/atmel/atmel-isc-clk.c
++++ b/drivers/media/platform/atmel/atmel-isc-clk.c
+@@ -304,8 +304,7 @@ void isc_clk_cleanup(struct isc_device *isc)
+ 	for (i = 0; i < ARRAY_SIZE(isc->isc_clks); i++) {
+ 		struct isc_clk *isc_clk = &isc->isc_clks[i];
+ 
+-		if (!IS_ERR(isc_clk->clk))
+-			clk_unregister(isc_clk->clk);
++		clk_unregister(isc_clk->clk);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(isc_clk_cleanup);
+-- 
+2.20.1
 
-This is dicussed on patch patch 3/7.
-
-> 
-> Why x16?
-> 
-> How is this intended to be consumed, and why is that behaviour different
-> from any *other* fault?
-> 
-> Mark.
-
-This is to distinguish EX_TYPE_FIXUP, if this exception is triggered, 
-in fixup processing, it is needed to copy by byte, but if exception is 
-triggered by machine check, the data does not need to be copied again.
-
-So we need one place to store exception type, Therefore, X16 that is not 
-currently used in copy_from/to_user is selected.
-
-Maybe better to use exception_table_entry->data to pass the register 
-that needs to be set?
-
-Thanks,
-Tong.
-
-
-> 
->> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
->> ---
->>   arch/arm64/include/asm/asm-extable.h | 14 ++++++++++++++
->>   arch/arm64/include/asm/asm-uaccess.h | 15 ++++++++++-----
->>   arch/arm64/lib/copy_from_user.S      | 18 +++++++++++-------
->>   arch/arm64/lib/copy_to_user.S        | 18 +++++++++++-------
->>   arch/arm64/mm/extable.c              | 18 ++++++++++++++----
->>   5 files changed, 60 insertions(+), 23 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
->> index c39f2437e08e..75b2c00e9523 100644
->> --- a/arch/arm64/include/asm/asm-extable.h
->> +++ b/arch/arm64/include/asm/asm-extable.h
->> @@ -2,12 +2,18 @@
->>   #ifndef __ASM_ASM_EXTABLE_H
->>   #define __ASM_ASM_EXTABLE_H
->>   
->> +#define FIXUP_TYPE_NORMAL		0
->> +#define FIXUP_TYPE_MC			1
->> +
->>   #define EX_TYPE_NONE			0
->>   #define EX_TYPE_FIXUP			1
->>   #define EX_TYPE_BPF			2
->>   #define EX_TYPE_UACCESS_ERR_ZERO	3
->>   #define EX_TYPE_LOAD_UNALIGNED_ZEROPAD	4
->>   
->> +/* _MC indicates that can fixup from machine check errors */
->> +#define EX_TYPE_UACCESS_MC		5
->> +
->>   #ifdef __ASSEMBLY__
->>   
->>   #define __ASM_EXTABLE_RAW(insn, fixup, type, data)	\
->> @@ -27,6 +33,14 @@
->>   	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
->>   	.endm
->>   
->> +/*
->> + * Create an exception table entry for `insn`, which will branch to `fixup`
->> + * when an unhandled fault(include sea fault) is taken.
->> + */
->> +	.macro          _asm_extable_uaccess_mc, insn, fixup
->> +	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_UACCESS_MC, 0)
->> +	.endm
->> +
->>   /*
->>    * Create an exception table entry for `insn` if `fixup` is provided. Otherwise
->>    * do nothing.
->> diff --git a/arch/arm64/include/asm/asm-uaccess.h b/arch/arm64/include/asm/asm-uaccess.h
->> index 0557af834e03..6c23c138e1fc 100644
->> --- a/arch/arm64/include/asm/asm-uaccess.h
->> +++ b/arch/arm64/include/asm/asm-uaccess.h
->> @@ -63,6 +63,11 @@ alternative_else_nop_endif
->>   9999:	x;					\
->>   	_asm_extable	9999b, l
->>   
->> +
->> +#define USER_MC(l, x...)			\
->> +9999:	x;					\
->> +	_asm_extable_uaccess_mc	9999b, l
->> +
->>   /*
->>    * Generate the assembly for LDTR/STTR with exception table entries.
->>    * This is complicated as there is no post-increment or pair versions of the
->> @@ -73,8 +78,8 @@ alternative_else_nop_endif
->>   8889:		ldtr	\reg2, [\addr, #8];
->>   		add	\addr, \addr, \post_inc;
->>   
->> -		_asm_extable	8888b,\l;
->> -		_asm_extable	8889b,\l;
->> +		_asm_extable_uaccess_mc	8888b, \l;
->> +		_asm_extable_uaccess_mc	8889b, \l;
->>   	.endm
->>   
->>   	.macro user_stp l, reg1, reg2, addr, post_inc
->> @@ -82,14 +87,14 @@ alternative_else_nop_endif
->>   8889:		sttr	\reg2, [\addr, #8];
->>   		add	\addr, \addr, \post_inc;
->>   
->> -		_asm_extable	8888b,\l;
->> -		_asm_extable	8889b,\l;
->> +		_asm_extable_uaccess_mc	8888b,\l;
->> +		_asm_extable_uaccess_mc	8889b,\l;
->>   	.endm
->>   
->>   	.macro user_ldst l, inst, reg, addr, post_inc
->>   8888:		\inst		\reg, [\addr];
->>   		add		\addr, \addr, \post_inc;
->>   
->> -		_asm_extable	8888b,\l;
->> +		_asm_extable_uaccess_mc	8888b, \l;
->>   	.endm
->>   #endif
->> diff --git a/arch/arm64/lib/copy_from_user.S b/arch/arm64/lib/copy_from_user.S
->> index 34e317907524..480cc5ac0a8d 100644
->> --- a/arch/arm64/lib/copy_from_user.S
->> +++ b/arch/arm64/lib/copy_from_user.S
->> @@ -25,7 +25,7 @@
->>   	.endm
->>   
->>   	.macro strb1 reg, ptr, val
->> -	strb \reg, [\ptr], \val
->> +	USER_MC(9998f, strb \reg, [\ptr], \val)
->>   	.endm
->>   
->>   	.macro ldrh1 reg, ptr, val
->> @@ -33,7 +33,7 @@
->>   	.endm
->>   
->>   	.macro strh1 reg, ptr, val
->> -	strh \reg, [\ptr], \val
->> +	USER_MC(9998f, strh \reg, [\ptr], \val)
->>   	.endm
->>   
->>   	.macro ldr1 reg, ptr, val
->> @@ -41,7 +41,7 @@
->>   	.endm
->>   
->>   	.macro str1 reg, ptr, val
->> -	str \reg, [\ptr], \val
->> +	USER_MC(9998f, str \reg, [\ptr], \val)
->>   	.endm
->>   
->>   	.macro ldp1 reg1, reg2, ptr, val
->> @@ -49,11 +49,12 @@
->>   	.endm
->>   
->>   	.macro stp1 reg1, reg2, ptr, val
->> -	stp \reg1, \reg2, [\ptr], \val
->> +	USER_MC(9998f, stp \reg1, \reg2, [\ptr], \val)
->>   	.endm
->>   
->> -end	.req	x5
->> -srcin	.req	x15
->> +end		.req	x5
->> +srcin		.req	x15
->> +fixup_type	.req	x16
->>   SYM_FUNC_START(__arch_copy_from_user)
->>   	add	end, x0, x2
->>   	mov	srcin, x1
->> @@ -62,7 +63,10 @@ SYM_FUNC_START(__arch_copy_from_user)
->>   	ret
->>   
->>   	// Exception fixups
->> -9997:	cmp	dst, dstin
->> +	// x16: fixup type written by ex_handler_uaccess_mc
->> +9997:	cmp 	fixup_type, #FIXUP_TYPE_MC
->> +	b.eq	9998f
->> +	cmp	dst, dstin
->>   	b.ne	9998f
->>   	// Before being absolutely sure we couldn't copy anything, try harder
->>   USER(9998f, ldtrb tmp1w, [srcin])
->> diff --git a/arch/arm64/lib/copy_to_user.S b/arch/arm64/lib/copy_to_user.S
->> index 802231772608..021a7d27b3a4 100644
->> --- a/arch/arm64/lib/copy_to_user.S
->> +++ b/arch/arm64/lib/copy_to_user.S
->> @@ -20,7 +20,7 @@
->>    *	x0 - bytes not copied
->>    */
->>   	.macro ldrb1 reg, ptr, val
->> -	ldrb  \reg, [\ptr], \val
->> +	USER_MC(9998f, ldrb  \reg, [\ptr], \val)
->>   	.endm
->>   
->>   	.macro strb1 reg, ptr, val
->> @@ -28,7 +28,7 @@
->>   	.endm
->>   
->>   	.macro ldrh1 reg, ptr, val
->> -	ldrh  \reg, [\ptr], \val
->> +	USER_MC(9998f, ldrh  \reg, [\ptr], \val)
->>   	.endm
->>   
->>   	.macro strh1 reg, ptr, val
->> @@ -36,7 +36,7 @@
->>   	.endm
->>   
->>   	.macro ldr1 reg, ptr, val
->> -	ldr \reg, [\ptr], \val
->> +	USER_MC(9998f, ldr \reg, [\ptr], \val)
->>   	.endm
->>   
->>   	.macro str1 reg, ptr, val
->> @@ -44,15 +44,16 @@
->>   	.endm
->>   
->>   	.macro ldp1 reg1, reg2, ptr, val
->> -	ldp \reg1, \reg2, [\ptr], \val
->> +	USER_MC(9998f, ldp \reg1, \reg2, [\ptr], \val)
->>   	.endm
->>   
->>   	.macro stp1 reg1, reg2, ptr, val
->>   	user_stp 9997f, \reg1, \reg2, \ptr, \val
->>   	.endm
->>   
->> -end	.req	x5
->> -srcin	.req	x15
->> +end		.req	x5
->> +srcin		.req	x15
->> +fixup_type	.req	x16
->>   SYM_FUNC_START(__arch_copy_to_user)
->>   	add	end, x0, x2
->>   	mov	srcin, x1
->> @@ -61,7 +62,10 @@ SYM_FUNC_START(__arch_copy_to_user)
->>   	ret
->>   
->>   	// Exception fixups
->> -9997:	cmp	dst, dstin
->> +	// x16: fixup type written by ex_handler_uaccess_mc
->> +9997:	cmp 	fixup_type, #FIXUP_TYPE_MC
->> +	b.eq	9998f
->> +	cmp	dst, dstin
->>   	b.ne	9998f
->>   	// Before being absolutely sure we couldn't copy anything, try harder
->>   	ldrb	tmp1w, [srcin]
->> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
->> index 4f0083a550d4..525876c3ebf4 100644
->> --- a/arch/arm64/mm/extable.c
->> +++ b/arch/arm64/mm/extable.c
->> @@ -24,6 +24,14 @@ static bool ex_handler_fixup(const struct exception_table_entry *ex,
->>   	return true;
->>   }
->>   
->> +static bool ex_handler_uaccess_type(const struct exception_table_entry *ex,
->> +			     struct pt_regs *regs,
->> +			     unsigned long fixup_type)
->> +{
->> +	regs->regs[16] = fixup_type;
->> +	return ex_handler_fixup(ex, regs);
->> +}
->> +
->>   static bool ex_handler_uaccess_err_zero(const struct exception_table_entry *ex,
->>   					struct pt_regs *regs)
->>   {
->> @@ -75,6 +83,8 @@ bool fixup_exception(struct pt_regs *regs)
->>   	switch (ex->type) {
->>   	case EX_TYPE_FIXUP:
->>   		return ex_handler_fixup(ex, regs);
->> +	case EX_TYPE_UACCESS_MC:
->> +		return ex_handler_uaccess_type(ex, regs, FIXUP_TYPE_NORMAL);
->>   	case EX_TYPE_BPF:
->>   		return ex_handler_bpf(ex, regs);
->>   	case EX_TYPE_UACCESS_ERR_ZERO:
->> @@ -94,10 +104,10 @@ bool fixup_exception_mc(struct pt_regs *regs)
->>   	if (!ex)
->>   		return false;
->>   
->> -	/*
->> -	 * This is not complete, More Machine check safe extable type can
->> -	 * be processed here.
->> -	 */
->> +	switch (ex->type) {
->> +	case EX_TYPE_UACCESS_MC:
->> +		return ex_handler_uaccess_type(ex, regs, FIXUP_TYPE_MC);
->> +	}
->>   
->>   	return false;
->>   }
->> -- 
->> 2.25.1
->>
-> .
