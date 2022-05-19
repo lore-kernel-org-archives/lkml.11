@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A947C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230311AbiESHZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
+        id S234794AbiESHZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234774AbiESHYx (ORCPT
+        with ESMTP id S234709AbiESHYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:24:53 -0400
+        Thu, 19 May 2022 03:24:51 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1A78023D
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:24:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDA887210
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:24:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652945086; x=1684481086;
+  t=1652945078; x=1684481078;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vOJ+0X+gvpEqwA/UyYFKtBgGzzfy5dr+lfcjrc7KYhc=;
-  b=VOycxL5Hs30+qtZk0p7Cue195Js0Ipx6oBOdmk0YzTfOETxQSQe8Qre3
-   Rlx99CReWWNKu9uSm3VYSPWjcP00a1hOekNybRFadgPeZngC29ZsfA6hV
-   wXUqxwxOCrXNexcR1sekiXNqy0z2qUFWOk0sFHlBbnWEEHAbnuat7hewK
-   QbGhBprm6MGIwUh/8Z2SJOeDB5AsDtBFfUEE5GYDmcYwv3l1HGOe4F6os
-   bh4hd1L4cPLD+KLBkP7ggNUBgfwWyQo9GCY3cq4GWxB6OkRY5qQ8Vxkjh
-   bo6kAggTIVD52eOypDg/YXkDoVwSCEc+4ltEbbQTw4fRFLB71whoOLBKm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="272195971"
+  bh=Plk0plqOguHnq6zJqwBQ6ucbqjFEQFVamoSa6HmPMUw=;
+  b=VAbEy6R9nNsFhHzYS2rEgQG5wZwJQw1Qhuoko+im0jxiDhHMlNYpwwhA
+   WGu4IUrEtq/I8z7Dc/89vRg9q8vCultuAwLjTVWMnqbvIXBegJMQyo1TA
+   kK5Pfix5cOmq9e/bhyHCTFuhTCt0A6V6kW7i0n7yMSVG5FCKIMrik1l3f
+   Z6Zrd3HPlpmqWUXWa41/0g1Rewh2yrArgAERLvOHUxkcdfjs7AAq725+M
+   lZkzL3HepPmR46kKmGVRJv/ohFt3YchXbR4V/kXhnjsITBx9kUdMGbFer
+   rcqOBM5+orSoX9f+YpdW8kNWigv3pf4nrFpwNL6j5yfmcY+JhQxO1iTx6
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="272195931"
 X-IronPort-AV: E=Sophos;i="5.91,236,1647327600"; 
-   d="scan'208";a="272195971"
+   d="scan'208";a="272195931"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 00:24:46 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 00:24:38 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,236,1647327600"; 
-   d="scan'208";a="714853111"
+   d="scan'208";a="714853079"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 19 May 2022 00:24:42 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 19 May 2022 00:24:34 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
         Christoph Hellwig <hch@infradead.org>,
@@ -50,11 +50,10 @@ To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
 Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
         Jacob jun Pan <jacob.jun.pan@intel.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v7 07/10] iommu: Remove SVA related callbacks from iommu ops
-Date:   Thu, 19 May 2022 15:20:44 +0800
-Message-Id: <20220519072047.2996983-8-baolu.lu@linux.intel.com>
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v7 05/10] arm-smmu-v3/sva: Add SVA domain support
+Date:   Thu, 19 May 2022 15:20:42 +0800
+Message-Id: <20220519072047.2996983-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
 References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
@@ -64,248 +63,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These ops'es have been replaced with the dev_attach/detach_pasid domain
-ops'es. There's no need for them anymore. Remove them to avoid dead
-code.
+Add support for domain ops callbacks for an SVA domain.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- include/linux/intel-iommu.h                   |  3 --
- include/linux/iommu.h                         |  7 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 16 ------
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 40 ---------------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  3 --
- drivers/iommu/intel/iommu.c                   |  3 --
- drivers/iommu/intel/svm.c                     | 49 -------------------
- 7 files changed, 121 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  4 ++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 46 +++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  6 +++
+ 3 files changed, 56 insertions(+)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 5e88eaa245aa..536f229fd274 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -739,9 +739,6 @@ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
- extern void intel_svm_check(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
--struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm);
--void intel_svm_unbind(struct iommu_sva *handle);
--u32 intel_svm_get_pasid(struct iommu_sva *handle);
- int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
- 			    struct iommu_page_response *msg);
- int intel_svm_attach_dev_pasid(struct iommu_domain *domain,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index d9ac5ebe5bbb..e4ce2fe0e144 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -212,9 +212,6 @@ struct iommu_iotlb_gather {
-  * @dev_has/enable/disable_feat: per device entries to check/enable/disable
-  *                               iommu specific features.
-  * @dev_feat_enabled: check enabled feature
-- * @sva_bind: Bind process address space to device
-- * @sva_unbind: Unbind process address space from device
-- * @sva_get_pasid: Get PASID associated to a SVA handle
-  * @page_response: handle page request response
-  * @def_domain_type: device default domain type, return value:
-  *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
-@@ -248,10 +245,6 @@ struct iommu_ops {
- 	int (*dev_enable_feat)(struct device *dev, enum iommu_dev_features f);
- 	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
- 
--	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm);
--	void (*sva_unbind)(struct iommu_sva *handle);
--	u32 (*sva_get_pasid)(struct iommu_sva *handle);
--
- 	int (*page_response)(struct device *dev,
- 			     struct iommu_fault_event *evt,
- 			     struct iommu_page_response *msg);
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index ec77f6a51ff9..0f0f5ba26dd5 100644
+index d2ba86470c42..ec77f6a51ff9 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -754,9 +754,6 @@ bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
- int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
- int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
- bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
--struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm);
--void arm_smmu_sva_unbind(struct iommu_sva *handle);
--u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
+@@ -758,6 +758,10 @@ struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm);
+ void arm_smmu_sva_unbind(struct iommu_sva *handle);
+ u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
  void arm_smmu_sva_notifier_synchronize(void);
- int arm_smmu_sva_attach_dev_pasid(struct iommu_domain *domain,
- 				  struct device *dev, ioasid_t id);
-@@ -793,19 +790,6 @@ static inline bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master
- 	return false;
- }
- 
--static inline struct iommu_sva *
--arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
--{
--	return ERR_PTR(-ENODEV);
--}
--
--static inline void arm_smmu_sva_unbind(struct iommu_sva *handle) {}
--
--static inline u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle)
--{
--	return IOMMU_PASID_INVALID;
--}
--
- static inline void arm_smmu_sva_notifier_synchronize(void) {}
- #endif /* CONFIG_ARM_SMMU_V3_SVA */
- #endif /* _ARM_SMMU_V3_H */
++int arm_smmu_sva_attach_dev_pasid(struct iommu_domain *domain,
++				  struct device *dev, ioasid_t id);
++void arm_smmu_sva_detach_dev_pasid(struct iommu_domain *domain,
++				   struct device *dev, ioasid_t id);
+ #else /* CONFIG_ARM_SMMU_V3_SVA */
+ static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ {
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 6969974ca89e..8290d66569f3 100644
+index f155d406c5d5..6969974ca89e 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -344,11 +344,6 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 	if (!bond)
- 		return ERR_PTR(-ENOMEM);
- 
--	/* Allocate a PASID for this mm if necessary */
--	ret = iommu_sva_alloc_pasid(mm, 1, (1U << master->ssid_bits) - 1);
--	if (ret)
--		goto err_free_bond;
--
- 	bond->mm = mm;
- 	bond->sva.dev = dev;
- 	refcount_set(&bond->refs, 1);
-@@ -367,41 +362,6 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 	return ERR_PTR(ret);
+@@ -549,3 +549,49 @@ void arm_smmu_sva_notifier_synchronize(void)
+ 	 */
+ 	mmu_notifier_synchronize();
  }
- 
--struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
--{
--	struct iommu_sva *handle;
--	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--
--	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
--		return ERR_PTR(-EINVAL);
--
--	mutex_lock(&sva_lock);
--	handle = __arm_smmu_sva_bind(dev, mm);
--	mutex_unlock(&sva_lock);
--	return handle;
--}
--
--void arm_smmu_sva_unbind(struct iommu_sva *handle)
--{
--	struct arm_smmu_bond *bond = sva_to_bond(handle);
--
--	mutex_lock(&sva_lock);
--	if (refcount_dec_and_test(&bond->refs)) {
--		list_del(&bond->list);
--		arm_smmu_mmu_notifier_put(bond->smmu_mn);
--		kfree(bond);
--	}
--	mutex_unlock(&sva_lock);
--}
--
--u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle)
--{
--	struct arm_smmu_bond *bond = sva_to_bond(handle);
--
--	return bond->mm->pasid;
--}
--
- bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
- {
- 	unsigned long reg, fld;
++
++int arm_smmu_sva_attach_dev_pasid(struct iommu_domain *domain,
++				  struct device *dev, ioasid_t id)
++{
++	int ret = 0;
++	struct mm_struct *mm;
++	struct iommu_sva *handle;
++
++	if (domain->type != IOMMU_DOMAIN_SVA)
++		return -EINVAL;
++
++	mm = domain_to_mm(domain);
++	if (WARN_ON(!mm))
++		return -ENODEV;
++
++	mutex_lock(&sva_lock);
++	handle = __arm_smmu_sva_bind(dev, mm);
++	if (IS_ERR(handle))
++		ret = PTR_ERR(handle);
++	mutex_unlock(&sva_lock);
++
++	return ret;
++}
++
++void arm_smmu_sva_detach_dev_pasid(struct iommu_domain *domain,
++				   struct device *dev, ioasid_t id)
++{
++	struct arm_smmu_bond *bond = NULL, *t;
++	struct mm_struct *mm = domain_to_mm(domain);
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	mutex_lock(&sva_lock);
++	list_for_each_entry(t, &master->bonds, list) {
++		if (t->mm == mm) {
++			bond = t;
++			break;
++		}
++	}
++
++	if (!WARN_ON(!bond) && refcount_dec_and_test(&bond->refs)) {
++		list_del(&bond->list);
++		arm_smmu_mmu_notifier_put(bond->smmu_mn);
++		kfree(bond);
++	}
++	mutex_unlock(&sva_lock);
++}
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 4ad3ca70cf89..b74f8964cc13 100644
+index 6e2cd082c670..4ad3ca70cf89 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2852,9 +2852,6 @@ static struct iommu_ops arm_smmu_ops = {
- 	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
- 	.dev_enable_feat	= arm_smmu_dev_enable_feature,
- 	.dev_disable_feat	= arm_smmu_dev_disable_feature,
--	.sva_bind		= arm_smmu_sva_bind,
--	.sva_unbind		= arm_smmu_sva_unbind,
--	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+@@ -2858,6 +2858,12 @@ static struct iommu_ops arm_smmu_ops = {
  	.page_response		= arm_smmu_page_response,
  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
  	.owner			= THIS_MODULE,
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 2b6a52c87c73..10e07d59d4c8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4919,9 +4919,6 @@ const struct iommu_ops intel_iommu_ops = {
- 	.def_domain_type	= device_def_domain_type,
- 	.pgsize_bitmap		= SZ_4K,
- #ifdef CONFIG_INTEL_IOMMU_SVM
--	.sva_bind		= intel_svm_bind,
--	.sva_unbind		= intel_svm_unbind,
--	.sva_get_pasid		= intel_svm_get_pasid,
- 	.page_response		= intel_svm_page_response,
- 	.sva_domain_ops = &(const struct iommu_domain_ops) {
- 		.set_dev_pasid		= intel_svm_attach_dev_pasid,
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index d575792441f3..e412a442d9a4 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -313,14 +313,6 @@ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
- 	return 0;
- }
- 
--static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm)
--{
--	ioasid_t max_pasid = dev_is_pci(dev) ?
--			pci_max_pasids(to_pci_dev(dev)) : intel_pasid_max_id;
--
--	return iommu_sva_alloc_pasid(mm, PASID_MIN, max_pasid - 1);
--}
--
- static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 					   struct device *dev,
- 					   ioasid_t pasid,
-@@ -810,47 +802,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 	return IRQ_RETVAL(handled);
- }
- 
--struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm)
--{
--	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
--	struct iommu_sva *sva;
--	int ret;
--
--	mutex_lock(&pasid_mutex);
--	ret = intel_svm_alloc_pasid(dev, mm);
--	if (ret) {
--		mutex_unlock(&pasid_mutex);
--		return ERR_PTR(ret);
--	}
--
--	sva = intel_svm_bind_mm(iommu, dev, mm->pasid, mm);
--	mutex_unlock(&pasid_mutex);
--
--	return sva;
--}
--
--void intel_svm_unbind(struct iommu_sva *sva)
--{
--	struct intel_svm_dev *sdev = to_intel_svm_dev(sva);
--
--	mutex_lock(&pasid_mutex);
--	intel_svm_unbind_mm(sdev->dev, sdev->pasid);
--	mutex_unlock(&pasid_mutex);
--}
--
--u32 intel_svm_get_pasid(struct iommu_sva *sva)
--{
--	struct intel_svm_dev *sdev;
--	u32 pasid;
--
--	mutex_lock(&pasid_mutex);
--	sdev = to_intel_svm_dev(sva);
--	pasid = sdev->pasid;
--	mutex_unlock(&pasid_mutex);
--
--	return pasid;
--}
--
- int intel_svm_page_response(struct device *dev,
- 			    struct iommu_fault_event *evt,
- 			    struct iommu_page_response *msg)
++#ifdef CONFIG_ARM_SMMU_V3_SVA
++	.sva_domain_ops = &(const struct iommu_domain_ops) {
++		.set_dev_pasid		= arm_smmu_sva_attach_dev_pasid,
++		.block_dev_pasid	= arm_smmu_sva_detach_dev_pasid,
++	},
++#endif
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev		= arm_smmu_attach_dev,
+ 		.map_pages		= arm_smmu_map_pages,
 -- 
 2.25.1
 
