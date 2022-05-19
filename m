@@ -2,61 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B32C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C39C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243616AbiESSF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
+        id S243638AbiESSGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243151AbiESSFp (ORCPT
+        with ESMTP id S243647AbiESSGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:05:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9429CDFF6A;
-        Thu, 19 May 2022 11:05:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40913B8277E;
-        Thu, 19 May 2022 18:05:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49A7BC385AA;
-        Thu, 19 May 2022 18:05:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652983538;
-        bh=eiONrI+/XIOUrRkbYlo8XEvtMnn4h975jZWYVuC1GfU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bHhW0O/zb8ezRvcI8k2YnsLVhATLz/RylFLkAoiLTo0zIx8NKsPXk1geulxFV7B5l
-         ihuckq535D4hjyyQS5kI0VXinkgn75K8dwNq7JlSIdTkuEw+plIzFIR+r7G/CgHh60
-         Z/YOrD6mtel4MtBTDGXlGCrFTQfxXvEoyXWaWlQ9q1ixvZwcXPSloyvtdKCN0O6bMa
-         2Ot7vSwbc/AfLaF0CZmOn/MOkPXkxonONHf33+BWD4FWQZGipfMRKRUgeYIZtOjuA/
-         kFB9OHRZ4rBEp0odb+fUh5pliqYn97+zrRc8GSO173fynlsk0HK+/9ii0t8DaWJMTw
-         F5/Mat4ypE4ww==
-Date:   Thu, 19 May 2022 23:35:22 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        jonathanh@nvidia.com, kyarlagadda@nvidia.com, ldewangan@nvidia.com,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        p.zabel@pengutronix.de, rgumasta@nvidia.com, robh+dt@kernel.org,
-        thierry.reding@gmail.com, nathan@kernel.org,
-        dan.carpenter@oracle.com
-Subject: Re: [PATCH v2 0/2] Fix uninitialized variable usage in Tegra GPCDMA
-Message-ID: <YoaG4tFAO1/DRR5k@matsya>
-References: <20220426101913.43335-1-akhilrajeev@nvidia.com>
+        Thu, 19 May 2022 14:06:05 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D235BC27;
+        Thu, 19 May 2022 11:05:57 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:38982)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nrkWs-003AjH-EX; Thu, 19 May 2022 12:05:42 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38810 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nrkWr-006fmJ-Ca; Thu, 19 May 2022 12:05:41 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Kyle Huey <khuey@pernos.co>, LKML <linux-kernel@vger.kernel.org>,
+        rjw@rjwysocki.net, oleg@redhat.com, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org,
+        Robert O'Callahan <roc@pernos.co>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+References: <20220421150248.667412396@infradead.org>
+        <20220421150654.817117821@infradead.org>
+        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
+        <CALWUPBdFDLuT7JaNGSJ_UXbHf8y9uKdC-SkAqzd=FQC0MX4nNQ@mail.gmail.com>
+        <YoXhfGGPKnT/YFC1@linutronix.de>
+Date:   Thu, 19 May 2022 13:05:32 -0500
+In-Reply-To: <YoXhfGGPKnT/YFC1@linutronix.de> (Sebastian Andrzej Siewior's
+        message of "Thu, 19 May 2022 08:19:40 +0200")
+Message-ID: <8735h54cur.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426101913.43335-1-akhilrajeev@nvidia.com>
+Content-Type: text/plain
+X-XM-SPF: eid=1nrkWr-006fmJ-Ca;;;mid=<8735h54cur.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+x0Ao64wqfn/lCXR2nCKOYfMdcIblQPOs=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 00/16] ptrace: cleanups and calling do_cldstop with only
+ siglock
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26-04-22, 15:49, Akhil R wrote:
-> Initialize uninitialized variable and remove unused switch case
-> in tegra186-gpcdma driver.
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
 
-Applied, thanks
+> On 2022-05-18 20:26:05 [-0700], Kyle Huey wrote:
+>> Is there a git branch somewhere I can pull to test this? It doesn't apply
+>> cleanly to Linus's tip.
+>
+> https://kernel.googlesource.com/pub/scm/linux/kernel/git/ebiederm/user-namespace.git ptrace_stop-cleanup-for-v5.19
 
--- 
-~Vinod
+Yes that is the branch this all applies to.
+
+This is my second round of cleanups this cycle for this code.
+I just keep finding little things that deserve to be changed,
+when I am working on the more substantial issues.
+
+Eric
+
+
+
