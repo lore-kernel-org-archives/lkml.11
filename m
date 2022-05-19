@@ -2,174 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40306C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:03:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC18FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236271AbiESODM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
+        id S234765AbiESODp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239354AbiESOCA (ORCPT
+        with ESMTP id S238688AbiESODk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:02:00 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-eus2azlp170100002.outbound.protection.outlook.com [IPv6:2a01:111:f403:c110::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F9A5DBE7;
-        Thu, 19 May 2022 07:00:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TvHhDuMgJGqLm4PJvceO8UnCuDCP+dVR/giuo2Fo1WU5aKafGxgSAN/uLGIkIHdHSzOS36xPgasL//he3DeTguO/tdYd9kbqfjDGHSDPf16Elmg9JtILDxbQy995RQbk3zGTIjoZdyngxzVyhY9LBVS0KMyFw38eF/5X4zg91sXThyCM1gHyYtDkDezEfQ8OQ06XHp5+AaH8YI8Nbs6YKdroEkRTOzkcKRCPlpBGtyNVwL7Yo5IeNw6Ty7pL1KV5ovtkW21+tjY0iXtgglbRukOcpf7IUxglotbwFsme85xjEeZxgIwLtbYxo+rodNxX9K1Ny4I/x8E2bfG2gYXJWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ynGEeBCN0XQvUESYmgGYylxrFJrX+EeuhjOvWG8gfaw=;
- b=FaieG8acGpmOiqj5Aw3BIxz5H95zicNEw3M0V707x7mHbLgkr9K7/Cv1UbqiDJ8Z1XE2yYs3BHJUqteqZ/O/Twg9pCEQ6C7bt7xvkj+rUZpn6FOxgp50mKpygKgTBXlAWGsBMQ/EFMwbdiGjeJaTKXn1gVMV/wqHBunTGkywLzs1gzIIWu/F1ddhEHKwly69stFdElh1D0YGLZbbkUjiQBhTFs9xgZdVRyF5my1mXb4Xh412mwnoRMwenE5ohWIDGsFgP7Q9Y/V0N5qQkB4naTa4qbtJ8pLnDT9HeS9hkpvkYoj5AA4jTbLLz89LsTTv9iUNs8oYMbC3dL0qtduDsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ynGEeBCN0XQvUESYmgGYylxrFJrX+EeuhjOvWG8gfaw=;
- b=C8/5kGh1/bQoCONoICzRZgFwdYXETPmg5Fv+EmVCkzAr7hYOvc0WxJhg80dX4Y58EWbWfToAbhshKqYCBN6JDBF/VGU0uvm2UtCMn7Nrohjk4W6j/wulg7Nd3a7beBn0RUQrdnS7hGd0qs/druVq+Mash1E/Jnr5OlQqS2yTJNg=
-Received: from DM5PR21MB1749.namprd21.prod.outlook.com (2603:10b6:4:9f::21) by
- PH7PR21MB3119.namprd21.prod.outlook.com (2603:10b6:510:1d3::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5273.5; Thu, 19 May 2022 13:45:25 +0000
-Received: from DM5PR21MB1749.namprd21.prod.outlook.com
- ([fe80::f4b9:a58c:5baf:bc29]) by DM5PR21MB1749.namprd21.prod.outlook.com
- ([fe80::f4b9:a58c:5baf:bc29%3]) with mapi id 15.20.5293.005; Thu, 19 May 2022
- 13:45:25 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Yongzhi Liu <lyz_cs@pku.edu.cn>, KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "sashal@kernel.org" <sashal@kernel.org>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "fuyq@stu.pku.edu.cn" <fuyq@stu.pku.edu.cn>
-Subject: RE: [PATCH] hv_netvsc: Fix potential dereference of NULL pointer
-Thread-Topic: [PATCH] hv_netvsc: Fix potential dereference of NULL pointer
-Thread-Index: AQHYa3mXg5VVcdJkQU2jMWLoTy5koa0mNkcg
-Date:   Thu, 19 May 2022 13:45:25 +0000
-Message-ID: <DM5PR21MB174975EE6EF554BB72C60C01CAD09@DM5PR21MB1749.namprd21.prod.outlook.com>
-References: <1652962188-129281-1-git-send-email-lyz_cs@pku.edu.cn>
-In-Reply-To: <1652962188-129281-1-git-send-email-lyz_cs@pku.edu.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6f1e090e-fdaf-4b91-925e-814f34d702c5;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-19T13:44:51Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3885186d-ae25-4fd4-3c9a-08da399dd3f3
-x-ms-traffictypediagnostic: PH7PR21MB3119:EE_
-x-microsoft-antispam-prvs: <PH7PR21MB31193436EEA667A4D50F4DA9CAD09@PH7PR21MB3119.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SPAhSBaovEPBtQh8DGgrVwb3h1JStmCYdczmmUAZUqjPsYsvUW/4I5AFxXr85S40pG5T9lzG2hOVHHvFJ81JLx8IQYkKWNB4bZySnTKU7LE7HTVf2xPu/kzJhb5EyI/BM4mq5tP+ihY1u3s0oezoOes1jOjkfic0TyKgsn2iZtzuF4zdpYrh4/UHKOEuzTJj+ZhBciDmCPY8284pKh9nb0+atvumaKEXIWWPNWprt1M521OuFdi/MxjAmHqN6+P+zPl7xGyItdharkZky4N8Vjd+eh902RdQ4NoStzguKcMQoqswbdBlcPrxkKJY6BaIxtmNZZUV6u0fM6N++0Hbymcc5lPeDZrXhJhRZ/mJmKxPAhZqEapMy2MteOfMXkhvHpdzfVuEmFRgCRjvPsg4vbO4EiaIQL8V4e3fTfSo9wUDHNMYPurwzKT92dU2bN/gRzO/a5e16o+0v7COzgIO73w+tgBa0dRJvjDNsngbFJPzUCt0v+QyPMOsUPIDPuXe5s86aYCGQ0ROC5uv6bI/9pOFkv93ys907auY5+SbkkFzVXPwZ08u4o+kps2e6iRhMwAxTS2llkNE65NcYjHleZTOjIryMHpl6Xq9YtUnip6+N9hc7KMsD+pO5BlXAfCVE4xOMa6aR24tze05AaBiM8qaAMPPbEDWT/ii4NQyHIDnx/xYbMj4Of0628Ydpq6c0L14xxDk7y9If7tKcnynz7LT8lUnJozZ8AQadOAryyA9iZIUZW08KG+TzLFYQuTI
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR21MB1749.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(66556008)(38070700005)(38100700002)(122000001)(64756008)(82950400001)(66946007)(8936002)(316002)(52536014)(6506007)(508600001)(8676002)(7696005)(82960400001)(4326008)(10290500003)(54906003)(110136005)(9686003)(26005)(76116006)(53546011)(66476007)(66446008)(71200400001)(186003)(8990500004)(7416002)(33656002)(55016003)(83380400001)(2906002)(86362001)(5660300002)(966005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1LbXBzfxD8xEOYbHRzL1ZAzXzi0AYvkZ5qEa/cOAHoJe5OKgsJe5Cm5RD+rG?=
- =?us-ascii?Q?xFyfB33Fak35qTrYf7fFiBMb17JKTFwd/hqs1dwIT908xCb3JFOKDE/1WB8y?=
- =?us-ascii?Q?xJ1Fyh3nnRdgFUnnkbwUhjXSRcYSMBov57DFkQd9/FYwmvqKWL0sodnF41MP?=
- =?us-ascii?Q?vg4ODlZgGh7m93zrzckdVp2ja4Z7eS0hs3GeYYCF1eUPnFi5KUk65S5fPW7X?=
- =?us-ascii?Q?HUbcYN6di70aSjM40PabVzFosPVzQuMliV/wCnZdUABt5DlyFEwtnm6N+jeS?=
- =?us-ascii?Q?E9QDATNv7YdhhsicQYzZjxz+FvyTGQLGqgbeSl3ut9l5iglQwkQn0x0BLAIv?=
- =?us-ascii?Q?A6fxEVxxdZnAJNLOxZGoAv8nPQtpkfAfefQRqScCA64IiD4T24u529xJEWlY?=
- =?us-ascii?Q?boogWQ2qgFqhK201X82lQ3FStU9ueZb9wxriYs5VjQJPUh5l9w5pKL77+BtT?=
- =?us-ascii?Q?j8UTPSYrEHMXnet1YFIEozYFDiZBBUTwA0jvErP1S3G8wowR35qtTMJYGxZc?=
- =?us-ascii?Q?VsE8Kyuncd4YyL/8b3gm3P15oWZ0JkvibM+QZ/iidXOgIMBOREdr3nS5XIVa?=
- =?us-ascii?Q?iQ0W1nx3+sTQO53Th/y6t/VVbqvS6pwV2GTbhGCpJGiOsa28/eCiLqqBS82J?=
- =?us-ascii?Q?7fuxQlGR3CVmESMPGCS5hQe2PpTYKUmiJJV8YbZgxlobxa/BORB3H2L4JgOr?=
- =?us-ascii?Q?9tiacT7tv01jZeE+kSO+CJbRUutKkGvlhq76anEPAty6l0M5Z19naInAdivV?=
- =?us-ascii?Q?7yH8dS4ldmfD+cyiEQ6wBw5aaXF8g5Y2/0UL1cVTMsryVI9wgVnKJH8Nya4j?=
- =?us-ascii?Q?IAKX526TFUbwbE/P8Jt4Oeq8t3MpON/sVA1E2Rqy7R6Gk4xG7ULbsr9bWxf2?=
- =?us-ascii?Q?HMnPy6zhMvb2UMqVfqeE4pbegkSsCIgoe3XF3J9/HHd4lmyOIQjpsnQkO3Xd?=
- =?us-ascii?Q?RIFrc+deONnKKrgSwOUFfQLe85b8QHC9rlMV0TQYMCSJL/lAqzZ2xWnTG7vF?=
- =?us-ascii?Q?ApMWl1cppOt4XdvjizzDFXrugNSxnr8p50MonyLLIPT+OaNY1Q/RvxDWDplV?=
- =?us-ascii?Q?YEA2iWQvUP9HdLHMcUbfHc0lhk3MCQA1DfDE9QckhDysLMbqEpDecBdNhoBq?=
- =?us-ascii?Q?nyFsXwNxDmedxiAyTa2BrtvOXMnIo869T+hgxNhjte4xtTyVkPIZdZkwPlME?=
- =?us-ascii?Q?O4/C5kaGnDVuAsKhgvqd3l6lwof2426ID8tRaX1/IKlHZQg4i/D3SUYKADOn?=
- =?us-ascii?Q?iGzmwmU9r/gfZAUaT2esLI33d5ueh4BHCzMtRS+6UrrrBv24+HI3RcJyk8sv?=
- =?us-ascii?Q?NV7kUiOb6R62LhQGjld2ebDbdRDYQADLvyWwtfDXUP+G8doV2Xa4Wd64C6ZH?=
- =?us-ascii?Q?l1LMMuZmHMt1Nm5nkGC4MLucI/l7eEa0MTL+Yqxq4Qo6M8f8GNLHYVgoM8y9?=
- =?us-ascii?Q?gH7s7oG5ASgrvJ26tRO1Ls5+2sF/ewwKov3Uwp3wLK0qjzkdRZwwabJjkvG0?=
- =?us-ascii?Q?foDsVv38CumPGF7N6+t0mnbKgxqTIexsHQWtekXVkWpXhfNccAkxLoXc8s15?=
- =?us-ascii?Q?ybAQKHAq2iA+lBFAYwA0lZ7aidHfODzqi+YCCJr27XWlT0PaOKAKZ84bm+6y?=
- =?us-ascii?Q?dCKc6flRzQcgx9khDHuFkbvPKxzDRfJz/9C9F6ZmBO87DCI6w/xctByLMVP8?=
- =?us-ascii?Q?XVZVpfHU3CSS8d3/JVRJ0PqdPuc049gAdaoCFYIYgJ7WS6i2cjAnqPvZLLKB?=
- =?us-ascii?Q?EV9ntUyLMA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 19 May 2022 10:03:40 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1571C2673;
+        Thu, 19 May 2022 07:03:39 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id f9so10270269ejc.0;
+        Thu, 19 May 2022 07:03:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:message-id:in-reply-to:references
+         :mime-version;
+        bh=qWNcKlbHWt+buYUPc86j5JlNPnGvKXkUMAum0oQSfJ0=;
+        b=LcE9bEgfBwTo+FP+bLoachNEfeucJ1OepYalzxu7uc6jEmRley8APjmdkai6m/XVAc
+         Ya75wYu2NMpfUANb1K7kUDHYWCcXkmTEbT8b7eC6obk6nmJdBqKhFhrN0XlEGUOS38va
+         4ldMm/u49lHcF+2IBH75a8sAghe0xurqgbWccyAqO4mLCKlrctVwIpqpzjLDyGQzcirk
+         n7m5dGw5dWTOgBJbZYpl3B7KJMFjTe8NedjJ7o/o2Y1HzA1yOOepTTvUkxg1N4L8fNYZ
+         ifLUQ4h2MYsaO+czOwRsRl85AqrCFL8vjJcLLAtxcS5VB2E6d1Yw/qOO6W6fRmbYAr3h
+         YCgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:message-id:in-reply-to
+         :references:mime-version;
+        bh=qWNcKlbHWt+buYUPc86j5JlNPnGvKXkUMAum0oQSfJ0=;
+        b=hXvo/VbUtzxSL6sVLt76fyjkVbZxLiIulA3mRfno9nEuiEFXOKK04zNlv/7DNw02ce
+         XhTS1FVSIlmkHytydT9ZGFbr2HKbEqWqkcz7YAbbuhK8rsqFdao3Pkzq9W2M4TSH2vns
+         +B0RGAE/JzEfwXj8WPFyXvhJj00vIV3MAUlOucLOWngAdL32tfMcI3/ZnWFenvQgTjYX
+         MMeljGh8vutU0zxTUAv3leE83Tj8bkC04HR5lfKM+W0+/Y4eGDAV9wl1leTTY0Q4hVY9
+         VG3+mkhZGgd+R8QjUylJH4EFmT/Uesn5KyAeoUZba/6NSCmwh/c8tKrcASyXHrtVFreg
+         GA7Q==
+X-Gm-Message-State: AOAM530Xpm9u/3N+O66JQl9RBabWWBjGxGjfWLoKXKyUwb6U4+x6TGGw
+        t0YrGBhjpBgr+L52hchNa4k=
+X-Google-Smtp-Source: ABdhPJyhieqoXKbfvsM8fh2dawCAGVx37vJQhD8YjDO0OoeyTXCFh58t3tmMrLP80r47m9bY8FV3oQ==
+X-Received: by 2002:a17:907:7b85:b0:6fd:d799:ef4e with SMTP id ne5-20020a1709077b8500b006fdd799ef4emr4492401ejc.319.1652969017544;
+        Thu, 19 May 2022 07:03:37 -0700 (PDT)
+Received: from [192.168.52.247] ([217.138.206.82])
+        by smtp.gmail.com with ESMTPSA id m13-20020a17090672cd00b006f3ef214e3esm2097890ejl.164.2022.05.19.07.03.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 07:03:37 -0700 (PDT)
+Date:   Thu, 19 May 2022 18:03:14 +0400
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+Subject: Re: [PATCH 0/6] clk: mediatek: Improvements to simple probe/remove
+ and reset controller unregistration
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Miles Chen <miles.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        =?iso-8859-1?q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+Message-Id: <E1V4CR.LC9T17R2IY1M2@gmail.com>
+In-Reply-To: <20220519134728.456643-1-y.oudjana@protonmail.com>
+References: <20220519134728.456643-1-y.oudjana@protonmail.com>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR21MB1749.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3885186d-ae25-4fd4-3c9a-08da399dd3f3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 13:45:25.4459
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9PPp1A3OI2whI1YK1fRyDWxHE45aD8kP/Uc8j9kDxDsE/ktUBavejyfD4dEt/XICw6VPwS9sYi2NlGTsycjt/w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3119
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+On Thu, May 19 2022 at 17:47:22 +0400, Yassine Oudjana 
+<yassine.oudjana@gmail.com> wrote:
+> This series started as part of an earlier series adding support for 
+> the main
+> clock controllers on MediaTek MT6735[1]. It has since been split off 
+> and
+> expanded. It adds a new function to unregister a reset controller and 
+> expands
+> the mtk_clk_simple_probe/remove functions to support the main 5 types 
+> of clocks:
+> - PLLs		(new)
+> - Fixed clocks	(new)
+> - Fixed factors	(new)
+> - Muxes		(new)
+> - Gates		(supported previously)
+> This should allow it to be used in most clock drivers, resulting in 
+> reduced
+> code duplication. It will be used in MT6735 clock drivers in the 
+> upcoming v2
+> of the MT6735 main clock controller series.
+> 
+> Dependencies:
+> - clk: mediatek: Move to struct clk_hw provider APIs (series)
+>   
+> https://patchwork.kernel.org/project/linux-mediatek/cover/20220510104804.544597-1-wenst@chromium.org/
+> - Cleanup MediaTek clk reset drivers and support MT8192/MT8195 
+> (series)
+>   
+> https://patchwork.kernel.org/project/linux-mediatek/cover/20220503093856.22250-1-rex-bc.chen@mediatek.com/
+> - Export required symbols to compile clk drivers as module (single 
+> patch)
+>   
+> https://patchwork.kernel.org/project/linux-mediatek/patch/20220518111652.223727-7-angelogioacchino.delregno@collabora.com/
+> 
+> Yassine Oudjana (6):
+>   clk: mediatek: gate: Export mtk_clk_register_gates_with_dev
+>   clk: mediatek: Use mtk_clk_register_gates_with_dev in simple probe
+>   clk: mediatek: reset: Return reset data pointer on register
+>   clk: mediatek: reset: Implement mtk_unregister_reset_controller() 
+> API
+>   clk: mediatek: Unregister reset controller on simple remove
+>   clk: mediatek: Add support for other clock types in simple
+>     probe/remove
+> 
+>  drivers/clk/mediatek/clk-gate.c   |   1 +
+>  drivers/clk/mediatek/clk-mt8192.c |   7 +-
+>  drivers/clk/mediatek/clk-mtk.c    | 123 
+> +++++++++++++++++++++++++-----
+>  drivers/clk/mediatek/clk-mtk.h    |  22 +++++-
+>  drivers/clk/mediatek/reset.c      |  41 ++++++----
+>  drivers/clk/mediatek/reset.h      |  20 +++--
+>  6 files changed, 167 insertions(+), 47 deletions(-)
+> 
+> --
+> 2.36.1
+> 
 
-> -----Original Message-----
-> From: Yongzhi Liu <lyz_cs@pku.edu.cn>
-> Sent: Thursday, May 19, 2022 8:10 AM
-> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> <haiyangz@microsoft.com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; wei.liu@kernel.org; Dexuan Cui
-> <decui@microsoft.com>; davem@davemloft.net; kuba@kernel.org;
-> pabeni@redhat.com; sashal@kernel.org
-> Cc: linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; fuyq@stu.pku.edu.cn; Yongzhi Liu
-> <lyz_cs@pku.edu.cn>
-> Subject: [PATCH] hv_netvsc: Fix potential dereference of NULL pointer
->=20
-> [Some people who received this message don't often get email from
-> lyz_cs@pku.edu.cn. Learn why this is important at
-> https://aka.ms/LearnAboutSenderIdentification.]
->=20
-> The return value of netvsc_devinfo_get()
-> needs to be checked to avoid use of NULL
-> pointer in case of an allocation failure.
->=20
-> Fixes: 0efeea5fb ("hv_netvsc: Add the support of hibernation")
->=20
-> Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-> ---
->  drivers/net/hyperv/netvsc_drv.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/hyperv/netvsc_drv.c
-> b/drivers/net/hyperv/netvsc_drv.c
-> index fde1c49..b1dece6 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -2671,7 +2671,10 @@ static int netvsc_suspend(struct hv_device *dev)
->=20
->         /* Save the current config info */
->         ndev_ctx->saved_netvsc_dev_info =3D netvsc_devinfo_get(nvdev);
-> -
-> +       if (!ndev_ctx->saved_netvsc_dev_info) {
-> +               ret =3D -ENOMEM;
-> +               goto out;
-> +       }
->         ret =3D netvsc_detach(net, nvdev);
->  out:
->         rtnl_unlock();
+Replying since there is a missing reference:
 
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Thank you!
+[1] 
+https://patchwork.kernel.org/project/linux-clk/cover/20220504122601.335495-1-y.oudjana@protonmail.com/
+
+
