@@ -2,88 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 10:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 10:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234670AbiESKeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 06:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
+        id S235510AbiESKfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 06:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiESKeS (ORCPT
+        with ESMTP id S229773AbiESKe6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 06:34:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E989F56FA8;
-        Thu, 19 May 2022 03:34:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A6A7B82390;
-        Thu, 19 May 2022 10:34:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC9ADC385AA;
-        Thu, 19 May 2022 10:34:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652956453;
-        bh=F6lMMI9wCT7YEnfx97Rh4IvbWpUerMrAQC7i5+XZHzg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Gsp6LkeWU3bKxfM9+evAMJQEbhaccx7WAas/qFQUx2uoKdez7z8+01aQGrvr4pBHQ
-         kfbBF4NzFCeuaCgkyv/vyAST6IkaweQeDq2ItEwo+mGtZ+oASqRKbAKFJ8iIH6M1ze
-         D9MOqeP3d0BppWUzqI0aTGXRtfiCZc6KwoEw1eLU=
-Date:   Thu, 19 May 2022 12:34:10 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kushagra Verma <kushagra765@outlook.com>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] USB / image: Fix spacing issues in
- mdc800_endpoint_equals()
-Message-ID: <YoYdItGTISO4CxHC@kroah.com>
-References: <HK0PR01MB2801F1EE137B9A5196B225D1F8D09@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
+        Thu, 19 May 2022 06:34:58 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E55579A4
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 03:34:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652956498; x=1684492498;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XTGttujMcUg+0VmQSASdxmBA6ZgRvaya7ou+Hajd/cE=;
+  b=P/fF2g1rZbnpct2l/Iv5/Mkchff80PaSCYSGLD2CebxRZnmiy+uq8ziC
+   bTtdeFCmPyWoNp6hemLTN6DDtsp542lk8lMyR7IXe293SrihfMJ7i8FPl
+   XoUbg7uOtAo2FSSXTe0qxcOghJkUNn2VlLGKhH6HwVf3sLVSoj8hnFK4H
+   qIrzHTinnoDcZyBEmsClXfP8EDkaGle6+cCAuVTgIQMFBq78FVW23Fol2
+   AIJUcMxjTHy1VxipblMYY5Bt3xz8zZa7PRUQ6SROE7BZk6ac1janhIyNC
+   VXYhV7XLro9Q5kGg4lK4HyGafF6LyAcvWePeLBH6uJbyHvKPYKEk5CUMg
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="164401320"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 May 2022 03:34:57 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 19 May 2022 03:34:56 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 19 May 2022 03:34:54 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <linux@armlinux.org.uk>, <sboyd@kernel.org>,
+        <ludovic.desroches@microchip.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 1/2] ARM: at91: pm: use proper compatibles for sam9x60's rtc and rtt
+Date:   Thu, 19 May 2022 13:37:22 +0300
+Message-ID: <20220519103723.925800-2-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220519103723.925800-1-claudiu.beznea@microchip.com>
+References: <20220519103723.925800-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <HK0PR01MB2801F1EE137B9A5196B225D1F8D09@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 02:42:31PM +0530, Kushagra Verma wrote:
-> This patch fixes the following spacing issues in mdc800_endpoint_equals():
-> 	1. (Removed) Space between function name and opening parenthesis.
-> 	2. (Removed) Space between variable and opening and closing
->             parenthesis in the return statement.
-> 	3. (Added) Space between 2 function arguments.
-> 
-> This fixes multiple checkpatch warnings for this function.
-> 
-> Signed-off-by: Kushagra Verma <kushagra765@outlook.com>
-> ---
->  drivers/usb/image/mdc800.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/usb/image/mdc800.c b/drivers/usb/image/mdc800.c
-> index fc0e22cc6fda..dc03e0e54fe0 100644
-> --- a/drivers/usb/image/mdc800.c
-> +++ b/drivers/usb/image/mdc800.c
-> @@ -220,12 +220,12 @@ static struct mdc800_data* mdc800;
->  	The USB Part of the driver
->  ****************************************************************************/
->  
-> -static int mdc800_endpoint_equals (struct usb_endpoint_descriptor *a,struct usb_endpoint_descriptor *b)
-> +static int mdc800_endpoint_equals(struct usb_endpoint_descriptor *a, struct usb_endpoint_descriptor *b)
->  {
->  	return (
-> -		   ( a->bEndpointAddress == b->bEndpointAddress )
-> -		&& ( a->bmAttributes     == b->bmAttributes     )
-> -		&& ( a->wMaxPacketSize   == b->wMaxPacketSize   )
-> +		   (a->bEndpointAddress == b->bEndpointAddress)
-> +		&& (a->bmAttributes     == b->bmAttributes)
-> +		&& (a->wMaxPacketSize   == b->wMaxPacketSize)
+Use proper compatible strings for SAM9X60's RTC and RTT IPs. These are
+necessary for configuring wakeup sources for ULP1 PM mode.
 
-As you can see, the original alignments was done for the specific reason
-of making this "pretty".  Your changes really do not help anything here,
-which is the primary reason to make checkpatch cleanup changes.
+Fixes: eaedc0d379da ("ARM: at91: pm: add ULP1 support for SAM9X60")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ arch/arm/mach-at91/pm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-So I'll leave this alone, sorry.
+diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
+index 8556c81a3b96..3161e4467081 100644
+--- a/arch/arm/mach-at91/pm.c
++++ b/arch/arm/mach-at91/pm.c
+@@ -211,12 +211,12 @@ static const struct of_device_id sama5d2_ws_ids[] = {
+ };
+ 
+ static const struct of_device_id sam9x60_ws_ids[] = {
+-	{ .compatible = "atmel,at91sam9x5-rtc",		.data = &ws_info[1] },
++	{ .compatible = "microchip,sam9x60-rtc",	.data = &ws_info[1] },
+ 	{ .compatible = "atmel,at91rm9200-ohci",	.data = &ws_info[2] },
+ 	{ .compatible = "usb-ohci",			.data = &ws_info[2] },
+ 	{ .compatible = "atmel,at91sam9g45-ehci",	.data = &ws_info[2] },
+ 	{ .compatible = "usb-ehci",			.data = &ws_info[2] },
+-	{ .compatible = "atmel,at91sam9260-rtt",	.data = &ws_info[4] },
++	{ .compatible = "microchip,sam9x60-rtt",	.data = &ws_info[4] },
+ 	{ .compatible = "cdns,sam9x60-macb",		.data = &ws_info[5] },
+ 	{ /* sentinel */ }
+ };
+-- 
+2.34.1
 
-thanks,
-
-greg k-h
