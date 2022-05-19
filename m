@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C8A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:33:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC539C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241060AbiESPdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        id S240889AbiESPd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240992AbiESPck (ORCPT
+        with ESMTP id S241012AbiESPcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:32:40 -0400
+        Thu, 19 May 2022 11:32:48 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3675DBCF;
-        Thu, 19 May 2022 08:32:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE251606E4;
+        Thu, 19 May 2022 08:32:43 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3D028FF809;
-        Thu, 19 May 2022 15:32:34 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id E76ACFF80F;
+        Thu, 19 May 2022 15:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652974356;
+        t=1652974361;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CstOmZ2llxpgwlrzOXXLNJr3aaQGBb36hf07xwtskwk=;
-        b=BPJcbOPFzoXrcYghJFLkeiqEwVV+zSd2CGV+QA8hBFqiJFU7YuxsH3GR06hbwtaNTvntyO
-        Ky6qRRilKKs97Yn0a6KG9NyZSP1phArjLnSwX60kxWUFdvRxT+5wLbkvEBDRwlAXmFJJWP
-        WUfCAI6cW+urozf+aSgcP5Xme8x3Pl39dpIguTTrqSR7BZQMIqFQBhFUyqPOWfk/IBlPsl
-        89G411RHpDPArGPy8bjlDp0dqlRelAxySsKoWdzj/3jRFUkFLX+BZqAoVnZNoSLm+JaYPk
-        3b/um5XMRS2nMkO0rYd+zxTVPMbP9K9QoEKqyDRSMwdd7wg6swbukY+fT++cow==
+        bh=KzRgECeLg8b+JOftEd+lYLYrupVVTVJ7ZgWpmv64DfU=;
+        b=B7XNeeqkkxFJgvseWqzReiqJqz98UoEV0tB65KjxFAWnnFt8GijfDc70bCGguEwTvIKk4n
+        WZ5ySVEkYmMNhVRg9ZCJylJ3LliqbeAAXqbAISAVgD49w5Ja8jlyOpsZT8lFQfpyDlIVae
+        MILlGbERi4P1mqOzQeZ2eQayMKII1E1ImhgqxWCB5oUs8wmB3seXhTtmmu25V1j6TVpzUS
+        0ETUjMXwzDREkPkxRQy6XtanTIdFKwZG1l3bX13G7xzwLj2RR4lCLQGHwtkpAArp+a2Z9w
+        HAT96ugGxygZU0eNerjUNW7VzCxEFLd5y7kZNmufqvRamElJAj2Fi4WSEGKKzw==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -54,9 +54,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v5 03/13] net: dsa: add Renesas RZ/N1 switch tag driver
-Date:   Thu, 19 May 2022 17:30:57 +0200
-Message-Id: <20220519153107.696864-4-clement.leger@bootlin.com>
+Subject: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port switch
+Date:   Thu, 19 May 2022 17:31:00 +0200
+Message-Id: <20220519153107.696864-7-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220519153107.696864-1-clement.leger@bootlin.com>
 References: <20220519153107.696864-1-clement.leger@bootlin.com>
@@ -67,202 +67,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The switch that is present on the Renesas RZ/N1 SoC uses a specific
-VLAN value followed by 6 bytes which contains forwarding configuration.
+Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
+present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
+This company does not exists anymore and has been bought by Synopsys.
+Since this IP can't be find anymore in the Synospsy portfolio, lets use
+Renesas as the vendor compatible for this IP.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- include/net/dsa.h             |   2 +
- include/uapi/linux/if_ether.h |   1 +
- net/dsa/Kconfig               |   7 +++
- net/dsa/Makefile              |   1 +
- net/dsa/tag_rzn1_a5psw.c      | 113 ++++++++++++++++++++++++++++++++++
- 5 files changed, 124 insertions(+)
- create mode 100644 net/dsa/tag_rzn1_a5psw.c
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 131 ++++++++++++++++++
+ 1 file changed, 131 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 64da5ed27fdc..33283eeda697 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -53,6 +53,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_SJA1110_VALUE		23
- #define DSA_TAG_PROTO_RTL8_4_VALUE		24
- #define DSA_TAG_PROTO_RTL8_4T_VALUE		25
-+#define DSA_TAG_PROTO_RZN1_A5PSW_VALUE		26
- 
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -81,6 +82,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_SJA1110		= DSA_TAG_PROTO_SJA1110_VALUE,
- 	DSA_TAG_PROTO_RTL8_4		= DSA_TAG_PROTO_RTL8_4_VALUE,
- 	DSA_TAG_PROTO_RTL8_4T		= DSA_TAG_PROTO_RTL8_4T_VALUE,
-+	DSA_TAG_PROTO_RZN1_A5PSW	= DSA_TAG_PROTO_RZN1_A5PSW_VALUE,
- };
- 
- struct dsa_switch;
-diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
-index 1d0bccc3fa54..d370165bc621 100644
---- a/include/uapi/linux/if_ether.h
-+++ b/include/uapi/linux/if_ether.h
-@@ -116,6 +116,7 @@
- #define ETH_P_QINQ3	0x9300		/* deprecated QinQ VLAN [ NOT AN OFFICIALLY REGISTERED ID ] */
- #define ETH_P_EDSA	0xDADA		/* Ethertype DSA [ NOT AN OFFICIALLY REGISTERED ID ] */
- #define ETH_P_DSA_8021Q	0xDADB		/* Fake VLAN Header for DSA [ NOT AN OFFICIALLY REGISTERED ID ] */
-+#define ETH_P_DSA_A5PSW	0xE001		/* A5PSW Tag Value [ NOT AN OFFICIALLY REGISTERED ID ] */
- #define ETH_P_IFE	0xED3E		/* ForCES inter-FE LFB type */
- #define ETH_P_AF_IUCV   0xFBFB		/* IBM af_iucv [ NOT AN OFFICIALLY REGISTERED ID ] */
- 
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 8cb87b5067ee..63853fff4e2f 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -132,6 +132,13 @@ config NET_DSA_TAG_RTL8_4
- 	  Say Y or M if you want to enable support for tagging frames for Realtek
- 	  switches with 8 byte protocol 4 tags, such as the Realtek RTL8365MB-VC.
- 
-+config NET_DSA_TAG_RZN1_A5PSW
-+	tristate "Tag driver for Renesas RZ/N1 A5PSW switch"
-+	help
-+	  Say Y or M if you want to enable support for tagging frames for
-+	  Renesas RZ/N1 embedded switch that uses an 8 byte tag located after
-+	  destination MAC address.
-+
- config NET_DSA_TAG_LAN9303
- 	tristate "Tag driver for SMSC/Microchip LAN9303 family of switches"
- 	help
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index 9f75820e7c98..af28c24ead18 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_NET_DSA_TAG_OCELOT_8021Q) += tag_ocelot_8021q.o
- obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
- obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
- obj-$(CONFIG_NET_DSA_TAG_RTL8_4) += tag_rtl8_4.o
-+obj-$(CONFIG_NET_DSA_TAG_RZN1_A5PSW) += tag_rzn1_a5psw.o
- obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
- obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
- obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
-diff --git a/net/dsa/tag_rzn1_a5psw.c b/net/dsa/tag_rzn1_a5psw.c
+diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
 new file mode 100644
-index 000000000000..e2a5ee6ae688
+index 000000000000..e3ab1cf1575d
 --- /dev/null
-+++ b/net/dsa/tag_rzn1_a5psw.c
-@@ -0,0 +1,113 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2022 Schneider Electric
-+ *
-+ * Clément Léger <clement.leger@bootlin.com>
-+ */
++++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+@@ -0,0 +1,131 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/bitfield.h>
-+#include <linux/etherdevice.h>
-+#include <linux/if_ether.h>
-+#include <net/dsa.h>
++title: Renesas RZ/N1 Advanced 5 ports ethernet switch
 +
-+#include "dsa_priv.h"
++maintainers:
++  - Clément Léger <clement.leger@bootlin.com>
 +
-+/* To define the outgoing port and to discover the incoming port a TAG is
-+ * inserted after Src MAC :
-+ *
-+ *       Dest MAC       Src MAC           TAG         Type
-+ * ...| 1 2 3 4 5 6 | 1 2 3 4 5 6 | 1 2 3 4 5 6 7 8 | 1 2 |...
-+ *                                |<--------------->|
-+ *
-+ * See struct a5psw_tag for layout
-+ */
++description: |
++  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC family and
++  handles 4 ports + 1 CPU management port.
 +
-+#define ETH_P_DSA_A5PSW			0xE001
-+#define A5PSW_TAG_LEN			8
-+#define A5PSW_CTRL_DATA_FORCE_FORWARD	BIT(0)
-+/* This is both used for xmit tag and rcv tagging */
-+#define A5PSW_CTRL_DATA_PORT		GENMASK(3, 0)
++allOf:
++  - $ref: dsa.yaml#
 +
-+struct a5psw_tag {
-+	__be16 ctrl_tag;
-+	__be16 ctrl_data;
-+	__be16 ctrl_data2_hi;
-+	__be16 ctrl_data2_lo;
-+};
++properties:
++  compatible:
++    items:
++      - enum:
++          - renesas,r9a06g032-a5psw
++      - const: renesas,rzn1-a5psw
 +
-+static struct sk_buff *a5psw_tag_xmit(struct sk_buff *skb, struct net_device *dev)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct a5psw_tag *ptag;
-+	u32 data2_val;
++  reg:
++    maxItems: 1
 +
-+	BUILD_BUG_ON(sizeof(*ptag) != A5PSW_TAG_LEN);
++  mdio:
++    $ref: /schemas/net/mdio.yaml#
++    unevaluatedProperties: false
 +
-+	/* The Ethernet switch we are interfaced with needs packets to be at
-+	 * least 60 bytes otherwise they will be discarded when they enter the
-+	 * switch port logic.
-+	 */
-+	if (__skb_put_padto(skb, ETH_ZLEN, false))
-+		return NULL;
++  clocks:
++    items:
++      - description: AHB clock used for the switch register interface
++      - description: Switch system clock
 +
-+	/* provide 'A5PSW_TAG_LEN' bytes additional space */
-+	skb_push(skb, A5PSW_TAG_LEN);
++  clock-names:
++    items:
++      - const: hclk
++      - const: clk
 +
-+	/* make room between MACs and Ether-Type to insert tag */
-+	dsa_alloc_etype_header(skb, A5PSW_TAG_LEN);
++  ethernet-ports:
++    type: object
++    properties:
++      '#address-cells':
++        const: 1
++      '#size-cells':
++        const: 0
 +
-+	ptag = dsa_etype_header_pos_tx(skb);
++    patternProperties:
++      "^(ethernet-)?port@[0-4]$":
++        type: object
++        description: Ethernet switch ports
 +
-+	data2_val = FIELD_PREP(A5PSW_CTRL_DATA_PORT, BIT(dp->index));
-+	ptag->ctrl_tag = htons(ETH_P_DSA_A5PSW);
-+	ptag->ctrl_data = htons(A5PSW_CTRL_DATA_FORCE_FORWARD);
-+	ptag->ctrl_data2_lo = htons(data2_val);
-+	ptag->ctrl_data2_hi = 0;
++        properties:
++          pcs-handle:
++            description:
++              phandle pointing to a PCS sub-node compatible with
++              renesas,rzn1-miic.yaml#
++            $ref: /schemas/types.yaml#/definitions/phandle
 +
-+	return skb;
-+}
++unevaluatedProperties: false
 +
-+static struct sk_buff *a5psw_tag_rcv(struct sk_buff *skb,
-+				     struct net_device *dev)
-+{
-+	struct a5psw_tag *tag;
-+	int port;
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
 +
-+	if (unlikely(!pskb_may_pull(skb, A5PSW_TAG_LEN))) {
-+		dev_warn_ratelimited(&dev->dev,
-+				     "Dropping packet, cannot pull\n");
-+		return NULL;
-+	}
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
 +
-+	tag = dsa_etype_header_pos_rx(skb);
++    switch@44050000 {
++        compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
++        reg = <0x44050000 0x10000>;
++        clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
++        clock-names = "hclk", "clk";
++        pinctrl-names = "default";
++        pinctrl-0 = <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
 +
-+	if (tag->ctrl_tag != htons(ETH_P_DSA_A5PSW)) {
-+		dev_warn_ratelimited(&dev->dev, "Dropping packet due to invalid TAG marker\n");
-+		return NULL;
-+	}
++        dsa,member = <0 0>;
 +
-+	port = FIELD_GET(A5PSW_CTRL_DATA_PORT, ntohs(tag->ctrl_data));
++        ethernet-ports {
++            #address-cells = <1>;
++            #size-cells = <0>;
 +
-+	skb->dev = dsa_master_find_slave(dev, 0, port);
-+	if (!skb->dev)
-+		return NULL;
++            port@0 {
++                reg = <0>;
++                label = "lan0";
++                phy-handle = <&switch0phy3>;
++                pcs-handle = <&mii_conv4>;
++            };
 +
-+	skb_pull_rcsum(skb, A5PSW_TAG_LEN);
-+	dsa_strip_etype_header(skb, A5PSW_TAG_LEN);
++            port@1 {
++                reg = <1>;
++                label = "lan1";
++                phy-handle = <&switch0phy1>;
++                pcs-handle = <&mii_conv3>;
++            };
 +
-+	dsa_default_offload_fwd_mark(skb);
++            port@4 {
++                reg = <4>;
++                ethernet = <&gmac1>;
++                label = "cpu";
++                fixed-link {
++                  speed = <1000>;
++                  full-duplex;
++                };
++            };
++        };
 +
-+	return skb;
-+}
++        mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
 +
-+static const struct dsa_device_ops a5psw_netdev_ops = {
-+	.name	= "a5psw",
-+	.proto	= DSA_TAG_PROTO_RZN1_A5PSW,
-+	.xmit	= a5psw_tag_xmit,
-+	.rcv	= a5psw_tag_rcv,
-+	.needed_headroom = A5PSW_TAG_LEN,
-+};
++            reset-gpios = <&gpio0a 2 GPIO_ACTIVE_HIGH>;
++            reset-delay-us = <15>;
++            clock-frequency = <2500000>;
 +
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_A5PSW);
-+module_dsa_tag_driver(a5psw_netdev_ops);
++            switch0phy1: ethernet-phy@1{
++                reg = <1>;
++            };
++
++            switch0phy3: ethernet-phy@3{
++                reg = <3>;
++            };
++        };
++    };
 -- 
 2.36.0
 
