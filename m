@@ -2,74 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1044C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A626C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232856AbiESCTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 22:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        id S232858AbiESC00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 22:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiESCTU (ORCPT
+        with ESMTP id S229589AbiESC0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 22:19:20 -0400
-X-Greylist: delayed 124 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 19:19:19 PDT
-Received: from alexa-out-tai-02.qualcomm.com (alexa-out-tai-02.qualcomm.com [103.229.16.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAB5C3D1B;
-        Wed, 18 May 2022 19:19:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652926760; x=1684462760;
-  h=from:to:cc:subject:date:message-id;
-  bh=1K5Kj0q4VA0uHycgXAZpiHxXiJ3BZne5cwNBKL+zDRg=;
-  b=j0Rr3aWVOKzf8sfCk8/nd/ZmaZTfVpOgfE0FGQQW/1a45NOd4sWpdN3S
-   VvgP/Q8FkMWVTdokTFpZGtHPJ47RpS9W2T0l1GxBbfoGw7j7U5rHScL+M
-   52FYo9xnBLpslLGGFZ9pTEzz7DwyhAsxkeoYk48bIZTGPC0eMeNBzf5pj
-   s=;
-Received: from ironmsg02-tai.qualcomm.com ([10.249.140.7])
-  by alexa-out-tai-02.qualcomm.com with ESMTP; 19 May 2022 10:17:13 +0800
-X-QCInternal: smtphost
-Received: from cbsp-sh-gv.ap.qualcomm.com (HELO cbsp-sh-gv.qualcomm.com) ([10.231.249.68])
-  by ironmsg02-tai.qualcomm.com with ESMTP; 19 May 2022 10:17:09 +0800
-Received: by cbsp-sh-gv.qualcomm.com (Postfix, from userid 3922021)
-        id C3CD44A36; Thu, 19 May 2022 10:17:07 +0800 (CST)
-From:   Tao Wang <quic_wat@quicinc.com>
-To:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org (open list:USB XHCI DRIVER),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     quic_wat@quicinc.com
-Subject: [PATCH] usb: xhci: save hcd_priv memory of shared_hcd
-Date:   Thu, 19 May 2022 10:17:01 +0800
-Message-Id: <1652926622-85047-1-git-send-email-quic_wat@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 18 May 2022 22:26:23 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C4E66699;
+        Wed, 18 May 2022 19:26:22 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L3YWT0V61zCsh5;
+        Thu, 19 May 2022 10:21:25 +0800 (CST)
+Received: from huawei.com (10.67.174.96) by canpemm500005.china.huawei.com
+ (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
+ 2022 10:26:20 +0800
+From:   Zhang Jianhua <chris.zjh@huawei.com>
+To:     <ebiggers@kernel.org>, <tytso@mit.edu>
+CC:     <linux-fscrypt@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next v2] fs-verity: Use struct_size() helper in enable_verity()
+Date:   Thu, 19 May 2022 10:24:50 +0800
+Message-ID: <20220519022450.2434483-1-chris.zjh@huawei.com>
+X-Mailer: git-send-email 2.31.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.96]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The shared_hcd->hcd_priv is not used in xhci, so not
-need to malloc hcd priv memory for shared_hcd.
+Make use of the struct_size() helper to calculate the size of struct
+fsverity_digest instead of an open-coded version, in order to get rid
+of the warning by sparse.
 
-Signed-off-by: Tao Wang <quic_wat@quicinc.com>
+Also, address the following sparse warning:
+fs/verity/enable.c:205:28: warning: using sizeof on a flexible structure
+
+Signed-off-by: Zhang Jianhua <chris.zjh@huawei.com>
 ---
- drivers/usb/host/xhci-plat.c | 5 +++++
- 1 file changed, 5 insertions(+)
+v2:
+- change the commit message from bugfix to cleanup
 
-diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
-index 01dcfd7..a27dd3a 100644
---- a/drivers/usb/host/xhci-plat.c
-+++ b/drivers/usb/host/xhci-plat.c
-@@ -336,6 +336,11 @@ static int xhci_plat_probe(struct platform_device *pdev)
- 	device_set_wakeup_capable(&pdev->dev, true);
+ fs/verity/enable.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/verity/enable.c b/fs/verity/enable.c
+index f75d2c010f36..075dc0aa5416 100644
+--- a/fs/verity/enable.c
++++ b/fs/verity/enable.c
+@@ -201,7 +201,7 @@ static int enable_verity(struct file *filp,
+ 	const struct fsverity_operations *vops = inode->i_sb->s_vop;
+ 	struct merkle_tree_params params = { };
+ 	struct fsverity_descriptor *desc;
+-	size_t desc_size = sizeof(*desc) + arg->sig_size;
++	size_t desc_size = struct_size(desc, signature, arg->sig_size);
+ 	struct fsverity_info *vi;
+ 	int err;
  
- 	xhci->main_hcd = hcd;
-+	/*
-+	 * The shared_hcd->hcd_priv is not used in xhci,
-+	 * so not need to malloc hcd priv memory for shared_hcd.
-+	 */
-+	driver->hcd_priv_size = 0;
- 	xhci->shared_hcd = __usb_create_hcd(driver, sysdev, &pdev->dev,
- 			dev_name(&pdev->dev), hcd);
- 	if (!xhci->shared_hcd) {
 -- 
-2.7.4
+2.31.0
 
