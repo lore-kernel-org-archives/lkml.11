@@ -2,90 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D59DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240939AbiESP0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
+        id S240948AbiESP0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240919AbiESPZv (ORCPT
+        with ESMTP id S241000AbiESP0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:25:51 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2A325DF
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:25:49 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id p26so7430118eds.5
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=javigon-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:from:mime-version:subject:date:message-id
-         :references:cc:in-reply-to:to;
-        bh=QTIQet1MwfaPkuVkZ6VAO4F74yKlRL1Luu8IUjHxYMk=;
-        b=l5svAHMFi6jauc3S7FX1DSGsV4mLJ6QQLIh3+rvFHlDUF24PdDRSfAjzgFwm49iJA0
-         NNE97fjiMLBGBtFHfDtvXWYYjbqJi8iEGw3rJ9JZ0SfbRfZxVUjm+1AcAAGsQiCmn+ee
-         89gRyY7ZHIuDSeuO9fuwbQvPzhQmzgICC/Zi2cvMq2Lohgjpg55kK0iwP+n2k0T3yUlz
-         q18HivfgFoQnhbgYxOH73LlZzlbv2CCITUbrLuXpgXq0vqfrPGH3EtRYLR0iE9Cf3tIo
-         jDXJ3/g1yY1JU1XpBiIE3iub60yT7wRm4Z2jDiczHn7xwf/pOKwY8+kEsQfKRV1mJHdJ
-         KpPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:content-transfer-encoding:from:mime-version
-         :subject:date:message-id:references:cc:in-reply-to:to;
-        bh=QTIQet1MwfaPkuVkZ6VAO4F74yKlRL1Luu8IUjHxYMk=;
-        b=Q1Qzx9aM09xejK6t7oVxc6rE5XeaPSW8ORcvGCrPggCuKl1oNXOwFCzwMJEk3gbAU/
-         +QivTzAuABale+5RpFDy5xMQPLgAk/PGmC4MNltGv1ArOi4W1UU4bwYT363i+B1NoT6a
-         v5WnB4qIOLZVJ3X9Hsk6sVlxHcgJ20A+OTExxwXuHfnwAnE8UgXB0RW/w+0SmyksKpX3
-         vYFZEOjeqGOnC+ING46JBQeuT3dNfa4P6aikMSe0OBKGAHkbsMwsfEHiWzKuWhJJ3z9X
-         GWI67mJLPzJlX6yLnl4K5oyEVbnt+Dq9pD2tIT9HZCApMzYLouvUi/c6fddaWwgWN6O1
-         DSIg==
-X-Gm-Message-State: AOAM5301z6QJhfvAzvL30y3ZXREou5e/BsOzJ6y3Ef/a07tRGE9nleyc
-        5g8n1OjASzUz1pT1YYLXBobw3A==
-X-Google-Smtp-Source: ABdhPJxqZsGrBLw1XfZ4Nx2omW80JrXR4I67dHiPrXDO/V/6B5AKsOnb4m6w+WedzFlbburvxrD0kQ==
-X-Received: by 2002:a05:6402:2741:b0:41f:69dc:9bcd with SMTP id z1-20020a056402274100b0041f69dc9bcdmr5928160edd.239.1652973947883;
-        Thu, 19 May 2022 08:25:47 -0700 (PDT)
-Received: from smtpclient.apple (5.186.196.163.dhcp.fibianet.dk. [5.186.196.163])
-        by smtp.gmail.com with ESMTPSA id ca7-20020aa7cd67000000b0042617ba63absm2892556edb.53.2022.05.19.08.25.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 08:25:47 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From:   =?utf-8?Q?Javier_Gonz=C3=A1lez?= <javier@javigon.com>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v4 00/13] support non power of 2 zoned devices
-Date:   Thu, 19 May 2022 17:25:46 +0200
-Message-Id: <40FFE5A8-35B9-4707-8D8C-A24254EB9A9B@javigon.com>
-References: <20220518080020.GA3697@lst.de>
-Cc:     =?utf-8?Q?Javier_Gonz=C3=A1lez?= <javier.gonz@samsung.com>,
-        Pankaj Raghav <p.raghav@samsung.com>, axboe@kernel.dk,
-        damien.lemoal@opensource.wdc.com, pankydev8@gmail.com,
-        dsterba@suse.com, linux-nvme@lists.infradead.org,
-        linux-fsdevel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        jiangbo.365@bytedance.com, linux-block@vger.kernel.org,
-        gost.dev@samsung.com, linux-kernel@vger.kernel.org,
-        dm-devel@redhat.com
-In-Reply-To: <20220518080020.GA3697@lst.de>
-To:     Christoph Hellwig <hch@lst.de>
-X-Mailer: iPhone Mail (19E258)
+        Thu, 19 May 2022 11:26:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D949F33E0E
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:26:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99A0CB824E6
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:26:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA9ABC385AA;
+        Thu, 19 May 2022 15:26:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652973968;
+        bh=sjj+mlnWDG2Xdrw+/4hBO5MRvw9CHxqz/fuaCtwbXyo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i/dsq4N7kRmTcuUlDgj7DS/wfYh6C7TjvTKmCbKHG6YD9WsbuAU6HpAFkhwqXRw+0
+         ekPV/lqa+IabiiJgCl644gN/Th+kgSwQvTpnGW0qbx9iudnK0gepFqiGL2iay4iuBD
+         vVt2ZdqLONtp01j+zY4isC4gn9Pi/OEG6YHcBrr8=
+Date:   Thu, 19 May 2022 17:25:17 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Chris Down <chris@chrisdown.name>
+Cc:     linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        kernel-team@fb.com
+Subject: Re: [RFC PATCH] printk: console: Allow each console to have its own
+ loglevel
+Message-ID: <YoZhXe9CZE5o73fG@kroah.com>
+References: <YoUBh5BSsURDO71Z@chrisdown.name>
+ <YoUR6RlzkCNG7BU0@kroah.com>
+ <YoVM+KbdyJm8RSSr@chrisdown.name>
+ <YoVO23+fvsNPnpKh@kroah.com>
+ <YoVWpZKHD7aec0CJ@chrisdown.name>
+ <YoXsAkUgzIjJR90W@kroah.com>
+ <YoZQQwtG12Ypr2IC@chrisdown.name>
+ <YoZVvA5FP4wFLSH9@kroah.com>
+ <YoZdVCfK4T8Ts2oS@chrisdown.name>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoZdVCfK4T8Ts2oS@chrisdown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, May 19, 2022 at 04:08:04PM +0100, Chris Down wrote:
+> Greg Kroah-Hartman writes:
+> > >  struct console {
+> > >  	char	name[16];
+> > >  	void	(*write)(struct console *, const char *, unsigned);
+> > > @@ -179,9 +173,11 @@ struct console {
+> > >  	void	*data;
+> > >  	struct	 console *next;
+> > >  	int	level;
+> > > -	struct	device classdev;
+> > > +	struct	device *classdev;
+> > 
+> > Ick, no, keep the real structure here.  It can properly handle the
+> > reference counting for the object.  Just correctly clean up in the
+> > release function, not anywhere else.
+> 
+> Sorry, I'm getting more and more confused about what you're asking me to do,
+> and less and less clear on the rationale.
+> 
+> Can you please clarify what "correctly cleaning up" would mean for a
+> non-pointer `struct device'?
+> 
+> Is your concern that...
+> 
+>     register_console(c)
+>         device_initialize(c->d)
+>         device_add(c->d)
+>     unregister_console(c)
+>         device_unregister(c->d)      console_classdev_release(c->d)
+>     register_console(c)
+>         device_initialize(c->d)  <-- classdev was not previously zeroed out
+> 				     in console_classdev_release() and bad 				     things may happen
 
-> On 18 May 2022, at 10.16, Christoph Hellwig <hch@lst.de> wrote:
->=20
-> =EF=BB=BFOn Tue, May 17, 2022 at 11:18:34AM +0200, Javier Gonz=C3=A1lez wr=
-ote:
->> Does the above help you reconsidering your interest in supporting this
->> in NVMe?
->=20
-> Very little.  It just seems like a really bad idea.
+Note, you can not "recycle" a structure in the driver model.  So when
+the console is unregistered, it should be freed.  When it is registered,
+it should be created.  Perhaps that is the confusion here?
 
-I understand you don=E2=80=99t like this, but I still hope you see value in s=
-upporting it. We are getting close to a very minimal patchset, which is also=
- helping to fix bugs in the zoned stack.
+thakns,
 
-If you take a look at the last version abs give some feedback, I=E2=80=99m s=
-ure we can end up with a good solution.=20
-
-Can you help?=
+greg k-h
