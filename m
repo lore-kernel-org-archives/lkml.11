@@ -2,204 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 153EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95346C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244497AbiESTO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 15:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
+        id S244527AbiESTPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 15:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244388AbiESTNo (ORCPT
+        with ESMTP id S244526AbiESTOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 15:13:44 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A00AFB00;
-        Thu, 19 May 2022 12:13:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=qJcjGji8b1vGgh3wix0mT+2g/2Wlq5dJpNiBhumcgiA=; b=XShqB5nL8uHseSVPPvVDtX0XsM
-        JG798u+SWJm6jSTgvitz/rSUethocgCp2FxnFxtaWzEEu/6hlOq76pQJFcLjZ0MYM+OYd/kjvd1kg
-        Doe1M3ThJsTgWBqq7Vy9FHqw7Z/mnPG3YdpDKgLR9BJI40spRHSGOaW0IC+4DFBfhjq8XvW8tWiPx
-        liv4hO8hTVsbxUqv7BUkA8z07LvtjJEroWm+tztncITnS7ZBagUtq1quPwOawovWT/SYdZrOtIsqP
-        Qn3xIIj0ENYOBdF0gkk76bkpmRO2osxv40xA064HAglyeDKTe+sAsL4Dui9mk0/S+XOKYlnIA38oC
-        67lg+eGQ==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1nrlaM-002TqU-GW; Thu, 19 May 2022 13:13:23 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1nrlaD-0004TO-UC; Thu, 19 May 2022 13:13:13 -0600
-From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>,
-        Logan Gunthorpe <logang@deltatee.com>
-Date:   Thu, 19 May 2022 13:13:01 -0600
-Message-Id: <20220519191311.17119-6-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220519191311.17119-1-logang@deltatee.com>
-References: <20220519191311.17119-1-logang@deltatee.com>
+        Thu, 19 May 2022 15:14:08 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2598111BA6
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:13:54 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id e15so6773598iob.3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:13:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6/y06+DLzN/eyg4fXfBHtcLRTnFYxYLYCPqBTJsbH6s=;
+        b=Hr7YTVx/XDlLAKxrqvGt3HM8lkbQ7yU2d3o62RUBreCJgrHoA8OSdL53fbQ3KLFiO2
+         /1vHpfewwHUWgXcLIj3wMgTZ5sGELoRatnJpC5h8N64AtjuyzTrKNDDMAgk+T9w7cCeF
+         Wg4EpROQ9lznY84WpbrXLJWghT/JB4bwz2w3PVWYuRB3zMZAcBIpkH5LdEYGfnVJpdOt
+         BfSvIidMaMzxVrCEapVPuz5jtfaWcxAdLMsxpucS1Nk1ppff19DluwXMBAn4FJlGa24U
+         mln4eXx0GXrxxAde1IcxQBsW5gzB/5zTgmkb5K81Vk8Gua1sTGxvoARNWc84yLIwalG9
+         /3sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6/y06+DLzN/eyg4fXfBHtcLRTnFYxYLYCPqBTJsbH6s=;
+        b=JhSnJRGXabg63d7V1Gaj/ovVAU87uSojHEbxZWlFI/lL4e8HQy2ewSPqcX85OmU8LZ
+         m4lAbi4yFzByRp1FFKA0QAclUEnt3QpMMDiKbDRU+A5puwLf+hbkz9z0m49rEUYTfUie
+         trFwfEildMhF7MB8bv7Q03xjyP8Ed3UkhpQy4LVpCMz3mbJNlOYsboyd3LXfyGCI1u7o
+         eQspd5QU9evEie/0pixFf/QWVpS8svxEDUaNdtJJkwu64DzoJab38Ne80jVj8n9Q6HxZ
+         TCOGd5aZg/29XfOBWNwJSi6taYfl3EH+xtFVp5/u+qok+SqFMaO/pHhEuwAtlx0aLzE8
+         qHxQ==
+X-Gm-Message-State: AOAM5323LF2hrpyeAGWrLcAbKDYccg+BnHmA7aFoOGQHMtQoCBvJ/4HO
+        gpyBUtgRr2QLUoLTk8u3kVThdDGOHSoNOmbrfezYVw==
+X-Google-Smtp-Source: ABdhPJy0GdftMdljZ/DggUvp858hbLHvZ0ZTwbMCuqHX0TPJ3QqmV+8xMprTqaPj1WirWbD9+n0Ce98OwaQRgHhTvhY=
+X-Received: by 2002:a05:6638:1693:b0:32b:96d6:5fc0 with SMTP id
+ f19-20020a056638169300b0032b96d65fc0mr3499533jat.167.1652987633996; Thu, 19
+ May 2022 12:13:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v1 05/15] md/raid5-cache: Refactor r5l_wake_reclaim() to take a struct r5conf
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+References: <20220422212945.2227722-1-axelrasmussen@google.com>
+ <20220422212945.2227722-6-axelrasmussen@google.com> <bceb4b77-24fa-7654-0c59-fc858bea096a@linuxfoundation.org>
+In-Reply-To: <bceb4b77-24fa-7654-0c59-fc858bea096a@linuxfoundation.org>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Thu, 19 May 2022 12:13:18 -0700
+Message-ID: <CAJHvVcj8FnOAQ7HqrgiXiN+k2=XbXPerLZy6QBG1mDMW3=7ewA@mail.gmail.com>
+Subject: Re: [PATCH v2 5/6] userfaultfd: selftests: make /dev/userfaultfd
+ testing configurable
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Dmitry V . Levin" <ldv@altlinux.org>,
+        Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@kernel.org>, Nadav Amit <namit@vmware.com>,
+        Peter Xu <peterx@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        zhangyi <yi.zhang@huawei.com>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linuxkselftest <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All calls to r5l_wake_reclaim() have to dereference conf to get the
-log. The log pointer should be protected by RCU, but isn't. Push
-the dereference of conf->log into r5l_wake_reclaim() to reduce
-the number of sites that dereference conf->log so this can be improved.
+On Tue, Apr 26, 2022 at 9:56 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
+>
+> On 4/22/22 3:29 PM, Axel Rasmussen wrote:
+> > Instead of always testing both userfaultfd(2) and /dev/userfaultfd,
+> > let the user choose which to test.
+> >
+> > As with other test features, change the behavior based on a new
+> > command line flag. Introduce the idea of "test mods", which are
+> > generic (not specific to a test type) modifications to the behavior of
+> > the test. This is sort of borrowed from this RFC patch series [1], but
+> > simplified a bit.
+> >
+> > The benefit is, in "typical" configurations this test is somewhat slow
+> > (say, 30sec or something). Testing both clearly doubles it, so it may
+> > not always be desirable, as users are likely to use one or the other,
+> > but never both, in the "real world".
+> >
+> > [1]: https://patchwork.kernel.org/project/linux-mm/patch/20201129004548.1619714-14-namit@vmware.com/
+> >
+> > Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> > ---
+> >   tools/testing/selftests/vm/userfaultfd.c | 41 +++++++++++++++++-------
+> >   1 file changed, 30 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
+> > index 12ae742a9981..274522704e40 100644
+> > --- a/tools/testing/selftests/vm/userfaultfd.c
+> > +++ b/tools/testing/selftests/vm/userfaultfd.c
+> > @@ -142,8 +142,17 @@ static void usage(void)
+> >   {
+> >       fprintf(stderr, "\nUsage: ./userfaultfd <test type> <MiB> <bounces> "
+> >               "[hugetlbfs_file]\n\n");
+> > +
+>
+> Remove the extra blank line here.
+>
+> >       fprintf(stderr, "Supported <test type>: anon, hugetlb, "
+> >               "hugetlb_shared, shmem\n\n");
+> > +
+>
+> Remove the extra blank line here.
+>
+> > +     fprintf(stderr, "'Test mods' can be joined to the test type string with a ':'. "
+> > +             "Supported mods:\n");
+> > +     fprintf(stderr, "\tdev - Use /dev/userfaultfd instead of userfaultfd(2)\n");
+> > +     fprintf(stderr, "\nExample test mod usage:\n");
+> > +     fprintf(stderr, "# Run anonymous memory test with /dev/userfaultfd:\n");
+> > +     fprintf(stderr, "./userfaultfd anon:dev 100 99999\n\n");
+> > +
+> >       fprintf(stderr, "Examples:\n\n");
+> >       fprintf(stderr, "%s", examples);
+>
+> Update examples above with new test cases if any.
 
-No functional changes intended.
+Will fix the above comments in v3.
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
----
- drivers/md/raid5-cache.c | 41 +++++++++++++++++++++-------------------
- drivers/md/raid5-log.h   |  2 +-
- drivers/md/raid5.c       |  2 +-
- 3 files changed, 24 insertions(+), 21 deletions(-)
+>
+> >       exit(1);
+> > @@ -1610,8 +1619,6 @@ unsigned long default_huge_page_size(void)
+> >
+> >   static void set_test_type(const char *type)
+> >   {
+> > -     uint64_t features = UFFD_API_FEATURES;
+> > -
+> >       if (!strcmp(type, "anon")) {
+> >               test_type = TEST_ANON;
+> >               uffd_test_ops = &anon_uffd_test_ops;
+> > @@ -1631,10 +1638,28 @@ static void set_test_type(const char *type)
+> >               test_type = TEST_SHMEM;
+> >               uffd_test_ops = &shmem_uffd_test_ops;
+> >               test_uffdio_minor = true;
+> > -     } else {
+> > -             err("Unknown test type: %s", type);
+> > +     }
+>
+> At this point, it might make it so much easier and maintainable if
+> we were to use getopt instead of parsing options.
 
-diff --git a/drivers/md/raid5-cache.c b/drivers/md/raid5-cache.c
-index 6db8040fb01b..735666f9d793 100644
---- a/drivers/md/raid5-cache.c
-+++ b/drivers/md/raid5-cache.c
-@@ -325,7 +325,20 @@ void r5c_handle_cached_data_endio(struct r5conf *conf,
- 	}
- }
- 
--void r5l_wake_reclaim(struct r5l_log *log, sector_t space);
-+static void __r5l_wake_reclaim(struct r5l_log *log, sector_t space)
-+{
-+	unsigned long target;
-+	unsigned long new = (unsigned long)space; /* overflow in theory */
-+
-+	if (!log)
-+		return;
-+	do {
-+		target = log->reclaim_target;
-+		if (new < target)
-+			return;
-+	} while (cmpxchg(&log->reclaim_target, target, new) != target);
-+	md_wakeup_thread(log->reclaim_thread);
-+}
- 
- /* Check whether we should flush some stripes to free up stripe cache */
- void r5c_check_stripe_cache_usage(struct r5conf *conf)
-@@ -348,7 +361,7 @@ void r5c_check_stripe_cache_usage(struct r5conf *conf)
- 	 */
- 	if (total_cached > conf->min_nr_stripes * 1 / 2 ||
- 	    atomic_read(&conf->empty_inactive_list_nr) > 0)
--		r5l_wake_reclaim(conf->log, 0);
-+		__r5l_wake_reclaim(conf->log, 0);
- }
- 
- /*
-@@ -367,7 +380,7 @@ void r5c_check_cached_full_stripe(struct r5conf *conf)
- 	if (atomic_read(&conf->r5c_cached_full_stripes) >=
- 	    min(R5C_FULL_STRIPE_FLUSH_BATCH(conf),
- 		conf->chunk_sectors >> RAID5_STRIPE_SHIFT(conf)))
--		r5l_wake_reclaim(conf->log, 0);
-+		__r5l_wake_reclaim(conf->log, 0);
- }
- 
- /*
-@@ -443,7 +456,7 @@ static inline void r5c_update_log_state(struct r5l_log *log)
- 		clear_bit(R5C_LOG_TIGHT, &conf->cache_state);
- 
- 	if (wake_reclaim)
--		r5l_wake_reclaim(log, 0);
-+		__r5l_wake_reclaim(log, 0);
- }
- 
- /*
-@@ -1085,7 +1098,7 @@ int r5l_write_stripe(struct r5l_log *log, struct stripe_head *sh)
- 
- 	mutex_unlock(&log->io_mutex);
- 	if (wake_reclaim)
--		r5l_wake_reclaim(log, reserve);
-+		__r5l_wake_reclaim(log, reserve);
- 	return 0;
- }
- 
-@@ -1237,7 +1250,7 @@ static void __r5l_stripe_write_finished(struct r5l_io_unit *io)
- 
- 	if (r5l_reclaimable_space(log) > log->max_free_space ||
- 	    test_bit(R5C_LOG_TIGHT, &conf->cache_state))
--		r5l_wake_reclaim(log, 0);
-+		__r5l_wake_reclaim(log, 0);
- 
- 	spin_unlock_irqrestore(&log->io_list_lock, flags);
- 	wake_up(&log->iounit_wait);
-@@ -1562,19 +1575,9 @@ static void r5l_reclaim_thread(struct md_thread *thread)
- 	r5l_do_reclaim(log);
- }
- 
--void r5l_wake_reclaim(struct r5l_log *log, sector_t space)
-+void r5l_wake_reclaim(struct r5conf *conf, sector_t space)
- {
--	unsigned long target;
--	unsigned long new = (unsigned long)space; /* overflow in theory */
--
--	if (!log)
--		return;
--	do {
--		target = log->reclaim_target;
--		if (new < target)
--			return;
--	} while (cmpxchg(&log->reclaim_target, target, new) != target);
--	md_wakeup_thread(log->reclaim_thread);
-+	__r5l_wake_reclaim(conf->log, space);
- }
- 
- void r5l_quiesce(struct r5l_log *log, int quiesce)
-@@ -1586,7 +1589,7 @@ void r5l_quiesce(struct r5l_log *log, int quiesce)
- 		mddev = log->rdev->mddev;
- 		wake_up(&mddev->sb_wait);
- 		kthread_park(log->reclaim_thread->tsk);
--		r5l_wake_reclaim(log, MaxSector);
-+		__r5l_wake_reclaim(log, MaxSector);
- 		r5l_do_reclaim(log);
- 	} else
- 		kthread_unpark(log->reclaim_thread->tsk);
-diff --git a/drivers/md/raid5-log.h b/drivers/md/raid5-log.h
-index ead541075528..3dd59dd4257f 100644
---- a/drivers/md/raid5-log.h
-+++ b/drivers/md/raid5-log.h
-@@ -18,7 +18,7 @@ void r5c_finish_stripe_write_out(struct r5conf *conf, struct stripe_head *sh,
- 				 struct stripe_head_state *s);
- void r5c_release_extra_page(struct stripe_head *sh);
- void r5c_use_extra_page(struct stripe_head *sh);
--void r5l_wake_reclaim(struct r5l_log *log, sector_t space);
-+void r5l_wake_reclaim(struct r5conf *conf, sector_t space);
- void r5c_handle_cached_data_endio(struct r5conf *conf,
- 				  struct stripe_head *sh, int disks);
- int r5c_cache_data(struct r5l_log *log, struct stripe_head *sh);
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index 436be2a42cc1..09e768f2d32c 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -742,7 +742,7 @@ raid5_get_active_stripe(struct r5conf *conf, sector_t sector,
- 			if (!sh) {
- 				set_bit(R5_INACTIVE_BLOCKED,
- 					&conf->cache_state);
--				r5l_wake_reclaim(conf->log, 0);
-+				r5l_wake_reclaim(conf, 0);
- 				wait_event_lock_irq(
- 					conf->wait_for_stripe,
- 					!list_empty(conf->inactive_list + hash) &&
--- 
-2.30.2
+Agreed, I'd like that as well. But, since it's a bigger refactor that
+affects all test types, I think it may be cleaner to leave it for a
+follow-up series.
 
+>
+> > +}
+> > +
+> > +static void parse_test_type_arg(const char *raw_type)
+> > +{
+> > +     char *buf = strdup(raw_type);
+> > +     uint64_t features = UFFD_API_FEATURES;
+> > +
+> > +     while (buf) {
+> > +             const char *token = strsep(&buf, ":");
+> > +
+> > +             if (!test_type)
+> > +                     set_test_type(token);
+> > +             else if (!strcmp(token, "dev"))
+> > +                     test_dev_userfaultfd = true;
+> > +             else
+> > +                     err("unrecognized test mod '%s'", token);
+> >       }
+> >
+> > +     if (!test_type)
+> > +             err("failed to parse test type argument: '%s'", raw_type);
+> > +
+> >       if (test_type == TEST_HUGETLB)
+> >               page_size = default_huge_page_size();
+> >       else
+> > @@ -1681,7 +1706,7 @@ int main(int argc, char **argv)
+> >               err("failed to arm SIGALRM");
+> >       alarm(ALARM_INTERVAL_SECS);
+> >
+> > -     set_test_type(argv[1]);
+> > +     parse_test_type_arg(argv[1]);
+> >
+> >       nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+> >       nr_pages_per_cpu = atol(argv[2]) * 1024*1024 / page_size /
+> > @@ -1719,12 +1744,6 @@ int main(int argc, char **argv)
+> >       }
+> >       printf("nr_pages: %lu, nr_pages_per_cpu: %lu\n",
+> >              nr_pages, nr_pages_per_cpu);
+> > -
+> > -     test_dev_userfaultfd = false;
+> > -     if (userfaultfd_stress())
+> > -             return 1;
+> > -
+> > -     test_dev_userfaultfd = true;
+> >       return userfaultfd_stress();
+> >   }
+> >
+> >
+>
+> Same comments as before on fail vs. skip conditions to watch out
+> for and report them correctly.
+
+I think in v3 things will be correct. Basically, in the skip cases we
+just exit(KSFT_SKIP) directly, instead of relying on the return value
+here. I'll take a pass and double check though before sending v3.
+
+>
+> thanks,
+> -- Shuah
+>
