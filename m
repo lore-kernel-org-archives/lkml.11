@@ -2,179 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65922C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDB3C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235190AbiESIPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 04:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
+        id S235337AbiESISY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 04:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiESIPR (ORCPT
+        with ESMTP id S235315AbiESIRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 04:15:17 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4095F27A
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:15:15 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id i19so8342054eja.11
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:15:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X/HlVYPwgofRxaTk6imTwB8PcUSbOstLV3YcDOYZEJw=;
-        b=C3vj2wbP2x4bbj09+r76aN1AxNcBgryPCLNUzVfK9ssr5gwZFqmrgH6+KqAd2w4HyN
-         lA2wyg3zoygVXPCj8pR3usPUaatLUlbBniZSF8pjBnJdH98Lwewl3yWT71aSs1Jw/Hz+
-         PHPhyVleyj1rCb20psivjpiqMuwfK+FD1pBQY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X/HlVYPwgofRxaTk6imTwB8PcUSbOstLV3YcDOYZEJw=;
-        b=eaK71FZf1JXh1/q2+uwqssNvVEUIoI+whJ66AzzM/M2tBWSCv/M7UqFjw6OyLs9z1i
-         TBuiiV6ToRl+rTwRoNL97p/Rp0gd4M5lxD8Wm8DNJlINB7hsIjHkPV+BOKFGaY7ns0fK
-         ASpOl9+YPqSMLHGTcyerpq7HeKnBh4/VeFUkROEIgqkpjlff6uVNX0SYR07Wvze76Wdi
-         GJhFsfeehQp5AwvdEg+hbSWwypFmDdM4IEVAguwuOLvkeTzwZQBDsXEOdPGRdG85JmIN
-         i3E8qOqX3Yb0mIOYJvMpZ6m1S1nJ8v1JN3QaGCGScxcLzGaOG7XdIUimak6ZuS8vOlyk
-         Ou+A==
-X-Gm-Message-State: AOAM530bT0OUmOsWRssi29Rn1ypi6NI34kSfszYZ5gxQmF8xhZA0MWxq
-        zS6oOh5s1vW9Ym28SH+FfDBpG9tc491nD3jkSNpM7w==
-X-Google-Smtp-Source: ABdhPJyq1UEZvSBP5DeREc22IsYZ7V5DeEyqmra4f8ewtbbNU+RcW98uM0dpOvj+yTS2WcylmOX0KhE9hY8on/dkFNk=
-X-Received: by 2002:a17:907:1b14:b0:6ef:a5c8:afbd with SMTP id
- mp20-20020a1709071b1400b006efa5c8afbdmr3221451ejc.151.1652948114080; Thu, 19
- May 2022 01:15:14 -0700 (PDT)
+        Thu, 19 May 2022 04:17:08 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8296473D
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:17:05 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3jP732SdzhZ5n;
+        Thu, 19 May 2022 16:16:27 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 19 May 2022 16:17:04 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 19 May 2022 16:17:03 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     <catalin.marinas@arm.com>, <will@kernel.org>,
+        <akpm@linux-foundation.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
+        <anshuman.khandual@arm.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v3 0/6] arm64: Cleanup ioremap() and support ioremap_prot()
+Date:   Thu, 19 May 2022 16:25:46 +0800
+Message-ID: <20220519082552.117736-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220518111652.223727-7-angelogioacchino.delregno@collabora.com>
- <20220519044153.11078-1-miles.chen@mediatek.com> <7e60b63c-2bf7-a77e-fe0f-a891efa77a47@collabora.com>
-In-Reply-To: <7e60b63c-2bf7-a77e-fe0f-a891efa77a47@collabora.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Thu, 19 May 2022 16:15:03 +0800
-Message-ID: <CAGXv+5FiteAu7in-CnmVUkDKy=ub1X6etyK1--PHPYKO3FPa=w@mail.gmail.com>
-Subject: Re: [PATCH v2 6/7] clk: mediatek: Export required symbols to compile
- clk drivers as module
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Miles Chen <miles.chen@mediatek.com>, bgolaszewski@baylibre.com,
-        chun-jie.chen@mediatek.com, ck.hu@mediatek.com,
-        devicetree@vger.kernel.org, fparent@baylibre.com,
-        ikjn@chromium.org, jason-jh.lin@mediatek.com, kernel@collabora.com,
-        konrad.dybcio@somainline.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        marijn.suijten@somainline.org, martin.botka@somainline.org,
-        matthias.bgg@gmail.com, mturquette@baylibre.com,
-        p.zabel@pengutronix.de, paul.bouchara@somainline.org,
-        phone-devel@vger.kernel.org, rex-bc.chen@mediatek.com,
-        robh+dt@kernel.org, sam.shih@mediatek.com, sboyd@kernel.org,
-        tinghan.shen@mediatek.com, weiyi.lu@mediatek.com,
-        y.oudjana@protonmail.com, ~postmarketos/upstreaming@lists.sr.ht
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 4:05 PM AngeloGioacchino Del Regno
-<angelogioacchino.delregno@collabora.com> wrote:
->
-> Il 19/05/22 06:41, Miles Chen ha scritto:
-> >
-> > Hi Angelo,
-> >
-> >> In order to compile the clock drivers for various MediaTek SoCs as
-> >> modules, it is necessary to export a few functions from the MediaTek
-> >> specific clocks (and reset) libraries.
-> >>
-> >> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> >> ---
-> >> drivers/clk/mediatek/clk-apmixed.c | 1 +
-> >> drivers/clk/mediatek/clk-cpumux.c  | 2 ++
-> >> drivers/clk/mediatek/clk-mtk.c     | 2 ++
-> >> drivers/clk/mediatek/reset.c       | 1 +
-> >> 4 files changed, 6 insertions(+)
-> >>
-> >> diff --git a/drivers/clk/mediatek/clk-apmixed.c b/drivers/clk/mediatek/clk-apmixed.c
-> >> index 6b0ab0a346e8..f126da693a7f 100644
-> >> --- a/drivers/clk/mediatek/clk-apmixed.c
-> >> +++ b/drivers/clk/mediatek/clk-apmixed.c
-> >> @@ -98,5 +98,6 @@ struct clk_hw *mtk_clk_register_ref2usb_tx(const char *name,
-> >>
-> >>      return &tx->hw;
-> >> }
-> >> +EXPORT_SYMBOL_GPL(mtk_clk_register_ref2usb_tx);
-> >>
-> >> MODULE_LICENSE("GPL");
-> >> diff --git a/drivers/clk/mediatek/clk-cpumux.c b/drivers/clk/mediatek/clk-cpumux.c
-> >> index 2b5d48591738..25618eff6f2a 100644
-> >> --- a/drivers/clk/mediatek/clk-cpumux.c
-> >> +++ b/drivers/clk/mediatek/clk-cpumux.c
-> >> @@ -150,6 +150,7 @@ int mtk_clk_register_cpumuxes(struct device_node *node,
-> >>
-> >>      return PTR_ERR(hw);
-> >> }
-> >> +EXPORT_SYMBOL_GPL(mtk_clk_register_cpumuxes);
-> >>
-> >> void mtk_clk_unregister_cpumuxes(const struct mtk_composite *clks, int num,
-> >>                               struct clk_hw_onecell_data *clk_data)
-> >> @@ -166,5 +167,6 @@ void mtk_clk_unregister_cpumuxes(const struct mtk_composite *clks, int num,
-> >>              clk_data->hws[mux->id] = ERR_PTR(-ENOENT);
-> >>      }
-> >> }
-> >> +EXPORT_SYMBOL_GPL(mtk_clk_unregister_cpumuxes);
-> >>
-> >> MODULE_LICENSE("GPL");
-> >> diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-> >> index 05a188c62119..41e60a7e8ff9 100644
-> >> --- a/drivers/clk/mediatek/clk-mtk.c
-> >> +++ b/drivers/clk/mediatek/clk-mtk.c
-> >> @@ -459,6 +459,7 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
-> >>      mtk_free_clk_data(clk_data);
-> >>      return r;
-> >> }
-> >> +EXPORT_SYMBOL_GPL(mtk_clk_simple_probe);
-> >>
-> >> int mtk_clk_simple_remove(struct platform_device *pdev)
-> >> {
-> >> @@ -472,5 +473,6 @@ int mtk_clk_simple_remove(struct platform_device *pdev)
-> >>
-> >>      return 0;
-> >> }
-> >> +EXPORT_SYMBOL_GPL(mtk_clk_simple_remove);
-> >
-> > Thanks, I need this too. I am preparing a patch to use mtk_clk_simple_remove/mtk_clk_simple_probe
-> > for MT6779 clks first and maybe I can apply this to all MediaTek clk drivers.
-> >
-> > Reviewed-by: Miles Chen <miles.chen@mediatek.com>
->
-> Hello Miles,
->
-> thanks for telling me, because my next step would have been exactly what
-> you're doing, for all MediaTek clk drivers... otherwise we'd be doing
-> redundant work going afterwards.
+1. Enhance generic ioremap to make it more useful.
+2. Let's arm64 use GENERIC_IOREMAP to cleanup code.
+3. Support HAVE_IOREMAP_PROT on arm64, which enable generic_access_phys(),
+   it is useful when debug(eg, gdb) via access_process_vm device memory
+   infrastructure.
 
-Should we consider using symbol namespaces (EXPORT_SYMBOL_NS)?
+v3:
+- add cleanup patch to kill ARM's unused arch_iounmap(the naming will be
+  used in GENERIC_IOREMAP) and add comments for arch_ioremap/arch_iounmap
+  hooks, per Anshuman Khandual
+- collect ack/review 
 
-ChenYu
+v2:
+- s/addr/phys_addr in ioremap_prot, suggested by Andrew Morton 
+- rename arch_ioremap/iounmap_check to arch_ioremap/iounmad
+  and change return value, per Christoph Hellwig and Andrew Morton
+- and use 'ifndef arch_ioremap' instead of weak function, per Arnd Bergmann
+- collect ack/review
 
-> Regards,
-> Angelo
->
-> >
-> > thanks,
-> > Miles
-> >>
-> >> MODULE_LICENSE("GPL");
-> >> diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-> >> index 179505549a7c..290ceda84ce4 100644
-> >> --- a/drivers/clk/mediatek/reset.c
-> >> +++ b/drivers/clk/mediatek/reset.c
-> >> @@ -228,5 +228,6 @@ int mtk_register_reset_controller_with_dev(struct device *dev,
-> >>
-> >>      return 0;
-> >> }
-> >> +EXPORT_SYMBOL_GPL(mtk_register_reset_controller_with_dev);
-> >>
-> >> MODULE_LICENSE("GPL");
-> >> --
-> >> 2.35.1
-> >>
-> >>
->
+Kefeng Wang (6):
+  ARM: mm: kill unused runtime hook arch_iounmap()
+  mm: ioremap: Use more sensibly name in ioremap_prot()
+  mm: ioremap: Setup phys_addr of struct vm_struct
+  mm: ioremap: Add arch_ioremap/iounmap()
+  arm64: mm: Convert to GENERIC_IOREMAP
+  arm64: Add HAVE_IOREMAP_PROT support
+
+ .../features/vm/ioremap_prot/arch-support.txt |  2 +-
+ arch/arm/include/asm/io.h                     |  4 +-
+ arch/arm/mm/ioremap.c                         |  9 +-
+ arch/arm/mm/nommu.c                           |  9 +-
+ arch/arm64/Kconfig                            |  2 +
+ arch/arm64/include/asm/io.h                   | 20 +++--
+ arch/arm64/include/asm/pgtable.h              | 10 +++
+ arch/arm64/kernel/acpi.c                      |  2 +-
+ arch/arm64/mm/hugetlbpage.c                   | 10 ---
+ arch/arm64/mm/ioremap.c                       | 85 +++----------------
+ include/asm-generic/io.h                      | 26 +++++-
+ mm/ioremap.c                                  | 30 +++++--
+ 12 files changed, 88 insertions(+), 121 deletions(-)
+
+-- 
+2.35.3
+
