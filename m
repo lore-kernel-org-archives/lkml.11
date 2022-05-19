@@ -2,511 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE871C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40306C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239122AbiESOCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59856 "EHLO
+        id S236271AbiESODM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239524AbiESOCW (ORCPT
+        with ESMTP id S239354AbiESOCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:02:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A2CD393ED
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:01:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652968914;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E40Kj9+FHA+/ZbiXmA06szwZWIHidl1octzz4AesjSA=;
-        b=RT0JUTLum7OrwDZaFaEoj1dB8tMAqmK03/UTmjJe/SI5l3Lv5bsYMuceszVROrvxsZP7nG
-        Hj8J6bIHB423LweeCOtzkj28t68fehyaJWyY/N/6Bwp51Ki6iEVGyi7rFlLJW1KAwXNuB3
-        VSnXaNJPABvEoT2TqPWf/j7ldAkJjbc=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-59-nYL_7NMVOzeMfRQwWJd-iw-1; Thu, 19 May 2022 10:01:53 -0400
-X-MC-Unique: nYL_7NMVOzeMfRQwWJd-iw-1
-Received: by mail-ej1-f72.google.com with SMTP id i14-20020a17090639ce00b006dabe6a112fso2566224eje.13
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:01:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=E40Kj9+FHA+/ZbiXmA06szwZWIHidl1octzz4AesjSA=;
-        b=fPDAuRTOtvqExeZ9OE+pzMIUlfIveAUywWUAP70YsX4ySrMJq1FnNi8bEyb0N6Vr7w
-         Bp/QdJQvDmD0Mb5NWT+44GespxIOr/RX7iIjJeNP665SnjI23XhpNGSt3d0bWj3nLuNo
-         xT8ETbrgnqXgVTM40rHL8zQUnSmpBubfVNlZO34G/981Rpf8iRNQGJQrsQkKordLWJSv
-         Qg8CkDhPZ3rOm50rKsqpgSlhbXI7lUeHwE6pDIDC+3aYOHCF7Yl68QMUtAXE2EwzUhPN
-         SDi5nOPY3mE0gBPrs5PD5Hf4Tx7HwzhCNuZcDhD315olhO41PpAGWsX4kUcf+UC2/1vP
-         sYRQ==
-X-Gm-Message-State: AOAM530pJw7FyPpvPIEJC4CfAvyudZVNx1Rvdsq23nPw0yY8184pGeY3
-        coj8ktxdb8T6qz4TdWc0K/0bI0hn+COm/CXWzcn+aEGwFFkZctvH1UGZ2/OEB0JDKWjaQ85fdqL
-        95PQ+zXef8nJtM4k8H2vkm29W
-X-Received: by 2002:a05:6402:f09:b0:42a:be2f:ceeb with SMTP id i9-20020a0564020f0900b0042abe2fceebmr5575248eda.110.1652968910227;
-        Thu, 19 May 2022 07:01:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzoLmQpb4dftE0QXBm5H8o6UYriq59cC0k/XVkHzL/xUn1d+Ce/VFnSoH0OKBuE4yCMVcnS5w==
-X-Received: by 2002:a05:6402:f09:b0:42a:be2f:ceeb with SMTP id i9-20020a0564020f0900b0042abe2fceebmr5575201eda.110.1652968909762;
-        Thu, 19 May 2022 07:01:49 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id qp24-20020a170907a21800b006f3ef214db8sm2164355ejc.30.2022.05.19.07.01.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 07:01:49 -0700 (PDT)
-Message-ID: <ba9fd954-64e1-189d-9a0e-7c7e329ff81b@redhat.com>
-Date:   Thu, 19 May 2022 16:01:48 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v7 1/1] x86/PCI: Ignore E820 reservations for bridge
- windows on newer systems
+        Thu, 19 May 2022 10:02:00 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eus2azlp170100002.outbound.protection.outlook.com [IPv6:2a01:111:f403:c110::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F9A5DBE7;
+        Thu, 19 May 2022 07:00:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TvHhDuMgJGqLm4PJvceO8UnCuDCP+dVR/giuo2Fo1WU5aKafGxgSAN/uLGIkIHdHSzOS36xPgasL//he3DeTguO/tdYd9kbqfjDGHSDPf16Elmg9JtILDxbQy995RQbk3zGTIjoZdyngxzVyhY9LBVS0KMyFw38eF/5X4zg91sXThyCM1gHyYtDkDezEfQ8OQ06XHp5+AaH8YI8Nbs6YKdroEkRTOzkcKRCPlpBGtyNVwL7Yo5IeNw6Ty7pL1KV5ovtkW21+tjY0iXtgglbRukOcpf7IUxglotbwFsme85xjEeZxgIwLtbYxo+rodNxX9K1Ny4I/x8E2bfG2gYXJWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ynGEeBCN0XQvUESYmgGYylxrFJrX+EeuhjOvWG8gfaw=;
+ b=FaieG8acGpmOiqj5Aw3BIxz5H95zicNEw3M0V707x7mHbLgkr9K7/Cv1UbqiDJ8Z1XE2yYs3BHJUqteqZ/O/Twg9pCEQ6C7bt7xvkj+rUZpn6FOxgp50mKpygKgTBXlAWGsBMQ/EFMwbdiGjeJaTKXn1gVMV/wqHBunTGkywLzs1gzIIWu/F1ddhEHKwly69stFdElh1D0YGLZbbkUjiQBhTFs9xgZdVRyF5my1mXb4Xh412mwnoRMwenE5ohWIDGsFgP7Q9Y/V0N5qQkB4naTa4qbtJ8pLnDT9HeS9hkpvkYoj5AA4jTbLLz89LsTTv9iUNs8oYMbC3dL0qtduDsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ynGEeBCN0XQvUESYmgGYylxrFJrX+EeuhjOvWG8gfaw=;
+ b=C8/5kGh1/bQoCONoICzRZgFwdYXETPmg5Fv+EmVCkzAr7hYOvc0WxJhg80dX4Y58EWbWfToAbhshKqYCBN6JDBF/VGU0uvm2UtCMn7Nrohjk4W6j/wulg7Nd3a7beBn0RUQrdnS7hGd0qs/druVq+Mash1E/Jnr5OlQqS2yTJNg=
+Received: from DM5PR21MB1749.namprd21.prod.outlook.com (2603:10b6:4:9f::21) by
+ PH7PR21MB3119.namprd21.prod.outlook.com (2603:10b6:510:1d3::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5273.5; Thu, 19 May 2022 13:45:25 +0000
+Received: from DM5PR21MB1749.namprd21.prod.outlook.com
+ ([fe80::f4b9:a58c:5baf:bc29]) by DM5PR21MB1749.namprd21.prod.outlook.com
+ ([fe80::f4b9:a58c:5baf:bc29%3]) with mapi id 15.20.5293.005; Thu, 19 May 2022
+ 13:45:25 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Yongzhi Liu <lyz_cs@pku.edu.cn>, KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "sashal@kernel.org" <sashal@kernel.org>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "fuyq@stu.pku.edu.cn" <fuyq@stu.pku.edu.cn>
+Subject: RE: [PATCH] hv_netvsc: Fix potential dereference of NULL pointer
+Thread-Topic: [PATCH] hv_netvsc: Fix potential dereference of NULL pointer
+Thread-Index: AQHYa3mXg5VVcdJkQU2jMWLoTy5koa0mNkcg
+Date:   Thu, 19 May 2022 13:45:25 +0000
+Message-ID: <DM5PR21MB174975EE6EF554BB72C60C01CAD09@DM5PR21MB1749.namprd21.prod.outlook.com>
+References: <1652962188-129281-1-git-send-email-lyz_cs@pku.edu.cn>
+In-Reply-To: <1652962188-129281-1-git-send-email-lyz_cs@pku.edu.cn>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220518220754.GA7911@bhelgaas>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220518220754.GA7911@bhelgaas>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6f1e090e-fdaf-4b91-925e-814f34d702c5;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-19T13:44:51Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3885186d-ae25-4fd4-3c9a-08da399dd3f3
+x-ms-traffictypediagnostic: PH7PR21MB3119:EE_
+x-microsoft-antispam-prvs: <PH7PR21MB31193436EEA667A4D50F4DA9CAD09@PH7PR21MB3119.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SPAhSBaovEPBtQh8DGgrVwb3h1JStmCYdczmmUAZUqjPsYsvUW/4I5AFxXr85S40pG5T9lzG2hOVHHvFJ81JLx8IQYkKWNB4bZySnTKU7LE7HTVf2xPu/kzJhb5EyI/BM4mq5tP+ihY1u3s0oezoOes1jOjkfic0TyKgsn2iZtzuF4zdpYrh4/UHKOEuzTJj+ZhBciDmCPY8284pKh9nb0+atvumaKEXIWWPNWprt1M521OuFdi/MxjAmHqN6+P+zPl7xGyItdharkZky4N8Vjd+eh902RdQ4NoStzguKcMQoqswbdBlcPrxkKJY6BaIxtmNZZUV6u0fM6N++0Hbymcc5lPeDZrXhJhRZ/mJmKxPAhZqEapMy2MteOfMXkhvHpdzfVuEmFRgCRjvPsg4vbO4EiaIQL8V4e3fTfSo9wUDHNMYPurwzKT92dU2bN/gRzO/a5e16o+0v7COzgIO73w+tgBa0dRJvjDNsngbFJPzUCt0v+QyPMOsUPIDPuXe5s86aYCGQ0ROC5uv6bI/9pOFkv93ys907auY5+SbkkFzVXPwZ08u4o+kps2e6iRhMwAxTS2llkNE65NcYjHleZTOjIryMHpl6Xq9YtUnip6+N9hc7KMsD+pO5BlXAfCVE4xOMa6aR24tze05AaBiM8qaAMPPbEDWT/ii4NQyHIDnx/xYbMj4Of0628Ydpq6c0L14xxDk7y9If7tKcnynz7LT8lUnJozZ8AQadOAryyA9iZIUZW08KG+TzLFYQuTI
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR21MB1749.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(66556008)(38070700005)(38100700002)(122000001)(64756008)(82950400001)(66946007)(8936002)(316002)(52536014)(6506007)(508600001)(8676002)(7696005)(82960400001)(4326008)(10290500003)(54906003)(110136005)(9686003)(26005)(76116006)(53546011)(66476007)(66446008)(71200400001)(186003)(8990500004)(7416002)(33656002)(55016003)(83380400001)(2906002)(86362001)(5660300002)(966005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1LbXBzfxD8xEOYbHRzL1ZAzXzi0AYvkZ5qEa/cOAHoJe5OKgsJe5Cm5RD+rG?=
+ =?us-ascii?Q?xFyfB33Fak35qTrYf7fFiBMb17JKTFwd/hqs1dwIT908xCb3JFOKDE/1WB8y?=
+ =?us-ascii?Q?xJ1Fyh3nnRdgFUnnkbwUhjXSRcYSMBov57DFkQd9/FYwmvqKWL0sodnF41MP?=
+ =?us-ascii?Q?vg4ODlZgGh7m93zrzckdVp2ja4Z7eS0hs3GeYYCF1eUPnFi5KUk65S5fPW7X?=
+ =?us-ascii?Q?HUbcYN6di70aSjM40PabVzFosPVzQuMliV/wCnZdUABt5DlyFEwtnm6N+jeS?=
+ =?us-ascii?Q?E9QDATNv7YdhhsicQYzZjxz+FvyTGQLGqgbeSl3ut9l5iglQwkQn0x0BLAIv?=
+ =?us-ascii?Q?A6fxEVxxdZnAJNLOxZGoAv8nPQtpkfAfefQRqScCA64IiD4T24u529xJEWlY?=
+ =?us-ascii?Q?boogWQ2qgFqhK201X82lQ3FStU9ueZb9wxriYs5VjQJPUh5l9w5pKL77+BtT?=
+ =?us-ascii?Q?j8UTPSYrEHMXnet1YFIEozYFDiZBBUTwA0jvErP1S3G8wowR35qtTMJYGxZc?=
+ =?us-ascii?Q?VsE8Kyuncd4YyL/8b3gm3P15oWZ0JkvibM+QZ/iidXOgIMBOREdr3nS5XIVa?=
+ =?us-ascii?Q?iQ0W1nx3+sTQO53Th/y6t/VVbqvS6pwV2GTbhGCpJGiOsa28/eCiLqqBS82J?=
+ =?us-ascii?Q?7fuxQlGR3CVmESMPGCS5hQe2PpTYKUmiJJV8YbZgxlobxa/BORB3H2L4JgOr?=
+ =?us-ascii?Q?9tiacT7tv01jZeE+kSO+CJbRUutKkGvlhq76anEPAty6l0M5Z19naInAdivV?=
+ =?us-ascii?Q?7yH8dS4ldmfD+cyiEQ6wBw5aaXF8g5Y2/0UL1cVTMsryVI9wgVnKJH8Nya4j?=
+ =?us-ascii?Q?IAKX526TFUbwbE/P8Jt4Oeq8t3MpON/sVA1E2Rqy7R6Gk4xG7ULbsr9bWxf2?=
+ =?us-ascii?Q?HMnPy6zhMvb2UMqVfqeE4pbegkSsCIgoe3XF3J9/HHd4lmyOIQjpsnQkO3Xd?=
+ =?us-ascii?Q?RIFrc+deONnKKrgSwOUFfQLe85b8QHC9rlMV0TQYMCSJL/lAqzZ2xWnTG7vF?=
+ =?us-ascii?Q?ApMWl1cppOt4XdvjizzDFXrugNSxnr8p50MonyLLIPT+OaNY1Q/RvxDWDplV?=
+ =?us-ascii?Q?YEA2iWQvUP9HdLHMcUbfHc0lhk3MCQA1DfDE9QckhDysLMbqEpDecBdNhoBq?=
+ =?us-ascii?Q?nyFsXwNxDmedxiAyTa2BrtvOXMnIo869T+hgxNhjte4xtTyVkPIZdZkwPlME?=
+ =?us-ascii?Q?O4/C5kaGnDVuAsKhgvqd3l6lwof2426ID8tRaX1/IKlHZQg4i/D3SUYKADOn?=
+ =?us-ascii?Q?iGzmwmU9r/gfZAUaT2esLI33d5ueh4BHCzMtRS+6UrrrBv24+HI3RcJyk8sv?=
+ =?us-ascii?Q?NV7kUiOb6R62LhQGjld2ebDbdRDYQADLvyWwtfDXUP+G8doV2Xa4Wd64C6ZH?=
+ =?us-ascii?Q?l1LMMuZmHMt1Nm5nkGC4MLucI/l7eEa0MTL+Yqxq4Qo6M8f8GNLHYVgoM8y9?=
+ =?us-ascii?Q?gH7s7oG5ASgrvJ26tRO1Ls5+2sF/ewwKov3Uwp3wLK0qjzkdRZwwabJjkvG0?=
+ =?us-ascii?Q?foDsVv38CumPGF7N6+t0mnbKgxqTIexsHQWtekXVkWpXhfNccAkxLoXc8s15?=
+ =?us-ascii?Q?ybAQKHAq2iA+lBFAYwA0lZ7aidHfODzqi+YCCJr27XWlT0PaOKAKZ84bm+6y?=
+ =?us-ascii?Q?dCKc6flRzQcgx9khDHuFkbvPKxzDRfJz/9C9F6ZmBO87DCI6w/xctByLMVP8?=
+ =?us-ascii?Q?XVZVpfHU3CSS8d3/JVRJ0PqdPuc049gAdaoCFYIYgJ7WS6i2cjAnqPvZLLKB?=
+ =?us-ascii?Q?EV9ntUyLMA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR21MB1749.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3885186d-ae25-4fd4-3c9a-08da399dd3f3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 13:45:25.4459
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9PPp1A3OI2whI1YK1fRyDWxHE45aD8kP/Uc8j9kDxDsE/ktUBavejyfD4dEt/XICw6VPwS9sYi2NlGTsycjt/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3119
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
-
-On 5/19/22 00:07, Bjorn Helgaas wrote:
-> On Mon, May 09, 2022 at 07:33:27PM +0200, Hans de Goede wrote:
->> On 5/7/22 17:31, Bjorn Helgaas wrote:
->>> On Sat, May 07, 2022 at 12:09:03PM +0200, Hans de Goede wrote:
->>>> On 5/6/22 18:51, Bjorn Helgaas wrote:
->>>>> On Thu, May 05, 2022 at 05:20:16PM +0200, Hans de Goede wrote:
->>>>>> Some BIOS-es contain bugs where they add addresses which are already
->>>>>> used in some other manner to the PCI host bridge window returned by
->>>>>> the ACPI _CRS method. To avoid this Linux by default excludes
->>>>>> E820 reservations when allocating addresses since 2010, see:
->>>>>> commit 4dc2287c1805 ("x86: avoid E820 regions when allocating address
->>>>>> space").
->>>>>>
->>>>>> Recently (2019) some systems have shown-up with E820 reservations which
->>>>>> cover the entire _CRS returned PCI bridge memory window, causing all
->>>>>> attempts to assign memory to PCI BARs which have not been setup by the
->>>>>> BIOS to fail. For example here are the relevant dmesg bits from a
->>>>>> Lenovo IdeaPad 3 15IIL 81WE:
->>>>>>
->>>>>>  [mem 0x000000004bc50000-0x00000000cfffffff] reserved
->>>>>>  pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
->>>>>>
->>>>>> The ACPI specifications appear to allow this new behavior:
->>>>>>
->>>>>> The relationship between E820 and ACPI _CRS is not really very clear.
->>>>>> ACPI v6.3, sec 15, table 15-374, says AddressRangeReserved means:
->>>>>>
->>>>>>   This range of addresses is in use or reserved by the system and is
->>>>>>   not to be included in the allocatable memory pool of the operating
->>>>>>   system's memory manager.
->>>>>>
->>>>>> and it may be used when:
->>>>>>
->>>>>>   The address range is in use by a memory-mapped system device.
->>>>>>
->>>>>> Furthermore, sec 15.2 says:
->>>>>>
->>>>>>   Address ranges defined for baseboard memory-mapped I/O devices, such
->>>>>>   as APICs, are returned as reserved.
->>>>>>
->>>>>> A PCI host bridge qualifies as a baseboard memory-mapped I/O device,
->>>>>> and its apertures are in use and certainly should not be included in
->>>>>> the general allocatable pool, so the fact that some BIOS-es reports
->>>>>> the PCI aperture as "reserved" in E820 doesn't seem like a BIOS bug.
->>>>>>
->>>>>> So it seems that the excluding of E820 reserved addresses is a mistake.
->>>>>>
->>>>>> Ideally Linux would fully stop excluding E820 reserved addresses,
->>>>>> but then various old systems will regress.
->>>>>> Instead keep the old behavior for old systems, while ignoring
->>>>>> the E820 reservations for any systems from now on.
->>>>>>
->>>>>> Old systems are defined here as BIOS year < 2018, this was chosen to
->>>>>> make sure that pci_use_e820 will not be set on the currently affected
->>>>>> systems, the oldest known one is from 2019.
->>>>>>
->>>>>> Testing has shown that some newer systems also have a bad _CRS return.
->>>>>> The pci_crs_quirks DMI table is used to keep excluding E820 reservations
->>>>>> from the bridge window on these systems.
->>>>>>
->>>>>> Also add pci=no_e820 and pci=use_e820 options to allow overriding
->>>>>> the BIOS year + DMI matching logic.
->>>>>>
->>>>>> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=206459
->>>>>> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1868899
->>>>>> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1871793
->>>>>> BugLink: https://bugs.launchpad.net/bugs/1878279
->>>>>> BugLink: https://bugs.launchpad.net/bugs/1931715
->>>>>> BugLink: https://bugs.launchpad.net/bugs/1932069
->>>>>> BugLink: https://bugs.launchpad.net/bugs/1921649
->>>>>> Cc: Benoit Grégoire <benoitg@coeus.ca>
->>>>>> Cc: Hui Wang <hui.wang@canonical.com>
->>>>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->>>>>
->>>>>> +	 * Ideally Linux would fully stop using E820 reservations, but then
->>>>>> +	 * various old systems will regress. Instead keep the old behavior for
->>>>>> +	 * old systems + known to be broken newer systems in pci_crs_quirks.
->>>>>> +	 */
->>>>>> +	if (year >= 0 && year < 2018)
->>>>>> +		pci_use_e820 = true;
->>>>>
->>>>> How did you pick 2018?  Prior to this patch, we used E820 reservations
->>>>> for all machines.  This patch would change that for 2019-2022
->>>>> machines, so there's a risk of breaking some of them.
->>>>
->>>> Correct. I picked 2018 because the first devices where using E820
->>>> reservations are causing issues (i2c controller not getting resources
->>>> leading to non working touchpad / thunderbolt hotplug issues) have
->>>> BIOS dates starting in 2019. I added a year margin, so we could make
->>>> this 2019.
->>>>
->>>>> I'm hesitant about changing the behavior for machines already in the
->>>>> field because if they were tested at all with Linux, it was without
->>>>> this patch.  So I would lean toward preserving the current behavior
->>>>> for BIOS year < 2023.
->>>>
->>>> I see, I presume the idea is to then use DMI to disable E820 clipping
->>>> on current devices where this is known to cause problems ?
->>>>
->>>> So for v8 I would:
->>>>
->>>> 1. Change the cut-off check to < 2023
->>>> 2. Drop the DMI quirks I added for models which are known to need E820
->>>>    clipping hit by the < 2018 check
->>>> 3. Add DMI quirks for models for which it is known that we must _not_
->>>>    do E820 clipping
->>>>
->>>> Is this the direction you want to go / does that sound right?
->>>
->>> Yes, I think that's what we should do.  All the machines in the field
->>> will be unaffected, except that we add quirks for known problems.
->>
->> I've been working on this today. I've mostly been going through
->> the all the existing bugs about this, to make a list of DMI matches
->> for devices on which we should _not_ do e820 clipping to fix th
->> kernel being unable to assign BARs there.
->>
->> I've found an interesting pattern there, all affected devices
->> are Lenovo devices with "IIL" in there device name, e.g. :
->> "IdeaPad 3 15IIL05". I've looked up all Lenovo devices which
->> have "IIL" as part of their DMI_PRODUCT_VERSION string here:
->> https://github.com/linuxhw/DMI/
->>
->> And then looked them up at https://linux-hardware.org/ and checked
->> their dmesg to see if they have the e820 problem other ideapads
->> have. I've gone through approx. half the list now and all
->> except one model seem to have the e820 problem.
->>
->> So it looks like we might be able to match all problem models
->> with a single DMI match.
->>
-> 
->> So the problem seems to be limited to one specific device
->> series / range and this is making me have second thoughts
->> about doing a date based cut-off at all. Trying to switch
->> over any models which are new in 2023 is fine, the problem
->> with a DMI BIOS date approach though is that as soon as some
->> new management-engine CVE comes out we will also see BIOS
->> updates with a year of 2023 for many existing models, of
->> up to 3-4 years old at least; and chances are that some of
->> those older models getting BIOS updates will be bitten by
->> this change.
->>
->> So as said I'm having second thoughts about the date based
->> approach. Bjorn, what do you think of just using DMI quirks
->> to disable e820 clipping on known problematic models and
->> otherwise keeping things as is ?
-> 
-> The current v8 patch [1] adds quirks to disable clipping for Lenovo
-> "*IIL*" and Acer Spin 5.  I think we also need to add one for Clevo
-> Barebones [2], don't we?
-
-Right looking at the dmesg output that one needs to be added to,
-I've done that for the v9 which I'm preparing.
-
-> Here's how I think about the date-based approach.  See if it seems
-> sensible to you.
-> 
-> Without a date check, we'll continue clipping by default:
-> 
->   - Future systems like Lenovo *IIL*, Acer Spin, and Clevo Barebones
->     will require new quirks to disable clipping.
-> 
->   - The problem here is E820 entries that cover entire _CRS windows
->     that should not be clipped out.
-> 
->   - I think these E820 entries are legal per spec, and it would be
->     hard to get BIOS vendors to change them.
-> 
->   - We will discover new systems that need clipping disabled piecemeal
->     as they are released.
-> 
->   - Future systems like Lenovo X1 Carbon and the Chromebooks (probably
->     anything using coreboot) will just work and we will not notice new
->     ones that rely on the clipping.
-> 
->   - BIOS updates will not require new quirks unless they change the
->     DMI model string.
-> 
-> With a date check that disables clipping, e.g., "no clipping when
-> date > 2022":
-> 
->   - Future systems like Lenovo *IIL*, Acer Spin, and Clevo Barebones
->     will just work without new quirks.
-> 
->   - Future systems like Lenovo X1 Carbon and the Chromebooks will
->     require new quirks to *enable* clipping.
-> 
->   - The problem here is that _CRS contains regions that are not usable
->     by PCI devices, and we rely on the E820 kludge to clip them out.
-> 
->   - I think this use of E820 is clearly a firmware bug, so we have a
->     fighting chance of getting it changed eventually.
-> 
->   - BIOS updates after the cutoff date *will* require quirks, but only
->     for systems like Lenovo X1 Carbon and Chromebooks that we already
->     think have broken firmware.
-> 
-> Is that a fair summary?
-
-Yes that seems a good summary to me. Actually it is so good I'm going
-to steal it for the commit msg of the split out date check patch :)
-
-> If so, it still seems to me like it's better to add quirks for
-> firmware that we think is broken than for firmware that seems unusual
-> but correct.
-
-Ack.
-
-> But I do think maybe we should split the date check to a separate
-> patch.  The rationale for the date check (to put the quirk burden on
-> systems with buggy firmware) is a little different from the "disable
-> E820 clipping" reason for the quirks.
-> 
-> I think the "disable clipping" quirks by themselves should fix all the
-> known broken systems, shouldn't they?
-
-Yes they should.
-
-> I'd really, really like to get
-> these quirks in for v5.18 if possible.
-
-Ok, I'll go and prepare a v9 and I will submit that later today.
-
-> For future reference, I'm attaching below all the bugs I know about
-> and the details of what's in E820 and _CRS.
-> 
-> Bjorn
-> 
-> [1] https://lore.kernel.org/r/20220512202511.34197-1-hdegoede@redhat.com
-> [2] https://bugzilla.kernel.org/show_bug.cgi?id=214259
-> 
-> 
-> https://bugzilla.kernel.org/show_bug.cgi?id=16228       Dell Precision T3500
->   BIOS-e820:                                   0xbfe4dc00-0xc0000000 (reserved)
->   pci_root PNP0A03:00: host bridge window [mem 0xbff00000-0xdfffffff]
->   pci 0000:00:1f.2: BAR 5: assigned [mem 0xbff00000-0xbff007ff]
->   ahci 0000:00:1f.2: controller reset failed (0xffffffff)
->   E820 covers part of _CRS window, 4dc2287c1805 clips that out.
->   Without 4dc2287c1805, doesn't boot because AHCI at
->   [mem 0xbff00000-0xbff007ff] is unusable.
-> 
-> https://bugzilla.kernel.org/show_bug.cgi?id=206459      Lenovo Yoga C940-14IIL
->   DMI: LENOVO 81Q9/LNVNB161216, BIOS AUCN54WW 01/09/2020
->   BIOS-e820:                         [mem 0x4bc50000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
->   pci 0000:2b:00.0: BAR 14: no space for [mem size 0x0c200000]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, Thunderbolt dock hot-add can't allocate MMIO
->   space.
-> 
-> https://bugzilla.kernel.org/show_bug.cgi?id=214259      Clevo X170KM Barebone
->   DMI: TUXEDO TUXEDO Book XUX7 - Gen12/X170KM-G, BIOS 1.07.05RTR1 02/01/2021
->   BIOS-e820:                         [mem 0x6bc00000-0xefffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x71000000-0xdfffffff window]
->   BIOS-e820:                         [mem 0x0100000000-0x48effffff] usable
->   pci_bus 0000:00: root bus resource [mem 0x4000000000-0x7fffffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit] # intel-lpss
->   pci 0000:00:15.1: reg 0x10: [mem 0x00000000-0x00000fff 64bit] # intel-lpss
->   pci 0000:00:15.2: reg 0x10: [mem 0x00000000-0x00000fff 64bit] # intel-lpss
->   pci 0000:00:19.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit] # intel-lpss
->   pci 0000:00:1f.5: reg 0x10: [mem 0xfe010000-0xfe010fff]       # intel_spi_pci, no window
->   pci 0000:00:15.0: BAR 0: assigned [mem 0x420210f000-0x420210ffff 64bit]
->   pci 0000:00:15.1: BAR 0: assigned [mem 0x4202111000-0x4202111fff 64bit]
->   pci 0000:00:15.2: BAR 0: assigned [mem 0x4202112000-0x4202112fff 64bit]
->   pci 0000:00:19.0: BAR 0: assigned [mem 0x4202113000-0x4202113fff 64bit]
->   pci 0000:00:1f.5: BAR 0: no space for [mem size 0x00001000]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
-> 
-> https://bugzilla.redhat.com/show_bug.cgi?id=1868899     Lenovo IdeaPad 3 15IIL05
->   DMI: LENOVO 81WE/LNVNB161216, BIOS EMCN44WW 12/23/2020
->   BIOS-e820:                         [mem 0x4bc50000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken (BIOS didn't assign, no space to
->   allocate).
-> 
-> https://bugzilla.redhat.com/show_bug.cgi?id=1871793     Lenovo IdeaPad 5 14IIL05
->   DMI: LENOVO 81YH/LNVNB161216, BIOS DSCN22WW(V1.08) 03/06/2020
->   BIOS-e820:                         [mem 0x5bc50000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x6d400000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken (BIOS didn't assign, no space to
->   allocate).
-> 
-> https://bugzilla.redhat.com/show_bug.cgi?id=2029207     Lenovo X1 Carbon (20A7)
->   DMI: LENOVO 20A7008CUK/20A7008CUK, BIOS GRET63WW (1.40 ) 03/27/2020
->   BIOS-e820:                         [mem 0xdceff000-0xdfa0ffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0xdfa00000-0xfebfffff window]
->   pci 0000:00:1c.0: BAR 14: assigned [mem 0xdfa00000-0xdfbfffff]
->   E820 covers part of _CRS window, 4dc2287c1805 clips that out.
->   Without 4dc2287c1805, doesn't wake from suspend because
->   [mem 0xdfa00000-0xdfa0ffff] unusable.
-> 
-> https://bugs.launchpad.net/bugs/1878279 Lenovo IdeaPad 5 14IIL05
->   DMI: LENOVO 81YH/LNVNB161216, BIOS DSCN23WW(V1.09) 03/25/2020
->   BIOS-e820:                         [mem 0x5bc50000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x6d400000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken (BIOS didn't assign, no space to
->   allocate).
-> 
-> https://bugs.launchpad.net/bugs/1880172 Lenovo IdeaPad 3 14IIL05 Core i3-1005G1 (81WD004MGE)
->   DMI: LENOVO 81WD/LNVNB161216, BIOS EMCN13WW 03/06/2020
->   BIOS-e820:                         [mem 0x6b000000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x70400000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken (BIOS didn't assign, no space to
->   allocate).
-> 
-> https://bugs.launchpad.net/bugs/1884232 Acer Spin SP513-54N
->   DMI: Acer Spin SP513-54N/Caboom_IL, BIOS V1.00 02/21/2020
->   BIOS-e820:                         [mem 0x39e00000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x3f800000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken (BIOS didn't assign, no space to
->   allocate).
-> 
-> https://bugs.launchpad.net/bugs/1921649 Lenovo IdeaPad S145 82DJ0000BR
->   DMI: LENOVO 82DJ/LNVNB161216, BIOS DKCN48WW 07/22/2020
->   BIOS-e820:                         [mem 0x6b000000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x70400000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken (BIOS didn't assign, no space to
->   allocate).
-> 
-> https://bugs.launchpad.net/bugs/1931715 Lenovo IdeaPad S145 82DJ0001BR
->   DMI: LENOVO 82DJ/LNVNB161216, BIOS DKCN51WW 12/23/2020
->   BIOS-e820:                         [mem 0x6b000000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x70400000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken, no dmesg from broken case.
-> 
-> https://bugs.launchpad.net/bugs/1932069 Lenovo BS145-15IIL
->   DMI: LENOVO 82HB/LNVNB161216, BIOS DKCN51WW 12/23/2020
->   BIOS-e820:                         [mem 0x4bc50000-0xcfffffff] reserved
->   pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
->   pci 0000:00:15.0: reg 0x10: [mem 0x00000000-0x00000fff 64bit]
->   pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
->   E820 covers entire _CRS window.  4dc2287c1805 clips it all out.
->   With 4dc2287c1805, touchpad broken (BIOS didn't assign, no space to
->   allocate).
-> 
-> https://lore.kernel.org/r/4e9fca2f-0af1-3684-6c97-4c35befd5019@redhat.com
-> Google internal report b/148759816
->   Chromebook asus-C523NA-A20057-coral
->   BIOS-e820:                         [mem 0x7b000000-0x7fffffff] reserved
->   BIOS-e820:                         [mem 0xd0000000-0xd0ffffff]
->   acpi PNP0A08:00: ... [mem 0x7b800000-0x7fffffff window] ...
->   acpi PNP0A08:00: ... [mem 0x80000000-0xe0000000 window] ...
->   pci_bus 0000:00: root bus resource [mem 0x7b800000-0xe0000000 window]
->   E820 covers [mem 0x7b800000-0x7fffffff] of _CRS window.
->   E820 punches [mem 0xd0000000-0xd0ffffff] hole for hidden device.
->   4dc2287c1805 clips these out.  Without 4dc2287c1805, boot fails.
->   Hidden device is a landmine unless we trim it out.
-> 
->   But 4c5e242d3e93 ("x86/PCI: Clip only host bridge windows for E820
->   regions") changes the time at which clipping is done.
-> 
->   If clipping preserves resources *completely* covered by E820, and we
->   clip *before* coalescing, [mem 0x7b800000-0x7fffffff window] is
->   preserved and [mem 0xd0000000-0xd0ffffff] is clipped out, resulting
->   in [mem 0x7b800000-0xcfffffff window], where 0x7b800000-0x7fffffff is
->   not usable.
-> 
->   If clipping preserves resources *completely* covered by E820, and we
->   clip *after* coalescing, we clip out [mem 0x7b000000-0x7fffffff]
->   and [mem 0xd0000000-0xd0ffffff], resulting in [mem
->   0x80000000-0xcfffffff window], which is usable.
-> 
-> Chromebook hp-x360-12b-n4000-octopus similar to asus-C523NA-A20057-coral
-> 
-> Summary:
->   These are broken by 4dc2287c1805:
->     https://bugzilla.kernel.org/show_bug.cgi?id=206459  01/09/2020 LENOVO
->     https://bugzilla.redhat.com/show_bug.cgi?id=1868899 12/23/2020 LENOVO
->     https://bugzilla.redhat.com/show_bug.cgi?id=1871793 03/06/2020 LENOVO
->     https://bugs.launchpad.net/bugs/1878279             03/25/2020 LENOVO
->     https://bugs.launchpad.net/bugs/1880172             03/06/2020 LENOVO
->     https://bugs.launchpad.net/bugs/1884232             02/21/2020 Acer
->     https://bugs.launchpad.net/bugs/1921649             07/22/2020 LENOVO
->     https://bugs.launchpad.net/bugs/1931715             12/23/2020 LENOVO
->     https://bugs.launchpad.net/bugs/1932069             12/23/2020 LENOVO
->       For all of the above, E820 covers entire _CRS window.  Trimming
->       the entire window means we can't assign any MMIO space.
-> 
->   These require 4dc2287c1805:
->     https://bugzilla.kernel.org/show_bug.cgi?id=16228   03/09/2009 Dell
->     https://bugzilla.redhat.com/show_bug.cgi?id=2029207 03/27/2020 LENOVO
->     b/148759816 Chromebooks
->       For the above, E820 covers part of _CRS window.  Failure to trim
->       that part means we assign MMIO space that doesn't work.
-> 
-
-I believe that this summary is correct, except that the broken by
-4dc2287c1805 list needs the TUXEDO / Clevo:
-
-    https://bugzilla.kernel.org/show_bug.cgi?id=214259 02/01/2021 TUXEDO (Clevo)
-
-Regards,
-
-Hans
 
 
+> -----Original Message-----
+> From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+> Sent: Thursday, May 19, 2022 8:10 AM
+> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
+> <haiyangz@microsoft.com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; wei.liu@kernel.org; Dexuan Cui
+> <decui@microsoft.com>; davem@davemloft.net; kuba@kernel.org;
+> pabeni@redhat.com; sashal@kernel.org
+> Cc: linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; fuyq@stu.pku.edu.cn; Yongzhi Liu
+> <lyz_cs@pku.edu.cn>
+> Subject: [PATCH] hv_netvsc: Fix potential dereference of NULL pointer
+>=20
+> [Some people who received this message don't often get email from
+> lyz_cs@pku.edu.cn. Learn why this is important at
+> https://aka.ms/LearnAboutSenderIdentification.]
+>=20
+> The return value of netvsc_devinfo_get()
+> needs to be checked to avoid use of NULL
+> pointer in case of an allocation failure.
+>=20
+> Fixes: 0efeea5fb ("hv_netvsc: Add the support of hibernation")
+>=20
+> Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+> ---
+>  drivers/net/hyperv/netvsc_drv.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/hyperv/netvsc_drv.c
+> b/drivers/net/hyperv/netvsc_drv.c
+> index fde1c49..b1dece6 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+> @@ -2671,7 +2671,10 @@ static int netvsc_suspend(struct hv_device *dev)
+>=20
+>         /* Save the current config info */
+>         ndev_ctx->saved_netvsc_dev_info =3D netvsc_devinfo_get(nvdev);
+> -
+> +       if (!ndev_ctx->saved_netvsc_dev_info) {
+> +               ret =3D -ENOMEM;
+> +               goto out;
+> +       }
+>         ret =3D netvsc_detach(net, nvdev);
+>  out:
+>         rtnl_unlock();
 
-
-
-
+Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+Thank you!
