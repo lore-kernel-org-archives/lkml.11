@@ -2,183 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242546AbiESRYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        id S242592AbiESRYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241281AbiESRYf (ORCPT
+        with ESMTP id S242584AbiESRYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:24:35 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91A3A30B8;
-        Thu, 19 May 2022 10:24:32 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so9406007pjb.0;
-        Thu, 19 May 2022 10:24:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AOewAjqDP3lAAYJgfWcVj1UOu5lLUzToNZ6Wvc+KtSg=;
-        b=o7PvoY82ItPKwYBbxMn3eeGtB+88hpIirgruNU/rWUoKpUEAqSN8AOJmIKDsce5JFi
-         UTYPp4rb4zmYUdXjv4RmmVYJVy3S+kuvgWvFsmqZDGGQmzxL2LeuQDl3ahDP4FRdZA8j
-         900dw1oX1FkKmt20m515iWbKsmS8VgKJL2hZYp5lKEvchzH0Eewp5UZJBqtqPqVic5EH
-         RF20B4iGdR38wQe+qn6Kbh+VMTzLJvHrydMTvN5QZY567vkCoDhNPdPix0kYs/jXAINc
-         5tV2zX4xFQC9V9Rum8IT42fvmOhz3r6B3xqzH6NifaMli1XqIQwj81SHZJLbzm4LIZsZ
-         1Xug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AOewAjqDP3lAAYJgfWcVj1UOu5lLUzToNZ6Wvc+KtSg=;
-        b=zRYyoCVR6aFnlshEQu2JH0lkVe157NRIjvhRI+frGFzi1npR0ucTRHpvn8kzbXqzby
-         tD/a/VYc+4wtF5s/ZReQfJGMwOrE39a4dQ+foYEQ8Cpzv89JNkDURUu46D2BAij8giMP
-         tXYfOXJrgNQ/UoH1cRuRGOyY35UC5irvpluXSpNSKMnZFsZCk/P9ODGDGvcPv5qqebkR
-         NCCydMRed/qlNiu5XHy1KlseUrCHCwC0VKUTpaclAnR6czq8n4f1x47AB3m5oabO2aOv
-         L8hHhXEtDY971jyyr2BMQk2fexbdZ9rf9Vt+8FLPBVlF/ABK4GzDWgWqZnwUVwO9M8PM
-         Qw3Q==
-X-Gm-Message-State: AOAM5314CAbS2OgOB3mYMCB0GyhMPPHCn2oV37IBw9BK4AjTnyhdwl+G
-        94VHaWkUDJkJFcJBM6ND1U7Ej7Qt0oLu
-X-Google-Smtp-Source: ABdhPJwzE8ZdLVW+yuKBJt7vmP5Ln6NcdLktqI4MYHA6QA9b9e/mWT6r/+ml164G4C5gZpReHJkGcQ==
-X-Received: by 2002:a17:903:22cd:b0:161:be20:577 with SMTP id y13-20020a17090322cd00b00161be200577mr5941328plg.54.1652981071739;
-        Thu, 19 May 2022 10:24:31 -0700 (PDT)
-Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.24.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:24:31 -0700 (PDT)
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
-        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        andriy.shevchenko@linux.intel.com, willy@infradead.org
-Subject: [PATCH v2 01/28] lib/printbuf: New data structure for printing strings
-Date:   Thu, 19 May 2022 13:23:54 -0400
-Message-Id: <20220519172421.162394-2-kent.overstreet@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
-References: <20220519172421.162394-1-kent.overstreet@gmail.com>
+        Thu, 19 May 2022 13:24:40 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED119A5033
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:24:35 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4L3xYZ08qcz9t0v;
+        Thu, 19 May 2022 19:24:34 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id ddt7bRaOl9UR; Thu, 19 May 2022 19:24:33 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4L3xYY6QdZz9t0Q;
+        Thu, 19 May 2022 19:24:33 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id CE1468B77E;
+        Thu, 19 May 2022 19:24:33 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id iY_bcdOXjTrp; Thu, 19 May 2022 19:24:33 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.71])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 898AF8B763;
+        Thu, 19 May 2022 19:24:33 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 24JHOJFK3119573
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Thu, 19 May 2022 19:24:19 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 24JHOGv43119570;
+        Thu, 19 May 2022 19:24:16 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] powerpc/fsl_book3e: Don't set rodata RO too early
+Date:   Thu, 19 May 2022 19:24:15 +0200
+Message-Id: <2e35f0fd649c83c5add17a99514ac040767be93a.1652981047.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652981054; l=2109; s=20211009; h=from:subject:message-id; bh=p6ejnAcRp1DXCMNYT2kdvj6nTKpgEruWDwQ7V/yK0UA=; b=YCxyW82yvhrDvdTSZOrtzTfRi2z5vOF3Fu4aR6vzJqRcB4CS0JKWHqwXmVUOviWs9NxEnzw57ItE Tp4MuPFZBVgkR7/y//Ec9JvC9ux9b2/xvuVmYe1tiac1Lq+GtZok
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds printbufs: a printbuf points to a char * buffer and knows the
-size of the output buffer as well as the current output position.
+On fsl_book3e, rodata is set read-only at the same time as
+init text is set NX at the end of init. That's too early.
 
-Future patches will be adding more features to printbuf, but initially
-printbufs are targeted at refactoring and improving our existing code in
-lib/vsprintf.c - so this initial printbuf patch has the features
-required for that.
+As both action are performed at the same time, delay both
+actions to the time rodata is expected to be made read-only.
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
+It means we will have a small window with init mem freed but
+still executable. It shouldn't be an issue though, especially
+because the said memory gets poisoned and should therefore
+result to a bad instruction fault in case it gets executer.
+
+mmu_mark_initmem_nx() is bailing out before doing anything when
+CONFIG_STRICT_KERNEL_RWX is not selected or rodata_enabled is false.
+
+mmu_mark_rodata_ro() is called only when CONFIG_STRICT_KERNEL_RWX
+is selected and rodata_enabled is true so this is equivalent.
+
+Move code from mmu_mark_initmem_nx() into mmu_mark_rodata_ro() and
+remove the call to strict_kernel_rwx_enabled() which is not needed
+anymore.
+
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: d5970045cf9e ("powerpc/fsl_booke: Update of TLBCAMs after init")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- include/linux/printbuf.h | 94 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 94 insertions(+)
- create mode 100644 include/linux/printbuf.h
+ arch/powerpc/mm/nohash/fsl_book3e.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/printbuf.h b/include/linux/printbuf.h
-new file mode 100644
-index 0000000000..40dc07040d
---- /dev/null
-+++ b/include/linux/printbuf.h
-@@ -0,0 +1,94 @@
-+/* SPDX-License-Identifier: LGPL-2.1+ */
-+/* Copyright (C) 2022 Kent Overstreet */
+diff --git a/arch/powerpc/mm/nohash/fsl_book3e.c b/arch/powerpc/mm/nohash/fsl_book3e.c
+index 08a984e29433..036e6a0e0137 100644
+--- a/arch/powerpc/mm/nohash/fsl_book3e.c
++++ b/arch/powerpc/mm/nohash/fsl_book3e.c
+@@ -285,22 +285,19 @@ void __init adjust_total_lowmem(void)
+ 
+ #ifdef CONFIG_STRICT_KERNEL_RWX
+ void mmu_mark_rodata_ro(void)
+-{
+-	/* Everything is done in mmu_mark_initmem_nx() */
+-}
+-#endif
+-
+-void mmu_mark_initmem_nx(void)
+ {
+ 	unsigned long remapped;
+ 
+-	if (!strict_kernel_rwx_enabled())
+-		return;
+-
+ 	remapped = map_mem_in_cams(__max_low_memory, CONFIG_LOWMEM_CAM_NUM, false, false);
+ 
+ 	WARN_ON(__max_low_memory != remapped);
+ }
++#endif
 +
-+#ifndef _LINUX_PRINTBUF_H
-+#define _LINUX_PRINTBUF_H
-+
-+#include <linux/string.h>
-+
-+/*
-+ * Printbufs: String buffer for outputting (printing) to, for vsnprintf
-+ */
-+
-+struct printbuf {
-+	char			*buf;
-+	unsigned		size;
-+	unsigned		pos;
-+};
-+
-+static inline unsigned printbuf_remaining(struct printbuf *out)
++void mmu_mark_initmem_nx(void)
 +{
-+	return out->pos < out->size ? out->size - out->pos : 0;
++	/* Everything is done in mmu_mark_rodata_ro() */
 +}
-+
-+static inline unsigned printbuf_written(struct printbuf *out)
-+{
-+	return min(out->pos, out->size);
-+}
-+
-+static inline void printbuf_nul_terminate(struct printbuf *out)
-+{
-+	if (out->pos < out->size)
-+		out->buf[out->pos] = 0;
-+	else if (out->size)
-+		out->buf[out->size - 1] = 0;
-+}
-+
-+static inline void pr_chars(struct printbuf *out, char c, unsigned n)
-+{
-+	memset(out->buf + out->pos,
-+	       c,
-+	       min(n, printbuf_remaining(out)));
-+	out->pos += n;
-+	printbuf_nul_terminate(out);
-+}
-+
-+static inline void __pr_char(struct printbuf *out, char c)
-+{
-+	if (printbuf_remaining(out))
-+		out->buf[out->pos] = c;
-+	out->pos++;
-+}
-+
-+static inline void pr_char(struct printbuf *out, char c)
-+{
-+	__pr_char(out, c);
-+	printbuf_nul_terminate(out);
-+}
-+
-+static inline void pr_bytes(struct printbuf *out, const void *b, unsigned n)
-+{
-+	memcpy(out->buf + out->pos,
-+	       b,
-+	       min(n, printbuf_remaining(out)));
-+	out->pos += n;
-+	printbuf_nul_terminate(out);
-+}
-+
-+static inline void pr_str(struct printbuf *out, const char *str)
-+{
-+	pr_bytes(out, str, strlen(str));
-+}
-+
-+static inline void pr_hex_byte(struct printbuf *out, u8 byte)
-+{
-+	__pr_char(out, hex_asc_hi(byte));
-+	__pr_char(out, hex_asc_lo(byte));
-+	printbuf_nul_terminate(out);
-+}
-+
-+static inline void pr_hex_byte_upper(struct printbuf *out, u8 byte)
-+{
-+	__pr_char(out, hex_asc_upper_hi(byte));
-+	__pr_char(out, hex_asc_upper_lo(byte));
-+	printbuf_nul_terminate(out);
-+}
-+
-+#define PRINTBUF ((struct printbuf) { .si_units = PRINTBUF_UNITS_10 })
-+#define PRINTBUF_EXTERN(_buf, _size)			\
-+((struct printbuf) {					\
-+	.buf	= _buf,					\
-+	.size	= _size,				\
-+})
-+
-+#endif /* _LINUX_PRINTBUF_H */
+ 
+ void setup_initial_memory_limit(phys_addr_t first_memblock_base,
+ 				phys_addr_t first_memblock_size)
 -- 
-2.36.0
+2.35.3
 
