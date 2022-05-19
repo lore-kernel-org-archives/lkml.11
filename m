@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D25C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49EA8C41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233472AbiESPns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
+        id S241517AbiESPmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241282AbiESPlZ (ORCPT
+        with ESMTP id S241142AbiESPkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:41:25 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA0815A19;
-        Thu, 19 May 2022 08:41:22 -0700 (PDT)
+        Thu, 19 May 2022 11:40:53 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE7410C3;
+        Thu, 19 May 2022 08:40:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652974882; x=1684510882;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+ABx0lox6wHjWB9I6XpUkHY/Io9HXsLK8krHlywnoYY=;
-  b=mNBUct0UNiswOmYQyd8Vn4ebRwPnmOndDYe0owtq6DcB9JozNMMZUXwk
-   BwUCtXlsWg00h3gU4w2gO4zJ12khqXtWlr7rvokKcjQ+0iPIySx8dSvEM
-   f91Ye/V1WTqx0pSrG+6AFUmJgzjPrpRNZA4mN2g7pegUtZAnPmB3t7Gwv
-   leXKs/woRv8Ce3UhOjhIA5ZHnlOuSQzmRzZj8oPsPmP/dg2HnNNGumSQ5
-   bgX4SYw9HnzDwawF04p3arPs1/n8GN3K6hcU4G0Favwm+1x1lbq+IjV+k
-   TmIpbjyZYLnxucaOgnEJ1Nt2d0ZtW9EA+x2UON6iT3wi5VMu4zlyLPrV9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="335299692"
+  t=1652974851; x=1684510851;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2gQabxIn8tPmd6ZL9v/swSq/nd87q2Ez4Gvfaiq6P+g=;
+  b=kGItLVNZA1Muqh7qEmRLz6D5HxVgDTFDh/PFFakiDGWodNSeDUjZ60Eb
+   rO9UAZrU7zplGU/jb9rL4OPjAvtFRIUORzZl3mihAt68DxZ70VcPiUjRJ
+   ylX1ZjWhLyzP/zvFesdPikivmi977YnYBKpWJ5Rl+2n4IwoUUZGvbkcFe
+   hrD1qFdzAZ9ImtqdcJWZjaSPz3sObSMfSi88/tLtUBH5x9nj/qo00214x
+   vo9Nz0tTsw4eta7zMaXFVslG2ISj8U8mZZBU2Vl9TKr5Q3JvhPjV7env1
+   0b0wLsTMNzInRjHaRG6U2DrFe4vNm/vvr1XzvF2aGJ+EyOSWiUZhIzo+W
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="272377334"
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="335299692"
+   d="scan'208";a="272377334"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 08:41:22 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 08:40:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="598635197"
+   d="scan'208";a="598634928"
 Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 19 May 2022 08:41:12 -0700
+  by orsmga008.jf.intel.com with ESMTP; 19 May 2022 08:40:41 -0700
 From:   Chao Peng <chao.p.peng@linux.intel.com>
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
@@ -70,102 +70,200 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         ddutile@redhat.com, dhildenb@redhat.com,
         Quentin Perret <qperret@google.com>,
         Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Subject: [PATCH v6 3/8] mm/memfd: Introduce MFD_INACCESSIBLE flag
-Date:   Thu, 19 May 2022 23:37:08 +0800
-Message-Id: <20220519153713.819591-4-chao.p.peng@linux.intel.com>
+Subject: [PATCH v6 0/8] KVM: mm: fd-based approach for supporting KVM guest private memory 
+Date:   Thu, 19 May 2022 23:37:05 +0800
+Message-Id: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
-References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a new memfd_create() flag indicating the content of the
-created memfd is inaccessible from userspace through ordinary MMU
-access (e.g., read/write/mmap). However, the file content can be
-accessed via a different mechanism (e.g. KVM MMU) indirectly.
+This is the v6 of this series which tries to implement the fd-based KVM
+guest private memory. The patches are based on latest kvm/queue branch
+commit:
 
-It provides semantics required for KVM guest private memory support
-that a file descriptor with this flag set is going to be used as the
-source of guest memory in confidential computing environments such
-as Intel TDX/AMD SEV but may not be accessible from host userspace.
+  2764011106d0 (kvm/queue) KVM: VMX: Include MKTME KeyID bits in
+shadow_zero_check
+ 
+and Sean's below patch:
 
-The flag can not coexist with MFD_ALLOW_SEALING, future sealing is
-also impossible for a memfd created with this flag.
+  KVM: x86/mmu: Add RET_PF_CONTINUE to eliminate bool+int* "returns"
+  https://lkml.org/lkml/2022/4/22/1598
 
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
----
- include/uapi/linux/memfd.h |  1 +
- mm/memfd.c                 | 15 ++++++++++++++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+Introduction
+------------
+In general this patch series introduce fd-based memslot which provides
+guest memory through memory file descriptor fd[offset,size] instead of
+hva/size. The fd can be created from a supported memory filesystem
+like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
+and the the memory backing store exchange callbacks when such memslot
+gets created. At runtime KVM will call into callbacks provided by the
+backing store to get the pfn with the fd+offset. Memory backing store
+will also call into KVM callbacks when userspace fallocate/punch hole
+on the fd to notify KVM to map/unmap secondary MMU page tables.
 
-diff --git a/include/uapi/linux/memfd.h b/include/uapi/linux/memfd.h
-index 7a8a26751c23..48750474b904 100644
---- a/include/uapi/linux/memfd.h
-+++ b/include/uapi/linux/memfd.h
-@@ -8,6 +8,7 @@
- #define MFD_CLOEXEC		0x0001U
- #define MFD_ALLOW_SEALING	0x0002U
- #define MFD_HUGETLB		0x0004U
-+#define MFD_INACCESSIBLE	0x0008U
- 
- /*
-  * Huge page size encoding when MFD_HUGETLB is specified, and a huge page
-diff --git a/mm/memfd.c b/mm/memfd.c
-index 08f5f8304746..775541d53f1b 100644
---- a/mm/memfd.c
-+++ b/mm/memfd.c
-@@ -18,6 +18,7 @@
- #include <linux/hugetlb.h>
- #include <linux/shmem_fs.h>
- #include <linux/memfd.h>
-+#include <linux/memfile_notifier.h>
- #include <uapi/linux/memfd.h>
- 
- /*
-@@ -261,7 +262,8 @@ long memfd_fcntl(struct file *file, unsigned int cmd, unsigned long arg)
- #define MFD_NAME_PREFIX_LEN (sizeof(MFD_NAME_PREFIX) - 1)
- #define MFD_NAME_MAX_LEN (NAME_MAX - MFD_NAME_PREFIX_LEN)
- 
--#define MFD_ALL_FLAGS (MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_HUGETLB)
-+#define MFD_ALL_FLAGS (MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_HUGETLB | \
-+		       MFD_INACCESSIBLE)
- 
- SYSCALL_DEFINE2(memfd_create,
- 		const char __user *, uname,
-@@ -283,6 +285,10 @@ SYSCALL_DEFINE2(memfd_create,
- 			return -EINVAL;
- 	}
- 
-+	/* Disallow sealing when MFD_INACCESSIBLE is set. */
-+	if (flags & MFD_INACCESSIBLE && flags & MFD_ALLOW_SEALING)
-+		return -EINVAL;
-+
- 	/* length includes terminating zero */
- 	len = strnlen_user(uname, MFD_NAME_MAX_LEN + 1);
- 	if (len <= 0)
-@@ -329,12 +335,19 @@ SYSCALL_DEFINE2(memfd_create,
- 	if (flags & MFD_ALLOW_SEALING) {
- 		file_seals = memfd_file_seals_ptr(file);
- 		*file_seals &= ~F_SEAL_SEAL;
-+	} else if (flags & MFD_INACCESSIBLE) {
-+		error = memfile_node_set_flags(file,
-+					       MEMFILE_F_USER_INACCESSIBLE);
-+		if (error)
-+			goto err_file;
- 	}
- 
- 	fd_install(fd, file);
- 	kfree(name);
- 	return fd;
- 
-+err_file:
-+	fput(file);
- err_fd:
- 	put_unused_fd(fd);
- err_name:
+Comparing to existing hva-based memslot, this new type of memslot allows
+guest memory unmapped from host userspace like QEMU and even the kernel
+itself, therefore reduce attack surface and prevent bugs.
+
+Based on this fd-based memslot, we can build guest private memory that
+is going to be used in confidential computing environments such as Intel
+TDX and AMD SEV. When supported, the memory backing store can provide
+more enforcement on the fd and KVM can use a single memslot to hold both
+the private and shared part of the guest memory. 
+
+mm extension
+---------------------
+Introduces new MFD_INACCESSIBLE flag for memfd_create(), the file created
+with these flags cannot read(), write() or mmap() etc via normal
+MMU operations. The file content can only be used with the newly
+introduced memfile_notifier extension.
+
+The memfile_notifier extension provides two sets of callbacks for KVM to
+interact with the memory backing store:
+  - memfile_notifier_ops: callbacks for memory backing store to notify
+    KVM when memory gets allocated/invalidated.
+  - backing store callbacks: callbacks for KVM to call into memory backing
+    store to request memory pages for guest private memory.
+
+The memfile_notifier extension also provides APIs for memory backing
+store to register/unregister itself and to trigger the notifier when the
+bookmarked memory gets fallocated/invalidated.
+
+memslot extension
+-----------------
+Add the private fd and the fd offset to existing 'shared' memslot so that
+both private/shared guest memory can live in one single memslot. A page in
+the memslot is either private or shared. A page is private only when it's
+already allocated in the backing store fd, all the other cases it's treated
+as shared, this includes those already mapped as shared as well as those
+having not been mapped. This means the memory backing store is the place
+which tells the truth of which page is private.
+
+Private memory map/unmap and conversion
+---------------------------------------
+Userspace's map/unmap operations are done by fallocate() ioctl on the
+backing store fd.
+  - map: default fallocate() with mode=0.
+  - unmap: fallocate() with FALLOC_FL_PUNCH_HOLE.
+The map/unmap will trigger above memfile_notifier_ops to let KVM map/unmap
+secondary MMU page tables.
+
+Test
+----
+To test the new functionalities of this patch TDX patchset is needed.
+Since TDX patchset has not been merged so I did two kinds of test:
+
+-  Selftest on normal VM from Vishal
+   https://lkml.org/lkml/2022/5/10/2045
+   The selftest has been ported to this patchset and you can find it in
+   repo: https://github.com/chao-p/linux/tree/privmem-v6
+
+-  Private memory funational test on latest TDX code
+   The patch is rebased to latest TDX code and tested the new
+   funcationalities. See below repos:
+   Linux: https://github.com/chao-p/linux/commits/privmem-v6-tdx
+   QEMU: https://github.com/chao-p/qemu/tree/privmem-v6
+
+An example QEMU command line for TDX test:
+-object tdx-guest,id=tdx \
+-object memory-backend-memfd-private,id=ram1,size=2G \
+-machine q35,kvm-type=tdx,pic=no,kernel_irqchip=split,memory-encryption=tdx,memory-backend=ram1
+
+What's missing
+--------------
+  - The accounting for longterm pinned memory in the backing store is
+    not included since I havn't come out a good solution yet.
+  - Batch invalidation notify for shmem is not ready, as I still see
+    it's a bit tricky to do that clearly.
+
+Changelog
+----------
+v6:
+  - Re-organzied patch for both mm/KVM parts.
+  - Added flags for memfile_notifier so its consumers can state their
+    features and memory backing store can check against these flags.
+  - Put a backing store reference in the memfile_notifier and move pfn_ops
+    into backing store.
+  - Only support boot time backing store register.
+  - Overall KVM part improvement suggested by Sean and some others.
+v5:
+  - Removed userspace visible F_SEAL_INACCESSIBLE, instead using an
+    in-kernel flag (SHM_F_INACCESSIBLE for shmem). Private fd can only
+    be created by MFD_INACCESSIBLE.
+  - Introduced new APIs for backing store to register itself to
+    memfile_notifier instead of direct function call.
+  - Added the accounting and restriction for MFD_INACCESSIBLE memory.
+  - Added KVM API doc for new memslot extensions and man page for the new
+    MFD_INACCESSIBLE flag.
+  - Removed the overlap check for mapping the same file+offset into
+    multiple gfns due to perf consideration, warned in document.
+  - Addressed other comments in v4.
+v4:
+  - Decoupled the callbacks between KVM/mm from memfd and use new
+    name 'memfile_notifier'.
+  - Supported register multiple memslots to the same backing store.
+  - Added per-memslot pfn_ops instead of per-system.
+  - Reworked the invalidation part.
+  - Improved new KVM uAPIs (private memslot extension and memory
+    error) per Sean's suggestions.
+  - Addressed many other minor fixes for comments from v3.
+v3:
+  - Added locking protection when calling
+    invalidate_page_range/fallocate callbacks.
+  - Changed memslot structure to keep use useraddr for shared memory.
+  - Re-organized F_SEAL_INACCESSIBLE and MEMFD_OPS.
+  - Added MFD_INACCESSIBLE flag to force F_SEAL_INACCESSIBLE.
+  - Commit message improvement.
+  - Many small fixes for comments from the last version.
+
+Links to previous discussions
+-----------------------------
+[1] Original design proposal:
+https://lkml.kernel.org/kvm/20210824005248.200037-1-seanjc@google.com/
+[2] Updated proposal and RFC patch v1:
+https://lkml.kernel.org/linux-fsdevel/20211111141352.26311-1-chao.p.peng@linux.intel.com/
+[3] Patch v5: https://lkml.org/lkml/2022/3/10/457
+
+Chao Peng (6):
+  mm: Introduce memfile_notifier
+  mm/memfd: Introduce MFD_INACCESSIBLE flag
+  KVM: Extend the memslot to support fd-based private memory
+  KVM: Add KVM_EXIT_MEMORY_FAULT exit
+  KVM: Handle page fault for private memory
+  KVM: Enable and expose KVM_MEM_PRIVATE
+
+Kirill A. Shutemov (1):
+  mm/shmem: Support memfile_notifier
+
+ Documentation/virt/kvm/api.rst   |  60 ++++++++++--
+ arch/mips/include/asm/kvm_host.h |   2 +-
+ arch/x86/include/asm/kvm_host.h  |   2 +-
+ arch/x86/kvm/Kconfig             |   2 +
+ arch/x86/kvm/mmu.h               |   1 +
+ arch/x86/kvm/mmu/mmu.c           |  70 +++++++++++++-
+ arch/x86/kvm/mmu/mmu_internal.h  |  17 ++++
+ arch/x86/kvm/mmu/mmutrace.h      |   1 +
+ arch/x86/kvm/mmu/paging_tmpl.h   |   5 +-
+ arch/x86/kvm/x86.c               |   2 +-
+ include/linux/kvm_host.h         |  51 +++++++++--
+ include/linux/memfile_notifier.h |  99 ++++++++++++++++++++
+ include/linux/shmem_fs.h         |   2 +
+ include/uapi/linux/kvm.h         |  33 +++++++
+ include/uapi/linux/memfd.h       |   1 +
+ mm/Kconfig                       |   4 +
+ mm/Makefile                      |   1 +
+ mm/memfd.c                       |  15 ++-
+ mm/memfile_notifier.c            | 137 +++++++++++++++++++++++++++
+ mm/shmem.c                       | 120 +++++++++++++++++++++++-
+ virt/kvm/Kconfig                 |   3 +
+ virt/kvm/kvm_main.c              | 153 +++++++++++++++++++++++++++++--
+ 22 files changed, 748 insertions(+), 33 deletions(-)
+ create mode 100644 include/linux/memfile_notifier.h
+ create mode 100644 mm/memfile_notifier.c
+
 -- 
 2.25.1
 
