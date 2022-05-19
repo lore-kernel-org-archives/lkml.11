@@ -2,155 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A8DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239591AbiESOWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
+        id S239484AbiESOYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:24:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239484AbiESOW1 (ORCPT
+        with ESMTP id S232250AbiESOYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:22:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7BEF73795
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:22:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652970146;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8QmPbRB1QFxv/pF4z1RFQhVilnkWaoFyXeE0F38Hzf4=;
-        b=AH9e5RLDqdWOZA2961jTtLnIoOOtqxXTlYkuDIOwwzcUzAzLeoLVq/D3HbstO8BB3F2k2X
-        +UlSILuJcPkBAYtq1RGfgdvvnnS+1wGHxonDw4aeyz9HtbaeFBw53WJU8MPI1/MKDbsgSc
-        gttQQ7Ky/U8YXz2jNSj1lq3AStE8ymw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-452-yprCcXR-NICTCUXaCRUCMQ-1; Thu, 19 May 2022 10:22:21 -0400
-X-MC-Unique: yprCcXR-NICTCUXaCRUCMQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5157F397968A;
-        Thu, 19 May 2022 14:22:20 +0000 (UTC)
-Received: from localhost (ovpn-13-136.pek2.redhat.com [10.72.13.136])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1CFF21121314;
-        Thu, 19 May 2022 14:22:19 +0000 (UTC)
-Date:   Thu, 19 May 2022 22:22:15 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Mimi Zohar <zohar@linux.ibm.com>, Coiby Xu <coxu@redhat.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>, akpm@linux-foundation.org,
-        kexec@lists.infradead.org, keyrings@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Chun-Yi Lee <jlee@suse.com>, stable@vger.kernel.org,
-        Philipp Rudo <prudo@linux.ibm.com>,
-        linux-security-module@vger.kernel.org,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        "open list:S390" <linux-s390@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-integrity <linux-integrity@vger.kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: Re: [PATCH v8 4/4] kexec, KEYS, s390: Make use of built-in and
- secondary keyring for signature verification
-Message-ID: <YoZSl84aJYTscgfO@MiWiFi-R3L-srv>
-References: <20220512070123.29486-1-coxu@redhat.com>
- <20220512070123.29486-5-coxu@redhat.com>
- <YoTYm6Fo1vBUuJGu@osiris>
- <20220519003902.GE156677@MiWiFi-R3L-srv>
- <c47299b899da4ad4b6d3ad637022ad82c8ed6ed2.camel@linux.ibm.com>
+        Thu, 19 May 2022 10:24:00 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD505B82C9;
+        Thu, 19 May 2022 07:23:59 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id t2so599967qkb.12;
+        Thu, 19 May 2022 07:23:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qa+RmjWGq636GZ/8xymXuJ2O/Y4ZrpNYQ00uYeEnnps=;
+        b=GtwDUuXWMikoAdpZO5iESljNOMEVwaut9jSbx04nSn/WsKu8Xkw384UfcB5+2X6scR
+         PJBqMPwQCmFLfHBUd54VAq8Y2PcKY83iffpbQFedSLtz7zAk6BxMPVkIxQ6GWvPKqbPr
+         BKjuTH/Qrd7iN9Pb1CdNBG+q8aTXnzFMwSWvsSjAl7vo4kCvhLwYrXb0hT5VtVBFQqm3
+         l7A7BpXBaCGM5y6sVYf/ydOD/xiczCPksHyvaTbg/7tmD+pzW0mABofHjXEGv3/F8BAR
+         TnD2/A6/iSwYBDqbnhGHGD/1fcZGP6VrTw9CG2DV8UrrRYHTJvzaLH1MCSALg261+XXu
+         EcLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qa+RmjWGq636GZ/8xymXuJ2O/Y4ZrpNYQ00uYeEnnps=;
+        b=Gf20gElKXG0UX1JGs/PWZ+LZ0HHA/ZuFPHct294lsIJq5Gkh27dxZGMMV/5MTZU3pp
+         4/USsWSP2nWGufyyr+xlo3lJIz3UfKF2dMPAqQMEBD59v+h5lNZhsXDVR++cWj2+CfBk
+         e3qmG5O77Lp52sCyx0KVt6kRJrWssxSqjWY2abll34k4jWPDBMTs+R5Fzfuml5MJHYHp
+         YQ9utfcdjzoKa2LEpCXIAPWsFcmEy7KI6LLMwP3Rl7HMacvidDwD1Rti6WJATpGKa/ZW
+         Wog56F9Bcy70+cx/mrUs2QOnI0Weu90MZvOwy7M/xgzacrLm2AmePnFxFJZWgfCX+gsR
+         0wKQ==
+X-Gm-Message-State: AOAM530/qQnnKp+e2htpPAyn5X30MidZGrgJZGiMuN1mDp41+exrnHzJ
+        czYH7veTqg2qVhg+KGe4IBs=
+X-Google-Smtp-Source: ABdhPJzTGJKtnF2Jao6mYEzO1MdxqaX7B7cQMJFc5dHa8sZmNVz1kZcmFh865P78KZqTjAs5O9p4Cw==
+X-Received: by 2002:a05:620a:46a1:b0:6a0:465e:ccca with SMTP id bq33-20020a05620a46a100b006a0465ecccamr3116751qkb.631.1652970238949;
+        Thu, 19 May 2022 07:23:58 -0700 (PDT)
+Received: from localhost.localdomain ([217.138.206.82])
+        by smtp.gmail.com with ESMTPSA id c15-20020ac85a8f000000b002f39b99f697sm1539342qtc.49.2022.05.19.07.23.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 07:23:58 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        Ikjoon Jang <ikjn@chromium.org>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Sam Shih <sam.shih@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Yassine Oudjana <yassine.oudjana@gmail.com>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+Subject: [PATCH v2 0/4] Mediatek MT6735 main clock and reset drivers
+Date:   Thu, 19 May 2022 18:22:07 +0400
+Message-Id: <20220519142211.458336-1-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c47299b899da4ad4b6d3ad637022ad82c8ed6ed2.camel@linux.ibm.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/19/22 at 07:56am, Mimi Zohar wrote:
-> [Cc'ing Jarkko, linux-integrity]
-> 
-> On Thu, 2022-05-19 at 08:39 +0800, Baoquan He wrote:
-> > On 05/18/22 at 01:29pm, Heiko Carstens wrote:
-> > > On Thu, May 12, 2022 at 03:01:23PM +0800, Coiby Xu wrote:
-> > > > From: Michal Suchanek <msuchanek@suse.de>
-> > > > 
-> > > > commit e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
-> > > > adds support for KEXEC_SIG verification with keys from platform keyring
-> > > > but the built-in keys and secondary keyring are not used.
-> > > > 
-> > > > Add support for the built-in keys and secondary keyring as x86 does.
-> > > > 
-> > > > Fixes: e23a8020ce4e ("s390/kexec_file: Signature verification prototype")
-> > > > Cc: stable@vger.kernel.org
-> > > > Cc: Philipp Rudo <prudo@linux.ibm.com>
-> > > > Cc: kexec@lists.infradead.org
-> > > > Cc: keyrings@vger.kernel.org
-> > > > Cc: linux-security-module@vger.kernel.org
-> > > > Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-> > > > Reviewed-by: "Lee, Chun-Yi" <jlee@suse.com>
-> > > > Acked-by: Baoquan He <bhe@redhat.com>
-> > > > Signed-off-by: Coiby Xu <coxu@redhat.com>
-> > > > ---
-> > > >  arch/s390/kernel/machine_kexec_file.c | 18 +++++++++++++-----
-> > > >  1 file changed, 13 insertions(+), 5 deletions(-)
-> > > 
-> > > As far as I can tell this doesn't have any dependency to the other
-> > > patches in this series, so should I pick this up for the s390 tree, or
-> > > how will this go upstream?
-> > 
-> > Thanks, Heiko.
-> > 
-> > I want to ask Mimi if this can be taken into KEYS-ENCRYPTED tree.
-> > Otherwise I will ask Andrew to help pick this whole series.
-> > 
-> > Surely, this patch 4 can be taken into s390 seperately since it's
-> > independent, both looks good.
-> 
-> KEYS-ENCRYTPED is a type of key, unrelated to using the .platform,
-> .builtin, .machine, or .secondary keyrings.  One of the main reasons
-> for this patch set is to use the new ".machine" keyring, which, if
-> enabled, is linked to the "secondary" keyring.  However, the only
-> reference to the ".machine" keyring is in the cover letter, not any of
-> the patch descriptions.  Since this is the basis for the system's
-> integrity, this seems like a pretty big omission.
-> 
-> From patch 2/4:
-> "The code in bzImage64_verify_sig makes use of system keyrings
-> including
-> .buitin_trusted_keys, .secondary_trusted_keys and .platform keyring to
-> verify signed kernel image as PE file..."
-> 
-> From patch 3/4:
-> "This patch allows to verify arm64 kernel image signature using not
-> only
-> .builtin_trusted_keys but also .platform and .secondary_trusted_keys
-> keyring."
-> 
-> From patch 4/4:
-> "... with keys from platform keyring but the built-in keys and
-> secondary keyring are not used."
-> 
-> This patch set could probably go through KEYS/KEYRINGS_INTEGRITY, but
-> it's kind of late to be asking.  Has it been in linux-next?  Should I
-> assume this patch set has been fully tested or can we get some "tags"?
+This series adds support for the main clock and reset controllers on the
+Mediatek MT6735 SoC:
+- apmixedsys (global PLLs)
+- topckgen (global divisors and muxes)
+- infracfg (gates and resets for internal components)
+- pericfg (gates and resets for peripherals)
 
-Right, it should be KEYS/KEYRINGS_INTEGRITY related, I made mistaken.
-Now it got two ACKs from Michal and me. Michal met the same issue on
-arm64 and posted another series of patches, finally Coiby integrated
-Michal's patch and his to make this patchset. That would be great if
-this can get reviewing from experts on key/keyring. Surely, Coiby need
-update the patch log to add the '.machine' keyring into patch logs as
-you pointed out.
+MT6735 has other more specialized clock controllers, support for which is
+not included in this series:
+- imgsys (camera)
+- mmsys (display)
+- vdecsys (video decoder)
+- audsys (audio)
 
-IIRC, Coiby has tested it on x86_64/arm64, not sure if he took test on
-s390. No, this hasn't been in linux-next.
+Tested on a Samsung Galaxy Grand Prime+ "grandpplte" with MT6737T, a slight
+variant of MT6735 with no known differences in the clock controllers. 
+
+Dependencies:
+- clk: mediatek: Move to struct clk_hw provider APIs (series)
+  https://patchwork.kernel.org/project/linux-mediatek/cover/20220510104804.544597-1-wenst@chromium.org/ 
+- Cleanup MediaTek clk reset drivers and support MT8192/MT8195 (series)
+  https://patchwork.kernel.org/project/linux-mediatek/cover/20220503093856.22250-1-rex-bc.chen@mediatek.com/
+- Export required symbols to compile clk drivers as module (single patch)
+  https://patchwork.kernel.org/project/linux-mediatek/patch/20220518111652.223727-7-angelogioacchino.delregno@collabora.com/
+- clk: mediatek: Improvements to simple probe/remove and reset controller unregistration
+  https://patchwork.kernel.org/project/linux-clk/cover/20220519134728.456643-1-y.oudjana@protonmail.com/
+
+Above are dependencies for patch 4/4 only; DT bindings don't need them.
+
+Changes since v1:
+- Rebase on some pending patches (listed as dependencies above).
+- Move common clock improvemenets to a separate series (last dependency
+  listed above).
+- Use mtk_clk_simple_probe/remove after making them support several clock types
+  in said series.
+- Combine all 4 drivers into one patch, and use one Kconfig symbol for all
+  following a conversation seen on a different series[1].
+- Correct APLL2 registers in apmixedsys driver (were offset backwards by 0x4).
+- Make irtx clock name lower case to match the other clocks.
+
+[1] https://lore.kernel.org/linux-mediatek/CAGXv+5H4gF5GXzfk8mjkG4Kry8uCs1CQbKoViBuc9LC+XdHH=A@mail.gmail.com/
+
+Yassine Oudjana (4):
+  dt-bindings: clock: Add Mediatek MT6735 clock bindings
+  dt-bindings: reset: Add MT6735 reset bindings
+  dt-bindings: arm: mediatek: Add MT6735 clock controller compatibles
+  clk: mediatek: Add drivers for MediaTek MT6735 main clock drivers
+
+ .../arm/mediatek/mediatek,infracfg.yaml       |    8 +-
+ .../arm/mediatek/mediatek,pericfg.yaml        |    1 +
+ .../bindings/clock/mediatek,apmixedsys.yaml   |    4 +-
+ .../bindings/clock/mediatek,topckgen.yaml     |    4 +-
+ MAINTAINERS                                   |   16 +
+ drivers/clk/mediatek/Kconfig                  |    9 +
+ drivers/clk/mediatek/Makefile                 |    1 +
+ drivers/clk/mediatek/clk-mt6735-apmixedsys.c  |  235 ++++
+ drivers/clk/mediatek/clk-mt6735-infracfg.c    |  205 ++++
+ drivers/clk/mediatek/clk-mt6735-pericfg.c     |  301 +++++
+ drivers/clk/mediatek/clk-mt6735-topckgen.c    | 1087 +++++++++++++++++
+ .../clock/mediatek,mt6735-apmixedsys.h        |   16 +
+ .../clock/mediatek,mt6735-infracfg.h          |   25 +
+ .../clock/mediatek,mt6735-pericfg.h           |   37 +
+ .../clock/mediatek,mt6735-topckgen.h          |   79 ++
+ .../reset/mediatek,mt6735-infracfg.h          |   31 +
+ .../reset/mediatek,mt6735-pericfg.h           |   31 +
+ 17 files changed, 2085 insertions(+), 5 deletions(-)
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-apmixedsys.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-infracfg.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-pericfg.c
+ create mode 100644 drivers/clk/mediatek/clk-mt6735-topckgen.c
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-apmixedsys.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-infracfg.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-pericfg.h
+ create mode 100644 include/dt-bindings/clock/mediatek,mt6735-topckgen.h
+ create mode 100644 include/dt-bindings/reset/mediatek,mt6735-infracfg.h
+ create mode 100644 include/dt-bindings/reset/mediatek,mt6735-pericfg.h
+
+-- 
+2.36.1
 
