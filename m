@@ -2,127 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C868C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22916C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241047AbiESPcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57072 "EHLO
+        id S241070AbiESPc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240935AbiESPch (ORCPT
+        with ESMTP id S241017AbiESPcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:32:37 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823405C84D;
-        Thu, 19 May 2022 08:32:35 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 52196FF804;
-        Thu, 19 May 2022 15:32:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652974354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H/loyWDzc9X11Tf8C5CPf6PW/Ft0RiVlInj9tX+NPZg=;
-        b=X+gHFMidJYS9rXgUSgxi0wcZgQRBBccLYdh1vd2TtM1ngJlViD3n8U2EEe4fM/7s1ejXtz
-        OywKjjr+VOSTiVUJmxRhQLFhwIwZkFCXQIqycuxFBe1OgyXEUe0/KGF/rCcGBw7QJ6+i75
-        HkpmZUlWpnwd+E0a8cEVCJBKbGOVNQgDlrts4q7Iq2v1G9u8tqMDnv/rW6KzDT5GyKL0VX
-        JyKXWQ0KYT/F1A3ifJxML5JPFKiydCtzHWn3QuULXAwddXt1LwNdtfaECKW8jrxCLXB40M
-        kado6ht4AA/CrLzCeFBEpEx1ENg6hC/v2CbQkY46ZP/Hm84S2HwIkGcNZk0iRA==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        Thu, 19 May 2022 11:32:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051D860ABF;
+        Thu, 19 May 2022 08:32:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=RftDzywG3r2aAn9dn2kxlngBMt6wN9yyHzisOWaRAY0=; b=AR+vTJME19UjwVUasj8rGPp7Fr
+        8PadH/tNushEB0xq2HqXaHOWK3Jspk3nHeaFivvV4N1HEt/vFhhp/zO5L2ksFNDVBFB0keYF5o40N
+        aAyX8U4dwODaCVq8jxZ5OLLTSZ10fD166r+OZo6JMssZztKRB+qracGilTqg9LWALut0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nri8h-003Vd3-Vj; Thu, 19 May 2022 17:32:35 +0200
+Date:   Thu, 19 May 2022 17:32:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v5 02/13] net: dsa: add support for ethtool get_rmon_stats()
-Date:   Thu, 19 May 2022 17:30:56 +0200
-Message-Id: <20220519153107.696864-3-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220519153107.696864-1-clement.leger@bootlin.com>
-References: <20220519153107.696864-1-clement.leger@bootlin.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        John Stultz <jstultz@google.com>,
+        Alvin =?utf-8?B?4pS8w6FpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver
+ that defers probe
+Message-ID: <YoZjE77QvIGifDnY@lunn.ch>
+References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
+ <Yn72l3O6yI7YstMf@lunn.ch>
+ <20220519145936.3ofmmnrehydba7t6@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519145936.3ofmmnrehydba7t6@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to allow dsa drivers to specify the .get_rmon_stats()
-operation.
+> > There is a very different approach, which might be simpler.
+> > 
+> > We know polling will always work. And it should be possible to
+> > transition between polling and interrupt at any point, so long as the
+> > phylock is held. So if you get -EPROBE_DEFFER during probe, mark some
+> > state in phydev that there should be an irq, but it is not around yet.
+> > When the phy is started, and phylib starts polling, look for the state
+> > and try getting the IRQ again. If successful, swap to interrupts, if
+> > not, keep polling. Maybe after 60 seconds of polling and trying, give
+> > up trying to find the irq and stick with polling.
+> 
+> That doesn't sound like something that I'd backport to stable kernels.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- include/net/dsa.h |  3 +++
- net/dsa/slave.c   | 13 +++++++++++++
- 2 files changed, 16 insertions(+)
+> What motivates me to make these changes in the first place is the idea
+> that current kernels should work with updated device trees.
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 14f07275852b..64da5ed27fdc 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -888,6 +888,9 @@ struct dsa_switch_ops {
- 				     struct ethtool_eth_mac_stats *mac_stats);
- 	void	(*get_eth_ctrl_stats)(struct dsa_switch *ds, int port,
- 				      struct ethtool_eth_ctrl_stats *ctrl_stats);
-+	void	(*get_rmon_stats)(struct dsa_switch *ds, int port,
-+				  struct ethtool_rmon_stats *rmon_stats,
-+				  const struct ethtool_rmon_hist_range **ranges);
- 	void	(*get_stats64)(struct dsa_switch *ds, int port,
- 				   struct rtnl_link_stats64 *s);
- 	void	(*self_test)(struct dsa_switch *ds, int port,
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 291197859cea..6cfe07ce06d6 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1002,6 +1002,18 @@ dsa_slave_get_eth_ctrl_stats(struct net_device *dev,
- 		ds->ops->get_eth_ctrl_stats(ds, dp->index, ctrl_stats);
- }
- 
-+static void
-+dsa_slave_get_rmon_stats(struct net_device *dev,
-+			 struct ethtool_rmon_stats *rmon_stats,
-+			 const struct ethtool_rmon_hist_range **ranges)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (ds->ops->get_rmon_stats)
-+		ds->ops->get_rmon_stats(ds, dp->index, rmon_stats, ranges);
-+}
-+
- static void dsa_slave_net_selftest(struct net_device *ndev,
- 				   struct ethtool_test *etest, u64 *buf)
- {
-@@ -2081,6 +2093,7 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
- 	.get_eth_phy_stats	= dsa_slave_get_eth_phy_stats,
- 	.get_eth_mac_stats	= dsa_slave_get_eth_mac_stats,
- 	.get_eth_ctrl_stats	= dsa_slave_get_eth_ctrl_stats,
-+	.get_rmon_stats		= dsa_slave_get_rmon_stats,
- 	.set_wol		= dsa_slave_set_wol,
- 	.get_wol		= dsa_slave_get_wol,
- 	.set_eee		= dsa_slave_set_eee,
--- 
-2.36.0
+By current, you mean old kernels, LTS etc. You want an LTS kernel to
+work with a new DT blob? You want forward compatibility with a DT
+blob. Do the stable rules say anything about that?
 
+      Andrew
