@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B97DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C67C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239219AbiESN5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56594 "EHLO
+        id S238370AbiESN57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238834AbiESN5I (ORCPT
+        with ESMTP id S238804AbiESN5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 19 May 2022 09:57:08 -0400
 Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1C5E65;
-        Thu, 19 May 2022 06:57:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932512BE7;
+        Thu, 19 May 2022 06:57:04 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C27B9240018;
-        Thu, 19 May 2022 13:56:53 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id AB19924000A;
+        Thu, 19 May 2022 13:57:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652968616;
+        t=1652968623;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+OOpYFAzojc6pPu7a3Cjy9JL3eWpwDvEMOqBp/XLQgg=;
-        b=dtLrrAdyCTFWwrLJm+qeQJGHpa3bmwxvW+UgOFJ2YIIByrWEe4gUjtmZGjssJ89W9srh8R
-        kZUUlf/rHIlPTNDYwmaIVUZU1WPsbHJKInceDUATxGClPhC6AZXeJcAej8dgHMEoW0dq0E
-        lYbranHyebS2g9nlHnKF1ZapApg5OPpr1GWEzmXkkxa2ZFeR2fqPG0GDXmowXSFxd5lFX/
-        9e+Cg0cVQKmps3VHV4/wykA4TXYwrxEHWkfwDBp3Ybo7yQf2RO+YN26CKmh0edA2YauRGK
-        dissJ8wdsdBTMbsA9chamCqVZRRQVvWCNiKLkCb7FvfgSTYn5wUCMwwP0sgdkA==
+        bh=pWGVazQWGDDZgzON711pAZLPzapDACfEJlg6W1kTnfg=;
+        b=BhkmYgd0BYKmyoJAXqAKqMjHEUFihdXTXN70fxztHSnrObK3NtNQFzMboMqwt+XpzQQBq8
+        Yckb+AaL2hE1pmmtEbLR6rLBxyeepVgkzziIS882Uojd76piQeLymSa7cHjUN3tFnQqX0A
+        /HiQNag2wBM6NiYjZFQdF4ixegzRmBH+6+CkP1eh5m73aUKH14Fldg3uY3qgC8C7HSl3Zy
+        7wfbsiUhnuFoVNDgwX9BUFpRq6lxwsuk3Xj7UuEefU8Fxxi8GiIk7GXCHkAaaT3zBG67iM
+        OmCXXf7ZSi2i5fa5SWdwzpMMobse/smQ6HYAlkS6nDQCtYamQECNfPh5KOY35A==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -43,9 +43,9 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 1/6] net: phy: Introduce QUSGMII PHY mode
-Date:   Thu, 19 May 2022 15:56:42 +0200
-Message-Id: <20220519135647.465653-2-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next 4/6] net: phy: Add support for inband extensions
+Date:   Thu, 19 May 2022 15:56:45 +0200
+Message-Id: <20220519135647.465653-5-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
 References: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
@@ -55,96 +55,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The QUSGMII mode is a derivative of Cisco's USXGMII standard. This
-standard is pretty similar to SGMII, but allows for faster speeds, and
-has the build-in bits for Quad and Octa variants (like QSGMII).
+The USXGMII Standard by Cisco introduces the notion of extensions used
+in the preamble. The standard proposes a "PCH" extension, which allows
+passing timestamps in the preamble. However, other alternatives are
+possible, like Microchip's "MCH" mode, that allows passing indication to
+a PHY telling whether or not the PHY should timestamp an outgoing packet,
+therefore removing the need for the PHY to have an internal classifier.
 
-The main difference with SGMII/QSGMII is that USXGMII/QUSGMII re-uses
-the preamble to carry various information, named 'Extensions'.
-
-As of today, the USXGMII standard only mentions the "PCH" extension,
-which is used to convey timestamps, allowing in-band signaling of PTP
-timestamps without having to modify the frame itself.
-
-This commit adds support for that mode. When no extension is in use, it
-behaves exactly like QSGMII, although it's not compatible with QSGMII.
+This commit allows reporting the various extensions a PHY supports,
+without tying them to the actual PHY mode. This is done 1) because there
+are multiple variants of the USXGMII mode, like QUSGMII and OUSGMII, and
+2) because other non-cisco standards might one day propose a similar
+mechanism.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
- Documentation/networking/phy.rst | 9 +++++++++
- drivers/net/phy/phylink.c        | 3 +++
- include/linux/phy.h              | 3 +++
- 3 files changed, 15 insertions(+)
+ drivers/net/phy/phy.c | 68 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/phy.h   | 25 +++++++++++++++-
+ 2 files changed, 92 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
-index d43da709bf40..72c3c9fbce6f 100644
---- a/Documentation/networking/phy.rst
-+++ b/Documentation/networking/phy.rst
-@@ -308,6 +308,15 @@ Some of the interface modes are described below:
-     rate of 125Mpbs using a 4B/5B encoding scheme, resulting in an underlying
-     data rate of 100Mpbs.
- 
-+``PHY_INTERFACE_MODE_QUSGMII``
-+    This defines the Cisco the Quad USGMII mode, which is the Quad variant of
-+    the USGMII (Universal SGMII) link. It's very similar to QSGMII, but uses
-+    a Packet Control Header (PCH) instead of the 7 bytes preamble to carry not
-+    only the port id, but also so-called "extensions". The only documented
-+    extension so-far in the specification is the inclusion of timestamps, for
-+    PTP-enabled PHYs. This mode isn't compatible with QSGMII, but offers the
-+    same capabilities in terms of link speed and negociation.
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index beb2b66da132..bbd3d7620609 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -1475,3 +1475,71 @@ int phy_ethtool_nway_reset(struct net_device *ndev)
+ 	return phy_restart_aneg(phydev);
+ }
+ EXPORT_SYMBOL(phy_ethtool_nway_reset);
 +
- Pause frames / flow control
- ===========================
- 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 06943889d747..228eed5bc85a 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -320,6 +320,7 @@ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_QSGMII:
-+	case PHY_INTERFACE_MODE_QUSGMII:
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_GMII:
- 		caps |= MAC_1000HD | MAC_1000FD;
-@@ -631,6 +632,7 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
- 		switch (pl->link_config.interface) {
- 		case PHY_INTERFACE_MODE_SGMII:
- 		case PHY_INTERFACE_MODE_QSGMII:
-+		case PHY_INTERFACE_MODE_QUSGMII:
- 			phylink_set(pl->supported, 10baseT_Half);
- 			phylink_set(pl->supported, 10baseT_Full);
- 			phylink_set(pl->supported, 100baseT_Half);
-@@ -2944,6 +2946,7 @@ void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
- 
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_QSGMII:
-+	case PHY_INTERFACE_MODE_QUSGMII:
- 		phylink_decode_sgmii_word(state, lpa);
- 		break;
- 
++/**
++ * PHY modes in the USXGMII family can have extensions, with data transmitted
++ * in the frame preamble.
++ * For now, only QUSGMII is supported, but other variants like USGMII and
++ * OUSGMII can be added in the future.
++ */
++static inline bool phy_interface_has_inband_ext(phy_interface_t interface)
++{
++	return interface == PHY_INTERFACE_MODE_QUSGMII;
++}
++
++bool phy_inband_ext_available(struct phy_device *phydev, u32 ext)
++{
++	return !!(phydev->inband_ext.available & ext);
++}
++EXPORT_SYMBOL(phy_inband_ext_available);
++
++bool phy_inband_ext_enabled(struct phy_device *phydev, u32 ext)
++{
++	return !!(phydev->inband_ext.enabled & ext);
++}
++EXPORT_SYMBOL(phy_inband_ext_enabled);
++
++static int phy_set_inband_ext(struct phy_device *phydev, u32 mask, u32 ext)
++{
++	int ret;
++
++	if (!phy_interface_has_inband_ext(phydev->interface))
++		return -EOPNOTSUPP;
++
++	if (!phydev->drv->inband_ext_config)
++		return -EOPNOTSUPP;
++
++	ret = phydev->drv->inband_ext_config(phydev, mask, ext);
++	if (ret)
++		return ret;
++
++	phydev->inband_ext.enabled &= ~mask;
++	phydev->inband_ext.enabled |= (mask & ext);
++
++	return 0;
++}
++
++int phy_inband_ext_enable(struct phy_device *phydev, u32 ext)
++{
++	return phy_set_inband_ext(phydev, ext, ext);
++}
++EXPORT_SYMBOL(phy_inband_ext_enable);
++
++int phy_inband_ext_disable(struct phy_device *phydev, u32 ext)
++{
++	return phy_set_inband_ext(phydev, ext, 0);
++}
++EXPORT_SYMBOL(phy_inband_ext_disable);
++
++int phy_inband_ext_set_available(struct phy_device *phydev, u32 mask, u32 ext)
++{
++	if (!(mask & phydev->drv->inband_ext))
++		return -EOPNOTSUPP;
++
++	phydev->inband_ext.available &= ~mask;
++	phydev->inband_ext.available |= (mask & ext);
++
++	return 0;
++}
++EXPORT_SYMBOL(phy_inband_ext_set_available);
++
 diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 36ca2b5c2253..4a2731c78590 100644
+index 4a2731c78590..6b08f49bce5b 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -152,6 +152,7 @@ typedef enum {
- 	PHY_INTERFACE_MODE_USXGMII,
- 	/* 10GBASE-KR - with Clause 73 AN */
- 	PHY_INTERFACE_MODE_10GKR,
-+	PHY_INTERFACE_MODE_QUSGMII,
- 	PHY_INTERFACE_MODE_MAX,
- } phy_interface_t;
+@@ -190,6 +190,21 @@ static inline void phy_interface_set_rgmii(unsigned long *intf)
+ 	__set_bit(PHY_INTERFACE_MODE_RGMII_TXID, intf);
+ }
  
-@@ -267,6 +268,8 @@ static inline const char *phy_modes(phy_interface_t interface)
- 		return "10gbase-kr";
- 	case PHY_INTERFACE_MODE_100BASEX:
- 		return "100base-x";
-+	case PHY_INTERFACE_MODE_QUSGMII:
-+		return "qusgmii";
- 	default:
- 		return "unknown";
++/*
++ * TODO : Doc
++ */
++enum {
++	__PHY_INBAND_EXT_PCH = 0,
++};
++
++#define PHY_INBAND_EXT_PCH	BIT(__PHY_INBAND_EXT_PCH)
++
++int phy_inband_ext_enable(struct phy_device *phydev, u32 ext);
++int phy_inband_ext_disable(struct phy_device *phydev, u32 ext);
++int phy_inband_ext_set_available(struct phy_device *phydev, u32 mask, u32 ext);
++bool phy_inband_ext_available(struct phy_device *phydev, u32 ext);
++bool phy_inband_ext_enabled(struct phy_device *phydev, u32 ext);
++
+ /*
+  * phy_supported_speeds - return all speeds currently supported by a PHY device
+  */
+@@ -275,7 +290,6 @@ static inline const char *phy_modes(phy_interface_t interface)
  	}
+ }
+ 
+-
+ #define PHY_INIT_TIMEOUT	100000
+ #define PHY_FORCE_TIMEOUT	10
+ 
+@@ -635,6 +649,11 @@ struct phy_device {
+ 
+ 	phy_interface_t interface;
+ 
++	struct {
++		u32 available;
++		u32 enabled;
++	} inband_ext;
++
+ 	/*
+ 	 * forced speed & duplex (no autoneg)
+ 	 * partner speed & duplex & pause (autoneg)
+@@ -766,6 +785,7 @@ struct phy_driver {
+ 	u32 phy_id_mask;
+ 	const unsigned long * const features;
+ 	u32 flags;
++	u32 inband_ext;
+ 	const void *driver_data;
+ 
+ 	/**
+@@ -935,6 +955,9 @@ struct phy_driver {
+ 	int (*get_sqi)(struct phy_device *dev);
+ 	/** @get_sqi_max: Get the maximum signal quality indication */
+ 	int (*get_sqi_max)(struct phy_device *dev);
++
++	int (*inband_ext_config)(struct phy_device *dev, u32 features,
++				 u32 mask);
+ };
+ #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
+ 				      struct phy_driver, mdiodrv)
 -- 
 2.36.1
 
