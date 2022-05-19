@@ -2,121 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 06:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 06:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234297AbiESGIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 02:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        id S234309AbiESGJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 02:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233546AbiESGII (ORCPT
+        with ESMTP id S234299AbiESGJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 02:08:08 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96825819AC
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 23:08:05 -0700 (PDT)
-Received: from epcas3p1.samsung.com (unknown [182.195.41.19])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220519060803epoutp02f4ee23128855bfc881bfa241fabf153f~wbJyWcceF1530615306epoutp02-
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:08:03 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220519060803epoutp02f4ee23128855bfc881bfa241fabf153f~wbJyWcceF1530615306epoutp02-
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1652940483;
-        bh=08kcVObZMGmflDkwaR63MNwsdaqkDNUIB29kvNBTLfM=;
-        h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=PPbSvpbxPThGILT+rYKvUtcP5Mq/EeoWaqY/hxzR6GQ4rsJMk2Oz9rVOdCqffpapj
-         15jvKlhBjmvuXAVAd1chNFVJtPnlSDQtoUomzyXmoF4p1TnWs0LaU8cNV+bCrkav2i
-         RcRnjqUTZlrVgwTyDq66444dV9asWFRGAGO0AQDM=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas3p3.samsung.com (KnoxPortal) with ESMTP id
-        20220519060802epcas3p379ab0aab40cd2d5992e0b9c514f71576~wbJyCC73H1166711667epcas3p3-;
-        Thu, 19 May 2022 06:08:02 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp1.localdomain
-        (Postfix) with ESMTP id 4L3fXy4kMCz4x9QB; Thu, 19 May 2022 06:08:02 +0000
-        (GMT)
-Mime-Version: 1.0
-Subject: [PATCH] scsi: ufs: Fix referencing invalid rsp field
-Reply-To: daejun7.park@samsung.com
-Sender: Daejun Park <daejun7.park@samsung.com>
-From:   Daejun Park <daejun7.park@samsung.com>
-To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>
-CC:     "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <252651381.41652940482659.JavaMail.epsvc@epcpadp4>
-Date:   Thu, 19 May 2022 15:05:29 +0900
-X-CMS-MailID: 20220519060529epcms2p8941ce10ed8cfb50c142140f1f69f8612
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220519060529epcms2p8941ce10ed8cfb50c142140f1f69f8612
-References: <CGME20220519060529epcms2p8941ce10ed8cfb50c142140f1f69f8612@epcms2p8>
+        Thu, 19 May 2022 02:09:22 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1AC819AC
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 23:09:20 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id q130so5006500ljb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 23:09:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PNDXrv+ygiGRP7Ew+ogCVIR6dtT/3oMpUNbrS/sX8rY=;
+        b=JraGpmG0cqUHEyLAfLVhlpM+dTRiEpUtcsF0rqAjnl/+B59Y9yXJff5hLwRoGkgk2O
+         u72zMcTB48oO881CVG7a9/iVM6gTiRqxMW8zSp/jYsjniUTfyl5utHeSoPkgeFEeQO3j
+         cA6EdnCYdvzttofR8wbD6CHz6CDBp6FhqCBBLyUQTg1SV7w0YZvLo3eMR1RZosUFO1ez
+         8iH/WaeMwUSQeKHqCyGGsWhY3M/8VhwtwJwXk8y/UGsehKGk4eMffFH3aXiKrNW27wFI
+         ld/fW3048PVpXv45bNZK5u27I6G3mDoNlycNroowpREKpCQB5/lu4aZrCpO61LTzwjlh
+         /X3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PNDXrv+ygiGRP7Ew+ogCVIR6dtT/3oMpUNbrS/sX8rY=;
+        b=Dnl7s/cNT9Vifg3/IOxVwP05OhiNujf7ie2VvHLWuPZYGHBtOLsp5pVUqYbyKigY1K
+         YUW3+7+dN8GFFG9p/6r38DWOg1Sba0DbKIx8PeGmgdJx+L4cRP7bEtnG4yaX1IgfjD1N
+         BoTaZj3jP3/G5fSFm9wpuDJHwlGwnGth5lJKxKjItdDXOmuLxxhs1G7H1SuuMWnmQuh1
+         Kvul+se8QT5BmXCRSnOwoQr5xPn3tKl22NkJUn9QPIsendXDMZMe51DBWgA+6bWVYQSI
+         O17M1eoXlso6jRutFp+8X2t9kKH8lo4kXBDXUMlsewOhCJWNpbcrI3P3Ne1o0ujIUz1z
+         KKow==
+X-Gm-Message-State: AOAM531yI+xaWFS9VBQHfpTqkr9YT84QdT22e1lXGrRv3efDAv1VsNpW
+        YLQMNgmy4pIaBnLhiQtfzD5f5/eN5R6N6/go2bs=
+X-Google-Smtp-Source: ABdhPJz2CZJFdxXN0qnPt5mP007Oh9MW3+s8BmVyfAOyENDI/3SMbwSwAPrScF2SF7YTdQ+xcMrnZhyu9OlPiQQHjKI=
+X-Received: by 2002:a2e:8210:0:b0:250:87c9:fb69 with SMTP id
+ w16-20020a2e8210000000b0025087c9fb69mr1723105ljg.470.1652940557605; Wed, 18
+ May 2022 23:09:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220518023123.2455827-1-liuchao@coolpad.com> <7d1878ef-e1ae-0550-7d6d-2a2ff858586c@kernel.org>
+In-Reply-To: <7d1878ef-e1ae-0550-7d6d-2a2ff858586c@kernel.org>
+From:   Chao Liu <chaoliu719@gmail.com>
+Date:   Thu, 19 May 2022 14:09:06 +0800
+Message-ID: <CAKaaq-WTHtxF28h_5uJD2y0SGz9q2greBtTaGLhCpBhfsA3xtw@mail.gmail.com>
+Subject: Re: [PATCH] f2fs: make f2fs_read_inline_data() more readable
+To:     Chao Yu <chao@kernel.org>
+Cc:     Chao Liu <liuchao@coolpad.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
+        Wayne Zhang <zhangwen@coolpad.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a patch for fixing referencing sense data when it is invalid.
-When the length of the data segment is 0, there is no valid information in
-the rsp field, so ufshpb_rsp_upiu() is returned without additional
-operation.
+On Wed, May 18, 2022 at 11:23 PM Chao Yu <chao@kernel.org> wrote:
+>
+> On 2022/5/18 10:33, Chao Liu wrote:
+> > In f2fs_read_inline_data(), it is confused with checking of
+> > inline_data flag, as we checked it before calling. So this
+> > patch add some comments for f2fs_has_inline_data().
+> >
+> > Signed-off-by: Chao Liu
+>
+> It looks email address is missing, but it shows after I can apply this
+> patch to my local git repo...
+>
+> Could you please check your email client configuration?
 
-Signed-off-by: Daejun Park <daejun7.park@samsung.com>
----
- drivers/scsi/ufs/ufshpb.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+Oh, sorry, this may be caused by my SMTP server, I will try to
+resend it later via this email address.
 
-diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
-index f1f65383e97d..8882b47f76d3 100644
---- a/drivers/scsi/ufs/ufshpb.c
-+++ b/drivers/scsi/ufs/ufshpb.c
-@@ -1304,6 +1304,13 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
- 	struct utp_hpb_rsp *rsp_field = &lrbp->ucd_rsp_ptr->hr;
- 	int data_seg_len;
- 
-+	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
-+		& MASK_RSP_UPIU_DATA_SEG_LEN;
-+
-+	/* If data segment length is zero, rsp_field is not valid */
-+	if (!data_seg_len)
-+		return;
-+
- 	if (unlikely(lrbp->lun != rsp_field->lun)) {
- 		struct scsi_device *sdev;
- 		bool found = false;
-@@ -1338,18 +1345,6 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
- 		return;
- 	}
- 
--	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
--		& MASK_RSP_UPIU_DATA_SEG_LEN;
--
--	/* To flush remained rsp_list, we queue the map_work task */
--	if (!data_seg_len) {
--		if (!ufshpb_is_general_lun(hpb->lun))
--			return;
--
--		ufshpb_kick_map_work(hpb);
--		return;
--	}
--
- 	BUILD_BUG_ON(sizeof(struct utp_hpb_rsp) != UTP_HPB_RSP_SIZE);
- 
- 	if (!ufshpb_is_hpb_rsp_valid(hba, lrbp, rsp_field))
--- 
-2.25.1
-
-
+>
+> Thanks,
+>
+> > ---
+> > fs/f2fs/f2fs.h | 4 ++++
+> > 1 file changed, 4 insertions(+)
+> >
+> > diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+> > index f579e2ed0f14..5071f6636e41 100644
+> > --- a/fs/f2fs/f2fs.h
+> > +++ b/fs/f2fs/f2fs.h
+> > @@ -3167,6 +3167,10 @@ static inline int inline_xattr_size(struct inode *inode)
+> > return 0;
+> > }
+> >
+> > +/*
+> > + * Notice: check inline_data flag without inode page lock is unsafe.
+> > + * It could change at any time by f2fs_convert_inline_page().
+> > + */
+> > static inline int f2fs_has_inline_data(struct inode *inode)
+> > {
+> > return is_inode_flag_set(inode, FI_INLINE_DATA);
+> > --
+> > 2.25.1
+> >
