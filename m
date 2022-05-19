@@ -2,115 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D770C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C34C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239303AbiESN5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
+        id S238258AbiESN5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232267AbiESN5H (ORCPT
+        with ESMTP id S237828AbiESN5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:57:07 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A06E53;
-        Thu, 19 May 2022 06:56:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652968626; x=1684504626;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=qHQfaI2qEG6es+WFBkybiU4w71hm7VMtmExmawIPkjc=;
-  b=U3PsAdKQ6v2FYfLmjmfI5wGbL9AuSGjJ+GiPe/TZSUjLvvaQkyRWcl23
-   NmC8s6iii4RoUpIqiZQ58kwwrstX9N7p+O/i+Izeh9NRSMmNvjoprQJlk
-   rliPHXcgvh16mwFJ3rwpG+YUBr4Ugjr4jC75RObwfokzVeO5pd9DVbh8X
-   PY7mYw7utA0f+QhZx2/2q6kLrCVIyiO3276KYGzSBa/hLDXETCniBJ/lU
-   lnxMWhU6T6pRAB25clSaVwQUu4qdVG5Cyn3RxjBMRNqtABTtx8X7Lcxmx
-   Z2yunZ7bKIGZmaBaFIMmzKUBYrta1whYw1tUsG8gPSKrJuQvzFnaFD2ks
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="164801009"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 May 2022 06:56:58 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 19 May 2022 06:56:57 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 19 May 2022 06:56:55 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>
-CC:     <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
-        <conor.dooley@microchip.com>, <linux-kernel@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v4 0/2] rtc: microchip: Add driver for PolarFire SoC
-Date:   Thu, 19 May 2022 14:55:21 +0100
-Message-ID: <20220519135523.594347-1-conor.dooley@microchip.com>
+        Thu, 19 May 2022 09:57:08 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923162AD2;
+        Thu, 19 May 2022 06:57:03 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 613DE24001A;
+        Thu, 19 May 2022 13:56:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652968618;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QPggy8DjxLmgMYSoeke7qJ+fzc4rcw2qLCr35/LZ95U=;
+        b=eXmcVNZEpkG/9pDpy7nmw3FauLQz7qRAEaKixvmmNUMQBykSenPtBG3UJEfzr7Sl1qdNh0
+        4lYq4Cdu3XveCT1sIq7Mh6Yn8ZRWBYNjsRFMls4Ql3qNcfIRZNCWS+yaL8Ztu6WUrMpqM+
+        r0HfK1/WU2rPdlnyJCNAoyMku+cB6fxpE3rOZLwBXRPyuB3oQNXo3uYFrrhqdI0IQPBxrb
+        Z5yiCFORBBwkfnlnuUgK47/n+4dxXh6aYogksPiDd8c9Sa3+Apaj34jIIAvLOjLrSgVDKB
+        zvHuJoHFNjTlmn2hBc5U555aLmc6pNa0Z2LOEvdey9wfkN/xQwaymwerCy0aPg==
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next 2/6] dt-bindings: net: ethernet-controller: add QUSGMII mode
+Date:   Thu, 19 May 2022 15:56:43 +0200
+Message-Id: <20220519135647.465653-3-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
+References: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey all,
-This is technically a v4 of [0], although a fair bit of time has
-passed since then. In the meantime I upstreamed the dt-binding, which
-was in the v1, and this patch depends on the fixes to the dt-binding
-and device tree etc which landed in v5.18-rc5.
+Add a new QUSGMII mode, standing for "Quad Universal Serial Gigabit
+Media Independent Interface", a derivative of USGMII which, similarly to
+QSGMII, allows to multiplex 4 1Gbps links to a Quad-PHY.
 
-The driver is quite substantially rewritten from the v1, as you wanted
-it to be switched to "binary" rather than calendar mode - so hopefully I
-have satisfied your concerns with the original driver. Specifically you
-had an significant issue with the counter being reset on startup & that
-is no longer the case.
+The main difference with QSGMII is that QUSGMII can include an extension
+instead of the standard 7bytes ethernet preamble, allowing to convey
+arbitrary data such as Timestamps.
 
-Thanks,
-Conor.
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v3:
-- invert read order of datetime registers so that they are properly
-  aligned. reads of the upper register are aligned to the last read
-  of the lower register
-- move wakeup_irq out of mpfs_rtc_dev & into probe
-- removed range_min since it is not set & implicity zero anyway
-- rewrote the remove function to not call mpfs_rtc_alarm_irq_enable(,0)
-
-Changes from v2:
-- move prescaler out of mpfs_rtc_dev & into probe
-
-Changes from v1:
-- remove duplicate and unused defines
-- remove oneline mpfs_rtc_set_prescaler function
-- dont unconditionally turn off the rtc in the init function
-- dont reset the rtc when init is run.
-- dont disable the alarm when we boot
-- use binary, not calendar mode
-- delete mpfs_rtc_init & set prescale in probe
-- use dev_pm_set_wake_irq rather than writing suspend/resume functions
-- delete calendar mode only register defines
-- since using binary mode, set range min to zero
-- set range max to max alarm value (is this acceptable?)
-- added a MAINTAINERS entry: when v1 was submitted there was nothing to
-  add to, but there is now.
-
-[0] https://lore.kernel.org/linux-rtc/20210512111133.1650740-1-daire.mcnamara@microchip.com/
-
-Conor Dooley (2):
-  rtc: Add driver for Microchip PolarFire SoC
-  MAINTAINERS: add PolarFire SoC's RTC
-
- MAINTAINERS            |   1 +
- drivers/rtc/Kconfig    |  10 ++
- drivers/rtc/Makefile   |   1 +
- drivers/rtc/rtc-mpfs.c | 326 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 338 insertions(+)
- create mode 100644 drivers/rtc/rtc-mpfs.c
-
-
-base-commit: c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 4f15463611f8..dccde2033697 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -67,6 +67,7 @@ properties:
+       - gmii
+       - sgmii
+       - qsgmii
++      - qusgmii
+       - tbi
+       - rev-mii
+       - rmii
 -- 
 2.36.1
 
