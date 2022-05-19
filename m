@@ -2,82 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EADAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A928C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232944AbiESChp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 22:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
+        id S232955AbiESCmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 22:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232008AbiESChl (ORCPT
+        with ESMTP id S229790AbiESCmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 22:37:41 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2BB8FFB2;
-        Wed, 18 May 2022 19:37:37 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L3YrY5yZrz1JCDW;
-        Thu, 19 May 2022 10:36:13 +0800 (CST)
-Received: from dggpeml500010.china.huawei.com (7.185.36.155) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 10:37:36 +0800
-Received: from huawei.com (10.67.175.33) by dggpeml500010.china.huawei.com
- (7.185.36.155) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 10:37:35 +0800
-From:   Lin Yujun <linyujun809@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <gustavoars@kernel.org>, <johnny.chenyi@huawei.com>,
-        <chenjiahao16@huawei.com>, <chenlifu@huawei.com>,
-        <lizhengyu3@huawei.com>, <liaochang1@huawei.com>,
-        <linyujun809@huawei.com>, <wangzhu9@huawei.com>,
-        <xuyihang@huawei.com>, <chris.zjh@huawei.com>,
-        <zouyipeng@huawei.com>
-Subject: [PATCH -next v2] x86/events:Use struct_size() helper in kzalloc()
-Date:   Thu, 19 May 2022 10:36:00 +0800
-Message-ID: <20220519023600.241591-1-linyujun809@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 18 May 2022 22:42:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 623BAA30BA
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 19:42:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652928157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OLLmfXiXzvWZFrGfu99utiSX147UCnqhw6D8tGfkdG0=;
+        b=cwxQm59Q9ojUf927yNzuZEFv/961pVUAn+8JuYYl6nyMswkqRbhPVP2CSEp4MDe7j+RCrg
+        6z0fL78+Sk3W8klzEbiCSnljoJDVYI1l9sPcV0d04m3aqXcKdlNWf+7gzmBGLA9WmGx599
+        +XQnNu4eu+7cp0oWxV3nPEdivXvptT0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-31-4kio-BwRMTSeYgIXtcsBrA-1; Wed, 18 May 2022 22:42:36 -0400
+X-MC-Unique: 4kio-BwRMTSeYgIXtcsBrA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A1096101AA42;
+        Thu, 19 May 2022 02:42:35 +0000 (UTC)
+Received: from T590 (ovpn-8-21.pek2.redhat.com [10.72.8.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A36061410DD5;
+        Thu, 19 May 2022 02:42:29 +0000 (UTC)
+Date:   Thu, 19 May 2022 10:42:22 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Harris James R <james.r.harris@intel.com>,
+        io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        ming.lei@redhat.com
+Subject: Re: [PATCH V2 0/1] ubd: add io_uring based userspace block driver
+Message-ID: <YoWujjFArHaXuqYS@T590>
+References: <20220517055358.3164431-1-ming.lei@redhat.com>
+ <YoOr6jBfgVm8GvWg@stefanha-x1.localdomain>
+ <YoSbuvT88sG5UkfG@T590>
+ <YoTOTCooQfQQxyA8@stefanha-x1.localdomain>
+ <YoTsYvnACbCNIMPE@T590>
+ <YoUVb8CeWRIErJBY@stefanha-x1.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.33]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500010.china.huawei.com (7.185.36.155)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoUVb8CeWRIErJBY@stefanha-x1.localdomain>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version,
-in order to avoid any potential type mistakes or integer overflows that,
-in the worst scenario, could lead to heap overflows.
+On Wed, May 18, 2022 at 04:49:03PM +0100, Stefan Hajnoczi wrote:
+> On Wed, May 18, 2022 at 08:53:54PM +0800, Ming Lei wrote:
+> > On Wed, May 18, 2022 at 11:45:32AM +0100, Stefan Hajnoczi wrote:
+> > > On Wed, May 18, 2022 at 03:09:46PM +0800, Ming Lei wrote:
+> > > > On Tue, May 17, 2022 at 03:06:34PM +0100, Stefan Hajnoczi wrote:
+> > > > > Here are some more thoughts on the ubd-control device:
+> > > > > 
+> > > > > The current patch provides a ubd-control device for processes with
+> > > > > suitable permissions (i.e. root) to create, start, stop, and fetch
+> > > > > information about devices.
+> > > > > 
+> > > > > There is no isolation between devices created by one process and those
+> > > > 
+> > > > I understand linux hasn't device namespace yet, so can you share the
+> > > > rational behind the idea of device isolation, is it because ubd device
+> > > > is served by ubd daemon which belongs to one pid NS? Or the user creating
+> > > > /dev/ubdbN belongs to one user NS?
+> > > 
+> > > With the current model a process with access to ubd-control has control
+> > > over all ubd devices. This is not desirable for most container use cases
+> > > because ubd-control usage within a container means that container could
+> > > stop any ubd device on the system.
+> > > 
+> > > Even for non-container use cases it's problematic that two applications
+> > > that use ubd can interfere with each other. If an application passes the
+> > > wrong device ID they can stop the other application's device, for
+> > > example.
+> > > 
+> > > I think it's worth supporting a model where there are multiple ubd
+> > > daemons that are not cooperating/aware of each other. They should be
+> > > isolated from each other.
+> > 
+> > Maybe I didn't mention it clearly, I meant the following model in last email:
+> > 
+> > 1) every user can send UBD_CMD_ADD_DEV to /dev/ubd-control
+> > 
+> > 2) the created /dev/ubdcN & /dev/udcbN are owned by the user who creates
+> > it
+> 
+> How does this work? Does userspace (udev) somehow get the uid/gid from
+> the uevent so it can set the device node permissions?
 
-Signed-off-by: Lin Yujun <linyujun809@huawei.com>
----
- arch/x86/events/rapl.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+We can let 'ubd list' export the owner info, then udev may override the default
+owner with exported info.
 
-diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
-index 77e3a47af5ad..8da003e02010 100644
---- a/arch/x86/events/rapl.c
-+++ b/arch/x86/events/rapl.c
-@@ -683,10 +683,8 @@ static const struct attribute_group *rapl_attr_update[] = {
- static int __init init_rapl_pmus(void)
- {
- 	int maxdie = topology_max_packages() * topology_max_die_per_package();
--	size_t size;
- 
--	size = sizeof(*rapl_pmus) + maxdie * sizeof(struct rapl_pmu *);
--	rapl_pmus = kzalloc(size, GFP_KERNEL);
-+	rapl_pmus = kzalloc(struct_size(rapl_pmus, pmus, maxdie), GFP_KERNEL);
- 	if (!rapl_pmus)
- 		return -ENOMEM;
- 
--- 
-2.17.1
+Or it can be done inside devtmpfs_create_node() by passing ubd's uid/gid
+at default.
+
+For /dev/ubdcN, I think it is safe, since the driver is only
+communicating with the userspace daemon, and both belong to same owner.
+Also ubd driver is simple enough to get full audited.
+
+For /dev/ubdbN, even though FS isn't allowed to mount, there is still
+lots of kernel code path involved, and some code path may not be run
+with unprivileged user before, that needs careful audit.
+
+So the biggest problem is if it is safe to export block disk to unprivileged
+user, and that is the one which can't be bypassed for any approach.
+
+
+
+
+Thanks, 
+Ming
 
