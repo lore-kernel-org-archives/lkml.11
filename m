@@ -2,255 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 075E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8578C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243893AbiESTYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 15:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
+        id S243978AbiEST2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 15:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239709AbiESTYr (ORCPT
+        with ESMTP id S237637AbiEST2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 15:24:47 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48075BE7C
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:24:46 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id c2so5632412plh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:24:46 -0700 (PDT)
+        Thu, 19 May 2022 15:28:15 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA06996BC;
+        Thu, 19 May 2022 12:28:13 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id m6so7406198ljb.2;
+        Thu, 19 May 2022 12:28:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=a+mg1KJ9fWnAuteOxUyV9WUk8JczPK1ljIX5mqz8zUo=;
-        b=I+LHXXZ0Ko2bLI1ImdPb1DIfLaNb3KO1zLbRAIGe7lvfbkaZbt9l9ogN2hbmKqmHil
-         dr9x6hTUyI4m5Upyx6T7zrCOkTPAQMEnQS8QDwkkmNBfzPFjZ76Gb2mZu8hkgVvju/uV
-         0a/oyroJXco+ItQkXvep6Jpz6Yq7sW3F1nruU=
+        bh=PvLDd8wcJFaP4wZyvv4PEwUuTP3SB9YVSkYVMPVbzng=;
+        b=Uc22x0NuV1MkOVz0+q7VLbrtNVzEVaPlEPu3pEhpU7LqfUx9jvflGzbiYKOBjQ75Nl
+         7VAnBHEm9RfJk2ExH9HbaYlWGEgdnBspOXY+CoAJWgn32j6WiY8Ew2A532ksAWLZtyqD
+         C50PQ3WXXMw0cvivqkROWDW7F9rQ3XY2qX/vWWOIdxVOWyVtXaKusQvl3o6PNJaEXCLI
+         rd1zSWev0Wmj8W9tZ1TSAOrrEs5lmyHFhQla6ikf2Am/fiLO2iE3KTCLbtskuetpLExV
+         3h6x2d/pb13i+Pn3M6gp+UxtGq73frFVbuPWITK8sUoY3hdl4Gistpkzlb2YgXKKfD+O
+         fLZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=a+mg1KJ9fWnAuteOxUyV9WUk8JczPK1ljIX5mqz8zUo=;
-        b=kZjZtMh91tjlDfWHY8FpHMpSoDqYo48G0sKytfXIifmBZNzKnWB9kW7aDUpBx6bAiy
-         FBVxwWr055aN3pbISuKJzwiawshLKxdlvXTvyFiIDftLWp6ShteV6eF60KlNWU5vCInU
-         r03Z4pLg5r4AfG/Rk7VFTZHq7oD+zivzlV6Lz0Ww8DOctuI0IgWR4w5MEbbdozCS3ktq
-         sVa6vV5Svx6GL4B6kd7uor1YeNpUix3rjDgvgoy6VEaBbey8mjScKXy82dOfZWIokZ0y
-         xDcYCx4poXTI6BkExNKbzw8VRKd+uu+U3b1c8xCcMX/DLgmJsKXPsPpK8njxtF0xADKd
-         icIQ==
-X-Gm-Message-State: AOAM5308hXeDUgr9SVDhOAhdg2c9Kxsbm514078Of5teFSwyKKdkc9Y7
-        dA3mGxF5LhF498GeOX8MMj6odg==
-X-Google-Smtp-Source: ABdhPJw11DSCDp6fSu0ayPSrbBHSiJYvLXU4Z/tr9+f4LpcAt7L5+APgtiTeeB3jC8YlkNLSQ/RjJw==
-X-Received: by 2002:a17:902:9044:b0:15d:1c51:5bef with SMTP id w4-20020a170902904400b0015d1c515befmr6129325plz.170.1652988286413;
-        Thu, 19 May 2022 12:24:46 -0700 (PDT)
-Received: from li-cloudtop.c.googlers.com.com (132.111.125.34.bc.googleusercontent.com. [34.125.111.132])
-        by smtp.gmail.com with ESMTPSA id t6-20020a17090a5d8600b001dcc0cb262asm187897pji.17.2022.05.19.12.24.45
+        bh=PvLDd8wcJFaP4wZyvv4PEwUuTP3SB9YVSkYVMPVbzng=;
+        b=3/oxbt/YuM1JWbLnhQ7COxiGDf8xPoF7oXCFjPlYiI16LRLgyF320223Vcv5uVVchJ
+         /1uR2YJnRX0IxThlGcGj7JLBMMsCmb2qc42zcEcrUuNnPyhoGvYPHElhyGr112GaUXhP
+         P+MrtR/r4fAytTrTxci33B0Nvj+PenC55yHuyJBu0l+aSozBIrKVJ+dJ5oW4uLhqj16w
+         8xxk1JLUY8CQvfR/ioQnbFjLDdk6fitEZP9ZcDCJ2KE5n13ygrGqcBFOk363ooMNBuyP
+         G/fe0FmP8zBBRJnCMqw/xVpBZaY6HJX6ihWHk/y13gaXvxDWKsrEhOdLzWw1BjCd0PiD
+         HWVg==
+X-Gm-Message-State: AOAM530CCNRueBAJr64uN2secWFNbzKSdrbfcpthU67S8lsNSDdkgCcS
+        JC10nJ1Bc063iH/XORIpL50=
+X-Google-Smtp-Source: ABdhPJxuxey6xeuyOaq/PdkiNBWjHJmK9mtssV6mSSRvv0EZysXovJkSn7t3gEN0fYV8lzwSLqrJdQ==
+X-Received: by 2002:a05:651c:102c:b0:253:d15e:dd12 with SMTP id w12-20020a05651c102c00b00253d15edd12mr3392798ljm.220.1652988492002;
+        Thu, 19 May 2022 12:28:12 -0700 (PDT)
+Received: from pc ([104.28.198.246])
+        by smtp.gmail.com with ESMTPSA id y27-20020ac255bb000000b0047255d21132sm378876lfg.97.2022.05.19.12.28.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 12:24:46 -0700 (PDT)
-From:   Li Li <dualli@chromium.org>
-To:     dualli@google.com, tkjos@google.com, gregkh@linuxfoundation.org,
-        christian@brauner.io, arve@android.com, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, maco@google.com, hridya@google.com,
-        surenb@google.com
-Cc:     joel@joelfernandes.org, kernel-team@android.com
-Subject: [PATCH v3] Binder: add TF_UPDATE_TXN to replace outdated txn
-Date:   Thu, 19 May 2022 12:24:42 -0700
-Message-Id: <20220519192442.1730349-1-dualli@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <YoaSLaNVMQIM7vvn@kroah.com>
-References: <YoaSLaNVMQIM7vvn@kroah.com>
+        Thu, 19 May 2022 12:28:11 -0700 (PDT)
+Date:   Thu, 19 May 2022 22:27:55 +0300
+From:   Boris Lysov <arz65xx@gmail.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     arzamas-16@mail.ee, mturquette@baylibre.com, sboyd@kernel.org,
+        matthias.bgg@gmail.com, wenst@chromium.org,
+        miles.chen@mediatek.com, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] clk: mediatek: Fix unused 'ops' field in mtk_pll_data
+Message-ID: <20220519222755.127ebbb8@pc>
+In-Reply-To: <ead37cb0-c841-df1a-ca10-a396b5e9951c@collabora.com>
+References: <20220515122409.13423-1-arzamas-16@mail.ee>
+        <ead37cb0-c841-df1a-ca10-a396b5e9951c@collabora.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Li <dualli@google.com>
+Hello, Angelo! 
 
-When the target process is busy, incoming oneway transactions are
-queued in the async_todo list. If the clients continue sending extra
-oneway transactions while the target process is frozen, this queue can
-become too large to accommodate new transactions. That's why binder
-driver introduced ONEWAY_SPAM_DETECTION to detect this situation. It's
-helpful to debug the async binder buffer exhausting issue, but the
-issue itself isn't solved directly.
+On Wed, 18 May 2022 14:15:13 +0200
+AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> wrote:
 
-In real cases applications are designed to send oneway transactions
-repeatedly, delivering updated inforamtion to the target process.
-Typical examples are Wi-Fi signal strength and some real time sensor
-data. Even if the apps might only care about the lastet information,
-all outdated oneway transactions are still accumulated there until the
-frozen process is thawed later. For this kind of situations, there's
-no existing method to skip those outdated transactions and deliver the
-latest one only.
+> Il 15/05/22 14:24, Boris Lysov ha scritto:
+> > From: Boris Lysov <arzamas-16@mail.ee>
+> > 
+> > Allow to specify optional clk_ops in mtk_pll_data which will be picked up in
+> > mtk_clk_register_pll. So far no already supported Mediatek SoC needs
+> > non-default clk_ops for PLLs but instead of removing this field it will be
+> > actually used in the future for supporting older SoCs (see [1] for details)
+> > with quirky PLLs.
+> > 
+> 
+> Hello Boris,
+> 
+> I disagree about this change and would rather see the ops pointer removed
+> with fire.
+> 
+> I got that you're trying to do something about "quirky PLLs", but is it
+> really about the PLLs that you're mentioning being "quirky", or are they
+> simply a different IP?
 
-This patch introduces a new transaction flag TF_UPDATE_TXN. To use it,
-use apps can set this new flag along with TF_ONE_WAY. When such an
-oneway transaction is to be queued into the async_todo list of a frozen
-process, binder driver will check if any previous pending transactions
-can be superseded by comparing their code, flags and target node. If
-such an outdated pending transaction is found, the latest transaction
-will supersede that outdated one. This effectively prevents the async
-binder buffer running out and saves unnecessary binder read workloads.
+To be honest I don't know exactly. mt6577 seems to share some common IP
+patterns such as splitting the entire clock system into few smaller subsystems
+such as apmixed (PLLs), topckgen (mux control), infra- and pericfg (internal
+and peripheral gate control). On the other hand, mt6577 is quite an old SoC
+(more on that in the end) and there are some differences about its operation
+compared to modern SoCs and their drivers.
 
-Signed-off-by: Li Li <dualli@google.com>
----
-v3:
-  - Add this changelog required by "The canonical patch format"
-v2:
-  - Fix alignment warnings reported by checkpatch --strict
-  - Add descriptive summary in patch subject
+> Also, if it's just about a bit inversion and a bigger delay:
+> 1. Bigger delay: Depending on how bigger, we may simply delay more by default
+>     for all PLLs, even the ones that aren't requiring us to wait for longer...
+>     ...after all, if it's about waiting for 10/20 *microseconds* more
+> { snip }
 
- drivers/android/binder.c            | 85 ++++++++++++++++++++++++++++-
- drivers/android/binder_trace.h      |  4 ++
- include/uapi/linux/android/binder.h |  1 +
- 3 files changed, 87 insertions(+), 3 deletions(-)
+According to the mt6577 datasheet the largest settling time is 10
+*milli*seconds for AUDPLL [1]. In my opinion this is way too much to be set as
+default for all mediatek devices.
 
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index f3b639e89dd8..bb968cf2f9ec 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -2594,6 +2594,56 @@ static int binder_fixup_parent(struct list_head *pf_head,
- 	return binder_add_fixup(pf_head, buffer_offset, bp->buffer, 0);
- }
- 
-+/**
-+ * binder_can_update_transaction() - Can a txn be superseded by an updated one?
-+ * @t1: the pending async txn in the frozen process
-+ * @t2: the new async txn to supersede the outdated pending one
-+ *
-+ * Return:  true if t2 can supersede t1
-+ *          false if t2 can not supersede t1
-+ */
-+static bool binder_can_update_transaction(struct binder_transaction *t1,
-+					  struct binder_transaction *t2)
-+{
-+	if ((t1->flags & t2->flags & (TF_ONE_WAY | TF_UPDATE_TXN)) !=
-+	    (TF_ONE_WAY | TF_UPDATE_TXN) || !t1->to_proc || !t2->to_proc)
-+		return false;
-+	if (t1->to_proc->tsk == t2->to_proc->tsk && t1->code == t2->code &&
-+	    t1->flags == t2->flags && t1->buffer->pid == t2->buffer->pid &&
-+	    t1->buffer->target_node->ptr == t2->buffer->target_node->ptr &&
-+	    t1->buffer->target_node->cookie == t2->buffer->target_node->cookie)
-+		return true;
-+	return false;
-+}
-+
-+/**
-+ * binder_find_outdated_transaction_ilocked() - Find the outdated transaction
-+ * @t:		 new async transaction
-+ * @target_list: list to find outdated transaction
-+ *
-+ * Return: the outdated transaction if found
-+ *         NULL if no outdated transacton can be found
-+ *
-+ * Requires the proc->inner_lock to be held.
-+ */
-+static struct binder_transaction *
-+binder_find_outdated_transaction_ilocked(struct binder_transaction *t,
-+					 struct list_head *target_list)
-+{
-+	struct binder_work *w;
-+
-+	list_for_each_entry(w, target_list, entry) {
-+		struct binder_transaction *t_queued;
-+
-+		if (w->type != BINDER_WORK_TRANSACTION)
-+			continue;
-+		t_queued = container_of(w, struct binder_transaction, work);
-+		if (binder_can_update_transaction(t_queued, t))
-+			return t_queued;
-+	}
-+	return NULL;
-+}
-+
- /**
-  * binder_proc_transaction() - sends a transaction to a process and wakes it up
-  * @t:		transaction to send
-@@ -2619,6 +2669,7 @@ static int binder_proc_transaction(struct binder_transaction *t,
- 	struct binder_node *node = t->buffer->target_node;
- 	bool oneway = !!(t->flags & TF_ONE_WAY);
- 	bool pending_async = false;
-+	struct binder_transaction *t_outdated = NULL;
- 
- 	BUG_ON(!node);
- 	binder_node_lock(node);
-@@ -2646,12 +2697,24 @@ static int binder_proc_transaction(struct binder_transaction *t,
- 	if (!thread && !pending_async)
- 		thread = binder_select_thread_ilocked(proc);
- 
--	if (thread)
-+	if (thread) {
- 		binder_enqueue_thread_work_ilocked(thread, &t->work);
--	else if (!pending_async)
-+	} else if (!pending_async) {
- 		binder_enqueue_work_ilocked(&t->work, &proc->todo);
--	else
-+	} else {
-+		if ((t->flags & TF_UPDATE_TXN) && proc->is_frozen) {
-+			t_outdated = binder_find_outdated_transaction_ilocked(t,
-+									      &node->async_todo);
-+			if (t_outdated) {
-+				binder_debug(BINDER_DEBUG_TRANSACTION,
-+					     "txn %d supersedes %d\n",
-+					     t->debug_id, t_outdated->debug_id);
-+				list_del_init(&t_outdated->work.entry);
-+				proc->outstanding_txns--;
-+			}
-+		}
- 		binder_enqueue_work_ilocked(&t->work, &node->async_todo);
-+	}
- 
- 	if (!pending_async)
- 		binder_wakeup_thread_ilocked(proc, thread, !oneway /* sync */);
-@@ -2660,6 +2723,22 @@ static int binder_proc_transaction(struct binder_transaction *t,
- 	binder_inner_proc_unlock(proc);
- 	binder_node_unlock(node);
- 
-+	/*
-+	 * To reduce potential contention, free the outdated transaction and
-+	 * buffer after releasing the locks.
-+	 */
-+	if (t_outdated) {
-+		struct binder_buffer *buffer = t_outdated->buffer;
-+
-+		t_outdated->buffer = NULL;
-+		buffer->transaction = NULL;
-+		trace_binder_transaction_update_buffer_release(buffer);
-+		binder_transaction_buffer_release(proc, NULL, buffer, 0, 0);
-+		binder_alloc_free_buf(&proc->alloc, buffer);
-+		kfree(t_outdated);
-+		binder_stats_deleted(BINDER_STAT_TRANSACTION);
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/android/binder_trace.h b/drivers/android/binder_trace.h
-index 8eeccdc64724..8cc07e6a4273 100644
---- a/drivers/android/binder_trace.h
-+++ b/drivers/android/binder_trace.h
-@@ -311,6 +311,10 @@ DEFINE_EVENT(binder_buffer_class, binder_transaction_failed_buffer_release,
- 	TP_PROTO(struct binder_buffer *buffer),
- 	TP_ARGS(buffer));
- 
-+DEFINE_EVENT(binder_buffer_class, binder_transaction_update_buffer_release,
-+	     TP_PROTO(struct binder_buffer *buffer),
-+	     TP_ARGS(buffer));
-+
- TRACE_EVENT(binder_update_page_range,
- 	TP_PROTO(struct binder_alloc *alloc, bool allocate,
- 		 void __user *start, void __user *end),
-diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
-index 11157fae8a8e..0b291b1d29d1 100644
---- a/include/uapi/linux/android/binder.h
-+++ b/include/uapi/linux/android/binder.h
-@@ -271,6 +271,7 @@ enum transaction_flags {
- 	TF_STATUS_CODE	= 0x08,	/* contents are a 32-bit status code */
- 	TF_ACCEPT_FDS	= 0x10,	/* allow replies with file descriptors */
- 	TF_CLEAR_BUF	= 0x20,	/* clear buffer on txn complete */
-+	TF_UPDATE_TXN	= 0x40,	/* update the outdated pending async txn */
- };
- 
- struct binder_transaction_data {
--- 
-2.36.1.124.g0e6072fb45-goog
+> 2. Bit inversion: that can be solved simply with a flag in the
+> prepare/unprepare ops for this driver... and if you want something that
+> performs even better, sparing you a nanosecond or two, you can always assign
+> an "inverted" callback for managing that single bit;
+
+Not all mt6577 PLLs need bit inversion. 2 PLLs follow the common flow (set a
+CON0_PWR_ON bit to start). 6 PLLs set this bit to 0 to start. And 1 PLL (which
+is actually a DDS) needs to write a magic value to specific register (in
+apmixed region) to start.
+Is very unfortunate that I can't directly link the vomit-inducing downstream
+code to prove the PLL situation due to its licensing but it's publicly
+available on the internet [2] as a part of device manufacturers' obligations to
+publish source code.
+
+> 3. Different IP: mtk_clk_register_(name-of-the-new-ip)_pll() - I don't think
+> that there's anything to explain to that one.
+In my opinion this would introduce more duplicate code than just letting a
+developer set custom clk_ops for a specific platform.
+
+Huge thanks for your feedback!
+
+P.S As I said above, mt6577 is old and in its current state [3] it's closer to
+being a personal project than a serious mainlining attempt. I share and agree
+with your opinion [4] on e-waste and is why I'm trying to put an effort into it.
+What I don't have enough of is time and, sadly, expertise. Maybe it'd be better
+for me to stay on github.
+
+[1] MT6577 HSPA Smartphone Application Processor Datasheet v0.94, page 1200
+[2] any linux v3.4 mt6577 kernel on github, see the 'enable_pll_op' function in
+mediatek/platform/mt6577/kernel/core/mt6577_clock_manager.c 
+[3] https://github.com/arzam16/linux-mt6577
+[4] https://lists.infradead.org/pipermail/linux-mediatek/2022-May/041498.html
+
+> Regards,
+> Angelo
+> 
+> > This patch depends on series "clk: mediatek: Move to struct clk_hw provider
+> > APIs" [2] by Chen-Yu Tsai.
+> > 
+> > [1]
+> > https://lists.infradead.org/pipermail/linux-mediatek/2022-February/035093.html
+> > [2]
+> > https://lists.infradead.org/pipermail/linux-mediatek/2022-May/040921.html
+> > 
+> > Signed-off-by: Boris Lysov <arzamas-16@mail.ee>
+> > ---
+> >   drivers/clk/mediatek/clk-pll.c | 5 ++++-
+> >   1 file changed, 4 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
+> > index cabdf25a27f3..509959a325f0 100644
+> > --- a/drivers/clk/mediatek/clk-pll.c
+> > +++ b/drivers/clk/mediatek/clk-pll.c
+> > @@ -347,7 +347,10 @@ static struct clk_hw *mtk_clk_register_pll(const
+> > struct mtk_pll_data *data, 
+> >   	init.name = data->name;
+> >   	init.flags = (data->flags & PLL_AO) ? CLK_IS_CRITICAL : 0;
+> > -	init.ops = &mtk_pll_ops;
+> > +	if (data->ops)
+> > +		init.ops = data->ops;
+> > +	else
+> > +		init.ops = &mtk_pll_ops;
+> >   	if (data->parent_name)
+> >   		init.parent_names = &data->parent_name;
+> >   	else
+> > 
+> 
 
