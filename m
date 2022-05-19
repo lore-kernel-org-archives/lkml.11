@@ -2,113 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1993C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA08BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237488AbiESTFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 15:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35402 "EHLO
+        id S243825AbiESTNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 15:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiESTFC (ORCPT
+        with ESMTP id S243716AbiESTNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 15:05:02 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0F3532FC;
-        Thu, 19 May 2022 12:05:01 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id j6so5878154pfe.13;
-        Thu, 19 May 2022 12:05:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=WCT0hzIW4BRC4ihOSuYMd7vmc8qyUUY0/7ETmCstrKQ=;
-        b=I5gizDUP9eFXALtskq8wtDRs1FF6xcWct/dwquOJmp5R6jdqySzPeyfd2YxLETggTe
-         zsoETshmZoPWJC9HX3OG+LKhvu+Owlj1Xyqt3WTVMGKx5ioHEHRrxMvdh5dOnnw2+R7L
-         /qxA4wPUTMSLCv6DoIblAn1M7Hkz/LQT1/sf/HgPVnh/uhYbCrrwn2DyOEIk7J75vhlW
-         bJE8Hy/I8G5KabtGjcySdIRg4P1RezIgELEU8DITWIletQpyk2hGx8I7AOfnrOiMDlU7
-         o8cMCqCiX1MY0G9E0ioRLsMR8OkQvwFgKcw1W5RWxcIth4nFgKXryPfvdgu6lEtlDtT0
-         jkMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=WCT0hzIW4BRC4ihOSuYMd7vmc8qyUUY0/7ETmCstrKQ=;
-        b=CW4WzDw9IRvxhSd6PaMuM0CRFHMCfEL3ixq0hoZRp+tlGmO9JehzGofpHAs26olSav
-         HS9/huInyf7IONvPeKJJQ4HiJjRkVGdX3dTiV3BnGFTbfXHt42KRGD23+EIK9MsxEg76
-         u4ZI/Cyj/6Y8hN5Pjl9dx6ApPim9KpzgOjdMCc7zPHV65ROS+i8XtpARCX0yhNobncIm
-         um/OHRENXeCYFgJPd6Spq9PG0F7oa8pKx4AojvBUuV0sJ5OcmDmXp5INEro9EyhcBpp5
-         hj+stWyQfLbbq3KD2nod8rlSfpQvY8iRbXu4fUVHrq4jp9IRULIFLrDypihcUCcFQ6r4
-         3cMg==
-X-Gm-Message-State: AOAM533/lf2KKdui9o1XUb4EnwRuHRNSt0M5nmhLrzYEY+d8E+6aakem
-        sAXZIuH3VDZrO0uR7L3/2HeLbNGJLuE=
-X-Google-Smtp-Source: ABdhPJxdsHDeOkVdzSo/tSvdzpUUjx/GOlwlHb2IfakWPr418DyzIYgfDQ8C0Jrctgm2Oc9RaBBmuQ==
-X-Received: by 2002:a63:5446:0:b0:3db:b1a0:ddca with SMTP id e6-20020a635446000000b003dbb1a0ddcamr5221703pgm.518.1652987100996;
-        Thu, 19 May 2022 12:05:00 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id a13-20020aa7864d000000b0051829b1595dsm23972pfo.130.2022.05.19.12.04.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 12:05:00 -0700 (PDT)
-Message-ID: <1892af53-5d83-ac8a-1180-970bf07e8889@gmail.com>
-Date:   Thu, 19 May 2022 12:04:59 -0700
+        Thu, 19 May 2022 15:13:21 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC9BAF300;
+        Thu, 19 May 2022 12:13:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=5EwGXxaUdgUDTgnCCbWFXiPOWwITuy/vPu3QayFRFZI=; b=VD1ZrvWMudK9E+QjPxjE3BaINA
+        +z/q4Pl+UxZN9WbMXUDLnrr5WByvsa33h6taMloQbCangn6qtuBrPCw/++SrJaPp3mo5L1D+MGi6l
+        xJAPZVagQrEbiN9pi/nO1vV7Cuv23rgbw+0/DobonPKvnCs7n4l0cwIvLgxlHdt4L8IsywgrHyeMT
+        WEgS10eQtE7SePY9ZhogcqJ045J75UpG1fXt0gbZZ+j6s74BHJEDXxwv62e+5f6roii+gaXRpjmdS
+        wxg3c3tVcrXJThOdPCgrCRrTbRWwWmkdUtsevwTQHo/p1F1n4fyFPOtB+ZqHk1CTHAK4+FiwVkQvm
+        2p/1Y8QQ==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nrlaF-002TqR-7D; Thu, 19 May 2022 13:13:17 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1nrlaD-0004TB-63; Thu, 19 May 2022 13:13:13 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu, 19 May 2022 13:12:57 -0600
+Message-Id: <20220519191311.17119-2-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220519191311.17119-1-logang@deltatee.com>
+References: <20220519191311.17119-1-logang@deltatee.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH stable 4.19 0/3] MMC timeout back ports
-Content-Language: en-US
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Nishad Kamdar <nishadkamdar@gmail.com>,
-        =?UTF-8?Q?Christian_L=c3=b6hle?= <CLoehle@hyperstone.com>,
-        "open list:MULTIMEDIA CARD (MMC), SECURE DIGITAL (SD) AND..." 
-        <linux-mmc@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, alcooperx@gmail.com,
-        kdasu.kdev@gmail.com
-References: <20220517182211.249775-1-f.fainelli@gmail.com>
- <1392eba8-d869-aa1a-b154-cec870017115@gmail.com>
-In-Reply-To: <1392eba8-d869-aa1a-b154-cec870017115@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, hch@infradead.org, guoqing.jiang@linux.dev, xni@redhat.com, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v1 01/15] md/raid5-log: Drop extern decorators for function prototypes
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+extern is not necessary and recommended against when defining prototype
+functions in headers. checkpatch.pl complains about these. So remove
+them.
 
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ drivers/md/raid5-log.h | 75 ++++++++++++++++++++----------------------
+ 1 file changed, 36 insertions(+), 39 deletions(-)
 
-On 5/19/2022 10:38 AM, Florian Fainelli wrote:
-> 
-> 
-> On 5/17/2022 11:22 AM, Florian Fainelli wrote:
->> These 3 commits from upstream allow us to have more fine grained control
->> over the MMC command timeouts and this solves the following timeouts
->> that we have seen on our systems across suspend/resume cycles:
->>
->> [   14.907496] usb usb2: root hub lost power or was reset
->> [   15.216232] usb 1-1: reset high-speed USB device number 2 using
->> xhci-hcd
->> [   15.485812] bcmgenet 8f00000.ethernet eth0: Link is Down
->> [   15.525328] mmc1: error -110 doing runtime resume
->> [   15.531864] OOM killer enabled.
->>
->> Thanks!
-> 
-> Looks like I managed to introduce a build warning due to the unused 
-> timeout variable, let me submit a fresher version for 4.19, 4.14 and 4.9.
-
-Only v4.19 and v4.14 required a v2, you can find both here:
-
-https://lore.kernel.org/lkml/20220519184536.370540-1-f.fainelli@gmail.com/T/#t
-
-https://lore.kernel.org/lkml/20220519190030.377695-1-f.fainelli@gmail.com/T/#t
-
-Sorry about that, I will build with W=1 in the future to notice those 
-set but unused variable warnings.
-
-Thanks!
+diff --git a/drivers/md/raid5-log.h b/drivers/md/raid5-log.h
+index 43c714a8798c..270ced4f770f 100644
+--- a/drivers/md/raid5-log.h
++++ b/drivers/md/raid5-log.h
+@@ -2,49 +2,46 @@
+ #ifndef _RAID5_LOG_H
+ #define _RAID5_LOG_H
+ 
+-extern int r5l_init_log(struct r5conf *conf, struct md_rdev *rdev);
+-extern void r5l_exit_log(struct r5conf *conf);
+-extern int r5l_write_stripe(struct r5l_log *log, struct stripe_head *head_sh);
+-extern void r5l_write_stripe_run(struct r5l_log *log);
+-extern void r5l_flush_stripe_to_raid(struct r5l_log *log);
+-extern void r5l_stripe_write_finished(struct stripe_head *sh);
+-extern int r5l_handle_flush_request(struct r5l_log *log, struct bio *bio);
+-extern void r5l_quiesce(struct r5l_log *log, int quiesce);
+-extern bool r5l_log_disk_error(struct r5conf *conf);
+-extern bool r5c_is_writeback(struct r5l_log *log);
+-extern int
+-r5c_try_caching_write(struct r5conf *conf, struct stripe_head *sh,
+-		      struct stripe_head_state *s, int disks);
+-extern void
+-r5c_finish_stripe_write_out(struct r5conf *conf, struct stripe_head *sh,
+-			    struct stripe_head_state *s);
+-extern void r5c_release_extra_page(struct stripe_head *sh);
+-extern void r5c_use_extra_page(struct stripe_head *sh);
+-extern void r5l_wake_reclaim(struct r5l_log *log, sector_t space);
+-extern void r5c_handle_cached_data_endio(struct r5conf *conf,
+-	struct stripe_head *sh, int disks);
+-extern int r5c_cache_data(struct r5l_log *log, struct stripe_head *sh);
+-extern void r5c_make_stripe_write_out(struct stripe_head *sh);
+-extern void r5c_flush_cache(struct r5conf *conf, int num);
+-extern void r5c_check_stripe_cache_usage(struct r5conf *conf);
+-extern void r5c_check_cached_full_stripe(struct r5conf *conf);
++int r5l_init_log(struct r5conf *conf, struct md_rdev *rdev);
++void r5l_exit_log(struct r5conf *conf);
++int r5l_write_stripe(struct r5l_log *log, struct stripe_head *head_sh);
++void r5l_write_stripe_run(struct r5l_log *log);
++void r5l_flush_stripe_to_raid(struct r5l_log *log);
++void r5l_stripe_write_finished(struct stripe_head *sh);
++int r5l_handle_flush_request(struct r5l_log *log, struct bio *bio);
++void r5l_quiesce(struct r5l_log *log, int quiesce);
++bool r5l_log_disk_error(struct r5conf *conf);
++bool r5c_is_writeback(struct r5l_log *log);
++int r5c_try_caching_write(struct r5conf *conf, struct stripe_head *sh,
++			  struct stripe_head_state *s, int disks);
++void r5c_finish_stripe_write_out(struct r5conf *conf, struct stripe_head *sh,
++				 struct stripe_head_state *s);
++void r5c_release_extra_page(struct stripe_head *sh);
++void r5c_use_extra_page(struct stripe_head *sh);
++void r5l_wake_reclaim(struct r5l_log *log, sector_t space);
++void r5c_handle_cached_data_endio(struct r5conf *conf,
++				  struct stripe_head *sh, int disks);
++int r5c_cache_data(struct r5l_log *log, struct stripe_head *sh);
++void r5c_make_stripe_write_out(struct stripe_head *sh);
++void r5c_flush_cache(struct r5conf *conf, int num);
++void r5c_check_stripe_cache_usage(struct r5conf *conf);
++void r5c_check_cached_full_stripe(struct r5conf *conf);
+ extern struct md_sysfs_entry r5c_journal_mode;
+-extern void r5c_update_on_rdev_error(struct mddev *mddev,
+-				     struct md_rdev *rdev);
+-extern bool r5c_big_stripe_cached(struct r5conf *conf, sector_t sect);
+-extern int r5l_start(struct r5l_log *log);
++void r5c_update_on_rdev_error(struct mddev *mddev, struct md_rdev *rdev);
++bool r5c_big_stripe_cached(struct r5conf *conf, sector_t sect);
++int r5l_start(struct r5l_log *log);
+ 
+-extern struct dma_async_tx_descriptor *
++struct dma_async_tx_descriptor *
+ ops_run_partial_parity(struct stripe_head *sh, struct raid5_percpu *percpu,
+ 		       struct dma_async_tx_descriptor *tx);
+-extern int ppl_init_log(struct r5conf *conf);
+-extern void ppl_exit_log(struct r5conf *conf);
+-extern int ppl_write_stripe(struct r5conf *conf, struct stripe_head *sh);
+-extern void ppl_write_stripe_run(struct r5conf *conf);
+-extern void ppl_stripe_write_finished(struct stripe_head *sh);
+-extern int ppl_modify_log(struct r5conf *conf, struct md_rdev *rdev, bool add);
+-extern void ppl_quiesce(struct r5conf *conf, int quiesce);
+-extern int ppl_handle_flush_request(struct r5l_log *log, struct bio *bio);
++int ppl_init_log(struct r5conf *conf);
++void ppl_exit_log(struct r5conf *conf);
++int ppl_write_stripe(struct r5conf *conf, struct stripe_head *sh);
++void ppl_write_stripe_run(struct r5conf *conf);
++void ppl_stripe_write_finished(struct stripe_head *sh);
++int ppl_modify_log(struct r5conf *conf, struct md_rdev *rdev, bool add);
++void ppl_quiesce(struct r5conf *conf, int quiesce);
++int ppl_handle_flush_request(struct r5l_log *log, struct bio *bio);
+ extern struct md_sysfs_entry ppl_write_hint;
+ 
+ static inline bool raid5_has_log(struct r5conf *conf)
 -- 
-Florian
+2.30.2
+
