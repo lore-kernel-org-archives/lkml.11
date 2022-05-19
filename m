@@ -2,210 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD02C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC8AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239409AbiESNxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
+        id S238908AbiESNx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239314AbiESNuo (ORCPT
+        with ESMTP id S239411AbiESNvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:50:44 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EACCE27B0;
-        Thu, 19 May 2022 06:50:24 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id v11so4768231qkf.1;
-        Thu, 19 May 2022 06:50:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8V7106cncXJIAE2fTOvUkVnCzPXvRlGPeVGDdYP0Urg=;
-        b=lVLRYfEIntAhPN8pTkRP3yHVS1Wvy4CnFf5JBKdwx3l8qzeMcj+d5GMEZoq/mfPY2K
-         iT6NYq7AqdLfqqyRvsv/RhbAy82WjPR4hEOq1KRfE/tLA4dt9BttZDxHNScHAlLK5w85
-         NLKTVgcYe5y927C9PvzdIgHB8Wb/Z7iKBmOM9QJrL5tkxmmxu2Sb/5NZPeI3c8QwyI2Q
-         JODxgHnr0MXK0CfPzsYpdimsRynXRA+Cb8W973e0NEiBKKKa1mxaXubbfhFLjEHNlIO1
-         UEC8MSiAAW0HPY4mgQyh/DASn4onAb28nSx0/igmIwqoY883rP7+y0m5VeBuIKMc1S14
-         JR4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8V7106cncXJIAE2fTOvUkVnCzPXvRlGPeVGDdYP0Urg=;
-        b=iXaY2L16JCJw+fRopfsPGAKIRBuizvzahdelslwvph94vzqkfMdYMNAyNksWcImlFx
-         Oj44Zc5C5xFsAbcPhYfhPVBk0DVhnLIRKpy+Vh/W1Kl+qSpchO8r8T6HHltCJSh/oYc5
-         6B8EyWIkKHavFRTEznp4IqAnd8Bc2PylQWgPdTv0YAzwXGQOLqggG8fE+E0dnU0VUMpo
-         4zFXBxvD2cSer5RIcRFxx76r0VVL54OuVCTZVhQNX+rn2dsR+XeskYFiyqcWsiqlhZeG
-         f2Swcie4xPMIh8GYL1pwS2nKX1sRx3VBNVsaynq86KMZvi4MuPgR2290Tm/tX/aNnI/E
-         rxhg==
-X-Gm-Message-State: AOAM530rrKnPKvNXGG5Dhq4NehCIpGoGcowwcP09tcw6xsHZhaliuif4
-        Vo2zwL2b9BT+9XDv8dx+je8=
-X-Google-Smtp-Source: ABdhPJyER/K8IeEG7nTHno0GPuvLt9c2Lxx+kEjuTcz5s714bprXvG/OVwM8fVTvtf4ybt2dnibycA==
-X-Received: by 2002:a05:620a:258e:b0:680:f33c:dbcd with SMTP id x14-20020a05620a258e00b00680f33cdbcdmr3197345qko.542.1652968194312;
-        Thu, 19 May 2022 06:49:54 -0700 (PDT)
-Received: from localhost.localdomain ([217.138.206.82])
-        by smtp.gmail.com with ESMTPSA id i186-20020a3754c3000000b0069fc13ce23dsm1315024qkb.110.2022.05.19.06.49.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 06:49:54 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 5/6] clk: mediatek: Unregister reset controller on simple remove
-Date:   Thu, 19 May 2022 17:47:27 +0400
-Message-Id: <20220519134728.456643-6-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220519134728.456643-1-y.oudjana@protonmail.com>
-References: <20220519134728.456643-1-y.oudjana@protonmail.com>
+        Thu, 19 May 2022 09:51:06 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2077.outbound.protection.outlook.com [40.107.220.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BA6E64DD;
+        Thu, 19 May 2022 06:50:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V/hDW6nlfzwVIxvRKbfMF956pn0C/AGO9ZojX8bW1YgRoPO5jcMWwWK9lriEDfYDal4Y1/+XLMAsN7gEuWQynXR97zxeNFxkEKoO5LXKK78v8xCsL2i+56+SaqUJEMAlcZBbExvKChTMTeR9PGpCpEAN5EE8XTEuWOpYt0szGblYJgkmRnRRTgGICbH7LT/+KqRPBnys4Q9rOjdDYsWoLcX7BgY1QsWdPbxa15OWlZQXTVGopxrJX4Xc8dkzrz5Q09vXMbt3CHfFQyEJsj7U26Ty6nMmgPMJzSxaTbajnRg3AI6PRrAKGbBM9awE9+ia705JNsEybuBjG3istLXkcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kx/7h0LqjSd+GsV2tfSqOvfm43DcSuET83U+A1CnloA=;
+ b=GHJ4hLhDZhDxhcjxN5bUiTvrihdygaYMgdAREIHQ/a6rrWw6PLWA3GSc0i1L4xL8ciUYOyV9vYD7/2fw4DtjvYBjKF9uDRByOz5AH33tJxM+xKqKEEHrycGZQbrWz+Hc5CbhwZc1GaFcuDdjaRPHkUoLH+/TX8o3tA2KfIxuPPb1Sa1QYiytmPa/py6wq5nvy5kLH8J0IKo70Ri9C237vu+aS54vna033k0OuLneezKWYYdyYrvzmToecMLyJQNx+DczMKC3Co1V9kvEV6Cxr8ZPD/tmv+rASiFXMIxwUHlWVF8rA8NoRUfp09FAM8I3eR6pfifhnRHfcTNDSHD0lg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kx/7h0LqjSd+GsV2tfSqOvfm43DcSuET83U+A1CnloA=;
+ b=xNu0pWBJFM3JQHInlTK3CcuNtwopHr+xJOaojPx7ICPrPtNjTCcOmKIIsOsukZ4j+jT627AF0lfgWJWj04HylUh4q7+SrbFfcZdiZAkAA/cl/Vf3RifkIAz23kDrHKfDlecVpfRZI7K+LotvvWMxFmSxMmjdIPCkDVwGHbV0kt4=
+Received: from BN1PR13CA0028.namprd13.prod.outlook.com (2603:10b6:408:e2::33)
+ by DM5PR12MB2470.namprd12.prod.outlook.com (2603:10b6:4:b4::39) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13; Thu, 19 May
+ 2022 13:48:08 +0000
+Received: from BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e2:cafe::45) by BN1PR13CA0028.outlook.office365.com
+ (2603:10b6:408:e2::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.7 via Frontend
+ Transport; Thu, 19 May 2022 13:48:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT035.mail.protection.outlook.com (10.13.177.116) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5273.14 via Frontend Transport; Thu, 19 May 2022 13:48:08 +0000
+Received: from jasmine-meng.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
+ 2022 08:48:04 -0500
+From:   Meng Li <li.meng@amd.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Huang Rui <ray.huang@amd.com>, <linux-pm@vger.kernel.org>
+CC:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Nathan Fontenot <nathan.fontenot@amd.com>,
+        Deepak Sharma <deepak.sharma@amd.com>,
+        "Alex Deucher" <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Jinzhou Su <Jinzhou.Su@amd.com>,
+        Perry Yuan <Perry.Yuan@amd.com>,
+        Xiaojian Du <Xiaojian.Du@amd.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Borislav Petkov <bp@alien8.de>, <linux-kernel@vger.kernel.org>,
+        Meng Li <li.meng@amd.com>
+Subject: [PATCH V6 3/4] selftests: amd-pstate: Add test trigger for amd-pstate driver
+Date:   Thu, 19 May 2022 21:47:36 +0800
+Message-ID: <20220519134737.359290-4-li.meng@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220519134737.359290-1-li.meng@amd.com>
+References: <20220519134737.359290-1-li.meng@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 59180a30-b65a-498c-6617-08da399e353c
+X-MS-TrafficTypeDiagnostic: DM5PR12MB2470:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB2470F9AB907CE2E7576346ACF7D09@DM5PR12MB2470.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bkmAVhG3K80g0vy5aVm3tLPCLUHMOpnoWxQEm6vJgNMmCU2EpMFNwSI6WDGm88ZM4a4SfphQIzJOKx56DuQMWeQ5o4o0gLWWuxM0yLz8e40BQquR7fAuVhBxwnd2f+fMpDRa3+1LYxQokB1SwSQdzJq63mYiXo+pu7Z0Q8k5YgnpD+4PTZE8q7yS94h/r2Z3Bf9AQfDt6fs7AwHb+ATIleZUlpkunmBemriMQw3+ue4tdU3YQmbQx438W9yhbhxma1aDM3hZVC1GkltqkwTynub8mpuDRIIpkBrBkCsK+78T6DcZWZj78nyul7SdR7cGoQvyXeKRhg+lUh+bLqT4oGYiRSht6iCqE7gdtLy50mJXd0DZK+rVNDH7xqCTAQlJfU4SjjZ0YPEjQ5olYMSLCJO/ijUFrHTWoipK8Tf0Niyex3mOxdLD1QZUi2NEGWLsWrUNttrA/O1hMBQp2SaDb20R4luLpJ+K3S568glFkHloaPeo0CweU6nZGf6QeYWOfed4P1z11Qyo2eCUWWsLDilIFICUUxe/Cv8bC7gByN0qbfmZnD0ick6HpdDcJDQbr77QvXUzcJXR6h5hH1l+cXfo/mR6giQkZIbBaXyTz/z7j7x77KPfHN6cX0R+oTzIIwwDQc9f7Tv42xMj2w0XO284/wTjGeBhfMjV1y0ip4WD0OgRUkzIbcgaLY2p4RUdPxLh0muM+eioy4Di4vAKYA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(16526019)(8676002)(508600001)(186003)(2616005)(2906002)(83380400001)(5660300002)(7696005)(36756003)(8936002)(70206006)(81166007)(336012)(316002)(40460700003)(426003)(6666004)(36860700001)(4326008)(110136005)(26005)(54906003)(47076005)(70586007)(1076003)(356005)(86362001)(82310400005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 13:48:08.6488
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59180a30-b65a-498c-6617-08da399e353c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2470
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+Add amd-pstate test trigger in kselftest, it will load/unload
+amd-pstate-ut module to test some cases etc.
 
-Store clk_data and rst_data pointers in a new wrapper struct,
-set it as platform driver data, then use it in mtk_clk_simple_remove
-to unregister the reset controller.
-
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+Signed-off-by: Meng Li <li.meng@amd.com>
+Acked-by: Huang Rui <ray.huang@amd.com>
 ---
-Dependencies:
-- clk: mediatek: Move to struct clk_hw provider APIs (series)
-  https://patchwork.kernel.org/project/linux-mediatek/cover/20220510104804.544597-1-wenst@chromium.org/ 
-- Cleanup MediaTek clk reset drivers and support MT8192/MT8195 (series)
-  https://patchwork.kernel.org/project/linux-mediatek/cover/20220503093856.22250-1-rex-bc.chen@mediatek.com/
-- Export required symbols to compile clk drivers as module (single patch)
-  https://patchwork.kernel.org/project/linux-mediatek/patch/20220518111652.223727-7-angelogioacchino.delregno@collabora.com/
+ tools/testing/selftests/Makefile              |  1 +
+ tools/testing/selftests/amd-pstate/Makefile   |  8 +++++
+ .../selftests/amd-pstate/amd-pstate-ut.sh     | 34 +++++++++++++++++++
+ tools/testing/selftests/amd-pstate/config     |  1 +
+ 4 files changed, 44 insertions(+)
+ create mode 100644 tools/testing/selftests/amd-pstate/Makefile
+ create mode 100755 tools/testing/selftests/amd-pstate/amd-pstate-ut.sh
+ create mode 100644 tools/testing/selftests/amd-pstate/config
 
- drivers/clk/mediatek/clk-mtk.c | 47 +++++++++++++++++++++-------------
- drivers/clk/mediatek/clk-mtk.h |  5 ++++
- 2 files changed, 34 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index 1b5591733e2b..3382802663f4 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -422,35 +422,41 @@ void mtk_clk_unregister_dividers(const struct mtk_clk_divider *mcds, int num,
- int mtk_clk_simple_probe(struct platform_device *pdev)
- {
- 	const struct mtk_clk_desc *mcd;
--	struct clk_hw_onecell_data *clk_data;
-+	struct mtk_simple_clk_controller *clk_ctrl;
- 	struct device_node *node = pdev->dev.of_node;
--	struct mtk_clk_rst_data *rst_data;
- 	int r;
- 
- 	mcd = of_device_get_match_data(&pdev->dev);
- 	if (!mcd)
- 		return -EINVAL;
- 
--	clk_data = mtk_alloc_clk_data(mcd->num_clks);
--	if (!clk_data)
-+	clk_ctrl = kzalloc(sizeof(*clk_ctrl), GFP_KERNEL);
-+	if (!clk_ctrl)
- 		return -ENOMEM;
- 
-+	clk_ctrl->clk_data = mtk_alloc_clk_data(mcd->num_clks);
-+	if (!clk_ctrl->clk_data) {
-+		r = -ENOMEM;
-+		goto free_clk_ctrl;
-+	}
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index 2319ec87f53d..975c13368286 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ TARGETS += alsa
++TARGETS += amd-pstate
+ TARGETS += arm64
+ TARGETS += bpf
+ TARGETS += breakpoints
+diff --git a/tools/testing/selftests/amd-pstate/Makefile b/tools/testing/selftests/amd-pstate/Makefile
+new file mode 100644
+index 000000000000..e1432112fb70
+--- /dev/null
++++ b/tools/testing/selftests/amd-pstate/Makefile
+@@ -0,0 +1,8 @@
++# SPDX-License-Identifier: GPL-2.0-only
++# Makefile for amd-pstate/ function selftests
 +
- 	r = mtk_clk_register_gates_with_dev(node, mcd->clks, mcd->num_clks,
--					    clk_data, &pdev->dev);
-+					    clk_ctrl->clk_data, &pdev->dev);
- 	if (r)
--		goto free_data;
-+		goto free_clk_data;
- 
--	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
-+	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_ctrl->clk_data);
- 	if (r)
- 		goto unregister_clks;
- 
--	platform_set_drvdata(pdev, clk_data);
-+	platform_set_drvdata(pdev, clk_ctrl);
- 
- 	if (mcd->rst_desc) {
--		rst_data = mtk_register_reset_controller_with_dev(&pdev->dev,
--							   	  mcd->rst_desc);
--		if (IS_ERR(rst_data)) {
--			r = PTR_ERR(rst_data);
-+		clk_ctrl->rst_data =
-+			mtk_register_reset_controller_with_dev(&pdev->dev,
-+							       mcd->rst_desc);
-+		if (IS_ERR(clk_ctrl->rst_data)) {
-+			r = PTR_ERR(clk_ctrl->rst_data);
- 			goto unregister_clks;
- 		}
- 	}
-@@ -458,9 +464,11 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
- 	return r;
- 
- unregister_clks:
--	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_data);
--free_data:
--	mtk_free_clk_data(clk_data);
-+	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_ctrl->clk_data);
-+free_clk_data:
-+	mtk_free_clk_data(clk_ctrl->clk_data);
-+free_clk_ctrl:
-+	kfree(clk_ctrl);
- 	return r;
- }
- EXPORT_SYMBOL_GPL(mtk_clk_simple_probe);
-@@ -468,12 +476,15 @@ EXPORT_SYMBOL_GPL(mtk_clk_simple_probe);
- int mtk_clk_simple_remove(struct platform_device *pdev)
- {
- 	const struct mtk_clk_desc *mcd = of_device_get_match_data(&pdev->dev);
--	struct clk_hw_onecell_data *clk_data = platform_get_drvdata(pdev);
-+	struct mtk_simple_clk_controller *clk_ctrl = platform_get_drvdata(pdev);
- 	struct device_node *node = pdev->dev.of_node;
- 
- 	of_clk_del_provider(node);
--	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_data);
--	mtk_free_clk_data(clk_data);
-+	if (clk_ctrl->rst_data)
-+		mtk_unregister_reset_controller(clk_ctrl->rst_data);
-+	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_ctrl->clk_data);
-+	mtk_free_clk_data(clk_ctrl->clk_data);
-+	kfree(clk_ctrl);
- 
- 	return 0;
- }
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index 1b95c484d5aa..fa092bca97c8 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -189,6 +189,11 @@ void mtk_free_clk_data(struct clk_hw_onecell_data *clk_data);
- struct clk_hw *mtk_clk_register_ref2usb_tx(const char *name,
- 			const char *parent_name, void __iomem *reg);
- 
-+struct mtk_simple_clk_controller {
-+	struct clk_hw_onecell_data *clk_data;
-+	struct mtk_clk_rst_data *rst_data;
-+};
++TEST_PROGS := amd-pstate-ut.sh
 +
- struct mtk_clk_desc {
- 	const struct mtk_gate *clks;
- 	size_t num_clks;
++include ../lib.mk
++
++$(TEST_GEN_FILES): $(HEADERS)
+diff --git a/tools/testing/selftests/amd-pstate/amd-pstate-ut.sh b/tools/testing/selftests/amd-pstate/amd-pstate-ut.sh
+new file mode 100755
+index 000000000000..970f7a76c7d5
+--- /dev/null
++++ b/tools/testing/selftests/amd-pstate/amd-pstate-ut.sh
+@@ -0,0 +1,34 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++
++# amd-pstate-ut is a test module for testing the amd-pstate driver.
++# (1) It can help all users to verify their processor support
++# (SBIOS/Firmware or Hardware).
++# (2) Kernel can have a basic function test to avoid the kernel
++# regression during the update.
++# (3) We can introduce more functional or performance tests to align
++# the result together, it will benefit power and performance scale optimization.
++
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
++if ! uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ | grep -q x86; then
++	echo "$0 # Skipped: Test can only run on x86 architectures."
++	exit $ksft_skip
++fi
++
++msg="Skip all tests:"
++if [ ! -w /dev ]; then
++    echo $msg please run this as root >&2
++    exit $ksft_skip
++fi
++
++scaling_driver=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_driver)
++
++if [ "$scaling_driver" != "amd-pstate" ]; then
++	echo "$0 # Skipped: Test can only run on amd-pstate driver."
++	echo "$0 # Current cpufreq scaling drvier is $scaling_driver."
++	exit $ksft_skip
++fi
++
++$(dirname $0)/../kselftest/module.sh "amd-pstate-ut" amd-pstate-ut
+diff --git a/tools/testing/selftests/amd-pstate/config b/tools/testing/selftests/amd-pstate/config
+new file mode 100644
+index 000000000000..f43103c9adc4
+--- /dev/null
++++ b/tools/testing/selftests/amd-pstate/config
+@@ -0,0 +1 @@
++CONFIG_X86_AMD_PSTATE_UT=m
 -- 
-2.36.1
+2.25.1
 
