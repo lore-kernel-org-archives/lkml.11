@@ -2,66 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B18DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEEB8C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238493AbiESNJJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38146 "EHLO
+        id S238507AbiESNMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238407AbiESNJG (ORCPT
+        with ESMTP id S238421AbiESNMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:09:06 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8809BCE88;
-        Thu, 19 May 2022 06:09:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vUv8v61VHIxh8esWamo0UaDA5N+0XE9YmKiSe8EzIBI=; b=V2Fl3DlO7O+BQYAReJ1eydhaQX
-        OE3S7WTEY2Qzsd0CCiqASt2DNhWsiYn3JSj27dYyFgp1En5pWHKV3jxjnc7y6Pl4jEPpChLx5s3in
-        lf6oKRoy4hMI3Y1waomzUbgWqbZrzDMj9nZ+HeMRIpleGjCPo3Jvo73q4Qkb8PJjdRyVbQFecCxHq
-        vFNthfMQvap+t+zNwI0XLnVnZSjeynAVR1V5y0j4DAOsBGQKMcMxTsBMF5QmyjMwzy5Wj81Hmo6xJ
-        PFZxOqF1zUYeP/7/KA4ZuCnkw1Tp0huv4AXmrvF0cLYLL2DzmiMnrEC+Dw6Zl+L5ibdoQwY8erRTz
-        D1p71MAA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrftl-00Ck60-Qd; Thu, 19 May 2022 13:09:01 +0000
-Date:   Thu, 19 May 2022 14:09:01 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
-Subject: Re: [PATCH] sysctl: handle table->maxlen properly for proc_dobool
-Message-ID: <YoZBbcEHcLqsAssF@casper.infradead.org>
-References: <20220519125505.92400-1-songmuchun@bytedance.com>
+        Thu, 19 May 2022 09:12:33 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44FFAEE23
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:12:28 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id bx33so6154183ljb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Tbdzb2bRxg6928mKfr1eQOs/EHKsEy71qlxik1ZfHuc=;
+        b=tPZRoKf1FlzJiaJ/LSleGDTLKgl7yH7IGkYrmC9jz8fvV59szPSLEx9tzbAJuOYU8k
+         hllYDvJHQtHZNRxc1bZ0kYGluAm3oi81WSbXFp7wA8pUYdqZZYxUDbQkVIvSGveNfZQ5
+         ordtsUr+t5+4hUODc0Ikjsi9nK1nRTPDpO8ewpxWr9wC7+U+6cP/97mUOeC2H5hsoTWY
+         s/2pWEkuiucEchrCOqINbhN+8T85nI3kof5SooGUz6erEZYnsbQQn29SsqevWcRxij4e
+         kr1RoaRklvO6n+JCOxp/U+f2f+3BWg2GCVk2xGxCv7oFjTGbiUgt9vN7Y49/IjMSOc/i
+         Vzxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Tbdzb2bRxg6928mKfr1eQOs/EHKsEy71qlxik1ZfHuc=;
+        b=perKbNLs9IgjxsW2/c81kF20jxPqn1BoJPPpw7rewihSVx2jQG3TzpGFoVqAmiTYX3
+         lYhhfatZlgtnBygbG388Lq8uCDXXDx89Gnc3GDbXAzMSsn0B/cC6VSUq/uXJ+YdwwlNe
+         nWbjTxjt4jd0LEsGXbLZpKbm29sLSWBf6tjRnB/aXr8HEs/v49aqZ7mHea+rhgCDHRYX
+         z0FzmkNojwZrzRTHswGc6oGZsrHQjW5HgGG7DmSVSAJeAxOtM+yF6ZKVhqqim9XPfCbc
+         t0V1/Emo2a+TaHvqzUNJRqMCFL/Oge1Zu/T2aNOXXXpo8rwoEddak40bNz9sj0/Vt0N/
+         MtRA==
+X-Gm-Message-State: AOAM531mLcRy3r0yBgzAuaQLQ6WuNlsoazy4KSRVZ0xz4qYtMFjx40di
+        A6Tey2vq/VzRLlPNl6xixnSZNfjQlbK+vl0Vv9MF3g==
+X-Google-Smtp-Source: ABdhPJwnhgPHFqa5mGfL1upSwxPA4GdglCVq6IdM8730POYTcoZpgJGdmGeVx20WdRrQeXywDLaSPOPlVzmQrnlRv1k=
+X-Received: by 2002:a2e:954c:0:b0:253:d9bf:9f55 with SMTP id
+ t12-20020a2e954c000000b00253d9bf9f55mr469067ljh.300.1652965947206; Thu, 19
+ May 2022 06:12:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519125505.92400-1-songmuchun@bytedance.com>
+References: <1652275016-13423-1-git-send-email-quic_mkshah@quicinc.com> <1652275016-13423-3-git-send-email-quic_mkshah@quicinc.com>
+In-Reply-To: <1652275016-13423-3-git-send-email-quic_mkshah@quicinc.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 19 May 2022 15:11:51 +0200
+Message-ID: <CAPDyKFqVU_8d_eMWHPByc5JiCdQGnYfWFc9HRv83X55N8UYCfg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] soc: qcom: rpmh-rsc: Attach RSC to cluster PM domain
+To:     Maulik Shah <quic_mkshah@quicinc.com>
+Cc:     bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rafael@kernel.org, daniel.lezcano@linaro.org,
+        quic_lsrao@quicinc.com, quic_rjendra@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 08:55:05PM +0800, Muchun Song wrote:
-> @@ -428,6 +428,8 @@ static int do_proc_dobool_conv(bool *negp, unsigned long *lvalp,
->  				int write, void *data)
+On Wed, 11 May 2022 at 15:17, Maulik Shah <quic_mkshah@quicinc.com> wrote:
+>
+> From: Lina Iyer <ilina@codeaurora.org>
+>
+> RSC is part the CPU subsystem and powers off the CPU domains when all
+> the CPUs and no RPMH transactions are pending from any of the drivers.
+> The RSC needs to flush the 'sleep' and 'wake' votes that are critical
+> for saving power when all the CPUs are in idle.
+>
+> Let's make RSC part of the CPU PM domains, by attaching it to the
+> cluster power domain. Registering for PM domain notifications, RSC
+> driver can be notified that the last CPU is powering down. When the last
+> CPU is powering down the domain, let's flush the 'sleep' and 'wake'
+> votes that are stored in the data buffers into the hardware and also
+> write next wakeup in CONTROL_TCS.
+>
+> Signed-off-by: Lina Iyer <ilina@codeaurora.org>
+> Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
+
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+
+Kind regards
+Uffe
+
+> ---
+>  drivers/soc/qcom/rpmh-internal.h |  4 ++-
+>  drivers/soc/qcom/rpmh-rsc.c      | 67 +++++++++++++++++++++++++++++++++++++---
+>  2 files changed, 66 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/soc/qcom/rpmh-internal.h b/drivers/soc/qcom/rpmh-internal.h
+> index 344ba68..cd3d6ce 100644
+> --- a/drivers/soc/qcom/rpmh-internal.h
+> +++ b/drivers/soc/qcom/rpmh-internal.h
+> @@ -97,7 +97,8 @@ struct rpmh_ctrlr {
+>   * @rsc_pm:             CPU PM notifier for controller.
+>   *                      Used when solver mode is not present.
+>   * @cpus_in_pm:         Number of CPUs not in idle power collapse.
+> - *                      Used when solver mode is not present.
+> + *                      Used when solver mode and "power-domains" is not present.
+> + * @genpd_nb:           PM Domain notifier for cluster genpd notifications.
+>   * @tcs:                TCS groups.
+>   * @tcs_in_use:         S/W state of the TCS; only set for ACTIVE_ONLY
+>   *                      transfers, but might show a sleep/wake TCS in use if
+> @@ -117,6 +118,7 @@ struct rsc_drv {
+>         int id;
+>         int num_tcs;
+>         struct notifier_block rsc_pm;
+> +       struct notifier_block genpd_nb;
+>         atomic_t cpus_in_pm;
+>         struct tcs_group tcs[TCS_TYPE_NR];
+>         DECLARE_BITMAP(tcs_in_use, MAX_TCS_NR);
+> diff --git a/drivers/soc/qcom/rpmh-rsc.c b/drivers/soc/qcom/rpmh-rsc.c
+> index 01c2f50c..050b5f5c 100644
+> --- a/drivers/soc/qcom/rpmh-rsc.c
+> +++ b/drivers/soc/qcom/rpmh-rsc.c
+> @@ -14,10 +14,13 @@
+>  #include <linux/kernel.h>
+>  #include <linux/list.h>
+>  #include <linux/module.h>
+> +#include <linux/notifier.h>
+>  #include <linux/of.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/pm_domain.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/wait.h>
+> @@ -834,6 +837,50 @@ static int rpmh_rsc_cpu_pm_callback(struct notifier_block *nfb,
+>         return ret;
+>  }
+>
+> +/**
+> + * rpmh_rsc_pd_callback() - Check if any of the AMCs are busy.
+> + * @nfb:    Pointer to the genpd notifier block in struct rsc_drv.
+> + * @action: GENPD_NOTIFY_PRE_OFF, GENPD_NOTIFY_OFF, GENPD_NOTIFY_PRE_ON or GENPD_NOTIFY_ON.
+> + * @v:      Unused
+> + *
+> + * This function is given to dev_pm_genpd_add_notifier() so we can be informed
+> + * about when cluster-pd is going down. When cluster go down we know no more active
+> + * transfers will be started so we write sleep/wake sets. This function gets
+> + * called from cpuidle code paths and also at system suspend time.
+> + *
+> + * If AMCs are not busy then writes cached sleep and wake messages to TCSes.
+> + * The firmware then takes care of triggering them when entering deepest low power modes.
+> + *
+> + * Return:
+> + * * NOTIFY_OK          - success
+> + * * NOTIFY_BAD         - failure
+> + */
+> +static int rpmh_rsc_pd_callback(struct notifier_block *nfb,
+> +                               unsigned long action, void *v)
+> +{
+> +       struct rsc_drv *drv = container_of(nfb, struct rsc_drv, genpd_nb);
+> +
+> +       /* We don't need to lock as genpd on/off are serialized */
+> +       if ((action == GENPD_NOTIFY_PRE_OFF) &&
+> +           (rpmh_rsc_ctrlr_is_busy(drv) || rpmh_flush(&drv->client)))
+> +               return NOTIFY_BAD;
+> +
+> +       return NOTIFY_OK;
+> +}
+> +
+> +static int rpmh_rsc_pd_attach(struct rsc_drv *drv, struct device *dev)
+> +{
+> +       int ret;
+> +
+> +       pm_runtime_enable(dev);
+> +       drv->genpd_nb.notifier_call = rpmh_rsc_pd_callback;
+> +       ret = dev_pm_genpd_add_notifier(dev, &drv->genpd_nb);
+> +       if (ret)
+> +               pm_runtime_disable(dev);
+> +
+> +       return ret;
+> +}
+> +
+>  static int rpmh_probe_tcs_config(struct platform_device *pdev,
+>                                  struct rsc_drv *drv, void __iomem *base)
 >  {
->  	if (write) {
-> +		if (*negp || (*lvalp != 0 && *lvalp != 1))
-> +			return -EINVAL;
->  		*(bool *)valp = *lvalp;
->  	} else {
->  		int val = *(bool *)valp;
-
-Is this the right approach?  Or should we do as C does and interpret
-writing non-zero as true?  ie:
-
-		*(bool *)valp = (bool)*lvalp;
-
-(is that cast needed?  It wouldn't be if it were an int, but bool is a
-bit weird)
-
+> @@ -963,7 +1010,7 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
+>                 return ret;
+>
+>         /*
+> -        * CPU PM notification are not required for controllers that support
+> +        * CPU PM/genpd notification are not required for controllers that support
+>          * 'HW solver' mode where they can be in autonomous mode executing low
+>          * power mode to power down.
+>          */
+> @@ -971,8 +1018,14 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
+>         solver_config &= DRV_HW_SOLVER_MASK << DRV_HW_SOLVER_SHIFT;
+>         solver_config = solver_config >> DRV_HW_SOLVER_SHIFT;
+>         if (!solver_config) {
+> -               drv->rsc_pm.notifier_call = rpmh_rsc_cpu_pm_callback;
+> -               cpu_pm_register_notifier(&drv->rsc_pm);
+> +               if (pdev->dev.pm_domain) {
+> +                       ret = rpmh_rsc_pd_attach(drv, &pdev->dev);
+> +                       if (ret)
+> +                               return ret;
+> +               } else {
+> +                       drv->rsc_pm.notifier_call = rpmh_rsc_cpu_pm_callback;
+> +                       cpu_pm_register_notifier(&drv->rsc_pm);
+> +               }
+>         }
+>
+>         /* Enable the active TCS to send requests immediately */
+> @@ -985,7 +1038,13 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
+>
+>         dev_set_drvdata(&pdev->dev, drv);
+>
+> -       return devm_of_platform_populate(&pdev->dev);
+> +       ret = devm_of_platform_populate(&pdev->dev);
+> +       if (ret && pdev->dev.pm_domain) {
+> +               dev_pm_genpd_remove_notifier(&pdev->dev);
+> +               pm_runtime_disable(&pdev->dev);
+> +       }
+> +
+> +       return ret;
+>  }
+>
+>  static const struct of_device_id rpmh_drv_match[] = {
+> --
+> 2.7.4
+>
