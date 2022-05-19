@@ -2,371 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA329C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 22:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51062C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 22:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245594AbiESW5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 18:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        id S245609AbiESW6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 18:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbiESW4z (ORCPT
+        with ESMTP id S231392AbiESW6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 18:56:55 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54794ECC1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:56:53 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24JJwvMM030086;
-        Thu, 19 May 2022 22:56:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=QvZf9KiEGK9801MeNY57PU1NQaHSf6ex4ALYNC6pyTE=;
- b=j3J0Na3lAsmU+L5DxHCT69noJrtz6ka31YHcPBDZPGzN8P+Oks+vg3xk8g74VxlsZuEr
- r8UUw8LZtgMQPAlJzfSV6NHzBfMhHe4gtpIHgHCi4p7083bvWDMHuc6Cni/+EyJOZeQa
- 14xjM/n0N+QxCdFqf7LkvymaEZNWceO9o4TXLhf6gX0u9CgR6IDjslKXAgjOpXEpTIid
- /b0EMa+ipTb5Kd4fZS4D5IzAvb9PzCPzCJqKO/0OKTCS0CwrVjwdGigjVpE/FCcGWKCT
- UIbtqqCv/sKO/9/M8N2DbstaN1oh9mI1z9p8c60xXwPfE8aBcoZcK3YR6lJS5bIRGj+W Cw== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g23725ury-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 May 2022 22:56:32 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24JMp7xT001449;
-        Thu, 19 May 2022 22:56:31 GMT
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2046.outbound.protection.outlook.com [104.47.56.46])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g22v5rdyu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 May 2022 22:56:31 +0000
+        Thu, 19 May 2022 18:58:50 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2042.outbound.protection.outlook.com [40.107.95.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276DB8CB2B;
+        Thu, 19 May 2022 15:58:49 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TTAq73TdAi4c6vhM1mhbAWr/BXR6xR9ltiaZ7enzZNrXjkD62gZXv2pjZGANDcOFCwYkIcJojB7cbdjQfuiQyeXF1N7d7IQ+uL10qhwEWjdxzeOzdrANtbGAv4Sjqx0Zq26RLsiG/5PpICbEKKDmITrdJcWtEHAzTPooZ1uxFbccS3fKmZ6qOUDNBd4n2Ln2NUMTocrW5n3A5Gdk318ok4GAexSg5ufFticFuy3u2GjLct0M8tnGulYFIMlXbgdvALRbsEzaWbrrrD6NEsGtI10L35Zp1pLXPmeNzMYzpjNTTdyFVw/Y5npwK8fLbkXj5IHZV/d2pxVYbFXst4balQ==
+ b=hydXe9YB03qQ6BNyAErdceE165puc/Bf+FTl19jXJRmML1JYsOHlIPz0ayBx9DFTC6nhjhjTjmyLhYw+tZB4cQFUo/wjLp2zLZ5bh19ctClblUnqn1axMsTi8F2r1xwBiLxRZn+CfMfUUhvT2DephF8C52raoet1OZ53QoLdZthlSq3gDVsNEWGwnhJ6xvHlLjlaXJpNi3kYwW85utVDFF0ii9N1NFUjCDZy1DDe1f1t52NfdIjWZSazdtnH3t/JLl0SnOnWiLJSMz1e7ozjCh7gN9N8mMvDFpAC+yqe+ua2E4j0tzUAk5uqGJVOrzkDd4Wj4GLV5ogyVZQUoBBKyQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QvZf9KiEGK9801MeNY57PU1NQaHSf6ex4ALYNC6pyTE=;
- b=dSh1v4nXrAcdPn78OY/RIdpjdn5m2x7ahRpYNyL3b9p0mLn0ZtBR7LVIE7x/BUlNCkovR5E4LW2CBKE60fPrYPKSAwaTj1MWB4g0Q8xT0YL0BQG2wNe6lZq+Rrj4iBRJiFe9Mq7urVSmiVc8LcbeQu44h/s99dcoxaHNHl693P1PxuNOeT4FOegzKiNzGfiK0g0bNOuw0uWKND252tqriQdLWPPCTt8dK/qgUa9XmUepYvcdszENqsjZTp+awK5Spsux6u+2Mhw8ArLG1o9Z2WE8OTWfiiSfPiFapwiQRjFfJ40h3LvzMdQRSwmbrgwB0PDJL8ajsHwFNlL0ssHymg==
+ bh=+6GLug5LJDMfSk9rl+yhehi0twhaH5O+5WCfmfaCQZQ=;
+ b=GhzxmIqagTlFV5e3OXbIAIpZMX4ewaFe8oHh90NCSqbVGv/laoCe+7TvatIhh9cDTplolJWmfU3h5Zqs+nATAwRxX9s0ctkAu3G+ZJvqNuEKbEluEkLb9pOdtl1v6eXW1XJo/EpcS1JrFHCy/+P5OwS88/uk8Q5DqY6f8JyweBKRF52cweLgQYs+F/jZc/29dY5SQ8Zm+YqNgtvoJkTvkTNsXboBE83E84naPltPgKLCUy7moPz9ctArwknFq7JwLa8j0uvy7Cgtgl9UcJxPIvHPretA+lStGq5G6xSH0DuojmKee1aNDQcb47Sd4m2y8WtgNuhk6G9jjJxY5Dpa8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QvZf9KiEGK9801MeNY57PU1NQaHSf6ex4ALYNC6pyTE=;
- b=xKca6uCW4ZYoHmIq3PROMSJVUAth1mrpWwYb0DuItfxK1ZHIa1tSWTDeKVB0bIti7kUJDfkGZf7Yd/r/FAPM4v0+PqhfE8kBUwjf+RcqKou34/3Tiz5YWy8LlSX2sPir6t9v9jZIT9v7eoYvbftk9xlSYUJutn2ewN5CBpmscyw=
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com (2603:10b6:805:d8::25)
- by SN6PR10MB2941.namprd10.prod.outlook.com (2603:10b6:805:dc::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Thu, 19 May
- 2022 22:56:29 +0000
-Received: from SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::e1df:2e42:6674:313e]) by SN6PR10MB3022.namprd10.prod.outlook.com
- ([fe80::e1df:2e42:6674:313e%7]) with mapi id 15.20.5273.016; Thu, 19 May 2022
- 22:56:29 +0000
-From:   Liam Howlett <liam.howlett@oracle.com>
-To:     Suren Baghdasaryan <surenb@google.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "mhocko@suse.com" <mhocko@suse.com>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "guro@fb.com" <guro@fb.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "aarcange@redhat.com" <aarcange@redhat.com>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "oleg@redhat.com" <oleg@redhat.com>,
-        "david@redhat.com" <david@redhat.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "shakeelb@google.com" <shakeelb@google.com>,
-        "peterx@redhat.com" <peterx@redhat.com>,
-        "jhubbard@nvidia.com" <jhubbard@nvidia.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "kernel-team@android.com" <kernel-team@android.com>
-Subject: Re: [PATCH v2 1/2] mm: drop oom code from exit_mmap
-Thread-Topic: [PATCH v2 1/2] mm: drop oom code from exit_mmap
-Thread-Index: AQHYaPp0ya25IVmpGEOQVFiK/GoNEq0mqk2AgAATyICAABdMAA==
-Date:   Thu, 19 May 2022 22:56:29 +0000
-Message-ID: <20220519225614.r6ey3bl32c3gbih5@revolver>
-References: <20220516075619.1277152-1-surenb@google.com>
- <20220519202149.3ywynqhbxlzp6uyn@revolver>
- <CAJuCfpHeAXSLjrXxgRaTXOEPPipcFq5MhP=uU0wkqeBoPUAcsQ@mail.gmail.com>
-In-Reply-To: <CAJuCfpHeAXSLjrXxgRaTXOEPPipcFq5MhP=uU0wkqeBoPUAcsQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 255b02a8-f7f9-403a-f604-08da39eacf7f
-x-ms-traffictypediagnostic: SN6PR10MB2941:EE_
-x-microsoft-antispam-prvs: <SN6PR10MB2941055ED43A04CA990EF698FDD09@SN6PR10MB2941.namprd10.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QvkE2yP7+PnacsOcsO3RctdZ1/uAvgfBKoICTzA4hW1pjjBJwzBBNAs2gAt5uPTak+Q5Ls+kPrLtazNtQ6ExBDZnUjOGCIiOl0acnSNPAlj2jzaf+KcDZwgYznYnfw4vIiLDMAUYMgp8uQyD8E5Oh/FgkGQ0gxiN1Bs+ti9QSfl68H2iC8Q/KV37dlB8PtMlQaAeDp6GM7XyZhpsehfqrSOhW2b9Wy3fmaqzN+9/KjAfZnqm55yqHcO3180nmvIU/tydCK94LMOb/qxr78FBL+PvEwDF+jUZpbF+1mHbVXddsanXp1qSYUqoIdlKaEr89OsPRqb8HxGEy2hngUqdlLOB9qd0hiEnINp3MtMkty4QXnu+z93JmIruXSiDTFbZenkzUfgA3QESOzz59AddJSIiX2e6XrMaVJaWiWkuByZ5AcjSOlBBKfUVA+I9QBJhhAllZ1lKtNIu6ucT33PCIHZJgaARha2GVpXMRccx0QHvhG4RQHEtTXy7v5x6V/0SKZRq7d1SxR4HnINruFjsYBwa4c8nlAJT9A4fWmSCfkn/hhzKWamvTbh64qJWR/Y9lfz+vyzrXVymH/eCNioiZ4rurz6SCU2aYfTqC9QxQ4P8fZaGmg1/OIk+w7YyHYhLo4A7YojI4qObZ6WiFVfql1C4YKqqB1hc2j6DfoyFqRbaLFbytUrxsPG7ioQy8ZyoNs4mheMV6J2Jk09U6eTUuQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB3022.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(66446008)(64756008)(91956017)(1076003)(66556008)(66946007)(66476007)(6916009)(8676002)(83380400001)(316002)(186003)(33716001)(4326008)(54906003)(71200400001)(44832011)(2906002)(26005)(6486002)(53546011)(6506007)(9686003)(38070700005)(76116006)(5660300002)(7416002)(8936002)(38100700002)(122000001)(508600001)(6512007)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1cRJYI2Bx/Q4uGgjfmPVAKL3Dc+ZW+9azLxzeVULdjVc/iOobh0y578jaQ+Q?=
- =?us-ascii?Q?foiejV7THozzVdqPhabbjHqwc73e9SkNyt3dCwW/W7oMjB+YL1u2KJHHdwv2?=
- =?us-ascii?Q?PUVqCKMoEIAN6CS3lIzowbLDXvo9FNRhsyKa4utoxV8JsXhWr3UEQPExWy29?=
- =?us-ascii?Q?qa08KZ0CrW0XEwrrJ3jqlneu8EBbd5dsa48CdMdjEeykHH7XOt2m8BCfsexB?=
- =?us-ascii?Q?ck5EDnTu9EiPD2Fx/oAZHXAvK2qwyBda5ouh8VhmQA4BuqCk/78irWz47BWf?=
- =?us-ascii?Q?mgtjb2axchSgcswM3pk9R6K837DW+sqUO8OxIMl47tFZ+3Fo2iWF2zeYRLu+?=
- =?us-ascii?Q?+GDTl6ZEgVMINHKNh7eRDS+hJobwmOB6xTpg524Perlttlm+hiezloA9CQ0y?=
- =?us-ascii?Q?STRakF6CNHzUzLm+mu9iBKGQva+zgeF91S303spvXDng+0O5N+yxtsAoQNNI?=
- =?us-ascii?Q?Jg2AtgBFvZ9nIgiQzXug8vmMt2Sni/BKLKY8FiyIqDIxMETY9QoycI1zvBoV?=
- =?us-ascii?Q?uoytUi2Wt7ffHUiySEB+ajdQiG+0dK3tAv1LHzqDEinWZo50T7/nzfRQiA+A?=
- =?us-ascii?Q?QwhC22fB2lXTsaUoNv68zLHRzORwbdCBLr1ulIh4jfLLli0tOtNkQ1knBg8h?=
- =?us-ascii?Q?p20x/BYC9fKsigVE9f8MQe35U1cWpqzSM6sA4p1KUoNSgLulkbI1aoTNLnnn?=
- =?us-ascii?Q?O6IJl1To79t6srfD0zqeI5PClBFVY/roszPX2LfuVQbVt0zj9QDKgOXpvQ53?=
- =?us-ascii?Q?uYh29OKMfHiVLzRm1gm0dGAvT0mAOui0leFbuJu0+X1GCq29t0rlSZSOHIi5?=
- =?us-ascii?Q?9cZ6j7e72e03pAp/FYnekHRrFoGGs+KxIQEO+SuCXoI/gLmxTLftpW3OkFHc?=
- =?us-ascii?Q?St5JowGrZ495Ovz4iqnONvK8+vZ2+bZqbL9WwATo6yKE/l3fxVJgLERXiQ0g?=
- =?us-ascii?Q?66F0CKcEs6b0JyTHiGudeyThu3BSzLFvy0+fMgUBnIfcgtqB4lblLtDWwK94?=
- =?us-ascii?Q?Vd3+svfijk3HVCYrlb63mMKAD+P78rlNDWu7cFxUrhwt9L2TAwFVghROQ7Bf?=
- =?us-ascii?Q?EHSjVyJF/HhL8xMnEaY1V3BbawuaMtRQTKwD+2/wA/STtIBYUUqSKZoYNCdr?=
- =?us-ascii?Q?webpPmsZg1GdW03a+9q+E+QE88jS2czWdJfa2BuDGLH+1s4908TSFcYdmVdP?=
- =?us-ascii?Q?bGdS24Y3cMxMZ8S/O/v/hfHKT7r8wywAZmliwEWoDH1k+ba7HrXQYH4qjfAm?=
- =?us-ascii?Q?0fvfO83iU0NCfjm9s+IarQaZt78H19EkvDXZn/MgZx2ip/ZhhwnD/4oNVBY6?=
- =?us-ascii?Q?N8K7VxRL2C4tMNWfIg/RWRbKI3E4jDRT/ym+XWFWBeUgNgNxpJtfzig6+CrY?=
- =?us-ascii?Q?vcQLXs6ox5nBl/EcOs1pD/beYnu5/kvb/b6lUjZDLtIKkk7BlPbFVAIBQgND?=
- =?us-ascii?Q?FzoWaGq52+gHaDYNqm2CPEKprmu4nE/cikeoSFzJ2P5of2DTxTkZdi6BK1If?=
- =?us-ascii?Q?M3IeVgJJaezynwuGxPXahZpbosZF2oPGoOwlIGRZghflguIn/MWb1jXB310M?=
- =?us-ascii?Q?ZyDBeWCSQLvitsqoBgM7AmIK59hs7HYaUBHIRuHMsx+uk3ifdYEFiJGPA+Ja?=
- =?us-ascii?Q?+Efiqz2CuLr/OXmb2Ksphki69+pCO6082gK+Fc46h5b/5D/P6rXp9AO7ftOB?=
- =?us-ascii?Q?OAYQpdrdMmDZ6BOgNRJL4zBhqD+vtaByx5jROznVXwUG7+FBBP5UPwVnrPFU?=
- =?us-ascii?Q?yXEO1+uaELVVPHxtohHRJ681jXVAXoc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <334C6BFC074406428E7FD2129DF27C7E@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ bh=+6GLug5LJDMfSk9rl+yhehi0twhaH5O+5WCfmfaCQZQ=;
+ b=r1LO93LQH6ZMG7ns01nzrP6uqFShV/uRdPrxOxl+G1csgBjLzf+RDjNPCtKagXvj8ju11zRJ6xZLr9+XDnv8eIEfUyyAU7xfsPxA1iPd1bNmaDDtXN2TM+dKrSRIiHEGn/9wmNMfsfANixjxC55ZrmFQyM6j7pmoVRcC0Yfirgy0h5wJ+UhFQawTYijACH/fvrTbs7lprejkBHglVlQFryB28FDJ0aDb6mNkvuramBAcCWk4UhjaV57QSlteWhzsewpEaL8kpMRWBwILPdcE6PfoDUHDrm6C5UiWfPsaf8qkLrqJo06LIALGjr2s+nMP5qofcWByMUFSWPr+faJ8NQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM4PR12MB6256.namprd12.prod.outlook.com (2603:10b6:8:a3::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5273.14; Thu, 19 May 2022 22:58:47 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2%7]) with mapi id 15.20.5273.014; Thu, 19 May 2022
+ 22:58:47 +0000
+Date:   Thu, 19 May 2022 19:58:46 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     joro@8bytes.org, will@kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, borntraeger@linux.ibm.com,
+        schnelle@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        farman@linux.ibm.com, iommu@lists.linux-foundation.org,
+        linux-s390@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/s390: tolerate repeat attach_dev calls
+Message-ID: <20220519225846.GD1343366@nvidia.com>
+References: <20220519182929.581898-1-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519182929.581898-1-mjrosato@linux.ibm.com>
+X-ClientProxiedBy: MN2PR12CA0006.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::19) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a3a9a0d4-29b9-49a1-e91b-08da39eb21ed
+X-MS-TrafficTypeDiagnostic: DM4PR12MB6256:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB62564475A5217D2D8B036728C2D09@DM4PR12MB6256.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: G/pZC68Bq5fz9r18FpSquvYGDzWfGqWOsU/Fpep2klnB6t2aPVbl7TIZ89Ge+wE8oExolhGWTFqJQE+olOmmCMMJfbazsYOmzSG5yryIhELT+p6mV84WZeRJioubypr1QNB3QptJSZtocXuwk+KdBRHdniXB21Jgw8uAhJyDbvoyV9LL3ce5pJMsvzQFUo1PzxiUSyR5u0YU6mcfTEoO/NBpR0CWlxEi9uTZbspGEdBDEKg6S4E6TDn0X4z630TgamqPyiDGK5EnKoqagtJ60Kxa37Mh/ppmc8D9d59KOfEx7BrpMhQynWMxpdfCFTHiIB/fDovuG/SJk7MoYv0LVRsQrRSyAx2DnBkMsgpMAW+r8HGX9cw8263/DRIVbPMELFjXbrjt1SpFbJazmiV6BTYhw3O5Uu8olFEAm59XkkDzygDa7py9HN4zIShXPbdU7Z12NXwIWBF6w8QxJ10i3P+d/5UAx4UeybhukJDn5PtnhPuoiVaCUFQTCXCCMdQ2vERSt62lUBODfpSq7DT7ne/IqpFTAC/uerJIONTNIP7Czq/UWetTKHwzQqhCaJ3C8SVqZ563Nqze4vFf1V1sewaLXoq4dZZfz+TKbyISi6M3dhawnsJkf9Vz2vEnrh8ajSs43ifx1bTvuDFh+eB4eQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(2906002)(6512007)(8936002)(316002)(86362001)(4744005)(1076003)(7416002)(2616005)(36756003)(26005)(83380400001)(6506007)(508600001)(4326008)(66556008)(66476007)(5660300002)(6916009)(33656002)(186003)(66946007)(38100700002)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cdjsviSfnRnb8f+4TzeuwwON2RqbHQP65bIr3oRhGmbQwWtS7hI9W9NYquUm?=
+ =?us-ascii?Q?DpGaSJCVbcPYIemBR5DvKNtExbYkHKft8JXo8I0dznJaAdeZHU8/BB99CHZ1?=
+ =?us-ascii?Q?hJ2CYrq0XQS15FZ5QcpsY1eLfpJ9rnsgf3Nc5kSIvYdxWSyg6SOefcofFvcw?=
+ =?us-ascii?Q?7LmG8g/lyxADdxLOMqJXzz0YwazgL5OHYyYqtUj0RlVMcZpEPV5w8fcs3lDm?=
+ =?us-ascii?Q?9Lolqi7ue5tJkrC8tU3kYkgZGNDFx5ZBXR9NoKRKYtnMHIKUzDGNTFsA5uts?=
+ =?us-ascii?Q?XoUMHGxnQkdAXyR0vzGvWUggvpmuFpDEvUTt+YhzOJdZAzTJ48IY73GKswvf?=
+ =?us-ascii?Q?ECnEAKG+EhogElIAZjlH3yQwc3ApUKzDKEPdYXxtFvx3OfQJv26xDi/vVLNm?=
+ =?us-ascii?Q?t0RK+3oRUi/kc7jWZ9PBzYgyUIZJOiz9wvVJbUQ5MY13mFx4QHCVDb8FnAes?=
+ =?us-ascii?Q?mhZTXDQ3vu4U8bLreK/YbSg3Gef9bg1hWJKAeiSXQZ/Cz1D/eEU9g3h51iSa?=
+ =?us-ascii?Q?t1A3vxp6b7cgK+X1q1aaP4kK87572Q5sVpO/4HfAkibGRdOljuJePx6dwMXT?=
+ =?us-ascii?Q?qyWc4zWW1Jv8ZrL6wdCQWMSYyURQcFie2awJxg84oIjaoM1gz5b9SyXqvQjN?=
+ =?us-ascii?Q?m1Xck17Xtt21cu/a6E/VjMl3KQGXP1KiJDs8dNlh2vixO9mHU0i0VZy+oTNr?=
+ =?us-ascii?Q?HUiWahOHm6vxtNhdsAH3SnmCbq63UXRapoHVGQqKzVRqYVw0GWyQjbl3kMer?=
+ =?us-ascii?Q?ZRK3TslRAFoZhkFbIE9QOESUCaLHQa0AkVFJGW3TI62QSXGHhPgyKvoJqWEY?=
+ =?us-ascii?Q?x7LCZlh+L2Ra00xI902VxxfwA1yoWI2BeJOozG/Nkj+sVoYQwRpXdDO+nSw6?=
+ =?us-ascii?Q?eTmneRJxUyHgtJNPRQwqB/Ob8pBE4O1GOXtW12T3WFB1xUdGov6DdH612D11?=
+ =?us-ascii?Q?0Gvy5Sgo1VHcHM1ScN/pJtzuPnmc5L2E922aXBVv5ChD2oBNwv/5lTkuIWZm?=
+ =?us-ascii?Q?hHolAN56WuyoUFckU8nwLIpTYwSNne/jwR29hn8VJGgyi5sjQXF93nF5Ovj/?=
+ =?us-ascii?Q?mW4EcRdPjDBzFRmlJlrvyJQgokrCbbbKeZXYkSM+s4pMShJzRdVBFQI7SkSV?=
+ =?us-ascii?Q?MMc73ESNytmqDqEZol0FM88nqrAYRXcKPQ0RgMlb/2xljdsdHXbJWVLVqq/m?=
+ =?us-ascii?Q?tflkNFg/9Jq3mmNQntqqL8wabeAZHQyOReMXFxc5Icm8djXa21609kA0IWWf?=
+ =?us-ascii?Q?896pHmtwFKkrD3QdsAbELLOHe6sqZbuVB0givW0Ojd8uBF83Mou8gENizwOV?=
+ =?us-ascii?Q?28/u+qFL/M/LQEOd2tr54P602rs+Mrnq9djodWX7VxVc5vy2w0fWMYKyme0h?=
+ =?us-ascii?Q?lQG0i1zf5dh4dRWbBM/bnQph3rySmBwcGqLAZtQ9A/EdFxAh0io+uC656PKL?=
+ =?us-ascii?Q?4g34wOD2CjSTzTi0RDyyxzIgbY/Fju1Lfq1mX33lQ10GeVY8J6MDDVm2ryz4?=
+ =?us-ascii?Q?mM2HMU/z+WrhaS6HbQAqPkQ2shZoN8drRrOc3Mc3i9ApSOS56oxoaNu+pzub?=
+ =?us-ascii?Q?n8JnRIx4P8wonScbU5tCiMm4hBlqrCXRyR1PntMl6GR+lz/j9rxw8murXpFa?=
+ =?us-ascii?Q?+NUUjdxeXlsxBalduzLQpZMVLTif8QGPzSAjkCJv8zhblZCdJiOxEpXKjraY?=
+ =?us-ascii?Q?Nwmqy69S5loiHaHOzT8rwaHprdp7w1xPhscIsNn0AWSfTmoHz+7bmly1kJtu?=
+ =?us-ascii?Q?OzrHu9cNbg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a3a9a0d4-29b9-49a1-e91b-08da39eb21ed
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB3022.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 255b02a8-f7f9-403a-f604-08da39eacf7f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 22:56:29.2434
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 22:58:47.6934
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VK/K/YbqRbirpfEZbqXXPcvRTn3qsybZhaZ6Kx8Kp/AXA0d6iEN+Vg3o2EVdKLGIQ1E4z4O5eQL/LW4ALEcmBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2941
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
- definitions=2022-05-19_06:2022-05-19,2022-05-19 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=999 adultscore=0 phishscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205190123
-X-Proofpoint-GUID: AvJNEjEj2oQg5IsS3yIl30eN4gOp5KDF
-X-Proofpoint-ORIG-GUID: AvJNEjEj2oQg5IsS3yIl30eN4gOp5KDF
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iZYBv5ol9bxm4y8DWVi+wbueVhFt1QF7IubX+gb7MdNHNrm1Q0qXNxaX1fUUUiSW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Suren Baghdasaryan <surenb@google.com> [220519 17:33]:
-> On Thu, May 19, 2022 at 1:22 PM Liam Howlett <liam.howlett@oracle.com> wr=
-ote:
-> >
-> > * Suren Baghdasaryan <surenb@google.com> [220516 03:56]:
-> > > The primary reason to invoke the oom reaper from the exit_mmap path u=
-sed
-> > > to be a prevention of an excessive oom killing if the oom victim exit
-> > > races with the oom reaper (see [1] for more details). The invocation =
-has
-> > > moved around since then because of the interaction with the munlock
-> > > logic but the underlying reason has remained the same (see [2]).
-> > >
-> > > Munlock code is no longer a problem since [3] and there shouldn't be
-> > > any blocking operation before the memory is unmapped by exit_mmap so
-> > > the oom reaper invocation can be dropped. The unmapping part can be d=
-one
-> > > with the non-exclusive mmap_sem and the exclusive one is only require=
-d
-> > > when page tables are freed.
-> > >
-> > > Remove the oom_reaper from exit_mmap which will make the code easier =
-to
-> > > read. This is really unlikely to make any observable difference altho=
-ugh
-> > > some microbenchmarks could benefit from one less branch that needs to=
- be
-> > > evaluated even though it almost never is true.
-> > >
-> > > [1] 212925802454 ("mm: oom: let oom_reap_task and exit_mmap run concu=
-rrently")
-> > > [2] 27ae357fa82b ("mm, oom: fix concurrent munlock and oom reaper unm=
-ap, v3")
-> > > [3] a213e5cf71cb ("mm/munlock: delete munlock_vma_pages_all(), allow =
-oomreap")
-> > >
-> > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > > Acked-by: Michal Hocko <mhocko@suse.com>
-> > > ---
-> > >  include/linux/oom.h |  2 --
-> > >  mm/mmap.c           | 31 ++++++++++++-------------------
-> > >  mm/oom_kill.c       |  2 +-
-> > >  3 files changed, 13 insertions(+), 22 deletions(-)
-> > >
-> > > diff --git a/include/linux/oom.h b/include/linux/oom.h
-> > > index 2db9a1432511..6cdf0772dbae 100644
-> > > --- a/include/linux/oom.h
-> > > +++ b/include/linux/oom.h
-> > > @@ -106,8 +106,6 @@ static inline vm_fault_t check_stable_address_spa=
-ce(struct mm_struct *mm)
-> > >       return 0;
-> > >  }
-> > >
-> > > -bool __oom_reap_task_mm(struct mm_struct *mm);
-> > > -
-> > >  long oom_badness(struct task_struct *p,
-> > >               unsigned long totalpages);
-> > >
-> > > diff --git a/mm/mmap.c b/mm/mmap.c
-> > > index 313b57d55a63..ded42150e706 100644
-> > > --- a/mm/mmap.c
-> > > +++ b/mm/mmap.c
-> > > @@ -3105,30 +3105,13 @@ void exit_mmap(struct mm_struct *mm)
-> > >       /* mm's last user has gone, and its about to be pulled down */
-> > >       mmu_notifier_release(mm);
-> > >
-> > > -     if (unlikely(mm_is_oom_victim(mm))) {
-> > > -             /*
-> > > -              * Manually reap the mm to free as much memory as possi=
-ble.
-> > > -              * Then, as the oom reaper does, set MMF_OOM_SKIP to di=
-sregard
-> > > -              * this mm from further consideration.  Taking mm->mmap=
-_lock for
-> > > -              * write after setting MMF_OOM_SKIP will guarantee that=
- the oom
-> > > -              * reaper will not run on this mm again after mmap_lock=
- is
-> > > -              * dropped.
-> > > -              *
-> > > -              * Nothing can be holding mm->mmap_lock here and the ab=
-ove call
-> > > -              * to mmu_notifier_release(mm) ensures mmu notifier cal=
-lbacks in
-> > > -              * __oom_reap_task_mm() will not block.
-> > > -              */
-> > > -             (void)__oom_reap_task_mm(mm);
-> > > -             set_bit(MMF_OOM_SKIP, &mm->flags);
-> > > -     }
-> > > -
-> > > -     mmap_write_lock(mm);
-> > > +     mmap_read_lock(mm);
-> > >       arch_exit_mmap(mm);
-> >
-> > arch_exit_mmap() was called under the write lock before, is it safe to
-> > call it under the read lock?
->=20
-> Ah, good catch. I missed at least one call chain which I believe would
-> require arch_exit_mmap() to be called under write lock:
->=20
-> arch_exit_mmap
->     ldt_arch_exit_mmap
->         free_ldt_pgtables
->             free_pgd_range
->=20
-> I'll need to check whether arch_exit_mmap() has to be called before
-> unmap_vmas(). If not, we could move it further down when we hold the
-> write lock.
-> Andrew, please remove this patchset from your tree for now until I fix th=
-is.
->=20
-> >
-> > >
-> > >       vma =3D mm->mmap;
-> > >       if (!vma) {
-> > >               /* Can happen if dup_mmap() received an OOM */
-> > > -             mmap_write_unlock(mm);
-> > > +             mmap_read_unlock(mm);
-> > >               return;
-> > >       }
-> > >
-> > > @@ -3138,6 +3121,16 @@ void exit_mmap(struct mm_struct *mm)
-> > >       /* update_hiwater_rss(mm) here? but nobody should be looking */
-> > >       /* Use -1 here to ensure all VMAs in the mm are unmapped */
-> > >       unmap_vmas(&tlb, vma, 0, -1);
-> > > +     mmap_read_unlock(mm);
-> > > +
-> > > +     /*
-> > > +      * Set MMF_OOM_SKIP to hide this task from the oom killer/reape=
-r
-> > > +      * because the memory has been already freed. Do not bother che=
-cking
-> > > +      * mm_is_oom_victim because setting a bit unconditionally is ch=
-eaper.
-> > > +      */
-> > > +     set_bit(MMF_OOM_SKIP, &mm->flags);
-> > > +
-> > > +     mmap_write_lock(mm);
-> >
-> > Is there a race here?  We had a VMA but after the read lock was dropped=
-,
-> > could the oom killer cause the VMA to be invalidated?  I don't think so
-> > but the comment above about dup_mmap() receiving an OOM makes me
-> > question it.  The code before kept the write lock from when the VMA was
-> > found until the end of the mm edits - and it had the check for !vma
-> > within the block itself.  We are also hiding it from the oom killer
-> > outside the read lock so it is possible for oom to find it in that
-> > window, right?
->=20
-> When I was trying to understand that comment and looked into
-> dup_mmap() code, my conclusion was that this check was there to
-> protect us from the case when dup_mmap() gets interrupted and leaves
-> mm->mmap=3DNULL. So, in a sense it was not really a race with OOM killer
-> but an interrupted dup_mmap() case. So, once we checked it above we
-> don't need to recheck again under write lock. When I asked Michal
-> about this he was in agreement but it's possible we overlooked some
-> corner case. If so, please let me know and I can add this check here.
+On Thu, May 19, 2022 at 02:29:29PM -0400, Matthew Rosato wrote:
+> Since commit 0286300e6045 ("iommu: iommu_group_claim_dma_owner() must
+> always assign a domain") s390-iommu will get called to allocate multiple
+> unmanaged iommu domains for a vfio-pci device -- however the current
+> s390-iommu logic tolerates only one.  Recognize that multiple domains can
+> be allocated and handle switching between DMA or different iommu domain
+> tables during attach_dev.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  drivers/iommu/s390-iommu.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
 
-I didn't see how it was a problem either, neither of the other entry
-points modify the vma linked list/tree.
+Makes senese, thanks
 
->=20
-> >
-> > Could we just unconditionally set the skip bit before taking a write
-> > lock for the duration of the exit?  I'm probably missing your reason fo=
-r
-> > doing it this way.
->=20
-> That's what I'm doing - unconditionally setting MMF_OOM_SKIP before
-> taking the write lock. Did I miss something?
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Sorry, I meant to type "before the read lock".  I think you answered
-this in the other thread though.  I think you want the oom killer and
-process_mrelease to be able to run in parallel to the exiting of the
-task?  If so, is it worth all tasks taking the read lock and then
-dropping it to allow this rare case?
-
->=20
-> >
-> > >       free_pgtables(&tlb, vma, FIRST_USER_ADDRESS, USER_PGTABLES_CEIL=
-ING);
-> > >       tlb_finish_mmu(&tlb);
-> > >
-> > > diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-> > > index 49d7df39b02d..36355b162727 100644
-> > > --- a/mm/oom_kill.c
-> > > +++ b/mm/oom_kill.c
-> > > @@ -509,7 +509,7 @@ static DECLARE_WAIT_QUEUE_HEAD(oom_reaper_wait);
-> > >  static struct task_struct *oom_reaper_list;
-> > >  static DEFINE_SPINLOCK(oom_reaper_lock);
-> > >
-> > > -bool __oom_reap_task_mm(struct mm_struct *mm)
-> > > +static bool __oom_reap_task_mm(struct mm_struct *mm)
-> > >  {
-> > >       struct vm_area_struct *vma;
-> > >       bool ret =3D true;
-> > > --
-> > > 2.36.0.550.gb090851708-goog
-> > >
-> > >
-> >
-> > --
-> > To unsubscribe from this group and stop receiving emails from it, send =
-an email to kernel-team+unsubscribe@android.com.
-> >=
+Jason
