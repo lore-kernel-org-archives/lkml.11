@@ -2,148 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89730C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240725AbiESR2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
+        id S242146AbiESR2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242783AbiESRZo (ORCPT
+        with ESMTP id S242575AbiESRZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:25:44 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CE5C9ECE;
-        Thu, 19 May 2022 10:25:32 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id i24so5706065pfa.7;
-        Thu, 19 May 2022 10:25:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=M4VpQ9FA/yOtZ7kv3MA0tILWqoI98zOrKzzcPQLN1bE=;
-        b=VS336rDNF126aiqs0zDhNVmRlLhtdgOCtQzOvqIe2Yzq4a3SGLnU0Wa5V7UjGDyzr8
-         HxiGB68x6vSj4roCHekfpfutPa3ii3iKfD5PkDTOztas057DLWq5mqhTKXCOEM4R/nUs
-         3lLvfn3LhzinKCo56cWZvPp5dPpaRJlN3OdgsJC8bpu/VUxPJbTgWFsFj5neYnMLUiPi
-         cEaeRm3mSfKibmHRgk9FvrOuIYVE2bS1+Cy7niekwndpz+L5ARq1Q09uI4m1P8dWNNzx
-         mBSSZvvkdDNtvD3XJdi/owL8ae1dB+A/1s1tOtvvKYixCm1VFyjKk2S0Fm/w04gx9dQc
-         YMLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=M4VpQ9FA/yOtZ7kv3MA0tILWqoI98zOrKzzcPQLN1bE=;
-        b=VtbZZu70W3MCBATFPcq8ze2rnsAoifXvnwW8LOa0aEnvIKMLHac6X6mLsqX2f8z7Zg
-         Dv7NOkuSr+lHmbO1N8bRbyW4SzvnfXUg7GWBaD+Uf5NOubAYaCCr8uZqUuz4zXJkHi4R
-         krA+R1TFj5A6D7t5QSYelKlFVSfM90Aj5VY0u22uT8X0pOFX2qk7smQe7ZVzHF6bApFO
-         RerqQBLsubsat6FA5HGD2hNHKlXaxlAqJBPwNssaZEr3uEy3mgywG6IzyrP55oEnpc+/
-         yhp2v6e+/LxF+QqGrs38M8GtAYLdM4ahswO03bWIVFKKNt+mqB0nhh3hF9OsfX3Ve+ex
-         1kiA==
-X-Gm-Message-State: AOAM532HAa1oFMo4Q+3J6f1U/pJ3Z2Kmvhg05ev/tJdz9rxkSla6hgIk
-        231p+xJVKeBgUIr19qSEERT8kTewYQFS
-X-Google-Smtp-Source: ABdhPJyHPF4eVFHphoTFrwK/26y6X6rTq/0g6vrr7JSEA1842SO8X+Q8rU+gTBd5uMonppR1gwCSUw==
-X-Received: by 2002:a63:5fcf:0:b0:3f6:298d:e2ea with SMTP id t198-20020a635fcf000000b003f6298de2eamr4902749pgb.561.1652981131850;
-        Thu, 19 May 2022 10:25:31 -0700 (PDT)
-Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:25:31 -0700 (PDT)
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
-        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        andriy.shevchenko@linux.intel.com, willy@infradead.org
-Subject: [PATCH v2 24/28] clk: tegra: bpmp: Convert to printbuf
-Date:   Thu, 19 May 2022 13:24:17 -0400
-Message-Id: <20220519172421.162394-25-kent.overstreet@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
-References: <20220519172421.162394-1-kent.overstreet@gmail.com>
+        Thu, 19 May 2022 13:25:36 -0400
+Received: from mail.wantyapps.xyz (unknown [IPv6:2001:19f0:5:305f:5400:3ff:fe88:abd4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512A4A88AA
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:25:24 -0700 (PDT)
+Received: from localhost (bzq-79-183-83-88.red.bezeqint.net [79.183.83.88])
+        by mail.wantyapps.xyz (Postfix) with ESMTPSA id 41DC57D654;
+        Thu, 19 May 2022 17:25:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wantyapps.xyz;
+        s=mail; t=1652981122;
+        bh=bwIKlOGYkL2L4Ao4onVXBZ5fa9b9XMy3wOyD2HdryOQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oQUhwKS+DczDCMjN3HbYDbECzhCixVy+OoQ5gWsypv1yLI2z+K/H/Thbk8xn8nEbF
+         45G8ezHEH3zy0jk9t3w76n96o7YtAM4cCOiorLVmsK+U7/HPTdxDb4YS2b1Scgdl8s
+         SkHbRRdGryTQORDrCUDksuCfncEgXMCl9gXskbpENN4v5auzz1TrWZh5FCersqOZS6
+         Q0W8NWdHL9sdiGX3MIVmIHlacYbJ09fcAM3aMIcNyKqnHSsqmeJ5SODukMgRhlBxYX
+         6t+GvpZVoCCSkqwTWTOdfX2ZiX6s/IalCK+9+UlaaHZ8H1vY01bMvajC27p5Qsi1Eq
+         fH1XgkGos0Vxw==
+From:   Uri Arev <me@wantyapps.xyz>
+Cc:     Uri Arev <me@wantyapps.xyz>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Len Baker <len.baker@gmx.com>, Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Srivathsa Dara <srivathsa729.8@gmail.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: fbtft: fix checkpatch.pl struct should normally be const
+Date:   Thu, 19 May 2022 20:25:01 +0300
+Message-Id: <20220519172503.10821-1-me@wantyapps.xyz>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This converts from seq_buf to printbuf, which is similar but heap
-allocates the string buffer.
+This simple patch fixes a checkpatch.pl warning in `fbtft/fbtft-core.c`.
 
-Previously in this code the string buffer was allocated on the stack;
-this means we've added a new potential memory allocation failure. This
-is fine though since it's only for a dev_printk() message.
+Reported by Checkpatch:
+WARNING: struct fb_ops should normally be const
 
-Memory allocation context: printbuf doesn't take gfp flags, instead we
-prefer the new memalloc_no*_(save|restore) interfaces to be used. Here
-the surrounding code is already allocating with GFP_KERNEL, so
-everything is fine.
-
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
+Signed-off-by: Uri Arev <me@wantyapps.xyz>
 ---
- drivers/clk/tegra/clk-bpmp.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ drivers/staging/fbtft/fbtft-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/tegra/clk-bpmp.c b/drivers/clk/tegra/clk-bpmp.c
-index 6ecf18f71c..77a8c47806 100644
---- a/drivers/clk/tegra/clk-bpmp.c
-+++ b/drivers/clk/tegra/clk-bpmp.c
-@@ -5,7 +5,7 @@
- 
- #include <linux/clk-provider.h>
- #include <linux/device.h>
--#include <linux/seq_buf.h>
-+#include <linux/printbuf.h>
- #include <linux/slab.h>
- 
- #include <soc/tegra/bpmp.h>
-@@ -360,39 +360,38 @@ static void tegra_bpmp_clk_info_dump(struct tegra_bpmp *bpmp,
- 				     const struct tegra_bpmp_clk_info *info)
+diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
+index 9c4d797e7ae4..9ff2b8230caf 100644
+--- a/drivers/staging/fbtft/fbtft-core.c
++++ b/drivers/staging/fbtft/fbtft-core.c
+@@ -539,7 +539,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
  {
- 	const char *prefix = "";
--	struct seq_buf buf;
-+	struct printbuf buf = PRINTBUF;
- 	unsigned int i;
--	char flags[64];
--
--	seq_buf_init(&buf, flags, sizeof(flags));
+ 	struct fb_info *info;
+ 	struct fbtft_par *par;
+-	struct fb_ops *fbops = NULL;
++	const struct fb_ops *fbops = NULL;
+ 	struct fb_deferred_io *fbdefio = NULL;
+ 	u8 *vmem = NULL;
+ 	void *txbuf = NULL;
+@@ -614,7 +614,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
+ 	if (!vmem)
+ 		goto alloc_fail;
  
- 	if (info->flags)
--		seq_buf_printf(&buf, "(");
-+		pr_buf(&buf, "(");
+-	fbops = devm_kzalloc(dev, sizeof(struct fb_ops), GFP_KERNEL);
++	const fbops = devm_kzalloc(dev, sizeof(struct fb_ops), GFP_KERNEL);
+ 	if (!fbops)
+ 		goto alloc_fail;
  
- 	if (info->flags & TEGRA_BPMP_CLK_HAS_MUX) {
--		seq_buf_printf(&buf, "%smux", prefix);
-+		pr_buf(&buf, "%smux", prefix);
- 		prefix = ", ";
- 	}
- 
- 	if ((info->flags & TEGRA_BPMP_CLK_HAS_SET_RATE) == 0) {
--		seq_buf_printf(&buf, "%sfixed", prefix);
-+		pr_buf(&buf, "%sfixed", prefix);
- 		prefix = ", ";
- 	}
- 
- 	if (info->flags & TEGRA_BPMP_CLK_IS_ROOT) {
--		seq_buf_printf(&buf, "%sroot", prefix);
-+		pr_buf(&buf, "%sroot", prefix);
- 		prefix = ", ";
- 	}
- 
- 	if (info->flags)
--		seq_buf_printf(&buf, ")");
-+		pr_buf(&buf, ")");
- 
- 	dev_printk(level, bpmp->dev, "%03u: %s\n", info->id, info->name);
--	dev_printk(level, bpmp->dev, "  flags: %lx %s\n", info->flags, flags);
-+	dev_printk(level, bpmp->dev, "  flags: %lx %s\n", info->flags, printbuf_str(&buf));
- 	dev_printk(level, bpmp->dev, "  parents: %u\n", info->num_parents);
- 
- 	for (i = 0; i < info->num_parents; i++)
- 		dev_printk(level, bpmp->dev, "    %03u\n", info->parents[i]);
-+
-+	printbuf_exit(&buf);
- }
- 
- static int tegra_bpmp_probe_clocks(struct tegra_bpmp *bpmp,
 -- 
-2.36.0
+2.36.1
 
