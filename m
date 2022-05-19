@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C94C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D95D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343798AbiESXvp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
+        id S232045AbiESXvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 19:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343801AbiESXve (ORCPT
+        with ESMTP id S1343818AbiESXvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:51:34 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67B040E7A
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:30 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id ob14-20020a17090b390e00b001dff2a43f8cso506693pjb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:30 -0700 (PDT)
+        Thu, 19 May 2022 19:51:36 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587033ED0C
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:33 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id n8so6073291plh.1
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tDYfcoctfgGUpMYw9gQculc5eVEMZPLN1EPyBP/a9TM=;
-        b=HljvQakYyYfi+0fM7rulr2lNCGasST40JGLLSaq280R0ouMVRg91Upwpa50fKNn+/w
-         N5f83IHNriAN3kCyk5qhyWQ7hh2LK9yCbkDB+HcAixAvZunoso5OJJNdAHZZcnDGGOMM
-         7oqCSim/qX+jB5HHwFiu9DFd+wzGZ7dvw3l+0=
+        bh=VL7aIwZLpyrGDABa3dlA4nbQrEjgDT3j5OG51Wkr0cs=;
+        b=DcFRazy5AS+leW4zapdXdURseTHi8jGS6Grlld8aafeb+yIROHu++Xcka/bBag2N+p
+         ziu/FT5pheluYDxTPSE1BFyvJ/7878FZY/ryTtiQf6nPljNg/lO9+GhceTiMLDnLVmar
+         0Yemt4SqBz2ac2O8Zf2vFxdPOCvwErHbvsBHs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tDYfcoctfgGUpMYw9gQculc5eVEMZPLN1EPyBP/a9TM=;
-        b=2fIZeUjTS1UdlXtP+UtWiYz+EsHXeBDuIvrQhKQVwKaoTORZy/SbwvzFnbcO2dNdWm
-         A/ieg2m1xsHSIrZC+PM6zG77KxywLNJbtAmwgVCy9216twagk1FA+gUVHuXtD1QCko8M
-         Iej15aRa05aT9XNllqutyFQvbr6Z51nEKIF/wg703aYJ3zFwiJnGZqI5JFOPuAoee9eV
-         HUV2jLgcD7AIPv+N+yXJxkpA9kWdzmgqSUkIT7qsJCI55LuhtGZn5ZsccBKFRIAsFa/N
-         39kZnxVptOsk5MM8Ifc2S7RmEoQW2jZsWODJe12CVdMMgrKsm7bYGQNuZA4mMePOhZwd
-         e0Ow==
-X-Gm-Message-State: AOAM530vrcx0B6RlvlkN3bgPoa0qn+JiTPSZW0/gATU3K6JcuvXCipp4
-        XM21FW6b80/VwviAK5PbRFnd2g==
-X-Google-Smtp-Source: ABdhPJxced5j+irHMBvMDaaCbqgm4kaRsuNLDDROWGXScg0zPskmeITG405M83EO8WbvdXflyKfaDA==
-X-Received: by 2002:a17:90b:3506:b0:1dc:72c6:384d with SMTP id ls6-20020a17090b350600b001dc72c6384dmr8233598pjb.137.1653004290046;
-        Thu, 19 May 2022 16:51:30 -0700 (PDT)
+        bh=VL7aIwZLpyrGDABa3dlA4nbQrEjgDT3j5OG51Wkr0cs=;
+        b=4WAuZNQxiEMUGVhsABlPd0dHI8dn2md4WuvHXZiy07NKbHspnYI+6ZjXJvAcu9um9t
+         jakskkTsk91Mm+IePPs0rINJPXYHx+NS/alBb9OXkAKn+M/Fv4C8oxJ+SgiRq21rzPO/
+         PMY5awqxEx4BjdSnhyCb0geDbmg2f9wjGH+STsTMXbB5VsYPPhCMCgyZOR2jxPUH0fmo
+         HumKtGGoByQ3LviOX1f9eCM84cHRfHptBpMeyj48XV0+w9a7Zcwinkou5bCQcCe6iZhS
+         2LjvCo5AAKpsgY51kcrnFK+kvSafoLi+Qax1nlNmh1hlMN0LGKNPcPAEIf0iBK4D3fR3
+         59jw==
+X-Gm-Message-State: AOAM53371F9ziN7iE4bvEClpnLftdP7nSJ+siWdP1N9iCjf5Y99lg1hu
+        F9bCl6DwAD+P7MQuPE0UjYSd2gkMc7EXG6UXiLo=
+X-Google-Smtp-Source: ABdhPJxDCBjYQEFXMOhW/5hij1tJ4nYFm+rNW+jd6yuvkCW4cTwWZbXjZozQP/1fxI8WBq1SkoQC8g==
+X-Received: by 2002:a17:902:7d89:b0:15e:e999:6b88 with SMTP id a9-20020a1709027d8900b0015ee9996b88mr7116055plm.98.1653004292678;
+        Thu, 19 May 2022 16:51:32 -0700 (PDT)
 Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:e45f:1f3c:299b:4d86])
-        by smtp.gmail.com with ESMTPSA id m2-20020a6545c2000000b003c18ab7389asm4128992pgr.36.2022.05.19.16.51.28
+        by smtp.gmail.com with ESMTPSA id m2-20020a6545c2000000b003c18ab7389asm4128992pgr.36.2022.05.19.16.51.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 16:51:29 -0700 (PDT)
+        Thu, 19 May 2022 16:51:32 -0700 (PDT)
 From:   Douglas Anderson <dianders@chromium.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
@@ -61,9 +60,9 @@ Cc:     Stephen Boyd <swboyd@chromium.org>, linux-arm-msm@vger.kernel.org,
         Douglas Anderson <dianders@chromium.org>,
         Stephen Boyd <sboyd@codeaurora.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/5] dt-bindings: arm: qcom: Add sc7180 Chromebook board bindings
-Date:   Thu, 19 May 2022 16:51:07 -0700
-Message-Id: <20220519164914.v3.3.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+Subject: [PATCH v3 5/5] dt-bindings: arm: qcom: Add more sc7180 Chromebook board bindings
+Date:   Thu, 19 May 2022 16:51:09 -0700
+Message-Id: <20220519164914.v3.5.Ie8713bc0377672ed8dd71189e66fc0b77226fb85@changeid>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 In-Reply-To: <20220519164914.v3.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
 References: <20220519164914.v3.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
@@ -73,245 +72,158 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This copy-pastes compatibles from sc7180-based boards from the device
-trees to the yaml file so that `make dtbs_check` will be happy.
-
-NOTES:
-- I make no attempt to try to share an "item" for all sc7180 based
-  Chromebooks. Because of the revision matching scheme used by the
-  Chromebook bootloader, at times we need a different number of
-  revisions listed.
-- Some of the odd entries in here (like google,homestar-rev23 or the
-  fact that "Google Lazor Limozeen without Touchscreen" changed from
-  sku5 to sku6) are not typos but simply reflect reality.
-- Many revisions of boards here never actually went to consumers, but
-  they are still in use within various companies that were involved in
-  Chromebook development. Since Chromebooks are developed with an
-  "upstream first" methodology, having these revisions supported with
-  upstream Linux is important. Making it easy for Chromebooks to be
-  developed with an "upstream first" methodology is valuable to the
-  upstream community because it improves the quality of upstream and
-  gets Chromebooks supported with vanilla upstream faster.
-
-One other note here is that, though the bootloader effectively treats
-the list of compatibles in a given device tree as unordered, some
-people would prefer future boards to list higher-numbered revisions
-first in the list. Chromebooks here are not changing and typically
-list lower revisions first just to avoid churn.
+This adds board bindings for boards that are downstream but not quite
+upstream yet.
 
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
+Normally this bindings doc would go together in the same series that
+adds the device trees. In this case, Joe has been sending patches
+supporting these Chromebooks. His most recent posting is:
 
-Changes in v3:
-- Split link to Chromebook boot doc into a separate patch.
-- Added a note to desc about revision ordering within a device tree.
+https://lore.kernel.org/r/20220510154406.v5.1.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid/
+
+If he were to add this patch to the end of his v6, however, it would
+make things a bit more complicated simply becuase it would cause
+conflicts with all the other patches in this series. ...so steady
+state it would be correct to keep it in the series with the device
+tree files, but for this one time I think it makes sense to keep all
+the Chromebook board bindings patches together.
+
+(no changes since v2)
 
 Changes in v2:
-- Add link to doc about how Chromebook devicetrees work.
 - Use a "description" instead of a comment for each item.
 - Use the marketing name instead of the code name where possible.
 
- .../devicetree/bindings/arm/qcom.yaml         | 182 +++++++++++++++++-
- 1 file changed, 181 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/arm/qcom.yaml         | 92 +++++++++++++++++++
+ 1 file changed, 92 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index df5230792b37..2269493a1b48 100644
+index f8caf4b920c8..572a3677688e 100644
 --- a/Documentation/devicetree/bindings/arm/qcom.yaml
 +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -219,11 +219,191 @@ properties:
-               - qcom,ipq8074-hk10-c2
-           - const: qcom,ipq8074
- 
--      - items:
-+      - description: Qualcomm Technologies, Inc. SC7180 IDP
-+        items:
-           - enum:
-               - qcom,sc7180-idp
+@@ -263,6 +263,16 @@ properties:
+           - const: google,homestar
            - const: qcom,sc7180
  
-+      - description: HP Chromebook x2 11c (rev1 - 2)
++      - description: Google Kingoftown (rev0)
 +        items:
-+          - const: google,coachz-rev1
-+          - const: google,coachz-rev2
++          - const: google,kingoftown-rev0
 +          - const: qcom,sc7180
 +
-+      - description: HP Chromebook x2 11c (newest rev)
++      - description: Google Kingoftown (newest rev)
 +        items:
-+          - const: google,coachz
++          - const: google,kingoftown
 +          - const: qcom,sc7180
 +
-+      - description: HP Chromebook x2 11c with LTE (rev1 - 2)
+       - description: Acer Chromebook Spin 513 (rev0)
+         items:
+           - const: google,lazor-rev0
+@@ -364,6 +374,48 @@ properties:
+           - const: google,lazor-sku6
+           - const: qcom,sc7180
+ 
++      - description: Google Mrbland with AUO panel (rev0)
 +        items:
-+          - const: google,coachz-rev1-sku0
-+          - const: google,coachz-rev2-sku0
++          - const: google,mrbland-rev0-sku0
 +          - const: qcom,sc7180
 +
-+      - description: HP Chromebook x2 11c with LTE (newest rev)
++      - description: Google Mrbland with AUO panel (newest rev)
 +        items:
-+          - const: google,coachz-sku0
++          - const: google,mrbland-sku1536
 +          - const: qcom,sc7180
 +
-+      - description: Lenovo Chromebook Duet 5 13 (rev2)
++      - description: Google Mrbland with BOE panel (rev0)
 +        items:
-+          - const: google,homestar-rev2
-+          - const: google,homestar-rev23
++          - const: google,mrbland-rev0-sku16
 +          - const: qcom,sc7180
 +
-+      - description: Lenovo Chromebook Duet 5 13 (rev3)
++      - description: Google Mrbland with BOE panel (newest rev)
 +        items:
-+          - const: google,homestar-rev3
++          - const: google,mrbland-sku1024
++          - const: google,mrbland-sku768
 +          - const: qcom,sc7180
 +
-+      - description: Lenovo Chromebook Duet 5 13 (newest rev)
++      - description: Google Pazquel with Parade (newest rev)
 +        items:
-+          - const: google,homestar
++          - const: google,pazquel-sku5
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 (rev0)
++      - description: Google Pazquel with TI (newest rev)
 +        items:
-+          - const: google,lazor-rev0
++          - const: google,pazquel-sku1
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 (rev1 - 2)
++      - description: Google Pazquel with LTE and Parade (newest rev)
 +        items:
-+          - const: google,lazor-rev1
-+          - const: google,lazor-rev2
++          - const: google,pazquel-sku4
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 (rev3 - 8)
++      - description: Google Pazquel with LTE and TI (newest rev)
 +        items:
-+          - const: google,lazor-rev3
-+          - const: google,lazor-rev4
-+          - const: google,lazor-rev5
-+          - const: google,lazor-rev6
-+          - const: google,lazor-rev7
-+          - const: google,lazor-rev8
++          - const: google,pazquel-sku0
++          - const: google,pazquel-sku2
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 (newest rev)
+       - description: Sharp Dynabook Chromebook C1 (rev1)
+         items:
+           - const: google,pompom-rev1
+@@ -394,6 +446,16 @@ properties:
+           - const: google,pompom-sku0
+           - const: qcom,sc7180
+ 
++      - description: Google Quackingstick (newest rev)
 +        items:
-+          - const: google,lazor
++          - const: google,quackingstick-sku1537
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 with KB Backlight (rev1 - 2)
++      - description: Google Quackingstick with LTE (newest rev)
 +        items:
-+          - const: google,lazor-rev1-sku2
-+          - const: google,lazor-rev2-sku2
++          - const: google,quackingstick-sku1536
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 with KB Backlight (rev3 - 8)
+       - description: Google Trogdor (newest rev)
+         items:
+           - const: google,trogdor
+@@ -404,6 +466,36 @@ properties:
+           - const: google,trogdor-sku0
+           - const: qcom,sc7180
+ 
++      - description: Lenovo IdeaPad Chromebook Duet 3 with BOE panel (rev0)
 +        items:
-+          - const: google,lazor-rev3-sku2
-+          - const: google,lazor-rev4-sku2
-+          - const: google,lazor-rev5-sku2
-+          - const: google,lazor-rev6-sku2
-+          - const: google,lazor-rev7-sku2
-+          - const: google,lazor-rev8-sku2
++          - const: google,wormdingler-rev0-sku16
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 with KB Backlight (newest rev)
++      - description: Lenovo IdeaPad Chromebook Duet 3 with BOE panel (newest rev)
 +        items:
-+          - const: google,lazor-sku2
++          - const: google,wormdingler-sku1024
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 with LTE (rev1 - 2)
++      - description: Lenovo IdeaPad Chromebook Duet 3 with BOE panel and rt5682s (newest rev)
 +        items:
-+          - const: google,lazor-rev1-sku0
-+          - const: google,lazor-rev2-sku0
++          - const: google,wormdingler-sku1025
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 with LTE (rev3 - 8)
++      - description: Lenovo IdeaPad Chromebook Duet 3 with INX panel (rev0)
 +        items:
-+          - const: google,lazor-rev3-sku0
-+          - const: google,lazor-rev4-sku0
-+          - const: google,lazor-rev5-sku0
-+          - const: google,lazor-rev6-sku0
-+          - const: google,lazor-rev7-sku0
-+          - const: google,lazor-rev8-sku0
++          - const: google,wormdingler-rev0-sku0
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook Spin 513 with LTE (newest rev)
++      - description: Lenovo IdeaPad Chromebook Duet 3 with INX panel (newest rev)
 +        items:
-+          - const: google,lazor-sku0
++          - const: google,wormdingler-sku0
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook 511 (rev4 - rev8)
++      - description: Lenovo IdeaPad Chromebook Duet 3 with INX panel and rt5682s (newest rev)
 +        items:
-+          - const: google,lazor-rev4-sku4
-+          - const: google,lazor-rev5-sku4
-+          - const: google,lazor-rev6-sku4
-+          - const: google,lazor-rev7-sku4
-+          - const: google,lazor-rev8-sku4
++          - const: google,wormdingler-sku1
 +          - const: qcom,sc7180
 +
-+      - description: Acer Chromebook 511 (newest rev)
-+        items:
-+          - const: google,lazor-sku4
-+          - const: qcom,sc7180
-+
-+      - description: Acer Chromebook 511 without Touchscreen (rev4)
-+        items:
-+          - const: google,lazor-rev4-sku5
-+          - const: qcom,sc7180
-+
-+      - description: Acer Chromebook 511 without Touchscreen (rev5 - rev8)
-+        items:
-+          - const: google,lazor-rev5-sku5
-+          - const: google,lazor-rev5-sku6
-+          - const: google,lazor-rev6-sku6
-+          - const: google,lazor-rev7-sku6
-+          - const: google,lazor-rev8-sku6
-+          - const: qcom,sc7180
-+
-+      - description: Acer Chromebook 511 without Touchscreen (newest rev)
-+        items:
-+          - const: google,lazor-sku6
-+          - const: qcom,sc7180
-+
-+      - description: Sharp Dynabook Chromebook C1 (rev1)
-+        items:
-+          - const: google,pompom-rev1
-+          - const: qcom,sc7180
-+
-+      - description: Sharp Dynabook Chromebook C1 (rev2)
-+        items:
-+          - const: google,pompom-rev2
-+          - const: qcom,sc7180
-+
-+      - description: Sharp Dynabook Chromebook C1 (newest rev)
-+        items:
-+          - const: google,pompom
-+          - const: qcom,sc7180
-+
-+      - description: Sharp Dynabook Chromebook C1 with LTE (rev1)
-+        items:
-+          - const: google,pompom-rev1-sku0
-+          - const: qcom,sc7180
-+
-+      - description: Sharp Dynabook Chromebook C1 with LTE (rev2)
-+        items:
-+          - const: google,pompom-rev2-sku0
-+          - const: qcom,sc7180
-+
-+      - description: Sharp Dynabook Chromebook C1 with LTE (newest rev)
-+        items:
-+          - const: google,pompom-sku0
-+          - const: qcom,sc7180
-+
-+      - description: Google Trogdor (newest rev)
-+        items:
-+          - const: google,trogdor
-+          - const: qcom,sc7180
-+
-+      - description: Google Trogdor with LTE (newest rev)
-+        items:
-+          - const: google,trogdor-sku0
-+          - const: qcom,sc7180
-+
-       - items:
-           - enum:
-               - qcom,sc7280-crd
+       - description: Qualcomm Technologies, Inc. sc7280 CRD platform (rev3 - 4)
+         items:
+           - const: qcom,sc7280-crd
 -- 
 2.36.1.124.g0e6072fb45-goog
 
