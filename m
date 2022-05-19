@@ -2,133 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74CD0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238079AbiESMtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 08:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50844 "EHLO
+        id S238089AbiESMt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 08:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237337AbiESMtE (ORCPT
+        with ESMTP id S238087AbiESMtZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 08:49:04 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66966BA98C
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:49:03 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id bs17so4654029qkb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:49:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZYNVM4/IO7V0fYNlQI5NvKWUT/yRQDy6ZvaTZbyqfac=;
-        b=mJWbE0QEIqGVvxszguDCXk6HwPAW7vSyy5sd3KThi4tH55htbFfVr/pC0ToJ9Wjpa1
-         NMmJnnauuKYVCnsnAXjrwKHeXhHl8ZPuLdHTFaFsHnnnmZs/DR1fBs0GWnkicU365rSs
-         MDd0k6/yu9md8zAjjRbTMI3qMGHSL2wGEXHcaHNOhg7ATegQxyCdQWMpnJjS9kEMrpsw
-         qAf5/l3VqY4vD1G5EoG5q0Ppuy/F+LqgJQy7AHg2mM4GxpxngJov49ELqlDU312VZzAS
-         x0NZG6iAjVCyxWGkBA/EzzSF3qXZiUBc5CNglAFiNWxAi2Te8oEllwRgTQe+Qirgs8yO
-         AkHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZYNVM4/IO7V0fYNlQI5NvKWUT/yRQDy6ZvaTZbyqfac=;
-        b=voaPEAAF5o+PPJeGF7tjZONrVjAhM8hXM/mOaSPl1QsNjDjAaRYabd+a802/qm6x5q
-         bylsEmlwTVxchMrhlhf+j5nGIuAvz2iWrhkIC9H4Ee+Nz2qIXglCRsQ+uT2z0m9uFn1/
-         wvq13591yNi/O3reQbR1YXHL28YlN6dH9mD85DE7lCtha5zhjHrHkNbqOCAjAOcSonYR
-         L1kMOC8iKLsu52Qri2tFypCchBil8p9pcBQQjXpBWMTrMvPRv3o1wgqbBQI2tiAUF7Sp
-         oh11FKeGWGEx75JEDgSnXVJvSYVMdcyJ4H+z9B5vNDMwkLt2QkME/7ALYaaR2VHLYiv7
-         T1JA==
-X-Gm-Message-State: AOAM532mvCcVD9o49r4sa/2LFHUoJTyMQeKBaDXoaUzYiiCMsK8CMatr
-        SoqzxUGWzDu1VZWiGN9FMfIWeQ==
-X-Google-Smtp-Source: ABdhPJwC7dyR0Qk9BGcWgMtmzQUq9wbfQt5NmHbKY9nEqa9QgAxBxse0MPnEsgUdrJlcKLQUc1t5uA==
-X-Received: by 2002:a37:6883:0:b0:6a3:42ae:e17b with SMTP id d125-20020a376883000000b006a342aee17bmr524511qkc.59.1652964542542;
-        Thu, 19 May 2022 05:49:02 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id p7-20020a37a607000000b0069fc13ce24dsm1250439qke.126.2022.05.19.05.49.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 05:49:01 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nrfaO-008vEJ-VD; Thu, 19 May 2022 09:49:00 -0300
-Date:   Thu, 19 May 2022 09:49:00 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Long Li <longli@microsoft.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
- Network Adapter
-Message-ID: <20220519124900.GR63055@ziepe.ca>
-References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
- <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
- <20220517152409.GJ63055@ziepe.ca>
- <PH7PR21MB326393A3D6BF619C2A7B4A42CED09@PH7PR21MB3263.namprd21.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH7PR21MB326393A3D6BF619C2A7B4A42CED09@PH7PR21MB3263.namprd21.prod.outlook.com>
+        Thu, 19 May 2022 08:49:25 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D420BA9A8
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:49:24 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 01A6D1A0B77;
+        Thu, 19 May 2022 14:49:23 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AA4A71A0B82;
+        Thu, 19 May 2022 14:49:22 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id DF5CC180031E;
+        Thu, 19 May 2022 20:49:20 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_sai: Enable MCTL_MCLK_EN bit for master mode
+Date:   Thu, 19 May 2022 20:36:48 +0800
+Message-Id: <1652963808-14515-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 05:57:01AM +0000, Long Li wrote:
+On i.MX8MM, the MCTL_MCLK_EN bit it is not only the gate
+for MCLK output to PAD, but also the gate bit between
+root clock and SAI module, So it is need to be enabled
+for master mode, otherwise there is no bclk generated.
 
-> > > +
-> > > +	err = ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd),
-> > > +udata->inlen));
-> > 
-> > Skeptical this min is correct, many other drivers get this wrong.
-> 
-> I think this is correct. This is to prevent user-mode passing more data that may overrun the kernel buffer.
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_sai.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-And what happens when udata->inlen is, say, 0?
+diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+index fa950dde5310..dae16a14f177 100644
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -437,6 +437,12 @@ static int fsl_sai_set_bclk(struct snd_soc_dai *dai, bool tx, u32 freq)
+ 				   FSL_SAI_CR2_DIV_MASK | FSL_SAI_CR2_BYP,
+ 				   savediv / 2 - 1);
  
-> > > +	// map to the page indexed by ucontext->doorbell
-> > 
-> > Not kernel style, be sure to run checkpatch and fix the egregious things.
-> > 
-> > > +static void mana_ib_disassociate_ucontext(struct ib_ucontext
-> > > +*ibcontext) { }
-> > 
-> > Does this driver actually support disassociate? Don't define this function if it
-> > doesn't.
-> > 
-> > I didn't see any mmap zapping so I guess it doesn't.
-> 
-> The user-mode deals with zapping.
-> I see the following comments on rdma_umap_priv_init():
-> 
-> /* RDMA drivers supporting disassociation must have their user space designed
->  * to cope in some way with their IO pages going to the zero page. */
-> 
-> Is there any other additional work for the kernel driver to support
-> disassociate? It seems uverbs_user_mmap_disassociate() has done all
-> the zapping when destroying a ucontext.
-
-Nope, that looks OK then
++	if (sai->soc_data->max_register >= FSL_SAI_MCTL) {
++		/* SAI is in master mode at this point, so enable MCLK */
++		regmap_update_bits(sai->regmap, FSL_SAI_MCTL,
++				   FSL_SAI_MCTL_MCLK_EN, FSL_SAI_MCTL_MCLK_EN);
++	}
++
+ 	return 0;
+ }
  
-> I will open PR to rdma-core. The current version of the driver
-> supports queue pair type IB_QPT_RAW_PACKET. The test case will be
-> limited to querying device and load/unload. Running traffic tests
-> will require DPDK (or other user-mode program making use of
-> IB_QPT_RAW_PACKET).
-> 
-> Is it acceptable to develop test cases for this driver without
-> traffic/data tests?
+-- 
+2.17.1
 
-I'm not keen on that, even EFA was able to do simple traffic.
-
-Even with RAW_PACKET I would expect the driver to be able to send/recv
-using standard verbs as RAW_PACKET is a common feature.
-
-Jason
