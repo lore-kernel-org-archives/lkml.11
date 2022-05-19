@@ -2,117 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 379B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB66C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239787AbiESOaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
+        id S239798AbiESOcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239777AbiESOay (ORCPT
+        with ESMTP id S239789AbiESOb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:30:54 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9C31BD
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:30:52 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id v8so7522522lfd.8
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:30:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=v/9u8Imy9wLRfYHBxZ32XU6PyvAPyOYsjrvd7MK9l3c=;
-        b=eaOE6+Y20AmRa6nSUYi7geIR7y/yn/2PASJIV5qzYyDB6uR6xRAVOuFN3V/UnNIH5M
-         26SZQjvVd+k+L58xBa0lL+d/7x36ah8wc87F8UlsMb5wc09DF4Pc5bn1Ue9CNrngxEmQ
-         rujvItsfN8DHXlCNtjEY9sOnjgY9+qPcFxdpugQM+pL8o3a9pjz/zI2ByEpjrazS9jj7
-         RxRiQ2McaC+Q1r0odu1Huw8tyIP9HnMsjz+7KMrlms6HUv3h5dGyFqEn+lOxlHWKHapY
-         fG61sn3MSGPU7p9Zu9P4jkwlQ5oJYJXIZun/HOlHmFqzFhu0XGxWPN44Grct9Rn5NWjz
-         yXUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=v/9u8Imy9wLRfYHBxZ32XU6PyvAPyOYsjrvd7MK9l3c=;
-        b=oWufFMutDJg38PUoEq7PwuXfjLov8KavqnTliBqaWN6KdgZApz3BrDUtFBkfnB8JIW
-         zi1nYzyT/lWZQLwPGuD7/c4EXhpUZqljOKYilXa8dwdznfn7KOGXBwQqRKRmAFJ2YunB
-         sPifEeURWeJ8nCKep+K888KDY2UKfvNkTHIwhixz8Hb+edKtj/eLgUzurbSE6QUHpFWk
-         KcXbL1oG8/kusUJYMNyVg5gqemUYv0+8e+YOExNVzO0CYJiezIprDu0Ybvrhken2Leve
-         XiRo/UGH88USKzDPNbqI54ABmE4iQgI29xI+Hq/HX9sI+AFY7su5b2kHcUzT2NA4MZLT
-         9Jhw==
-X-Gm-Message-State: AOAM531iJCZMMjqv1pF9jJ8UERA2r5jy2hbGlUMNrt7BfxEExqC2Y+as
-        bFhb+XhUgq5ZGyVn8+Fv9QVwvg==
-X-Google-Smtp-Source: ABdhPJyRZHYDd6kSYR3c0rhv9w4eYdGNQxiFk/lUQ+ZunBiRsQGfvCDxNyRijOiVzLAzMZqW6VekGw==
-X-Received: by 2002:ac2:482f:0:b0:472:47d5:ef32 with SMTP id 15-20020ac2482f000000b0047247d5ef32mr3587303lft.344.1652970650876;
-        Thu, 19 May 2022 07:30:50 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.185])
-        by smtp.gmail.com with ESMTPSA id d25-20020ac24c99000000b00477b624c0a8sm304402lfl.180.2022.05.19.07.30.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 07:30:50 -0700 (PDT)
-Message-ID: <6f009241-a63f-ae43-a04b-62841aaef293@openvz.org>
-Date:   Thu, 19 May 2022 17:30:49 +0300
+        Thu, 19 May 2022 10:31:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A58FF719F3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652970713;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4592P8caqsLbBXSwqCd7azgHUUtDxpfkl8BDz2lklMc=;
+        b=Ky86F/CF9/E+GSU6MkzUqYxGTIjaUCT1OzIXiavjrKeTtk0Dota1K4VZYoSRXBtCmE3IT0
+        TNtCP8P6zZvcnVDvX1DXYYjcJ4hUygftET8StmR+bF55cgRpyPvLKZZ3IVUFmmvjP3Kq1G
+        KIpvflid2jbEF8oONEcE5cz+cdwXUZ4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-458-kWuMFNf6PRaLvIr2OjGyig-1; Thu, 19 May 2022 10:31:50 -0400
+X-MC-Unique: kWuMFNf6PRaLvIr2OjGyig-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 101D080088A;
+        Thu, 19 May 2022 14:31:50 +0000 (UTC)
+Received: from eperezma.remote.csb (unknown [10.39.193.126])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D855040CF8ED;
+        Thu, 19 May 2022 14:31:47 +0000 (UTC)
+From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     linux-kernel@vger.kernel.org, sgarzare@redhat.com,
+        gdawar@xilinx.com, lingshan.zhu@intel.com, kvm@vger.kernel.org,
+        lulu@redhat.com, netdev@vger.kernel.org, lvivier@redhat.com,
+        eli@mellanox.com, virtualization@lists.linux-foundation.org,
+        parav@nvidia.com
+Subject: [PATCH] vdpasim: allow to enable a vq repeatedly
+Date:   Thu, 19 May 2022 16:31:45 +0200
+Message-Id: <20220519143145.767845-1-eperezma@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH v3] io_uring: fix incorrect __kernel_rwf_t cast
-To:     Christoph Hellwig <hch@infradead.org>, Jens Axboe <axboe@kernel.dk>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        io-uring@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-References: <2eb22fb3-40cc-48f6-8ba9-5faeae0b43ff@kernel.dk>
-Content-Language: en-US
-In-Reply-To: <2eb22fb3-40cc-48f6-8ba9-5faeae0b43ff@kernel.dk>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently 'make C=1 fs/io_uring.o' generates sparse warning:
+Code must be resilient to enable a queue many times.
 
-  CHECK   fs/io_uring.c
-fs/io_uring.c: note: in included file (through
-include/trace/trace_events.h, include/trace/define_trace.h, i
-nclude/trace/events/io_uring.h):
-./include/trace/events/io_uring.h:488:1:
- warning: incorrect type in assignment (different base types)
-    expected unsigned int [usertype] op_flags
-    got restricted __kernel_rwf_t const [usertype] rw_flags
+At the moment the queue is resetting so it's definitely not the expected
+behavior.
 
-This happen on cast of sqe->rw_flags which is defined as __kernel_rwf_t,
-this type is bitwise and requires __force attribute for any casts.
-However rw_flags is a member of the union, and its access can be safely
-replaced by using of its neighbours, so let's use poll32_events to fix
-the sparse warning.
-
-Signed-off-by: Vasily Averin <vvs@openvz.org>
+Fixes: 2c53d0f64c06 ("vdpasim: vDPA device simulator")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
 ---
-v3:
-  1) fix only hunk in TRACE_EVENT(io_uring_req_failed),
-     rest ones was fixed by Christoph Hellwig already.
-  2) updated patch description
+ drivers/vdpa/vdpa_sim/vdpa_sim.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-v2: updated according to comments by Christoph Hellwig
-
----
- include/trace/events/io_uring.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/trace/events/io_uring.h b/include/trace/events/io_uring.h
-index 80d2588a090c..6ba87a290a24 100644
---- a/include/trace/events/io_uring.h
-+++ b/include/trace/events/io_uring.h
-@@ -520,7 +520,7 @@ TRACE_EVENT(io_uring_req_failed,
- 		__entry->off		= sqe->off;
- 		__entry->addr		= sqe->addr;
- 		__entry->len		= sqe->len;
--		__entry->op_flags	= sqe->rw_flags;
-+		__entry->op_flags	= sqe->poll32_events;
- 		__entry->buf_index	= sqe->buf_index;
- 		__entry->personality	= sqe->personality;
- 		__entry->file_index	= sqe->file_index;
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+index ddbe142af09a..b53cd00ad161 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+@@ -355,9 +355,10 @@ static void vdpasim_set_vq_ready(struct vdpa_device *vdpa, u16 idx, bool ready)
+ 	struct vdpasim_virtqueue *vq = &vdpasim->vqs[idx];
+ 
+ 	spin_lock(&vdpasim->lock);
+-	vq->ready = ready;
+-	if (vq->ready)
++	if (!vq->ready) {
++		vq->ready = ready;
+ 		vdpasim_queue_ready(vdpasim, idx);
++	}
+ 	spin_unlock(&vdpasim->lock);
+ }
+ 
 -- 
-2.31.1
+2.27.0
 
