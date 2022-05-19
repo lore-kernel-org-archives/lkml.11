@@ -2,128 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55457C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 04:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE610C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 04:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233505AbiESEHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 00:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45980 "EHLO
+        id S233496AbiESEIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 00:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233483AbiESEH1 (ORCPT
+        with ESMTP id S229766AbiESEIq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 00:07:27 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58240B2240;
-        Wed, 18 May 2022 21:07:26 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2ec42eae76bso44575147b3.10;
-        Wed, 18 May 2022 21:07:26 -0700 (PDT)
+        Thu, 19 May 2022 00:08:46 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DE8AFB32
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:08:45 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id z2so7519064ejj.3
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:08:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VXXEFVAWdcfsrBLBj8ao5DIb64QepPVvyxaMhKzXSz4=;
-        b=bw96tcbU3b3bKXOLcOF/AgAkk7wRQZDJDDAW9NCIvo1kFnjx0ziKDZV5+njUSSrKHL
-         nMUcqVxWv4O/HOLGLqgSw2tPsLor49noYVmEC2cUOF7sUum+XgVsz/chJvloyE/7Mhpp
-         A6/xy8c41g993gjpNoXpRTxlGrLpRWFlUFjmWQ/JZbOFm8WhFX/m46d+SR19VSr+JqvJ
-         2gGXdgRBUxXf900CZ22iErlthvQIHmWwQtfGwYTgpRVVoPoCmoQKsNiRDAvsHwMfbDZ5
-         EoxNS1V6DGWwOCk4Ip9ckDnlX1RFHZG/PDmPKGA7jHOP/7l/cifjH05BjVLlyJ63oqnW
-         aSCg==
+        bh=5NuTN6+F3TBVlFzEcXPbTfTSxJJpUOQDs3Y2ry8Jne0=;
+        b=mH2llISZenMBvGXANBcqE5aANz8QcBamzb+hFox7K8HGfGN/weV2lCOdRhy/dPSPCO
+         3z3OXGaMdfYxtwPSOduMuc2kYwvHrLSKBpcUhlgW/stCQzC8NPyYNDO4cyA5T+OKPuZJ
+         CNaR8UiojwlJ2MMZAzLARljH+2A8OblwDbaYp1A9Wx9X4vKuojYxUiIRq8DFS304i8vY
+         OIWojYSH/2ofFVTbXBTf4UCB/WSc2ZBN0ChjfqUviwzjZQ8mgrXmc90Moy/N/t+I4OVq
+         uhQY3n4xH35mgxMEGit9nVTDO3hZxN4FBSJeyOlKz9iguRPkWU2X9KiTd2YgCn0aNvKt
+         1ZkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VXXEFVAWdcfsrBLBj8ao5DIb64QepPVvyxaMhKzXSz4=;
-        b=DsxFlMOwjrmXNzsr1NbiDgEN+ZZMbCvSGttOVcx4bIZSJmqmvn9pkfKZfiiCNGUwG/
-         SuINhQU+hEFSjPL5LuuL+hS9qR0SCzrW9FL+R5sF2aV78Gwpf7LCZOEgdOuDA2647jcZ
-         XNtqBaIoidh8UcVOjoMJaxANYSsyYUi8hyZxmiGmU/oYFEFytCzU//fIlqwRVkLg24w2
-         vnkRnjpZf2kPYxPC/DRQyVj50EGQPTWWqQ2WUqb2MoSRqBtLWQfP2QL9GGcT5djm5PGE
-         zt7qE4mpBSyb/LrHqPcakokvCodOv2HGRFi6NpeedgLfvZ8OFHo4zFODb3VONQZX05EQ
-         H0dA==
-X-Gm-Message-State: AOAM530RqoQzXbdVT/VVfbBzVBqQUhVhTONWl1eqam94l3KG+ptpoKwB
-        HVCrIZrayn6iJZANpPFMfOifT4M3muGHzPkis4Y=
-X-Google-Smtp-Source: ABdhPJxbJGkHPtjXLEwwOw4PHTO9ghyGHE/Mv303/T+yUZFJOG3isNuJYeet9Pv4Y+XInrhWvxXsWOCPupkmjHSn/Oo=
-X-Received: by 2002:a0d:c101:0:b0:2ff:5824:e8a8 with SMTP id
- c1-20020a0dc101000000b002ff5824e8a8mr2562737ywd.413.1652933245601; Wed, 18
- May 2022 21:07:25 -0700 (PDT)
+        bh=5NuTN6+F3TBVlFzEcXPbTfTSxJJpUOQDs3Y2ry8Jne0=;
+        b=Kv6nK1/i7KTqgF78+e5/RqQASHp1qqwpVPgfwecpehPCsghtzGAL/Nz3Xfo0OcxSwV
+         ItOYpcA+sybl7cI/fixWJVv26bpdIsR26oxqUcFa/92pdVaJi8Avvi/A6NcsOptKKjSW
+         emEroo7pv+CT6vVPUuHOqf9/MR88n020HhtmgIStJgfJH9W59y1RCtL6k55rrwawxkDO
+         8qdxPDCtIry34ZkeLTOuxnrzLv/Z2qs/l05mxid3VTYA7EMuyFLaK6le82eZu13HAHpn
+         ry0ClVeRaylGpG4ICaWCHKUfewDm4ewvHG3N/AH6zi/bLSfm/E+XsqGLoLp2plAtm2YZ
+         jrVA==
+X-Gm-Message-State: AOAM533X759YXtY305J/0E5lL15bvsSqMj+t47/uO+lo9lXKa76qEfRP
+        UIdycM3Qey4drJ7srcvnnXltsN2l2r/MwUgGnaYHzP5YdUxysjzV
+X-Google-Smtp-Source: ABdhPJxWnZ/+po2yuf7QTqvUbRYgFyJlL22dsPnz5xfr+cYG0iUXYo+9qOcpeEbzVPemTgXOZyJ3sflpJUuYqb9FRPk=
+X-Received: by 2002:a05:6000:78b:b0:20d:101b:2854 with SMTP id
+ bu11-20020a056000078b00b0020d101b2854mr2119695wrb.300.1652933313841; Wed, 18
+ May 2022 21:08:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220518192924.20948-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAHp75VeyU4Ox76wz9VfT8qEKHsE1eAo2iw27Lro1tmjJB0npMg@mail.gmail.com>
-In-Reply-To: <CAHp75VeyU4Ox76wz9VfT8qEKHsE1eAo2iw27Lro1tmjJB0npMg@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Thu, 19 May 2022 05:07:00 +0100
-Message-ID: <CA+V-a8tp0T=ojr3hB-QacOvV5sCZ29YXspPzKSSpGHUA8_1XDA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/7] Renesas RZ/G2L IRQC support
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220518224725.742882-1-namhyung@kernel.org> <20220518224725.742882-7-namhyung@kernel.org>
+In-Reply-To: <20220518224725.742882-7-namhyung@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 18 May 2022 21:08:21 -0700
+Message-ID: <CAP-5=fWyH=-XDdOsCjLTOHO09vCHnUcnijvVT0mw0zp6Ft57zA@mail.gmail.com>
+Subject: Re: [PATCH 6/6] perf test: Add a basic offcpu profiling test
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
+        Milian Wolff <milian.wolff@kdab.com>, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Blake Jones <blakejones@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 10:10 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
+On Wed, May 18, 2022 at 3:47 PM Namhyung Kim <namhyung@kernel.org> wrote:
 >
-> On Wed, May 18, 2022 at 9:29 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> >
-> > Hi All,
-> >
-> > The RZ/G2L Interrupt Controller is a front-end for the GIC found on
-> > Renesas RZ/G2L SoC's with below pins:
-> > - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI
-> >   interrupts
-> > - GPIO pins used as external interrupt input pins out of GPIOINT0-122 a
-> >   maximum of only 32 can be mapped to 32 GIC SPI interrupts,
-> > - NMI edge select.
-> >
-> >                                                              _____________
-> >                                                              |    GIC     |
-> >                                                              |  ________  |
-> >                                       ____________           | |        | |
-> > NMI --------------------------------->|          |  SPI0-479 | | GIC-600| |
-> >              _______                  |          |------------>|        | |
-> >              |      |                 |          |  PPI16-31 | |        | |
-> >              |      | IRQ0-IRQ7       |   IRQC   |------------>|        | |
-> > P0_P48_4 --->| GPIO |---------------->|          |           | |________| |
-> >              |      |GPIOINT0-122     |          |           |            |
-> >              |      |---------------->| TINT0-31 |           |            |
-> >              |______|                 |__________|           |____________|
-> >
-> > The proposed patches add hierarchical IRQ domain, one in IRQC driver and
-> > another in pinctrl driver. Upon interrupt requests map the interrupt to
-> > GIC. Out of GPIOINT0-122 only 32 can be mapped to GIC SPI, this mapping is
-> > handled by the pinctrl and IRQC driver.
+>   $ sudo ./perf test -v offcpu
+>    88: perf record offcpu profiling tests                              :
+>   --- start ---
+>   test child forked, pid 685966
+>   Basic off-cpu test
+>   Basic off-cpu test [Success]
+>   test child finished with 0
+>   ---- end ----
+>   perf record offcpu profiling tests: Ok
 >
-> Where is the explanation on why valid_mask can't be used instead?
->
-The .valid_mask option is one time setting but what I need is
-something dynamic i.e. out of 392 GPIO pins any 32 can be used as an
-interrupt pin. Also with this patch we also save on memory here [0].
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/kernel/irq/irqdomain.c?h=next-20220518#n153
+Acked-by: Ian Rogers <irogers@google.com>
 
-Cheers,
-Prabhakar
+Thanks,
+Ian
+
+> ---
+>  tools/perf/tests/shell/record_offcpu.sh | 60 +++++++++++++++++++++++++
+>  1 file changed, 60 insertions(+)
+>  create mode 100755 tools/perf/tests/shell/record_offcpu.sh
 >
+> diff --git a/tools/perf/tests/shell/record_offcpu.sh b/tools/perf/tests/shell/record_offcpu.sh
+> new file mode 100755
+> index 000000000000..96e0739f7478
+> --- /dev/null
+> +++ b/tools/perf/tests/shell/record_offcpu.sh
+> @@ -0,0 +1,60 @@
+> +#!/bin/sh
+> +# perf record offcpu profiling tests
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +set -e
+> +
+> +err=0
+> +perfdata=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
+> +
+> +cleanup() {
+> +  rm -f ${perfdata}
+> +  rm -f ${perfdata}.old
+> +  trap - exit term int
+> +}
+> +
+> +trap_cleanup() {
+> +  cleanup
+> +  exit 1
+> +}
+> +trap trap_cleanup exit term int
+> +
+> +test_offcpu() {
+> +  echo "Basic off-cpu test"
+> +  if [ `id -u` != 0 ]
+> +  then
+> +    echo "Basic off-cpu test [Skipped permission]"
+> +    err=2
+> +    return
+> +  fi
+> +  if perf record --off-cpu -o ${perfdata} --quiet true 2>&1 | grep BUILD_BPF_SKEL
+> +  then
+> +    echo "Basic off-cpu test [Skipped missing BPF support]"
+> +    err=2
+> +    return
+> +  fi
+> +  if ! perf record --off-cpu -e dummy -o ${perfdata} sleep 1 2> /dev/null
+> +  then
+> +    echo "Basic off-cpu test [Failed record]"
+> +    err=1
+> +    return
+> +  fi
+> +  if ! perf evlist -i ${perfdata} | grep -q "offcpu-time"
+> +  then
+> +    echo "Basic off-cpu test [Failed record]"
+> +    err=1
+> +    return
+> +  fi
+> +  if ! perf report -i ${perfdata} -q --percent-limit=90 | egrep -q sleep
+> +  then
+> +    echo "Basic off-cpu test [Failed missing output]"
+> +    err=1
+> +    return
+> +  fi
+> +  echo "Basic off-cpu test [Success]"
+> +}
+> +
+> +test_offcpu
+> +
+> +cleanup
+> +exit $err
 > --
-> With Best Regards,
-> Andy Shevchenko
+> 2.36.1.124.g0e6072fb45-goog
+>
