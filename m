@@ -2,112 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE79C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343849AbiESXwF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
+        id S231461AbiESXwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 19:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343800AbiESXvc (ORCPT
+        with ESMTP id S1343879AbiESXw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:51:32 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55293B3D8
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:29 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id l14so6604365pjk.2
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:29 -0700 (PDT)
+        Thu, 19 May 2022 19:52:26 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A3C122B7E
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:52:09 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id h186so6356297pgc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:52:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=q35UEoXZMSOCcWFw42emLPYiONOKqm2lz40BTN9A+tM=;
-        b=DqXWeTE0OEyINrjPcpc9yri/jFkIZtNX9Jtkf89JF7Ixsn2tRbTntduA/QiAb4FOuc
-         PDvVmT2zyplpwW6ARV04IhNM28Ecb25ZSry69jftIUQd9WwWmVoE7JvgFw6DUa/XmQJV
-         sTQCP6ztMskUe/UDVTqet2hxP5IvoMk3Vtp5U=
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:references:in-reply-to:content-transfer-encoding;
+        bh=cGpb7ZGnZmolqlcodDS+4Xrnr2MP+JxaiTVWAeuRPq8=;
+        b=7K50c7Qr3zfvvux1YsgYi0IeVwVi0vsOPEwdjD4VmEygxA0cAY9Qu+k/FAZg9egbRR
+         cF3+ncwvI7jUd9+PYB1FhWc9MyS2bFcDJ6PTpTO6pyI2DDcOvsb7EJpjPhSEOJ57FM84
+         earrT+0CjWsmMSVWHxuuIWTpvNYkkkf7p+wKCF2PT0dHiArhfB6DbPHGUuoa4Otq1Yur
+         OgxboR1ThofnFMtAy4weNpGwJ0aoSoMADy1a+ZGJJlYER7mp8rSZdsDXTJ30uGnHPMeg
+         QYs4Cc6gS6qbnp7ni3dmyNsrTwyfMQsqcMX+FbuNnMLQBXePuHFNuJPpnNQLKi2FaraC
+         0xXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=q35UEoXZMSOCcWFw42emLPYiONOKqm2lz40BTN9A+tM=;
-        b=33N4f3sKNke/P4UEl1JnysywWrG+OE57nTmc1Fqamhlw41vG/Vv6tvB1Q3FUTJNu5p
-         5iT9YFjAzH5VFdQxrdvjE/tgAm11PzqjL95sI7EPQMMER0FtDB4IubU+pAsUdZT5yBSQ
-         HY5HDIu44DIYWJnb0JlYPvRutHZcUM4n/TicUYw4yEZ1iCz9yBMq/zO8CYtEJMp+q/3+
-         byuHD1P2l2gwSnuguYJ+Izo1doousbgxzBMeF2rJln3ns/QbkaDhelRx9Yel+K3Gw43o
-         /3uA59FMJfxQGktgwQQcCBN9SzfFxEBzpFvGMkUdOrNQP9GE4IDIWwoaSCFYczHobhWZ
-         c2uw==
-X-Gm-Message-State: AOAM532rv0I6Xztyu5nc8nTZXIVBz3CnVdmM7BHLhT0r94CsAcg6TGTT
-        jO1fJdnK5K5TDj0w1Z/k8YLeMQ==
-X-Google-Smtp-Source: ABdhPJzMGN37UVZtjWP6BKx/lse700pzDoGhoFR29+V9COGUUz+/fqUNPpKhMjPOpqTK8XweCe+SCg==
-X-Received: by 2002:a17:902:8501:b0:15f:173:40e1 with SMTP id bj1-20020a170902850100b0015f017340e1mr7086601plb.74.1653004288460;
-        Thu, 19 May 2022 16:51:28 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:e45f:1f3c:299b:4d86])
-        by smtp.gmail.com with ESMTPSA id m2-20020a6545c2000000b003c18ab7389asm4128992pgr.36.2022.05.19.16.51.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 16:51:28 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>, linux-arm-msm@vger.kernel.org,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        "Joseph S . Barrera III" <joebar@chromium.org>,
-        patches@lists.linux.dev, devicetree@vger.kernel.org,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Julius Werner <jwerner@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/5] dt-bindings: arm: qcom: Mention that Chromebooks use a different scheme
-Date:   Thu, 19 May 2022 16:51:06 -0700
-Message-Id: <20220519164914.v3.2.I6418884d8bab6956c7016304f45adc7df808face@changeid>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <20220519164914.v3.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
-References: <20220519164914.v3.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=cGpb7ZGnZmolqlcodDS+4Xrnr2MP+JxaiTVWAeuRPq8=;
+        b=dO54Pm7aBTv4N7/Fw/9U4eOv+bn16h0qedYhTnZRNt1NEKwlJvYin3EFJiXJEgt5zc
+         r8HfFjyraBuyIMb87LqdriRqdb3gZxhUrqZYTnPkr2lapYkidkUu7KuvCfAp2h/t241H
+         Qlt9MPY05FFuN7TPyjM7X4Z+AO+9rmgIsZIIxG+jJ2OQAS+0RSPILoaZ6fNsYj/GG2Rc
+         kypNyUaQ0Lt1XHfhy9FCyMKDG+b118VhrDeKWYHyNbOLq/ijFW3rljwzi/9l/8qILTKq
+         i5RMpf5EAhRXMnupRcZ+zhY6NzmJNt8HiLo/HLyjiVEH74HYsFqgJDBNTfg19/WU8mZw
+         kDiw==
+X-Gm-Message-State: AOAM5317ddmM5sbc/9/etwGlyhyUdDGTMh3kNVdd+y//tg5qsXHWzAr8
+        bXs+7XpXiSHrjUIAaEqQdhirulL2+/nmOw==
+X-Google-Smtp-Source: ABdhPJwrFUKQH6K/e/+BKe3g7XJw/azNCdfccjM3ECAUEP78BGgrOnFO9s7S1AJ229C2kfRGt1F/2A==
+X-Received: by 2002:a63:4d02:0:b0:3f5:db92:60b7 with SMTP id a2-20020a634d02000000b003f5db9260b7mr6125338pgb.580.1653004328778;
+        Thu, 19 May 2022 16:52:08 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id i3-20020aa796e3000000b0050dc76281c8sm231664pfq.162.2022.05.19.16.52.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 16:52:08 -0700 (PDT)
+Message-ID: <8492c79f-3ddf-3b26-db9a-ff0f42bab7d9@kernel.dk>
+Date:   Thu, 19 May 2022 17:52:07 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] random: convert to using fops->write_iter()
+Content-Language: en-US
+From:   Jens Axboe <axboe@kernel.dk>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <f871a510-d262-bc98-757e-204976e1b82c@kernel.dk>
+In-Reply-To: <f871a510-d262-bc98-757e-204976e1b82c@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The qcom.yaml bindings file has a whole description of what the
-top-level compatible should look like for Qualcomm devices. It doesn't
-match what Chromebooks do, so add a link to the Chromebook docs.
+On 5/19/22 5:43 PM, Jens Axboe wrote:
+> Now that the read side has been converted to fix a regression with
+> splice, convert the write side as well to have some symmetry in the
+> interface used (and help deprecate ->write()).
 
-Reported-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
----
-The link added here will (obviously) not function until the
-documentation patch makes it to mainline. Presumably folks who want to
-read it in the meantime can find it pretty easily. If there's a better
-way to link this then please let me know.
+Oh, and similarly to the other one, you can then add ->splice_write
+as well with using iter_file_splice_write for that. If you want to add
+that, please do.
 
-Changes in v3:
-- ("Mention that Chromebooks use a different scheme") split out for v3.
-
- Documentation/devicetree/bindings/arm/qcom.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 5c06d1bfc046..df5230792b37 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -90,6 +90,11 @@ description: |
-   A dragonboard board v0.1 of subtype 1 with an apq8074 SoC version 2, made in
-   foundry 2.
- 
-+  There are many devices in the list below that run the standard ChromeOS
-+  bootloader setup and use the open source depthcharge bootloader to boot the
-+  OS. These devices do not use the scheme described above. For details, see:
-+  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/arm/google/chromebook-boot-flow.rst
-+
- properties:
-   $nodename:
-     const: "/"
 -- 
-2.36.1.124.g0e6072fb45-goog
+Jens Axboe
 
