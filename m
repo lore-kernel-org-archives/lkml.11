@@ -2,152 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CADC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 00:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C8B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 00:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232455AbiESAwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 20:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
+        id S232323AbiESAyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 20:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232329AbiESAwU (ORCPT
+        with ESMTP id S232386AbiESAyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 20:52:20 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88EA344E8;
-        Wed, 18 May 2022 17:52:17 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id u23so6472538lfc.1;
-        Wed, 18 May 2022 17:52:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5igVcgabfc3GpqR+MTampE2W7vmBRqD9HW7OXsIkAag=;
-        b=VPQenJuW+OU2IPmWU2GFyZZVSj5wN32qJwvTtwmzGWsd2jWWlVg88/rrpXKyHvRjT3
-         Ml/wXy3LfZVPOn3QHJM8giH/EE0Kc+AiGW8Ss5XWWMXCNxna9kEiB3mjPnXRKVCtDUku
-         5UVHJx89alZ3m+0KkfExjcSlUaHVHzdfHlbdcfUJPgFAm/4j+53XqocxKIQWqb7BowTh
-         AE2vtuJqHk/nH2oNR/basBq1ZU+ZbQ6sO1ZAjwPSzNcWHrJ+6HdNns6FWCo2x+J6+583
-         KmnJIrbQrpksPKtbvmIaYPN2K6WKZhAciyRTbLo/Du99PBz0kvzJxxqUvvxu0IEAnMKa
-         BiDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5igVcgabfc3GpqR+MTampE2W7vmBRqD9HW7OXsIkAag=;
-        b=iQZ2srCUPb+4LEpOkrR8sSYWwdAv04vEw8gYJyUMzVf5JEw9Vo5HLu8q9TwSs7Ux3J
-         HU1aMjPWgY0opUjJw8Wd2gc1WpVwfs6mAFRUIwALJyfRX6fuhMW8jY42+PVFJdBUtc3h
-         13719S5prwzW0+FXJz4zAxF9iR+aJBfnPb6KmGof+AXQT1gTFk+7UpB7hHgW4bYq2/Tc
-         llIhm4eOWtigshfqFF9C5SKlFE+lB60QncpGGmOg9qBLnlUBACFXsd7pLrVENjO64R8L
-         LfxUQgdQuZ8zJ+4KJREIM0K7O5r3otiw0jK1ZCKfhK1qtJhOR1YB8GARocYYj2UI3olt
-         I3Sg==
-X-Gm-Message-State: AOAM5317vz5dHRcNE/bDopYwje+2afHluKYQOZkKq1OHbQNviftOfBa6
-        9aF0z68Br2BQbduQQZILhiYs3bJKqo+rEVHJa5M=
-X-Google-Smtp-Source: ABdhPJzye9D8ZzBG1mW+oOdXc4HL1Ud/n9N+sNSiOtlLukstVs8BE5VN6OqqEqObbwvyuiEqu9nepwH/GRCVRJdO+nA=
-X-Received: by 2002:ac2:43a1:0:b0:472:1de:bbdc with SMTP id
- t1-20020ac243a1000000b0047201debbdcmr1492978lfl.48.1652921535991; Wed, 18 May
- 2022 17:52:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220510031056.1657-1-ctcchien@nuvoton.com> <20220510031056.1657-3-ctcchien@nuvoton.com>
- <8d46eeb8-7926-f842-6105-1975a5adc3fe@molgen.mpg.de> <CAHpyw9cvrEKMUpRBWYWp9hDZgA8ALHBkNAQr6ZDqjj4uH-MRTQ@mail.gmail.com>
- <564c41fe-08cc-9c19-1506-c7b501458251@molgen.mpg.de>
-In-Reply-To: <564c41fe-08cc-9c19-1506-c7b501458251@molgen.mpg.de>
-From:   Medad Young <medadyoung@gmail.com>
-Date:   Thu, 19 May 2022 08:52:04 +0800
-Message-ID: <CAHpyw9dGfn8Q5zerjKDLWpVzcA6MmtfhOiJ_b7M1NLUFXDPMcA@mail.gmail.com>
-Subject: Re: [PATCH v9 2/3] dt-bindings: edac: nuvoton: add NPCM memory controller
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     rric@kernel.org, James Morse <james.morse@arm.com>,
-        tony.luck@intel.com, Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Patrick Venture <venture@google.com>, KWLIU@nuvoton.com,
-        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING <KFTING@nuvoton.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>, ctcchien@nuvoton.com,
-        devicetree <devicetree@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-edac <linux-edac@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 18 May 2022 20:54:00 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021016.outbound.protection.outlook.com [52.101.62.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128EE55208;
+        Wed, 18 May 2022 17:53:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Jvy08O4bz3WMaay6pL7dktv6rbquaRroFXNteIyXDVDv0YRSStwxGTLBCIiNclMkbo9T0eSo2OYC/ELbgDDI9R+laC0mKdlsJw1HWgBIEKaRbghKanXVPIrh7ABMtXuRdQ3qh5NRT9Y1G3zsHh4DkWUTERK4y+E5XOrgyL0YKgif7zXdToDt4EkMTrMifz4QZZoBR+NBFYemqpcK2TkCfrtKQOdAroJCiTYscdxAb51WnYRO3yWp0Kr+QOgaNnS9tt699pvcDpK7quBx8bPqr708yAwjKQnY55CFKffjMVwgqwkNSB5W/ZyN63E4aQyjvbuSp9+WRkPV+ZrDDrXvDA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2mA0Xcy+/4d8K9rNJFpebMSC2JhoDnSf+wwIrWA5ToE=;
+ b=Yz7PzEYp4uX3LLZx0vFoazfaG9+lXniHpZkuFl6lKOBT34iWRLABejYEBuxfhfV4zBT4Flog4juSAXxaYKv46Ij4cPwNOITy+0SlPEuFpq+qiAbbzjd9p/bVPljhmxFC1np88vi9TYrfTX9mYzpTRaia9L/XieXtnYGXZw2M/FCzc+Lh7wfy18Vsuk3ZJqVz8+2rraZ03SCzsTCFa4zCXw0GyehPeTXYn8XJOivbFDTEqUJrAEGl2X/CyZ6GqUG8nCxvWHVsInKNAyBVhjfHyq2AWR24tOylW8VUDkjVKKFrwaJmhv0gS6U/7OyYLtkgrO7roVUNDpLnzbsn7R6MYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2mA0Xcy+/4d8K9rNJFpebMSC2JhoDnSf+wwIrWA5ToE=;
+ b=hTJ2aL4sAQ+3V1wbCP/fhcdV7J+V0hrfylzyr8ktN8a3edqL1agafGamjNjMz+cmneXCVxIZM25UaKqUyxv0Lmowwb+Z4rkeuOMZJj5TkL0nsPtDu+Wu0p5CJeS/zuK7r7U6AMVMHWcyvEHxBlkfZ2Ys93av1hOor/5BxkXPyF4=
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
+ by SJ0PR21MB2016.namprd21.prod.outlook.com (2603:10b6:a03:2aa::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.7; Thu, 19 May
+ 2022 00:37:54 +0000
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::bdc5:cad:529a:4cdd]) by PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::bdc5:cad:529a:4cdd%7]) with mapi id 15.20.5293.007; Thu, 19 May 2022
+ 00:37:53 +0000
+From:   Long Li <longli@microsoft.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [EXTERNAL] Re: [PATCH 05/12] net: mana: Set the DMA device max
+ page size
+Thread-Topic: [EXTERNAL] Re: [PATCH 05/12] net: mana: Set the DMA device max
+ page size
+Thread-Index: AQHYac0t/cR6HA52CUOHz8pr+lzroa0jKeeAgABLXKCAAAGZgIAABm1QgABEpQCAAFjD8IAAs9+AgABQTyCAACamgIAAF+RQ
+Date:   Thu, 19 May 2022 00:37:53 +0000
+Message-ID: <PH7PR21MB32636589EAFFF6E521780245CED09@PH7PR21MB3263.namprd21.prod.outlook.com>
+References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
+ <1652778276-2986-6-git-send-email-longli@linuxonhyperv.com>
+ <20220517145949.GH63055@ziepe.ca>
+ <PH7PR21MB3263EFA8F624F681C3B57636CECE9@PH7PR21MB3263.namprd21.prod.outlook.com>
+ <20220517193515.GN63055@ziepe.ca>
+ <PH7PR21MB3263C44368F02B8AF8521C4ACECE9@PH7PR21MB3263.namprd21.prod.outlook.com>
+ <20220518000356.GO63055@ziepe.ca>
+ <BL1PR21MB3283790E8270ED6C639AAB0DD6D19@BL1PR21MB3283.namprd21.prod.outlook.com>
+ <20220518160525.GP63055@ziepe.ca>
+ <BL1PR21MB32831207F674356EAF8EE600D6D19@BL1PR21MB3283.namprd21.prod.outlook.com>
+ <20220518231111.GQ63055@ziepe.ca>
+In-Reply-To: <20220518231111.GQ63055@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=ffdd0740-9cbe-4e97-94f9-66c7b6943ca4;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-19T00:36:41Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3a33aefc-fe95-472b-9b5e-08da392fcfc9
+x-ms-traffictypediagnostic: SJ0PR21MB2016:EE_
+x-microsoft-antispam-prvs: <SJ0PR21MB2016E7AB447D797AE66E2627CED09@SJ0PR21MB2016.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6Vq/fiiVN2ieAUiePzClI3rt3/0P2VuhLsFohaf0T4hSbz6t5z/DnBPBgGATGY9JuqrH7AbGofKZpC+gWFjChEUVOhF71DJZMvsND5PnIZdkmHl6fYYp/mXW64xQuDFVxCpIrkiq/7aggHJ49CKu2+Vd8iObtayvaDSEhZEgvfgs8eT/Jv32mkjxTEUxGNB4rCTKYXEV5sh8uERNubYy92vOle9DSutrGnExKNn8/rNQVO09CG0P9vwy/nu8jzti9jBWXnP7ZONTigJas7oNqyEcFnNOHFQUjXzfEUR+Gi3xdtrInn4gn7XYIxod2uQt5BR59eInmaZqw5nbwmJUN0HinriQYPNJ5iU14p2dVJidRtHlrijucbReH4u+UuSrBVTcvSRPlp/q3VxiiLtds0vYtUvwOoZ9xjHEDxYlckfPJYumcXy84TsFa+Huh1GWgzcxJ3BjNWbTBOWlopU5rQ/EUjNnsxdJd4p9B0T6XAkLSJQ/5bEgaIr2L57OFP4zV9Y+CZn48yvOmKInLDGvPQSNfKtyvmqLmz8s1NcB2wKnL9fcX7ZeiD/GQIKtJZV26dw2vtoP22RzTgE57yuKl1NGws909TxQIRicwMAQAADgoisacbqAWiHhke1kUz9dFFBB7v3K1ZMG/mLIEQtZ6OFwihMmqocHNEIeO8mR9NgUPo+Udlg2pQ65UOxSPRqExVv0X/cC1CyUCJixUBNcI3gDTzgQx8jmOoTiHPv5jqv7KRUHd3K7UGXbMpBLKbQO
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(4744005)(2906002)(71200400001)(8676002)(66446008)(66556008)(66946007)(33656002)(66476007)(8990500004)(4326008)(7696005)(64756008)(76116006)(82950400001)(82960400001)(122000001)(9686003)(38100700002)(38070700005)(10290500003)(55016003)(26005)(7416002)(316002)(54906003)(186003)(6636002)(86362001)(52536014)(508600001)(8936002)(6506007)(83380400001)(5660300002)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?WE/VH6w5zlW9gZ5F//Ukdmj0gIIWq+iPY39oVrVjwnVbyRGMjWB7RL32F/P/?=
+ =?us-ascii?Q?myeJdYAwam5lUwnTc++XLKR7EgI9kFJxn930jpzuivsfBIRKWY2/ypj3YddI?=
+ =?us-ascii?Q?ugkifkfNYeCjw+6wKWD/6QryP2UaY2NU3HsfwoKk2TdmdNQQfhohPUYSQmul?=
+ =?us-ascii?Q?87zMaq2YFrgRObJS0v+NHlhB9VH7ZkeEtRDM8C0eUtdNyazu3mCsdvcVo3d7?=
+ =?us-ascii?Q?D8uLVWX3VXMRj3r1Sje3bULSMtTT9pF84hQxgIWj9AIyrCi67f3e+Rqr6M0n?=
+ =?us-ascii?Q?8LOhZKtO/9Yria/4GUimrY0ARMcNyvg8lyiFo83/V/CYoqD0hZAfH4dsh24J?=
+ =?us-ascii?Q?0Dtpm9WmW9tQKpWC0lMHQe3wa8YLv5P7BZYmjYQiL6lwQZ4f0OO/fbRYJ60R?=
+ =?us-ascii?Q?BlKOuvRDYXxBRlc8ylTNkU7qwknkmmj6jUSS8sJA/RRvhYFUAXNL5YhPWrv+?=
+ =?us-ascii?Q?a/myuHNTjV7LMF5EaKEvHL9lSNolYFP9/B52mCgP0RBxaMbChmXLfqq++PnJ?=
+ =?us-ascii?Q?RJW/ozFnJo9SrKY7yFuw8QF1oUYAoOsCsar6L4DUx1K2kJm0xzkpb/rF0GfC?=
+ =?us-ascii?Q?lDSrIzKfuvmnmKgn3XiNA5aM/tYJmfFH+TBDykpA6/Wcy6JTOa6ldHXBUnem?=
+ =?us-ascii?Q?meV9AcPPX2TGXICUXNoJDyD40JFYISevr+QuFJVnYhsc9cyShiSqvUzzwWw7?=
+ =?us-ascii?Q?vwYp33KWvdIMt1ACicVX7S1TK0g10tXfZbZG7dn9BjfcddqanYvA/FjCWYHH?=
+ =?us-ascii?Q?zCwZvOZE4jldAmgYXiORKtT38aSCoGTMNa+eD9HcV2bp+tDR19TP7XW07g0j?=
+ =?us-ascii?Q?cVBKERNR3qhuUPJo7Hqkmk3e+ySehrLvgzgbGxSTDpQusY5ilTTdqkACZ5gf?=
+ =?us-ascii?Q?XnRrd92f7sDhLVytyJGg+ZHD4oqCUE260bYvXDfPO/i6lnDsv4pU9HTjgPhT?=
+ =?us-ascii?Q?2Sh9f4qdHItoSyStdYrfbuuN6eCcMnVlpRvrZEds2dGqaRnmPnZSvIXuHztr?=
+ =?us-ascii?Q?4QbZnKmz4T+d6m+WsRIPEvDVoHIdJdpiRsMABMqbDFlBTSMYlb1rsvLmj2Kc?=
+ =?us-ascii?Q?vLXjX3MntMmkm8sdRMHWK14WGpoFBJFFYw3oUaz++6d/4BAmhXI43F8ARXsD?=
+ =?us-ascii?Q?PEvA+WsOyEo0Lw51/pkOssMTcxzJxWnKO9anTnmXGwCcEjQAKBMIpfKzvuV+?=
+ =?us-ascii?Q?GPHpfrFOiYI9XSjglcwNxzERnbZrughHqZdJZbCpuxN9q/wUX1Qw5wegL4MP?=
+ =?us-ascii?Q?lnT9ZL6lfDC50uxUrmC6sGNc6KiZcmtvGL6dYwBKk30hf8SBxHbt5N0S7zyx?=
+ =?us-ascii?Q?WLGM8CZvBIh9SR08Cu45W0xiZimBp4InmtYW0RFlRdAwp8wsDBiJQ/n1yc9X?=
+ =?us-ascii?Q?+so3bKD+6ZAsp4OOQDUonaiJGqz5TuxqyPgfOR6N0HihmcH/e7Qg4PuwuCZm?=
+ =?us-ascii?Q?bI/21FnnStEItcPg1w6Z1rDhqpGyDgHz4hcZgqIuPK0WNtsjkFPvNN/qnYlr?=
+ =?us-ascii?Q?KfE6r6IuECElGxxFfV8u+BUgeKvBZkFusKES3B0yFUT37skUwCKU0GPzKq0G?=
+ =?us-ascii?Q?vzdIPJhydhsxvPCoSwsW9KjQg7xPDiQRKRzBReePtusJd2uDb5YcVBvl10r+?=
+ =?us-ascii?Q?YZHVhYZXZnSHQS12jH2Em7OmZojpgSpRTwZehTqey3QQHOIIKq2+lbhv6sfU?=
+ =?us-ascii?Q?mOLOuX4qwWBdb56bWbAGlgloKlW31wHsX8wtdygvZE0TeHIuONVEKKJJaBwa?=
+ =?us-ascii?Q?RWSwhinOWw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a33aefc-fe95-472b-9b5e-08da392fcfc9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 00:37:53.7589
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8+2MH0IuoxM5WWriAoPrid/VErHkcIyU8TgpYia8l7n6x4hu87A0s8RuYybws1HcWNkjd+qkobDzHBEHX3zxHA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR21MB2016
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Paul,
+> Subject: Re: [EXTERNAL] Re: [PATCH 05/12] net: mana: Set the DMA device m=
+ax
+> page size
+>=20
+> On Wed, May 18, 2022 at 09:05:22PM +0000, Ajay Sharma wrote:
+>=20
+> > Use the ib_umem_find_best_pgsz() and rdma_for_each_block() API when
+> > registering an MR instead of coding it in the driver.
+>=20
+> The dma_set_max_seg_size() has *nothing* to do with
+> ib_umem_find_best_pgsz() other than its value should be larger than the l=
+argest
+> set bit.
+>=20
+> Again, it is supposed to be the maximum value the HW can support in a ib_=
+sge
+> length field, which is usually 2G.
 
-Paul Menzel <pmenzel@molgen.mpg.de> =E6=96=BC 2022=E5=B9=B45=E6=9C=8818=E6=
-=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=8812:33=E5=AF=AB=E9=81=93=EF=BC=
-=9A
->
-> Dear Medad,
->
->
-> Am 16.05.22 um 04:30 schrieb Medad Young:
->
-> > Paul Menzel =E6=96=BC 2022=E5=B9=B45=E6=9C=8810=E6=97=A5 =E9=80=B1=E4=
-=BA=8C =E4=B8=8B=E5=8D=882:14=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> >> Am 10.05.22 um 05:10 schrieb Medad CChien:
-> >>> Document devicetree bindings for the Nuvoton BMC NPCM memory controll=
-er.
-> >>>
-> >>> Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
-> >>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> >>> ---
-> >>>    .../edac/nuvoton,npcm-memory-controller.yaml  | 61 +++++++++++++++=
-++++
-> >>>    1 file changed, 61 insertions(+)
-> >>>    create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,=
-npcm-memory-controller.yaml
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/edac/nuvoton,npcm-memo=
-ry-controller.yaml b/Documentation/devicetree/bindings/edac/nuvoton,npcm-me=
-mory-controller.yaml
-> >>> new file mode 100644
-> >>> index 000000000000..6f37211796a3
-> >>> --- /dev/null
-> >>> +++ b/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-cont=
-roller.yaml
-> >>> @@ -0,0 +1,61 @@
-> >>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> >>> +%YAML 1.2
-> >>> +---
-> >>> +$id: http://devicetree.org/schemas/edac/nuvoton,npcm-memory-controll=
-er.yaml#
-> >>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >>> +
-> >>> +title: Nuvoton NPCM Memory Controller
-> >>> +
-> >>> +maintainers:
-> >>> +  - Medad CChien <ctcchien@nuvoton.com>
-> >>
-> >> Just a side note, that in my experience functional like
-> >> <linux-npcm-memory-controller@nuvoton.com> instead of personal address=
-es
-> >> are useful, as you can configure on your side, who to deliver messages
-> >> to. For example, if you are on sick leave or vacation, you just
-> >> configure to deliver the message to a colleague of yours (or they get
-> >> messages in the first place anyway).
-> >>
-> >> Maybe you can bring that up at Nuvoton.
-> >
-> > I understand, but we do not have group email  address.
-> > so maybe I should add more maintainers?
->
-> If there are actually more maintainers, responsible and knowledgeable
-> for that driver, than yes, these should be added (until you get a
-> function address set up).
->
+Will fix this in v2.
 
-OK, thanks
-
->
-> Kind regards,
->
-> Paul
-
-B.R.
-Medad
+Long
