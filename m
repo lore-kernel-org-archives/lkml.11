@@ -2,78 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C33EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:44:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36547C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:44:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343702AbiESXo2 (ORCPT
+        id S1343678AbiESXow (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
+        Thu, 19 May 2022 19:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343688AbiESXoP (ORCPT
+        with ESMTP id S1343701AbiESXor (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:44:15 -0400
-Received: from mail-4323.proton.ch (mail-4323.proton.ch [185.70.43.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5087A11991D;
-        Thu, 19 May 2022 16:44:14 -0700 (PDT)
-Date:   Thu, 19 May 2022 23:44:07 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wujek.eu;
-        s=protonmail2; t=1653003852; x=1653263052;
-        bh=Av8VhGGy9fDa2YnaJT7DzXlV8BZZT5+/mxjWeny6Lho=;
-        h=Date:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:References:
-         Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=CK3dwueKjMcY70MIKC+y5gKyabyovoqZKW2vhdR63yqMSrFIsVbUAajct1R+05shf
-         VoGq/QXe5DV8PLDTnlJMgeb9282TDxQsEhmyVi4NkoBXyQfieWQdn4gN41SlFjV/A+
-         zVEKrTvU1aaB/c3lhijkAtCePVnBqbHN7am+43bztN6qwWKa64zZ4+fxBrCqqpY93h
-         k7zBgQejlejSwBz3NwyuTTL0FZ7BPSlgbC7/IfJLQVHhvyQfyMsJv5jqNAKv0WyEug
-         Z/oaU4hLi6yZb508YRniFebUBwlGSSofB0PyKvW5SrgKvUvZhyNmQGTcSjhYd6avED
-         +OF1jTlD3LFog==
-From:   Adam Wujek <dev_public@wujek.eu>
-Cc:     Adam Wujek <dev_public@wujek.eu>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Adam Wujek <dev_public@wujek.eu>
-Subject: [PATCH 3/3] hwmon: (pmbus) support mfr registers specific for page in debugfs
-Message-ID: <20220519234346.440398-3-dev_public@wujek.eu>
-In-Reply-To: <20220519234346.440398-1-dev_public@wujek.eu>
-References: <20220519234346.440398-1-dev_public@wujek.eu>
-Feedback-ID: 23425257:user:proton
+        Thu, 19 May 2022 19:44:47 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509A11238A6
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:44:41 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id a12so4883944vsp.5
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:44:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=T7TMhWp0SAA5jCPI+KmjChJGEDhSNE7gjRtO2nBQMRY=;
+        b=BzegkdqL04SDprwN3BH/yJoSzWsLHcyLmAGGCEygbOdvHy4tYEJYBiKWOptkLQozzC
+         HyDWCA3IvrWI9y/I4CdWbk1sDNCn/9d0MLbjeECNUWs6jJoKwb6C8dLGQ0frIy+owMvD
+         ONHfSqTfyu6HoAcMV78W6yWv3NOt4V5b+TtXodoAwFzCRyIx3dBKRQIhKfejJpFNDlSY
+         JxhrLMvqg9MGPoYnDAxQlJZvV24y3ef+V+o+GBOiZaWeH+8UpkEP9qfU8M7zaHpNZOMx
+         HdD4qBq8iNGMti572kJjIMhTiHehFb817O24qw59XZQ+rnuGBMn6vVQYxK1Ronei/2aV
+         YJoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T7TMhWp0SAA5jCPI+KmjChJGEDhSNE7gjRtO2nBQMRY=;
+        b=PcCFs1wJE2cvH+ckLAc4tZXFLYULzDQlkn8vqeDvpMCVet7jgniZR/LkHKq9y/szvN
+         R3ymG8wxAB7tBpLrYC8aD8sCmkwpZ32DYZstWyR216MM4Ys2WGU90Sp8SRbtPwMXWYgH
+         ubtESZmGqjATvt/5I/FVqPPhhUicesy/FyRA7cWGWAJUf13Ex1SZ6gc4Vpiw5LNvJ6OH
+         upvATYQ7zGPDN74whc9e+iV+V4h6K2fJEkiNnKWqcUo+lFudHVyw2t6s3ind9HtYDUaF
+         Ns1L6uNYApzwBgRLwll+HGFSoeI1TR6FZsGRK7hUq/zkyoyO837d0f3HL9qarcMswf4R
+         uazA==
+X-Gm-Message-State: AOAM5335wYhtyosQE1cqk8vvMCcX6D7UJUkZU056t9aETiJEB+zDMz6e
+        ++uX96SDmexcMYvtsLoEbMqyoUT2307I4A==
+X-Google-Smtp-Source: ABdhPJyHFOCMJV+CyCoxWknfQ8NqR0JS4gDvoJu+C1UV67ZhJqkTrdelVCUD8uOqNzc2ybutuw8y7A==
+X-Received: by 2002:a17:902:c409:b0:161:b135:87c9 with SMTP id k9-20020a170902c40900b00161b13587c9mr7135944plk.94.1653003869609;
+        Thu, 19 May 2022 16:44:29 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id q22-20020a17090aa01600b001cd4989ff5esm352938pjp.37.2022.05.19.16.44.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 16:44:29 -0700 (PDT)
+Date:   Thu, 19 May 2022 23:44:25 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v3 20/34] KVM: x86: KVM_REQ_TLB_FLUSH_CURRENT is a
+ superset of KVM_REQ_HV_TLB_FLUSH too
+Message-ID: <YobWWW1gzZtmL6BO@google.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+ <20220414132013.1588929-21-vkuznets@redhat.com>
+ <6c9add3244d86080ccd8c3c72a37b9ee112d45b8.camel@redhat.com>
+ <87mtfdubro.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87mtfdubro.fsf@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before, it was assumed that all debugfs mfr entries are the same for all
-pages. Now mfr registers can be present only on some pages or contain
-different values in different pages.
+On Thu, May 19, 2022, Vitaly Kuznetsov wrote:
+> This, however, made me think there's room for optimization here. In some
+> cases, when both KVM_REQ_TLB_FLUSH_CURRENT and KVM_REQ_TLB_FLUSH_GUEST
+> were requested, there's no need to flush twice, e.g. on SVM
+> .flush_tlb_current == .flush_tlb_guest. I'll probably not go into this
+> territory with this series as it's already fairly big, just something
+> for the future.
 
-Signed-off-by: Adam Wujek <dev_public@wujek.eu>
----
- drivers/hwmon/pmbus/pmbus_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_c=
-ore.c
-index 597cbe85df07..26fa927dac26 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -2664,7 +2664,8 @@ static ssize_t pmbus_debugfs_mfr_read(struct file *fi=
-le, char __user *buf,
- =09struct pmbus_debugfs_entry *entry =3D file->private_data;
- =09char data[I2C_SMBUS_BLOCK_MAX + 2] =3D { 0 };
-
--=09rc =3D i2c_smbus_read_block_data(entry->client, entry->reg, data);
-+=09rc =3D pmbus_read_block_data(entry->client, entry->page, entry->reg,
-+=09=09=09=09   data);
- =09if (rc < 0)
- =09=09return rc;
-
---
-2.17.1
-
-
+Definitely not worth your time.  On VMX, CURRENT isn't a superset of GUEST when
+EPT is enabled.  And on SVM, the flush doesn't actually occur until VM-Enter, i.e.
+the redundant flush is just an extra write to svm->vmcb->control.tlb_ctl (or an
+extra decrement of asid_generation).
