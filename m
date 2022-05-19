@@ -2,152 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE72C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D770C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239297AbiESNzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
+        id S239303AbiESN5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239361AbiESNzY (ORCPT
+        with ESMTP id S232267AbiESN5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:55:24 -0400
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id C818FE274F;
-        Thu, 19 May 2022 06:54:08 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app4 (Coremail) with SMTP id cS_KCgDnN+DqS4ZivQ92AA--.55027S2;
-        Thu, 19 May 2022 21:53:55 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v2] net: wireless: marvell: mwifiex: fix sleep in atomic context bugs
-Date:   Thu, 19 May 2022 21:53:45 +0800
-Message-Id: <20220519135345.109936-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgDnN+DqS4ZivQ92AA--.55027S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAr1UWr15KrWktw1rKw43GFg_yoWrXryxpa
-        n8KF93Zw40qrs0k3yDJa1kZF98K3WrKry2kFs7Aw4F9F4fGryrZFyaqFyIgFs8XF4vqa4a
-        vrn0qw13Arn3tFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
-        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_Xr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfUnpnQUUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggPAVZdtZx5OgAVsw
+        Thu, 19 May 2022 09:57:07 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A06E53;
+        Thu, 19 May 2022 06:56:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652968626; x=1684504626;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qHQfaI2qEG6es+WFBkybiU4w71hm7VMtmExmawIPkjc=;
+  b=U3PsAdKQ6v2FYfLmjmfI5wGbL9AuSGjJ+GiPe/TZSUjLvvaQkyRWcl23
+   NmC8s6iii4RoUpIqiZQ58kwwrstX9N7p+O/i+Izeh9NRSMmNvjoprQJlk
+   rliPHXcgvh16mwFJ3rwpG+YUBr4Ugjr4jC75RObwfokzVeO5pd9DVbh8X
+   PY7mYw7utA0f+QhZx2/2q6kLrCVIyiO3276KYGzSBa/hLDXETCniBJ/lU
+   lnxMWhU6T6pRAB25clSaVwQUu4qdVG5Cyn3RxjBMRNqtABTtx8X7Lcxmx
+   Z2yunZ7bKIGZmaBaFIMmzKUBYrta1whYw1tUsG8gPSKrJuQvzFnaFD2ks
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="164801009"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 May 2022 06:56:58 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 19 May 2022 06:56:57 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 19 May 2022 06:56:55 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>
+CC:     <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
+        <conor.dooley@microchip.com>, <linux-kernel@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+Subject: [PATCH v4 0/2] rtc: microchip: Add driver for PolarFire SoC
+Date:   Thu, 19 May 2022 14:55:21 +0100
+Message-ID: <20220519135523.594347-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are sleep in atomic context bugs when uploading device dump
-data on usb interface. The root cause is that the operations that
-may sleep are called in fw_dump_timer_fn which is a timer handler.
-The call tree shows the execution paths that could lead to bugs:
+Hey all,
+This is technically a v4 of [0], although a fair bit of time has
+passed since then. In the meantime I upstreamed the dt-binding, which
+was in the v1, and this patch depends on the fixes to the dt-binding
+and device tree etc which landed in v5.18-rc5.
 
-   (Interrupt context)
-fw_dump_timer_fn
-  mwifiex_upload_device_dump
-    dev_coredumpv(..., GFP_KERNEL)
-      dev_coredumpm()
-        kzalloc(sizeof(*devcd), gfp); //may sleep
-        dev_set_name
-          kobject_set_name_vargs
-            kvasprintf_const(GFP_KERNEL, ...); //may sleep
-            kstrdup(s, GFP_KERNEL); //may sleep
+The driver is quite substantially rewritten from the v1, as you wanted
+it to be switched to "binary" rather than calendar mode - so hopefully I
+have satisfied your concerns with the original driver. Specifically you
+had an significant issue with the counter being reset on startup & that
+is no longer the case.
 
-This patch moves the operations that may sleep into a work item.
-The work item will run in another kernel thread which is in
-process context to execute the bottom half of the interrupt.
-So it could prevent atomic context from sleeping.
+Thanks,
+Conor.
 
-Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v2:
-  - Fix compile problem.
+Changes since v3:
+- invert read order of datetime registers so that they are properly
+  aligned. reads of the upper register are aligned to the last read
+  of the lower register
+- move wakeup_irq out of mpfs_rtc_dev & into probe
+- removed range_min since it is not set & implicity zero anyway
+- rewrote the remove function to not call mpfs_rtc_alarm_irq_enable(,0)
 
- drivers/net/wireless/marvell/mwifiex/init.c      | 12 +++++++++++-
- drivers/net/wireless/marvell/mwifiex/main.h      |  1 +
- drivers/net/wireless/marvell/mwifiex/sta_event.c |  1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+Changes from v2:
+- move prescaler out of mpfs_rtc_dev & into probe
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
-index 88c72d1827a..cc3f1121eb9 100644
---- a/drivers/net/wireless/marvell/mwifiex/init.c
-+++ b/drivers/net/wireless/marvell/mwifiex/init.c
-@@ -63,11 +63,19 @@ static void wakeup_timer_fn(struct timer_list *t)
- 		adapter->if_ops.card_reset(adapter);
- }
- 
-+static void fw_dump_work(struct work_struct *work)
-+{
-+	struct mwifiex_adapter *adapter =
-+		container_of(work, struct mwifiex_adapter, devdump_work);
-+
-+	mwifiex_upload_device_dump(adapter);
-+}
-+
- static void fw_dump_timer_fn(struct timer_list *t)
- {
- 	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
- 
--	mwifiex_upload_device_dump(adapter);
-+	schedule_work(&adapter->devdump_work);
- }
- 
- /*
-@@ -321,6 +329,7 @@ static void mwifiex_init_adapter(struct mwifiex_adapter *adapter)
- 	adapter->active_scan_triggered = false;
- 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
- 	adapter->devdump_len = 0;
-+	INIT_WORK(&adapter->devdump_work, fw_dump_work);
- 	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
- }
- 
-@@ -401,6 +410,7 @@ mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
- {
- 	del_timer(&adapter->wakeup_timer);
- 	del_timer_sync(&adapter->devdump_timer);
-+	cancel_work_sync(&adapter->devdump_work);
- 	mwifiex_cancel_all_pending_cmd(adapter);
- 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
- 	wake_up_interruptible(&adapter->hs_activate_wait_q);
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 332dd1c8db3..c8ac2f57f18 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -900,6 +900,7 @@ struct mwifiex_adapter {
- 	struct work_struct rx_work;
- 	struct workqueue_struct *dfs_workqueue;
- 	struct work_struct dfs_work;
-+	struct work_struct devdump_work;
- 	bool rx_work_enabled;
- 	bool rx_processing;
- 	bool delay_main_work;
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 7d42c5d2dbf..8e28d0107d7 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -644,6 +644,7 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 
- upload_dump:
- 	del_timer_sync(&adapter->devdump_timer);
-+	cancel_work_sync(&adapter->devdump_work);
- 	mwifiex_upload_device_dump(adapter);
- }
- 
+Changes from v1:
+- remove duplicate and unused defines
+- remove oneline mpfs_rtc_set_prescaler function
+- dont unconditionally turn off the rtc in the init function
+- dont reset the rtc when init is run.
+- dont disable the alarm when we boot
+- use binary, not calendar mode
+- delete mpfs_rtc_init & set prescale in probe
+- use dev_pm_set_wake_irq rather than writing suspend/resume functions
+- delete calendar mode only register defines
+- since using binary mode, set range min to zero
+- set range max to max alarm value (is this acceptable?)
+- added a MAINTAINERS entry: when v1 was submitted there was nothing to
+  add to, but there is now.
+
+[0] https://lore.kernel.org/linux-rtc/20210512111133.1650740-1-daire.mcnamara@microchip.com/
+
+Conor Dooley (2):
+  rtc: Add driver for Microchip PolarFire SoC
+  MAINTAINERS: add PolarFire SoC's RTC
+
+ MAINTAINERS            |   1 +
+ drivers/rtc/Kconfig    |  10 ++
+ drivers/rtc/Makefile   |   1 +
+ drivers/rtc/rtc-mpfs.c | 326 +++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 338 insertions(+)
+ create mode 100644 drivers/rtc/rtc-mpfs.c
+
+
+base-commit: c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
 -- 
-2.17.1
+2.36.1
 
