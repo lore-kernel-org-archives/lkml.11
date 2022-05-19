@@ -2,78 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 687B8C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C85DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241764AbiESQHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 12:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
+        id S241756AbiESQIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 12:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241745AbiESQHf (ORCPT
+        with ESMTP id S241737AbiESQH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 12:07:35 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980C636691
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:07:33 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id n18so5212441plg.5
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:07:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vCPJKfu2oCo3i3xfxQhF4mnOjWu7Adqh9L+m1Zagfr0=;
-        b=GaqVQKsxA6ix9Bsatt+I5CsjaAIQEaSZbzLk9E1xDSCgs0QZQNX+z/1BGz4/N4qGU2
-         FUsGHNI3UZZcPeYGbFu400r/YKfLxm6JLeUq/lUS/1O87JVFh/LPzyXkA8CW3/gOVW81
-         +15tbkWi0q+owvBHGj9l2DYhTXl1PqNkQzPtY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vCPJKfu2oCo3i3xfxQhF4mnOjWu7Adqh9L+m1Zagfr0=;
-        b=zLpmwUj/T1kserzaIUBcl9h9naeBWKXVBkszfFYZVeOD0PTvDWbgbGDmwChkQoo1uw
-         GwH8ti6RkFi8Yk7mNJGP6QcrNIIDFXFFE9+gGlbvGZcHXxdGLRHZs/+H7bXm6TU/Hzd9
-         dBBOe4UHUQBrTY/w5UxIG66OJZGTIQnW6pEPba52imGOqLIV5jfk8mp3AAj+lRL9k8uN
-         7hDL+yBo84Bo5sXHxVcInr2afR+b0mpCBKVZ34MJ+JU4rA/la5ij4+tcR0LPm3VYz3Gm
-         JLWMUNGmmcpFZ2Hc9fZjXYCX9H7Xjm4G8w5CYNs7FUdA3al93OmEF+7QkV8ZAlLNjd07
-         8Ojg==
-X-Gm-Message-State: AOAM532Q2iAr4e/0QeKZ+qGCMl+3NSpGBDXkGG18b0S2yu9xQXi9bxZT
-        Es2WzekAv90EmcJ8RMUl2mqfCQ==
-X-Google-Smtp-Source: ABdhPJwLsJF8qU7yTq05vzlOk9lTd0uC0zK41oeCXBlgmhVRtr/qW6q2lxRAhULfDPPc4BNK/MrikA==
-X-Received: by 2002:a17:903:1c1:b0:161:aa16:f279 with SMTP id e1-20020a17090301c100b00161aa16f279mr5496491plh.88.1652976452932;
-        Thu, 19 May 2022 09:07:32 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:e229:79ea:227e:d9dd])
-        by smtp.gmail.com with UTF8SMTPSA id d132-20020a621d8a000000b0050dc76281bcsm4290876pfd.150.2022.05.19.09.07.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 09:07:32 -0700 (PDT)
-Date:   Thu, 19 May 2022 09:07:31 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Judy Hsiao <judyhsiao@chromium.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
-        dianders@chromium.org, cychiang@google.com, judyhsiao@google.com,
-        tzungbi@chromium.org, swboyd@chromium.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [v1 3/3] arm64: dts: qcom: sc7280: include
- sc7280-herobrine-audio-rt5682.dtsi in villager and herobrine-r1
-Message-ID: <YoZrQ0kkNoqtPHU0@google.com>
-References: <20220519084119.675990-1-judyhsiao@chromium.org>
- <20220519084119.675990-4-judyhsiao@chromium.org>
+        Thu, 19 May 2022 12:07:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27334A3F6
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:07:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87D99B82520
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:07:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A04C385AA;
+        Thu, 19 May 2022 16:07:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652976476;
+        bh=jC9MZ56f6/y27GJlqudr3bwdHks9u/b7P6hjWSqT9ek=;
+        h=From:To:Cc:Subject:Date:From;
+        b=g26P3IuHY37nxhFCaqTOhYp/GEhMEQQhn/N/pE36Wbfp1AJ8D1gPD0Gx6H81PpzNo
+         QsO0b/8lGWtzjC+3QO5y1Hj5EBu/7GgQW+CEXFA6Nx+HRnIZVUtfzaOVcqdfXKq2pz
+         Mnb0FasGOQ34/dHbzc+nIowXPfnXr1weW61xJHcu+4JYlgEpHr3c0B8IasZ1A1wbHE
+         dj48YH9X3qWtoV7U6KkyvRhYvUiZitKO+/dWc/Angsu2xeiqNbnNNyDjFCXoJsgv1T
+         l0h13nMlVe6cqV8MT0Zkul7ubXXatoGz4MWQzRBySkfX6KXjiTGSoOgaNp77A+1gSB
+         sqiwsvDPC+bcw==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@rivosinc.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH v3 0/2] use static key to optimize pgtable_l4_enabled
+Date:   Thu, 19 May 2022 23:59:16 +0800
+Message-Id: <20220519155918.3882-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220519084119.675990-4-judyhsiao@chromium.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 08:41:19AM +0000, Judy Hsiao wrote:
-> Include sc7280-herobrine-audio-rt5682.dtsi in villager and herobrine-r1 as
-> these boards use rt5682 codec.
-> 
-> Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
+The pgtable_l4|[l5]_enabled check sits at hot code path, performance
+is impacted a lot. Since pgtable_l4|[l5]_enabled isn't changed after
+boot, so static key can be used to solve the issue[1].
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+An unified way static key was introduced in [2], but it's only targets
+riscv isa extension. We dunno whether SV48 and SV57 will be considered
+as isa extension, so the unified solution isn't used for
+pgtable_l4[l5]_enabled.
+
+patch1 fix a NULL pointer deference if static key is used a bit earlier.
+patch2 uses the static key to optimize pgtable_l4|[l5]_enabled.
+
+[1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
+[2] https://lore.kernel.org/linux-riscv/20220517184453.3558-1-jszhang@kernel.org/T/#t
+
+Since v2:
+ - move the W=1 warning fix to a separate patch
+ - move the unified way to use static key to a new patch series.
+
+Since v1:
+ - Add a W=1 warning fix
+ - Fix W=1 error
+ - Based on v5.18-rcN, since SV57 support is added, so convert
+   pgtable_l5_enabled as well.
+
+
+Jisheng Zhang (2):
+  riscv: move sbi_init() earlier before jump_label_init()
+  riscv: turn pgtable_l4|[l5]_enabled to static key for RV64
+
+ arch/riscv/include/asm/pgalloc.h    | 16 ++++----
+ arch/riscv/include/asm/pgtable-32.h |  3 ++
+ arch/riscv/include/asm/pgtable-64.h | 59 +++++++++++++++++---------
+ arch/riscv/include/asm/pgtable.h    |  5 +--
+ arch/riscv/kernel/cpu.c             |  4 +-
+ arch/riscv/kernel/setup.c           |  2 +-
+ arch/riscv/mm/init.c                | 64 ++++++++++++++++++-----------
+ arch/riscv/mm/kasan_init.c          | 16 ++++----
+ 8 files changed, 103 insertions(+), 66 deletions(-)
+
+-- 
+2.34.1
+
