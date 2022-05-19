@@ -2,98 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB60EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238824AbiESNa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:30:28 -0400
+        id S238860AbiESNac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:30:32 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238798AbiESNa0 (ORCPT
+        with ESMTP id S238804AbiESNa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 19 May 2022 09:30:26 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99ED0CEBA1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:30:19 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id i11so9042457ybq.9
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:30:19 -0700 (PDT)
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04040CC15A;
+        Thu, 19 May 2022 06:30:22 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id g12so7002563edq.4;
+        Thu, 19 May 2022 06:30:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ea9SWDA6wvriBFyiWmSM/cUBDRlPeKx6B/XCiADE6Cg=;
-        b=ks6F3fTckOrmjWS0ClW006McxhjxXzbDAmClZ85Ndf/WMrVkPSfxPwMkCJ5+JB/Zly
-         zqD5LIxa+lWehhvWN4Mf2NAHwpS/L4Y90P7fnLH5GPIKVSen0ZQFicNPS4BO/kxG2Hi7
-         9+VqUpx3JpcDW4Kk2EBUINsel5EOpG7wvvFrLGI/79QAayI4cP63wE/0zgtW6uCGI/46
-         NbjttW4tN3/OkWR6s6nrDwk1Vto3pC3uUL5jEpueyGDrGhBIRRoelrsklzxX3c65f6dY
-         nVGShTwmklzNOXcRrUN7VvADdrC/n6x9IsBvYl4aTfA7ntFmcUWmig7WU3bTqN+epHWp
-         Pvtg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oIDUTK5KnimKV7JPutWUmQpjQBhC0JH0W89/0KDYnjU=;
+        b=m8yheAljXGiSAp7sTPLVn41jM1DI7C22S/YSgdPtAZsrFfwp5W60wjaH6T8uKfZ29x
+         f9PXETDthGEDSE+UHlxIeFv5wmnFoE0oVdgQ8Ua7l0P59/lKyMC3NZjIMhr25GJ2e2hb
+         Zc9VrHmJFNlBJOd85ajBr7jRPy7CAdr1I5p2vIcB/P7ZPjLVZhj5EroI5+A413Li9tQw
+         5xCooyoqMpYcscAyAd0c6IRTkF8jAGCRIwWN1laA4sXtwfa0gAyQTtSa3U1zpUHW0JI2
+         HhhK2ooy15oQH9sq1UA+T86CutFLBIyxcCwkZcgXhtWbVAUO5lJIdsZxF6xVG7xLS9OK
+         F/tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ea9SWDA6wvriBFyiWmSM/cUBDRlPeKx6B/XCiADE6Cg=;
-        b=scSAzlJGnDfkzsu5b98zw/n66b868vh9ZN+VLtw8z0G4mfs2hXr73g8mtYJVWbc518
-         lkoQdKJ8ObxXY4obKL6oTfkyaOqFZ1E6r5g3Oz0fn2jHY0bjleF29oKj/snVXsM+n6pC
-         WUDq/mFiRHSgAHyGb/p87eHybOHJjR+etNGehvSqIkDMnIvw/7X1f4dHEynU4XMsCNmS
-         syeOlbiogkIesusv8fbK7SLOlIIRKDRKx9LPR3H/Jul3kE+waK5bFZXXdgWBQj93h3rr
-         rKPIvaBYM7oJsviq+bAgEXdG+XJZzH/k5o+TND3ArtPC1LKkH1WtuoJkx4tUtueXr+Av
-         zAQQ==
-X-Gm-Message-State: AOAM530CvnzrOrZVZNHXyAEN+CqPzhU1cddF3EwUaNhH+orFi7luGrWr
-        oLHzVfSsCm9fP+T9mdJ3jS6dKZcQm4uf6hWEqiH7cg==
-X-Google-Smtp-Source: ABdhPJx5ABKP9iZZdCdL37HDpt4btHGxSXXOR0fGwkumd4vTxNoxrgrIZ9EOp8UTgSt1tW+U2kK3C15aGRatb6Ii7AA=
-X-Received: by 2002:a5b:691:0:b0:64d:ab44:f12e with SMTP id
- j17-20020a5b0691000000b0064dab44f12emr4304244ybq.533.1652967018884; Thu, 19
- May 2022 06:30:18 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oIDUTK5KnimKV7JPutWUmQpjQBhC0JH0W89/0KDYnjU=;
+        b=G95fBi+vrlRuI82VUvTpnb8BRivcuET+LbeYK+YPl9t7CYnxejEb302QM4BNgqHrO8
+         0sP7eBxFqnSS2We1k0bEo7vFWSCMTBkr7LmMWKt0OzxFKq005ncS9ocxvUsTlyGOJcvi
+         y3Y23/iB5yAGqYcN40jTHTj4a8FusWPYM1pGy9amfVNl61J2pwKuDBElQ5MBzHbDiCI6
+         /Jou2f6UYLXghpFsoKHan3VcXB4EZz7M/5U6Jz3G37e7Kh4Sh0skXxrbUtXk9/HpQB+W
+         5oAhJct7S/a8krqEAffrOIEhOcDJ5zvbGMIdESbMJH4OLFCiFXOcKATUQXeRbLQwVeXF
+         4THg==
+X-Gm-Message-State: AOAM533yBzI8XvH6IL57BuB8oyWNa8spC44TeHqSFE0KG+AEt5NB+UHG
+        JwL4pwrNJg70GoP6myiraGc=
+X-Google-Smtp-Source: ABdhPJxD/2CT/MGULbnCUrsZ1tb3g+UHs+Pb3kiiCQsEmpZ/ClE/+navdTOKiRkrNOfL7dKcy8qNqQ==
+X-Received: by 2002:a05:6402:3301:b0:42a:ee56:310b with SMTP id e1-20020a056402330100b0042aee56310bmr5309547eda.69.1652967020604;
+        Thu, 19 May 2022 06:30:20 -0700 (PDT)
+Received: from fedora.robimarko.hr (cpe-94-253-165-71.zg.cable.xnet.hr. [94.253.165.71])
+        by smtp.googlemail.com with ESMTPSA id y17-20020a17090614d100b006f3ef214dd4sm2120383ejc.58.2022.05.19.06.30.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 06:30:20 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        konrad.dybcio@somainline.org
+Cc:     Robert Marko <robimarko@gmail.com>
+Subject: [PATCH v5 2/7] regulator: qcom_spmi: add support for HT_P150
+Date:   Thu, 19 May 2022 15:30:10 +0200
+Message-Id: <20220519133015.484639-2-robimarko@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220519133015.484639-1-robimarko@gmail.com>
+References: <20220519133015.484639-1-robimarko@gmail.com>
 MIME-Version: 1.0
-References: <20220518192924.20948-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220518192924.20948-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220518192924.20948-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 19 May 2022 15:30:07 +0200
-Message-ID: <CACRpkdYt-doG_i2T9jjDCb8=oJFR_7Z8RCwW+S05qd90E3FgLg@mail.gmail.com>
-Subject: Re: [PATCH v4 4/7] gpio: gpiolib: Dont assume child_offset_to_irq
- callback always succeeds
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 9:30 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+HT_P150 is a LDO PMOS regulator based on LV P150 using HFS430 layout
+found in PMP8074 and PMS405 PMIC-s.
 
-> On Renesas RZ/G2L SoC not all the GPIO pins can be simultaneously used as
-> interrupts. The SoC allows 32 interrupts which is first come first serve
-> basis and is dynamic i.e. if there is a free slot (after rmmod) this can
-> be used by other GPIO pins being used as an interrupt.
->
-> To handle such cases change child_offset_to_irq() callback to return error
-> codes in case of failure. All the users of child_offset_to_irq() callback
-> are also updated with this API change.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Both PMP8074 and PMS405 define the programmable range as 1.616V to 3.304V
+but the actual MAX output voltage depends on the exact LDO in each of
+the PMIC-s.
 
-This looks very useful!
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+It has a max current of 150mA, voltage step of 8mV.
 
-Yours,
-Linus Walleij
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ drivers/regulator/qcom_spmi-regulator.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/regulator/qcom_spmi-regulator.c b/drivers/regulator/qcom_spmi-regulator.c
+index 02bfce981150..38bbc70241ae 100644
+--- a/drivers/regulator/qcom_spmi-regulator.c
++++ b/drivers/regulator/qcom_spmi-regulator.c
+@@ -164,6 +164,7 @@ enum spmi_regulator_subtype {
+ 	SPMI_REGULATOR_SUBTYPE_ULT_HF_CTL3	= 0x0f,
+ 	SPMI_REGULATOR_SUBTYPE_ULT_HF_CTL4	= 0x10,
+ 	SPMI_REGULATOR_SUBTYPE_HFS430		= 0x0a,
++	SPMI_REGULATOR_SUBTYPE_HT_P150		= 0x35,
+ };
+ 
+ enum spmi_common_regulator_registers {
+@@ -544,6 +545,10 @@ static struct spmi_voltage_range hfs430_ranges[] = {
+ 	SPMI_VOLTAGE_RANGE(0, 320000, 320000, 2040000, 2040000, 8000),
+ };
+ 
++static struct spmi_voltage_range ht_p150_ranges[] = {
++	SPMI_VOLTAGE_RANGE(0, 1616000, 1616000, 3304000, 3304000, 8000),
++};
++
+ static DEFINE_SPMI_SET_POINTS(pldo);
+ static DEFINE_SPMI_SET_POINTS(nldo1);
+ static DEFINE_SPMI_SET_POINTS(nldo2);
+@@ -564,6 +569,7 @@ static DEFINE_SPMI_SET_POINTS(nldo660);
+ static DEFINE_SPMI_SET_POINTS(ht_lvpldo);
+ static DEFINE_SPMI_SET_POINTS(ht_nldo);
+ static DEFINE_SPMI_SET_POINTS(hfs430);
++static DEFINE_SPMI_SET_POINTS(ht_p150);
+ 
+ static inline int spmi_vreg_read(struct spmi_regulator *vreg, u16 addr, u8 *buf,
+ 				 int len)
+@@ -1458,6 +1464,7 @@ static const struct regulator_ops spmi_hfs430_ops = {
+ 
+ static const struct spmi_regulator_mapping supported_regulators[] = {
+ 	/*           type subtype dig_min dig_max ltype ops setpoints hpm_min */
++	SPMI_VREG(LDO,   HT_P150,  0, INF, HFS430, hfs430, ht_p150, 10000),
+ 	SPMI_VREG(BUCK,  GP_CTL,   0, INF, SMPS,   smps,   smps,   100000),
+ 	SPMI_VREG(BUCK,  HFS430,   0, INF, HFS430, hfs430, hfs430,  10000),
+ 	SPMI_VREG(LDO,   N300,     0, INF, LDO,    ldo,    nldo1,   10000),
+-- 
+2.36.1
+
