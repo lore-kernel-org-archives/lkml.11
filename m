@@ -2,85 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28257C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 205DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232880AbiESC3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 22:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
+        id S232900AbiESC3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 22:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiESC3X (ORCPT
+        with ESMTP id S232888AbiESC3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 22:29:23 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4F4C6E74;
-        Wed, 18 May 2022 19:29:21 -0700 (PDT)
-Received: from canpemm500005.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3Yg13b1RzgYCM;
-        Thu, 19 May 2022 10:27:57 +0800 (CST)
-Received: from huawei.com (10.67.174.96) by canpemm500005.china.huawei.com
- (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 10:29:19 +0800
-From:   Zhang Jianhua <chris.zjh@huawei.com>
-To:     <ebiggers@kernel.org>, <tytso@mit.edu>
-CC:     <linux-fscrypt@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next v2] fs-verity: Use struct_size() helper in fsverity_ioctl_measure()
-Date:   Thu, 19 May 2022 10:27:49 +0800
-Message-ID: <20220519022749.2435114-1-chris.zjh@huawei.com>
-X-Mailer: git-send-email 2.31.0
+        Wed, 18 May 2022 22:29:45 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2ED2C6E64
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 19:29:19 -0700 (PDT)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(12590:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Thu, 19 May 2022 10:16:53 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.6; Thu, 19 May 2022 10:16:50 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2507.006; Thu, 19 May 2022 10:16:50 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Stephen Boyd <sboyd@kernel.org>
+CC:     "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
+Subject: RE: [PATCH v15 05/10] clk: Add Sunplus SP7021 clock driver
+Thread-Topic: [PATCH v15 05/10] clk: Add Sunplus SP7021 clock driver
+Thread-Index: AQHYZcsXCsTwSBsje0a2OPS1GfS78a0h1u8AgADuCPCAAdLagIAA6WiQ
+Date:   Thu, 19 May 2022 02:16:50 +0000
+Message-ID: <7fcb969a0d0740459a9ebc403aeb556f@cqplus1.com>
+References: <cover.1652329411.git.qinjian@cqplus1.com>
+ <9a71d17e9c70051db44c5545453ae8320ed8e0f8.1652329411.git.qinjian@cqplus1.com>
+ <20220517021755.F1D05C385B8@smtp.kernel.org>
+ <7febed72ae2747abb953a6f44a51102c@cqplus1.com>
+ <20220518202049.6055BC385A9@smtp.kernel.org>
+In-Reply-To: <20220518202049.6055BC385A9@smtp.kernel.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.96]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500005.china.huawei.com (7.192.104.229)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() to calculate the size of struct
-fsverity_digest instead of an open-coded version, in order to
-get rid of the sparse warnings about flexible structure.
-
-As reported by sparse:
-fs/verity/measure.c:48:9: warning: using sizeof on a flexible structure
-fs/verity/measure.c:52:38: warning: using sizeof on a flexible structure
-
-Signed-off-by: Zhang Jianhua <chris.zjh@huawei.com>
----
-v2:
-- change the commit message from bugfix to cleanup
- fs/verity/measure.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/fs/verity/measure.c b/fs/verity/measure.c
-index e99c00350c28..4a388116d0de 100644
---- a/fs/verity/measure.c
-+++ b/fs/verity/measure.c
-@@ -27,6 +27,7 @@ int fsverity_ioctl_measure(struct file *filp, void __user *_uarg)
- 	const struct fsverity_info *vi;
- 	const struct fsverity_hash_alg *hash_alg;
- 	struct fsverity_digest arg;
-+	size_t arg_size = struct_size(&arg, digest, 0);
- 
- 	vi = fsverity_get_info(inode);
- 	if (!vi)
-@@ -44,11 +45,11 @@ int fsverity_ioctl_measure(struct file *filp, void __user *_uarg)
- 	if (arg.digest_size < hash_alg->digest_size)
- 		return -EOVERFLOW;
- 
--	memset(&arg, 0, sizeof(arg));
-+	memset(&arg, 0, arg_size);
- 	arg.digest_algorithm = hash_alg - fsverity_hash_algs;
- 	arg.digest_size = hash_alg->digest_size;
- 
--	if (copy_to_user(uarg, &arg, sizeof(arg)))
-+	if (copy_to_user(uarg, &arg, arg_size))
- 		return -EFAULT;
- 
- 	if (copy_to_user(uarg->digest, vi->file_digest, hash_alg->digest_size))
--- 
-2.31.0
-
+PiA+ID4gPiArDQo+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGZfcXVv
+dGllbnQgID0gZGYgLyBtOw0KPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IGRmX3JlbWFpbmRlciA9ICgoZGYgJSBtKSAqIDEwMDApIC8gbTsNCj4gPiA+ID4gKw0KPiA+ID4g
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmIChmcmVxID4gZGZfcXVvdGllbnQp
+IHsNCj4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRmX3F1
+b3RpZW50ICA9IGZyZXEgLSBkZl9xdW90aWVudCAtIDE7DQo+ID4gPiA+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBkZl9yZW1haW5kZXIgPSAxMDAwIC0gZGZfcmVtYWlu
+ZGVyOw0KPiA+ID4NCj4gPiA+IFdoZXJlIGRvZXMgMTAwMCBjb21lIGZyb20/DQo+ID4NCj4gPiAx
+MDAwIGlzIGNvbWUgZnJvbSAiYm9ycm93IDEiIGluIGxhc3Qgb3BlcmF0aW9uLg0KPiANCj4gSXQn
+cyBzY2FsaW5nIHRoZSB2YWx1ZSByaWdodD8gV2hhdCBpcyBiZWluZyBzY2FsZWQ/IEFyZSB3ZSBj
+b252ZXJ0aW5nDQo+IHVuaXRzIHRvIEh6IGZyb20ga0h6Pw0KDQpIZXJlIGp1c3QgdXNpbmcgaW50
+ZWdlciByZXBsYWNlbWVudCBmbG9hdGluZyBwb2ludCBvcGVyYXRpb24sIGZvciBleGFtcGxlOg0K
+ZGYgPSAxMywgbSA9IDMNCjEzIC8gMyA9IDQuMzMzMzMzMzMNCmRmX3F1b3RpZW50ID0gNA0KZGZf
+cmVtYWluZGVyID0gMC4zMzMzMzMzICogMTAwMCAoYWNjdXJhdGUgdG8gMyBkZWNpbWFsIHBsYWNl
+cykgPSAzMzMNCg0K
