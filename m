@@ -2,223 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 041B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B56C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbiESH1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        id S229509AbiESH0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234835AbiESH13 (ORCPT
+        with ESMTP id S234750AbiESHZL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:27:29 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7FB8FD6F
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:27:18 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24J68WkN009140;
-        Thu, 19 May 2022 07:27:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2021-07-09;
- bh=2fUjTspUY2YeWYeJPr5FCQwI0aDCLD1nIM/XHvfDGcc=;
- b=vv9AJ19S82C6Uh8c+OVZ5I1q2S6HgdCVQ3yVobSXLfWeGfwUl4OYaQqskNinTF59Gal/
- WazyJGqtQlmylwezgmNIZ+8G1SXgTZXb6fwIk1vpt7jwH9knVsDK/Ba17TylxjuWtsUL
- Av6ZUnE2jca9Ed3f1H+fvj5jqiRyEH9Wb+BVsyPox78Z3hWaw10g3UNHR2yUAWCsfETP
- G+jp9tp6CJ3QgflYIlYExqXqWlOTE7KBekCrPmG4+He+nupS/YOKEZF8B3R5OhD/xWCM
- uHNdNIgDeyWdSx8+hmapLGFb5N8zFDnRyizH2FsHCyHNRjOp6nHuHibeQH0Ip1c0IWHi OA== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g2310ud8c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 May 2022 07:27:14 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24J7F7FN023351;
-        Thu, 19 May 2022 07:27:13 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2173.outbound.protection.outlook.com [104.47.55.173])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g22v50uqv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 May 2022 07:27:12 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UoUwxhL0TN//WnB6USBU+tblF4qDdRllQJ2Gostfp+MlS9xpqrcSKLLc8ATV2lz5ISA7lG/6VBno09lbKVduoNXXq9kLfQFwgvIu076E/A4o+gxRHfc0UgbjWV2vUsP06uyqnBn5pX52o9+v1B5zvHF5ymmiAJtHLeaRHT2hCekRgM4nRbRu0QGYEff1+2mkexVK9W4nduhIrkwq+5d0MGzooVgMby2AST1Ci2Jwop38qPRPSZW15aETpySIkdTm0bxj1hvH0DDjBTDOe1rGMoq7hhEXmvSgwyXTMrjuM6HDLHAbOCD3wqzc7bTfH37Wnh4fVKZh66zGvZ4ZVVyx0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2fUjTspUY2YeWYeJPr5FCQwI0aDCLD1nIM/XHvfDGcc=;
- b=YbmOZr6l0FiCf3f/imBa15zQYim4Brxu8BInaw8M+LXVNoAYgz+dBPTYIxPoXX8sD/OGlBq55pYtVojaJ8u7UtjK4U+3uuiL4PNX7PAg4eej9pPiajsI9ayaUCFPUYlSzoCWPqjKh/WEWlSVohOm3FY+AcBijMevryEE1S0m3FjcN/+K641axd9fs6vDbzEeJerMD+uoy9sd3teEqFqO8TApZqt/CLUZu/FiS1igBUgpWLBTyUC/RiII9ErAN1y26fEki5EdiO09oJDP7CJTCIK+1oR9H578w0V7JW7PS66iGyOeteXz1SfxKe5w6rXvo7UrjzBD8v5digDrc4EjAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Thu, 19 May 2022 03:25:11 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209C384A0D;
+        Thu, 19 May 2022 00:25:05 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id 10so598465plj.0;
+        Thu, 19 May 2022 00:25:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2fUjTspUY2YeWYeJPr5FCQwI0aDCLD1nIM/XHvfDGcc=;
- b=JoZI2IzsdqWqht11TZzoycjgWXOiuqoPG9twnz2mIAke7OHCgb5N/sfKRz70NV/Koc85KZji8DG1ghM4Au04UCMarAjvRfyrWneex3Jfh72RYWHrk8ubsgqrxPituyu1w7lUBl5lZ1rBnXyDm0tg7/OzVUoE+o40d5aRMWt1M70=
-Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
- by DM5PR1001MB2154.namprd10.prod.outlook.com (2603:10b6:4:2e::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Thu, 19 May
- 2022 07:27:11 +0000
-Received: from CO1PR10MB4468.namprd10.prod.outlook.com
- ([fe80::14ef:8202:73ba:29ec]) by CO1PR10MB4468.namprd10.prod.outlook.com
- ([fe80::14ef:8202:73ba:29ec%3]) with mapi id 15.20.5273.016; Thu, 19 May 2022
- 07:27:11 +0000
-From:   Imran Khan <imran.f.khan@oracle.com>
-To:     tj@kernel.org, viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH v4 0/4] kernfs: make ->attr.open RCU protected.
-Date:   Thu, 19 May 2022 17:26:54 +1000
-Message-Id: <20220519072658.736370-1-imran.f.khan@oracle.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SYXPR01CA0079.ausprd01.prod.outlook.com
- (2603:10c6:0:2e::12) To CO1PR10MB4468.namprd10.prod.outlook.com
- (2603:10b6:303:6c::24)
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k7KTYEAzBj+UHeOYHPkQPvPY0nWRVQq1n8Qfv4AqkRw=;
+        b=LgPneXHQcr5a2wUiKfofywt0n5ugbFygskIFcuyjBKNXMs+AZk/5MabsHL5IoJGvzY
+         8k/q2hxkIuhEHovPPVupaRkOhh0GPIRzih9ZKMha8547f6EWsH3hjljN5B4JoqXPMXQQ
+         dWUIgPph3HXR5zDsYrk0cLHbobI3HH16dtwtQoKH9RFOE2Ez6A1xdHYR0TE7gmCtvVkw
+         /joO7RofkPky7H6xOHNgE/CiADNPGLvaD9qiazUJhe3l+Cu7J78MsqjkZU6ooV8gRty0
+         g1O4guZmH0xLL7ebihegWWHv7p/9z5U1CH1mFR16M5m30OUXtK1v8trLO/h00HO87ZPo
+         +oJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k7KTYEAzBj+UHeOYHPkQPvPY0nWRVQq1n8Qfv4AqkRw=;
+        b=UfIPZwaBOA2s/tn1UgatAiQ/B851/CN/MT88lwAel4qDX76E4BqdHi29x+WBZKpBPq
+         5OOy3iAFmCpq6JLKPitTun0h0repNGeiIrMcY3f0IJs9NpVoHBfiza7pgQIsreKLC/64
+         RPcPI78wFsjTYJG8gJ6jf8Ia3P8hKOvAP2uAsNmWBf+Z6ClRtBVwNmkdGWSEYyZmvSrw
+         kXrZH2p9LPeUy1bEeJil7HsQ9sfXVNhbJn8URVFDfAS8Xr1tE5nSzX6PYrPePaP6dRKp
+         zqDxl7zjA9VV34C/sY5bkEPrgoVsiZIabV7hlLGRUk0D/iVcO5QrYVo3tm41VuiXaebc
+         tTfg==
+X-Gm-Message-State: AOAM531LYPCBhHOxZ1fScVugPxOQNAnoNprO/5KPtPliUpUWK8eu7jWg
+        eTdIHZh8aKACTLsFm6tOPo4=
+X-Google-Smtp-Source: ABdhPJyjibq4qVCxGzg3BADkPXuKeH/EjdBmVyRnufxJ0q+nWEGOqMRD0p8wN5jCOOvjCoEZThfK3Q==
+X-Received: by 2002:a17:902:aa85:b0:155:ceb9:3710 with SMTP id d5-20020a170902aa8500b00155ceb93710mr3574445plr.59.1652945104460;
+        Thu, 19 May 2022 00:25:04 -0700 (PDT)
+Received: from localhost.localdomain ([116.89.141.50])
+        by smtp.gmail.com with ESMTPSA id b12-20020a170902650c00b00161ac982b9esm2974159plk.185.2022.05.19.00.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 00:25:03 -0700 (PDT)
+From:   Medad CChien <medadyoung@gmail.com>
+X-Google-Original-From: Medad CChien <ctcchien@nuvoton.com>
+To:     rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
+        mchehab@kernel.org, bp@alien8.de, robh+dt@kernel.org,
+        benjaminfair@google.com, yuenn@google.com, venture@google.com,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
+        tali.perry1@gmail.com, ctcchien@nuvoton.com
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: [PATCH v10 0/3] EDAC: nuvoton: Add nuvoton NPCM memory controller driver
+Date:   Thu, 19 May 2022 15:24:51 +0800
+Message-Id: <20220519072454.24063-1-ctcchien@nuvoton.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ef041701-7772-40fa-4c3d-08da3968fd25
-X-MS-TrafficTypeDiagnostic: DM5PR1001MB2154:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1001MB21546B2183B503EF32423F99B0D09@DM5PR1001MB2154.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DYuKCjpYJIpF1vVOR/0IOr62hBdLJdf5K+LoWtURZC0vwH33op7ZiSa9p48+HfPdNrf3pQsSwP9a5JwQ4Hv9vHh/DO6tsgjmlCES0dADHy+PS2NCHClIR22K5Hul8F6nkTOtoEzD7xn2SjqqfHRqg2kO+zWYT3pDLCLy143Pf13SiNFsy5iSLqZvoV6/x7slfh7esKV0SQSLeLKDoDBHFYe9Pm5HoiCM9cyMMbTjCE+eh9a7hGk/W/qHf2d4UolxUVPToN9F4FK3UmQoG4JBG3if0Sv7MD2SQKXS4a+4a5IMIuMBXBs3y9/Mdijw20hhTSJOmHeFnZdrqwMVki43Gakxj1zlvovc6AeiUQC8vUxS2W7PKJunyvlsCOjXqiNlVkJovEWq99Ip35DSsuaOISc4fsSFR3tzuMTS5fcEdjBIoZdyTTzf3c0MJYGPT1FqEqP26jgUxG9svF0HG1IrpX0LueSUST37nHhdF0IRLlCnBeYDKWp/57qTWNoJIqlD+62Bh/JMb4tqzajAi2FZT6ftgNJABXvuJxhHGXch4wuQofcFesvvJglvucLexehbrYB8As7SF8j+g363EPn8Y2GD/vvwZshSepvXiOwhQRYoWsnTi3i9pl/2Cl5eAY1c5i+akT9OeSCstelf6PqXTriU5EXEoKhTtv59zf6PWlhwdQqDzxjwBeIylEneYPQurQOKfWoax8VKUHA/JNJi5U6REM2Mhf9lg8kYuENpdlRLmWlbuEv0sp8NXLKVYlq4CdsNL8ksdyadpu8MYof0/zwWJOVHdRijjgCjx92p+MlmOasSQWaZlJADq9oygsy7c4ZLT8Ji1o6rkRKJw1k7tmDDS12pP+nVi1tfgtNh+SU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(103116003)(8676002)(83380400001)(86362001)(186003)(66556008)(6666004)(38350700002)(4326008)(66946007)(36756003)(66476007)(38100700002)(1076003)(6486002)(8936002)(966005)(2616005)(508600001)(52116002)(2906002)(26005)(6512007)(6506007)(5660300002)(87590200002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ajp/7LHzuwiLBiiwBhsEdCorjeitzE7/HsbMl679zB0HDAVflMnHshhE/Tkq?=
- =?us-ascii?Q?Rcn1xihyMjDh2Zl4wBbtTvCr6eAcJCWHZP2AhGV/M8iI7bGv5ygTw36ZF9Ge?=
- =?us-ascii?Q?+amw2M/IaotGkMLMw6CW5qFwfvcMKN8FXLDst2+8F0tQVfS8YBl9ULSmtSxl?=
- =?us-ascii?Q?XFD6oyeMa3i9OQHRmYpIs1NTnGQo7/HBS0qn3HGWj9BX8cz3qnP9ztWu7XmD?=
- =?us-ascii?Q?xN7rkv7m8NPrFEJKQppFMdVGmXWF4UNye3i0aF4axccbcibavtGafcNKPdQu?=
- =?us-ascii?Q?du0P/lPjA64+Pgk2B5UUeWuAQGMXl5ut/PYBFxMnGU2e8O1rjZqbilTsFgZj?=
- =?us-ascii?Q?o8Ny3KlMW3RDsUg5RA7I4iIHrOPJhBCfhPP2MjhhOPNYnq1IfL+K+ltoSdDB?=
- =?us-ascii?Q?yX9Zn3DQyttceDOkGvDOtdhDppe0fMI4LljJOcVhuwbw51u/vt8HetXdDpBr?=
- =?us-ascii?Q?bOuQRH+fTHPp+dwDtuyNLV8c7wTdTuIzgU+LBZ86piSPdimyY451q4XTD/qX?=
- =?us-ascii?Q?1gBSESKYfKzKc3APqFM8ORnmYzhZakfueHtZzlyv9MTHIspvAjARxkWolU4Q?=
- =?us-ascii?Q?turicLI7qfa69Q9mcpi+hz8VKb74iyYjkLtfgtyOiz6wHUU6Ne0s+94lQqYM?=
- =?us-ascii?Q?35FJdka3peZDXTqEwSNDUO0ES0apsJMQKYD1MNv/4vjlRH2kcyLks+cLBZ0M?=
- =?us-ascii?Q?EXxA4kOS02ZbTUrLOhrgChC65YEYo16KmkkIGVFe1d/Lpoyz4T49hQpZl7iX?=
- =?us-ascii?Q?DxFh4ovG/FB7f0HnAV20HQarV+0l0k1Bk2v/OscDZ0RyByaDTlwdw2NDSogq?=
- =?us-ascii?Q?rqIO6H7LvJe28GZmBE03kkaMfTYwr5I/VQn1Cpq5/DKDHJvBOdt7i1m39nEW?=
- =?us-ascii?Q?RI516IA+m4y/2N3qMiEDC6B6BkzQMoDHYlvZphJJy2XPsZK2goFG6ZFyT/KX?=
- =?us-ascii?Q?sdA96uoSwmhyAwQexwBxExdc4ajD2xty18aDTJRom9+kuRERtQhZI5OQxnU7?=
- =?us-ascii?Q?F+tvmCr8DofdfN4AZU/+2G1/uYwxYpqShWmpJ5MGmW96UW2j+oQfBZCHbOii?=
- =?us-ascii?Q?OqglANhSBzuZEtFCl93E0BPZx5EgHcyy4HvoPRP4UdbF23KfsBTLADLoODS/?=
- =?us-ascii?Q?tTz0A2qG2EYzN5UsVsN0/tjljM33+H9mULcp8kcW6FIStwDTiDPEY03QOnLK?=
- =?us-ascii?Q?V/c6GJ1WiAW5xxZm7EqtvEdgFOOlgB0FPvq5jKKTTqTBIrRU3laW3W5MD+Zj?=
- =?us-ascii?Q?UsY/VCnNzrFsrWuXfqNJF5k+cYKAGN4dnMSOgtm+o9Hw2g2AoSsKc6+vHVgZ?=
- =?us-ascii?Q?99e5e6KxI+wP0nModoMsNZSTHIj/9vB3E/f7golSzhKB2nxAkLs52XSQDBFf?=
- =?us-ascii?Q?zIvVE0mgtK8rs0jNvq2mcvGZ4NXhSameNeC2etTvLeGfb8xDGVk5AgHWnyhE?=
- =?us-ascii?Q?Kh40hunRi/ZjRH1HOR3pqcKG92YFmttP9xNJ4AP3rhg1yKcLooR7Alg5AFV1?=
- =?us-ascii?Q?mvLC5HwKQW4JkuE8+XOpZEhsdDdO5Uqia+fUrpJajzfXpInAn4uxEkrObRbP?=
- =?us-ascii?Q?Nx+9D4fNGKEP0yee83j4tJlbOreuT1l5dAegQj2dBqTDpINP4chmvMVyIEuz?=
- =?us-ascii?Q?wUG0SPIUrW8FPcEDAcIBG3//VM0eeHHuW49fbQszKta4H/Mi3xd7V5Tbfn3h?=
- =?us-ascii?Q?qF166c9gEeA954E6oI84vk29Ny9cRPyzm6EE0c7rQ1VN5xqSGm7J03w9YYKY?=
- =?us-ascii?Q?+VqY2cVwgLRUaf6lF2hIOPHVHaesqQk=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef041701-7772-40fa-4c3d-08da3968fd25
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 07:27:11.4058
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RDJ5YVlqZRgB2amVU79t5JoNMSU3wrjH5iC8uRCiokxaw5DY09nmbCcfORcfVscEMMmXdMbNGAbW8H+/4OQlng==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1001MB2154
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
- definitions=2022-05-19_01:2022-05-17,2022-05-19 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=999 adultscore=0 phishscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205190045
-X-Proofpoint-ORIG-GUID: b73Dh82CrTmYRmZgWE4eH7JIeN8eM1HQ
-X-Proofpoint-GUID: b73Dh82CrTmYRmZgWE4eH7JIeN8eM1HQ
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The patches in this version of the patch set are as follows:
+Support memory controller for Nuvoton NPCM SoC.
 
-PATCH-1: Make kernfs_open_node->attr.open RCU protected.
+Addressed comments from:
+ - Rob Herring : https://lkml.org/lkml/2022/2/25/1103
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/2/27/63
+ - Rob Herring : https://lkml.org/lkml/2022/3/2/828
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/11/294
+ - Jonathan Neuschäfer : https://lkml.org/lkml/2022/3/11/1167
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/11/293
+ - Rob Herring : https://lkml.org/lkml/2022/3/11/575
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/11/305
+ - Avi Fishman : https://lkml.org/lkml/2022/3/13/339
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/14/93
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/14/95
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/15/378
+ - Boris Petkov : https://lkml.org/lkml/2022/3/17/561
+ - Paul Menzel : https://lkml.org/lkml/2022/4/9/47
+ - Paul Menzel : https://lkml.org/lkml/2022/4/11/182
+ - Borislav Petkov : https://lkml.org/lkml/2022/4/8/871
+ - Paul Menzel : https://lkml.org/lkml/2022/4/9/51
+ - Paul Menzel : https://lkml.org/lkml/2022/4/9/65
+ - Rob Herring : https://lkml.org/lkml/2022/4/21/681
+ - Paul Menzel : https://lkml.org/lkml/2022/5/3/307
+ - Paul Menzel : https://lkml.org/lkml/2022/5/3/304
+ - Borislav Petkov : https://lkml.org/lkml/2022/5/3/343
+ - Paul Menzel https://lkml.org/lkml/2022/5/10/47
+ - Paul Menzel https://lkml.org/lkml/2022/5/10/127
 
-PATCH-2: Change kernfs_notify_list to llist.
+Changes since version 10:
+ - Add one more maintainer.
+ - Correct indentation in npcm_edac.c.
+ - Add datasheet information in commit message.
 
-PATCH-3: Introduce interface to access kernfs_open_file_mutex.
+Changes since version 9:
+ - Add a necessary blank line in Kconfig for EDAC_NPCM.
+ - Reflow for 75 characters per line in commit message of devicetree file.
+ - Remove wrong tags in all the commit message.
+ - Reorder content in commit message of NPCM memory controller driver.
 
-PATCH-4: Replace global kernfs_open_file_mutex with hashed mutexes.
+Changes since version 8:
+ - Add new line character at the end of file of yaml file
 
-Changes since v3:
- - Rebase on tag next-20220518
- - Rename RCU access related helpers and update their description
- - Address errors reported by kernel test robot
- - Include Acked-by tags from Tejun for the acked patches (PATCH-2,3,4)
+Changes since version 7:
+ - Refactor npcm_edac.c.
+ - Sort strings in npcm_edac.c.
+ - Reflow code for 75 characters per line.
+ - Summarize errors and warnings reported by kernel test robot.
+ - Shorten name of values to make them become more readable in npcm_edac.c..
+ - Put spaces between the * and the text in npcm_edac.c.
 
-Changes since v2:
- - Rebase on tag next-20220510
- - Remove PATCH-1 of v2 because it is present in tag next-20220510
- - Include Acked-by tags from Tejun for the acked patches (PATCH-2 and PATCH-3)
+Changes since version 6:
+ - Fix warnings in npcm_edac.c.
+ - Add information reported by kernel test robot <lkp@intel.com>.
 
+Changes since version 5:
+ - Update commit message of dt-bindings: edac: nuvoton: add NPCM memory controller.
+ 
+Changes since version 4:
+ - Update filename in nuvoton,npcm-memory-controller.yaml.
+ - Add COMPILE_TEST in Kconfig.
+ - Fix errors in npcm_edac.c.
+ - Remove unnecessary checking after of_match_device() and of_device_get_match_data().
 
-Cover letter for v2:
---------------------------------------------------------------------------
+Changes since version 3:
+ - Rename npcm-edac.yaml as nuvoton,npcm-memory-controller.yaml.
+ - Drop 'EDAC' in title of nuvoton,npcm-memory-controller.yaml.
+ - Update compatible in nuvoton,npcm-memory-controller.yaml.
 
-I have not yet received any feedback about v1 of this patchset [2] but
-in the meantime an old version of first patch from [3] has been integrated in
-linux-next. Functionally first patch in both [2] and [3] are identical.
-It's just that [2] has renamed one of the functions to better reflect the fact
-that we are no longer using reference counting for kernfs_open_node.
+Changes since version 2:
+ - Update description and compatible in npcm-edac.yaml.
+ - Remove address-cells and size-cells in npcm-edac.yaml.
+ - Reorder the items of examples in npcm-edac.yaml.
+ - Reorder header file in driver.
 
-In this version, I have just modified first patch of v1 so that we use the
-modified function name as done in [2] and avoid those parts that are already
-present in linux-next now. The remaining 4 patches (PATCH-2 to PATCH-5) are
-identical in both v1 and v2 albeit v2 has been rebased on tag next-20220503.
+Changes since version 1:
+ - Add nuvoton,npcm750-memory-controller property in NPCM devicetree.
+ - Add new property in edac binding document.
+ - Add new driver for nuvoton NPCM memory controller.
 
-Changes since v1:
- - Rebase on tag next-20220503
+Medad CChien (3):
+  dt-bindings: edac: nuvoton: add NPCM memory controller
+  ARM: dts: nuvoton: Add memory controller node
+  EDAC: nuvoton: Add NPCM memory controller driver
 
-[2]: https://lore.kernel.org/lkml/20220428055431.3826852-1-imran.f.khan@oracle.com/
-[3]: https://lore.kernel.org/lkml/20220324103040.584491-1-imran.f.khan@oracle.com/
+ .../edac/nuvoton,npcm-memory-controller.yaml  |  62 ++
+ arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi |   7 +
+ drivers/edac/Kconfig                          |  17 +
+ drivers/edac/Makefile                         |   1 +
+ drivers/edac/npcm_edac.c                      | 680 ++++++++++++++++++
+ 5 files changed, 767 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
+ create mode 100644 drivers/edac/npcm_edac.c
 
-Original cover letter
--------------------------------------------------------
-
-This patchset contains subset of patches (after addressing review comments)
-discussed at [1]. Since [1] is replacing multiple global locks and since
-each of these locks can be removed independently, it was decided that we
-should make these changes in parts i.e first get one set of optimizations
-integrated and then work on top of those further.
-
-The patches in this change set introduce following changes:
-
-PATCH-1: Remove reference counting for kernfs_open_node.
-
-PATCH-2: Make kernfs_open_node->attr.open RCU protected.
-
-PATCH-3: Change kernfs_notify_list to llist.
-
-PATCH-4: Introduce interface to access kernfs_open_file_mutex.
-
-PATCH-5: Replace global kernfs_open_file_mutex with hashed mutexes.
-
-[1] https://lore.kernel.org/lkml/YmLfxHcekrr89IFl@slm.duckdns.org/
-
-----------------------------------------------------------------
-
-Imran Khan (4):
-  kernfs: make ->attr.open RCU protected.
-  kernfs: Change kernfs_notify_list to llist.
-  kernfs: Introduce interface to access global kernfs_open_file_mutex.
-  kernfs: Replace global kernfs_open_file_mutex with hashed mutexes.
-
- fs/kernfs/file.c            | 270 +++++++++++++++++++++++-------------
- fs/kernfs/kernfs-internal.h |   4 +
- fs/kernfs/mount.c           |  19 +++
- include/linux/kernfs.h      |  61 +++++++-
- 4 files changed, 258 insertions(+), 96 deletions(-)
-
-
-base-commit: 736ee37e2e8eed7fe48d0a37ee5a709514d478b3
 -- 
-2.30.2
+2.17.1
 
