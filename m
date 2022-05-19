@@ -2,109 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFDF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 03:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F024C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 03:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiESDKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 23:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
+        id S233102AbiESDKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 23:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232897AbiESDJ7 (ORCPT
+        with ESMTP id S233125AbiESDKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 23:09:59 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4131D9E94;
-        Wed, 18 May 2022 20:09:56 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L3ZX40zRNzQkKB;
-        Thu, 19 May 2022 11:07:00 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 11:09:52 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 11:09:52 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>
-CC:     <haijun.liu@mediatek.com>, <chandrashekar.devegowda@intel.com>,
-        <ricardo.martinez@linux.intel.com>, <loic.poulain@linaro.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH -next v2] net: wwan: t7xx: use GFP_ATOMIC under spin lock in t7xx_cldma_gpd_set_next_ptr()
-Date:   Thu, 19 May 2022 11:21:08 +0800
-Message-ID: <20220519032108.2996400-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 18 May 2022 23:10:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2AB8DE312;
+        Wed, 18 May 2022 20:10:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0681F61920;
+        Thu, 19 May 2022 03:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 60966C36AE3;
+        Thu, 19 May 2022 03:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652929813;
+        bh=LvuANKic4Swt7hf04ETk8GqSz0khQp/gzpNDBzz91YQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jIECwSeZDDaMQ2PZ2ktRdZxueTuPmmZWn5xkQrgkNSOELdxCQt3ghFyDcKD3vWWhk
+         MAVxjx3EQwFq7ohm7nurzeLCFQ7MLIvJd3+IHAPvcl62hD/esEWII34vFx5/5idz3g
+         4d8PbCoPWaomVed9cVI4wE3Lcrf30LoeVLYt5amXr8Ipg+6UHoJSK28CyLr5WWGvod
+         kzD9amjGbx7xWLa5CibBKdAYr+nUBuaPfUQ4Hqjj46DT3wKD9LyEzWpH1DmK/pTtMV
+         cN8RqCTAPa1RNxV0UfynAKcIxH1ECuhPzZ4ODmZD2E9mReAxB8NSCkpey2bDZ2uVyp
+         XtT8Wo5OVNqhA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 438F8F0392C;
+        Thu, 19 May 2022 03:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 0/2] octeon_ep: Fix the error handling path of
+ octep_request_irqs()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165292981327.2906.8358628971940512633.git-patchwork-notify@kernel.org>
+Date:   Thu, 19 May 2022 03:10:13 +0000
+References: <cover.1652819974.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <cover.1652819974.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     vburru@marvell.com, aayarekar@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        sburla@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sometimes t7xx_cldma_gpd_set_next_ptr() is called under spin lock,
-so add 'gfp_mask' parameter in t7xx_cldma_gpd_set_next_ptr() to pass
-the flag.
+Hello:
 
-Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  change the parameter to gfp flag.
----
- drivers/net/wwan/t7xx/t7xx_hif_cldma.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-index 0c52801ed0de..6ff30cb8eb16 100644
---- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-+++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-@@ -91,9 +91,9 @@ static void t7xx_cldma_gpd_set_next_ptr(struct cldma_gpd *gpd, dma_addr_t next_p
- }
- 
- static int t7xx_cldma_alloc_and_map_skb(struct cldma_ctrl *md_ctrl, struct cldma_request *req,
--					size_t size)
-+					size_t size, gfp_t gfp_mask)
- {
--	req->skb = __dev_alloc_skb(size, GFP_KERNEL);
-+	req->skb = __dev_alloc_skb(size, gfp_mask);
- 	if (!req->skb)
- 		return -ENOMEM;
- 
-@@ -174,7 +174,7 @@ static int t7xx_cldma_gpd_rx_from_q(struct cldma_queue *queue, int budget, bool
- 		spin_unlock_irqrestore(&queue->ring_lock, flags);
- 		req = queue->rx_refill;
- 
--		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, queue->tr_ring->pkt_size);
-+		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, queue->tr_ring->pkt_size, GFP_KERNEL);
- 		if (ret)
- 			return ret;
- 
-@@ -402,7 +402,7 @@ static struct cldma_request *t7xx_alloc_rx_request(struct cldma_ctrl *md_ctrl, s
- 	if (!req->gpd)
- 		goto err_free_req;
- 
--	val = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, pkt_size);
-+	val = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, pkt_size, GFP_KERNEL);
- 	if (val)
- 		goto err_free_pool;
- 
-@@ -801,7 +801,7 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
- 		if (req->skb)
- 			continue;
- 
--		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, rxq->tr_ring->pkt_size);
-+		ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, rxq->tr_ring->pkt_size, GFP_ATOMIC);
- 		if (ret)
- 			break;
- 
+On Tue, 17 May 2022 22:59:43 +0200 you wrote:
+> I send a small serie to ease review and because I'm sighly less confident with
+> the 2nd patch.
+> 
+> They are related to the same Fixes: tag, so they obviously could be merged if
+> it is preferred.
+> 
+> Details on modification of this v2 are given in each patch.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,1/2] octeon_ep: Fix a memory leak in the error handling path of octep_request_irqs()
+    https://git.kernel.org/netdev/net-next/c/4d3bf6fb5334
+  - [v2,2/2] octeon_ep: Fix irq releasing in the error handling path of octep_request_irqs()
+    https://git.kernel.org/netdev/net-next/c/3588c189e45a
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
