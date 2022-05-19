@@ -2,141 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46120C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236331AbiESJvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 05:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S231956AbiESJvd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 05:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236300AbiESJvR (ORCPT
+        with ESMTP id S236334AbiESJvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 05:51:17 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FECB1C125;
-        Thu, 19 May 2022 02:51:15 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 4AA302188C;
-        Thu, 19 May 2022 09:51:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652953874; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I8DbhN/hmOIXXZ4piaGn9jvuXkaTo8VWp7TEEneSWwU=;
-        b=YFxzBTOtJeatYq35CXez5bOlSjNY4j0o3mtivxShrX3+r3OGxsUKu4LeTD5d/SWLBWQHZw
-        et1F5ekV2CK0+dO/rT6Z6P3Tc3mMmVNGUJuW4ovJIawZLb0vaTZXSIG2mclSWc4xLg67TK
-        pvtcYKhsS9GpnIBCVqgNTN5bQGKNjh4=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 7FA8F2C141;
-        Thu, 19 May 2022 09:51:13 +0000 (UTC)
-Date:   Thu, 19 May 2022 11:51:12 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        Yang Shi <yang.shi@linux.alibaba.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, Zi Yan <ziy@nvidia.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <guro@fb.com>
-Subject: Re: [PATCH] Revert "mm/vmscan: never demote for memcg reclaim"
-Message-ID: <YoYTEDD+c4GT0xYY@dhcp22.suse.cz>
-References: <20220518190911.82400-1-hannes@cmpxchg.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518190911.82400-1-hannes@cmpxchg.org>
+        Thu, 19 May 2022 05:51:24 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92CE3B571
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:51:22 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id v5-20020a17090a7c0500b001df84fa82f8so4741268pjf.5
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:51:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Kz0h8AVlhDxqu2fBv10G2DB8irasLWVcOGHbwSABuog=;
+        b=j8zmNa4gMVNlK1u6bsG4t1uiZRogcunLjCd15/qrWM4n/t2ugaS7lRDlEPZ6jY+yIg
+         mTkGGLdzW/XF1HzWzoin/UaQRAH1HC3QmvuecgIwR59XLaQAahzL2pgVCOsQvNZj7cdz
+         VYmF4RqqxQQpgjr2ibTG/yK7t16feYxU3umPw8ojMW425llDHKVO+X5yB6azRO4u6S58
+         UzattIxywCxCfAijShBykl2CXmkGvvOSVCsH94kEZkUjIFlVSSr3OA351Ri9HUtPyFhO
+         1A35o6nL/k3nMH4PSxrKdHRFharWVdXlHgLosiZP6HKazU5lWFSTbsjROPCzR/ueoDD1
+         zBxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Kz0h8AVlhDxqu2fBv10G2DB8irasLWVcOGHbwSABuog=;
+        b=0QekHIhgUfnsASd1fcyDFEKTwYRgHvZZMT//5ROl+glf7b+QRJdtzVl1XW+BZXFXiM
+         TdNpJpVWLFU5+SFebWmA/Aph2TRb3qP+y7QbkSyD2feznT9bl8JFrx0hJ5UKryHj5r/F
+         vh+p5dy/xrmeLgg5QQxRLZ0lzfEnp1J3YEIMc80t07bQkXP83yryWqk9NmvJ+HLebGA3
+         b4Gs4KfOdCTZnanCm9ys6Cz8JIfwhzqTPUJrUgy67OmEjPjpZ3F4Cq3dM4O1dh+iRIPA
+         ETj7QzAydmgCe5XHesCNYHweqHrrZHwGg1hffbY48PjxdhI4iNoK26y0hiCuEuFMRwR2
+         n6dg==
+X-Gm-Message-State: AOAM5319O43CTMUE0xJoasdPmgvTYvNpW42mNAd5t5A0uMgg8oobu7H+
+        rChgP5bQNwU6gSPSVFzFuC2M/s1hQDEFfA==
+X-Google-Smtp-Source: ABdhPJw1fyrbaoYaCvEaPe+05dXjx+wf3KiemTb56WVrxGS0CtEIIiLvyqyF450u94ZVs2dzcF4H8w==
+X-Received: by 2002:a17:90b:1d0b:b0:1df:b3dc:5140 with SMTP id on11-20020a17090b1d0b00b001dfb3dc5140mr4289320pjb.225.1652953882156;
+        Thu, 19 May 2022 02:51:22 -0700 (PDT)
+Received: from Negi ([207.151.52.3])
+        by smtp.gmail.com with ESMTPSA id f186-20020a62dbc3000000b0050dc7628133sm3798073pfg.13.2022.05.19.02.51.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 02:51:21 -0700 (PDT)
+From:   Soumya Negi <soumya.negi97@gmail.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Soumya Negi <soumya.negi97@gmail.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: r8188eu: Remove multiple assignments
+Date:   Thu, 19 May 2022 02:50:11 -0700
+Message-Id: <20220519095012.5619-1-soumya.negi97@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 18-05-22 15:09:11, Johannes Weiner wrote:
-> This reverts commit 3a235693d3930e1276c8d9cc0ca5807ef292cf0a.
-> 
-> Its premise was that cgroup reclaim cares about freeing memory inside
-> the cgroup, and demotion just moves them around within the cgroup
-> limit. Hence, pages from toptier nodes should be reclaimed directly.
-> 
-> However, with NUMA balancing now doing tier promotions, demotion is
-> part of the page aging process. Global reclaim demotes the coldest
-> toptier pages to secondary memory, where their life continues and from
-> which they have a chance to get promoted back. Essentially, tiered
-> memory systems have an LRU order that spans multiple nodes.
-> 
-> When cgroup reclaims pages coming off the toptier directly, there can
-> be colder pages on lower tier nodes that were demoted by global
-> reclaim. This is an aging inversion, not unlike if cgroups were to
-> reclaim directly from the active lists while there are inactive pages.
-> 
-> Proactive reclaim is another factor. The goal of that it is to offload
-> colder pages from expensive RAM to cheaper storage. When lower tier
-> memory is available as an intermediate layer, we want offloading to
-> take advantage of it instead of bypassing to storage.
-> 
-> Revert the patch so that cgroups respect the LRU order spanning the
-> memory hierarchy.
+Conform to Linux coding style.
+Issue found by checkpatch:-
+CHECK: multiple assignments should be avoided
 
-I do agree with your reasoning.
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_br_ext.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> Of note is a specific undercommit scenario, where all cgroup limits in
-> the system add up to <= available toptier memory. In that case,
-> shuffling pages out to lower tiers first to reclaim them from there is
-> inefficient. This is something could be optimized/short-circuited
-> later on (although care must be taken not to accidentally recreate the
-> aging inversion). Let's ensure correctness first.
-
-My slight concern with demotion is that there is no actual "guarantee"
-to reclaim any charges which try_charge depends on to make a forward
-progress. I suspect this is rather unlikely situation, though. The last
-tear (without any fallback) should have some memory to reclaim most of
-the time. Retries should push some pages out but low effort allocation
-requests like GFP_NORETRY might fail but callers should be prepared for
-that.
-
-All that being said the agin inversion is much more real of a problem
-than this.
-
-> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> Cc: "Huang, Ying" <ying.huang@intel.com>
-> Cc: Yang Shi <yang.shi@linux.alibaba.com>
-> Cc: Zi Yan <ziy@nvidia.com>
-> Cc: Michal Hocko <mhocko@suse.com>
-> Cc: Shakeel Butt <shakeelb@google.com>
-> Cc: Roman Gushchin <guro@fb.com>
-
-Acked-by: Michal Hocko <mhocko@suse.com>
-
-> ---
->  mm/vmscan.c | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
-> 
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index c6918fff06e1..7a4090712177 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -528,13 +528,8 @@ static bool can_demote(int nid, struct scan_control *sc)
->  {
->  	if (!numa_demotion_enabled)
->  		return false;
-> -	if (sc) {
-> -		if (sc->no_demotion)
-> -			return false;
-> -		/* It is pointless to do demotion in memcg reclaim */
-> -		if (cgroup_reclaim(sc))
-> -			return false;
-> -	}
-> +	if (sc && sc->no_demotion)
-> +		return false;
->  	if (next_demotion_node(nid) == NUMA_NO_NODE)
->  		return false;
->  
-> -- 
-> 2.36.1
-
+diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
+index e1b3e9d5250b..bca20fe5c983 100644
+--- a/drivers/staging/r8188eu/core/rtw_br_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
+@@ -53,7 +53,8 @@ static unsigned char *__nat25_find_pppoe_tag(struct pppoe_hdr *ph, unsigned shor
+ 	unsigned char *cur_ptr, *start_ptr;
+ 	unsigned short tagLen, tagType;
+ 
+-	start_ptr = cur_ptr = (unsigned char *)ph->tag;
++	start_ptr = (unsigned char *)ph->tag;
++	cur_ptr = (unsigned char *)ph->tag;
+ 	while ((cur_ptr - start_ptr) < ntohs(ph->length)) {
+ 		/*  prevent un-alignment access */
+ 		tagType = (unsigned short)((cur_ptr[0] << 8) + cur_ptr[1]);
 -- 
-Michal Hocko
-SUSE Labs
+2.17.1
+
