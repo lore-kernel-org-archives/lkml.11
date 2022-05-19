@@ -2,280 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 580F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DE2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236258AbiESNye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
+        id S238992AbiESNyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239342AbiESNvA (ORCPT
+        with ESMTP id S239408AbiESNxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:51:00 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959B1DE32C;
-        Thu, 19 May 2022 06:50:28 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id 135so2214234qkm.4;
-        Thu, 19 May 2022 06:50:28 -0700 (PDT)
+        Thu, 19 May 2022 09:53:42 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEFFE27A1;
+        Thu, 19 May 2022 06:53:27 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id a22so4762629qkl.5;
+        Thu, 19 May 2022 06:53:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Qy/P0mZ00noEySeWC/Vtvod18+b1z4lRDAbgjrxSrfI=;
-        b=a5OHjJtkOOGvIu6jZg5QA09ruZ+iHD24h5fVYngt/TjqtTTtS84PiyZlRz3xbOX+eD
-         WYaR6T3dx8+SI+vY3m21XylsDLqE1I0gH8Pcmu8+tg/Y2HcWzlCGZIBFV+Pnv2R1G7Yg
-         TzcmYw8ckLZEgzeEibAId7f8tdQP3TlAXUV1/8OU629u7HDhspdgFjBfpSxfgcXzgMl7
-         WnJ+CrTotBnBDsyW/Ne5SAeFkzmMaSfZiFcE8tigc83LAWw25lST6C/ZblpyJ8en1x10
-         Teb65uwJy1pCJlj+0W6WLZDLdTK6DKkwyg0eOWo6dxTwAIOf6NmdTaBw3QcZGJOsIcky
-         O9WQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=keYAzS3dhQvs7qI6nbKP5Mgbkua2ZacULmCdRbuaUc8=;
+        b=Zy9FoaShfDwmRGcOYJ+wxpjcrZu2f2vqgHUEw75zSvAtIX0/8Tkx1V5KVZfirZj8N/
+         LgZaVCDelBkIjQBbO5MWwDDAaMaefYQe8CdyUNQw8T3kuCs1PlZislLbTtwt5XEwcoKb
+         IgsG2AL9JFn2oyprjb80fXiOSmE7R7STUdzKlClPdnmQ9nz93y1U6lhqibQePYnIfXCF
+         SjG94wAJHj/c8tELqRz0xTk5vvEOLYrg2qAyvNlNZkbGwnUMoOg/kLeNBG+ibkaAPxPv
+         kiyVMuVJZtSV40EJdTaeCBoQZSAuW1NIC5BI1JcGyXEZJ+AjTzDV5el3sQCE9dIpJrsV
+         pT/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Qy/P0mZ00noEySeWC/Vtvod18+b1z4lRDAbgjrxSrfI=;
-        b=oXqsZU+JjiOVtR4/TSEg8LdFLK28eFj9b36Tns6O0NRtHjW7L4kiYVEPCS9bYAIK9O
-         Li5Bihm141DR3fedXmQjnC1skQLZJ8X964rMTPAFKOd+ZGdJHL1Jz67222HFmPghroBa
-         nUNsOO80IiNRw4fKdwyZqP3JmzE6BK+03sA8HsHQVlsMtjzGHTy29HXeTHgD4A5VFD5b
-         OCRDIjKWTTcim8Gct1Of3mUONhlFueBLmpel/dKYNpVK1fETJs6VL7aayd8IzHoBFbWk
-         kKhZGSprcGGfupTfkN6IWwNMd0ji+bbakiZGdWcJf+RBPQlaDX0y7XOz3A70/SjioZlc
-         +Q5g==
-X-Gm-Message-State: AOAM530gwi0vTLBdJVqOtWXnwAiLrguK+nV2ViLINSUhV0IRpheYbNbY
-        1t2CvUhsIhAzpOE3JoLWXjA=
-X-Google-Smtp-Source: ABdhPJwtEj+JJRio5QYmwvU2cAJtTQu5mDAibXeOd2Nt2uRks/gnWgo29yFyhbRaE2j2y8DH8STX7w==
-X-Received: by 2002:a05:620a:29ce:b0:6a0:2338:2fbe with SMTP id s14-20020a05620a29ce00b006a023382fbemr3115971qkp.315.1652968201971;
-        Thu, 19 May 2022 06:50:01 -0700 (PDT)
-Received: from localhost.localdomain ([217.138.206.82])
-        by smtp.gmail.com with ESMTPSA id i186-20020a3754c3000000b0069fc13ce23dsm1315024qkb.110.2022.05.19.06.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 06:50:01 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 6/6] clk: mediatek: Add support for other clock types in simple probe/remove
-Date:   Thu, 19 May 2022 17:47:28 +0400
-Message-Id: <20220519134728.456643-7-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220519134728.456643-1-y.oudjana@protonmail.com>
-References: <20220519134728.456643-1-y.oudjana@protonmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=keYAzS3dhQvs7qI6nbKP5Mgbkua2ZacULmCdRbuaUc8=;
+        b=hF1Je0vST7GcpqKp1uzlkrM6EUIwZaTqqQ3ckAXZWb73OP5VQjhPwCiGuDPD3+bacX
+         wLKFQGDRDxOkyvrex6Um0HX2oZGhIin0SFP0qkICO+ov9iFnU/Fw+RSugd/OHGhFNLrX
+         //SXWL+EmUuLcrBTBo78NI3bambPHYeWtUBTCUcKIN3sw0DgbX8YcOcrfuCip89dzd+N
+         N8O3UG1iwGEUFE9tLzshHe8tUp9q6p4Aey4l2V7FCmJRDEzkaXTNLW3gZXi1TK+EU+ys
+         nILjZ3DqtxbHBExKtSCYGz41gOYNSGCKTkmVdQ4mO4Em4+Crlf+Nx3VJYjnOBje7AvHZ
+         aqPQ==
+X-Gm-Message-State: AOAM5309DPaHiSmxN4FoaC2rJX2CCHJUo10r9aAd90M1AvhoBR/6hug2
+        TBfZrAY51BNV0f4VDoLhOSELhceXsS7BG+Uf07QbKMaRSKA=
+X-Google-Smtp-Source: ABdhPJytoUtDATpgujBr6c0c94pGAnTZfjmWy8Z37ROo5pZsuQvcWAaHVJ98uGRlIxmGE141MkVzxANB1xRWY6LG1t0=
+X-Received: by 2002:a05:620a:1aa0:b0:6a0:a34:15e0 with SMTP id
+ bl32-20020a05620a1aa000b006a00a3415e0mr3096146qkb.19.1652968406507; Thu, 19
+ May 2022 06:53:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20f17f64-88cb-4e80-07c1-85cb96c83619@windriver.com>
+In-Reply-To: <20f17f64-88cb-4e80-07c1-85cb96c83619@windriver.com>
+From:   Amir Goldstein <amir73il@gmail.com>
+Date:   Thu, 19 May 2022 16:53:15 +0300
+Message-ID: <CAOQ4uxiQTwEh3ry8_8UMFuPPBjwA+pb8RLLuG=93c9hYtDqg8g@mail.gmail.com>
+Subject: Re: warning for EOPNOTSUPP vfs_copy_file_range
+To:     He Zhe <zhe.he@windriver.com>
+Cc:     Dave Chinner <dchinner@redhat.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Luis Henriques <lhenriques@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+On Thu, May 19, 2022 at 11:22 AM He Zhe <zhe.he@windriver.com> wrote:
+>
+> Hi,
+>
+> We are experiencing the following warning from
+> "WARN_ON_ONCE(ret == -EOPNOTSUPP);" in vfs_copy_file_range, from
+> 64bf5ff58dff ("vfs: no fallback for ->copy_file_range")
+>
+> # cat /sys/class/net/can0/phys_switch_id
+>
+> WARNING: CPU: 7 PID: 673 at fs/read_write.c:1516 vfs_copy_file_range+0x380/0x440
+> Modules linked in: llce_can llce_logger llce_mailbox llce_core sch_fq_codel
+> openvswitch nsh nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
+> CPU: 7 PID: 673 Comm: cat Not tainted 5.15.38-yocto-standard #1
+> Hardware name: Freescale S32G399A (DT)
+> pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> pc : vfs_copy_file_range+0x380/0x440
+> lr : vfs_copy_file_range+0x16c/0x440
+> sp : ffffffc00e0f3ce0
+> x29: ffffffc00e0f3ce0 x28: ffffff88157b5a40 x27: 0000000000000000
+> x26: ffffff8816ac3230 x25: ffffff881c060008 x24: 0000000000001000
+> x23: 0000000000000000 x22: 0000000000000000 x21: ffffff881cc99540
+> x20: ffffff881cc9a340 x19: ffffffffffffffa1 x18: ffffffffffffffff
+> x17: 0000000000000001 x16: 0000adfbb5178cde x15: ffffffc08e0f3647
+> x14: 0000000000000000 x13: 34613178302f3061 x12: 3178302b636e7973
+> x11: 0000000000058395 x10: 00000000fd1c5755 x9 : ffffffc008361950
+> x8 : ffffffc00a7d4d58 x7 : 0000000000000000 x6 : 0000000000000001
+> x5 : ffffffc009e81000 x4 : ffffffc009e817f8 x3 : 0000000000000000
+> x2 : 0000000000000000 x1 : ffffff88157b5a40 x0 : ffffffffffffffa1
+> Call trace:
+>  vfs_copy_file_range+0x380/0x440
+>  __do_sys_copy_file_range+0x178/0x3a4
+>  __arm64_sys_copy_file_range+0x34/0x4c
+>  invoke_syscall+0x5c/0x130
+>  el0_svc_common.constprop.0+0x68/0x124
+>  do_el0_svc+0x50/0xbc
+>  el0_svc+0x54/0x130
+>  el0t_64_sync_handler+0xa4/0x130
+>  el0t_64_sync+0x1a0/0x1a4
+> cat: /sys/class/net/can0/phys_switch_id: Operation not supported
+>
+> And we found this is triggered by the following stack. Specifically, all
+> netdev_ops in CAN drivers we can find now do not have ndo_get_port_parent_id and
+> ndo_get_devlink_port, which makes phys_switch_id_show return -EOPNOTSUPP all the
+> way back to vfs_copy_file_range.
+>
+> phys_switch_id_show+0xf4/0x11c
+> dev_attr_show+0x2c/0x6c
+> sysfs_kf_seq_show+0xb8/0x150
+> kernfs_seq_show+0x38/0x44
+> seq_read_iter+0x1c4/0x4c0
+> kernfs_fop_read_iter+0x44/0x50
+> generic_file_splice_read+0xdc/0x190
+> do_splice_to+0xa0/0xfc
+> splice_direct_to_actor+0xc4/0x250
+> do_splice_direct+0x94/0xe0
+> vfs_copy_file_range+0x16c/0x440
+> __do_sys_copy_file_range+0x178/0x3a4
+> __arm64_sys_copy_file_range+0x34/0x4c
+> invoke_syscall+0x5c/0x130
+> el0_svc_common.constprop.0+0x68/0x124
+> do_el0_svc+0x50/0xbc
+> el0_svc+0x54/0x130
+> el0t_64_sync_handler+0xa4/0x130
+> el0t_64_sync+0x1a0/0x1a4
+>
+> According to the original commit log, this warning is for operational validity
+> checks to generic_copy_file_range(). The reading will eventually return as
+> not supported as printed above. But is this warning still necessary? If so we
+> might want to remove it to have a cleaner dmesg.
+>
 
-Simple probe/remove functions currently support gates only. Add
-PLLs, fixed clocks, fixed factors and muxes to support most
-clock controllers. struct mtk_clk_desc now takes descriptions
-for all of these clocks, and only the ones set will be registered.
-Most clock controllers will only use a subset of the types
-supported.
+Sigh! Those filesystems have no business doing copy_file_range()
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
----
-Dependencies:
-- clk: mediatek: Move to struct clk_hw provider APIs (series)
-  https://patchwork.kernel.org/project/linux-mediatek/cover/20220510104804.544597-1-wenst@chromium.org/ 
-- Cleanup MediaTek clk reset drivers and support MT8192/MT8195 (series)
-  https://patchwork.kernel.org/project/linux-mediatek/cover/20220503093856.22250-1-rex-bc.chen@mediatek.com/
-- Export required symbols to compile clk drivers as module (single patch)
-  https://patchwork.kernel.org/project/linux-mediatek/patch/20220518111652.223727-7-angelogioacchino.delregno@collabora.com/
+Here is a patch that Luis has been trying to push last year
+to fix a problem with copy_file_range() from tracefs:
 
- drivers/clk/mediatek/clk-mtk.c | 88 +++++++++++++++++++++++++++++-----
- drivers/clk/mediatek/clk-mtk.h | 17 ++++++-
- 2 files changed, 92 insertions(+), 13 deletions(-)
+https://lore.kernel.org/linux-fsdevel/20210702090012.28458-1-lhenriques@suse.de/
 
-diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
-index 3382802663f4..df1209d5b6fb 100644
---- a/drivers/clk/mediatek/clk-mtk.c
-+++ b/drivers/clk/mediatek/clk-mtk.c
-@@ -15,8 +15,10 @@
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- 
--#include "clk-mtk.h"
- #include "clk-gate.h"
-+#include "clk-mtk.h"
-+#include "clk-mux.h"
-+#include "clk-pll.h"
- 
- struct clk_hw_onecell_data *mtk_alloc_clk_data(unsigned int clk_num)
- {
-@@ -434,20 +436,55 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
- 	if (!clk_ctrl)
- 		return -ENOMEM;
- 
--	clk_ctrl->clk_data = mtk_alloc_clk_data(mcd->num_clks);
-+	clk_ctrl->clk_data = mtk_alloc_clk_data(mcd->num_plls
-+					      + mcd->num_fixed_clks
-+					      + mcd->num_factors
-+					      + mcd->num_muxes
-+					      + mcd->num_gates);
- 	if (!clk_ctrl->clk_data) {
- 		r = -ENOMEM;
- 		goto free_clk_ctrl;
- 	}
- 
--	r = mtk_clk_register_gates_with_dev(node, mcd->clks, mcd->num_clks,
--					    clk_ctrl->clk_data, &pdev->dev);
--	if (r)
--		goto free_clk_data;
-+	if (mcd->plls) {
-+		r = mtk_clk_register_plls(node, mcd->plls, mcd->num_plls,
-+					  clk_ctrl->clk_data);
-+		if (r)
-+			goto free_clk_data;
-+	}
-+
-+	if (mcd->fixed_clks) {
-+		r = mtk_clk_register_fixed_clks(mcd->fixed_clks, mcd->num_fixed_clks,
-+						clk_ctrl->clk_data);
-+		if (r)
-+			goto unregister_plls;
-+	}
-+
-+	if (mcd->factors) {
-+		r = mtk_clk_register_factors(mcd->factors, mcd->num_factors,
-+					     clk_ctrl->clk_data);
-+		if (r)
-+			goto unregister_fixed_clks;
-+	}
-+
-+	if (mcd->muxes) {
-+		spin_lock_init(&clk_ctrl->mux_lock);
-+		r = mtk_clk_register_muxes(mcd->muxes, mcd->num_muxes, node,
-+					   &clk_ctrl->mux_lock, clk_ctrl->clk_data);
-+		if (r)
-+			goto unregister_factors;
-+	}
-+
-+	if (mcd->gates) {
-+		r = mtk_clk_register_gates_with_dev(node, mcd->gates, mcd->num_gates,
-+						    clk_ctrl->clk_data, &pdev->dev);
-+		if (r)
-+			goto unregister_muxes;
-+	}
- 
- 	r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_ctrl->clk_data);
- 	if (r)
--		goto unregister_clks;
-+		goto unregister_gates;
- 
- 	platform_set_drvdata(pdev, clk_ctrl);
- 
-@@ -457,14 +494,30 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
- 							       mcd->rst_desc);
- 		if (IS_ERR(clk_ctrl->rst_data)) {
- 			r = PTR_ERR(clk_ctrl->rst_data);
--			goto unregister_clks;
-+			goto unregister_clk_provider;
- 		}
- 	}
- 
- 	return r;
- 
--unregister_clks:
--	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_ctrl->clk_data);
-+unregister_clk_provider:
-+	of_clk_del_provider(node);
-+unregister_gates:
-+	if (mcd->gates)
-+		mtk_clk_unregister_gates(mcd->gates, mcd->num_gates, clk_ctrl->clk_data);
-+unregister_muxes:
-+	if (mcd->muxes)
-+		mtk_clk_unregister_muxes(mcd->muxes, mcd->num_muxes, clk_ctrl->clk_data);
-+unregister_factors:
-+	if (mcd->factors)
-+		mtk_clk_unregister_factors(mcd->factors, mcd->num_factors, clk_ctrl->clk_data);
-+unregister_fixed_clks:
-+	if (mcd->fixed_clks)
-+		mtk_clk_unregister_fixed_clks(mcd->fixed_clks, mcd->num_fixed_clks,
-+					      clk_ctrl->clk_data);
-+unregister_plls:
-+	if (mcd->plls)
-+		mtk_clk_unregister_plls(mcd->plls, mcd->num_plls, clk_ctrl->clk_data);
- free_clk_data:
- 	mtk_free_clk_data(clk_ctrl->clk_data);
- free_clk_ctrl:
-@@ -480,9 +533,22 @@ int mtk_clk_simple_remove(struct platform_device *pdev)
- 	struct device_node *node = pdev->dev.of_node;
- 
- 	of_clk_del_provider(node);
-+
- 	if (clk_ctrl->rst_data)
- 		mtk_unregister_reset_controller(clk_ctrl->rst_data);
--	mtk_clk_unregister_gates(mcd->clks, mcd->num_clks, clk_ctrl->clk_data);
-+
-+	if (mcd->gates)
-+		mtk_clk_unregister_gates(mcd->gates, mcd->num_gates, clk_ctrl->clk_data);
-+	if (mcd->muxes)
-+		mtk_clk_unregister_muxes(mcd->muxes, mcd->num_muxes, clk_ctrl->clk_data);
-+	if (mcd->factors)
-+		mtk_clk_unregister_factors(mcd->factors, mcd->num_factors, clk_ctrl->clk_data);
-+	if (mcd->fixed_clks)
-+		mtk_clk_unregister_fixed_clks(mcd->fixed_clks, mcd->num_fixed_clks,
-+					      clk_ctrl->clk_data);
-+	if (mcd->plls)
-+		mtk_clk_unregister_plls(mcd->plls, mcd->num_plls, clk_ctrl->clk_data);
-+
- 	mtk_free_clk_data(clk_ctrl->clk_data);
- 	kfree(clk_ctrl);
- 
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index fa092bca97c8..23bce98bca20 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -13,6 +13,9 @@
- #include <linux/spinlock.h>
- #include <linux/types.h>
- 
-+#include "clk-gate.h"
-+#include "clk-mux.h"
-+#include "clk-pll.h"
- #include "reset.h"
- 
- #define MAX_MUX_GATE_BIT	31
-@@ -191,12 +194,22 @@ struct clk_hw *mtk_clk_register_ref2usb_tx(const char *name,
- 
- struct mtk_simple_clk_controller {
- 	struct clk_hw_onecell_data *clk_data;
-+	spinlock_t mux_lock;
- 	struct mtk_clk_rst_data *rst_data;
- };
- 
- struct mtk_clk_desc {
--	const struct mtk_gate *clks;
--	size_t num_clks;
-+	const struct mtk_pll_data *plls;
-+	size_t num_plls;
-+	const struct mtk_fixed_clk *fixed_clks;
-+	size_t num_fixed_clks;
-+	const struct mtk_fixed_factor *factors;
-+	size_t num_factors;
-+	const struct mtk_mux *muxes;
-+	size_t num_muxes;
-+	const struct mtk_gate *gates;
-+	size_t num_gates;
-+
- 	const struct mtk_clk_rst_desc *rst_desc;
- };
- 
--- 
-2.36.1
+Luis gave up on it, because no maintainer stepped up to take
+the patch, but I think that is the right way to go.
 
+Maybe this bug report can raise awareness to that old patch.
+
+Al, could you have a look?
+
+Thanks,
+Amir.
