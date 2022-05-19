@@ -2,89 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F15B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 523EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244833AbiESUtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 16:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
+        id S244837AbiESUuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 16:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244785AbiESUtg (ORCPT
+        with ESMTP id S235804AbiESUt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 16:49:36 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9B38720B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:49:33 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id o80so11094117ybg.1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:49:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DpIUn7t2KpByY+C3exdjmM1g7bDyPkhbaj3F539P5Ug=;
-        b=be4+zMYgHWBD0Fm8gVi2/TF2wY6TpO20KB8n9nn225sOFXquQQ+GoLMQiUSJNsfP6i
-         gmJAonvgLrXHYk9VmEPiweCwS65SJMfIVO5JYuA8w9vKBFLNDlShjOZi+KCXwiynlmG9
-         S8DHJbSI4WMsxIROerIXKHNZkJoZ+WizMBwk6nnEs8nr4zB4sDOemcxFX5uHEjs3hytF
-         Jsxmn+qmKyyz1q+0LMNv6buvXZQ7SrCN29zqwfhIR1UAk2ssVXStQdAqbfDL++oyR1p7
-         HQuUylF8EV12p+x5M82glvEBSmbBj26M0qPJoTrlBWv2hVuehOplhtgYQHtqTGZIsRr8
-         zW6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DpIUn7t2KpByY+C3exdjmM1g7bDyPkhbaj3F539P5Ug=;
-        b=MPJW3jggPR2UsGtylWxxlwOE0kKrfOUsIcq8thu/l3/MlTzYCbPu4GzvTgOBTAZ1Su
-         NIeHDNCRmOiPuO48S02UkvZLz4ACBUXsxnhn8r75D4iz7ARyEN/d/Yayax05u0WhPZaq
-         KF7z6tx0PlvbA5pV/CXh7iJlf1gu4Q0n1NtTAIdRiK1n8mc8GV+nJcc3w7W4sLH5PcNU
-         M+IHyEkEiKmz8kJ5vwLwGoFgHPA9kOHV+8Ky2V0K2aoIBs1c1/FFU2ZVXDwOg8cW7I2s
-         D3HgkA4+4+EM98HpuWPPBk9xq57AGREo2PeJxHAMhlU0Lhq6808W2PjLnhwXBiSmL4tf
-         6ruw==
-X-Gm-Message-State: AOAM533JSAVJ9ut8GrbYPXIgnd3YA5cLNpfgoVHGpjWOFyye2HwYArbG
-        hgrm3bqFV36U2nc8q0cNdHVgCqqNOgS7lHlhhlUm9wrNlXA=
-X-Google-Smtp-Source: ABdhPJzPxhkV/Rn/SuoG3prTwHYeGQr3LSPIIJaKxjOHyoF0SbdUm2tlYi6vaiBt8JFzR0b45ZPy7nHSil3uJWZmlz8=
-X-Received: by 2002:a05:6902:526:b0:64d:b6ab:f91d with SMTP id
- y6-20020a056902052600b0064db6abf91dmr6490609ybs.295.1652993373117; Thu, 19
- May 2022 13:49:33 -0700 (PDT)
+        Thu, 19 May 2022 16:49:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 153FE9AE51
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652993394;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PdxtfUaqt+ckQV5UNvImiFwAdFM46p7Vdz5WK1RinCQ=;
+        b=FlvLQD5JW8ce6g/kN5xKxUpF2PZ56qNMofEncieR9H40awhXlvjm+jeybgVlbGxzqbSCq3
+        q5oagP7BTshr79apyMrpLn/4ZSG22iQtj+5RjlucFaJTO6C0Nae3ExI9nBEPA6mh5XF1Ns
+        61Zs/LtqDEhKeyR2C77Uvp0jp7B2Vwk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-531-bag73ySPPNu3X3oQiiNn6g-1; Thu, 19 May 2022 16:49:52 -0400
+X-MC-Unique: bag73ySPPNu3X3oQiiNn6g-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1A609185A79C;
+        Thu, 19 May 2022 20:49:52 +0000 (UTC)
+Received: from dqiao.bos.com (unknown [10.22.35.162])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B349D1121314;
+        Thu, 19 May 2022 20:49:51 +0000 (UTC)
+From:   Donghai Qiao <dqiao@redhat.com>
+To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
+        peterz@infradead.org, heying24@huawei.com,
+        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
+        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
+Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
+        Donghai Qiao <dqiao@redhat.com>
+Subject: [PATCH v4 04/11] smp: replace smp_call_function_single() with  smp_call()
+Date:   Thu, 19 May 2022 16:49:36 -0400
+Message-Id: <20220519204943.1079578-5-dqiao@redhat.com>
+In-Reply-To: <20220519204943.1079578-1-dqiao@redhat.com>
+References: <20220519204943.1079578-1-dqiao@redhat.com>
+Reply-To: dqiao@redhat.com
 MIME-Version: 1.0
-References: <cover.1651647576.git.hakan.jansson@infineon.com>
- <64b59ca66cc22e6433a044e7bba2b3e97c810dc2.1651647576.git.hakan.jansson@infineon.com>
- <CACRpkdY3xPcyNcJfdGbSP5rdcUV6hr87yJNDVDGZdRCfN+MqLA@mail.gmail.com>
- <1e8cfbc6-8452-0e87-9713-536d235e5b51@infineon.com> <CACRpkda4ByrS8RGAunno_S59+Y2yado4eObzwsVkM2Q=n-B+CQ@mail.gmail.com>
- <d35fff90-ded7-2b1a-0e1a-f2db14cc4d07@infineon.com> <0dffeb79-3182-fab1-e25a-aab4107beb6e@infineon.com>
-In-Reply-To: <0dffeb79-3182-fab1-e25a-aab4107beb6e@infineon.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 19 May 2022 22:49:21 +0200
-Message-ID: <CACRpkdaea+35bn-fa0JcfYvi+SMvHUxzmWJHeCHwV82+eodCGw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: net: broadcom-bluetooth: Add property
- for autobaud mode
-To:     Hakan Jansson <hakan.jansson@infineon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 4:04 PM Hakan Jansson
-<hakan.jansson@infineon.com> wrote:
+Eliminated the percpu global csd_data and temporarily hooked up
+smp_call_function_single() to smp_call().
 
-> I checked the state of this patch on Devicetree Bindings Patchwork and
-> it's marked "Changes Requested". I'd be happy to revise the patch but
-> it's not clear to me what changes are requested. Could you please help
-> guide me how to proceed?
+Signed-off-by: Donghai Qiao <dqiao@redhat.com>
+---
+v1 -> v2: Removed 'x' from the function names and change XCALL to
+          SMP_CALL from the new macros
 
-Sorry if it's not clear but I'm essentially requesting that the document
-describe how autobaud mode actually works. The binding documentation
-must help DT authors to know what they should do with this property.
+ kernel/smp.c | 74 ++++++++++++++++++----------------------------------
+ 1 file changed, 25 insertions(+), 49 deletions(-)
 
-Yours,
-Linus Walleij
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 101a48d1d8af..8fdea9547502 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -414,8 +414,6 @@ static __always_inline void csd_unlock(struct __call_single_data *csd)
+ 	smp_store_release(&csd->node.u_flags, 0);
+ }
+ 
+-static DEFINE_PER_CPU_SHARED_ALIGNED(call_single_data_t, csd_data);
+-
+ void __smp_call_single_queue(int cpu, struct llist_node *node)
+ {
+ #ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
+@@ -649,6 +647,9 @@ void flush_smp_call_function_from_idle(void)
+ }
+ 
+ /*
++ * This is a temporarily hook up. This function will be eliminated
++ * with a later patch in this series.
++ *
+  * smp_call_function_single - Run a function on a specific CPU
+  * @func: The function to run. This must be fast and non-blocking.
+  * @info: An arbitrary pointer to pass to the function.
+@@ -657,59 +658,21 @@ void flush_smp_call_function_from_idle(void)
+  * Returns 0 on success, else a negative status code.
+  */
+ int smp_call_function_single(int cpu, smp_call_func_t func, void *info,
+-			     int wait)
++			int wait)
+ {
+-	call_single_data_t *csd;
+-	call_single_data_t csd_stack = {
+-		.node = { .u_flags = CSD_FLAG_LOCK | CSD_TYPE_SYNC, },
+-	};
+-	int this_cpu;
+-	int err;
+-
+-	/*
+-	 * prevent preemption and reschedule on another processor,
+-	 * as well as CPU removal
+-	 */
+-	this_cpu = get_cpu();
+-
+-	/*
+-	 * Can deadlock when called with interrupts disabled.
+-	 * We allow cpu's that are not yet online though, as no one else can
+-	 * send smp call function interrupt to this cpu and as such deadlocks
+-	 * can't happen.
+-	 */
+-	WARN_ON_ONCE(cpu_online(this_cpu) && irqs_disabled()
+-		     && !oops_in_progress);
++	unsigned int flags = 0;
+ 
+-	/*
+-	 * When @wait we can deadlock when we interrupt between llist_add() and
+-	 * arch_send_call_function_ipi*(); when !@wait we can deadlock due to
+-	 * csd_lock() on because the interrupt context uses the same csd
+-	 * storage.
+-	 */
+-	WARN_ON_ONCE(!in_task());
+-
+-	csd = &csd_stack;
+-	if (!wait) {
+-		csd = this_cpu_ptr(&csd_data);
+-		csd_lock(csd);
+-	}
+-
+-	csd->func = func;
+-	csd->info = info;
+-#ifdef CONFIG_CSD_LOCK_WAIT_DEBUG
+-	csd->node.src = smp_processor_id();
+-	csd->node.dst = cpu;
+-#endif
+-
+-	err = generic_exec_single(cpu, csd);
++	if ((unsigned int)cpu >= nr_cpu_ids || !cpu_online(cpu))
++		return -ENXIO;
+ 
+ 	if (wait)
+-		csd_lock_wait(csd);
++		flags = SMP_CALL_TYPE_SYNC;
++	else
++		flags = SMP_CALL_TYPE_ASYNC;
+ 
+-	put_cpu();
++	smp_call(cpu, func, info, flags);
+ 
+-	return err;
++	return 0;
+ }
+ EXPORT_SYMBOL(smp_call_function_single);
+ 
+@@ -1175,6 +1138,19 @@ void __smp_call_mask_cond(const struct cpumask *mask,
+ 		smp_cond_func_t cond_func, bool local_cpu,
+ 		unsigned int flags)
+ {
++	bool wait = false;
++
++	if (flags == SMP_CALL_TYPE_SYNC)
++		wait = true;
++
++	preempt_disable();
++
++	/*
++	 * This is temporarily hook. The function smp_call_function_many_cond()
++	 * will be inlined here with a later patch in this series.
++	 */
++	smp_call_function_many_cond(mask, func, info, local_cpu, wait, cond_func);
++	preempt_enable();
+ }
+ 
+ /*
+-- 
+2.27.0
+
