@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A31F2C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3408C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242836AbiESRZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
+        id S242856AbiESR0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242607AbiESRY7 (ORCPT
+        with ESMTP id S242623AbiESRZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:24:59 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7038CA30A5;
-        Thu, 19 May 2022 10:24:58 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id bh5so5376893plb.6;
-        Thu, 19 May 2022 10:24:58 -0700 (PDT)
+        Thu, 19 May 2022 13:25:05 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27049A3093;
+        Thu, 19 May 2022 10:25:03 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id i24so5706065pfa.7;
+        Thu, 19 May 2022 10:25:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=e3OxyC3/DI33JXHwVUL35gvyfpdRWxFslUVcm3O0EXs=;
-        b=gIY+kSSVUC4Mo1TlPJ2EpffwqI+g7vs9uSicukEY6JHyWUdCZrcpOcFeFlHxlp/9CT
-         O1dorvDVkiR3qdq+ZTIE0axAWgk3elhD5DnL1fdP7mQY05KF77ubjlrR2z0JouMqOw3k
-         9S6Nkgstt4va5hpQ6rjkaxN6uefqKHXkHRyojR3uPmSoNz0OfO5j1bijGobBv1C7oKsR
-         Bm7KgWf+cPb03mm6lQjxWHjabmxEyEwgdqmpCjPLIZgBP9NUbGqzjqdIcxVFiFlQC4xS
-         QbKoK4pHfgoYpe/GsRl4Dwo5zwxyYmnxp1i63apv1e8r/U5Q4tblR+7VvBQij8KQhGIO
-         xnVQ==
+        bh=sYyJmhJ1UJuNTKSNkznuVgdOa0YLmomkOmOhYpxJCFI=;
+        b=B1Heee3hxpN0aBQABPk0xvOT+jNBu4aa7AW9HK6xt/c87pzEb/DTZi7S+zuAx7PfOi
+         Ugk+cjgRwVIq0AfPCPScAmiJDJinvCqHIbGwupmjTb3JM3sMnmnbqB79XrgM5gwDVatp
+         DltHbvP8sTARpXH5IhZ3fAthfr4j1lR5OO2INzRNnl9acSGvlZhHf2euPwAZVBTSJ8si
+         CZbQIn3QSEfbI5qbXSHNv2G4GXSdwjhtMOznL6S5rKQFb+CMk73ITxWA1Gez162dP7UI
+         oi9ial8S6TM8MW23ND5h0h8wcA+lsIW4YDX+5lQMe8sJ+MsFwpTlpFAx+9j2yenqSqi4
+         xHPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=e3OxyC3/DI33JXHwVUL35gvyfpdRWxFslUVcm3O0EXs=;
-        b=S5JbkDsMCc+7Wf1Py1DXxgvyCMCFZcRJDrwDhqiR6xB6jtZ62nK524yCLqjFgOb2+4
-         olUiVw8qAD7U/qLxDBo7oyuw8U2P5f0F0uAZoJGdL48s+v/imXheDAmUfdzME6UvsAut
-         MuhqR+sgxFzRQ21AeFpup1vVGM5KyExGCmgd209n/JN/meO3usWYJaoL3K5ERMzvLa+y
-         j5DD1muj9tMXOl6VUzBMsakaQylVKwptyC8PHlCLlgnPSKNIS4g1iFDsOAMwIzjZoX71
-         o8pfDqwZnj4NF44rmtNB82QD+wdKgYIktNUb2ZlejHOSYWUTGZgZmpNn/p7/rbz7bOlH
-         E2jQ==
-X-Gm-Message-State: AOAM530QC8ZT8pAypUvVucPDFiNGVu9SLBpu2q5JEocbaB73OJpYmAuc
-        i61vMIfmIaIb5ozsK2Z3yBkMpmiCrtCt
-X-Google-Smtp-Source: ABdhPJysdaEJkG8ndxjZfsUp39aQC6MnGASv6eEov7HDfqLiNgQj3nda4/tl6+uPmbOCpJn3pJB3Jg==
-X-Received: by 2002:a17:90b:1d87:b0:1dc:a9c0:3d49 with SMTP id pf7-20020a17090b1d8700b001dca9c03d49mr6875780pjb.12.1652981097648;
-        Thu, 19 May 2022 10:24:57 -0700 (PDT)
+        bh=sYyJmhJ1UJuNTKSNkznuVgdOa0YLmomkOmOhYpxJCFI=;
+        b=HHBc+sXsT0fHkYnrEEY3HGC35DqmQ0Mk3iwDPmrZGaQLvAbkYpgC1WolbKR0U86ZZ5
+         HFhrFTJBJKPx4b1SLgXEdrtq6j9oNLbaW4y7Io4aiBJQuSFyu6wI4Q6GC5Au3OsagDeQ
+         t4KficODlqEQV8HFox/VQJEfryuh0N/V332UxYx/jIjIxa+eUBH90I9RfMv6xQv/O1nF
+         5wNRq3b6gPaqJsXHgXjp/ChgyzNIvhflpgHOLqbuXOKQmhgkW44Zj6vvk4i+8M7vsYnI
+         wiC3cDME+A4gY2q6opet644fAy1FeYv97GkfYPb5VGGtiz7Qerq9nDe/NN4BlHtsKVzG
+         HJsQ==
+X-Gm-Message-State: AOAM531aeALEZCBhiEVhH2z+HPphW74l9IlGs565S3AbMK1vBjo8isti
+        SQZCbeG4FRcHVCtiNou3uov+zqngLk54
+X-Google-Smtp-Source: ABdhPJzZY5YP8RElcJziKMe2Pb+9bzOWxPxFDsokqdhQLlpUQtMJ7p36gRVAP/eKYVsQomShn6d3Ew==
+X-Received: by 2002:a63:2c15:0:b0:3f6:6a5f:8f0a with SMTP id s21-20020a632c15000000b003f66a5f8f0amr495864pgs.76.1652981102152;
+        Thu, 19 May 2022 10:25:02 -0700 (PDT)
 Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.24.55
+        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:24:56 -0700 (PDT)
+        Thu, 19 May 2022 10:25:01 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
         pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
         andriy.shevchenko@linux.intel.com, willy@infradead.org
-Subject: [PATCH v2 10/28] vsprintf: pr_u64_minwidth(), pr_u64()
-Date:   Thu, 19 May 2022 13:24:03 -0400
-Message-Id: <20220519172421.162394-11-kent.overstreet@gmail.com>
+Subject: [PATCH v2 12/28] test_printf: Drop requirement that sprintf not write past nul
+Date:   Thu, 19 May 2022 13:24:05 -0400
+Message-Id: <20220519172421.162394-13-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
 References: <20220519172421.162394-1-kent.overstreet@gmail.com>
@@ -65,172 +65,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds two new-style printbuf helpers for printing simple u64s, and
-converts num_to_str() to be a simple wrapper around pr_u64_minwidth().
+The current test code checks that sprintf never writes past the
+terminating nul. This is a rather strange requirement, completely
+separate from writing past the end of the buffer, which of course we
+can't do: writing anywhere to the buffer passed to snprintf, within size
+of course, should be perfectly fine.
+
+Since this check has no documentation as to where it comes from or what
+depends on it, and it's getting in the way of further refactoring
+(printf_spec handling is right now scattered massively throughout the
+code, and we'd like to consolidate it) - delete it.
+
+Also, many current pretty-printers building up their output on the
+stack, and then copy it to the actual output buffer - by eliminating
+this requirement we can kill those extra buffers.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- lib/vsprintf.c | 100 ++++++++++++++++++++++++-------------------------
- 1 file changed, 48 insertions(+), 52 deletions(-)
+ lib/test_printf.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index d1372c0b37..3f5638d27a 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -363,41 +363,51 @@ char *put_dec(char *buf, unsigned long long n)
- 
- #endif
- 
--/*
-- * Convert passed number to decimal string.
-- * Returns the length of string.  On buffer overflow, returns 0.
-- *
-- * If speed is not important, use snprintf(). It's easy to read the code.
-+/**
-+ * pr_u64_minwidth - print a u64, in decimal, with zero padding
-+ * @out: printbuf to output to
-+ * @num: u64 to print
-+ * @width: minimum width
-  */
--int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
-+void pr_u64_minwidth(struct printbuf *out, u64 num, unsigned width)
- {
- 	/* put_dec requires 2-byte alignment of the buffer. */
- 	char tmp[sizeof(num) * 3] __aligned(2);
--	int idx, len;
-+	unsigned len = put_dec(tmp, num) - tmp;
- 
--	/* put_dec() may work incorrectly for num = 0 (generate "", not "0") */
--	if (num <= 9) {
--		tmp[0] = '0' + num;
--		len = 1;
--	} else {
--		len = put_dec(tmp, num) - tmp;
--	}
-+	printbuf_make_room(out, max(len, width));
- 
--	if (len > size || width > size)
--		return 0;
-+	if (width > len)
-+		__pr_chars_reserved(out, '0', width - len);
- 
--	if (width > len) {
--		width = width - len;
--		for (idx = 0; idx < width; idx++)
--			buf[idx] = ' ';
--	} else {
--		width = 0;
--	}
-+	while (len)
-+		__pr_char_reserved(out, tmp[--len]);
-+	printbuf_nul_terminate(out);
-+}
- 
--	for (idx = 0; idx < len; ++idx)
--		buf[idx + width] = tmp[len - idx - 1];
-+/**
-+ * pr_u64 - print a simple u64, in decimal
-+ * @out: printbuf to output to
-+ * @num: u64 to print
-+ */
-+void pr_u64(struct printbuf *out, u64 num)
-+{
-+	pr_u64_minwidth(out, num, 0);
-+}
- 
--	return len + width;
-+/*
-+ * Convert passed number to decimal string.
-+ * Returns the length of string.  On buffer overflow, returns 0.
-+ *
-+ * Consider switching to printbufs and using pr_u64() or pr_u64_minwith()
-+ * instead.
-+ */
-+int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
-+{
-+	struct printbuf out = PRINTBUF_EXTERN(buf, size);
-+
-+	pr_u64_minwidth(&out, num, width);
-+	return out.pos;
- }
- 
- #define SIGN	1		/* unsigned/signed, must be 1 */
-@@ -996,20 +1006,6 @@ static const struct printf_spec default_dec_spec = {
- 	.precision = -1,
- };
- 
--static const struct printf_spec default_dec02_spec = {
--	.base = 10,
--	.field_width = 2,
--	.precision = -1,
--	.flags = ZEROPAD,
--};
--
--static const struct printf_spec default_dec04_spec = {
--	.base = 10,
--	.field_width = 4,
--	.precision = -1,
--	.flags = ZEROPAD,
--};
--
- static noinline_for_stack
- void resource_string(struct printbuf *out, struct resource *res,
- 		     struct printf_spec spec, const char *fmt)
-@@ -1208,12 +1204,12 @@ void bitmap_list_string(struct printbuf *out, unsigned long *bitmap,
- 			__pr_char(out, ',');
- 		first = false;
- 
--		number(out, rbot, default_dec_spec);
-+		pr_u64(out, rbot);
- 		if (rtop == rbot + 1)
- 			continue;
- 
--		__pr_char(out, '-');
--		number(out, rtop - 1, default_dec_spec);
-+		pr_char(out, '-');
-+		pr_u64(out, rtop - 1);
+diff --git a/lib/test_printf.c b/lib/test_printf.c
+index 1e1604ef1a..0804ab788d 100644
+--- a/lib/test_printf.c
++++ b/lib/test_printf.c
+@@ -78,12 +78,6 @@ do_test(int bufsize, const char *expect, int elen,
+ 		return 1;
  	}
- }
  
-@@ -1762,21 +1758,21 @@ void date_str(struct printbuf *out,
- 	int year = tm->tm_year + (r ? 0 : 1900);
- 	int mon = tm->tm_mon + (r ? 0 : 1);
- 
--	number(out, year, default_dec04_spec);
--	__pr_char(out, '-');
--	number(out, mon, default_dec02_spec);
--	__pr_char(out, '-');
--	number(out, tm->tm_mday, default_dec02_spec);
-+	pr_u64_minwidth(out, year, 4);
-+	pr_char(out, '-');
-+	pr_u64_minwidth(out, mon, 2);
-+	pr_char(out, '-');
-+	pr_u64_minwidth(out, tm->tm_mday, 2);
- }
- 
- static noinline_for_stack
- void time_str(struct printbuf *out, const struct rtc_time *tm, bool r)
- {
--	number(out, tm->tm_hour, default_dec02_spec);
-+	pr_u64_minwidth(out, tm->tm_hour, 2);
- 	__pr_char(out, ':');
--	number(out, tm->tm_min, default_dec02_spec);
-+	pr_u64_minwidth(out, tm->tm_min, 2);
- 	__pr_char(out, ':');
--	number(out, tm->tm_sec, default_dec02_spec);
-+	pr_u64_minwidth(out, tm->tm_sec, 2);
- }
- 
- static noinline_for_stack
-@@ -2054,7 +2050,7 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 			str_spec.precision = precision;
- 			break;
- 		case 'p':	/* phandle */
--			number(out, (unsigned int)dn->phandle, default_dec_spec);
-+			pr_u64(out, (unsigned int)dn->phandle);
- 			break;
- 		case 'P':	/* path-spec */
- 			p = fwnode_get_name(of_fwnode_handle(dn));
+-	if (memchr_inv(test_buffer + written + 1, FILL_CHAR, BUF_SIZE + PAD_SIZE - (written + 1))) {
+-		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote beyond the nul-terminator\n",
+-			bufsize, fmt);
+-		return 1;
+-	}
+-
+ 	if (memcmp(test_buffer, expect, written)) {
+ 		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote '%s', expected '%.*s'\n",
+ 			bufsize, fmt, test_buffer, written, expect);
 -- 
 2.36.0
 
