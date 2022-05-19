@@ -2,117 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1260FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1044C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232838AbiESCSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 22:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        id S232856AbiESCTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 22:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiESCSk (ORCPT
+        with ESMTP id S230457AbiESCTU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 22:18:40 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DACC03BA;
-        Wed, 18 May 2022 19:18:39 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so7424166pjb.2;
-        Wed, 18 May 2022 19:18:39 -0700 (PDT)
+        Wed, 18 May 2022 22:19:20 -0400
+X-Greylist: delayed 124 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 19:19:19 PDT
+Received: from alexa-out-tai-02.qualcomm.com (alexa-out-tai-02.qualcomm.com [103.229.16.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAB5C3D1B;
+        Wed, 18 May 2022 19:19:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KeX8w/tHzQMRh97u9HLg+afFKVHsNgRdUyS/TL/tFmA=;
-        b=KVBvFQ9YS19mLDlSZBGgTG8QmY88NWqRL+Zdt+9e++VxhDUOavYgmvT5U6xOaRaj5e
-         c/HGDwqd2zxj8bkYiZ036YdHVShZZgTfyNIovn927R00DucYUHUufFEW0Ca+HRsCOj7E
-         /p4NhbInAdFA8OyuuBTr9bnV/NDhRExU3dgO7ISPkdk9I+LO2GdkhvtqOGC7EJ7n4eYE
-         7ratehvr7WapPNnIGwiLazuKv27m+Nm8WBD1pUqQmDA3566KD3eEglonI+5znVlcMkCM
-         NnrLCChO0yokU1Cii1hQxB8jb2mdNLMKUR4Kk5vISlXutokQWD9ayvJU/oaKZuAN0mmm
-         8Ong==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KeX8w/tHzQMRh97u9HLg+afFKVHsNgRdUyS/TL/tFmA=;
-        b=6V8PbRnBxxKL+DR0BRaNNnWb9RdbvyfuXhn7Tmkb9Pgf0E+PC39FW+PweJ/kMyU5Rh
-         CGX7gt2TkjZhIaAJSu0sZ4jhP4kEg5fYdOm70nEcos0xVCB+4232Ryxnp8JS4SnUBTOS
-         XlxbMej8dy9/dhsux527uFVPv1ofmimL8aFhB/oDiN2NaxH3xmjKDVXamSw2ktmOaY4E
-         cr3UaOj23DXY3CAmTCV3IJO1AiblbCLabKb3fSKMQ6Km89XnbURc5o3NazJklRI8w7d/
-         4PTF1y73OvcgRb0T7lSDsUnQA479Jbk3DBWoHNaHd9tvMYZ9uoc33m2qNoLxbqfET5LH
-         d/JQ==
-X-Gm-Message-State: AOAM530VF4GEHjRvRlJN5EriooViUeVE5kJdq0I6N90dEScAeKTufmqw
-        bRV6PZZHGIJRFu4w5uEvUoo=
-X-Google-Smtp-Source: ABdhPJza5NJsX50MgITiY21AXbqRp+aNg3kqzni2ni98Vxr5gRd5WexpY9rrSjpDP9Q2v6nVea/xDw==
-X-Received: by 2002:a17:902:dad1:b0:161:9abb:fb75 with SMTP id q17-20020a170902dad100b001619abbfb75mr2469103plx.135.1652926719221;
-        Wed, 18 May 2022 19:18:39 -0700 (PDT)
-Received: from localhost.localdomain ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id 63-20020a621842000000b00512d13016d0sm2548596pfy.159.2022.05.18.19.18.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 19:18:38 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     mchehab@kernel.org, senozhatsky@chromium.org,
-        cai.huoqing@linux.dev, hverkuil-cisco@xs4all.nl,
-        sw0312.kim@samsung.com, satendra.t@samsung.com,
-        jh1009.sung@samsung.com, nenggun.kim@samsung.com
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH v2] media: dvb_vb2: fix possible out of bound access
-Date:   Thu, 19 May 2022 10:17:43 +0800
-Message-Id: <20220519021743.8295-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652926760; x=1684462760;
+  h=from:to:cc:subject:date:message-id;
+  bh=1K5Kj0q4VA0uHycgXAZpiHxXiJ3BZne5cwNBKL+zDRg=;
+  b=j0Rr3aWVOKzf8sfCk8/nd/ZmaZTfVpOgfE0FGQQW/1a45NOd4sWpdN3S
+   VvgP/Q8FkMWVTdokTFpZGtHPJ47RpS9W2T0l1GxBbfoGw7j7U5rHScL+M
+   52FYo9xnBLpslLGGFZ9pTEzz7DwyhAsxkeoYk48bIZTGPC0eMeNBzf5pj
+   s=;
+Received: from ironmsg02-tai.qualcomm.com ([10.249.140.7])
+  by alexa-out-tai-02.qualcomm.com with ESMTP; 19 May 2022 10:17:13 +0800
+X-QCInternal: smtphost
+Received: from cbsp-sh-gv.ap.qualcomm.com (HELO cbsp-sh-gv.qualcomm.com) ([10.231.249.68])
+  by ironmsg02-tai.qualcomm.com with ESMTP; 19 May 2022 10:17:09 +0800
+Received: by cbsp-sh-gv.qualcomm.com (Postfix, from userid 3922021)
+        id C3CD44A36; Thu, 19 May 2022 10:17:07 +0800 (CST)
+From:   Tao Wang <quic_wat@quicinc.com>
+To:     Mathias Nyman <mathias.nyman@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org (open list:USB XHCI DRIVER),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     quic_wat@quicinc.com
+Subject: [PATCH] usb: xhci: save hcd_priv memory of shared_hcd
+Date:   Thu, 19 May 2022 10:17:01 +0800
+Message-Id: <1652926622-85047-1-git-send-email-quic_wat@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vb2_core_qbuf and vb2_core_querybuf don't check the range of b->index
-controlled by the user.
+The shared_hcd->hcd_priv is not used in xhci, so not
+need to malloc hcd priv memory for shared_hcd.
 
-Fix this by adding range checking code before using them.
-
-Fixes: 57868acc369a ("media: videobuf2: Add new uAPI for DVB streaming I/O")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Signed-off-by: Tao Wang <quic_wat@quicinc.com>
 ---
+ drivers/usb/host/xhci-plat.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-v2: 
-1. fix inappropriate use of dprintk.
-2. add "fixes" tag
-
- drivers/media/dvb-core/dvb_vb2.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/drivers/media/dvb-core/dvb_vb2.c b/drivers/media/dvb-core/dvb_vb2.c
-index a1bd6d9c9223..909df82fed33 100644
---- a/drivers/media/dvb-core/dvb_vb2.c
-+++ b/drivers/media/dvb-core/dvb_vb2.c
-@@ -354,6 +354,12 @@ int dvb_vb2_reqbufs(struct dvb_vb2_ctx *ctx, struct dmx_requestbuffers *req)
+diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
+index 01dcfd7..a27dd3a 100644
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -336,6 +336,11 @@ static int xhci_plat_probe(struct platform_device *pdev)
+ 	device_set_wakeup_capable(&pdev->dev, true);
  
- int dvb_vb2_querybuf(struct dvb_vb2_ctx *ctx, struct dmx_buffer *b)
- {
-+	struct vb2_queue *q = &ctx->vb_q;
-+
-+	if (b->index >= q->num_buffers) {
-+		dprintk(1, "[%s] buffer index out of range\n", ctx->name);
-+		return -EINVAL;
-+	}
- 	vb2_core_querybuf(&ctx->vb_q, b->index, b);
- 	dprintk(3, "[%s] index=%d\n", ctx->name, b->index);
- 	return 0;
-@@ -378,8 +384,13 @@ int dvb_vb2_expbuf(struct dvb_vb2_ctx *ctx, struct dmx_exportbuffer *exp)
- 
- int dvb_vb2_qbuf(struct dvb_vb2_ctx *ctx, struct dmx_buffer *b)
- {
-+	struct vb2_queue *q = &ctx->vb_q;
- 	int ret;
- 
-+	if (b->index >= q->num_buffers) {
-+		dprintk(1, "[%s] buffer index out of range\n", ctx->name);
-+		return -EINVAL;
-+	}
- 	ret = vb2_core_qbuf(&ctx->vb_q, b->index, b, NULL);
- 	if (ret) {
- 		dprintk(1, "[%s] index=%d errno=%d\n", ctx->name,
+ 	xhci->main_hcd = hcd;
++	/*
++	 * The shared_hcd->hcd_priv is not used in xhci,
++	 * so not need to malloc hcd priv memory for shared_hcd.
++	 */
++	driver->hcd_priv_size = 0;
+ 	xhci->shared_hcd = __usb_create_hcd(driver, sysdev, &pdev->dev,
+ 			dev_name(&pdev->dev), hcd);
+ 	if (!xhci->shared_hcd) {
 -- 
-2.25.1
+2.7.4
 
