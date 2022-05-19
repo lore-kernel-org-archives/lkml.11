@@ -2,111 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B76EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD84C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239741AbiESO3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S239761AbiESOab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239727AbiESO3t (ORCPT
+        with ESMTP id S238424AbiESOa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:29:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B7DA8CCE1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:29:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652970587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 19 May 2022 10:30:26 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4707ECC17A;
+        Thu, 19 May 2022 07:30:25 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 0293621BA7;
+        Thu, 19 May 2022 14:30:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652970624; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=skQV/7bpYYCLikiWPou37BZfffdt7LpNOeVYRjZR2lk=;
-        b=Lxzxi2PMwYLFZLEqCLys5KnolOgDSxVmxMiKsM0iMTJmjtY+Kdsi4qX1JVu8omrKwIAIy/
-        D8wJiN80OAcj9lXlYpnkgYpRfn7uZ0qSrasunzRdBYLDgQNTVfsG09OaGFipP8uPq0s1VN
-        7DAKD8gjvIDSX9dxETokbGhrZctZD3c=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-235-ix_0Q5RHOGqm8ZBTQj_rng-1; Thu, 19 May 2022 10:29:46 -0400
-X-MC-Unique: ix_0Q5RHOGqm8ZBTQj_rng-1
-Received: by mail-ed1-f70.google.com with SMTP id s9-20020aa7d789000000b0042ab9d77febso3713887edq.16
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:29:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=skQV/7bpYYCLikiWPou37BZfffdt7LpNOeVYRjZR2lk=;
-        b=wwRCxbe8nquM2pOUK3DcpWe+jFri+633NvytTSVHBdkgzDSF2U/8IZhvgDNHYQuVY6
-         fEX6NMmuPjxhM0LSaYnhdUg2EbGrwAlEqvssf1Ah7gCxP4/0PWwO92PbWP9Qe4rUvmeC
-         mIulFcGlvngi+RjggdEhdOSysHrAtSPWM+PBYL0LjopUtSz+uljSi8cYpTCE2zb/oItP
-         07FwAUw+BNp1kSadShjfKIGrH8olwhX+u6aKoiXe40E5x6LDHRWk+MBq44H24oncx0Ir
-         YkDhIGlyIhegIj2hoownINm0bufkqbccxYR1eWh1c3Jqon4NzxQs0uZx0f8u58o/nB93
-         KD2g==
-X-Gm-Message-State: AOAM531wFYGyNJuVXqvsQMJZok9nXcP/tQ8OoGFOe/krbx4R4nQ2dkd0
-        m8I365K9qOAATusYMPYtMtlsfREjtFTDnGTgc8Q7OfTeCR6n7Uip9jtGX5QOnh6dnGYHRLBabji
-        m0lp/j+Uyy+m6Q5q7sBZAOicl
-X-Received: by 2002:a17:907:6e09:b0:6fe:8b65:357b with SMTP id sd9-20020a1709076e0900b006fe8b65357bmr4556156ejc.492.1652970585072;
-        Thu, 19 May 2022 07:29:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyR6WHxquEyjTqk32bptNw0qJbDMyBekjUeS7a4RWeKtvRRxz2LEG0cbg0e2bJOBOt7i1Z4UQ==
-X-Received: by 2002:a17:907:6e09:b0:6fe:8b65:357b with SMTP id sd9-20020a1709076e0900b006fe8b65357bmr4556142ejc.492.1652970584862;
-        Thu, 19 May 2022 07:29:44 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id b26-20020a170906729a00b006f3ef214e0esm2184208ejl.116.2022.05.19.07.29.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 07:29:44 -0700 (PDT)
-Message-ID: <c49dfdf1-c1e8-a9d2-0f31-f190d7b6631f@redhat.com>
-Date:   Thu, 19 May 2022 16:29:43 +0200
+        bh=ksHZxdVRk14EnrcHsj+kk3njdbVyXCR3+VlQoHpUCbA=;
+        b=y0uKW6stVDJGXAUWRLLTQaHVZr6pwZBBIUmg0uvLEADMiG8nZnrxMTwpccUSWB35ezyPy9
+        VcRk18SF1XxmFLZITJugUxGJvtR/ov3PysBUs6AxGCbgVp7n+oW5vxRbyOpySC9mbJRdH0
+        WihUJ/SmAYhOZ7yCeMYjcgUjBVWdHsw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652970624;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ksHZxdVRk14EnrcHsj+kk3njdbVyXCR3+VlQoHpUCbA=;
+        b=RNFuWmBGUfcbg581uVEUBadzTF95IMlTqovFpmc79oejE4UHpwd3G6X4U8CCw0xfptOexH
+        tJsj8dbjZrNwBUCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 76A9C13456;
+        Thu, 19 May 2022 14:30:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ipb8GX9UhmLBRwAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Thu, 19 May 2022 14:30:23 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id bbdc8505;
+        Thu, 19 May 2022 14:31:01 +0000 (UTC)
+From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
+To:     Amir Goldstein <amir73il@gmail.com>
+Cc:     He Zhe <zhe.he@windriver.com>, Dave Chinner <dchinner@redhat.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Luis Henriques <lhenriques@suse.com>
+Subject: Re: warning for EOPNOTSUPP vfs_copy_file_range
+References: <20f17f64-88cb-4e80-07c1-85cb96c83619@windriver.com>
+        <CAOQ4uxiQTwEh3ry8_8UMFuPPBjwA+pb8RLLuG=93c9hYtDqg8g@mail.gmail.com>
+Date:   Thu, 19 May 2022 15:31:00 +0100
+In-Reply-To: <CAOQ4uxiQTwEh3ry8_8UMFuPPBjwA+pb8RLLuG=93c9hYtDqg8g@mail.gmail.com>
+        (Amir Goldstein's message of "Thu, 19 May 2022 16:53:15 +0300")
+Message-ID: <87czg94msb.fsf@brahms.olymp>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v7 1/1] x86/PCI: Ignore E820 reservations for bridge
- windows on newer systems
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220519141450.GA19225@bhelgaas>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220519141450.GA19225@bhelgaas>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Amir Goldstein <amir73il@gmail.com> writes:
 
-On 5/19/22 16:14, Bjorn Helgaas wrote:
-> On Thu, May 19, 2022 at 04:01:48PM +0200, Hans de Goede wrote:
-> 
->> Ok, I'll go and prepare a v9 and I will submit that later today.
-> 
-> Would it be practical to split into three patches?
-> 
->   1) Add command-line args
->   2) Add DMI quirks
->   3) Add date check
-> 
-> It seems easier to assimilate and document in smaller pieces, if
-> that's possible.
+> On Thu, May 19, 2022 at 11:22 AM He Zhe <zhe.he@windriver.com> wrote:
+>>
+>> Hi,
+>>
+>> We are experiencing the following warning from
+>> "WARN_ON_ONCE(ret =3D=3D -EOPNOTSUPP);" in vfs_copy_file_range, from
+>> 64bf5ff58dff ("vfs: no fallback for ->copy_file_range")
+>>
+>> # cat /sys/class/net/can0/phys_switch_id
+>>
+>> WARNING: CPU: 7 PID: 673 at fs/read_write.c:1516 vfs_copy_file_range+0x3=
+80/0x440
+>> Modules linked in: llce_can llce_logger llce_mailbox llce_core sch_fq_co=
+del
+>> openvswitch nsh nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defra=
+g_ipv4
+>> CPU: 7 PID: 673 Comm: cat Not tainted 5.15.38-yocto-standard #1
+>> Hardware name: Freescale S32G399A (DT)
+>> pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
+>> pc : vfs_copy_file_range+0x380/0x440
+>> lr : vfs_copy_file_range+0x16c/0x440
+>> sp : ffffffc00e0f3ce0
+>> x29: ffffffc00e0f3ce0 x28: ffffff88157b5a40 x27: 0000000000000000
+>> x26: ffffff8816ac3230 x25: ffffff881c060008 x24: 0000000000001000
+>> x23: 0000000000000000 x22: 0000000000000000 x21: ffffff881cc99540
+>> x20: ffffff881cc9a340 x19: ffffffffffffffa1 x18: ffffffffffffffff
+>> x17: 0000000000000001 x16: 0000adfbb5178cde x15: ffffffc08e0f3647
+>> x14: 0000000000000000 x13: 34613178302f3061 x12: 3178302b636e7973
+>> x11: 0000000000058395 x10: 00000000fd1c5755 x9 : ffffffc008361950
+>> x8 : ffffffc00a7d4d58 x7 : 0000000000000000 x6 : 0000000000000001
+>> x5 : ffffffc009e81000 x4 : ffffffc009e817f8 x3 : 0000000000000000
+>> x2 : 0000000000000000 x1 : ffffff88157b5a40 x0 : ffffffffffffffa1
+>> Call trace:
+>>  vfs_copy_file_range+0x380/0x440
+>>  __do_sys_copy_file_range+0x178/0x3a4
+>>  __arm64_sys_copy_file_range+0x34/0x4c
+>>  invoke_syscall+0x5c/0x130
+>>  el0_svc_common.constprop.0+0x68/0x124
+>>  do_el0_svc+0x50/0xbc
+>>  el0_svc+0x54/0x130
+>>  el0t_64_sync_handler+0xa4/0x130
+>>  el0t_64_sync+0x1a0/0x1a4
+>> cat: /sys/class/net/can0/phys_switch_id: Operation not supported
+>>
+>> And we found this is triggered by the following stack. Specifically, all
+>> netdev_ops in CAN drivers we can find now do not have ndo_get_port_paren=
+t_id and
+>> ndo_get_devlink_port, which makes phys_switch_id_show return -EOPNOTSUPP=
+ all the
+>> way back to vfs_copy_file_range.
+>>
+>> phys_switch_id_show+0xf4/0x11c
+>> dev_attr_show+0x2c/0x6c
+>> sysfs_kf_seq_show+0xb8/0x150
+>> kernfs_seq_show+0x38/0x44
+>> seq_read_iter+0x1c4/0x4c0
+>> kernfs_fop_read_iter+0x44/0x50
+>> generic_file_splice_read+0xdc/0x190
+>> do_splice_to+0xa0/0xfc
+>> splice_direct_to_actor+0xc4/0x250
+>> do_splice_direct+0x94/0xe0
+>> vfs_copy_file_range+0x16c/0x440
+>> __do_sys_copy_file_range+0x178/0x3a4
+>> __arm64_sys_copy_file_range+0x34/0x4c
+>> invoke_syscall+0x5c/0x130
+>> el0_svc_common.constprop.0+0x68/0x124
+>> do_el0_svc+0x50/0xbc
+>> el0_svc+0x54/0x130
+>> el0t_64_sync_handler+0xa4/0x130
+>> el0t_64_sync+0x1a0/0x1a4
+>>
+>> According to the original commit log, this warning is for operational va=
+lidity
+>> checks to generic_copy_file_range(). The reading will eventually return =
+as
+>> not supported as printed above. But is this warning still necessary? If =
+so we
+>> might want to remove it to have a cleaner dmesg.
+>>
+>
+> Sigh! Those filesystems have no business doing copy_file_range()
+>
+> Here is a patch that Luis has been trying to push last year
+> to fix a problem with copy_file_range() from tracefs:
+>
+> https://lore.kernel.org/linux-fsdevel/20210702090012.28458-1-lhenriques@s=
+use.de/
 
-Ack, will do. Note this will cause quite a bit of copy/paste
-in the commit msg to explain why these changes are necessary.
+Yikes!  It's been a while and I completely forgot about it.  I can
+definitely try to respin this patch if someone's interested in picking
+it.  I'll have to go re-read everything again and see what's missing and
+what has changed in between.
 
-Regards,
+Cheers,
+--=20
+Lu=C3=ADs
 
-Hans
-
+> Luis gave up on it, because no maintainer stepped up to take
+> the patch, but I think that is the right way to go.
+>
+> Maybe this bug report can raise awareness to that old patch.
+>
+> Al, could you have a look?
+>
+> Thanks,
+> Amir.
+>
