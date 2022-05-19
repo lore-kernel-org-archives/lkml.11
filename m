@@ -2,90 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC822C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B993DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243917AbiESS2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
+        id S243343AbiESS3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243895AbiESS2b (ORCPT
+        with ESMTP id S232209AbiESS3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:28:31 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E03CC17B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:28:22 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id q203so6691501iod.0
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:28:22 -0700 (PDT)
+        Thu, 19 May 2022 14:29:41 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3C4EBE92
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:29:40 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-f1d5464c48so7785417fac.6
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:29:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=ND7f0vx9pZeDMhgR5d9yPNpUzi34XU/+i7olrPBQCuY=;
-        b=YV/qjkXoecsS2oe33P2wBJVytQp5MTWs64Kic5Q17lfWu1L9Ak2YJdLZ4P4iuiad9K
-         COZ9O9ZvugCVGcREEHB0hxB9z3MAuj8zBelSYydaU8xvHymcbQ1ApvBKgSBQsOlLECp0
-         LYV+rwYq1hkXaaEcaV8VSICXBFJu5tSmpai+xnirfZDpxVIzdK3jJqPAKQ/E3Tw9ggAR
-         gTnZUFQ2xP7XxJWZzk3rG1QNNhxPxCtifvpPdxDKQSp/N9TD497gJv6/8ryHh8wAlkOd
-         j2HUGsAoaXnlzXFdWDuKLeu5u86cfsLci1M/EILpIz6ABcmTVZ58cg4Y6ousQOO8+45E
-         OtBA==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=CebFhyYrHA9qyenphvt66UOHmXFE+xmKVw8/99ZVMrI=;
+        b=BbEcvDyVv+Ydj5Curj0uOZzUm7Y2C3b1AoRxnMmnho5SbVkNnLXCW75iaiBllx0pC9
+         9JfRUk7l8DPJxhocFrgzSX6+M7XEbWvgjPMrVaEgx2mX//tpwj6Bk3xq17A3/sEBTAuD
+         VcBBQCt3M+AVOp4aNNUGhEvl8lCpIODBpGqn2chRmfvMHONRqIxQeE/XHp2A5A3lawzB
+         WKMJ1UKmfn798brfXuF+cuuo7c/bC7Z0DMpbGIjSUh/4Leb9jUHt284UganttTbXyeKF
+         BaClhqgexI0GkPcI/fU6zLgUc3uIwpfY5Sms1ODpeTt9ghi7c0+Hp1ilSOzr00nyjRrs
+         FzQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=ND7f0vx9pZeDMhgR5d9yPNpUzi34XU/+i7olrPBQCuY=;
-        b=xpNhWM18QMwwwoWcWthHVYLRG8XG3ZL5Efmg8gy8DBJstVTU52Ynbwt/tbiTOc16wV
-         2g5r2XTMes8JM/umTRBiJweSCJRBcs7ixK54OdRPB5K4u80JBWUj9vXJc5z6MBCFXQa3
-         JKopUmB/IMf2Z0aNfsgzY9NnAE1kV32APmWecKtsTAOZJHAchkbaXQug2LwHb3gwenyz
-         woOMiIeNRuQ6lKV1/VyxJSk1M0yJ/IrYf1mIuf/GKzHm1XDR2T84HPUC5b9zGTe8Wo4U
-         7c1VjMOgfpRRzGs1xEboMOkPOsK2ZaQHJer5EZbBItkW2BT8+34s9ihJBU17Q6t2OD2I
-         tU/g==
-X-Gm-Message-State: AOAM532DqqXTH4tI9kpO+QUIJWrtBOf7CrHWsdo5XxhK8t/0S3LoD8jI
-        c8Dyjor3Z+mzU8a9ldqar6X3Uw==
-X-Google-Smtp-Source: ABdhPJwyRboO1Ja53YC/vxYKpauz0w2zyTeorZnthVC36rGlGpNJwpzh4MC7zHK+OQbTjKDzNmiRGA==
-X-Received: by 2002:a05:6638:d87:b0:32b:abdf:5867 with SMTP id l7-20020a0566380d8700b0032babdf5867mr3348125jaj.216.1652984901976;
-        Thu, 19 May 2022 11:28:21 -0700 (PDT)
-Received: from [127.0.1.1] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id s15-20020a92cb0f000000b002cd7dc16ae4sm1481072ilo.1.2022.05.19.11.28.21
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=CebFhyYrHA9qyenphvt66UOHmXFE+xmKVw8/99ZVMrI=;
+        b=nJ99bNkJThY7LnmtqaNWXQ+iL8iUVUGnFwmZqZQIGd84/K7mG2cbdx3VpRMFVjvjk1
+         xxfg/wDxevuK2N4prKqG2O8TWI4C8zvRgMNH4qsDRRjWmh/byJxhFmALgKUAigLRw1Fc
+         Re7JyZQt92sYqj2Jq341+tkFp2iAinzAIWj+Xg+2qXCKs0DFnD19RtnFL+ToAuDDbzhO
+         jXjhSGurDF51Zt2uqP68WTNV8PPpyPhBpMeNLTSt5+7RcFd0PHTaic1T0sZ7APuWm/OF
+         8I0jJDqS/V431Mh5gMMn/NhhIGuuAIXif1V7HMMvcHf6id7whUmLPbIR1aFVuHeQfhTs
+         SqTw==
+X-Gm-Message-State: AOAM532J/pQzRZkBw75LgHHtlUo+apR5pg15rhV7CbzWh9q59Gy2t7sY
+        fQxW7Dj6Pk4V+iXQHf5yeps=
+X-Google-Smtp-Source: ABdhPJwV1DyKvn/eltAGDpEdsrre6oNgNJic/9ukILKyeBUu0/8OT0Jalw7WF7viVMdnavsUkifHgg==
+X-Received: by 2002:a05:6870:23a8:b0:e9:85b0:83e9 with SMTP id e40-20020a05687023a800b000e985b083e9mr3931630oap.65.1652984980287;
+        Thu, 19 May 2022 11:29:40 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z11-20020a056870e14b00b000f1a2378a12sm1892oaa.37.2022.05.19.11.29.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 11:28:21 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     hch@infradead.org, Vasily Averin <vasily.averin@linux.dev>
-Cc:     rostedt@goodmis.org, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
-        mingo@redhat.com, asml.silence@gmail.com
-In-Reply-To: <6f009241-a63f-ae43-a04b-62841aaef293@openvz.org>
-References: <2eb22fb3-40cc-48f6-8ba9-5faeae0b43ff@kernel.dk> <6f009241-a63f-ae43-a04b-62841aaef293@openvz.org>
-Subject: Re: [PATCH v3] io_uring: fix incorrect __kernel_rwf_t cast
-Message-Id: <165298490113.98310.14692453666034246336.b4-ty@kernel.dk>
-Date:   Thu, 19 May 2022 12:28:21 -0600
+        Thu, 19 May 2022 11:29:39 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 19 May 2022 11:29:37 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] powerpc/fsl_book3e: Don't set rodata RO too early
+Message-ID: <20220519182937.GA80472@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 17:30:49 +0300, Vasily Averin wrote:
-> Currently 'make C=1 fs/io_uring.o' generates sparse warning:
+On Thu, May 19, 2022 at 07:24:15PM +0200, Christophe Leroy wrote:
+> On fsl_book3e, rodata is set read-only at the same time as
+> init text is set NX at the end of init. That's too early.
 > 
->   CHECK   fs/io_uring.c
-> fs/io_uring.c: note: in included file (through
-> include/trace/trace_events.h, include/trace/define_trace.h, i
-> nclude/trace/events/io_uring.h):
-> ./include/trace/events/io_uring.h:488:1:
->  warning: incorrect type in assignment (different base types)
->     expected unsigned int [usertype] op_flags
->     got restricted __kernel_rwf_t const [usertype] rw_flags
+> As both action are performed at the same time, delay both
+> actions to the time rodata is expected to be made read-only.
 > 
-> [...]
+> It means we will have a small window with init mem freed but
+> still executable. It shouldn't be an issue though, especially
+> because the said memory gets poisoned and should therefore
+> result to a bad instruction fault in case it gets executer.
 
-Applied, thanks!
+executed
 
-[1/1] io_uring: fix incorrect __kernel_rwf_t cast
-      commit: 0e7579ca732a39cc377e17509dda9bfc4f6ba78e
+> 
+> mmu_mark_initmem_nx() is bailing out before doing anything when
+> CONFIG_STRICT_KERNEL_RWX is not selected or rodata_enabled is false.
+> 
+> mmu_mark_rodata_ro() is called only when CONFIG_STRICT_KERNEL_RWX
+> is selected and rodata_enabled is true so this is equivalent.
+> 
+> Move code from mmu_mark_initmem_nx() into mmu_mark_rodata_ro() and
+> remove the call to strict_kernel_rwx_enabled() which is not needed
+> anymore.
+> 
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Fixes: d5970045cf9e ("powerpc/fsl_booke: Update of TLBCAMs after init")
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-Best regards,
--- 
-Jens Axboe
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-
+Guenter
