@@ -2,113 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC80CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241627AbiESQBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 12:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
+        id S241633AbiESQE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 12:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241611AbiESQBS (ORCPT
+        with ESMTP id S241061AbiESQEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 12:01:18 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B93220F3;
-        Thu, 19 May 2022 09:01:17 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id n8so5212613plh.1;
-        Thu, 19 May 2022 09:01:16 -0700 (PDT)
+        Thu, 19 May 2022 12:04:23 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA8650E0C
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:04:21 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id ev18so5720557pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:04:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Izt2XQIS+k/iuXA05DKzoWcR89KdN5/M9JpMeEiR3dk=;
-        b=l+Z5DmtzF2PgSdkzReMXkCr0cikUBHlWtJhOoNkfVGm38LC7zuwnjIKP8w+S8zYU0l
-         O4KR91U+cpCxuuu8g/ETUF4jAo+xXwGpo9ryb50c+J5XpKR09Q2O/bbEf5xlk3+M3pGj
-         NQuZ2LoiJRuECGmMkbVOPLY8bq3ECkxQkzJ8bbVEM+SkQoVSGXZWFb/fbZq06ipYJmZ+
-         tnjZ9RJ1+72C+V8v8qoDrHh+3fTfDx+nvvykt+VzOwUefQYg7/JwMzNhWkMXSkYbuiGu
-         8oDyZsL61cYx3FGPVXl02kA1U1YcDh6V1U5D60XchTn+d1nNi+6e8OYl1IH4MF+lDyk1
-         mYiQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zg+ynRXLZeMnK1oxqyeYVjcC5/X4aWhcXC6yBD5OT4A=;
+        b=JqngR68puIkzlfBafI5k1wJZPvRZLdo970iM1/sHRkJapZDCKpCkU0bRTyqldOD2KA
+         1ZV0XBzywrjm6qyCzUUN2gge2PdeBNmhfqHpeSnuuDb/TmzoAUwZhNT/oDH5hKvHckiG
+         CvqVPWCajw2s1CqDgtrug4r5cEza1q7Ar7kSY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Izt2XQIS+k/iuXA05DKzoWcR89KdN5/M9JpMeEiR3dk=;
-        b=IZqZdBnZoFdIssS+eWZP7/I0c1VCP/cRiy6G5vMOCQi8wnSC8gR0qApKPNBLdOX67g
-         q0C7B7H7h5buDgVWwY6VJUu0T2Ehel3lcOBLwykMmLFqsx0H//rr8H2wzJgzxzqU8GSR
-         RR71QI2E/t3u/ocyrX3wytMt4CMwB/8zHX2CpVJI8IT/WvLvQb+KX8JEygcsUkwIupO1
-         J1S8DRAb5EjFdaUVo5fER2Oj7fu3JmAKThIA+S6Byjt0weuVvYTgIOYgZwj0Uvq1sXZl
-         3RR/I5Rz+CwRdt8JE3pT70u1p0A6HLriD3qYmlzIcByFoiS3RiJ277DkZI1ioH35Pm7X
-         RGfQ==
-X-Gm-Message-State: AOAM532K9T2t5NRlPEEr8gB08R7h/NCVNE9sRx6mfEj66Mm/iLeM4dyi
-        FBHuXFMyELoJkzxv+TGrgt6a1+ezAHF/A8SJxOc=
-X-Google-Smtp-Source: ABdhPJxuAHz6fXhLGH98VdN5BYkURgBOorxd4Mtvxw41lKe+Kr0/EjkshxnhJApKfZa/HsAUzAKQ9vip789BEWDnuAk=
-X-Received: by 2002:a17:903:24f:b0:15c:e3b8:a640 with SMTP id
- j15-20020a170903024f00b0015ce3b8a640mr5309537plh.5.1652976076357; Thu, 19 May
- 2022 09:01:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zg+ynRXLZeMnK1oxqyeYVjcC5/X4aWhcXC6yBD5OT4A=;
+        b=ZIItONpYfsJH7TvPQguP+fDABt1XdHHkuv1yPeqGiKQFaxs5ZkB5vY3I69dOWlBU+K
+         q2KWgImMpmAGtcEpvT+gLFUwohBx19fxWAOjYW8GpMaVWCvW7LZZvhoudVYL6tISiciy
+         Kr6oDuxP0qsLaj/BKre4SeXKUcCUybD31htHdZBOj1EpstbbnVSuV2f5ryhxvvm94gEV
+         XawlwzoNola5C3uFjU7N4+He2R+Mz0+zaFTeYZSZRXJP9AGtgjSqHBayv9d5rjGTSydi
+         +TM+d5aKdCyyKY5/DdXYA/lb/NLPVLJlzR5njEbdutVUkynyqxrmlbGgwSoIz/mVBOwE
+         HnIg==
+X-Gm-Message-State: AOAM532U/NqyRuNXZAN7nrbpzXwNWbHDAbgR8ZZU61XYgUQoBrQxTH6A
+        shmI1t+BQiRACRYO8T5V9iZlqA==
+X-Google-Smtp-Source: ABdhPJy9S9/dhxwqs8xQPVr2FwoS6jmgVHh+Zr6FjGsyF9xmE8GmXAJRlr5lWzWVg8d0+Ach74RPtA==
+X-Received: by 2002:a17:90b:4b8a:b0:1df:75f2:d2f4 with SMTP id lr10-20020a17090b4b8a00b001df75f2d2f4mr5908520pjb.109.1652976260975;
+        Thu, 19 May 2022 09:04:20 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:e229:79ea:227e:d9dd])
+        by smtp.gmail.com with UTF8SMTPSA id jx12-20020a17090b46cc00b001cd4989fec6sm5750078pjb.18.2022.05.19.09.04.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 09:04:20 -0700 (PDT)
+Date:   Thu, 19 May 2022 09:04:19 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Judy Hsiao <judyhsiao@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        dianders@chromium.org, cychiang@google.com, judyhsiao@google.com,
+        tzungbi@chromium.org, swboyd@chromium.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [v1 2/3] arm64: dts: qcom: sc7280: Add
+ sc7280-herobrine-audio-rt5682.dtsi
+Message-ID: <YoZqg6KoZilkuPZV@google.com>
+References: <20220519084119.675990-1-judyhsiao@chromium.org>
+ <20220519084119.675990-3-judyhsiao@chromium.org>
 MIME-Version: 1.0
-References: <20220428205116.861003-1-yury.norov@gmail.com> <20220428205116.861003-4-yury.norov@gmail.com>
- <20220519150929.GA3145933@roeck-us.net>
-In-Reply-To: <20220519150929.GA3145933@roeck-us.net>
-From:   Yury Norov <yury.norov@gmail.com>
-Date:   Thu, 19 May 2022 09:01:00 -0700
-Message-ID: <CAAH8bW8ju7XLkbYya1A1OtqGVGDUAk7dPyw01RsDzg+v7xihyQ@mail.gmail.com>
-Subject: Re: [PATCH 3/5] lib/bitmap: add test for bitmap_{from,to}_arr64
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220519084119.675990-3-judyhsiao@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 8:09 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Thu, Apr 28, 2022 at 01:51:14PM -0700, Yury Norov wrote:
-> > Test newly added bitmap_{from,to}_arr64() functions similarly to
-> > already existing bitmap_{from,to}_arr32() tests.
-> >
-> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
->
-> With this patch in linux-next (including next-20220519), I see lots of
-> bitmap test errors when booting 32-bit ppc images in qemu. Examples:
->
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0", got "0,65"
-> ...
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128"
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128-129"
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128-130"
-> ...
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65,128-143", got "0,65,128-143,208-209"
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65,128-143", got "0,65,128-143,208-210"
->
-> and so on. It only  gets worse from there, and ends with:
->
-> test_bitmap: parselist: 14: input is '0-2047:128/256' OK, Time: 4274
-> test_bitmap: bitmap_print_to_pagebuf: input is '0-32767
-> ', Time: 127267
-> test_bitmap: failed 337 out of 3801 tests
->
-> Other architectures and 64-bit ppc builds seem to be fine.
+On Thu, May 19, 2022 at 08:41:18AM +0000, Judy Hsiao wrote:
+> Audio dtsi for sc7280 boards that using rt5682 headset codec:
+> 1. Add dt nodes for sound card which use I2S playback and record
+>    through rt5682s and I2S playback through max98357a.
+> 2. Enable lpass cpu node and add pin control and dai-links.
+> 
+> Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
 
-Hi Guenter,
+A general note: this series depends on others like "Add lpass pin
+control support for audio on sc7280 based targets" [1] and "Add
+soundcard support for sc7280 based platforms" [2]. This should be
+mentioned somewhere, either in the cover letter or after '---'.
 
-Thanks for letting me know. It's really weird because it has already
-been for 2 weeks
-in next with no issues. But I tested it on mips32, not powerpc. I'll
-check what happens
-there.
+[1] https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638776
+[2] https://patchwork.kernel.org/project/linux-arm-msm/list/?series=638274
 
-Can you please share your config and qemu image if possible?
+> ---
+>  .../qcom/sc7280-herobrine-audio-rt5682.dtsi   | 121 ++++++++++++++++++
+>  1 file changed, 121 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi
+> new file mode 100644
+> index 000000000000..9e449817f6fd
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi
+> @@ -0,0 +1,121 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + *
+> + * This file defines the common audio settings for the child boards using rt5682 codec.
+> + *
+> + * Copyright 2022 Google LLC.
+> + */
+> +
+> +/ {
+> +	/* BOARD-SPECIFIC TOP LEVEL NODES */
+> +	sound: sound {
+> +		compatible = "google,sc7280-herobrine";
+> +		model = "sc7280-rt5682-max98360a-1mic";
+> +
+> +		status = "okay";
+> +		audio-routing =
+> +			"Headphone Jack", "HPOL",
+> +			"Headphone Jack", "HPOR";
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		#sound-dai-cells = <0>;
 
-Thanks,
-Yury
+Is 'sound-dai-cells' really needed here? The binding doesn't mention it and
+the sound card isn't really a DAI.
+
+> +
+> +		dai-link@0 {
+> +			link-name = "MAX98360";
+> +			reg = <0>;
+
+Eventually the 'reg' property should be removed from the binding and DTs
+([1], [2]), but for now it is needed to match the binding.
+
+[1] https://patchwork.kernel.org/project/linux-arm-msm/patch/1649863277-31615-5-git-send-email-quic_srivasam@quicinc.com/
+[2] https://patchwork.kernel.org/project/linux-arm-msm/patch/1650291252-30398-5-git-send-email-quic_srivasam@quicinc.com/
+
+
+> +
+> +			cpu {
+> +				sound-dai = <&lpass_cpu MI2S_SECONDARY>;
+> +			};
+> +
+> +			codec {
+> +				sound-dai = <&max98360a>;
+> +			};
+> +		};
+> +
+> +		dai-link@1 {
+> +			link-name = "ALC5682";
+> +			reg = <1>;
+> +
+> +			cpu {
+> +				sound-dai = <&lpass_cpu MI2S_PRIMARY>;
+> +			};
+> +
+> +			codec {
+> +				sound-dai = <&alc5682 0 /* aif1 */>;
+> +			};
+> +		};
+> +	};
+> +};
+> +
+> +hp_i2c: &i2c2 {
+> +	status = "okay";
+> +	clock-frequency = <400000>;
+> +
+> +	alc5682: codec@1a {
+> +		compatible = "realtek,rt5682s";
+> +		reg = <0x1a>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&hp_irq>;
+> +
+> +		#sound-dai-cells = <1>;
+> +
+> +		interrupt-parent = <&tlmm>;
+> +		interrupts = <101 IRQ_TYPE_EDGE_BOTH>;
+> +
+> +		AVDD-supply = <&pp1800_alc5682>;
+> +		MICVDD-supply = <&pp3300_codec>;
+
+The regulators are not mentioned in the binding, but the driver
+expects them, so I guess this is fine (maybe the binding should
+be updated in a separate patch?).
+
