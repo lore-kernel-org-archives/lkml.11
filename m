@@ -2,121 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 10:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB76C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 10:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237030AbiESK5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 06:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41098 "EHLO
+        id S237096AbiESK5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 06:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiESK5E (ORCPT
+        with ESMTP id S236134AbiESK5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 06:57:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5065C674C8
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 03:57:03 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EACE41F86A;
-        Thu, 19 May 2022 10:57:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652957821; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8uZD/sZperneDqTPmd/3WdovVji6ii5Xr/81SKEuRI4=;
-        b=SPinQL3l1IrJeHOkOXoaUvW+T4FUNTVr5LsgEoOKh0t0ydiKxpj3mAwY8bV0lpIdi8E+th
-        TxHLIrqz+O4LOnz4G+2x2BE5dpXSD06fCKEmxH/Qkgskm2rY50xwQXAwj76VWu8rJpnSOE
-        iUijMuYueXfTDri4cKSeUZGCOFZTBqQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652957821;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8uZD/sZperneDqTPmd/3WdovVji6ii5Xr/81SKEuRI4=;
-        b=GFdxz3drPlEthQn5HQPEQgVP6OBYVfm5b3mhjwrdQffvVzpeuqVG+jYkjDFiozZEwVethz
-        qAmY/KHBJIMBDpDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C1C3913AF8;
-        Thu, 19 May 2022 10:57:01 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Q/E6Ln0ihmJdWwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 19 May 2022 10:57:01 +0000
-Message-ID: <5a0c9b7c-3620-3e0f-7510-d0fc3fa6ceda@suse.cz>
-Date:   Thu, 19 May 2022 12:57:01 +0200
+        Thu, 19 May 2022 06:57:40 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE10AF31D;
+        Thu, 19 May 2022 03:57:39 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id A064E1F41C26
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652957857;
+        bh=n5xuyUTKwTtfK1E3KUXlguxQHbXpNAqOc2gndpqI8jA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=JodT7xtJhuDdpRliWmuR69V68cdLgMXYC8d7buT+z/skOa4D3K2ioz+upZrBg2HUI
+         fFJ9Rn8C3zYLSF4itEkiZf4lAf9mhOFGsXHiH+NvNHs2flmyQC/4D/NcGC8PSQsOSO
+         GcqoxRa4TTV0C4aYYrl2y+kEE4aiAR0BuXE3s+rTbSRmruSUiKG/62QN94HtkxPd8h
+         5hZsoL+SJmGw8nEPAF5+YZtOZrPZ6NRg8hcTQlgW4L/qyI+I5dRn80ayHZZC1Hf8GO
+         mkG9ultCG+PShiWcqnTz48Dvqc3PWYvBoJFQUeF+LqJAZWbjIhdXyvsG+uqjGWPers
+         YX5xODM5B4tmA==
+Message-ID: <43133a4d-8bad-93ba-c376-21d30d039b15@collabora.com>
+Date:   Thu, 19 May 2022 13:57:31 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.0
-Subject: Re: [PATCH 4/6] mm/page_alloc: Remove unnecessary page == NULL check
- in rmqueue
+Subject: Re: [PATCH v8 00/27] Introduce power-off+restart call chain API
 Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220512085043.5234-1-mgorman@techsingularity.net>
- <20220512085043.5234-5-mgorman@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220512085043.5234-5-mgorman@techsingularity.net>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Joshua Thompson <funaho@jurai.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        xen-devel@lists.xenproject.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+References: <20220509233235.995021-1-dmitry.osipenko@collabora.com>
+ <CAJZ5v0jhWs-8ChHddebTZcaH6kA05sLEMsXM9Op7kHWAQDxeYA@mail.gmail.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <CAJZ5v0jhWs-8ChHddebTZcaH6kA05sLEMsXM9Op7kHWAQDxeYA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/12/22 10:50, Mel Gorman wrote:
-> The VM_BUG_ON check for a valid page can be avoided with a simple
-> change in the flow. The ZONE_BOOSTED_WATERMARK is unlikely in general
-> and even more unlikely if the page allocation failed so mark the
-> branch unlikely.
-
-Hm, so that makes a DEBUG_VM config avoid the check. On the other hand,
-it puts it on the path returning from rmqueue_pcplist() for all configs,
-and that should be the fast path. So unless things further change in the
-following patches, it doesn't seem that useful?
-
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-> Tested-by: Minchan Kim <minchan@kernel.org>
-> Acked-by: Minchan Kim <minchan@kernel.org>
-> ---
->  mm/page_alloc.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
+On 5/18/22 17:46, Rafael J. Wysocki wrote:
+> On Tue, May 10, 2022 at 1:33 AM Dmitry Osipenko
+> <dmitry.osipenko@collabora.com> wrote:
+...
+>> Introduce new API that provides call chains support for all restart and
+>> power-off modes. The new API is designed with simplicity and extensibility
+>> in mind.
+...
+> The v8 looks much better than the previous versions to me.
 > 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 1c4c54503a5d..b543333dce8f 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -3765,17 +3765,18 @@ struct page *rmqueue(struct zone *preferred_zone,
->  
->  	page = rmqueue_buddy(preferred_zone, zone, order, alloc_flags,
->  							migratetype);
-> -	if (unlikely(!page))
-> -		return NULL;
->  
->  out:
->  	/* Separate test+clear to avoid unnecessary atomics */
-> -	if (test_bit(ZONE_BOOSTED_WATERMARK, &zone->flags)) {
-> +	if (unlikely(test_bit(ZONE_BOOSTED_WATERMARK, &zone->flags))) {
->  		clear_bit(ZONE_BOOSTED_WATERMARK, &zone->flags);
->  		wakeup_kswapd(zone, 0, 0, zone_idx(zone));
->  	}
->  
-> -	VM_BUG_ON_PAGE(page && bad_range(zone, page), page);
-> +	if (unlikely(!page))
-> +		return NULL;
-> +
-> +	VM_BUG_ON_PAGE(bad_range(zone, page), page);
->  	return page;
->  }
->  
+> I actually don't really have any comments on it except for the minor
+> remark regarding patch [1/27] sent separately.
+> 
+> Please just send an update of that one patch and I will queue up the
+> series for 5.19.
+> 
+> However, I'm going to send a pull request with it in the second half
+> of the merge window, after the majority of the other changes in the
+> subsystems touched by it have been integrated.
 
+Thanks, Rafael. I sent out the updated [1/27] patch to you.
+
+For the reference, the updated patch can be found here as well:
+
+https://lore.kernel.org/all/20220519105015.1195955-1-dmitry.osipenko@collabora.com/T/#u
+
+-- 
+Best regards,
+Dmitry
