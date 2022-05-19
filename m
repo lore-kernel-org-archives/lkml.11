@@ -2,167 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E83CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A75C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238217AbiESMzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 08:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
+        id S238251AbiESMzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 08:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234713AbiESMz3 (ORCPT
+        with ESMTP id S238216AbiESMzf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 08:55:29 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D1EA7E36
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:55:28 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id 137so4993292pgb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:55:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XiUsRi0TcKngRpQ/Aq2tkPZeo5Erutd/MtmCgm/5bYU=;
-        b=MRvUskMS0dP9aYF0X75Mw2BIhDXmrUI5V2pM7+rkEZ158WuT9cZe4IexXcTj+ckM6i
-         +iz8Rx1U7C3CnSE5DvvQPv9cnm7wPAnYi3p07DcDBhtTMuiZ6trrjNVBdEKWUXgBJm0D
-         wxQLG3pJmHYv6LiStLin3J3zLFhidhzdyRuA2VtubHUeAfgtUKMsjeDCSokJoaLDnLke
-         IGWzmoAgd9tqR/0J3vNW2mQJqh3Sg2aEdgo99EpPShPJhNszGRPIULjKkfTpChErPPuG
-         sURwiVhnCKdDino+ptabRTeyYJwwSGLrNzYflyG8C/0073CdhdU+WnYgekHMXwL8uKt9
-         7X2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XiUsRi0TcKngRpQ/Aq2tkPZeo5Erutd/MtmCgm/5bYU=;
-        b=15n+9sFYPUQn+ENWMPyo2S0PtPYEFYilsYvRR7NgzlMhqcjzaTGZ9YwYZrskzjGsqe
-         1UbYaFToelKmXFBECJumHdmXXnEE5aadMDOESGM5hcoz1CuceehaSB4nJf6W33BzRI1v
-         BoWeuWDVqJknYICHjBS6CNb5rX9ZHwaWFn+rPjIrOPZsautN6S6Pr6lKILAHAEIyz9gl
-         /AmO9hQujihJLRxUUNtYzMPGfZtIF97kA1fWrOH+N5YyhLmiugQIpoaZMLhxZqIn7I6k
-         5fWybUGH5+2q4XphEL0HAflTbq+xxXRk+0T8RY6T7mxD3VU8twZBqYfvXy0ifOIsYy25
-         sZ6w==
-X-Gm-Message-State: AOAM5336tLiDOeNVPuMEXc/jS0P1Fpx+v+qf6+Bb255obU34Gd4ELnbc
-        vO9apW//o7mMicOHGsue5Ql6DpFms2TI/A==
-X-Google-Smtp-Source: ABdhPJxMmOwhWa8SHa/gVmsNZFJ9NCopj+W+34thmpChLqFM/4MyZoVb5YqSIWIq+rP6kZLzTnkSCA==
-X-Received: by 2002:a05:6a00:140f:b0:4e0:6995:9c48 with SMTP id l15-20020a056a00140f00b004e069959c48mr4568784pfu.59.1652964927356;
-        Thu, 19 May 2022 05:55:27 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id iz10-20020a170902ef8a00b0015e8d4eb1ddsm3664659plb.39.2022.05.19.05.55.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 05:55:27 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Cc:     duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
-Subject: [PATCH] sysctl: handle table->maxlen properly for proc_dobool
-Date:   Thu, 19 May 2022 20:55:05 +0800
-Message-Id: <20220519125505.92400-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        Thu, 19 May 2022 08:55:35 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD3EA7E28;
+        Thu, 19 May 2022 05:55:33 -0700 (PDT)
+X-UUID: 8202cfeb095e4ff58a4ade731d116dae-20220519
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:4335a90b-ea10-470c-9c87-8dcb580a43f0,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:ee8fdf79-5ef6-470b-96c9-bdb8ced32786,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 8202cfeb095e4ff58a4ade731d116dae-20220519
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1539566960; Thu, 19 May 2022 20:55:30 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 19 May 2022 20:55:29 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 19 May 2022 20:55:29 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 19 May 2022 20:55:29 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <p.zabel@pengutronix.de>,
+        <angelogioacchino.delregno@collabora.com>,
+        <chun-jie.chen@mediatek.com>, <wenst@chromium.org>,
+        <runyang.chen@mediatek.com>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v7 04/19] clk: mediatek: reset: Extract common drivers to update function
+Date:   Thu, 19 May 2022 20:55:12 +0800
+Message-ID: <20220519125527.18544-5-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220519125527.18544-1-rex-bc.chen@mediatek.com>
+References: <20220519125527.18544-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Setting ->proc_handler to proc_dobool at the same time setting ->maxlen
-to sizeof(int) is counter-intuitive, it is easy to make mistakes.  For
-robustness, fix it by handling able->maxlen properly for proc_dobool in
-__do_proc_dointvec().
+To make drivers more clear and readable, we extract common code
+within assert and deassert to mtk_reset_update_set_clr() and
+mtk_reset_update().
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Iurii Zaikin <yzaikin@google.com>
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- fs/lockd/svc.c  |  2 +-
- kernel/sysctl.c | 22 ++++++++++++----------
- 2 files changed, 13 insertions(+), 11 deletions(-)
+ drivers/clk/mediatek/reset.c | 38 +++++++++++++++++++++---------------
+ 1 file changed, 22 insertions(+), 16 deletions(-)
 
-diff --git a/fs/lockd/svc.c b/fs/lockd/svc.c
-index 59ef8a1f843f..6e48ee787f49 100644
---- a/fs/lockd/svc.c
-+++ b/fs/lockd/svc.c
-@@ -496,7 +496,7 @@ static struct ctl_table nlm_sysctls[] = {
- 	{
- 		.procname	= "nsm_use_hostnames",
- 		.data		= &nsm_use_hostnames,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(nsm_use_hostnames),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dobool,
- 	},
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index e52b6e372c60..353fb9093012 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -428,6 +428,8 @@ static int do_proc_dobool_conv(bool *negp, unsigned long *lvalp,
- 				int write, void *data)
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index 5cbbcc22a4fc..22fa9f09752c 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -12,24 +12,27 @@
+ 
+ #include "reset.h"
+ 
+-static int mtk_reset_assert(struct reset_controller_dev *rcdev,
+-			    unsigned long id)
++static int mtk_reset_update(struct reset_controller_dev *rcdev,
++			    unsigned long id, bool deassert)
  {
- 	if (write) {
-+		if (*negp || (*lvalp != 0 && *lvalp != 1))
-+			return -EINVAL;
- 		*(bool *)valp = *lvalp;
- 	} else {
- 		int val = *(bool *)valp;
-@@ -489,17 +491,17 @@ static int __do_proc_dointvec(void *tbl_data, struct ctl_table *table,
- 			      int write, void *data),
- 		  void *data)
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
++	unsigned int val = deassert ? 0 : ~0;
+ 
+ 	return regmap_update_bits(data->regmap,
+ 				  data->regofs + ((id / 32) << 2),
+-				  BIT(id % 32), ~0);
++				  BIT(id % 32), val);
++}
++
++static int mtk_reset_assert(struct reset_controller_dev *rcdev,
++			    unsigned long id)
++{
++	return mtk_reset_update(rcdev, id, false);
+ }
+ 
+ static int mtk_reset_deassert(struct reset_controller_dev *rcdev,
+ 			      unsigned long id)
  {
--	int *i, vleft, first = 1, err = 0;
-+	int vleft, first = 1, err = 0, size;
- 	size_t left;
- 	char *p;
--	
+-	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+-
+-	return regmap_update_bits(data->regmap,
+-				  data->regofs + ((id / 32) << 2),
+-				  BIT(id % 32), 0);
++	return mtk_reset_update(rcdev, id, true);
+ }
+ 
+ static int mtk_reset(struct reset_controller_dev *rcdev, unsigned long id)
+@@ -43,24 +46,27 @@ static int mtk_reset(struct reset_controller_dev *rcdev, unsigned long id)
+ 	return mtk_reset_deassert(rcdev, id);
+ }
+ 
+-static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+-				    unsigned long id)
++static int mtk_reset_update_set_clr(struct reset_controller_dev *rcdev,
++				    unsigned long id, bool deassert)
+ {
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
++	unsigned int deassert_ofs = deassert ? 0x4 : 0;
+ 
+ 	return regmap_write(data->regmap,
+-			    data->regofs + ((id / 32) << 4),
++			    data->regofs + ((id / 32) << 4) + deassert_ofs,
+ 			    BIT(id % 32));
+ }
+ 
++static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
++				    unsigned long id)
++{
++	return mtk_reset_update_set_clr(rcdev, id, false);
++}
 +
- 	if (!tbl_data || !table->maxlen || !*lenp || (*ppos && !write)) {
- 		*lenp = 0;
- 		return 0;
- 	}
--	
--	i = (int *) tbl_data;
--	vleft = table->maxlen / sizeof(*i);
-+
-+	size = conv == do_proc_dobool_conv ? sizeof(bool) : sizeof(int);
-+	vleft = table->maxlen / size;
- 	left = *lenp;
+ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+ 				      unsigned long id)
+ {
+-	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+-
+-	return regmap_write(data->regmap,
+-			    data->regofs + ((id / 32) << 4) + 0x4,
+-			    BIT(id % 32));
++	return mtk_reset_update_set_clr(rcdev, id, true);
+ }
  
- 	if (!conv)
-@@ -514,7 +516,7 @@ static int __do_proc_dointvec(void *tbl_data, struct ctl_table *table,
- 		p = buffer;
- 	}
- 
--	for (; left && vleft--; i++, first=0) {
-+	for (; left && vleft--; tbl_data = (char *)tbl_data + size, first=0) {
- 		unsigned long lval;
- 		bool neg;
- 
-@@ -528,12 +530,12 @@ static int __do_proc_dointvec(void *tbl_data, struct ctl_table *table,
- 					     sizeof(proc_wspace_sep), NULL);
- 			if (err)
- 				break;
--			if (conv(&neg, &lval, i, 1, data)) {
-+			if (conv(&neg, &lval, tbl_data, 1, data)) {
- 				err = -EINVAL;
- 				break;
- 			}
- 		} else {
--			if (conv(&neg, &lval, i, 0, data)) {
-+			if (conv(&neg, &lval, tbl_data, 0, data)) {
- 				err = -EINVAL;
- 				break;
- 			}
-@@ -708,8 +710,8 @@ int do_proc_douintvec(struct ctl_table *table, int write,
-  * @lenp: the size of the user buffer
-  * @ppos: file position
-  *
-- * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
-- * values from/to the user buffer, treated as an ASCII string.
-+ * Reads/writes up to table->maxlen/sizeof(bool) bool values from/to
-+ * the user buffer, treated as an ASCII string.
-  *
-  * Returns 0 on success.
-  */
+ static int mtk_reset_set_clr(struct reset_controller_dev *rcdev,
 -- 
-2.11.0
+2.18.0
 
