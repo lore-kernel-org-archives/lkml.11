@@ -2,268 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB69C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4752CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237739AbiESN6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        id S237657AbiESN6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239175AbiESN5K (ORCPT
+        with ESMTP id S239088AbiESN5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:57:10 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9FB2BF4;
-        Thu, 19 May 2022 06:57:07 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 71767240013;
-        Thu, 19 May 2022 13:57:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652968626;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e/Kd10AwKv2w3Q0mttVB1gl1+W1auqMdjySJEYCTO9o=;
-        b=dyizHEMJHFYCCIPWTfmsbIgm6s+HL+xuND5A7ZvZtWqLtwVgFsgIqHuZ7oUxJajIKw85UR
-        Z/wW1Nnr3b1fkgwjp17UPMJ5PGp/Z7HBX3IOlO1Tdc4kEYRxs92oeNCCbcQSRMsXXIq30R
-        msUR/n19m080Ye0bygpUyYekyT+dUr2FwqfafTSplu4eLsWAE5edca+1yJZhApddYXq32a
-        SJklsaSONInJjLdyC/t0UfZLHxQXAJqr1ck6S1c1tSNKutM9vvOwWY3VB5o8ZmWtBjsJ+Z
-        lp3leL015Tj753cA9CFjQ+mkZhasBqRZOoQM8qTjFfUDbsKBKQpheAdBl93HAA==
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Richard Cochran <richardcochran@gmail.com>,
-        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 6/6] net: phy: micrel: Add QUSGMII support and PCH extension
-Date:   Thu, 19 May 2022 15:56:47 +0200
-Message-Id: <20220519135647.465653-7-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
-References: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
+        Thu, 19 May 2022 09:57:09 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2041.outbound.protection.outlook.com [40.107.244.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB3D63F7
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:57:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZKOCIxF3yjYeJoYPaZRuliw0Tzi/5Wy17aIIdlTuekcIW97G2hSYKmRQOj5tbskX4N+Vtfqv5vN3/Fy92Hfx8vio4BS92r8w77xECIb/kSYDbUSvc3JU/LGIYbgfg4bkoMf0xlETSVj4fkB1NzLvEabh7Ct45JSMJiBXMwfHtXysaaoWweQkmdMD3S3JqayXEYju4wq/7xgXdmYMStxXgFC5O/BKgJIRSpYptM0qNxTEcrWsx3gEqU1+HUppxQ+ZvyLS8yXWROK3ycwo+QOnX5ZGRKxgLobpzMIKgFWgB3IQYu6OpboMgQsEfSwh4D0css2BNQq16CcHNXI7iHIciw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zWbwrFQcxd5mlZNmjM1mqd5xcV8Uop3GtGsXlq/+Kck=;
+ b=aJDMncdm3DFBrfXGRjMy8DeLCvpxaR1l4ZJ5STknAdOGewgzdYSow66h5HCxTCvAICcMsqCTsJfaUoMTHtHTzt55rqe8kExAEQKFOqDoC2vUumsJpEaI2jVY419Ga0JUvwuI8aWDu4zB42o4ofZ1AKgOiLvQraD+PdBivPTIwf3Qi4begN2JnLUarvx1u/ApDDUoD/9nGdypAZw+07I0KlZl5UCKbOFHTSd0SvotSAKSxzLl9Yv7CH9ayj69cgNI8HZsCvbMtEpytKwssGpjeuxEq2ewqb1LfvQVZQ6IjSv3hhCjZrpI/DlUfNoyoyIAK3wWRc8jstod1WqarrWnUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zWbwrFQcxd5mlZNmjM1mqd5xcV8Uop3GtGsXlq/+Kck=;
+ b=kDX/sB10EUzGPT2bmt2zbMSP6IwECPG4IDc7pmvzTBU0I9CJHcT19knC/cdDoy/27EvaUR/KEPJedJGYwHBEdscghipk/ckmLZrHV9NlngFDx5SE2HO0sLzbymdhrzC4Wk79YE/ERSrtWYJashpRCk2UMsQMoLfesS1KeXWN0H4=
+Received: from BN0PR08CA0019.namprd08.prod.outlook.com (2603:10b6:408:142::12)
+ by BN7PR12MB2706.namprd12.prod.outlook.com (2603:10b6:408:2a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.16; Thu, 19 May
+ 2022 13:57:03 +0000
+Received: from BN8NAM11FT025.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:142:cafe::27) by BN0PR08CA0019.outlook.office365.com
+ (2603:10b6:408:142::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14 via Frontend
+ Transport; Thu, 19 May 2022 13:57:03 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT025.mail.protection.outlook.com (10.13.177.136) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5273.14 via Frontend Transport; Thu, 19 May 2022 13:57:03 +0000
+Received: from agrodzovsky-All-Series.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 19 May 2022 08:57:02 -0500
+From:   Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+To:     <tj@kernel.org>, <jiangshanlai@gmail.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     <amd-gfx@lists.freedesktop.org>, <Christian.Koenig@amd.com>,
+        "Andrey Grodzovsky" <andrey.grodzovsky@amd.com>
+Subject: [PATCH] Revert "workqueue: remove unused cancel_work()"
+Date:   Thu, 19 May 2022 09:56:42 -0400
+Message-ID: <20220519135642.83209-1-andrey.grodzovsky@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6bb525c5-ebfd-458f-f745-08da399f7431
+X-MS-TrafficTypeDiagnostic: BN7PR12MB2706:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR12MB270628BF640382ED0DB9F0A0EAD09@BN7PR12MB2706.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HwS1km/tvpDbkXnM5wf+MmDEmaoYlvqo4+ChnOCg29X88pScEcLeYofN7Eyz8eCxzhRLP9Dakzm8F2+w83b2he21LYWzTsFGGjdrqK75A0zHZbJMIDcE2YyOd6lMH+sIe8odWtj6j3pfpN4BVK1wAbaRxuWfiuNbj88J52I3hSaC3vobP2+bgyyw7UWT64PSvF8dFC98NIBpQ3fu9p34gJ0tAvytVktcOgJxgg/CnFhm/JAZsiVoe3GVWYTCOfNlU5D3Sc6e92RFQnZRELa0mPAtFXiAchUPglPBHPvfUasZFdUCjBAx92X3N+c/UxW3sU+RtzUWvTYILgqy6qKZ2HmoMqLeuioEx3U1lji1008yTzvpp4YGMpfjHzQhhDPAJDVu3j31kzQFhLoMXvSU6gTpF3iKmFn7a7yO25AD/loXb2Apoxfa2BTOrA9OXuzlPztMLbrOn3uTjX8dn+5yuT9ZqxgQxWA05vBtoy14K6xPud0A/WfW7eaGEh4D9qotfkBMzfI/jXx0lqh2r9zI4L6SLw8axaD+MwGXovw478ARqK0tANSqRUh94HaKv0kJcbQf6cMs+EMQsfxtq6ODEBhDZ/Avggt+wXyTA2ZXp08JSKw4vZdZeo9fHLorhUOSuff4zERfa5FMUYFQkdXrll0Ueq182NcVVZGFvX1Aqh4rt/R0bE/UlGiNXI81bDmKXEsPFiN8dFC7dTi4KXHEYw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(356005)(508600001)(36756003)(6666004)(2906002)(82310400005)(8936002)(54906003)(5660300002)(1076003)(47076005)(26005)(7696005)(44832011)(186003)(81166007)(70206006)(40460700003)(426003)(86362001)(36860700001)(110136005)(336012)(316002)(16526019)(4326008)(2616005)(8676002)(70586007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 13:57:03.7580
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bb525c5-ebfd-458f-f745-08da399f7431
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT025.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2706
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds support for the PCH extension in the Lan8814 PHY,
-allowing the PHY to report RX timestamps to the MAC in the ethernet
-preamble.
+This reverts commit 6417250d3f894e66a68ba1cd93676143f2376a6f
+and exports the function. 
 
-When using the PCH extension, the PHY will only report the nanoseconds
-part of the timestamp in-band, and the seconds part out-of-band.
-The main goal in the end is to lower the pressure on the MDIO bus, which
-may get pushed to its limit on 48 ports switches doing PTP at a high
-rate.
+We need this funtion in amdgpu driver to fix a bug.
 
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Signed-off-by: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
 ---
- drivers/net/phy/micrel.c | 102 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 96 insertions(+), 6 deletions(-)
+ include/linux/workqueue.h | 1 +
+ kernel/workqueue.c        | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index f537e61cb61d..904b46701782 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -116,6 +116,10 @@
- #define LTC_HARD_RESET				0x023F
- #define LTC_HARD_RESET_				BIT(0)
+diff --git a/include/linux/workqueue.h b/include/linux/workqueue.h
+index 7fee9b6cfede..9e41e1226193 100644
+--- a/include/linux/workqueue.h
++++ b/include/linux/workqueue.h
+@@ -453,6 +453,7 @@ extern int schedule_on_each_cpu(work_func_t func);
+ int execute_in_process_context(work_func_t fn, struct execute_work *);
  
-+#define TSU_GENERAL_CONFIG			0x2C0
-+#define TSU_GENERAL_CONFIG_TSU_ENABLE_		BIT(0)
-+#define TSU_GENERAL_CONFIG_TSU_ENABLE_PCH_	BIT(1)
-+
- #define TSU_HARD_RESET				0x02C1
- #define TSU_HARD_RESET_				BIT(0)
+ extern bool flush_work(struct work_struct *work);
++extern bool cancel_work(struct work_struct *work);
+ extern bool cancel_work_sync(struct work_struct *work);
  
-@@ -139,6 +143,7 @@
- 
- #define PTP_OPERATING_MODE			0x0241
- #define PTP_OPERATING_MODE_STANDALONE_		BIT(0)
-+#define PTP_OPERATING_MODE_PCH_			BIT(1)
- 
- #define PTP_TX_MOD				0x028F
- #define PTP_TX_MOD_TX_PTP_SYNC_TS_INSERT_	BIT(12)
-@@ -227,6 +232,15 @@
- #define PS_TO_REG				200
- #define FIFO_SIZE				8
- 
-+struct lan8814_skb_cb {
-+	u8 rew_op;
-+	u16 ts_id;
-+	unsigned long jiffies;
-+};
-+
-+#define LAN8814_SKB_CB(skb) \
-+	((struct lan8814_skb_cb *)((skb)->cb))
-+
- struct kszphy_hw_stat {
- 	const char *string;
- 	u8 reg;
-@@ -1809,6 +1823,16 @@ static void lan8814_ptp_rx_ts_get(struct phy_device *phydev,
- 	*seq_id = lanphy_read_page_reg(phydev, 5, PTP_RX_MSG_HEADER2);
+ extern bool flush_delayed_work(struct delayed_work *dwork);
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 613917bbc4e7..f94b596ebffd 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -3267,6 +3267,15 @@ static bool __cancel_work(struct work_struct *work, bool is_dwork)
+ 	return ret;
  }
  
-+static void lan8814_ptp_rx_ts_get_partial(struct phy_device *phydev,
-+					  u32 *seconds, u16 *seq_id)
++/*
++ * See cancel_delayed_work()
++ */
++bool cancel_work(struct work_struct *work)
 +{
-+	*seconds = lanphy_read_page_reg(phydev, 5, PTP_RX_INGRESS_SEC_HI);
-+	*seconds = (*seconds << 16) |
-+		   lanphy_read_page_reg(phydev, 5, PTP_RX_INGRESS_SEC_LO);
-+
-+	*seq_id = lanphy_read_page_reg(phydev, 5, PTP_RX_MSG_HEADER2);
++	return __cancel_work(work, false);
 +}
++EXPORT_SYMBOL(cancel_work);
 +
- static void lan8814_ptp_tx_ts_get(struct phy_device *phydev,
- 				  u32 *seconds, u32 *nano_seconds, u16 *seq_id)
- {
-@@ -1955,6 +1979,13 @@ static int lan8814_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
- 	lan8814_flush_fifo(ptp_priv->phydev, false);
- 	lan8814_flush_fifo(ptp_priv->phydev, true);
- 
-+	if (phydev->interface == PHY_INTERFACE_MODE_QUSGMII &&
-+	    ptp_priv->hwts_tx_type == HWTSTAMP_TX_ON)
-+		phy_inband_ext_set_available(phydev, PHY_INBAND_EXT_PCH,
-+					     PHY_INBAND_EXT_PCH);
-+	else
-+		phy_inband_ext_set_available(phydev, PHY_INBAND_EXT_PCH, 0);
-+
- 	return copy_to_user(ifr->ifr_data, &config, sizeof(config)) ? -EFAULT : 0;
- }
- 
-@@ -2283,11 +2314,17 @@ static int lan8814_ptpci_adjfine(struct ptp_clock_info *ptpci, long scaled_ppm)
- 	return 0;
- }
- 
--static void lan8814_get_sig_tx(struct sk_buff *skb, u16 *sig)
-+static void lan8814_get_sig_tx(struct phy_device *phydev,
-+			       struct sk_buff *skb, u16 *sig)
- {
- 	struct ptp_header *ptp_header;
- 	u32 type;
- 
-+	if (phy_inband_ext_enabled(phydev, PHY_INBAND_EXT_PCH)) {
-+		*sig = LAN8814_SKB_CB(skb)->ts_id >> 2;
-+		return;
-+	}
-+
- 	type = ptp_classify_raw(skb);
- 	ptp_header = ptp_parse_header(skb, type);
- 
-@@ -2309,7 +2346,7 @@ static void lan8814_dequeue_tx_skb(struct kszphy_ptp_priv *ptp_priv)
- 
- 	spin_lock_irqsave(&ptp_priv->tx_queue.lock, flags);
- 	skb_queue_walk_safe(&ptp_priv->tx_queue, skb, skb_tmp) {
--		lan8814_get_sig_tx(skb, &skb_sig);
-+		lan8814_get_sig_tx(phydev, skb, &skb_sig);
- 
- 		if (memcmp(&skb_sig, &seq_id, sizeof(seq_id)))
- 			continue;
-@@ -2367,8 +2404,20 @@ static bool lan8814_match_skb(struct kszphy_ptp_priv *ptp_priv,
- 
- 	if (ret) {
- 		shhwtstamps = skb_hwtstamps(skb);
--		memset(shhwtstamps, 0, sizeof(*shhwtstamps));
--		shhwtstamps->hwtstamp = ktime_set(rx_ts->seconds, rx_ts->nsec);
-+
-+		if (phy_inband_ext_enabled(ptp_priv->phydev, PHY_INBAND_EXT_PCH)) {
-+			/* When using the PCH extension, we get the seconds part
-+			 * from MDIO accesses, but the seconds part gets
-+			 * set by the MAC driver according to the PCH data in the
-+			 * preamble
-+			 */
-+			struct timespec64 ts = ktime_to_timespec64(shhwtstamps->hwtstamp);
-+
-+			shhwtstamps->hwtstamp = ktime_set(rx_ts->seconds, ts.tv_nsec);
-+		} else {
-+			memset(shhwtstamps, 0, sizeof(*shhwtstamps));
-+			shhwtstamps->hwtstamp = ktime_set(rx_ts->seconds, rx_ts->nsec);
-+		}
- 		netif_rx(skb);
- 	}
- 
-@@ -2387,8 +2436,17 @@ static void lan8814_get_rx_ts(struct kszphy_ptp_priv *ptp_priv)
- 		if (!rx_ts)
- 			return;
- 
--		lan8814_ptp_rx_ts_get(phydev, &rx_ts->seconds, &rx_ts->nsec,
--				      &rx_ts->seq_id);
-+		/* When using PCH mode, the nanoseconds part of the timestamp is
-+		 * transmitted inband through the ethernet preamble. We only need
-+		 * to retrieve the seconds part along with the seq_id, the MAC
-+		 * driver will fill-in the nanoseconds part itself
-+		 */
-+		if (phy_inband_ext_enabled(ptp_priv->phydev, PHY_INBAND_EXT_PCH))
-+			lan8814_ptp_rx_ts_get_partial(phydev, &rx_ts->seconds,
-+						      &rx_ts->seq_id);
-+		else
-+			lan8814_ptp_rx_ts_get(phydev, &rx_ts->seconds,
-+					      &rx_ts->nsec, &rx_ts->seq_id);
- 
- 		/* If we failed to match the skb add it to the queue for when
- 		 * the frame will come
-@@ -2682,6 +2740,36 @@ static int lan8814_set_tunable(struct phy_device *phydev,
- 	}
- }
- 
-+static int lan8814_inband_ext_config(struct phy_device *phydev, u32 mask, u32 ext)
-+{
-+	u32 tsu_cfg;
-+
-+	if (!(mask & PHY_INBAND_EXT_PCH))
-+		return -EOPNOTSUPP;
-+
-+	tsu_cfg = ~TSU_GENERAL_CONFIG_TSU_ENABLE_;
-+
-+	lanphy_write_page_reg(phydev, 5, TSU_GENERAL_CONFIG, tsu_cfg);
-+
-+	if (ext & PHY_INBAND_EXT_PCH) {
-+		lanphy_write_page_reg(phydev, 4, PTP_OPERATING_MODE,
-+				      PTP_OPERATING_MODE_PCH_);
-+
-+		tsu_cfg |= TSU_GENERAL_CONFIG_TSU_ENABLE_PCH_;
-+	} else {
-+		lanphy_write_page_reg(phydev, 4, PTP_OPERATING_MODE,
-+				      PTP_OPERATING_MODE_STANDALONE_);
-+
-+		tsu_cfg &= ~TSU_GENERAL_CONFIG_TSU_ENABLE_PCH_;
-+	}
-+
-+	tsu_cfg |= TSU_GENERAL_CONFIG_TSU_ENABLE_;
-+
-+	lanphy_write_page_reg(phydev, 5, TSU_GENERAL_CONFIG, tsu_cfg);
-+
-+	return 0;
-+}
-+
- static int lan8814_config_init(struct phy_device *phydev)
- {
- 	int val;
-@@ -2914,6 +3002,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.phy_id		= PHY_ID_LAN8814,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	.name		= "Microchip INDY Gigabit Quad PHY",
-+	.inband_ext	= PHY_INBAND_EXT_PCH,
- 	.config_init	= lan8814_config_init,
- 	.probe		= lan8814_probe,
- 	.soft_reset	= genphy_soft_reset,
-@@ -2927,6 +3016,7 @@ static struct phy_driver ksphy_driver[] = {
- 	.resume		= kszphy_resume,
- 	.config_intr	= lan8814_config_intr,
- 	.handle_interrupt = lan8814_handle_interrupt,
-+	.inband_ext_config = lan8814_inband_ext_config,
- }, {
- 	.phy_id		= PHY_ID_LAN8804,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ /**
+  * cancel_delayed_work - cancel a delayed work
+  * @dwork: delayed_work to cancel
 -- 
-2.36.1
+2.25.1
 
