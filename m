@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD63C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE79C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343828AbiESXwA (ORCPT
+        id S1343849AbiESXwF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58438 "EHLO
+        Thu, 19 May 2022 19:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343806AbiESXve (ORCPT
+        with ESMTP id S1343800AbiESXvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:51:34 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1927A3969C
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:32 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so6537404pjq.2
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:32 -0700 (PDT)
+        Thu, 19 May 2022 19:51:32 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55293B3D8
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:29 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id l14so6604365pjk.2
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:51:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=F2j8gBiRNl2VaOq43M0rn2Ao2XR/GvcvBpoHrX5f89k=;
-        b=mZ9xWcJPGJCLwrQNju9yrBuEuoKSQwUkwLIZnq2Z6nDS5vOkDGMOSfsKQ2m5wbrJGS
-         im9eLAUujU9NdwzEiNvDe08dbGQFiBgqdKNUfakDj3mF9zmQpV/sMgYT8f+3D+/YSZYq
-         x1mgKgyJM6AaxFa5ZJM8fwIirKWFbnctjc8M0=
+        bh=q35UEoXZMSOCcWFw42emLPYiONOKqm2lz40BTN9A+tM=;
+        b=DqXWeTE0OEyINrjPcpc9yri/jFkIZtNX9Jtkf89JF7Ixsn2tRbTntduA/QiAb4FOuc
+         PDvVmT2zyplpwW6ARV04IhNM28Ecb25ZSry69jftIUQd9WwWmVoE7JvgFw6DUa/XmQJV
+         sTQCP6ztMskUe/UDVTqet2hxP5IvoMk3Vtp5U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=F2j8gBiRNl2VaOq43M0rn2Ao2XR/GvcvBpoHrX5f89k=;
-        b=auh3poPRlS+bhSzsueF9FZZpyj3xDuFw32gcq0Y5OTc+RFmHtVw3bkK1pnBNK59SSR
-         p7fQ3v+seR7BJlCPjaIA4Ayqiy3ZgEhdO4d4+Y8aY1ybbB4TrBjBF1rKsO4ryABQs20u
-         QiUIqjeXS/gEwkjFMYwvicQ8wkBuARFHdPmzY+2qvWptI2MGzI2d/nB+lp7XOi0TWUKH
-         0Pdi7IvH2sXFxGsu1mBrp1VzdTXsfx0X0oMCk4Xue3g7vF2k0O8l7sIO5Do+K0Lum1ws
-         SSEZhQm4dAUsuJQv5SmjZJgfsNlZ4iTqL6OpACYiPtDufF6gJBRFe4ec27eiFvnjfv5K
-         ZaqA==
-X-Gm-Message-State: AOAM532UkqcilNczNRWvhDM+HrSSORM86y7KkVwtgFLOyBlwY6mBXbaa
-        hMYLzDr9hQkxYkbb8bHiQ1ZSfA==
-X-Google-Smtp-Source: ABdhPJxUwcFTBnCpm03bJuEKOfdkbdElV+yux9xGU1D+TTegkYpeTprFQkCozMA/Qs7+oaUQIP0DXg==
-X-Received: by 2002:a17:902:c752:b0:161:7cb4:78b8 with SMTP id q18-20020a170902c75200b001617cb478b8mr6940375plq.39.1653004291348;
-        Thu, 19 May 2022 16:51:31 -0700 (PDT)
+        bh=q35UEoXZMSOCcWFw42emLPYiONOKqm2lz40BTN9A+tM=;
+        b=33N4f3sKNke/P4UEl1JnysywWrG+OE57nTmc1Fqamhlw41vG/Vv6tvB1Q3FUTJNu5p
+         5iT9YFjAzH5VFdQxrdvjE/tgAm11PzqjL95sI7EPQMMER0FtDB4IubU+pAsUdZT5yBSQ
+         HY5HDIu44DIYWJnb0JlYPvRutHZcUM4n/TicUYw4yEZ1iCz9yBMq/zO8CYtEJMp+q/3+
+         byuHD1P2l2gwSnuguYJ+Izo1doousbgxzBMeF2rJln3ns/QbkaDhelRx9Yel+K3Gw43o
+         /3uA59FMJfxQGktgwQQcCBN9SzfFxEBzpFvGMkUdOrNQP9GE4IDIWwoaSCFYczHobhWZ
+         c2uw==
+X-Gm-Message-State: AOAM532rv0I6Xztyu5nc8nTZXIVBz3CnVdmM7BHLhT0r94CsAcg6TGTT
+        jO1fJdnK5K5TDj0w1Z/k8YLeMQ==
+X-Google-Smtp-Source: ABdhPJzMGN37UVZtjWP6BKx/lse700pzDoGhoFR29+V9COGUUz+/fqUNPpKhMjPOpqTK8XweCe+SCg==
+X-Received: by 2002:a17:902:8501:b0:15f:173:40e1 with SMTP id bj1-20020a170902850100b0015f017340e1mr7086601plb.74.1653004288460;
+        Thu, 19 May 2022 16:51:28 -0700 (PDT)
 Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:e45f:1f3c:299b:4d86])
-        by smtp.gmail.com with ESMTPSA id m2-20020a6545c2000000b003c18ab7389asm4128992pgr.36.2022.05.19.16.51.30
+        by smtp.gmail.com with ESMTPSA id m2-20020a6545c2000000b003c18ab7389asm4128992pgr.36.2022.05.19.16.51.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 16:51:31 -0700 (PDT)
+        Thu, 19 May 2022 16:51:28 -0700 (PDT)
 From:   Douglas Anderson <dianders@chromium.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
@@ -59,12 +59,11 @@ Cc:     Stephen Boyd <swboyd@chromium.org>, linux-arm-msm@vger.kernel.org,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
         Julius Werner <jwerner@chromium.org>,
         Douglas Anderson <dianders@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Stephen Boyd <sboyd@codeaurora.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/5] dt-bindings: arm: qcom: Add / fix sc7280 board bindings
-Date:   Thu, 19 May 2022 16:51:08 -0700
-Message-Id: <20220519164914.v3.4.I1318c1ae2ce55ade1d092fc21df846360b15c560@changeid>
+Subject: [PATCH v3 2/5] dt-bindings: arm: qcom: Mention that Chromebooks use a different scheme
+Date:   Thu, 19 May 2022 16:51:06 -0700
+Message-Id: <20220519164914.v3.2.I6418884d8bab6956c7016304f45adc7df808face@changeid>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 In-Reply-To: <20220519164914.v3.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
 References: <20220519164914.v3.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
@@ -74,79 +73,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This copy-pastes compatibles from sc7280-based boards from the device
-trees to the yaml file. It also fixes the CRD/IDP bindings which had
-gotten stale.
+The qcom.yaml bindings file has a whole description of what the
+top-level compatible should look like for Qualcomm devices. It doesn't
+match what Chromebooks do, so add a link to the Chromebook docs.
 
+Reported-by: Stephen Boyd <swboyd@chromium.org>
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-It should be noted that these match the sc7280 boards as of the top of
-the "for-next" branch of the tree
-git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git
+The link added here will (obviously) not function until the
+documentation patch makes it to mainline. Presumably folks who want to
+read it in the meantime can find it pretty easily. If there's a better
+way to link this then please let me know.
 
-(no changes since v2)
+Changes in v3:
+- ("Mention that Chromebooks use a different scheme") split out for v3.
 
-Changes in v2:
-- Use a "description" instead of a comment for each item.
-
- .../devicetree/bindings/arm/qcom.yaml         | 42 +++++++++++++++----
- 1 file changed, 34 insertions(+), 8 deletions(-)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 2269493a1b48..f8caf4b920c8 100644
+index 5c06d1bfc046..df5230792b37 100644
 --- a/Documentation/devicetree/bindings/arm/qcom.yaml
 +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -404,14 +404,40 @@ properties:
-           - const: google,trogdor-sku0
-           - const: qcom,sc7180
+@@ -90,6 +90,11 @@ description: |
+   A dragonboard board v0.1 of subtype 1 with an apq8074 SoC version 2, made in
+   foundry 2.
  
--      - items:
--          - enum:
--              - qcom,sc7280-crd
--              - qcom,sc7280-idp
--              - qcom,sc7280-idp2
--              - google,hoglin
--              - google,piglin
--              - google,senor
-+      - description: Qualcomm Technologies, Inc. sc7280 CRD platform (rev3 - 4)
-+        items:
-+          - const: qcom,sc7280-crd
-+          - const: google,hoglin-rev3
-+          - const: google,hoglin-rev4
-+          - const: google,piglin-rev3
-+          - const: google,piglin-rev4
-+          - const: qcom,sc7280
++  There are many devices in the list below that run the standard ChromeOS
++  bootloader setup and use the open source depthcharge bootloader to boot the
++  OS. These devices do not use the scheme described above. For details, see:
++  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/arm/google/chromebook-boot-flow.rst
 +
-+      - description: Qualcomm Technologies, Inc. sc7280 CRD platform (newest rev)
-+        items:
-+          - const: google,hoglin
-+          - const: qcom,sc7280
-+
-+      - description: Qualcomm Technologies, Inc. sc7280 IDP SKU1 platform
-+        items:
-+          - const: qcom,sc7280-idp
-+          - const: google,senor
-+          - const: qcom,sc7280
-+
-+      - description: Qualcomm Technologies, Inc. sc7280 IDP SKU2 platform
-+        items:
-+          - const: qcom,sc7280-idp2
-+          - const: google,piglin
-+          - const: qcom,sc7280
-+
-+      - description: Google Herobrine (newest rev)
-+        items:
-+          - const: google,herobrine
-+          - const: qcom,sc7280
-+
-+      - description: Google Villager (newest rev)
-+        items:
-+          - const: google,villager
-           - const: qcom,sc7280
- 
-       - items:
+ properties:
+   $nodename:
+     const: "/"
 -- 
 2.36.1.124.g0e6072fb45-goog
 
