@@ -2,98 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 11:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96318C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 11:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237627AbiESLzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 07:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33154 "EHLO
+        id S232024AbiESL45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 07:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237611AbiESLzh (ORCPT
+        with ESMTP id S237552AbiESL4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 07:55:37 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF5BB82FA;
-        Thu, 19 May 2022 04:55:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652961335; x=1684497335;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=t8Pe4Q+TJHqdH7A97sboo3Z2TolIf8EzWhjhwNv7dsg=;
-  b=Tj+4p/nOQpg9L2ypSsevkuzqvs1kG8dIkLkTpdW27YVIXrwDtmmL87Z1
-   6ASJSKj3dB3HOAMJ+LMRWQYL2ZoVxmw/GDOGmMj5Pz5EEsW11L28fEKpP
-   F21U/0dn8NLlQVs3+I6PjSKgEf4AYWv7qjAhVc2XBfQxVfe0Ji1BCaIqi
-   AHNcnkmc4bvWMHr7Ro6CwOKPH2T80mPYXOD+gQaNR6pdLepL+SCxxF9Su
-   s+JNuseUbcjxnMfm6PgU31BER2lXYLh+PWKWbK3YTyYrrN5tzhSSLvVFh
-   uS/uphX/rUV0xMrTNZvuNd3FiYNug4Aaxix/lWxvlPauImCIAUyTVSkN9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="270988936"
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="270988936"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 04:55:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="556863492"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 19 May 2022 04:55:27 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id E88F0109; Thu, 19 May 2022 14:55:27 +0300 (EEST)
-Date:   Thu, 19 May 2022 14:55:27 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCHv6 02/15] mm: Add support for unaccepted memory
-Message-ID: <20220519115527.jqzrvsqk4o225m6d@black.fi.intel.com>
-References: <20220517153444.11195-1-kirill.shutemov@linux.intel.com>
- <20220517153444.11195-3-kirill.shutemov@linux.intel.com>
- <972b5335-98df-f7b2-4b4f-53695e684d8b@amd.com>
+        Thu, 19 May 2022 07:56:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B759162102
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 04:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652961403;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vUzlKZtKtiKnTkl0c+yvVz6DAi0GpJ/ajyiMuXYkKV0=;
+        b=IS24Wpo2LIoBzJbMU9ExPpVT++yOueSUkxkF1cySk838mntHKGwnsV0oVYJQ3rv3f3yqwb
+        deziW2nyodUuz/4eAOCcf9swowTfUNfRQDLP8oTzM1W9rhN8XiNaBtkKAvRcA+7cUiP83f
+        hWen40n8aRy3R3henjuPKY18jm8JTZo=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-632-9wAA94kPPGecafpiWMy8NQ-1; Thu, 19 May 2022 07:56:42 -0400
+X-MC-Unique: 9wAA94kPPGecafpiWMy8NQ-1
+Received: by mail-pl1-f199.google.com with SMTP id o10-20020a170902d4ca00b00161d8033431so1275233plg.20
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 04:56:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vUzlKZtKtiKnTkl0c+yvVz6DAi0GpJ/ajyiMuXYkKV0=;
+        b=Om9wEZBuGoeNGaTjT9IBjbQ+i5G2JqS7NcMB0ITS14DTuHuevFeOlfSzMowKQf2gsj
+         vLic9RlvwaWevJLf8O7GHTVZOWxtqW6hTZdiXz5DCHdpE37rBveXPAYzd8SR7Ym8hF4g
+         eF9ysz97oyuuG4XXthTHGWD7aAWYrQrwQ29wZ++QDdv0ufrNrY9SzZdb6mW9Cpmqkx/S
+         2p2pDhODWwaiHr7HkBIg4rJvbgcVi49HjjLZ7Kx+uFBLZUK0UpB5XANem0F+xkazNQcm
+         087Luj4UX8N1g5Pwv4s+GwxThtf8o8uAFBdg/BBH+INddrVz5JFfTH/4dMJvc1wGrcGx
+         T2Ag==
+X-Gm-Message-State: AOAM532CL4iW1zKiENWz3lBynk+pLdg0nrBJibq4WBToLN/YicxOmyiA
+        pQDEohHSlO3SyBddLK4CJgLUCrTBW5kh3BiVpASgun3fLgZnugY9Xfi4KQjHQeyi9Tk+FYArQuS
+        P8G17aDlVPxZV60y9rTgG86izy6342uu+z52LdBXZ
+X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id k18-20020a170902c41200b00161af8bf478mr4521227plk.67.1652961401566;
+        Thu, 19 May 2022 04:56:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwaJcMg0BaVxCTdCDQ3mQxkDhNi5bxy54g0yctOXIo/JTNwcXdo8zjGgzXssPr6OROkM+zoGvNENhA/pSXCpxY=
+X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id
+ k18-20020a170902c41200b00161af8bf478mr4521208plk.67.1652961401301; Thu, 19
+ May 2022 04:56:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <972b5335-98df-f7b2-4b4f-53695e684d8b@amd.com>
+References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+ <YoX7iHddAd4FkQRQ@infradead.org> <YoX904CAFOAfWeJN@kroah.com>
+ <YoYCIhYhzLmhIGxe@infradead.org> <CAO-hwJL4Pj4JaRquoXD1AtegcKnh22_T0Z0VY_peZ8FRko3kZw@mail.gmail.com>
+ <87ee0p951b.fsf@toke.dk>
+In-Reply-To: <87ee0p951b.fsf@toke.dk>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 19 May 2022 13:56:30 +0200
+Message-ID: <CAO-hwJKwj6H0Nc_gqsN5okT2ipLL3H6fqe23_vpO+xC3PnX5uw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 12:43:15PM +0200, Gupta, Pankaj wrote:
-> If both Intel TDX and AMD SEV-SNP requires the memory to be accepted before
-> it can be used by the guest. In what other use cases (apart from memory
-> hotplug), the lazy memory acceptance will be useful?
+On Thu, May 19, 2022 at 12:43 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>
+> Benjamin Tissoires <benjamin.tissoires@redhat.com> writes:
+>
+> > On Thu, May 19, 2022 at 10:39 AM Christoph Hellwig <hch@infradead.org> =
+wrote:
+> >>
+> >> On Thu, May 19, 2022 at 10:20:35AM +0200, Greg KH wrote:
+> >> > > are written using a hip new VM?
+> >> >
+> >> > Ugh, don't mention UDI, that's a bad flashback...
+> >>
+> >> But that is very much what we are doing here.
+> >>
+> >> > I thought the goal here was to move a lot of the quirk handling and
+> >> > "fixup the broken HID decriptors in this device" out of kernel .c co=
+de
+> >> > and into BPF code instead, which this patchset would allow.
+> >
+> > Yes, quirks are a big motivation for this work. Right now half of the
+> > HID drivers are less than 100 lines of code, and are just trivial
+> > fixes (one byte in the report descriptor, one key mapping, etc...).
+> > Using eBPF for those would simplify the process from the user point of
+> > view: you drop a "firmware fix" as an eBPF program in your system and
+> > you can continue working on your existing kernel.
+>
+> How do you envision those BPF programs living, and how would they be
+> distributed? (In-tree / out of tree?)
+>
 
-It is nothing to do with hotplug.
+As Greg mentioned in his reply, report descriptors fixups don't do
+much besides changing a memory buffer at probe time. So we can either
+have udev load the program, pin it and forget about it, or we can also
+have the kernel do that for us.
 
-Any memory has to be accepted before it can be used inside the TDX or
-SEV-SNP guest. It can happen upfront, before kernel gets control (like by
-firmware) or by kernel. The idea is to accept small portion of the memory
-upfront and leave the rest to the kernel. The reason why delaying
-acceptance make sense is boot time. We want the guest to start doing
-useful stuff as fast as possible.
+So I envision the distribution to be hybrid:
+- for plain fixups where no userspace is required, we should
+distribute those programs in the kernel itself, in-tree.
+This series already implements pre-loading of BPF programs for the
+core part of HID-BPF, but I plan on working on some automation of
+pre-loading of these programs from the kernel itself when we need to
+do so.
 
--- 
- Kirill A. Shutemov
+Ideally, the process would be:
+* user reports a bug
+* developer produces an eBPF program (and maybe compile it if the user
+doesn't have LLVM)
+* user tests/validates the fix without having to recompile anything
+* developer drops the program in-tree
+* some automated magic happens (still unclear exactly how to define
+which HID device needs which eBPF program ATM)
+* when the kernel sees this exact same device (BUS/VID/PID/INTERFACE)
+it loads the fixup
+
+- the other part of the hybrid solution is for when userspace is
+heavily involved (because it exports a new dbus interface for that
+particular feature on this device). We can not really automatically
+preload the BPF program because we might not have the user in front of
+it.
+So in that case, the program would be hosted alongside the
+application, out-of-the-tree, but given that to be able to call kernel
+functions you need to be GPL, some public distribution of the sources
+is required.
+
+Cheers,
+Benjamin
+
