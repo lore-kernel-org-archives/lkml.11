@@ -2,328 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B133C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74CD0C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238032AbiESMro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 08:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49456 "EHLO
+        id S238079AbiESMtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 08:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238028AbiESMra (ORCPT
+        with ESMTP id S237337AbiESMtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 08:47:30 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7F3BA98A
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:47:29 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id i1so4691650plg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:47:29 -0700 (PDT)
+        Thu, 19 May 2022 08:49:04 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66966BA98C
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:49:03 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id bs17so4654029qkb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:49:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WcILqSPKpKM1ieuMAubHYoA522zDgq1QGQHfQOO5iAo=;
-        b=i1EyqSfj/2Rf2GZjBE0D5AHT22mui/DxsSLYkSsV6duNTJQGnVGukkA7Rcx/ETyL9I
-         UlYMu/n2MJiw7ATW2+xEPGyaECqjwrllgZvMAh3ywgeNEITrUuHBNtQrs7PSeVFgAaH5
-         2qHNGcHjLwqeoicf0AiEARUlKlPVWVvfiAKPHwFsQcEzOGjz1i8weV+jz7+UBEPYJol8
-         //9+gtyhkolAdCAlbYJ4J/r81HOHdQqFI0a3Y6djuO14419ozkFTg5cjYvANM8E5PiD9
-         qFTGXhfidzthTtm+EiIPW2GETwwJGzg8F5EOaRByxlVafSvCo4eZFZHwJewdHcp9S+Lm
-         aJRw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZYNVM4/IO7V0fYNlQI5NvKWUT/yRQDy6ZvaTZbyqfac=;
+        b=mJWbE0QEIqGVvxszguDCXk6HwPAW7vSyy5sd3KThi4tH55htbFfVr/pC0ToJ9Wjpa1
+         NMmJnnauuKYVCnsnAXjrwKHeXhHl8ZPuLdHTFaFsHnnnmZs/DR1fBs0GWnkicU365rSs
+         MDd0k6/yu9md8zAjjRbTMI3qMGHSL2wGEXHcaHNOhg7ATegQxyCdQWMpnJjS9kEMrpsw
+         qAf5/l3VqY4vD1G5EoG5q0Ppuy/F+LqgJQy7AHg2mM4GxpxngJov49ELqlDU312VZzAS
+         x0NZG6iAjVCyxWGkBA/EzzSF3qXZiUBc5CNglAFiNWxAi2Te8oEllwRgTQe+Qirgs8yO
+         AkHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WcILqSPKpKM1ieuMAubHYoA522zDgq1QGQHfQOO5iAo=;
-        b=O64phzpBe3SQ9vIXKi4ZUOXkbpJZyGftea0QvI2zC5qEd/vtzsCgAl3Dg8ErDXc1g0
-         PEu/xeQfiAN9D5xoPHP9nKlywWVOwq11TMzpUPfsd0wIBTbrVC6Q/sD0q1ytb0HBfV3G
-         8hyfNzMtEtyB55IKD3cQ0w/HQ2MN2hQbF27C34noJt8a5yHy3mTDbHb28P1VF16ZP9Ms
-         Km+xC2F3JWMxwG/M5J1KP8GdkG/Do0xk5/ohIrUov9/Vq/WvG/UdH9Jl2rTmXmLulTOi
-         Em5Uil/K++Qw9B4Z7A0JVHBJN8ELPc+mhkM0odCODiWqlY5NGpqUmbGE8UoegmwPsLy9
-         avkA==
-X-Gm-Message-State: AOAM53177LF/UE19iIXlZZGObi+pvcfCEsEfC2u2y3O0ZA9yzBwNsWD8
-        qan6EvNXjVwU6XSwNNqpGhmldw==
-X-Google-Smtp-Source: ABdhPJxeIAsHF8VyN+llpWr8cC7jI+2ytsBJoR2SYlXRLrxfN9MtF+R3b28WkAJdzDYYKR7ktvffJg==
-X-Received: by 2002:a17:90a:6ac5:b0:1df:77a0:a72f with SMTP id b5-20020a17090a6ac500b001df77a0a72fmr5499840pjm.125.1652964448573;
-        Thu, 19 May 2022 05:47:28 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id t5-20020a17090ad14500b001d960eaed66sm3441296pjw.42.2022.05.19.05.47.23
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZYNVM4/IO7V0fYNlQI5NvKWUT/yRQDy6ZvaTZbyqfac=;
+        b=voaPEAAF5o+PPJeGF7tjZONrVjAhM8hXM/mOaSPl1QsNjDjAaRYabd+a802/qm6x5q
+         bylsEmlwTVxchMrhlhf+j5nGIuAvz2iWrhkIC9H4Ee+Nz2qIXglCRsQ+uT2z0m9uFn1/
+         wvq13591yNi/O3reQbR1YXHL28YlN6dH9mD85DE7lCtha5zhjHrHkNbqOCAjAOcSonYR
+         L1kMOC8iKLsu52Qri2tFypCchBil8p9pcBQQjXpBWMTrMvPRv3o1wgqbBQI2tiAUF7Sp
+         oh11FKeGWGEx75JEDgSnXVJvSYVMdcyJ4H+z9B5vNDMwkLt2QkME/7ALYaaR2VHLYiv7
+         T1JA==
+X-Gm-Message-State: AOAM532mvCcVD9o49r4sa/2LFHUoJTyMQeKBaDXoaUzYiiCMsK8CMatr
+        SoqzxUGWzDu1VZWiGN9FMfIWeQ==
+X-Google-Smtp-Source: ABdhPJwC7dyR0Qk9BGcWgMtmzQUq9wbfQt5NmHbKY9nEqa9QgAxBxse0MPnEsgUdrJlcKLQUc1t5uA==
+X-Received: by 2002:a37:6883:0:b0:6a3:42ae:e17b with SMTP id d125-20020a376883000000b006a342aee17bmr524511qkc.59.1652964542542;
+        Thu, 19 May 2022 05:49:02 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id p7-20020a37a607000000b0069fc13ce24dsm1250439qke.126.2022.05.19.05.49.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 05:47:28 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     corbet@lwn.net, akpm@linux-foundation.org, paulmck@kernel.org,
-        mike.kravetz@oracle.com, osalvador@suse.de, david@redhat.com
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH 2/2] mm: memory_hotplug: introduce SECTION_CANNOT_OPTIMIZE_VMEMMAP
-Date:   Thu, 19 May 2022 20:46:32 +0800
-Message-Id: <20220519124632.92091-3-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220519124632.92091-1-songmuchun@bytedance.com>
-References: <20220519124632.92091-1-songmuchun@bytedance.com>
+        Thu, 19 May 2022 05:49:01 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nrfaO-008vEJ-VD; Thu, 19 May 2022 09:49:00 -0300
+Date:   Thu, 19 May 2022 09:49:00 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Long Li <longli@microsoft.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Message-ID: <20220519124900.GR63055@ziepe.ca>
+References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
+ <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
+ <20220517152409.GJ63055@ziepe.ca>
+ <PH7PR21MB326393A3D6BF619C2A7B4A42CED09@PH7PR21MB3263.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH7PR21MB326393A3D6BF619C2A7B4A42CED09@PH7PR21MB3263.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For now, the feature of hugetlb_free_vmemmap is not compatible with the
-feature of memory_hotplug.memmap_on_memory, and hugetlb_free_vmemmap
-takes precedence over memory_hotplug.memmap_on_memory. However, someone
-wants to make memory_hotplug.memmap_on_memory takes precedence over
-hugetlb_free_vmemmap since memmap_on_memory makes it more likely to
-succeed memory hotplug in close-to-OOM situations.  So the decision
-of making hugetlb_free_vmemmap take precedence is not wise and elegant.
-The proper approach is to have hugetlb_vmemmap.c do the check whether
-the section which the HugeTLB pages belong to can be optimized.  If
-the section's vmemmap pages are allocated from the added memory block
-itself, hugetlb_free_vmemmap should refuse to optimize the vmemmap,
-otherwise, do the optimization.  Then both kernel parameters are
-compatible.  So this patch introduces SECTION_CANNOT_OPTIMIZE_VMEMMAP
-to indicate whether the section could be optimized.
+On Thu, May 19, 2022 at 05:57:01AM +0000, Long Li wrote:
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- Documentation/admin-guide/kernel-parameters.txt | 22 +++++++++----------
- Documentation/admin-guide/sysctl/vm.rst         |  5 ++---
- include/linux/memory_hotplug.h                  |  9 --------
- include/linux/mmzone.h                          | 17 +++++++++++++++
- mm/hugetlb_vmemmap.c                            | 28 ++++++++++++++++++-------
- mm/memory_hotplug.c                             | 22 +++++++------------
- mm/sparse.c                                     |  8 +++++++
- 7 files changed, 66 insertions(+), 45 deletions(-)
+> > > +
+> > > +	err = ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd),
+> > > +udata->inlen));
+> > 
+> > Skeptical this min is correct, many other drivers get this wrong.
+> 
+> I think this is correct. This is to prevent user-mode passing more data that may overrun the kernel buffer.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index c087f578d9d8..5359ffb04a84 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1730,9 +1730,11 @@
- 			Built with CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON=y,
- 			the default is on.
+And what happens when udata->inlen is, say, 0?
  
--			This is not compatible with memory_hotplug.memmap_on_memory.
--			If both parameters are enabled, hugetlb_free_vmemmap takes
--			precedence over memory_hotplug.memmap_on_memory.
-+			Note that the vmemmap pages may be allocated from the added
-+			memory block itself when memory_hotplug.memmap_on_memory is
-+			enabled, those vmemmap pages cannot be optimized even if this
-+			feature is enabled.  Other vmemmap pages not allocated from
-+			the added memory block itself do not be affected.
- 
- 	hung_task_panic=
- 			[KNL] Should the hung task detector generate panics.
-@@ -3077,10 +3079,12 @@
- 			[KNL,X86,ARM] Boolean flag to enable this feature.
- 			Format: {on | off (default)}
- 			When enabled, runtime hotplugged memory will
--			allocate its internal metadata (struct pages)
--			from the hotadded memory which will allow to
--			hotadd a lot of memory without requiring
--			additional memory to do so.
-+			allocate its internal metadata (struct pages,
-+			those vmemmap pages cannot be optimized even
-+			if hugetlb_free_vmemmap is enabled) from the
-+			hotadded memory which will allow to hotadd a
-+			lot of memory without requiring additional
-+			memory to do so.
- 			This feature is disabled by default because it
- 			has some implication on large (e.g. GB)
- 			allocations in some configurations (e.g. small
-@@ -3090,10 +3094,6 @@
- 			Note that even when enabled, there are a few cases where
- 			the feature is not effective.
- 
--			This is not compatible with hugetlb_free_vmemmap. If
--			both parameters are enabled, hugetlb_free_vmemmap takes
--			precedence over memory_hotplug.memmap_on_memory.
--
- 	memtest=	[KNL,X86,ARM,M68K,PPC,RISCV] Enable memtest
- 			Format: <integer>
- 			default : 0 <disable>
-diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
-index 5c9aa171a0d3..d7374a1e8ac9 100644
---- a/Documentation/admin-guide/sysctl/vm.rst
-+++ b/Documentation/admin-guide/sysctl/vm.rst
-@@ -565,9 +565,8 @@ See Documentation/admin-guide/mm/hugetlbpage.rst
- hugetlb_optimize_vmemmap
- ========================
- 
--This knob is not available when memory_hotplug.memmap_on_memory (kernel parameter)
--is configured or the size of 'struct page' (a structure defined in
--include/linux/mm_types.h) is not power of two (an unusual system config could
-+This knob is not available when the size of 'struct page' (a structure defined
-+in include/linux/mm_types.h) is not power of two (an unusual system config could
- result in this).
- 
- Enable (set to 1) or disable (set to 0) the feature of optimizing vmemmap pages
-diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-index 20d7edf62a6a..e0b2209ab71c 100644
---- a/include/linux/memory_hotplug.h
-+++ b/include/linux/memory_hotplug.h
-@@ -351,13 +351,4 @@ void arch_remove_linear_mapping(u64 start, u64 size);
- extern bool mhp_supports_memmap_on_memory(unsigned long size);
- #endif /* CONFIG_MEMORY_HOTPLUG */
- 
--#ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
--bool mhp_memmap_on_memory(void);
--#else
--static inline bool mhp_memmap_on_memory(void)
--{
--	return false;
--}
--#endif
--
- #endif /* __LINUX_MEMORY_HOTPLUG_H */
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index e0b7618d7212..3f73f24f394c 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1434,6 +1434,7 @@ extern size_t mem_section_usage_size(void);
- 	MAPPER(IS_ONLINE)							\
- 	MAPPER(IS_EARLY)							\
- 	MAPPER(TAINT_ZONE_DEVICE, CONFIG_ZONE_DEVICE)				\
-+	MAPPER(CANNOT_OPTIMIZE_VMEMMAP, CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP)	\
- 	MAPPER(MAP_LAST_BIT)
- 
- #define __SECTION_SHIFT_FLAG_MAPPER_0(x)
-@@ -1471,6 +1472,22 @@ static inline struct page *__section_mem_map_addr(struct mem_section *section)
- 	return (struct page *)map;
- }
- 
-+#ifdef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-+static inline void section_mark_cannot_optimize_vmemmap(struct mem_section *ms)
-+{
-+	ms->section_mem_map |= SECTION_CANNOT_OPTIMIZE_VMEMMAP;
-+}
-+
-+static inline int section_cannot_optimize_vmemmap(struct mem_section *ms)
-+{
-+	return (ms && (ms->section_mem_map & SECTION_CANNOT_OPTIMIZE_VMEMMAP));
-+}
-+#else
-+static inline void section_mark_cannot_optimize_vmemmap(struct mem_section *ms)
-+{
-+}
-+#endif
-+
- static inline int present_section(struct mem_section *section)
- {
- 	return (section && (section->section_mem_map & SECTION_MARKED_PRESENT));
-diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-index fcd9f7872064..f12170520337 100644
---- a/mm/hugetlb_vmemmap.c
-+++ b/mm/hugetlb_vmemmap.c
-@@ -97,18 +97,32 @@ int hugetlb_vmemmap_alloc(struct hstate *h, struct page *head)
- 	return ret;
- }
- 
-+static unsigned int optimizable_vmemmap_pages(struct hstate *h,
-+					      struct page *head)
-+{
-+	unsigned long pfn = page_to_pfn(head);
-+	unsigned long end = pfn + pages_per_huge_page(h);
-+
-+	if (READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF)
-+		return 0;
-+
-+	for (; pfn < end; pfn += PAGES_PER_SECTION) {
-+		if (section_cannot_optimize_vmemmap(__pfn_to_section(pfn)))
-+			return 0;
-+	}
-+
-+	return hugetlb_optimize_vmemmap_pages(h);
-+}
-+
- void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
- {
- 	unsigned long vmemmap_addr = (unsigned long)head;
- 	unsigned long vmemmap_end, vmemmap_reuse, vmemmap_pages;
- 
--	vmemmap_pages = hugetlb_optimize_vmemmap_pages(h);
-+	vmemmap_pages = optimizable_vmemmap_pages(h, head);
- 	if (!vmemmap_pages)
- 		return;
- 
--	if (READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF)
--		return;
--
- 	static_branch_inc(&hugetlb_optimize_vmemmap_key);
- 
- 	vmemmap_addr	+= RESERVE_VMEMMAP_SIZE;
-@@ -199,10 +213,10 @@ static struct ctl_table hugetlb_vmemmap_sysctls[] = {
- static __init int hugetlb_vmemmap_sysctls_init(void)
- {
- 	/*
--	 * If "memory_hotplug.memmap_on_memory" is enabled or "struct page"
--	 * crosses page boundaries, the vmemmap pages cannot be optimized.
-+	 * If "struct page" crosses page boundaries, the vmemmap pages cannot
-+	 * be optimized.
- 	 */
--	if (!mhp_memmap_on_memory() && is_power_of_2(sizeof(struct page)))
-+	if (is_power_of_2(sizeof(struct page)))
- 		register_sysctl_init("vm", hugetlb_vmemmap_sysctls);
- 
- 	return 0;
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 3b360eda933f..7309694c4dee 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -43,30 +43,22 @@
- #include "shuffle.h"
- 
- #ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
--static int memmap_on_memory_set(const char *val, const struct kernel_param *kp)
--{
--	if (hugetlb_optimize_vmemmap_enabled())
--		return 0;
--	return param_set_bool(val, kp);
--}
--
--static const struct kernel_param_ops memmap_on_memory_ops = {
--	.flags	= KERNEL_PARAM_OPS_FL_NOARG,
--	.set	= memmap_on_memory_set,
--	.get	= param_get_bool,
--};
--
- /*
-  * memory_hotplug.memmap_on_memory parameter
-  */
- static bool memmap_on_memory __ro_after_init;
--module_param_cb(memmap_on_memory, &memmap_on_memory_ops, &memmap_on_memory, 0444);
-+module_param(memmap_on_memory, bool, 0444);
- MODULE_PARM_DESC(memmap_on_memory, "Enable memmap on memory for memory hotplug");
- 
--bool mhp_memmap_on_memory(void)
-+static inline bool mhp_memmap_on_memory(void)
- {
- 	return memmap_on_memory;
- }
-+#else
-+static inline bool mhp_memmap_on_memory(void)
-+{
-+	return false;
-+}
- #endif
- 
- enum {
-diff --git a/mm/sparse.c b/mm/sparse.c
-index cb3bfae64036..1f353bf9ea6b 100644
---- a/mm/sparse.c
-+++ b/mm/sparse.c
-@@ -913,6 +913,14 @@ int __meminit sparse_add_section(int nid, unsigned long start_pfn,
- 	ms = __nr_to_section(section_nr);
- 	set_section_nid(section_nr, nid);
- 	__section_mark_present(ms, section_nr);
-+	/*
-+	 * Mark whole section as non-optimizable once there is a subsection
-+	 * whose vmemmap pages are allocated from alternative allocator. The
-+	 * early section is always optimizable since the early section's
-+	 * vmemmap pages do not consider partially being populated.
-+	 */
-+	if (!early_section(ms) && altmap)
-+		section_mark_cannot_optimize_vmemmap(ms);
- 
- 	/* Align memmap to section boundary in the subsection case */
- 	if (section_nr_to_pfn(section_nr) != start_pfn)
--- 
-2.11.0
+> > > +	// map to the page indexed by ucontext->doorbell
+> > 
+> > Not kernel style, be sure to run checkpatch and fix the egregious things.
+> > 
+> > > +static void mana_ib_disassociate_ucontext(struct ib_ucontext
+> > > +*ibcontext) { }
+> > 
+> > Does this driver actually support disassociate? Don't define this function if it
+> > doesn't.
+> > 
+> > I didn't see any mmap zapping so I guess it doesn't.
+> 
+> The user-mode deals with zapping.
+> I see the following comments on rdma_umap_priv_init():
+> 
+> /* RDMA drivers supporting disassociation must have their user space designed
+>  * to cope in some way with their IO pages going to the zero page. */
+> 
+> Is there any other additional work for the kernel driver to support
+> disassociate? It seems uverbs_user_mmap_disassociate() has done all
+> the zapping when destroying a ucontext.
 
+Nope, that looks OK then
+ 
+> I will open PR to rdma-core. The current version of the driver
+> supports queue pair type IB_QPT_RAW_PACKET. The test case will be
+> limited to querying device and load/unload. Running traffic tests
+> will require DPDK (or other user-mode program making use of
+> IB_QPT_RAW_PACKET).
+> 
+> Is it acceptable to develop test cases for this driver without
+> traffic/data tests?
+
+I'm not keen on that, even EFA was able to do simple traffic.
+
+Even with RAW_PACKET I would expect the driver to be able to send/recv
+using standard verbs as RAW_PACKET is a common feature.
+
+Jason
