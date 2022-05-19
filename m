@@ -2,91 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8FB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245278AbiESVmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 17:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
+        id S245363AbiESVmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 17:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245179AbiESVlY (ORCPT
+        with ESMTP id S244755AbiESVmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 17:41:24 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A584EA0D
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:41:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=4Ryv8V/o6iO/NxByO0hQtge0QtXFF+VpHW1PBt63HGE=; b=WBvhQDsCtvUv3fASEBtX4EZBXk
-        u2tcPobZYmRlY6xxZ2I+UCaV/sJheSv+kEXv1F/PR+tvmiMCfUwxOEKu/3BDRz8AQzhSK5iV0b8Wj
-        lyp9minffd1H2Hp100McpbZSi8TdLhffjk3RjtBD2WTOYDUoP2Z/hzNpyZQscToNb1uSIq6FwhlA+
-        ukY0BqtCf8rKa36rePo8M8166lFg8g2YGaYScOpGVO8gZhbKxbONBC/DwieGnDxqFEPogiUZxf3Ok
-        gRcNLjc7SUdihWYWzIF+EkBXd3NHE9fW6i7KxKcAqmU3Vw7PIJ1nT4lVmkdZUUzTVrgqDZZP6bJuM
-        b6MHNE+g==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrntN-0028dk-Ck; Thu, 19 May 2022 21:41:10 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 211F5300859;
-        Thu, 19 May 2022 23:41:07 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 08D862021B1A0; Thu, 19 May 2022 23:41:07 +0200 (CEST)
-Message-ID: <20220519213421.748352112@infradead.org>
-User-Agent: quilt/0.66
-Date:   Thu, 19 May 2022 23:27:53 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     frederic@kernel.org, paulmck@kernel.org, rjw@rjwysocki.net,
-        x86@kernel.org
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        jpoimboe@kernel.org
-Subject: [RFC][PATCH 3/9] cpuidle: Move IRQ state validation
-References: <20220519212750.656413111@infradead.org>
+        Thu, 19 May 2022 17:42:07 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B70107893
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:41:58 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so1008305otk.6
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:41:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=CpuiHu6st5jvRyMaG9VX7RMBtuAsBPj44JQMGd55xSk=;
+        b=X1FGonc0itVjTaJy5AqOZm4ZPWMp6o//luJ4v+XTffdBLPZrA1yullEKYrYVTwSLo3
+         1TK+BNFnpUwv1gFLulhTKSZfr/5MIgaqTHBHya7aH4f64OqcYFI9UARAqZnkjjAq2fjQ
+         XHJ1bWtRjdwOJL/jPAredUfs5ZGMzP0parqGKOQJ1hukOGUrww/Jx+ttLyJ7ce9u8aDV
+         gwG8WgOBlcQuOMOgIBiQKSuvyFhxiGHMTOJkGZWALAncZrzLeLH0C5L8tVpuzJdavhmX
+         PK7jQz3jbvgevAa4kyujYNTX7ZfCHzIBSL0rkiBVfBBxacwcVnT6zercCqaKtAiWlKCl
+         iJgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=CpuiHu6st5jvRyMaG9VX7RMBtuAsBPj44JQMGd55xSk=;
+        b=vQgWGYbCjm4OEMLQcnS3BPeLf1B62r633KfzWn33oVrLzW09/PigmjP+V0Mc0cK2D+
+         12lq8GQyBQyNYU4XCwEK8dIF92rs3XKeIhDBAvIxhiNX7JnIM+4/F27IPTBppTVKXl+y
+         +GBhnTSU2oREQQOrbrwxR81jYN373Xsou/xbmQ/rY9owHE5js3Wly0SUsVkyeBBW9Rjc
+         xzuS0iM9vKLadmxJ8x75DmNyQEV7ExwWLvgI+thb0W2JSiLWhAz3kThM2UJZ4k8lA2Yz
+         O7g25nU/kmjYpEvdzmRvNZkeza6c2FEeYBIufXlC9bRD6g9mbA1X/IJPgOJlkg7t8BCR
+         QKBQ==
+X-Gm-Message-State: AOAM5311JyR86XsjX6gVVBkrKOpkJZDr6/h+DE506XZNoycYnoeAggb8
+        e08LsXnwV52HDsxiGZeZ8/8=
+X-Google-Smtp-Source: ABdhPJwBml8d2YJQucekuCRaj6PIzvGEkJuWAcNUSWUvgdv8zUnJWbUcTHb2lE59ASNYwXO9JZWlAg==
+X-Received: by 2002:a05:6830:310c:b0:606:66c8:53d4 with SMTP id b12-20020a056830310c00b0060666c853d4mr2686287ots.129.1652996518130;
+        Thu, 19 May 2022 14:41:58 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t187-20020aca5fc4000000b00325cda1ffb4sm188141oib.51.2022.05.19.14.41.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 14:41:57 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <28f3958f-dd25-cb1a-0a4c-040e7706ffc7@roeck-us.net>
+Date:   Thu, 19 May 2022 14:41:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220428172040.GA3623323@roeck-us.net> <YmvVkKXJWBoGqWFx@osiris>
+ <yt9dk0apbicu.fsf@linux.ibm.com> <20220513165955.mkg5wvfi4dwpzoer@revolver>
+ <YoOMsmq24FWsWWyr@osiris> <b18d5338-0031-a813-2825-207bea1b84cb@roeck-us.net>
+ <20220519143541.dfzgoubmkboc6kk4@revolver>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] mapletree-vs-khugepaged
+In-Reply-To: <20220519143541.dfzgoubmkboc6kk4@revolver>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make cpuidle_enter_state() consistent with the s2idle variant and
-verify ->enter() always returns with interrupts disabled.
+On 5/19/22 07:35, Liam Howlett wrote:
+> * Guenter Roeck <linux@roeck-us.net> [220517 10:32]:
+> 
+> ...
+>>
+>> Another bisect result, boot failures with nommu targets (arm:mps2-an385,
+>> m68k:mcf5208evb). Bisect log is the same for both.
+> ...
+>> # first bad commit: [bd773a78705fb58eeadd80e5b31739df4c83c559] nommu: remove uses of VMA linked list
+> 
+> I cannot reproduce this on my side, even with that specific commit.  Can
+> you point me to the failure log, config file, etc?  Do you still see
+> this with the fixes I've sent recently?
+> 
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- drivers/cpuidle/cpuidle.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+This was in linux-next; most recently with next-20220517.
+I don't know if that was up-to-date with your patches.
+The problem seems to be memory allocation failures.
+A sample log is at
+https://kerneltests.org/builders/qemu-m68k-next/builds/1065/steps/qemubuildcommand/logs/stdio
+The log history at
+https://kerneltests.org/builders/qemu-m68k-next?numbuilds=30
+will give you a variety of logs.
 
---- a/drivers/cpuidle/cpuidle.c
-+++ b/drivers/cpuidle/cpuidle.c
-@@ -234,7 +234,11 @@ int cpuidle_enter_state(struct cpuidle_d
- 	stop_critical_timings();
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
- 		rcu_idle_enter();
-+
- 	entered_state = target_state->enter(dev, drv, index);
-+	if (WARN_ON_ONCE(!irqs_disabled()))
-+		raw_local_irq_disable();
-+
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
- 		rcu_idle_exit();
- 	start_critical_timings();
-@@ -246,12 +250,8 @@ int cpuidle_enter_state(struct cpuidle_d
- 	/* The cpu is no longer idle or about to enter idle. */
- 	sched_idle_set_state(NULL);
- 
--	if (broadcast) {
--		if (WARN_ON_ONCE(!irqs_disabled()))
--			local_irq_disable();
--
-+	if (broadcast)
- 		tick_broadcast_exit();
--	}
- 
- 	if (!cpuidle_state_is_coupled(drv, index))
- 		local_irq_enable();
+The configuration is derived from m5208evb_defconfig, with initrd
+and command line embedded in the image. You can see the detailed
+configuration updates at
+https://github.com/groeck/linux-build-test/blob/master/rootfs/m68k/run-qemu-m68k.sh
 
+Qemu command line is
 
+qemu-system-m68k -M mcf5208evb -kernel vmlinux \
+     -cpu m5208 -no-reboot -nographic -monitor none
+     -append "rdinit=/sbin/init console=ttyS0,115200"
+
+with initrd from
+https://github.com/groeck/linux-build-test/blob/master/rootfs/m68k/rootfs-5208.cpio.gz
+
+I use qemu v6.2, but any recent qemu version should work.
+
+Hope this helps,
+Guenter
