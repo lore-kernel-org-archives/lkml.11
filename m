@@ -2,202 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8019FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240673AbiESPRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
+        id S240690AbiESPSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240661AbiESPRB (ORCPT
+        with ESMTP id S234710AbiESPSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:17:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57DA65FF09
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:16:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652973418;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eFxAkTiFYx/27rNrxiNuMe1vTCHfN4tVz87m6TJA89U=;
-        b=ECZCR2WzbqgSWgTXmvLZNNqXQsvlIxYsSZd9y54f5Je7rPrStf5I9irxtT262XG5sYutWy
-        sTT9VOzqo1dHM7r6BI5fA3h5Ds0uCM2YPbPM3csk2G+dysvHmW8LJ1V8p7mX8jdruhDroS
-        uYJD1d4JQnPAW6iy6Nbn2/ON6SDqlFQ=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-228-Ja2n8FvbONii9obOO1aGBg-1; Thu, 19 May 2022 11:16:57 -0400
-X-MC-Unique: Ja2n8FvbONii9obOO1aGBg-1
-Received: by mail-qt1-f200.google.com with SMTP id l7-20020a05622a174700b002f3c49f49ffso4489987qtk.15
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:16:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eFxAkTiFYx/27rNrxiNuMe1vTCHfN4tVz87m6TJA89U=;
-        b=WntLrVIqI9kZVw4JHpUoCIAV+ebpv0tRy5FTaysCKS4xTOqeym6CXoNxw4AjNcR12e
-         IQGBQuV2rwDi1dULmZ45KeYu9KzFmJD9kshTCtSNYg/BDaTVpT8RGrvIux36QuC2uK/w
-         WPgPQ/Skid0Cjeads+aDyf03KaXZRya+tv9hZMAgYNq2ZZEQCMTEb1Xv7FkNUy259E9l
-         oDTp/JfelV8JYbGpYP9V7Wm2NB4aLqGR47QO2XjkD9WmAxOTYzoOaYWmmyTDng0AYsaV
-         fcKHhQKu1ZkoLTaDaA8rlr+YRYm1aXy7poUTFaB7p4Efwj4p/KvkFekrlzFtlW7R8L11
-         HHIw==
-X-Gm-Message-State: AOAM533X2vgyAgOdQfTiBzw7dwLMf+IcANE89Wdq40ba+82NFPe0eZgH
-        ayXYnhdK8GJuM+xQAl+92UjkZBo5pt3t7YXIGnkuQMk5D8mLIpvUX27uZ1D530ERfzrwpFXhHlJ
-        ypDQmYX0PgEWg/tjj0VBoUNKM
-X-Received: by 2002:a05:622a:15cb:b0:2f3:f90f:1939 with SMTP id d11-20020a05622a15cb00b002f3f90f1939mr4332869qty.374.1652973416660;
-        Thu, 19 May 2022 08:16:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxvxlpYrFwSJ+r9PedV8x0+cauaFMXyvayTXrq2OHyietf7KJSz5bBSaj+kURa8rNtS/vfhAg==
-X-Received: by 2002:a05:622a:15cb:b0:2f3:f90f:1939 with SMTP id d11-20020a05622a15cb00b002f3f90f1939mr4332845qty.374.1652973416375;
-        Thu, 19 May 2022 08:16:56 -0700 (PDT)
-Received: from [192.168.1.86] (pool-173-48-131-43.bstnma.fios.verizon.net. [173.48.131.43])
-        by smtp.gmail.com with ESMTPSA id c190-20020ae9edc7000000b0069fc13ce1e3sm1347636qkg.20.2022.05.19.08.16.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 08:16:55 -0700 (PDT)
-Message-ID: <32e5a3b7-9294-bbd5-0ae4-b5c04eb4e0e6@redhat.com>
-Date:   Thu, 19 May 2022 11:16:53 -0400
+        Thu, 19 May 2022 11:18:31 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01olkn2102.outbound.protection.outlook.com [40.92.52.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1A0606ED;
+        Thu, 19 May 2022 08:18:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c5KW/bc1AmvR9URy6rX16DVoLGYgFYe3GqBOh87jq+GZ5lnNJPqWZ4G2Uf/L0+KjmLQipYYAGiNwY+tqkq3Sk50UOTYiNvVMTdxgP63FCS2VjL1Ls3OKpU1P12k1C/qUTHR40H13aEsRr4xvFtzLAuHnQyIhqr1JMtGP8XUBCY4UEU4JnrD0ndS5AW5e2Fp9/QiLQpZwNDepElEduQRAiErHARRDy5+f/a35noaSwYX5m5EBKf5qKcESjItg/2dG/IG0YAMnVsl/9+glxt93QvN7SS0ULcaOxEU7/7YvKq3eH7/lZDL8XAIyYf8YjwDI3q/NC1bPJLUUi9Rm/BNWQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VdPRfZyZ8DUPFSd6YPYlPxi2mxfJDsPaX4KQ61phZ18=;
+ b=LsrzST2x0r2wKl2Bzxh9r1zV/rPl1GbqFznqBo5Uv9pNWUIaO5L9cPCxJfOczdlcsfK7yAMUKmVKmCW990c3A5B5QMeFk6sQtJr4oAvIIQyPej8/OMkZK1WpYvcw9e6c5wnv0Q5JdPdQ6fZt+oMbFCWzMFBi6UL7X3MQ/P5pXvVfAbo0ZNeybsl0fz4Pd9dzsjrQ7knDl9CBJUhVrZHbARtgIzcQIwq9MV++S0UXJifNa3AuNASzYGk9QJIMKBpI22aySrwksbGOMlmx/8pNqNmqrJPOSd6b1JsE0W5xUb9mvpK/KP4Wn06MqimF4gWJr59hYsuUCiQJkLUXp5lkng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VdPRfZyZ8DUPFSd6YPYlPxi2mxfJDsPaX4KQ61phZ18=;
+ b=F7x9N1B2KSTs9TBzDNT5Etm3ZKgtA5xGbrruEgz0OPPeCIqnSwi/RoR+qHEBtkfrv9rILYrR9g7Mp5BdseQ1946tw+nxBVQl8bt3hEu23DKxW2LWnQa0lfjPezKzvJ45KC4UYsCBHeCsXLqyLIBNuhYAlmhX3qbKrBxyoiyWrbGr++xKHvUhVSVOvkPm+2l1jjVASti5uT9OBpn7XsQTP8Jj8VxvC0BoOizTlRuhUbq2db0mOXDGwlqmQ5Lsa9ze+woGB3q9E/b2j2Ryc7hnLtbN8jYJviw0KsJxZbAkdpMc+BQprONu4rUX53vT0nwB/6YwfLby+5V8lgfsfFs42w==
+Received: from HK0PR01MB2801.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:95::22) by PSBPR01MB3733.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:3::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17; Thu, 19 May
+ 2022 15:18:28 +0000
+Received: from HK0PR01MB2801.apcprd01.prod.exchangelabs.com
+ ([fe80::3022:ac4d:5d89:8c7c]) by HK0PR01MB2801.apcprd01.prod.exchangelabs.com
+ ([fe80::3022:ac4d:5d89:8c7c%5]) with mapi id 15.20.5273.014; Thu, 19 May 2022
+ 15:18:28 +0000
+Message-ID: <HK0PR01MB2801538F9FA06A3B8F2B59CFF8D09@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
+Subject: [PATCH 0/3] USB / dwc3: Fix multiple checkpatch warnings and typos
+From:   Kushagra Verma <kushagra765@outlook.com>
+To:     balbi@kernel.org, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 19 May 2022 20:48:22 +0530
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
+X-TMN:  [nKhRSQu3rudRphq0OJ/GIabttgxpvyLVSVHFsyM+WYlSdireaCpsK2CxlW31HnPRPGcWMl69LG4=]
+X-ClientProxiedBy: SI2PR04CA0012.apcprd04.prod.outlook.com
+ (2603:1096:4:197::14) To HK0PR01MB2801.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:95::22)
+X-Microsoft-Original-Message-ID: <d986bb1ccf903124a4b54679bd5d80dccb16a270.camel@outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v8 0/4] perf: arm-spe: Decode SPE source and use for perf
- c2c
-Content-Language: en-US
-To:     Leo Yan <leo.yan@linaro.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Ali Saidi <alisaidi@amazon.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, german.gomez@arm.com,
-        benh@kernel.crashing.org, Nick.Forrington@arm.com,
-        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
-        james.clark@arm.com, john.garry@huawei.com,
-        Jiri Olsa <jolsa@kernel.org>, kjain@linux.ibm.com,
-        lihuafei1@huawei.com, mark.rutland@arm.com,
-        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
-        peterz@infradead.org, will@kernel.org
-References: <20220517020326.18580-1-alisaidi@amazon.com>
- <YoQRg1r7HuwiO3bZ@kernel.org> <20220518041630.GD402837@leoy-ThinkPad-X240s>
-From:   Joe Mario <jmario@redhat.com>
-In-Reply-To: <20220518041630.GD402837@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2a3a43cd-60ff-450d-3c6a-08da39aad33e
+X-MS-TrafficTypeDiagnostic: PSBPR01MB3733:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: k5+R9YAyFwlW3OwWwAPih3sQt+fQk+KYkNX+p13SKJjRYr/YhlB4sWBLhFOvFGepfw0Hv3/oHJV9YQE0LWfb6BOzIwovfG5ESCznTM4txpQeOSIiw8aZ5Ri7pNRhbXNYvjt/QK5ukeRoCOQAQeP4d/jkHyN63EQaC9rLpmsrNyL42ZZQhnx2OmF2hzFCU8Gqo2hJmYTGhKYdZTS7E5x62qC3LrA4FMNaPPwnJ65vh9TH/Xh+WNyjuW6qivfNLWRkjYyufcft2QlRbQ0zg/eTPiP9RUlJm/AGtqKAZPyOW+Fe1nIn45pSjB0Rz90wIrNKhjGwBfH+qYyh7lpqrTlzwbtartNY5pdVlf1tOkiY4L9rLr8scXvHFWenp5da5v8chjPSNx4MbrR5RA9tKVfqKhVw4u+KhoRBlPY6pgtME/bOY04EnzjMIVA6bzxZjAQeCMZR20NyHECACYlqSx/W6D4sdNsACnlxGSGOwMogc4WZynIKZumjKrr1CCe4HCCEOI7WOX3fivzBUh4PowqlEAh7E3KXf9hZxYl2DEIZ5FxynOaRURmbfGPVssccT0D8K0cLCVQ1Wh6NqCuGywH/qQ==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZkxZUmhhT25objZWSWtqV21lN01zR3p5U2dPMEVJR3JUUmt3SGdVbW9DeVdZ?=
+ =?utf-8?B?VmxGa1NxTVNacGw5MmVUbHF3WFpYTjhUNmdJTWgwU0RNcWZiZ0VKMWhOYXp0?=
+ =?utf-8?B?NG5vY3J1dDhacnhJOVpISzhvZW5GY3Q0MXU3TTFZQ0tWYmNTOGtCL2hsVDJ1?=
+ =?utf-8?B?anc1MC9ic2FoV0YwVWgvdmV3RkE3Qi80Y2lGczlHOW5RYWtmUjlrYm9OTHg0?=
+ =?utf-8?B?NzZvaG1wdDBrVkIvQzBHT3dNTzFITUl6cFZZWmt4WXdzL2gwOVp2RUZRaDhM?=
+ =?utf-8?B?Z2hRa3g0R24zdkZpSksxRFJaUkFqaXlNbXB2NWlVZXlOdElsbHRoM0pjQWlH?=
+ =?utf-8?B?TVZ5WWtWeXZNNHMzdXV5OHpHRDBNRDhUSjgxcGFjeG11ZTkzWk5IMkszR3VM?=
+ =?utf-8?B?c000TkxRSGVXK2IvcVVJNjkrdGxWdmZBNVdTSWdmdS9aVXVBektLYWdPajZJ?=
+ =?utf-8?B?S1ZLR1pDVzlXMUx1VVFFNWcwdzRMY2p0THUzU1hWMzBmdUdyY0xhLzM1SlY4?=
+ =?utf-8?B?UkxzOGdjZWFaSFVjZ0FIZ2drbU9HRlY0MitrZ08zS0xtUWZndXFyRE11RldS?=
+ =?utf-8?B?QWNHcDVvdlVCYWVNVW45c25wMWFIR1pJaEtyWS9YTHBsaVg5QU9PVlVobFhs?=
+ =?utf-8?B?VHVBby9abmxMczZUMGxIUEN1bkJSL3JONHl0bzQ0aGJ5ZStrNWlxakhEeFhr?=
+ =?utf-8?B?cmdXU1grZVIwK1c2NnVyR2JIREsweGxKaGNvS0dyZkp5YmQ5ZlVvdGdFVWdx?=
+ =?utf-8?B?NGZjWWZuZ1FtYzhVRTM1bC9wTHc1bkZmZXYvK0JwV29OYTVTSDhDV0luNHFh?=
+ =?utf-8?B?ZERxYXRPakZ3ai9BWEtWK1dSalFOclV5VnpxS09sc093WkpHalEvNFRiS3Y3?=
+ =?utf-8?B?endQV0tiRkNtQ04yaWo0c3ZxR2JSUjhjeG1VTEJ0LzFBOHB2UzQ4U3QvTERs?=
+ =?utf-8?B?TGQ2b3NZTEFzK3J6WFpHVmJiVXIrRkdOR2VZci9MUjQ2OGlKR1VpZ3RYb1FR?=
+ =?utf-8?B?bTZkMjgwaU9lVDAzZVNMNENzNUJpTHhGS1luaHhER3p0MENNaVNPRGgzRnc3?=
+ =?utf-8?B?bXZmQS9oS1ZvajBmeXpxdDV5cCtrdCtrQ2w0OTVDRXNmK3R3VEVYR0Nwc2NF?=
+ =?utf-8?B?N21qOE1qUXo4UVVWbzVYY0xpcjQzRDRPWDh5UnNvRC9ydmVEMGE3WEViV0Zu?=
+ =?utf-8?B?OTBWdFFNWXRFU0NDSCtVWGdSMDdENitoSjU5QzVHYUhpWlRhRWRCdXdWanBs?=
+ =?utf-8?B?TjFlZVRLRERreW52eXZ6VVh5UTlvMXVVNng2ejhCaFAvQVYrZ05rMmF6YWdx?=
+ =?utf-8?B?M2gyaURSY0dLL0JjdUJmdThsbW02bHFSclBjdWVaR2sxV1FidzhPdGdrR0tP?=
+ =?utf-8?B?SVZTV1hHZisyc21vZDFicFd1TFh1Vy9USy9IV1lTa2w5c01GSU9DQVA1NTB6?=
+ =?utf-8?B?TmhJTUUyVy9GOGxPVEFCY1l6T0dTUGFubDU2MHN6azlnd1d3U1lKamFkeTVM?=
+ =?utf-8?B?YU1xNDJlZXBoMzBTeEFtV0cwZVNHMFBZRGd6Z2RpcXY4S25PeUFURUphUHVN?=
+ =?utf-8?B?dDlpc0M0dHdRRWVaR3d3eWJhK1E4ZTh3YWhVdm5tMDNuTTlod3NvZVY3aHRx?=
+ =?utf-8?B?Qy9PRThkUTRhb1cyMEhEdGZrODlCU0l0NUNCSmczdmVCNm1scGt6WHJCNWtS?=
+ =?utf-8?B?VEwwTUhUZE5kV2ZOVEdRSHhmd0VPclNIZVBScGc4Q2tRUU9CcXo0K2FwK28w?=
+ =?utf-8?B?em4xNFB5ZWg2SjFJRElET2NUOStQYnZnaUw3T2tXSlVmQ09nelpmOWZBWlZ2?=
+ =?utf-8?B?YWxZRVNnN1J1VTdmMG93VUxBbDMrUG5OdUR0TVNmYWh2RVBlVE9vUmg4bEt4?=
+ =?utf-8?B?ejZjc2NSMEtRcXpIemhUQ3FhOXhMMzN1WDRDbUVTOGp0QWgyQlNDd3VWajJB?=
+ =?utf-8?B?YnBpUldnckZkbmRrSXpWOG5qdzJFclFINTJjeHczR3JDVFpoc1ZkM1RjQURL?=
+ =?utf-8?B?akNMaGJqVUo2dStSVmlVOTBsMlUwSENaaUI4UHBoZHFrMDlsMThaU053MEFx?=
+ =?utf-8?Q?AMVpcZ?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a3a43cd-60ff-450d-3c6a-08da39aad33e
+X-MS-Exchange-CrossTenant-AuthSource: HK0PR01MB2801.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 15:18:27.9984
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PSBPR01MB3733
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This patch series fixes multiple checkpatch warnings and typos in drivers/u=
+sb/dwc3.
 
+Kushagra Verma (3):
+  USB / dwc3: Fix bare use of unsigned warning
+  USB / dwc3: Fix a repeated word in ep0.c
+  USB / dwc3: Fix typos in Kconfig
 
-On 5/18/22 12:16 AM, Leo Yan wrote:
-> Hi Joe,
-> 
-> On Tue, May 17, 2022 at 06:20:03PM -0300, Arnaldo Carvalho de Melo wrote:
->> Em Tue, May 17, 2022 at 02:03:21AM +0000, Ali Saidi escreveu:
->>> When synthesizing data from SPE, augment the type with source information
->>> for Arm Neoverse cores so we can detect situtions like cache line
->>> contention and transfers on Arm platforms. 
->>>
->>> This changes enables future changes to c2c on a system with SPE where lines that
->>> are shared among multiple cores show up in perf c2c output. 
->>>
->>> Changes is v9:
->>>  * Change reporting of remote socket data which should make Leo's upcomping
->>>    patch set for c2c make sense on multi-socket platforms  
->>
->> Hey,
->>
->> 	Joe Mario, who is one of 'perf c2c' authors asked me about some
->> git tree he could clone from for both building the kernel and
->> tools/perf/ so that he could do tests, can you please provide that?
-> 
-> I have uploaded the latest patches for enabling 'perf c2c' on Arm SPE
-> on the repo:
-> 
-> https://git.linaro.org/people/leo.yan/linux-spe.git branch: perf_c2c_arm_spe_peer_v3
-> 
-> Below are the quick notes for build the kernel with enabling Arm SPE:
-> 
->   $ git clone -b perf_c2c_arm_spe_peer_v3 https://git.linaro.org/people/leo.yan/linux-spe.git
-> 
->   Or
-> 
->   $ git clone -b perf_c2c_arm_spe_peer_v3 ssh://git@git.linaro.org/people/leo.yan/linux-spe.git
-> 
->   $ cd linux-spe
-> 
->   # Build kernel
->   $ make defconfig
->   $ ./scripts/config -e CONFIG_PID_IN_CONTEXTIDR
->   $ ./scripts/config -e CONFIG_ARM_SPE_PMU
->   $ make Image
-> 
->   # Build perf
->   $ cd tools/perf
->   $ make VF=1 DEBUG=1
-> 
-> When boot the kernel, please add option "kpti=off" in kernel command
-> line, you might need to update grub menu for this.
-> 
-> Please feel free let us know if anything is not clear for you.
-> 
-> Thank you,
-> Leo
-> 
+ drivers/usb/dwc3/Kconfig | 4 ++--
+ drivers/usb/dwc3/core.c  | 4 ++--
+ drivers/usb/dwc3/ep0.c   | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-Hi Leo:
-Thanks for getting this working on ARM.  I do have a few comments.
+--=20
+2.36.1
 
-I built and ran this on a ARM Neoverse-N1 system with 2 numa nodes.  
-
-Comment 1:
-When I run "perf c2c report", the "Node" field is marked "N/A".  It's supposed to show the numa node where the data address for the cacheline resides.  That's important both to see what node hot data resides on and if that data is getting lots of cross-numa accesses. 
-
-Comment 2:
-I'm assuming you're identifying the contended cachelines using the "peer" load response, which indicates the load was resolved from a "peer" cpu's cacheline.  Please confirm.
-If that's true, is it possible to identify if that "peer" response was on the local or remote numa node?  
-
-I ask because being able to identify both local and remote HitM's on Intel X86_64 has been quite valuable.  That's because remote HitM's are costly and because it helps the viewer see if they need to optimize their cpu affinity or what node their hot data resides on.
-
-Last Comment:
-There's a row in the Pareto table that has incorrect column alignment.
-Look at row 80 below in the truncated snipit of output.  It has an extra field inserted in it at the beginning.
-I also show what the corrected output should look like.
-
-Incorrect row 80:
-    71	=================================================
-    72	      Shared Cache Line Distribution Pareto      
-    73	=================================================
-    74	#
-    75	# ----- HITM -----    Snoop  ------- Store Refs ------  ------- CL --------                      
-    76	# RmtHitm  LclHitm     Peer   L1 Hit  L1 Miss      N/A    Off  Node  PA cnt        Code address
-    77	# .......  .......  .......  .......  .......  .......  .....  ....  ......  ..................
-    78	#
-    79	  -------------------------------------------------------------------------------
-    80	      0        0        0     4648        0        0    11572            0x422140
-    81	  -------------------------------------------------------------------------------
-    82	    0.00%    0.00%    0.00%    0.00%    0.00%   44.47%    0x0   N/A       0            0x400ce8
-    83	    0.00%    0.00%   10.26%    0.00%    0.00%    0.00%    0x0   N/A       0            0x400e48
-    84	    0.00%    0.00%    0.00%    0.00%    0.00%   55.53%    0x0   N/A       0            0x400e54
-    85	    0.00%    0.00%   89.74%    0.00%    0.00%    0.00%    0x8   N/A       0            0x401038
-
-
-Corrected row 80:
-    71	=================================================
-    72	      Shared Cache Line Distribution Pareto      
-    73	=================================================
-    74	#
-    75	# ----- HITM -----    Snoop  ------- Store Refs -----   ------- CL --------                       
-    76	# RmtHitm  LclHitm     Peer   L1 Hit  L1 Miss     N/A     Off  Node  PA cnt        Code address
-    77	# .......  .......  .......  .......  .......  ......   .....  ....  ......  ..................
-    78	#
-    79	  -------------------------------------------------------------------------------
-    80	       0        0     4648        0        0    11572            0x422140
-    81	  -------------------------------------------------------------------------------
-    82	    0.00%    0.00%    0.00%    0.00%    0.00%   44.47%    0x0   N/A       0            0x400ce8
-    83	    0.00%    0.00%   10.26%    0.00%    0.00%    0.00%    0x0   N/A       0            0x400e48
-    84	    0.00%    0.00%    0.00%    0.00%    0.00%   55.53%    0x0   N/A       0            0x400e54
-    85	    0.00%    0.00%   89.74%    0.00%    0.00%    0.00%    0x8   N/A       0            0x401038
-       
-Thanks again for doing this.
-Joe
 
