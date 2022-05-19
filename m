@@ -2,64 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C088C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B43AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240296AbiESPEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
+        id S240428AbiESPEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240498AbiESPEA (ORCPT
+        with ESMTP id S240315AbiESPEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:04:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC16948337
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:02:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 19 May 2022 11:04:07 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFC9EBAA0;
+        Thu, 19 May 2022 08:03:15 -0700 (PDT)
+Received: from zn.tnic (p200300ea97465796329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:5796:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 858D9619C4
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:02:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D19C34100;
-        Thu, 19 May 2022 15:02:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652972579;
-        bh=CO8FvRjgqQRDUZQMWj+zx8s5XWzeklwKdteIGDW8lg4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yUaavQ6cPlzd15+JJhEGulmfqXf5w2PjHyLT4UCu8SjNhRU8m5agbH1Z/i8e5Qv/b
-         vfoR7CzKcGBmZbouw/qyqQwKWaWcnZNG8iDgHYNkimACES+I9fVw4xkQeeuxZMdliL
-         TGt4LDUmd4HGYmQNjRZhVwNne5DwubgSlEp7dq2M=
-Date:   Thu, 19 May 2022 16:57:54 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL]: soundwire updates for v5.19
-Message-ID: <YoZa8lde+AT1OrJg@kroah.com>
-References: <Ynz9e/Ppp+xbk4Ph@matsya>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8847D1EC026E;
+        Thu, 19 May 2022 17:03:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652972590;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=yvKb4IzN3NrjS2AQS+ImmzuX/ff1+9+b8fevzzkU7Ig=;
+        b=FLB4Wuf55Lc4bCmExyixxbJkiLXZSY+MeSuvOC5RPGKQ+S2UYTU+HbHulu3DLm0dfqgL3N
+        lQzc7OQlmxCp5K9bqwLSyn9M+8XWv/Ek2oOoV//M2MFzOdLyXg9piMchyNooxJsCs3K0m5
+        rkIERLMRVjyqkNSZjCr1dHc/y8JGOU4=
+Date:   Thu, 19 May 2022 17:03:10 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        X86 ML <x86@kernel.org>, Tony Luck <tony.luck@intel.com>
+Subject: [PATCH] x86/microcode: Add explicit CPU vendor dependency
+Message-ID: <YoZcLsqkxJ+VGf0W@zn.tnic>
+References: <20220518202934.730a8aba@canb.auug.org.au>
+ <8ead0da9-9545-b10d-e3db-7df1a1f219e4@infradead.org>
+ <YoVlwN/IeVXoMaq1@zn.tnic>
+ <df5ed1d0-6304-89b8-ad68-0cf6a59d8614@infradead.org>
+ <YoVzUxSwhoim9TOX@zn.tnic>
+ <65f17e84-83e4-c33a-1718-fbb5841cef46@infradead.org>
+ <YoZaZ+HVyjKrwtSQ@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Ynz9e/Ppp+xbk4Ph@matsya>
+In-Reply-To: <YoZaZ+HVyjKrwtSQ@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 05:58:43PM +0530, Vinod Koul wrote:
-> Hello Greg,
-> 
-> Please pull to receive soundwire subsystem updates for v5.19-rc1. 
-> 
-> Minor updates to Intel and Qcom driver and some core changes in
-> power-management. Patches are already in linux-next.
-> 
-> The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
-> 
->   Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/soundwire.git tags/soundwire-5.19-rc1
+From: Borislav Petkov <bp@suse.de>
 
-Pulled and pushed out, thanks.
+Add a explicit dependency to the respective CPU vendor so that the
+respective microcode support for it gets built only when that support is
+enabled.
 
-greg k-h
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+---
+ arch/x86/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index b0142e01002e..7ba627c60504 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1313,7 +1313,7 @@ config MICROCODE
+ 
+ config MICROCODE_INTEL
+ 	bool "Intel microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_INTEL && MICROCODE
+ 	default MICROCODE
+ 	help
+ 	  This options enables microcode patch loading support for Intel
+@@ -1325,7 +1325,7 @@ config MICROCODE_INTEL
+ 
+ config MICROCODE_AMD
+ 	bool "AMD microcode loading support"
+-	depends on MICROCODE
++	depends on CPU_SUP_AMD && MICROCODE
+ 	help
+ 	  If you select this option, microcode patch loading support for AMD
+ 	  processors will be enabled.
+-- 
+2.35.1
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
