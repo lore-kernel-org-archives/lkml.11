@@ -2,136 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16606C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiESHWA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:22:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40080 "EHLO
+        id S234632AbiESHXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbiESHVy (ORCPT
+        with ESMTP id S229764AbiESHXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:21:54 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5667891F
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:21:50 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nraTh-0004Vm-9x; Thu, 19 May 2022 09:21:45 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>,
-        Jessica Clarke <jrtc27@jrtc27.com>
-Subject: Re: [PATCH] riscv: Fix ALT_THEAD_PMA's asm parameters
-Date:   Thu, 19 May 2022 09:21:44 +0200
-Message-ID: <3667011.kQq0lBPeGt@diego>
-In-Reply-To: <20220518184529.454008-1-nathan@kernel.org>
-References: <20220518184529.454008-1-nathan@kernel.org>
+        Thu, 19 May 2022 03:23:10 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8A47E1CB
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:23:09 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id a23so5158579ljd.9
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:23:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=RDS+R7kv4kqSF00p+RWbaotyXSwPC07y+iylpR+DVkQ=;
+        b=kWsk9Mw07o61WnL2Ul9s50tphJqRp26k/7J3Cy2LfngowlbcqT7Lq+DIBaAO9PRQ3z
+         W67bNrRsVBFOS4ZDFYZZqdocOfnTvpEz7llVlUj+ojySoWa8S7rY+PtPrKLYGIUwe63J
+         4FLrUvPJMt4e1EFzLEO1crPWdOpojJVtmD+6bGc7XeX6MH6YPzQC/Bp5JD4QL8XkkWI6
+         ry+CkITz9C9FF6KYKyVT6m7VufsnhUR+2yI9SmOgwgDVO0RHwXTJ0n2y4eJJyd7oOzix
+         Q9+BMzQN7wazuF4jWldj6xCl3vzUaGYX8ltKUuCXaiaqlzszUtDp6d+2byxsdsdnQNGb
+         rm9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RDS+R7kv4kqSF00p+RWbaotyXSwPC07y+iylpR+DVkQ=;
+        b=ii6j2n57649RzKepYGvHTBe++0bmZyqB2nbGBeuAG7pMtxUyJCdI/jaSOa6h74cPeb
+         dwDKPIQRjQsu8hzhVkn2KYouMSOz/FVm6Sm/V8AdVmPBSGBZVkNOItRrO2Ip4cAPosr1
+         iA//B1vcIqUey5DdvS8kX09BIw9lUiX+wY+kcu4QGGtBGnzQerupH41jY7XEbcc+CYmb
+         zItvPvYcZeQhoE1+8xArEA3L4TYdcxEtELtwPBzohes/lEshahL9uKYXK3VUqCmv8QDY
+         TCpHn6zEeTVuNi5k21kAe/rszdQPqxFD3mLu2CP1WzZja9sBYypyku1N7Gl7UtFCuiE9
+         L4IA==
+X-Gm-Message-State: AOAM533AosG+ALUW32nZtu9RIuFCASZFnlxU2qgW0PpCiUuo2/hdVSdB
+        eiBfrcs6pf7XAhff5bzGTzckOA==
+X-Google-Smtp-Source: ABdhPJznxBDWCH+ijcOPUlprywGhnlV0Z0a3QRSs1g97Y+aVVkWE/Eq/f88xbY8kvpLtw+uaGo6PbA==
+X-Received: by 2002:a05:651c:887:b0:247:f630:d069 with SMTP id d7-20020a05651c088700b00247f630d069mr1900295ljq.514.1652944987565;
+        Thu, 19 May 2022 00:23:07 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id e20-20020a2ea554000000b0024f3d1daed2sm157674ljn.90.2022.05.19.00.23.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 00:23:07 -0700 (PDT)
+Message-ID: <07c8cac0-ab85-19a7-de2c-14f6dc1c496a@linaro.org>
+Date:   Thu, 19 May 2022 09:23:06 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/8] clk: qcom: alpha-pll: correct kerneldoc
+Content-Language: en-US
+To:     Stephen Boyd <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org
+References: <20220501103520.111561-1-krzysztof.kozlowski@linaro.org>
+ <2f73874b-430a-48d2-4739-b06eebed1ea8@linaro.org>
+ <20220519001438.E534DC385A9@smtp.kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220519001438.E534DC385A9@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, 18. Mai 2022, 20:45:29 CEST schrieb Nathan Chancellor:
-> After commit a35707c3d850 ("riscv: add memory-type errata for T-Head"),
-> builds with LLVM's integrated assembler fail like:
+On 19/05/2022 02:14, Stephen Boyd wrote:
+> Quoting Krzysztof Kozlowski (2022-05-17 09:46:49)
+>> On 01/05/2022 12:35, Krzysztof Kozlowski wrote:
+>>> Correct kerneldoc warning:
+>>>
+>>>   drivers/clk/qcom/clk-alpha-pll.c:1450:
+>>>     warning: expecting prototype for clk_lucid_pll_configure(). Prototype was for clk_trion_pll_configure() instead
+>>>
+>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> Any comments on entire set?
 > 
->   In file included from arch/riscv/kernel/asm-offsets.c:10:
->   In file included from ./include/linux/mm.h:29:
->   In file included from ./include/linux/pgtable.h:6:
->   In file included from ./arch/riscv/include/asm/pgtable.h:114:
->   ./arch/riscv/include/asm/pgtable-64.h:210:2: error: invalid input constraint '0' in asm
->           ALT_THEAD_PMA(prot_val);
->           ^
->   ./arch/riscv/include/asm/errata_list.h:88:4: note: expanded from macro 'ALT_THEAD_PMA'
->           : "0"(_val),                                                    \
->             ^
-> 
-> This was reported upstream to LLVM where Jessica pointed out a couple of
-> issues with the existing implementation of ALT_THEAD_PMA:
-> 
-> * t3 is modified but not listed in the clobbers list.
-> 
-> * "+r"(_val) marks _val as both an input and output of the asm but then
->   "0"(_val) marks _val as an input matching constraint, which does not
->   make much sense in this situation, as %1 is not actually used in the
->   asm and matching constraints are designed to be used for different
->   inputs that need to use the same register.
-> 
-> Drop the matching contraint and shift all the operands by one, as %1 is
-> unused, and mark t3 as clobbered. This resolves the build error and goes
-> not cause any problems with GNU as.
-> 
-> Fixes: a35707c3d850 ("riscv: add memory-type errata for T-Head")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1641
-> Link: https://github.com/llvm/llvm-project/issues/55514
-> Link: https://gcc.gnu.org/onlinedocs/gcc/Simple-Constraints.html
-> Suggested-by: Jessica Clarke <jrtc27@jrtc27.com>
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> Please send a cover letter next time. Also they're simply "qcom" related
+> but otherwise I'm not sure why they aren't sent to individual subsystem
+> lists. They don't depend on each other to build, right?
 
-I'm not sure anymore why it ended up the original way, but with this change
-it definitly looks better
+Indeed, they can go via separate subsystems. I'll split the series in v2.
 
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-
-On an actual D1-Nezha board also
-
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-
-
-Thanks for doing that improvement
-Heiko
-
-> ---
->  arch/riscv/include/asm/errata_list.h | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-> index 9e2888dbb5b1..416ead0f9a65 100644
-> --- a/arch/riscv/include/asm/errata_list.h
-> +++ b/arch/riscv/include/asm/errata_list.h
-> @@ -75,20 +75,20 @@ asm volatile(ALTERNATIVE(						\
->  	"nop\n\t"							\
->  	"nop\n\t"							\
->  	"nop",								\
-> -	"li      t3, %2\n\t"						\
-> -	"slli    t3, t3, %4\n\t"					\
-> +	"li      t3, %1\n\t"						\
-> +	"slli    t3, t3, %3\n\t"					\
->  	"and     t3, %0, t3\n\t"					\
->  	"bne     t3, zero, 2f\n\t"					\
-> -	"li      t3, %3\n\t"						\
-> -	"slli    t3, t3, %4\n\t"					\
-> +	"li      t3, %2\n\t"						\
-> +	"slli    t3, t3, %3\n\t"					\
->  	"or      %0, %0, t3\n\t"					\
->  	"2:",  THEAD_VENDOR_ID,						\
->  		ERRATA_THEAD_PBMT, CONFIG_ERRATA_THEAD_PBMT)		\
->  	: "+r"(_val)							\
-> -	: "0"(_val),							\
-> -	  "I"(_PAGE_MTMASK_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
-> +	: "I"(_PAGE_MTMASK_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
->  	  "I"(_PAGE_PMA_THEAD >> ALT_THEAD_PBMT_SHIFT),			\
-> -	  "I"(ALT_THEAD_PBMT_SHIFT))
-> +	  "I"(ALT_THEAD_PBMT_SHIFT)					\
-> +	: "t3")
->  #else
->  #define ALT_THEAD_PMA(_val)
->  #endif
-> 
-> base-commit: 93c0651617a62a69717299f1464dda798af8bebb
-> 
-
-
-
-
+Best regards,
+Krzysztof
