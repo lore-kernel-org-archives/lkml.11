@@ -2,110 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A96C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbiESJ3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 05:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
+        id S236146AbiESJbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 05:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbiESJ3f (ORCPT
+        with ESMTP id S236049AbiESJbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 05:29:35 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6839CA776E;
-        Thu, 19 May 2022 02:29:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652952573; x=1684488573;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GG+D/zbzcTBxqP2PNnwLTtmoBW5Cf4iVBDI1LewPyVE=;
-  b=TqX1Y9O9Hs49AZiWkUl1+B8xITThfcTUdUzpngbIFMJC28Az6DVBixAN
-   gefLfygW6iBMEWmNPQYrdYV394OYd4O6QvXOtynzEpTSM2u+wVmmy4hBy
-   sHiaR3Ojw+bc6Nm4sPn8MB1BcHnrQEqExASQpUO/WsP/HDYcNf0kNibV9
-   6XTS2eEHZGoLXZ8YoLUIEkhom51iAG/B/LPGvWmpdtCxNOcQbwfPhG6KF
-   Xh+ShMxGnZN7zRaFkX4R9aQyqwqhdI5S5A+3XU75Erpn2E93E5Z9VV16D
-   ZcLScckKMBG+/EcP9uqYu5A8OWyCCIvP46pEXJezKRKsYeeRtm3+cFOro
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="269701311"
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="269701311"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 02:29:26 -0700
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="570113195"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 02:29:20 -0700
-Date:   Thu, 19 May 2022 17:29:12 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Zeng Guang <guang.zeng@intel.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>
-Subject: Re: [PATCH v9 0/9] IPI virtualization support for VM
-Message-ID: <20220519092906.GA3234@gao-cwp>
-References: <20220419153155.11504-1-guang.zeng@intel.com>
- <2d33b71a-13e5-d377-abc2-c20958526497@redhat.com>
- <cf178428-8c98-e7b3-4317-8282938976fd@intel.com>
- <f0e633b3-38ea-f288-c74d-487387cefddc@redhat.com>
- <YoK48P2UrrjxaRrJ@google.com>
- <20220517135321.GA31556@gao-cwp>
- <20220517140218.GA569@gao-cwp>
+        Thu, 19 May 2022 05:31:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2837133A2C;
+        Thu, 19 May 2022 02:31:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 024D3618D8;
+        Thu, 19 May 2022 09:31:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AAA9C385AA;
+        Thu, 19 May 2022 09:30:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652952665;
+        bh=ymyWwFkIGcEgTX/HoyldR566LvQatVtWXOdUzMjInTY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZsqjEz6v2uriZ2N0Dq+pndBRjvXvXcsjqqD+SvOkF0pAjllZckSSQYaCIQuEcw1Jy
+         2gDuMEW3YDYmQiSxD5oLg6FWYCdEjerCuH613MHsO//W5TSZsctd3moeGrzUDeRe6s
+         A9o4YVEYofn+70aKTfqkQvyQKReky8arKQkuzj+/1fx+lWD15H7ZSBUhsWsqXso+2v
+         pfcgLj1oqEZBMnIQHSVyd/1eNUlHWeCjPPq+0x8B1shXK+tDzT9UJeTpd9qImfciul
+         P2Sn+4aIKue0xebzFbJ0yeibqCMn+utYG9Q8Y8N+qtr7MyADNwqr8dBlCdNZa0fDzj
+         bxurpPC3T8esw==
+From:   eballetbo@kernel.org
+To:     lizefan.x@bytedance.com, corbet@lwn.net, joel@joelfernandes.org,
+        arve@android.com, tjmercier@google.com, maco@android.com,
+        benjamin.gaignard@collabora.com, tj@kernel.org, brauner@kernel.org,
+        sumit.semwal@linaro.org, tkjos@android.com, surenb@google.com,
+        hannes@cmpxchg.org, Brian.Starkey@arm.com,
+        christian.koenig@amd.com, gregkh@linuxfoundation.org,
+        lmark@codeaurora.org, john.stultz@linaro.org, hridya@google.com,
+        shuah@kernel.org, labbott@redhat.com
+Cc:     Enric Balletbo i Serra <eballetbo@kernel.org>,
+        cgroups@vger.kernel.org, kernel-team@android.com,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, cmllamas@google.com,
+        daniel@ffwll.ch, Kenny.Ho@amd.com, linux-kselftest@vger.kernel.org,
+        kaleshsingh@google.com, mkoutny@suse.com, jstultz@google.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        skhan@linuxfoundation.org
+Subject: Re: [PATCH v7 1/6] gpu: rfc: Proposal for a GPU cgroup controller
+Date:   Thu, 19 May 2022 11:30:35 +0200
+Message-Id: <20220519093034.541481-1-eballetbo@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510235653.933868-1-tjmercier@google.com>
+References: <20220510235653.933868-1-tjmercier@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517140218.GA569@gao-cwp>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 10:02:23PM +0800, Chao Gao wrote:
->+ Maxim
+From: Enric Balletbo i Serra <eballetbo@kernel.org>
+
+On Tue, 10 May 2022 23:56:45 +0000, T.J. Mercier wrote:
+> From: Hridya Valsaraju <hridya@google.com>
 >
->On Tue, May 17, 2022 at 09:53:26PM +0800, Chao Gao wrote:
->>On Mon, May 16, 2022 at 08:49:52PM +0000, Sean Christopherson wrote:
->>>On Tue, May 03, 2022, Paolo Bonzini wrote:
->>>> On 5/3/22 09:32, Zeng Guang wrote:
->>>> > 
->>>> > I don't see "[PATCH v9 4/9] KVM: VMX: Report tertiary_exec_control field in
->>>> > dump_vmcs()" in kvm/queue. Does it not need ?
->>>> 
->>>> Added now (somehow the patches were not threaded, so I had to catch them one
->>>> by one from lore).
->>>> 
->>>> > Selftests for KVM_CAP_MAX_VCPU_ID is posted in V2 which is revised on top of
->>>> > kvm/queue.
->>>> > ([PATCH v2] kvm: selftests: Add KVM_CAP_MAX_VCPU_ID cap test - Zeng
->>>> > Guang (kernel.org) <https://lore.kernel.org/lkml/20220503064037.10822-1-guang.zeng@intel.com/>)
->>>> 
->>>> Queued, thanks.
->>>
->>>Shouldn't we have a solution for the read-only APIC_ID mess before this is merged?
 
-Paolo & Sean,
+Hi T.J. Mercier,
 
-If a solution for read-only APIC ID mess is needed before merging IPIv
-series, do you think the Maxim's patch [1] after some improvement will
-suffice? Let us know if there is any gap.
+Many thanks for this effort. It caught my attention because we might have a use
+case where this feature can be useful for us. Hence I'd like to jump and be part
+of the discussion, I'd really appreciate if you can cc'me for next versions.
 
-[1]: https://lore.kernel.org/all/20220427200314.276673-3-mlevitsk@redhat.com/
+While reading the full patchset I was a bit confused about the status of this
+proposal. In fact, the rfc in the subject combined with the number of iterations
+(already seven) confused me. So I'm wondering if this is a RFC or a 'real'
+proposal already that you want to land.
+
+If this is still a RFC I'd remove the 'rfc: Proposal' and use the more canonical
+way that is put RFC in the []. I.e [PATCH RFC v7] cgroup: Add a GPU cgroup
+controller.
+
+If it is not, I'd just remove the RFC and make the subject in the cgroup
+subsystem instead of the gpu. I.E [PATCH v7] cgroup: Add a GPU cgroup
+
+I don't want to nitpick but IMO that helps new people to join to the history of
+the patchset.
+
+> This patch adds a proposal for a new GPU cgroup controller for
+> accounting/limiting GPU and GPU-related memory allocations.
+
+As far as I can see the only thing that is adding here is the accounting, so I'd
+remove any reference to limiting and just explain what the patch really
+introduces, not the future, otherwise is confusing an you expect more than the
+patch really does.
+
+It is important maintain the commit message sync with what the patch really
+does.
+
+> The proposed controller is based on the DRM cgroup controller[1] and
+> follows the design of the RDMA cgroup controller.
+> 
+> The new cgroup controller would:
+> * Allow setting per-device limits on the total size of buffers
+>   allocated by device within a cgroup.
+> * Expose a per-device/allocator breakdown of the buffers charged to a
+>   cgroup.
+> 
+> The prototype in the following patches is only for memory accounting
+> using the GPU cgroup controller and does not implement limit setting.
+> 
+> [1]: https://lore.kernel.org/amd-gfx/20210126214626.16260-1-brian.welty@intel.com/
+> 
+
+I think this is material for the cover more than the commit message. When I read
+this I was expecting all this in this patch.
+
+> Signed-off-by: Hridya Valsaraju <hridya@google.com>
+> Signed-off-by: T.J. Mercier <tjmercier@google.com>
+> ---
+> v7 changes
+> Remove comment about duplicate name rejection which is not relevant to
+> cgroups users per Michal Koutný.
+> 
+> v6 changes
+> Move documentation into cgroup-v2.rst per Tejun Heo.
+> 
+> v5 changes
+> Drop the global GPU cgroup "total" (sum of all device totals) portion
+> of the design since there is no currently known use for this per
+> Tejun Heo.
+> 
+> Update for renamed functions/variables.
+> 
+> v3 changes
+> Remove Upstreaming Plan from gpu-cgroup.rst per John Stultz.
+> 
+> Use more common dual author commit message format per John Stultz.
+> ---
+>  Documentation/admin-guide/cgroup-v2.rst | 23 +++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+> index 69d7a6983f78..2e1d26e327c7 100644
+> --- a/Documentation/admin-guide/cgroup-v2.rst
+> +++ b/Documentation/admin-guide/cgroup-v2.rst
+> @@ -2352,6 +2352,29 @@ first, and stays charged to that cgroup until that resource is freed. Migrating
+>  a process to a different cgroup does not move the charge to the destination
+>  cgroup where the process has moved.
+>  
+> +
+> +GPU
+> +---
+> +
+> +The GPU controller accounts for device and system memory allocated by the GPU
+> +and related subsystems for graphics use. Resource limits are not currently
+> +supported.
+> +
+> +GPU Interface Files
+> +~~~~~~~~~~~~~~~~~~~~
+> +
+> +  gpu.memory.current
+> +	A read-only file containing memory allocations in flat-keyed format. The key
+> +	is a string representing the device name. The value is the size of the memory
+> +	charged to the device in bytes. The device names are globally unique.::
+> +
+> +	  $ cat /sys/kernel/fs/cgroup1/gpu.memory.current
+
+I think this is outdated, you are using cgroup v2, right?
+
+> +	  dev1 4194304
+> +	  dev2 104857600
+> +
+
+When I applied the full series I was expecting see the memory allocated by the
+gpu devices or users of the gpu in this file but, after some experiments, what I
+saw is the memory allocated via any process that uses the dma-buf heap API (not
+necessary gpu users). For example, if you create a small program that allocates
+some memory via the dma-buf heap API and then you cat the gpu.memory.current
+file, you see that the memory accounted is not related to the gpu.
+
+This is really confusing, looks to me that the patches evolved to account memory
+that is not really related to the GPU but allocated vi the dma-buf heap API. IMO
+the name of the file should be according to what really does to avoid
+confusions.
+
+So, is this patchset meant to be GPU specific? If the answer is yes that's good
+but that's not what I experienced. I'm missing something?
+
+If the answer is that evolved to track dma-buf heap allocations I think all the
+patches need some rework to adapt the wording as right now, the gpu wording
+seems confusing to me.
+
+> +	The device name string is set by a device driver when it registers with the
+> +	GPU cgroup controller to participate in resource accounting.
+> +
+>  Others
+>  ------
+>
+>
+Thanks,
+ Enric
+ 
