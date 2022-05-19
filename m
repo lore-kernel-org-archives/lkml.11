@@ -2,84 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D39CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241483AbiESPu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
+        id S236795AbiESPwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241699AbiESPuO (ORCPT
+        with ESMTP id S241615AbiESPuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:50:14 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED42996A6;
-        Thu, 19 May 2022 08:48:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652975329; x=1684511329;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=K+X0c3bbcUNzQpy8lCHb3Na26UYRbDdUTe8o7LeQPZA=;
-  b=V8uDYyxR/Hz5Y3L+gArcDCfPsIqLl6KXIWpxLThumOR1iatnwoJ/TW2b
-   75N4m+bntLF18H3/OC5IoSIadDMx/gnjRFV5G3ZElA6ZkMpwIfcoeKnAH
-   ET/K6AOVxcrmMyFQBc+c96EGQHJDS9NzFi3Ef+jW2/lSlReDoSsTcHXZJ
-   k=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 19 May 2022 08:48:47 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 08:48:47 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 19 May 2022 08:48:46 -0700
-Received: from [10.110.66.23] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 19 May
- 2022 08:48:45 -0700
-Message-ID: <18852332-ee42-ef7e-67a3-bbd91a6694ba@quicinc.com>
-Date:   Thu, 19 May 2022 08:48:44 -0700
+        Thu, 19 May 2022 11:50:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E19B175AA
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:50:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D116B61BFB
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:50:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA248C34100;
+        Thu, 19 May 2022 15:50:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652975449;
+        bh=k0ngAhg/Z3ZQxhg7rV0/oPwjM35gchHoHZEW1gRBeBA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cy3munNdMyBLZ1tkla/JwMThbfl4pDGriqW7Dzzq89o31hihdxJgRH08avEQ8BZST
+         LWrIWddTKSpAAWB/xiufwEXbJ7yeyc0bc8L+w8xUJCn9DvsDB8rqouODgXckPrVWDP
+         w22PmmzG3CAKYnc5Y7+KtAG7Rfl/JHcPXYQFsbLA=
+Date:   Thu, 19 May 2022 17:50:46 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Li Li <dualli@chromium.org>
+Cc:     dualli@google.com, tkjos@google.com, christian@brauner.io,
+        arve@android.com, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, maco@google.com, hridya@google.com,
+        surenb@google.com, joel@joelfernandes.org, kernel-team@android.com
+Subject: Re: [PATCH v1] Binder: add TF_UPDATE_TXN
+Message-ID: <YoZnVrU8Dih+urv6@kroah.com>
+References: <20220519000623.1715899-1-dualli@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net v2] net: wireless: marvell: mwifiex: fix sleep in
- atomic context bugs
-Content-Language: en-US
-To:     <duoming@zju.edu.cn>, Kalle Valo <kvalo@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <amitkarwar@gmail.com>,
-        <ganapathi017@gmail.com>, <sharvari.harisangam@nxp.com>,
-        <huxinming820@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20220519135345.109936-1-duoming@zju.edu.cn>
- <87zgjd1sd4.fsf@kernel.org>
- <699e56d5.22006.180dce26e02.Coremail.duoming@zju.edu.cn>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <699e56d5.22006.180dce26e02.Coremail.duoming@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519000623.1715899-1-dualli@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/2022 8:14 AM, duoming@zju.edu.cn wrote:
-> Hello,
-> 
-> On Thu, 19 May 2022 17:58:47 +0300 Kalle Valo wrote:
-> 
->>> There are sleep in atomic context bugs when uploading device dump
->>> data on usb interface. The root cause is that the operations that
->>> may sleep are called in fw_dump_timer_fn which is a timer handler.
->>> The call tree shows the execution paths that could lead to bugs:
->>>
->>>     (Interrupt context)
->>> fw_dump_timer_fn
->>>    mwifiex_upload_device_dump
->>>      dev_coredumpv(..., GFP_KERNEL)
+On Wed, May 18, 2022 at 05:06:23PM -0700, Li Li wrote:
+> From: Li Li <dualli@google.com>
 
-just looking at this description, why isn't the simple fix just to 
-change this call to use GFP_ATOMIC?
+Note, your subject does not say what TF_UPDATE_TXN is, so it's a bit
+hard to determine what is happening here.  Can you clean that up a bit
+and sumarize what this new addition does?
+
+> 
+> When the target process is busy, incoming oneway transactions are
+> queued in the async_todo list. If the clients continue sending extra
+> oneway transactions while the target process is frozen, this queue can
+> become too large to accommodate new transactions. That's why binder
+> driver introduced ONEWAY_SPAM_DETECTION to detect this situation. It's
+> helpful to debug the async binder buffer exhausting issue, but the
+> issue itself isn't solved directly.
+> 
+> In real cases applications are designed to send oneway transactions
+> repeatedly, delivering updated inforamtion to the target process.
+> Typical examples are Wi-Fi signal strength and some real time sensor
+> data. Even if the apps might only care about the lastet information,
+> all outdated oneway transactions are still accumulated there until the
+> frozen process is thawed later. For this kind of situations, there's
+> no existing method to skip those outdated transactions and deliver the
+> latest one only.
+> 
+> This patch introduces a new transaction flag TF_UPDATE_TXN. To use it,
+> use apps can set this new flag along with TF_ONE_WAY. When such an
+> oneway transaction is to be queued into the async_todo list of a frozen
+> process, binder driver will check if any previous pending transactions
+> can be superseded by comparing their code, flags and target node. If
+> such an outdated pending transaction is found, the latest transaction
+> will supersede that outdated one. This effectively prevents the async
+> binder buffer running out and saves unnecessary binder read workloads.
+> 
+> Signed-off-by: Li Li <dualli@google.com>
+> ---
+>  drivers/android/binder.c            | 90 ++++++++++++++++++++++++++++-
+>  drivers/android/binder_trace.h      |  4 ++
+>  include/uapi/linux/android/binder.h |  1 +
+
+How was this tested? 
+
+>  3 files changed, 92 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+> index f3b639e89dd8..153486a32d69 100644
+> --- a/drivers/android/binder.c
+> +++ b/drivers/android/binder.c
+> @@ -2594,6 +2594,60 @@ static int binder_fixup_parent(struct list_head *pf_head,
+>  	return binder_add_fixup(pf_head, buffer_offset, bp->buffer, 0);
+>  }
+>  
+> +/**
+> + * binder_can_update_transaction() - Can a txn be superseded by an updated one?
+> + * @t1: the pending async txn in the frozen process
+> + * @t2: the new async txn to supersede the outdated pending one
+> + *
+> + * Return:  true if t2 can supersede t1
+> + *          false if t2 can not supersede t1
+> + */
+> +static bool binder_can_update_transaction(struct binder_transaction *t1,
+> +					  struct binder_transaction *t2)
+> +{
+> +	if ((t1->flags & t2->flags & (TF_ONE_WAY | TF_UPDATE_TXN))
+> +			!= (TF_ONE_WAY | TF_UPDATE_TXN)
+> +			|| t1->to_proc == NULL || t2->to_proc == NULL)
+> +		return false;
+> +	if (t1->to_proc->tsk == t2->to_proc->tsk && t1->code == t2->code
+> +			&& t1->flags == t2->flags
+> +			&& t1->buffer->pid == t2->buffer->pid
+> +			&& t1->buffer->target_node->ptr
+> +			== t2->buffer->target_node->ptr
+> +			&& t1->buffer->target_node->cookie
+> +			== t2->buffer->target_node->cookie)
+
+Did checkpatch pass this?  Please always use --strict and fix up all the
+issues that it reports as this is not a normal kernel coding style,
+sorry.
+
+thanks,
+
+greg k-h
