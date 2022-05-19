@@ -2,143 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C1EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A06D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233148AbiESSEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55476 "EHLO
+        id S240148AbiESSFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243584AbiESSEo (ORCPT
+        with ESMTP id S243584AbiESSFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:04:44 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB8A5FF13;
-        Thu, 19 May 2022 11:04:43 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id m25so7405290oih.2;
-        Thu, 19 May 2022 11:04:43 -0700 (PDT)
+        Thu, 19 May 2022 14:05:40 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062FBDFF58
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:05:36 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id t6so8294311wra.4
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:05:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=a1fLBAz97REz0jfdyucNaKEBoM0Z0pYoEHkMNeMyZmY=;
-        b=Uts+jMb3MuoaLS6OeCoJ3tuosalXIzzvigYxaCpoSx3sFYls89Wumpe/Q58z2wrNmu
-         uZDjciUuAI2Jcke0yVuUjvfAfyn+ViKpwGP+sdS0F3voNA6rwPhM5d82ZaywhLIAtEvt
-         TIPcqmHb0UpUpygoeFdlTbGwkpBu+e6jqlSZm7Zd2OcLEZ9SW4OCW9ZyZ76Yob8kkBTQ
-         nQgs6I7U7v/ESkep7gZkqYUFQGquqIhOifSReKBK68+3J3TPD80MJ9weARpS8CEQ20r/
-         glGtntZ04BwGNeI/zwovNrOJeGeTmkO4c05pv+tSxIZh8Xi6BXea2sBrux1CXhdk8Wg7
-         bR2Q==
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GXptsJcBObAmTHNgi3MV9lQPw8m5c8uSghS5yX++H8I=;
+        b=bpVxe5OkU3xcWoEy8jrJOAYFaMoHctxc+PHbSJXzyYCy0RSD0DYf9SHj7dAZXOGY/b
+         WTTer+QHHw/88590UJsnQArVErgQde6Q4L47VdMXa6+IfTBXGdy7nrrI8+zKC9K+OCu9
+         PtZT89BQo2iQNx1zh+CkVSueLzuky3MJ+uCds=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=a1fLBAz97REz0jfdyucNaKEBoM0Z0pYoEHkMNeMyZmY=;
-        b=4IMSjrUW3FMW+Lvr4dqGLElv0mcO9f7jvUTweCTm2LV3LBOABRGhGBY8W7h7g9cJK/
-         bT18ct9gkT6J1SQkhsWNNstY44O1TPJvcaCIeP+m9y+keTX4FdaisftXhfPWtmpWxxep
-         UIUm3Nn7M8SX4DIckvvyQUGG9q3Tw9bz7NG3JEHiBTgv10PPAAfLqSeFCbKeP2r70WIo
-         79Oehaf9bc/VBfmGSm/2fUtY4JjRUGO7tnlsYSNA5UpqczG2U0TRRB47ojCh976aUKQV
-         tFZzGpdqrpzp/W7X6YM1e4i6gr3nEpnCRtw0bNAFIqXgfnnKtntzQyhjbIABhL7O7ijD
-         /8ng==
-X-Gm-Message-State: AOAM532Mm1zqed1Pqm6YidNPpkXfGdFjSkxUGaDgcjHSWNb07bowoPY9
-        0pEydtNlwG0DZGT1dqcGLQKRWqvP7g542Q==
-X-Google-Smtp-Source: ABdhPJz3kOxPGC9IfIhJm0Kyu8j0LIFXBDddhJhj2FaXxItDd/dLBGPf5K1ZLyli35hlNUxOtMYwuw==
-X-Received: by 2002:a05:6808:14cf:b0:328:ab6f:187b with SMTP id f15-20020a05680814cf00b00328ab6f187bmr3326747oiw.14.1652983482969;
-        Thu, 19 May 2022 11:04:42 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id e4-20020a056870a60400b000f169cbbb32sm114390oam.43.2022.05.19.11.04.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 11:04:42 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <872607af-5647-a255-83f2-3bf75b7f0df4@roeck-us.net>
-Date:   Thu, 19 May 2022 11:04:39 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GXptsJcBObAmTHNgi3MV9lQPw8m5c8uSghS5yX++H8I=;
+        b=M00AMqOXnM9oVnyMM9W0cN8U0dqOGwe3Gs0LJD5JXaElkRcINtRbb95yCzTmCli8w/
+         6rbhy4r368DOU3APx+N/a6F39rDUwRP5nz3uCYMC6I5unu7l9/GNkxVLWfdNQfin6iNn
+         JjEgNpcMtCMo5odi5FludBw9i/sG1sQuAOWq6KB2zTOQY/NWSTdWztY99zAHDr7cEbTI
+         n5jjp6TO6G5IqABj8d3HYrYI9sg7wat2Ols4ABrbdmAz1mzhJNWf7f9vtcbsBQ+ROFEj
+         9ksIEaZfGLGn8saZ/62yT7/1SysiqNCLOENe3zEGhkKjhB0wIpfulJt/gQuzcXqczsnX
+         l+7g==
+X-Gm-Message-State: AOAM531PnpnOTT3Bd9tWmt0Gy5NX/fCL1EvDmEqOzzXTr/t5qtQcIefd
+        dWRRL9RYFdg3t6YNwc68MElO/Q==
+X-Google-Smtp-Source: ABdhPJwN562D6hxL4omJgYXwo9pCJ9gFpCFSuYLQIrhIXXjkedD2mow75MiG73kTAvmCYIaoxLE0EA==
+X-Received: by 2002:a05:6000:1acd:b0:20c:726a:3840 with SMTP id i13-20020a0560001acd00b0020c726a3840mr5068108wry.507.1652983534566;
+        Thu, 19 May 2022 11:05:34 -0700 (PDT)
+Received: from localhost ([2620:10d:c092:400::4:c1eb])
+        by smtp.gmail.com with ESMTPSA id s11-20020adfbc0b000000b0020c5253d8f3sm266099wrg.63.2022.05.19.11.05.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 11:05:33 -0700 (PDT)
+Date:   Thu, 19 May 2022 19:05:32 +0100
+From:   Chris Down <chris@chrisdown.name>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Subject: Re: [RFC PATCH] printk: console: Allow each console to have its own
+ loglevel
+Message-ID: <YoaG7I9jDS0aQndK@chrisdown.name>
+References: <YoUBh5BSsURDO71Z@chrisdown.name>
+ <CAMuHMdU2tUU6FAM-nK9oxd0GwcO3WwvZp9Um4=w5By+N0P0kXA@mail.gmail.com>
+ <YoZWFi0AtmA9fvv/@chrisdown.name>
+ <CAMuHMdU5=XW28XBdEx9ofrrysUCqqtoaS7=0U8Mr7TF3XdntWw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <20220428205116.861003-1-yury.norov@gmail.com>
- <20220428205116.861003-4-yury.norov@gmail.com>
- <20220519150929.GA3145933@roeck-us.net>
- <CAAH8bW8ju7XLkbYya1A1OtqGVGDUAk7dPyw01RsDzg+v7xihyQ@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 3/5] lib/bitmap: add test for bitmap_{from,to}_arr64
-In-Reply-To: <CAAH8bW8ju7XLkbYya1A1OtqGVGDUAk7dPyw01RsDzg+v7xihyQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdU5=XW28XBdEx9ofrrysUCqqtoaS7=0U8Mr7TF3XdntWw@mail.gmail.com>
+User-Agent: Mutt/2.2.4 (c3baa83e) (2022-04-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/22 09:01, Yury Norov wrote:
-> On Thu, May 19, 2022 at 8:09 AM Guenter Roeck <linux@roeck-us.net> wrote:
->>
->> On Thu, Apr 28, 2022 at 01:51:14PM -0700, Yury Norov wrote:
->>> Test newly added bitmap_{from,to}_arr64() functions similarly to
->>> already existing bitmap_{from,to}_arr32() tests.
->>>
->>> Signed-off-by: Yury Norov <yury.norov@gmail.com>
->>
->> With this patch in linux-next (including next-20220519), I see lots of
->> bitmap test errors when booting 32-bit ppc images in qemu. Examples:
->>
->> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0", got "0,65"
->> ...
->> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128"
->> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128-129"
->> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128-130"
->> ...
->> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65,128-143", got "0,65,128-143,208-209"
->> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65,128-143", got "0,65,128-143,208-210"
->>
->> and so on. It only  gets worse from there, and ends with:
->>
->> test_bitmap: parselist: 14: input is '0-2047:128/256' OK, Time: 4274
->> test_bitmap: bitmap_print_to_pagebuf: input is '0-32767
->> ', Time: 127267
->> test_bitmap: failed 337 out of 3801 tests
->>
->> Other architectures and 64-bit ppc builds seem to be fine.
-> 
-> Hi Guenter,
-> 
-> Thanks for letting me know. It's really weird because it has already
-> been for 2 weeks
-> in next with no issues. But I tested it on mips32, not powerpc. I'll
-> check what happens
-> there.
-> 
-Oh, I have seen the problem for a while, it is just that -next is in
-such a bad shape that it is difficult to bisect individual problems.
+Hi Geert,
 
-> Can you please share your config and qemu image if possible?
-> 
+Geert Uytterhoeven writes:
+>CC DT
 
-First, you have to revert commit b033767848c411
-("powerpc/code-patching: Use jump_label for testing freed initmem")
-to avoid a crash. After that, a recent version of qemu should work
-with the following command line.
+Thanks!
 
-qemu-system-ppc -kernel arch/powerpc/boot/uImage -M mpc8544ds \
-	-m 256 -no-reboot -initrd rootfs.cpio \
-	--append "rdinit=/sbin/init coherent_pool=512k mem=256M console=ttyS0" \
-	-monitor none -nographic
+>On Thu, May 19, 2022 at 4:37 PM Chris Down <chris@chrisdown.name> wrote:
+>> Geert Uytterhoeven writes:
+>> >All of the above options are appropriate for "classic" systems,
+>> >where the console device is selected using the "console=" option.
+>> >
+>> >On systems using Device tree, the serial console device is selected
+>> >using the "chosen/stout-path" property in DT, and the graphical
+>> >console is usually auto-detected and auto-enabled through DRM.
+>> >Do you envision a way to specify a specific console loglevel on the
+>> >kernel command line on such systems?
+>>
+>> Interesting question! I hadn't really thought about device tree. I actually
+>> have very little understanding of how it works to be honest :-)
+>>
+>> I'm happy to add loglevel support to device tree, I assume I'd add another
+>> property under the chosen node, like chosen/stdout-loglevel.
+>
+>Please do not add a new property there.
+>IMHO, the loglevel should be specified on the kernel command line,
+>and not be fixed using a DT property.
 
-Configuration is mpc85xx_defconfig with CONFIG_TEST_BITMAP enabled.
-I used the root file system (initrd) from
-https://github.com/groeck/linux-build-test/blob/master/rootfs/ppc/rootfs.cpio.gz
+Ah, if that's what you want, it should already work I think (if I understood 
+your point correctly).
 
-Hope this helps,
-Guenter
+As long as you know which console type will be brought up, you can just specify 
+the following rule on the command line and the rule will be applied to 
+whichever console is brought up by DT (untested, but it should work):
+
+     # default 4, serial to 5
+     loglevel=4 console=ttyS0/5
+
+     # default 4, usb to 5
+     loglevel=4 console=ttyUSB0/5
+
+Is that the kind of thing you meant?
