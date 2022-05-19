@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 046A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD382C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240104AbiESPAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
+        id S231371AbiESPAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240203AbiESO7W (ORCPT
+        with ESMTP id S240178AbiESO7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:59:22 -0400
+        Thu, 19 May 2022 10:59:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE57E7313
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:59:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFFAEAD3D
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:59:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9734AB82559
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:59:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0FA4C385AA;
-        Thu, 19 May 2022 14:59:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4866FB8255A
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:59:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A01F4C34113;
+        Thu, 19 May 2022 14:59:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652972345;
-        bh=4GjeqQ3BUCp74cSdy5xmVITYIftzeKtWS4AXw4zWwH8=;
+        s=k20201202; t=1652972353;
+        bh=kprj9AsueaFINeMIMWN9khvtDSMfrbM/1saZBC5B40Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bbrxgSPrsQh5g1OSHLYO3G221fmaj4LK4VJAVS+PpCIsgaikC+vtrPpbBwOGfx3v5
-         fN+0c0/I3cVtCP95JbU12Jglo2ELnZ44V+lNvvZjHFxhedoRauDZqJd/XnmFu+D6xX
-         H85BAB2/wvx0Zx0Ers+fLrHgYdMa7W1Bb4Kaqe9vsqgf2DUcwZhGxsfT/3swJWmutu
-         X9CmraBw0NPeBdKjp904js1C7Y7Klap9/VWtiQbJzVLqxQp4rUxLrfG+UUg37eYMmQ
-         NmH25d6sA6ATNcgR/jZcsai1OW2QaMiGyDrNK1SWUMbhov3iNNUyWu8JtUipnlNGm7
-         VE8zhPHpiOhZg==
+        b=sfZyP1OspaIXRm+2aNmcrHHvzVmTTgU+rOQyN1IE1RTyp7pQ44135kNoo9IcMEjVH
+         GVHE5SUCg9eRfssF6pzv/YgDnszuYADlN5836IR/fKMQJ633nHOXDctAhKy5i2+GwB
+         E3/lqxVXz4+ww+IKTFK5kgTPShHwQQPcITtlR8MLbfNvEnzF5ezX9ZWBwx11C3eQHC
+         z9MrKV9nr+CTnv8XqEo3px/wI0lOVtzojO+SMOeSPHUd0w6VzeW+FyusoxzdJr2J7/
+         YjowURrsU/znYf9M/PMEcrPdAapKXLYhxHC33b05I0IVa1omSFEhpcCzUeJsAmQgEQ
+         n9g8xy9IQdJEg==
 From:   Frederic Weisbecker <frederic@kernel.org>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Frederic Weisbecker <frederic@kernel.org>,
@@ -50,9 +50,9 @@ Cc:     Frederic Weisbecker <frederic@kernel.org>,
         Uladzislau Rezki <uladzislau.rezki@sony.com>,
         Joel Fernandes <joel@joelfernandes.org>,
         Mark Rutland <mark.rutland@arm.com>
-Subject: [PATCH 09/21] context_tracking: Take idle eqs entrypoints over RCU
-Date:   Thu, 19 May 2022 16:58:11 +0200
-Message-Id: <20220519145823.618983-10-frederic@kernel.org>
+Subject: [PATCH 11/21] context_tracking: Take NMI eqs entrypoints over RCU
+Date:   Thu, 19 May 2022 16:58:13 +0200
+Message-Id: <20220519145823.618983-12-frederic@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220519145823.618983-1-frederic@kernel.org>
 References: <20220519145823.618983-1-frederic@kernel.org>
@@ -63,12 +63,12 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 The RCU dynticks counter is going to be merged into the context tracking
-subsystem. Start with moving the idle extended quiescent states
-entrypoints to context tracking. For now those are dumb redirections to
+subsystem. Prepare with moving the NMI extended quiescent states
+entrypoints to context tracking. For now those are dumb redirection to
 existing RCU calls.
 
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Paul E. McKenney <paulmck@kernel.org>
 Cc: Peter Zijlstra <peterz@infradead.org>
 Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
@@ -83,316 +83,203 @@ Cc: Phil Auld <pauld@redhat.com>
 Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
 Cc: Alex Belits <abelits@marvell.com>
 ---
- Documentation/RCU/stallwarn.rst   |  4 ++--
- arch/arm/mach-imx/cpuidle-imx6q.c |  5 +++--
- drivers/acpi/processor_idle.c     |  5 +++--
- drivers/cpuidle/cpuidle.c         |  9 +++++----
- include/linux/context_tracking.h  |  8 ++++++++
- include/linux/rcupdate.h          |  2 +-
- kernel/context_tracking.c         | 15 +++++++++++++++
- kernel/locking/lockdep.c          |  2 +-
- kernel/rcu/Kconfig                |  2 ++
- kernel/rcu/tree.c                 |  2 --
- kernel/rcu/update.c               |  2 +-
- kernel/sched/idle.c               | 10 +++++-----
- kernel/sched/sched.h              |  1 +
- kernel/time/Kconfig               |  6 ++++++
- 14 files changed, 53 insertions(+), 20 deletions(-)
+ Documentation/RCU/Design/Requirements/Requirements.rst |  2 +-
+ arch/Kconfig                                           |  2 +-
+ arch/arm64/kernel/entry-common.c                       |  8 ++++----
+ include/linux/context_tracking_irq.h                   |  4 ++++
+ include/linux/hardirq.h                                |  4 ++--
+ kernel/context_tracking.c                              | 10 ++++++++++
+ kernel/entry/common.c                                  |  4 ++--
+ kernel/extable.c                                       |  4 ++--
+ kernel/trace/trace.c                                   |  2 +-
+ 9 files changed, 27 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/RCU/stallwarn.rst b/Documentation/RCU/stallwarn.rst
-index 794837eb519b..b95bda7755fa 100644
---- a/Documentation/RCU/stallwarn.rst
-+++ b/Documentation/RCU/stallwarn.rst
-@@ -97,8 +97,8 @@ warnings:
- 	which will include additional debugging information.
+diff --git a/Documentation/RCU/Design/Requirements/Requirements.rst b/Documentation/RCU/Design/Requirements/Requirements.rst
+index 2a657fd2bca3..ac323f2af19b 100644
+--- a/Documentation/RCU/Design/Requirements/Requirements.rst
++++ b/Documentation/RCU/Design/Requirements/Requirements.rst
+@@ -1847,7 +1847,7 @@ normal interrupts. One way that this can happen is for code that
+ directly invokes ct_irq_enter() and ct_irq_exit() to be called
+ from an NMI handler. This astonishing fact of life prompted the current
+ code structure, which has ct_irq_enter() invoking
+-rcu_nmi_enter() and ct_irq_exit() invoking rcu_nmi_exit().
++ct_nmi_enter() and ct_irq_exit() invoking ct_nmi_exit().
+ And yes, I also learned of this requirement the hard way.
  
- -	A low-level kernel issue that either fails to invoke one of the
--	variants of rcu_user_enter(), rcu_user_exit(), rcu_idle_enter(),
--	rcu_idle_exit(), rcu_irq_enter(), or rcu_irq_exit() on the one
-+	variants of rcu_user_enter(), rcu_user_exit(), ct_idle_enter(),
-+	ct_idle_exit(), rcu_irq_enter(), or rcu_irq_exit() on the one
- 	hand, or that invokes one of them too many times on the other.
- 	Historically, the most frequent issue has been an omission
- 	of either irq_enter() or irq_exit(), which in turn invoke
-diff --git a/arch/arm/mach-imx/cpuidle-imx6q.c b/arch/arm/mach-imx/cpuidle-imx6q.c
-index 094337dc1bc7..d086cbae09c3 100644
---- a/arch/arm/mach-imx/cpuidle-imx6q.c
-+++ b/arch/arm/mach-imx/cpuidle-imx6q.c
-@@ -3,6 +3,7 @@
-  * Copyright (C) 2012 Freescale Semiconductor, Inc.
-  */
+ Loadable Modules
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 888f9725b20b..a1150a190bf6 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -792,7 +792,7 @@ config HAVE_CONTEXT_TRACKING_USER_OFFSTACK
  
-+#include <linux/context_tracking.h>
- #include <linux/cpuidle.h>
- #include <linux/module.h>
- #include <asm/cpuidle.h>
-@@ -24,9 +25,9 @@ static int imx6q_enter_wait(struct cpuidle_device *dev,
- 		imx6_set_lpm(WAIT_UNCLOCKED);
- 	raw_spin_unlock(&cpuidle_lock);
+ 	  - Critical entry code isn't preemptible (or better yet:
+ 	    not interruptible).
+-	  - No use of RCU read side critical sections, unless rcu_nmi_enter()
++	  - No use of RCU read side critical sections, unless ct_nmi_enter()
+ 	    got called.
+ 	  - No use of instrumentation, unless instrumentation_begin() got
+ 	    called.
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index a1490e8bf5d4..b8fcdd777a8a 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -161,7 +161,7 @@ static void noinstr arm64_enter_nmi(struct pt_regs *regs)
+ 	__nmi_enter();
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+ 	lockdep_hardirq_enter();
+-	rcu_nmi_enter();
++	ct_nmi_enter();
  
--	rcu_idle_enter();
-+	ct_idle_enter();
- 	cpu_do_idle();
--	rcu_idle_exit();
-+	ct_idle_exit();
- 
- 	raw_spin_lock(&cpuidle_lock);
- 	if (num_idle_cpus-- == num_online_cpus())
-diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-index 32b20efff5f8..935f4113d5f6 100644
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -22,6 +22,7 @@
- #include <linux/cpu.h>
- #include <linux/minmax.h>
- #include <acpi/processor.h>
-+#include <linux/context_tracking.h>
- 
- /*
-  * Include the apic definitions for x86 to have the APIC timer related defines
-@@ -648,11 +649,11 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
- 		raw_spin_unlock(&c3_lock);
+ 	trace_hardirqs_off_finish();
+ 	ftrace_nmi_enter();
+@@ -182,7 +182,7 @@ static void noinstr arm64_exit_nmi(struct pt_regs *regs)
+ 		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
  	}
  
--	rcu_idle_enter();
-+	ct_idle_enter();
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	lockdep_hardirq_exit();
+ 	if (restore)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+@@ -199,7 +199,7 @@ static void noinstr arm64_enter_el1_dbg(struct pt_regs *regs)
+ 	regs->lockdep_hardirqs = lockdep_hardirqs_enabled();
  
- 	acpi_idle_do_entry(cx);
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+-	rcu_nmi_enter();
++	ct_nmi_enter();
  
--	rcu_idle_exit();
-+	ct_idle_exit();
+ 	trace_hardirqs_off_finish();
+ }
+@@ -218,7 +218,7 @@ static void noinstr arm64_exit_el1_dbg(struct pt_regs *regs)
+ 		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
+ 	}
  
- 	/* Re-enable bus master arbitration */
- 	if (dis_bm) {
-diff --git a/drivers/cpuidle/cpuidle.c b/drivers/cpuidle/cpuidle.c
-index ef2ea1b12cd8..62dd956025f3 100644
---- a/drivers/cpuidle/cpuidle.c
-+++ b/drivers/cpuidle/cpuidle.c
-@@ -23,6 +23,7 @@
- #include <linux/suspend.h>
- #include <linux/tick.h>
- #include <linux/mmu_context.h>
-+#include <linux/context_tracking.h>
- #include <trace/events/power.h>
- 
- #include "cpuidle.h"
-@@ -150,12 +151,12 @@ static void enter_s2idle_proper(struct cpuidle_driver *drv,
- 	 */
- 	stop_critical_timings();
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_enter();
-+		ct_idle_enter();
- 	target_state->enter_s2idle(dev, drv, index);
- 	if (WARN_ON_ONCE(!irqs_disabled()))
- 		local_irq_disable();
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_exit();
-+		ct_idle_exit();
- 	tick_unfreeze();
- 	start_critical_timings();
- 
-@@ -233,10 +234,10 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
- 
- 	stop_critical_timings();
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_enter();
-+		ct_idle_enter();
- 	entered_state = target_state->enter(dev, drv, index);
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_exit();
-+		ct_idle_exit();
- 	start_critical_timings();
- 
- 	sched_clock_idle_wakeup_event();
-diff --git a/include/linux/context_tracking.h b/include/linux/context_tracking.h
-index e35ae66b4794..01abadb2f993 100644
---- a/include/linux/context_tracking.h
-+++ b/include/linux/context_tracking.h
-@@ -119,4 +119,12 @@ extern void context_tracking_init(void);
- static inline void context_tracking_init(void) { }
- #endif /* CONFIG_CONTEXT_TRACKING_USER_FORCE */
- 
-+#ifdef CONFIG_CONTEXT_TRACKING_IDLE
-+extern void ct_idle_enter(void);
-+extern void ct_idle_exit(void);
-+#else
-+static inline void ct_idle_enter(void) { }
-+static inline void ct_idle_exit(void) { }
-+#endif /* !CONFIG_CONTEXT_TRACKING_IDLE */
-+
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	if (restore)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+ }
+diff --git a/include/linux/context_tracking_irq.h b/include/linux/context_tracking_irq.h
+index 60e3ed15a04e..11043bf724b7 100644
+--- a/include/linux/context_tracking_irq.h
++++ b/include/linux/context_tracking_irq.h
+@@ -7,11 +7,15 @@ void ct_irq_enter(void);
+ void ct_irq_exit(void);
+ void ct_irq_enter_irqson(void);
+ void ct_irq_exit_irqson(void);
++void ct_nmi_enter(void);
++void ct_nmi_exit(void);
+ #else
+ static inline void ct_irq_enter(void) { }
+ static inline void ct_irq_exit(void) { }
+ static inline void ct_irq_enter_irqson(void) { }
+ static inline void ct_irq_exit_irqson(void) { }
++static inline void ct_nmi_enter(void) { }
++static inline void ct_nmi_exit(void) { }
  #endif
-diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-index f9f75a3cfeb8..a7b7c459d5d4 100644
---- a/include/linux/rcupdate.h
-+++ b/include/linux/rcupdate.h
-@@ -129,7 +129,7 @@ static inline void rcu_nocb_flush_deferred_wakeup(void) { }
-  * @a: Code that RCU needs to pay attention to.
-  *
-  * RCU read-side critical sections are forbidden in the inner idle loop,
-- * that is, between the rcu_idle_enter() and the rcu_idle_exit() -- RCU
-+ * that is, between the ct_idle_enter() and the ct_idle_exit() -- RCU
-  * will happily ignore any such read-side critical sections.  However,
-  * things like powertop need tracepoints in the inner idle loop.
-  *
+ 
+ #endif
+diff --git a/include/linux/hardirq.h b/include/linux/hardirq.h
+index 76878b357ffa..345cdbe9c1b7 100644
+--- a/include/linux/hardirq.h
++++ b/include/linux/hardirq.h
+@@ -124,7 +124,7 @@ extern void rcu_nmi_exit(void);
+ 	do {							\
+ 		__nmi_enter();					\
+ 		lockdep_hardirq_enter();			\
+-		rcu_nmi_enter();				\
++		ct_nmi_enter();				\
+ 		instrumentation_begin();			\
+ 		ftrace_nmi_enter();				\
+ 		instrumentation_end();				\
+@@ -143,7 +143,7 @@ extern void rcu_nmi_exit(void);
+ 		instrumentation_begin();			\
+ 		ftrace_nmi_exit();				\
+ 		instrumentation_end();				\
+-		rcu_nmi_exit();					\
++		ct_nmi_exit();					\
+ 		lockdep_hardirq_exit();				\
+ 		__nmi_exit();					\
+ 	} while (0)
 diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index da067a36b326..26e67da7d90a 100644
+index de2df0b4b460..120c2864dc95 100644
 --- a/kernel/context_tracking.c
 +++ b/kernel/context_tracking.c
-@@ -22,6 +22,21 @@
- #include <linux/export.h>
- #include <linux/kprobes.h>
+@@ -55,6 +55,16 @@ void ct_irq_exit_irqson(void)
+ {
+ 	rcu_irq_exit_irqson();
+ }
++
++noinstr void ct_nmi_enter(void)
++{
++	rcu_nmi_enter();
++}
++
++noinstr void ct_nmi_exit(void)
++{
++	rcu_nmi_exit();
++}
+ #endif /* #ifdef CONFIG_CONTEXT_TRACKING_IDLE */
  
-+
-+#ifdef CONFIG_CONTEXT_TRACKING_IDLE
-+noinstr void ct_idle_enter(void)
-+{
-+	rcu_idle_enter();
-+}
-+EXPORT_SYMBOL_GPL(ct_idle_enter);
-+
-+void ct_idle_exit(void)
-+{
-+	rcu_idle_exit();
-+}
-+EXPORT_SYMBOL_GPL(ct_idle_exit);
-+#endif /* #ifdef CONFIG_CONTEXT_TRACKING_IDLE */
-+
  #ifdef CONFIG_CONTEXT_TRACKING_USER
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index 9a89386696ba..256fb950a603 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -449,7 +449,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
+ 	__nmi_enter();
+ 	lockdep_hardirqs_off(CALLER_ADDR0);
+ 	lockdep_hardirq_enter();
+-	rcu_nmi_enter();
++	ct_nmi_enter();
  
- #define CREATE_TRACE_POINTS
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index c06cab6546ed..5f0dfe37234b 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -6546,7 +6546,7 @@ void lockdep_rcu_suspicious(const char *file, const int line, const char *s)
+ 	instrumentation_begin();
+ 	trace_hardirqs_off_finish();
+@@ -469,7 +469,7 @@ void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
+ 	}
+ 	instrumentation_end();
+ 
+-	rcu_nmi_exit();
++	ct_nmi_exit();
+ 	lockdep_hardirq_exit();
+ 	if (irq_state.lockdep)
+ 		lockdep_hardirqs_on(CALLER_ADDR0);
+diff --git a/kernel/extable.c b/kernel/extable.c
+index bda5e9761541..71f482581cab 100644
+--- a/kernel/extable.c
++++ b/kernel/extable.c
+@@ -114,7 +114,7 @@ int kernel_text_address(unsigned long addr)
+ 
+ 	/* Treat this like an NMI as it can happen anywhere */
+ 	if (no_rcu)
+-		rcu_nmi_enter();
++		ct_nmi_enter();
+ 
+ 	if (is_module_text_address(addr))
+ 		goto out;
+@@ -127,7 +127,7 @@ int kernel_text_address(unsigned long addr)
+ 	ret = 0;
+ out:
+ 	if (no_rcu)
+-		rcu_nmi_exit();
++		ct_nmi_exit();
+ 
+ 	return ret;
+ }
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 85e519cc0af9..c096da6ea121 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -3102,7 +3102,7 @@ void __trace_stack(struct trace_array *tr, unsigned int trace_ctx,
+ 	}
  
  	/*
- 	 * If a CPU is in the RCU-free window in idle (ie: in the section
--	 * between rcu_idle_enter() and rcu_idle_exit(), then RCU
-+	 * between ct_idle_enter() and ct_idle_exit(), then RCU
- 	 * considers that CPU to be in an "extended quiescent state",
- 	 * which means that RCU will be completely ignoring that CPU.
- 	 * Therefore, rcu_read_lock() and friends have absolutely no
-diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-index c05ca52cdf64..d471d22a5e21 100644
---- a/kernel/rcu/Kconfig
-+++ b/kernel/rcu/Kconfig
-@@ -8,6 +8,8 @@ menu "RCU Subsystem"
- config TREE_RCU
- 	bool
- 	default y if SMP
-+	# Dynticks-idle tracking
-+	select CONTEXT_TRACKING_IDLE
- 	help
- 	  This option selects the RCU implementation that is
- 	  designed for very large SMP system with hundreds or
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index ff97264d8077..c2792b200958 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -668,7 +668,6 @@ void noinstr rcu_idle_enter(void)
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
- 	rcu_eqs_enter(false);
- }
--EXPORT_SYMBOL_GPL(rcu_idle_enter);
- 
- #ifdef CONFIG_NO_HZ_FULL
- 
-@@ -908,7 +907,6 @@ void noinstr rcu_idle_exit(void)
- 	rcu_eqs_exit(false);
- 	raw_local_irq_restore(flags);
- }
--EXPORT_SYMBOL_GPL(rcu_idle_exit);
- 
- #ifdef CONFIG_NO_HZ_FULL
- /**
-diff --git a/kernel/rcu/update.c b/kernel/rcu/update.c
-index 2e93acad1e31..738842c4886b 100644
---- a/kernel/rcu/update.c
-+++ b/kernel/rcu/update.c
-@@ -85,7 +85,7 @@ module_param(rcu_normal_after_boot, int, 0444);
-  * and while lockdep is disabled.
-  *
-  * Note that if the CPU is in the idle loop from an RCU point of view (ie:
-- * that we are in the section between rcu_idle_enter() and rcu_idle_exit())
-+ * that we are in the section between ct_idle_enter() and ct_idle_exit())
-  * then rcu_read_lock_held() sets ``*ret`` to false even if the CPU did an
-  * rcu_read_lock().  The reason for this is that RCU ignores CPUs that are
-  * in such a section, considering these as in extended quiescent state,
-diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
-index 8f8b5020e76a..6de222b23b49 100644
---- a/kernel/sched/idle.c
-+++ b/kernel/sched/idle.c
-@@ -53,14 +53,14 @@ static noinline int __cpuidle cpu_idle_poll(void)
- {
- 	trace_cpu_idle(0, smp_processor_id());
- 	stop_critical_timings();
--	rcu_idle_enter();
-+	ct_idle_enter();
- 	local_irq_enable();
- 
- 	while (!tif_need_resched() &&
- 	       (cpu_idle_force_poll || tick_check_broadcast_expired()))
- 		cpu_relax();
- 
--	rcu_idle_exit();
-+	ct_idle_exit();
- 	start_critical_timings();
- 	trace_cpu_idle(PWR_EVENT_EXIT, smp_processor_id());
- 
-@@ -98,12 +98,12 @@ void __cpuidle default_idle_call(void)
- 		 *
- 		 * Trace IRQs enable here, then switch off RCU, and have
- 		 * arch_cpu_idle() use raw_local_irq_enable(). Note that
--		 * rcu_idle_enter() relies on lockdep IRQ state, so switch that
-+		 * ct_idle_enter() relies on lockdep IRQ state, so switch that
- 		 * last -- this is very similar to the entry code.
- 		 */
- 		trace_hardirqs_on_prepare();
- 		lockdep_hardirqs_on_prepare(_THIS_IP_);
--		rcu_idle_enter();
-+		ct_idle_enter();
- 		lockdep_hardirqs_on(_THIS_IP_);
- 
- 		arch_cpu_idle();
-@@ -116,7 +116,7 @@ void __cpuidle default_idle_call(void)
- 		 */
- 		raw_local_irq_disable();
- 		lockdep_hardirqs_off(_THIS_IP_);
--		rcu_idle_exit();
-+		ct_idle_exit();
- 		lockdep_hardirqs_on(_THIS_IP_);
- 		raw_local_irq_enable();
- 
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 58263f90c559..f398f2bf05f4 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -27,6 +27,7 @@
- #include <linux/capability.h>
- #include <linux/cgroup_api.h>
- #include <linux/cgroup.h>
-+#include <linux/context_tracking.h>
- #include <linux/cpufreq.h>
- #include <linux/cpumask_api.h>
- #include <linux/ctype.h>
-diff --git a/kernel/time/Kconfig b/kernel/time/Kconfig
-index 41f99bcfe9e6..a41753be1a2b 100644
---- a/kernel/time/Kconfig
-+++ b/kernel/time/Kconfig
-@@ -76,6 +76,12 @@ config TIME_KUNIT_TEST
- config CONTEXT_TRACKING
- 	bool
- 
-+config CONTEXT_TRACKING_IDLE
-+	bool
-+	select CONTEXT_TRACKING
-+	help
-+	  Tracks idle state on behalf of RCU.
-+
- if GENERIC_CLOCKEVENTS
- menu "Timers subsystem"
- 
+-	 * When an NMI triggers, RCU is enabled via rcu_nmi_enter(),
++	 * When an NMI triggers, RCU is enabled via ct_nmi_enter(),
+ 	 * but if the above rcu_is_watching() failed, then the NMI
+ 	 * triggered someplace critical, and ct_irq_enter() should
+ 	 * not be called from NMI.
 -- 
 2.25.1
 
