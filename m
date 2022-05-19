@@ -2,123 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 871A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242977AbiESRoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
+        id S243001AbiESRpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233298AbiESRoJ (ORCPT
+        with ESMTP id S240091AbiESRpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:44:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27DA1674DC
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:44:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652982245;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TbKUDAKlg/Ogjr+4QtQJqlmidAs8wGDhpgalHiP6hOo=;
-        b=GncvwfsXmWksaV2D/D5dcRUcq2QlVL2Vurwa27vjeFOviWblnoM8H49ltvuZgG8HV5gdas
-        hOu5Kn/4mqGiNqZ1ZZFLmPI3X2Mmx6NyM+i2b7ikKLcf2++j8xA8gqX7P6VhrSb1jaUW3B
-        QQz0V+QcyzpgLBxtEfDgkZRSDcaBW/4=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-104-vmnwhXpJPGGIgo8dDK-2oQ-1; Thu, 19 May 2022 13:44:03 -0400
-X-MC-Unique: vmnwhXpJPGGIgo8dDK-2oQ-1
-Received: by mail-ed1-f72.google.com with SMTP id b3-20020aa7d483000000b004282ca95814so4000876edr.9
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:44:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TbKUDAKlg/Ogjr+4QtQJqlmidAs8wGDhpgalHiP6hOo=;
-        b=iYkiI7kPPHIF1tQwtb4MFUh1D5B2VnIgiqOjnSP/7q4aDzLfsdsWJyDKvAIq7l+oNY
-         h+VUnvXci78BPDdHKRztrgKGX/Fqs960LynzOJYBqN23M78YyjZsPJLTrHsrtVtlTGI0
-         pamhfTB9sFZSnLtqL+XELhc17aLsfh1FF0ke1f2jQ48gzM4exfbs7fY0WTqLIoi5anUV
-         BCwaDLdFxf6HO8boGAzc3MUqO3NTRnOP8TP9INAt6qZta1eBajq8wTe0FBQtSCj8HbNF
-         oENAPNcB1fBDFzqnjjBvmscA+AHKDc/GhlmhnbVfj/Fc6N+Uvi3tB5bMvlDSnSrqnu3G
-         xfvw==
-X-Gm-Message-State: AOAM533G6L4O/1OH1inJ4+gTRAredQOpSzv76b7myb9eJPIC/SuFSRQd
-        4x+NR2zeIOn27NMiZ4X1oglOF9R+ZnXA1e1WT0U/iSFC7tyLtTERhk+lyoWkJkhOChe5Fo3o27j
-        SbBAWz1jFmFEYN9TOMKVDtZBF
-X-Received: by 2002:a05:6402:2999:b0:428:bb4d:6cea with SMTP id eq25-20020a056402299900b00428bb4d6ceamr6631358edb.29.1652982242776;
-        Thu, 19 May 2022 10:44:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzvMbOp5T/ObRZXQ6Jq5u59322uAqzlrp5apy+zFigpuah5J4H5qKyzhYRShJqiKytyVEbuWA==
-X-Received: by 2002:a05:6402:2999:b0:428:bb4d:6cea with SMTP id eq25-20020a056402299900b00428bb4d6ceamr6631339edb.29.1652982242610;
-        Thu, 19 May 2022 10:44:02 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id v18-20020a056402349200b0042ac43be19dsm3339522edc.3.2022.05.19.10.44.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 10:44:02 -0700 (PDT)
-Message-ID: <b08e3ae2-18b8-fe4d-7658-c51baf2dd197@redhat.com>
-Date:   Thu, 19 May 2022 19:44:01 +0200
+        Thu, 19 May 2022 13:45:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3341A5012
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:45:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB10CB8276B
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:45:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20601C385AA;
+        Thu, 19 May 2022 17:45:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652982331;
+        bh=XTqlTDp8vpzw/d57Gk8js0SUxWL/JNoh0jjWesaOhhc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iJWmZerXyVB+ZXw70rsMHe+AOM4sC3xMYx2HodoCNnUVPYpzjyCQ1yiqWPbP4adW5
+         katOidFEtGfejhIz8Vvy7F/6kgSbBomwmb7TKxb6fGWg7m0/csITw7UkKagWHlDuVo
+         pLRE+whzhcFyEebRO5jCgzSx5oMSJ1O/zVLn/eus=
+Date:   Thu, 19 May 2022 19:45:27 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Chris Down <chris@chrisdown.name>
+Cc:     linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        kernel-team@fb.com
+Subject: Re: [RFC PATCH] printk: console: Allow each console to have its own
+ loglevel
+Message-ID: <YoaCN+OH6cG0p1CN@kroah.com>
+References: <YoUR6RlzkCNG7BU0@kroah.com>
+ <YoVM+KbdyJm8RSSr@chrisdown.name>
+ <YoVO23+fvsNPnpKh@kroah.com>
+ <YoVWpZKHD7aec0CJ@chrisdown.name>
+ <YoXsAkUgzIjJR90W@kroah.com>
+ <YoZQQwtG12Ypr2IC@chrisdown.name>
+ <YoZVvA5FP4wFLSH9@kroah.com>
+ <YoZdVCfK4T8Ts2oS@chrisdown.name>
+ <YoZhXe9CZE5o73fG@kroah.com>
+ <YoZoXOghSuCy9Bi+@chrisdown.name>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] platform/x86: intel_cht_int33fe: Set driver data
-Content-Language: en-US
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220519122103.78546-1-heikki.krogerus@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220519122103.78546-1-heikki.krogerus@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoZoXOghSuCy9Bi+@chrisdown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 5/19/22 14:21, Heikki Krogerus wrote:
-> Module removal fails because cht_int33fe_typec_remove()
-> tries to access driver data that does not exist. Fixing by
-> assigning the data at the end of probe.
+On Thu, May 19, 2022 at 04:55:08PM +0100, Chris Down wrote:
+> Greg Kroah-Hartman writes:
+> > On Thu, May 19, 2022 at 04:08:04PM +0100, Chris Down wrote:
+> > > Greg Kroah-Hartman writes:
+> > > > >  struct console {
+> > > > >  	char	name[16];
+> > > > >  	void	(*write)(struct console *, const char *, unsigned);
+> > > > > @@ -179,9 +173,11 @@ struct console {
+> > > > >  	void	*data;
+> > > > >  	struct	 console *next;
+> > > > >  	int	level;
+> > > > > -	struct	device classdev;
+> > > > > +	struct	device *classdev;
+> > > >
+> > > > Ick, no, keep the real structure here.  It can properly handle the
+> > > > reference counting for the object.  Just correctly clean up in the
+> > > > release function, not anywhere else.
+> > > 
+> > > Sorry, I'm getting more and more confused about what you're asking me to do,
+> > > and less and less clear on the rationale.
+> > > 
+> > > Can you please clarify what "correctly cleaning up" would mean for a
+> > > non-pointer `struct device'?
+> > > 
+> > > Is your concern that...
+> > > 
+> > >     register_console(c)
+> > >         device_initialize(c->d)
+> > >         device_add(c->d)
+> > >     unregister_console(c)
+> > >         device_unregister(c->d)      console_classdev_release(c->d)
+> > >     register_console(c)
+> > >         device_initialize(c->d)  <-- classdev was not previously zeroed out
+> > > 				     in console_classdev_release() and bad 				     things may happen
+> > 
+> > Note, you can not "recycle" a structure in the driver model.  So when
+> > the console is unregistered, it should be freed.  When it is registered,
+> > it should be created.  Perhaps that is the confusion here?
 > 
-> Fixes: 915623a80b5a ("platform/x86: intel_cht_int33fe: Switch to DMI modalias based loading")
-> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> I suspect you're close to the source of the confusion. So your point is that
+> the `struct console' should be freed when the driver refcount drops to 0
+> rather than trying to do it the other way around. Right?
 
-Thank you for your patch, I've applied this patch to my review-hans 
-branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+When the "device" refcount, not driver.  refcounts are for data.
 
-Note it will show up in my review-hans branch once I've pushed my
-local branch there, which might take a while.
-
-Once I've run some tests on this branch the patches there will be
-added to the platform-drivers-x86/for-next branch and eventually
-will be included in the pdx86 pull-request to Linus for the next
-merge-window.
-
-Regards,
-
-Hans
-
-
-
-
-> ---
->  drivers/platform/x86/intel/chtwc_int33fe.c | 2 ++
->  1 file changed, 2 insertions(+)
+> So, just to try to come to a solution, here's the lay of the land as I
+> understand it. Currently pretty much all consoles are statically defined
+> (and most of the non-static cases are false positives)
 > 
-> diff --git a/drivers/platform/x86/intel/chtwc_int33fe.c b/drivers/platform/x86/intel/chtwc_int33fe.c
-> index 0de509fbf0209..c52ac23e23315 100644
-> --- a/drivers/platform/x86/intel/chtwc_int33fe.c
-> +++ b/drivers/platform/x86/intel/chtwc_int33fe.c
-> @@ -389,6 +389,8 @@ static int cht_int33fe_typec_probe(struct platform_device *pdev)
->  		goto out_unregister_fusb302;
->  	}
->  
-> +	platform_set_drvdata(pdev, data);
-> +
->  	return 0;
->  
->  out_unregister_fusb302:
+>     % git grep 'struct console.*=' -- '*.c' | awk '/static/ { print "static"; } !/static/ { print "non-static" }' | sort | uniq -c
+>          15 non-static
+>         105 static
 
+ah, ok, then we have a problem, and your change to the struct device
+being a pointer is correct.
+
+That's the problem when you only see a tiny bit of the kernel in a
+patch, sorry for the confusion.
+
+But you still need to free the device structure that is pointed to by
+the device in the release function.  Your release function can not be
+"empty" like your original patch was.
+
+thanks,
+
+greg k-h
