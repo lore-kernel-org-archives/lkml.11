@@ -2,168 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E90C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D1AC4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232280AbiESHGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35944 "EHLO
+        id S229597AbiESHJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiESHGo (ORCPT
+        with ESMTP id S231129AbiESHJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:06:44 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C64663F1;
-        Thu, 19 May 2022 00:06:42 -0700 (PDT)
-Received: from kwepemi100024.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L3gqf07bQzhZFN;
-        Thu, 19 May 2022 15:05:49 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100024.china.huawei.com (7.221.188.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 15:06:40 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 15:06:39 +0800
-Subject: Re: [PATCH -next v2 2/2] blk-throttle: fix io hung due to
- configuration updates
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     kernel test robot <lkp@intel.com>, Tejun Heo <tj@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>, Ming Lei <ming.lei@redhat.com>,
-        <kbuild-all@lists.01.org>, <cgroups@vger.kernel.org>,
-        linux-block <linux-block@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>
-References: <20220518072751.1188163-3-yukuai3@huawei.com>
- <202205182347.tMOOqyfL-lkp@intel.com>
- <84fe296e-6e56-3ca9-73a8-357beb675c6e@huawei.com>
- <3d6878f4-1902-633d-0af2-276831364a4f@huawei.com>
- <CAMuHMdV6NysKKh+HZ-cgHh+=SVcydmxO6ic82+t3ySTgfkoEOg@mail.gmail.com>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <20bc6370-999b-ed3c-4b8f-19b2cdba5965@huawei.com>
-Date:   Thu, 19 May 2022 15:06:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 19 May 2022 03:09:24 -0400
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D526EB8BCF
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:09:21 -0700 (PDT)
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202205190709190f941d43afcfeba4c7
+        for <linux-kernel@vger.kernel.org>;
+        Thu, 19 May 2022 09:09:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=ERGzHdc12/H97hzrWVUlGifh8cF+QnzKMs/6AlPoGeI=;
+ b=dWXiv16DDlez26T4iDcnfeQENrDw0YdlBvYF9Uaaw999tVSfXAUtTL0FVDu95s3eLSm5S6
+ CAuX3h/pvmzd1aY2pM2AL/IYZzrrFM3/ohJ+gia8RMVbq0oUWmFslr/9L41g4IoMoLpWaTnW
+ C1eV6NIhxjdUgmG8zwMhm0DVqohbw=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v2 2/9] tty: n_gsm: fix tty registration before control channel open
+Date:   Thu, 19 May 2022 09:07:50 +0200
+Message-Id: <20220519070757.2096-2-daniel.starke@siemens.com>
+In-Reply-To: <20220519070757.2096-1-daniel.starke@siemens.com>
+References: <20220519070757.2096-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdV6NysKKh+HZ-cgHh+=SVcydmxO6ic82+t3ySTgfkoEOg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Daniel Starke <daniel.starke@siemens.com>
 
+The current implementation registers/deregisters the user ttys at mux
+attach/detach. That means that the user devices are available before any
+control channel is open. However, user channel initialization requires an
+open control channel. Furthermore, the user is not informed if the mux
+restarts due to configuration changes.
+Put the registration/deregistration procedure into separate function to
+improve readability.
+Move registration to mux activation and deregistration to mux cleanup to
+keep the user devices only open as long as a control channel exists. The
+user will be informed via the device driver if the mux was reconfigured in
+a way that required a mux re-activation.
+This makes it necessary to add T2 initialization to gsmld_open() for the
+ldisc open code path (not the reconfiguration code path) to avoid deletion
+of an uninitialized T2 at mux cleanup.
 
-在 2022/05/19 15:01, Geert Uytterhoeven 写道:
-> Hi Yukuai,
-> 
-> On Thu, May 19, 2022 at 5:25 AM yukuai (C) <yukuai3@huawei.com> wrote:
->> 在 2022/05/19 10:11, yukuai (C) 写道:
->>> 在 2022/05/18 23:52, kernel test robot 写道:
->>>> Thank you for the patch! Yet something to improve:
->>>>
->>>> [auto build test ERROR on next-20220517]
->>>>
->>>> url:
->>>> https://github.com/intel-lab-lkp/linux/commits/Yu-Kuai/bugfix-for-blk-throttle/20220518-151713
->>>>
->>>> base:    47c1c54d1bcd0a69a56b49473bc20f17b70e5242
->>>> config: m68k-allyesconfig
->>>> (https://download.01.org/0day-ci/archive/20220518/202205182347.tMOOqyfL-lkp@intel.com/config)
->>>>
->>>> compiler: m68k-linux-gcc (GCC) 11.3.0
->>>> reproduce (this is a W=1 build):
->>>>           wget
->>>> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
->>>> -O ~/bin/make.cross
->>>>           chmod +x ~/bin/make.cross
->>>>           #
->>>> https://github.com/intel-lab-lkp/linux/commit/f8345dbaf4ed491742aab29834aff66b4930c087
->>>>
->>>>           git remote add linux-review
->>>> https://github.com/intel-lab-lkp/linux
->>>>           git fetch --no-tags linux-review
->>>> Yu-Kuai/bugfix-for-blk-throttle/20220518-151713
->>>>           git checkout f8345dbaf4ed491742aab29834aff66b4930c087
->>>>           # save the config file
->>>>           mkdir build_dir && cp config build_dir/.config
->>>>           COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0
->>>> make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
->>>>
->>>> If you fix the issue, kindly add following tag as appropriate
->>>> Reported-by: kernel test robot <lkp@intel.com>
->>>>
->>>> All errors (new ones prefixed by >>):
->>>>
->>>>      m68k-linux-ld: block/blk-throttle.o: in function `tg_conf_updated':
->>>>>> blk-throttle.c:(.text+0x25bc): undefined reference to `__udivdi3'
->>>>>> m68k-linux-ld: blk-throttle.c:(.text+0x2626): undefined reference to
->>>>>> `__udivdi3'
->>> Hi,
->>>
->>> I'm confused here, the only place that I can relate to this:
->>>
->>>       return dispatched * new_limit / old_limit;
->>>
->>> However, I don't understand yet why this is problematic...
->>>>      `.exit.text' referenced in section `.data' of
->>>> sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section
->>>> `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
->>
->> + static u64 throtl_update_bytes_disp(u64 dispatched, u64 new_limit,
->> +                                    u64 old_limit)
->> + {
->> +        if (new_limit == old_limit)
->> +                return dispatched;
->> +
->> +        if (new_limit == U64_MAX)
->> +                return 0;
->> +
->> +        return dispatched * new_limit / old_limit;
->>
->> I understand it now. I'm doing (u64 / u64), I should use div64_u64
-> 
-> Better, use mul_u64_u64_div_u64(), as "dispatched * new_limit"
-> may overflow?
-Hi,
+Fixes: d50f6dcaf22a ("tty: n_gsm: expose gsmtty device nodes at ldisc open time")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 117 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 79 insertions(+), 38 deletions(-)
 
-It's right that it  can overflow, I'll handle such case in next version.
-> 
->> + }
->> +
->> + static u32 throtl_update_io_disp(u32 dispatched, u32 new_limit, u32 old_limit)
->> + {
->> +        if (new_limit == old_limit)
->> +                return dispatched;
->> +
->> +        if (new_limit == UINT_MAX)
->> +                return 0;
->> +
->> +        return dispatched * new_limit / old_limit;
-> 
-> This is the same as above, but now operating on u32s instead of u64s.
-> Likewise, can the multiplication overflow?
-same as above.
+See patch 6 regarding changes since to v1.
 
-Thanks,
-Kuai
-> 
->> + }
-> 
-> Gr{oetje,eeting}s,
-> 
->                          Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                  -- Linus Torvalds
-> .
-> 
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 08fea3e7674d..e695956fc96c 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -235,6 +235,7 @@ struct gsm_mux {
+ 	struct gsm_dlci *dlci[NUM_DLCI];
+ 	int old_c_iflag;		/* termios c_iflag value before attach */
+ 	bool constipated;		/* Asked by remote to shut up */
++	bool has_devices;		/* Devices were registered */
+ 
+ 	spinlock_t tx_lock;
+ 	unsigned int tx_bytes;		/* TX data outstanding */
+@@ -444,6 +445,68 @@ static u8 gsm_encode_modem(const struct gsm_dlci *dlci)
+ 	return modembits;
+ }
+ 
++/**
++ *	gsm_register_devices	-	register all tty devices for a given mux index
++ *
++ *	@driver: the tty driver that describes the tty devices
++ *	@index:  the mux number is used to calculate the minor numbers of the
++ *	         ttys for this mux and may differ from the position in the
++ *	         mux array.
++ */
++static int gsm_register_devices(struct tty_driver *driver, unsigned int index)
++{
++	struct device *dev;
++	int i;
++	unsigned int base;
++
++	if (!driver || index >= MAX_MUX)
++		return -EINVAL;
++
++	base = index * NUM_DLCI; /* first minor for this index */
++	for (i = 1; i < NUM_DLCI; i++) {
++		/* Don't register device 0 - this is the control channel
++		 * and not a usable tty interface
++		 */
++		dev = tty_register_device(gsm_tty_driver, base + i, NULL);
++		if (IS_ERR(dev)) {
++			if (debug & 8)
++				pr_info("%s failed to register device minor %u",
++					__func__, base + i);
++			for (i--; i >= 1; i--)
++				tty_unregister_device(gsm_tty_driver, base + i);
++			return PTR_ERR(dev);
++		}
++	}
++
++	return 0;
++}
++
++/**
++ *	gsm_unregister_devices	-	unregister all tty devices for a given mux index
++ *
++ *	@driver: the tty driver that describes the tty devices
++ *	@index:  the mux number is used to calculate the minor numbers of the
++ *	         ttys for this mux and may differ from the position in the
++ *	         mux array.
++ */
++static void gsm_unregister_devices(struct tty_driver *driver,
++				   unsigned int index)
++{
++	int i;
++	unsigned int base;
++
++	if (!driver || index >= MAX_MUX)
++		return;
++
++	base = index * NUM_DLCI; /* first minor for this index */
++	for (i = 1; i < NUM_DLCI; i++) {
++		/* Don't unregister device 0 - this is the control
++		 * channel and not a usable tty interface
++		 */
++		tty_unregister_device(gsm_tty_driver, base + i);
++	}
++}
++
+ /**
+  *	gsm_print_packet	-	display a frame for debug
+  *	@hdr: header to print before decode
+@@ -2191,6 +2254,10 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ 	del_timer_sync(&gsm->t2_timer);
+ 
+ 	/* Free up any link layer users and finally the control channel */
++	if (gsm->has_devices) {
++		gsm_unregister_devices(gsm_tty_driver, gsm->num);
++		gsm->has_devices = false;
++	}
+ 	for (i = NUM_DLCI - 1; i >= 0; i--)
+ 		if (gsm->dlci[i])
+ 			gsm_dlci_release(gsm->dlci[i]);
+@@ -2214,6 +2281,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ static int gsm_activate_mux(struct gsm_mux *gsm)
+ {
+ 	struct gsm_dlci *dlci;
++	int ret;
+ 
+ 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
+ 	init_waitqueue_head(&gsm->event);
+@@ -2225,9 +2293,14 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
+ 	else
+ 		gsm->receive = gsm1_receive;
+ 
++	ret = gsm_register_devices(gsm_tty_driver, gsm->num);
++	if (ret)
++		return ret;
++
+ 	dlci = gsm_dlci_alloc(gsm, 0);
+ 	if (dlci == NULL)
+ 		return -ENOMEM;
++	gsm->has_devices = true;
+ 	gsm->dead = false;		/* Tty opens are now permissible */
+ 	return 0;
+ }
+@@ -2488,39 +2561,14 @@ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len)
+  *	will need moving to an ioctl path.
+  */
+ 
+-static int gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
++static void gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
+ {
+-	unsigned int base;
+-	int ret, i;
+-
+ 	gsm->tty = tty_kref_get(tty);
+ 	/* Turn off tty XON/XOFF handling to handle it explicitly. */
+ 	gsm->old_c_iflag = tty->termios.c_iflag;
+ 	tty->termios.c_iflag &= (IXON | IXOFF);
+-	ret =  gsm_activate_mux(gsm);
+-	if (ret != 0)
+-		tty_kref_put(gsm->tty);
+-	else {
+-		/* Don't register device 0 - this is the control channel and not
+-		   a usable tty interface */
+-		base = mux_num_to_base(gsm); /* Base for this MUX */
+-		for (i = 1; i < NUM_DLCI; i++) {
+-			struct device *dev;
+-
+-			dev = tty_register_device(gsm_tty_driver,
+-							base + i, NULL);
+-			if (IS_ERR(dev)) {
+-				for (i--; i >= 1; i--)
+-					tty_unregister_device(gsm_tty_driver,
+-								base + i);
+-				return PTR_ERR(dev);
+-			}
+-		}
+-	}
+-	return ret;
+ }
+ 
+-
+ /**
+  *	gsmld_detach_gsm	-	stop doing 0710 mux
+  *	@tty: tty attached to the mux
+@@ -2531,12 +2579,7 @@ static int gsmld_attach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
+ 
+ static void gsmld_detach_gsm(struct tty_struct *tty, struct gsm_mux *gsm)
+ {
+-	unsigned int base = mux_num_to_base(gsm); /* Base for this MUX */
+-	int i;
+-
+ 	WARN_ON(tty != gsm->tty);
+-	for (i = 1; i < NUM_DLCI; i++)
+-		tty_unregister_device(gsm_tty_driver, base + i);
+ 	/* Restore tty XON/XOFF handling. */
+ 	gsm->tty->termios.c_iflag = gsm->old_c_iflag;
+ 	tty_kref_put(gsm->tty);
+@@ -2629,7 +2672,6 @@ static void gsmld_close(struct tty_struct *tty)
+ static int gsmld_open(struct tty_struct *tty)
+ {
+ 	struct gsm_mux *gsm;
+-	int ret;
+ 
+ 	if (tty->ops->write == NULL)
+ 		return -EINVAL;
+@@ -2645,12 +2687,11 @@ static int gsmld_open(struct tty_struct *tty)
+ 	/* Attach the initial passive connection */
+ 	gsm->encoding = 1;
+ 
+-	ret = gsmld_attach_gsm(tty, gsm);
+-	if (ret != 0) {
+-		gsm_cleanup_mux(gsm, false);
+-		mux_put(gsm);
+-	}
+-	return ret;
++	gsmld_attach_gsm(tty, gsm);
++
++	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
++
++	return 0;
+ }
+ 
+ /**
+-- 
+2.34.1
+
