@@ -2,97 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11356C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234340AbiESV12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 17:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
+        id S232887AbiESV2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 17:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiESV11 (ORCPT
+        with ESMTP id S229710AbiESV2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 17:27:27 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E9B6D951;
-        Thu, 19 May 2022 14:27:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652995646; x=1684531646;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YEslGaRlWEVd8rQfrjVOyqh7W4xppAWF9ITI8yuaqmA=;
-  b=Aqw4cS3/t65JPN7NP6Q2HbatSjTOFy0XXPOVBZSMNbtn+OPcbTyF7wni
-   kHWf/I5mfRAHzY70+6M7+obrWMlGSvcDqTvqm/qjfRTCr1d2SoRn/eoG/
-   Rdusb4b8RB3/I1yjB6+vYpMDXIDmj9IDMqMuDknlpZsRdygQZS6l4XCDC
-   8rX5mJsjYQ/xMHSqzL9i/D06sVvO2XvEZlS9vdGeLCqv1DGFLETA5dRHF
-   cuqPZl57d5oFqxi7w8FoNNA3UHEh1pYRBqUTeCuAw1497715DOXbhul3W
-   Q5qqJOvRsceYUonMZ3Bufld9ptyXUZNU68TyxiBUOQc/in2ESphD7+C4p
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="271208129"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="271208129"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 14:27:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="524296741"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 19 May 2022 14:26:47 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 42026109; Fri, 20 May 2022 00:26:46 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v1 1/1] pinctrl: intel: Fix kernel doc format, i.e. add return sections
-Date:   Fri, 20 May 2022 00:26:45 +0300
-Message-Id: <20220519212645.47177-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 19 May 2022 17:28:34 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2CD6E8CD
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:28:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=iLKJL80pdLJpGRira2nJXXVQ3PoLCXZN+D6vBVWk5N8=; b=c87/WFkxD9GWe5V++LDIilAbI9
+        cbY0e1u8kgx9DA3mhAoDq6Agf3TdgrgE2ccS5388wym+BPGFJbuDzxWxZ83c05MWDEfKy/G1BnQVI
+        PEkHuc8Eq0wg+GlZ1qWPPrTFoioo2WGmpN2WpWTLHGQnxeXDR/s8Wdhj7+CV36eormFEMuo6Zljk9
+        aMDwuZFYOkhVIyO8QqvV3flL1cQr8fZ7zPrqdJ2HtaaCrTTh1f/RJ0s6nkaE90BuFEfDdlwMiizhE
+        CC7i0buKxIr+W6WFXQJngakRL9vWW9QbvCe9N/KSyoHHc4lOPSAm3J0suZTtO2eTcqce8gitFEEvQ
+        Rkkl5IFQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nrnh2-00D71X-6i; Thu, 19 May 2022 21:28:24 +0000
+Date:   Thu, 19 May 2022 22:28:24 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Mel Gorman <mgorman@suse.de>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: Re: mm/page_alloc.c:984:9: warning: iteration 119304648 invokes
+ undefined behavior
+Message-ID: <Yoa2eJ6+nyvK1EL+@casper.infradead.org>
+References: <202205200521.65W2rpLt-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202205200521.65W2rpLt-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel doc validator is not happy:
+On Fri, May 20, 2022 at 05:14:52AM +0800, kernel test robot wrote:
+> All warnings (new ones prefixed by >>):
+> 
+>    mm/page_alloc.c: In function 'rmqueue.isra':
+> >> mm/page_alloc.c:984:9: warning: iteration 119304648 invokes undefined behavior [-Waggressive-loop-optimizations]
+>      984 |         list_add(&page->lru, &area->free_list[migratetype]);
+>          |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    mm/page_alloc.c:2305:21: note: within this loop
+>     2305 |         while (high > low) {
+>          |                ~~~~~^~~~~
 
-  pinctrl-intel.c:865: warning: No description found for return value of 'intel_gpio_to_pin'
-  pinctrl-intel.c:904: warning: No description found for return value of 'intel_pin_to_gpio'
-  2 warnings
+That's OK.  'high' and 'low' are page orders.  They both lie in the
+range [0,63], so this will not iterate 119304648 times (what a funny
+number; I wonder why GCC chose it).
 
-Add return sections to the kernel documentation of the above mentioned
-functions.
+Can we make GCC happier by telling it that low and high are unsigned?
+It should have figured out that 'high' is <= 63 already, as that's a
+consequence of:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pinctrl/intel/pinctrl-intel.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index f882a31375ee..ffc045f7bf00 100644
---- a/drivers/pinctrl/intel/pinctrl-intel.c
-+++ b/drivers/pinctrl/intel/pinctrl-intel.c
-@@ -858,6 +858,9 @@ static const struct pinctrl_desc intel_pinctrl_desc = {
-  * When coming through gpiolib irqchip, the GPIO offset is not
-  * automatically translated to pinctrl pin number. This function can be
-  * used to find out the corresponding pinctrl pin.
-+ *
-+ * Return: a pin number and pointers to the community and pad group, which
-+ * the pin belongs to, or negative error code if translation can't be done.
-  */
- static int intel_gpio_to_pin(struct intel_pinctrl *pctrl, unsigned int offset,
- 			     const struct intel_community **community,
-@@ -899,6 +902,8 @@ static int intel_gpio_to_pin(struct intel_pinctrl *pctrl, unsigned int offset,
-  * @pin: pin number
-  *
-  * Translate the pin number of pinctrl to GPIO offset
-+ *
-+ * Return: a GPIO offset, or negative error code if translation can't be done.
-  */
- static __maybe_unused int intel_pin_to_gpio(struct intel_pinctrl *pctrl, int pin)
- {
--- 
-2.35.1
+        unsigned long size = 1 << high;
 
