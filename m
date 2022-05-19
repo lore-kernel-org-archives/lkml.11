@@ -2,125 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 11:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A7BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 11:00:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231510AbiESLAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 07:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        id S237196AbiESLAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 07:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237147AbiESK74 (ORCPT
+        with ESMTP id S235003AbiESLAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 06:59:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92ACEAFB15
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 03:59:50 -0700 (PDT)
+        Thu, 19 May 2022 07:00:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A95DAFAFD
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 04:00:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652957989;
+        s=mimecast20190719; t=1652958017;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v9f3Ov+Z2Vuq0fPwMO6gi/TL300cbGhsqiELARmaeZY=;
-        b=Afttb/9LAESH0cQ3ifv/cYzVooBvoUUBwFnJAEfNhMVL61omFCoB+FphsqAnYr3RF5O1uy
-        HuxzdjLcP67kMfT2tSelSHaJv1yhTN78wZ+rfkpSBqh4ajMmrscJkmZwoVrLvfl7cayw6e
-        TTSWLs4h6gLO51EGmJc5DIRmsCH7K6I=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=DK0SAajG/TJcxOWS+cQ31l+UPExFSP3wmD0TKCGxiF0=;
+        b=Pn+TRnQs4i/6fpjKsMiklRNbhWweVqqSz6KZtPpixJWeKm1A23wNng4LWTxSmAW8fLEjU1
+        z6rZmaPPNwUOFFq9OSXxYDEalC1XbZQH8eNCpHQ3MKufF2tpgcjuwDyBXLVg2C1v8tq4hk
+        FVEJaQjjbF2i28RKXT2fXXEPevou6Do=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-399-Sm6xi8xsNAaN7GgDxgXJLw-1; Thu, 19 May 2022 06:59:48 -0400
-X-MC-Unique: Sm6xi8xsNAaN7GgDxgXJLw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-458-ooCkteJYMzq0HIulWeXlFQ-1; Thu, 19 May 2022 07:00:14 -0400
+X-MC-Unique: ooCkteJYMzq0HIulWeXlFQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2197538041CC;
-        Thu, 19 May 2022 10:59:48 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 39BFC8001EA;
+        Thu, 19 May 2022 11:00:14 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 85C29492CA2;
-        Thu, 19 May 2022 10:59:47 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F42A40C1421;
+        Thu, 19 May 2022 11:00:13 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH 2/7] rxrpc: Fix listen() setting the bar too high for the
- prealloc rings
+Subject: [PATCH 6/7] rxrpc: Fix decision on when to generate an IDLE ACK
 From:   David Howells <dhowells@redhat.com>
 To:     marc.dionne@auristor.com
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Thu, 19 May 2022 11:59:46 +0100
-Message-ID: <165295798686.3423686.15508607653616387166.stgit@warthog.procyon.org.uk>
+Date:   Thu, 19 May 2022 12:00:12 +0100
+Message-ID: <165295801283.3423686.12547659984258455210.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165295798034.3423686.10148594094912570224.stgit@warthog.procyon.org.uk>
 References: <165295798034.3423686.10148594094912570224.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AF_RXRPC's listen() handler lets you set the backlog up to 32 (if you bump
-up the sysctl), but whilst the preallocation circular buffers have 32 slots
-in them, one of them has to be a dead slot because we're using CIRC_CNT().
+Fix the decision on when to generate an IDLE ACK by keeping a count of the
+number of packets we've received, but not yet soft-ACK'd, and the number of
+packets we've processed, but not yet hard-ACK'd, rather than trying to keep
+track of which DATA sequence numbers correspond to those points.
 
-This means that listen(rxrpc_sock, 32) will cause an oops when the socket
-is closed because rxrpc_service_prealloc_one() allocated one too many calls
-and rxrpc_discard_prealloc() won't then be able to get rid of them because
-it'll think the ring is empty.  rxrpc_release_calls_on_socket() then tries
-to abort them, but oopses because call->peer isn't yet set.
+We then generate an ACK when either counter exceeds 2.  The counters are
+both cleared when we transcribe the information into any sort of ACK packet
+for transmission.  IDLE and DELAY ACKs are skipped if both counters are 0
+(ie. no change).
 
-Fix this by setting the maximum backlog to RXRPC_BACKLOG_MAX - 1 to match
-the ring capacity.
-
- BUG: kernel NULL pointer dereference, address: 0000000000000086
- ...
- RIP: 0010:rxrpc_send_abort_packet+0x73/0x240 [rxrpc]
- Call Trace:
-  <TASK>
-  ? __wake_up_common_lock+0x7a/0x90
-  ? rxrpc_notify_socket+0x8e/0x140 [rxrpc]
-  ? rxrpc_abort_call+0x4c/0x60 [rxrpc]
-  rxrpc_release_calls_on_socket+0x107/0x1a0 [rxrpc]
-  rxrpc_release+0xc9/0x1c0 [rxrpc]
-  __sock_release+0x37/0xa0
-  sock_close+0x11/0x20
-  __fput+0x89/0x240
-  task_work_run+0x59/0x90
-  do_exit+0x319/0xaa0
-
-Fixes: 00e907127e6f ("rxrpc: Preallocate peers, conns and calls for incoming service requests")
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Fixes: 805b21b929e2 ("rxrpc: Send an ACK after every few DATA packets we receive")
 Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
-Link: https://lists.infradead.org/pipermail/linux-afs/2022-March/005079.html
 ---
 
- net/rxrpc/sysctl.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/trace/events/rxrpc.h |    2 +-
+ net/rxrpc/ar-internal.h      |    4 ++--
+ net/rxrpc/input.c            |   11 +++++++++--
+ net/rxrpc/output.c           |   18 +++++++++++-------
+ net/rxrpc/recvmsg.c          |    8 +++-----
+ 5 files changed, 26 insertions(+), 17 deletions(-)
 
-diff --git a/net/rxrpc/sysctl.c b/net/rxrpc/sysctl.c
-index 540351d6a5f4..555e0910786b 100644
---- a/net/rxrpc/sysctl.c
-+++ b/net/rxrpc/sysctl.c
-@@ -12,7 +12,7 @@
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index 4a3ab0ed6e06..1c714336b863 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -1509,7 +1509,7 @@ TRACE_EVENT(rxrpc_call_reset,
+ 		    __entry->call_serial = call->rx_serial;
+ 		    __entry->conn_serial = call->conn->hi_serial;
+ 		    __entry->tx_seq = call->tx_hard_ack;
+-		    __entry->rx_seq = call->ackr_seen;
++		    __entry->rx_seq = call->rx_hard_ack;
+ 			   ),
  
- static struct ctl_table_header *rxrpc_sysctl_reg_table;
- static const unsigned int four = 4;
--static const unsigned int thirtytwo = 32;
-+static const unsigned int max_backlog = RXRPC_BACKLOG_MAX - 1;
- static const unsigned int n_65535 = 65535;
- static const unsigned int n_max_acks = RXRPC_RXTX_BUFF_SIZE - 1;
- static const unsigned long one_jiffy = 1;
-@@ -89,7 +89,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= (void *)&four,
--		.extra2		= (void *)&thirtytwo,
-+		.extra2		= (void *)&max_backlog,
- 	},
- 	{
- 		.procname	= "rx_window_size",
+ 	    TP_printk("c=%08x %08x:%08x r=%08x/%08x tx=%08x rx=%08x",
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 8465985a4cb6..dce056adb78c 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -680,8 +680,8 @@ struct rxrpc_call {
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+ 	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
+-	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+-	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
++	atomic_t		ackr_nr_unacked; /* Number of unacked packets */
++	atomic_t		ackr_nr_consumed; /* Number of packets needing hard ACK */
+ 
+ 	/* RTT management */
+ 	rxrpc_serial_t		rtt_serial[4];	/* Serial number of DATA or PING sent */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 2e61545ad8ca..1145cb14d86f 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -412,8 +412,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ {
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	enum rxrpc_call_state state;
+-	unsigned int j, nr_subpackets;
+-	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = 0;
++	unsigned int j, nr_subpackets, nr_unacked = 0;
++	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = serial;
+ 	rxrpc_seq_t seq0 = sp->hdr.seq, hard_ack;
+ 	bool immediate_ack = false, jumbo_bad = false;
+ 	u8 ack = 0;
+@@ -569,6 +569,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			sp = NULL;
+ 		}
+ 
++		nr_unacked++;
++
+ 		if (last) {
+ 			set_bit(RXRPC_CALL_RX_LAST, &call->flags);
+ 			if (!ack) {
+@@ -588,9 +590,14 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ 			}
+ 			call->rx_expect_next = seq + 1;
+ 		}
++		if (!ack)
++			ack_serial = serial;
+ 	}
+ 
+ ack:
++	if (atomic_add_return(nr_unacked, &call->ackr_nr_unacked) > 2 && !ack)
++		ack = RXRPC_ACK_IDLE;
++
+ 	if (ack)
+ 		rxrpc_propose_ACK(call, ack, ack_serial,
+ 				  immediate_ack, true,
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 46aae9b7006f..9683617db704 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -74,11 +74,18 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 				 u8 reason)
+ {
+ 	rxrpc_serial_t serial;
++	unsigned int tmp;
+ 	rxrpc_seq_t hard_ack, top, seq;
+ 	int ix;
+ 	u32 mtu, jmax;
+ 	u8 *ackp = pkt->acks;
+ 
++	tmp = atomic_xchg(&call->ackr_nr_unacked, 0);
++	tmp |= atomic_xchg(&call->ackr_nr_consumed, 0);
++	if (!tmp && (reason == RXRPC_ACK_DELAY ||
++		     reason == RXRPC_ACK_IDLE))
++		return 0;
++
+ 	/* Barrier against rxrpc_input_data(). */
+ 	serial = call->ackr_serial;
+ 	hard_ack = READ_ONCE(call->rx_hard_ack);
+@@ -223,6 +230,10 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
+ 	n = rxrpc_fill_out_ack(conn, call, pkt, &hard_ack, &top, reason);
+ 
+ 	spin_unlock_bh(&call->lock);
++	if (n == 0) {
++		kfree(pkt);
++		return 0;
++	}
+ 
+ 	iov[0].iov_base	= pkt;
+ 	iov[0].iov_len	= sizeof(pkt->whdr) + sizeof(pkt->ack) + n;
+@@ -259,13 +270,6 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
+ 					  ntohl(pkt->ack.serial),
+ 					  false, true,
+ 					  rxrpc_propose_ack_retry_tx);
+-		} else {
+-			spin_lock_bh(&call->lock);
+-			if (after(hard_ack, call->ackr_consumed))
+-				call->ackr_consumed = hard_ack;
+-			if (after(top, call->ackr_seen))
+-				call->ackr_seen = top;
+-			spin_unlock_bh(&call->lock);
+ 		}
+ 
+ 		rxrpc_set_keepalive(call);
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index eca6dda26c77..250f23bc1c07 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -260,11 +260,9 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 		rxrpc_end_rx_phase(call, serial);
+ 	} else {
+ 		/* Check to see if there's an ACK that needs sending. */
+-		if (after_eq(hard_ack, call->ackr_consumed + 2) ||
+-		    after_eq(top, call->ackr_seen + 2) ||
+-		    (hard_ack == top && after(hard_ack, call->ackr_consumed)))
+-			rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial,
+-					  true, true,
++		if (atomic_inc_return(&call->ackr_nr_consumed) > 2)
++			rxrpc_propose_ACK(call, RXRPC_ACK_IDLE, serial,
++					  true, false,
+ 					  rxrpc_propose_ack_rotate_rx);
+ 		if (call->ackr_reason && call->ackr_reason != RXRPC_ACK_DELAY)
+ 			rxrpc_send_ack_packet(call, false, NULL);
 
 
