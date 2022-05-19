@@ -2,101 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 563BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 04:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 04:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233478AbiESEEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 00:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
+        id S233463AbiESEEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 00:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233386AbiESEDu (ORCPT
+        with ESMTP id S233439AbiESEEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 00:03:50 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307799A983
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:03:49 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id i8so3662768plr.13
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:03:49 -0700 (PDT)
+        Thu, 19 May 2022 00:04:41 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C3E9A98B
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:04:40 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id m23so4830266ljc.0
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:04:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gb1YAzoZl4sa0hLxrYxHiOizo1KxBkTwf3Ir2DZ2iVo=;
-        b=FfaO33NNu6uvtL7LvvqKjqvfFywaxOsqqWnpN9vVr05AnaJAxSOtxSDNJTGR2YFk3u
-         QXYCyGAN1aX7m2QfBqHN2mKj8r4aWdeMdL/Cv4SY9jRiIKu2d+6lVyAibTFhMVtP6YFV
-         j+Nqoa+tnRuaKWOzzLjeVT27FaaDrFesUWz5KjrBchx+1mv84SWKXint5uMNGkVpLYDD
-         u5KNCsBD0ntJ+SX7Y1kjWbQ2njZQ38Jki5rQSWRSPAlTLgvPv6QxbBQl9wkLRiWoTzhk
-         dKNg4uuqB8anev+hOFqUdVAP7OyptvegmQWf3J8WrFlWy6mxnxYNaeUwF+xE1amH0tvo
-         I2gw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=n0WqSjbtSNE0NhAHgkhktuyznGvAC8Z94X7uXLT1JRM=;
+        b=R65X9/wZQ3VbcRybUFv5mw1ZkIK7CbmY/GaBWVAGu+8mz27BQjtGFIrK2bX304qQZ5
+         ZzM7S0FnLJwJjxb274CqqQnWT8IqHvg4ODdbU5+J9BRLxyqwtpLvf3mmWSH3ahNdA+lU
+         c8Efs+pWoo5h5RKep40f2yXNenX29elRD6qaHkDvcyfgx+XTwf8z/lGiwy77I3qJ8iO5
+         Msyv3mSYSCeTng1tDcR7HpxuQ8FE80dO+/pMZwWNWKIv0u0AHR0sUlNTJZCFfQlgalUw
+         I/r05dcAjKfvsyEGSCIo3Ai4sIK0Fr2P+GB5lOX99pziuTLNnr/4EmiI26FETKi49NbO
+         ZRGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gb1YAzoZl4sa0hLxrYxHiOizo1KxBkTwf3Ir2DZ2iVo=;
-        b=AQ3fnK/aYsHbUgOhfAJqPemdu/bTxg24vvh9WWwvuCy955tDd++K453tR7WnKWz+v3
-         LGURRrVYdER8X7hr3TDMIhsonVhCnJ8iC495YjDIVDN7F1AV9QgFCnIHb2zybMWmXzdU
-         ZZ/rjGkPNA4Vby9i4keHKmRMdF57d026TgXsjfujvNAH4VdIfkuLngwCA5CGYVW/DV+x
-         0jvlClTyFDEimz6jiXs/EOgqvdiQb/1LfswQjXGJ38DRHe83QC5SL5oR/BOlpOIeyO30
-         C/z6nO9z90Mt34WpdTvk7zOF2SJWsDGQoENuPc3kMPKpmytN9XMSiUsn+WnbcFGsK32R
-         jliA==
-X-Gm-Message-State: AOAM533MBfMLYifukLvJgwe3YXrh9e5QKZEnujjTNbzLNW3ElwVxmcsM
-        uPnu5g+Gb8s989oDsqLuKxQjyw==
-X-Google-Smtp-Source: ABdhPJymWX1xXARueRINSzkpKUBJ9YLkEYCoagQ7kTzKyx7vKWCR0HOaBj+S9Tau46a4A4OuVVpiQA==
-X-Received: by 2002:a17:902:6b42:b0:15d:3603:6873 with SMTP id g2-20020a1709026b4200b0015d36036873mr2929296plt.30.1652933028649;
-        Wed, 18 May 2022 21:03:48 -0700 (PDT)
-Received: from [10.70.252.135] ([139.177.225.229])
-        by smtp.gmail.com with ESMTPSA id t10-20020a170902dcca00b001619fbb0e6dsm2466603pll.40.2022.05.18.21.03.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 21:03:48 -0700 (PDT)
-Message-ID: <94047220-1991-078f-3a2c-21ccbcb1eafc@bytedance.com>
-Date:   Thu, 19 May 2022 12:03:41 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n0WqSjbtSNE0NhAHgkhktuyznGvAC8Z94X7uXLT1JRM=;
+        b=8DydK6zMaoXoFfL4iVwU3y7K1zFhOyKBJasQ4ASSlFt582Bw+9yGOv5zLAv8/m/wS/
+         0rHEIGaHYvv94eWFcOVMFao3yrqsFyLQqbQUXYSp+MORL+mPl47TptOchBZDGWTs6R5J
+         PFg6DjCkGh9gpHNDr2xM+CtSDm75Btyqn0qxVil/WGelq9NtJdeS5W9NIb37HPeS+cUB
+         Ui8xa2oQwgDKyJ/rXtIgTLZDZNge1jZ0bflsn4G9iBnCqjFQZteMujNydZfn/KUbY7e7
+         xc6S1Th1n+eJmfAGHn3f8ZJqF4wZ/iAVj0+dVVJ5s80WY1bp6VKJ4hin8kRk6UDRWKCr
+         +DKQ==
+X-Gm-Message-State: AOAM530tX75zTFask/HJ/i4n8YdWyLCFCmVgOpAnS5LbqzbbmDGcFEcU
+        LM0uy2Je0XSN6QLsIk87K+L5UpF+ZsLyWZ0TskWrGjckuVNEbA==
+X-Google-Smtp-Source: ABdhPJz5zh4yFjz2+uzcc9OKuxkhf+RSeDOAf14JMNpky3U/o33GKfx9oY9pcnkFZLayOWUyFgtRpijetQErtJJ0LLc=
+X-Received: by 2002:a05:6000:78b:b0:20d:101b:2854 with SMTP id
+ bu11-20020a056000078b00b0020d101b2854mr2110281wrb.300.1652933067274; Wed, 18
+ May 2022 21:04:27 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [RFC PATCH 00/18] Try to free user PTE page table pages
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, songmuchun@bytedance.com,
-        zhouchengming@bytedance.com, akpm@linux-foundation.org,
-        tglx@linutronix.de, kirill.shutemov@linux.intel.com,
-        jgg@nvidia.com, tj@kernel.org, dennis@kernel.org,
-        ming.lei@redhat.com
-References: <20220429133552.33768-1-zhengqi.arch@bytedance.com>
- <8c51d9ae-5a8e-74a9-ddc2-70b5fcd38427@bytedance.com>
- <37055be1-05af-f7ef-c33e-27f90fa0f9ca@redhat.com>
- <YoUJEZU9JcfMlhRO@casper.infradead.org>
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-In-Reply-To: <YoUJEZU9JcfMlhRO@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220518224725.742882-1-namhyung@kernel.org> <20220518224725.742882-5-namhyung@kernel.org>
+In-Reply-To: <20220518224725.742882-5-namhyung@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 18 May 2022 21:04:15 -0700
+Message-ID: <CAP-5=fVUxdKY5Uvi8k=_1kJ8_Qw_PuGbfTY5EbF4j35DxSDFFA@mail.gmail.com>
+Subject: Re: [PATCH 4/6] perf record: Handle argument change in sched_switch
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Song Liu <songliubraving@fb.com>, Hao Luo <haoluo@google.com>,
+        Milian Wolff <milian.wolff@kdab.com>, bpf@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Blake Jones <blakejones@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 18, 2022 at 3:47 PM Namhyung Kim <namhyung@kernel.org> wrote:
+>
+> Recently sched_switch tracepoint added a new argument for prev_state,
+> but it's hard to handle the change in a BPF program.  Instead, we can
+> check the function prototype in BTF before loading the program.
+>
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 
+Acked-by: Ian Rogers <irogers@google.com>
 
-On 2022/5/18 10:56 PM, Matthew Wilcox wrote:
-> On Wed, May 18, 2022 at 04:51:06PM +0200, David Hildenbrand wrote:
->> yes, I talked about the involved challenges, especially, how malicious
->> user space can trigger allocation of almost elusively page tables and
->> essentially consume a lot of unmovable+unswappable memory and even store
->> secrets in the page table structure.
-> 
-> There are a lot of ways for userspace to consume a large amount of
-> kernel memory.  For example, one can open a file and set file locks on
-
-Yes, malicious programs are really hard to avoid, maybe we should try to
-solve some common cases first (such as empty PTE tables).
-
-> alternate bytes.  We generally handle this by accounting the memory to
-> the process and let the OOM killer, rlimits, memcg or other mechanism
-> take care of it.  Just because page tables are (generally) reclaimable
-> doesn't mean we need to treat them specially.
-> 
-
--- 
 Thanks,
-Qi
+Ian
+
+> ---
+>  tools/perf/util/bpf_off_cpu.c          | 28 +++++++++++++++++++++
+>  tools/perf/util/bpf_skel/off_cpu.bpf.c | 35 ++++++++++++++++++--------
+>  2 files changed, 52 insertions(+), 11 deletions(-)
+>
+> diff --git a/tools/perf/util/bpf_off_cpu.c b/tools/perf/util/bpf_off_cpu.c
+> index b5e2d038da50..874856c55101 100644
+> --- a/tools/perf/util/bpf_off_cpu.c
+> +++ b/tools/perf/util/bpf_off_cpu.c
+> @@ -89,6 +89,33 @@ static void off_cpu_finish(void *arg __maybe_unused)
+>         off_cpu_bpf__destroy(skel);
+>  }
+>
+> +/* v5.18 kernel added prev_state arg, so it needs to check the signature */
+> +static void check_sched_switch_args(void)
+> +{
+> +       const struct btf *btf = bpf_object__btf(skel->obj);
+> +       const struct btf_type *t1, *t2, *t3;
+> +       u32 type_id;
+> +
+> +       type_id = btf__find_by_name_kind(btf, "bpf_trace_sched_switch",
+> +                                        BTF_KIND_TYPEDEF);
+> +       if ((s32)type_id < 0)
+> +               return;
+> +
+> +       t1 = btf__type_by_id(btf, type_id);
+> +       if (t1 == NULL)
+> +               return;
+> +
+> +       t2 = btf__type_by_id(btf, t1->type);
+> +       if (t2 == NULL || !btf_is_ptr(t2))
+> +               return;
+> +
+> +       t3 = btf__type_by_id(btf, t2->type);
+> +       if (t3 && btf_is_func_proto(t3) && btf_vlen(t3) == 4) {
+> +               /* new format: pass prev_state as 4th arg */
+> +               skel->rodata->has_prev_state = true;
+> +       }
+> +}
+> +
+>  int off_cpu_prepare(struct evlist *evlist, struct target *target)
+>  {
+>         int err, fd, i;
+> @@ -117,6 +144,7 @@ int off_cpu_prepare(struct evlist *evlist, struct target *target)
+>         }
+>
+>         set_max_rlimit();
+> +       check_sched_switch_args();
+>
+>         err = off_cpu_bpf__load(skel);
+>         if (err) {
+> diff --git a/tools/perf/util/bpf_skel/off_cpu.bpf.c b/tools/perf/util/bpf_skel/off_cpu.bpf.c
+> index 78cdcc8ff863..986d7db6e75d 100644
+> --- a/tools/perf/util/bpf_skel/off_cpu.bpf.c
+> +++ b/tools/perf/util/bpf_skel/off_cpu.bpf.c
+> @@ -72,6 +72,8 @@ int enabled = 0;
+>  int has_cpu = 0;
+>  int has_task = 0;
+>
+> +const volatile bool has_prev_state = false;
+> +
+>  /*
+>   * Old kernel used to call it task_struct->state and now it's '__state'.
+>   * Use BPF CO-RE "ignored suffix rule" to deal with it like below:
+> @@ -121,22 +123,13 @@ static inline int can_record(struct task_struct *t, int state)
+>         return 1;
+>  }
+>
+> -SEC("tp_btf/sched_switch")
+> -int on_switch(u64 *ctx)
+> +static int off_cpu_stat(u64 *ctx, struct task_struct *prev,
+> +                       struct task_struct *next, int state)
+>  {
+>         __u64 ts;
+> -       int state;
+>         __u32 stack_id;
+> -       struct task_struct *prev, *next;
+>         struct tstamp_data *pelem;
+>
+> -       if (!enabled)
+> -               return 0;
+> -
+> -       prev = (struct task_struct *)ctx[1];
+> -       next = (struct task_struct *)ctx[2];
+> -       state = get_task_state(prev);
+> -
+>         ts = bpf_ktime_get_ns();
+>
+>         if (!can_record(prev, state))
+> @@ -180,4 +173,24 @@ int on_switch(u64 *ctx)
+>         return 0;
+>  }
+>
+> +SEC("tp_btf/sched_switch")
+> +int on_switch(u64 *ctx)
+> +{
+> +       struct task_struct *prev, *next;
+> +       int prev_state;
+> +
+> +       if (!enabled)
+> +               return 0;
+> +
+> +       prev = (struct task_struct *)ctx[1];
+> +       next = (struct task_struct *)ctx[2];
+> +
+> +       if (has_prev_state)
+> +               prev_state = (int)ctx[3];
+> +       else
+> +               prev_state = get_task_state(prev);
+> +
+> +       return off_cpu_stat(ctx, prev, next, prev_state);
+> +}
+> +
+>  char LICENSE[] SEC("license") = "Dual BSD/GPL";
+> --
+> 2.36.1.124.g0e6072fb45-goog
+>
