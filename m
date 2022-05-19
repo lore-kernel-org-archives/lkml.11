@@ -2,106 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3408C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C381AC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242856AbiESR0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
+        id S243004AbiESR0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242623AbiESRZF (ORCPT
+        with ESMTP id S242635AbiESRZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:25:05 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27049A3093;
-        Thu, 19 May 2022 10:25:03 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id i24so5706065pfa.7;
-        Thu, 19 May 2022 10:25:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sYyJmhJ1UJuNTKSNkznuVgdOa0YLmomkOmOhYpxJCFI=;
-        b=B1Heee3hxpN0aBQABPk0xvOT+jNBu4aa7AW9HK6xt/c87pzEb/DTZi7S+zuAx7PfOi
-         Ugk+cjgRwVIq0AfPCPScAmiJDJinvCqHIbGwupmjTb3JM3sMnmnbqB79XrgM5gwDVatp
-         DltHbvP8sTARpXH5IhZ3fAthfr4j1lR5OO2INzRNnl9acSGvlZhHf2euPwAZVBTSJ8si
-         CZbQIn3QSEfbI5qbXSHNv2G4GXSdwjhtMOznL6S5rKQFb+CMk73ITxWA1Gez162dP7UI
-         oi9ial8S6TM8MW23ND5h0h8wcA+lsIW4YDX+5lQMe8sJ+MsFwpTlpFAx+9j2yenqSqi4
-         xHPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sYyJmhJ1UJuNTKSNkznuVgdOa0YLmomkOmOhYpxJCFI=;
-        b=HHBc+sXsT0fHkYnrEEY3HGC35DqmQ0Mk3iwDPmrZGaQLvAbkYpgC1WolbKR0U86ZZ5
-         HFhrFTJBJKPx4b1SLgXEdrtq6j9oNLbaW4y7Io4aiBJQuSFyu6wI4Q6GC5Au3OsagDeQ
-         t4KficODlqEQV8HFox/VQJEfryuh0N/V332UxYx/jIjIxa+eUBH90I9RfMv6xQv/O1nF
-         5wNRq3b6gPaqJsXHgXjp/ChgyzNIvhflpgHOLqbuXOKQmhgkW44Zj6vvk4i+8M7vsYnI
-         wiC3cDME+A4gY2q6opet644fAy1FeYv97GkfYPb5VGGtiz7Qerq9nDe/NN4BlHtsKVzG
-         HJsQ==
-X-Gm-Message-State: AOAM531aeALEZCBhiEVhH2z+HPphW74l9IlGs565S3AbMK1vBjo8isti
-        SQZCbeG4FRcHVCtiNou3uov+zqngLk54
-X-Google-Smtp-Source: ABdhPJzZY5YP8RElcJziKMe2Pb+9bzOWxPxFDsokqdhQLlpUQtMJ7p36gRVAP/eKYVsQomShn6d3Ew==
-X-Received: by 2002:a63:2c15:0:b0:3f6:6a5f:8f0a with SMTP id s21-20020a632c15000000b003f66a5f8f0amr495864pgs.76.1652981102152;
-        Thu, 19 May 2022 10:25:02 -0700 (PDT)
-Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:25:01 -0700 (PDT)
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
-        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        andriy.shevchenko@linux.intel.com, willy@infradead.org
-Subject: [PATCH v2 12/28] test_printf: Drop requirement that sprintf not write past nul
-Date:   Thu, 19 May 2022 13:24:05 -0400
-Message-Id: <20220519172421.162394-13-kent.overstreet@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
-References: <20220519172421.162394-1-kent.overstreet@gmail.com>
+        Thu, 19 May 2022 13:25:02 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B23A5017;
+        Thu, 19 May 2022 10:25:00 -0700 (PDT)
+Received: from relay4-d.mail.gandi.net (unknown [217.70.183.196])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 713D8D3A61;
+        Thu, 19 May 2022 17:21:03 +0000 (UTC)
+Received: (Authenticated sender: didi.debian@cknow.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id BA400E0007;
+        Thu, 19 May 2022 17:20:55 +0000 (UTC)
+From:   Diederik de Haas <didi.debian@cknow.org>
+To:     linux-i2c@vger.kernel.org, Jean Delvare <jdelvare@suse.de>
+Cc:     =?utf-8?B?0KHQtdGA0LPQtdC5INCk0ZHQtNC+0YDQvtCy?= 
+        <serfyod0vr@yandex.ru>, linux-kernel@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>
+Subject: Re: Systems with more than 4 memory slots not supported yet, not instantiating SPD
+Date:   Thu, 19 May 2022 19:20:45 +0200
+Message-ID: <8957561.CDJkKcVGEf@bagend>
+Organization: Connecting Knowledge
+In-Reply-To: <3837611652787835@vla1-3991b5027d7d.qloud-c.yandex.net>
+References: <3837611652787835@vla1-3991b5027d7d.qloud-c.yandex.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="nextPart3123807.5fSG56mABF"; micalg="pgp-sha256"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current test code checks that sprintf never writes past the
-terminating nul. This is a rather strange requirement, completely
-separate from writing past the end of the buffer, which of course we
-can't do: writing anywhere to the buffer passed to snprintf, within size
-of course, should be perfectly fine.
+--nextPart3123807.5fSG56mABF
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"; protected-headers="v1"
+From: Diederik de Haas <didi.debian@cknow.org>
+To: linux-i2c@vger.kernel.org, Jean Delvare <jdelvare@suse.de>
+Date: Thu, 19 May 2022 19:20:45 +0200
+Message-ID: <8957561.CDJkKcVGEf@bagend>
+Organization: Connecting Knowledge
+In-Reply-To: <3837611652787835@vla1-3991b5027d7d.qloud-c.yandex.net>
+References: <3837611652787835@vla1-3991b5027d7d.qloud-c.yandex.net>
 
-Since this check has no documentation as to where it comes from or what
-depends on it, and it's getting in the way of further refactoring
-(printf_spec handling is right now scattered massively throughout the
-code, and we'd like to consolidate it) - delete it.
+On Tuesday, 17 May 2022 13:43:55 CEST =D0=A1=D0=B5=D1=80=D0=B3=D0=B5=D0=B9 =
+=D0=A4=D1=91=D0=B4=D0=BE=D1=80=D0=BE=D0=B2 wrote:
+> On the advice of Diederik de Haas (didi.debian@cknow.org ) on May 16 at
+> 22:41 I am sending you my message in
+> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1001286
 
-Also, many current pretty-printers building up their output on the
-stack, and then copy it to the actual output buffer - by eliminating
-this requirement we can kill those extra buffers.
+That bug report and https://bugs.debian.org/1001286 do contain the full
+history, but it looks like the most interesting/actionable part of that
+conversation wasn't shared with upstream.
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
----
- lib/test_printf.c | 6 ------
- 1 file changed, 6 deletions(-)
+I have no specific knowledge about this issue, but will try to summarize it.
 
-diff --git a/lib/test_printf.c b/lib/test_printf.c
-index 1e1604ef1a..0804ab788d 100644
---- a/lib/test_printf.c
-+++ b/lib/test_printf.c
-@@ -78,12 +78,6 @@ do_test(int bufsize, const char *expect, int elen,
- 		return 1;
- 	}
- 
--	if (memchr_inv(test_buffer + written + 1, FILL_CHAR, BUF_SIZE + PAD_SIZE - (written + 1))) {
--		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote beyond the nul-terminator\n",
--			bufsize, fmt);
--		return 1;
--	}
--
- 	if (memcmp(test_buffer, expect, written)) {
- 		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote '%s', expected '%.*s'\n",
- 			bufsize, fmt, test_buffer, written, expect);
--- 
-2.36.0
+/var/log/kern.log
+[    1.341085] i801_smbus 0000:00:1f.3: SMBus using PCI interrupt
+[    1.341467] i2c i2c-0: 8/8 memory slots populated (from DMI)
+[    1.341470] i2c i2c-0: Systems with more than 4 memory slots not support=
+ed yet, not instantiating SPD
+
+On Monday, 16 May 2022 20:55:20 CEST =D0=A1=D0=B5=D1=80=D0=B3=D0=B5=D0=B9 =
+=D0=A4=D1=91=D0=B4=D0=BE=D1=80=D0=BE=D0=B2 wrote:
+> 1. Systems with more than 4 memory slots not supported yet, not
+> instantiating SPD. Now I have made it so that the system sees 8 slots, as
+> described below, but I do not see SPD.
+>=20
+> 2. Kingston memory slots do not appear on the I2C bus, although I see them
+> in the BIOS and can change their parameters. Nevertheless, Linux works
+> fine.
+
+> I rebuilt the kernel by changing to
+> "./linux-source-5.17.6-1/drivers/i2c/i2c-smbus.c"
+>=20
+> line 358:
+>         if (slot_count > 4) {
+>                 dev_warn(&adap->dev,
+>                          "Systems with more than 4 memory slots not
+> supported yet, not instantiating SPD\n"); return;
+>         }
+>
+> and replace with
+>
+>         if (slot_count > 8) {
+>                 dev_warn(&adap->dev,
+>                          "Systems with more than 8 memory slots not
+> supported yet, not instantiating SPD\n"); return;
+>         }
+
+To which I responded:
+
+The 4 slot limit was specified in 5ace60859e84113b7a185c117fbf2c429d381b59
+(upstream commit ID) and the secondary commit message had this:
+"Start with just DDR2, DDR3 and DDR4 on x86 for now, and only for systems w=
+ith
+no more than 4 memory slots. These limitations may be lifted later."
+
+That commit by Jean Delvare was from ~2 years ago and it appears that there
+may now be a reason to lift/change that limit of 4 (to 8)
+
+As such a change should be discussed (and possibly implemented) upstream,
+I asked to forward the request there/here.
+
+Hopefully you now do have the needed information.
+
+Cheers,
+  Diederik
+
+--nextPart3123807.5fSG56mABF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQT1sUPBYsyGmi4usy/XblvOeH7bbgUCYoZ8bQAKCRDXblvOeH7b
+bgklAP90TlF+loOGAgtKXSTr+sUT6bGU4Z2VoYaL9UDqgvM5DQEA2rNgbAejD8dH
+3+zpG+dtLwYnTmADPdLlLQehNoXTjwA=
+=Jbcc
+-----END PGP SIGNATURE-----
+
+--nextPart3123807.5fSG56mABF--
+
+
 
