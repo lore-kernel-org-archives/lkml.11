@@ -2,395 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 769AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235743AbiESJAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 05:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
+        id S235753AbiESJBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 05:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233283AbiESJAv (ORCPT
+        with ESMTP id S233283AbiESJBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 05:00:51 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F6125DB
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:00:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=XrYKEh8RhSLE25PF1iComKvphLhT+lBnN/kFlXkBQ+I=; b=ajZp3ndFGU6wrKpKpw6NowR6x4
-        R5rremBiPvHVKDhc3AGYAuwcVFngJfK9apwE/fy6HaHEFNcrTbiXaDuidwOp2dIwFqWLWL3UtPDFv
-        fBQXUq2/iFeH0YLOtCHuc7SiwJKt0cDL0/ZzUptEcu/rwVkKtwygUilByt52L9kiMknhXfnY+Abmk
-        6xj4pRlBYBhUWpUXybXeYayIKHFmJwq0uIxpjc53TUwVfZotfydHbgAabnfFzqiT5+NMxdYpPKnNs
-        BcqBnA6LZQCSOL58dnKbY5HV3+KFtuAgsDv/wMgoHGWZjun5kraZHInSxxQcUopEFIbYupQFt/685
-        NnyOwECQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrc1K-001mgJ-5C; Thu, 19 May 2022 09:00:35 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8A7F0980E0B; Thu, 19 May 2022 11:00:29 +0200 (CEST)
-Date:   Thu, 19 May 2022 11:00:29 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Subject: [PATCH v2] objtool: Fix symbol creation
-Message-ID: <20220519090029.GA6479@worktop.programming.kicks-ass.net>
-References: <YoK4U9RgQ9N+HhXJ@dev-arch.thelio-3990X>
- <20220516214005.GQ76023@worktop.programming.kicks-ass.net>
- <YoPAZ6JfsF0LrQNc@hirez.programming.kicks-ass.net>
- <YoPCTEYjoPqE4ZxB@hirez.programming.kicks-ass.net>
- <20220518012429.4zqzarvwsraxivux@treble>
- <20220518074152.GB10117@worktop.programming.kicks-ass.net>
- <20220518173604.7gcrjjum6fo2m2ub@treble>
- <YoVuxKGkt0IQ0yjb@hirez.programming.kicks-ass.net>
+        Thu, 19 May 2022 05:01:36 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B8C340F1;
+        Thu, 19 May 2022 02:01:35 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24J8GNQD006931;
+        Thu, 19 May 2022 09:01:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=hqtw9iKEIdORIKukZHNl3n2cAgbzR2rjnUa/NIrGhOs=;
+ b=gc6BAGUj2LD24mYZDvaxzhpmqa3jkdw5dTXyJj31rA2B2cDwOoTCS97PghLeDgGQjuVB
+ hO0NQpPpDL4R3DxQpsCYt2t0y0NZGvAlGzG+G9Caj8bhRjFsB+OIf2ineNrzt7qzYRj2
+ eaIslSX4bKjuXYNDFik9D0x5fqhZJ7Hzmjsqnk6rqOFosVhw1/KswhQuzA5tMq0inzZN
+ Sh2211O7XTIzlJRIQBKTUTXtgDu5chCBp7ISWYcdWwljh5ZduwvnvkQzteFoeGhUEQRV
+ KRlnAYso08hsA6X42624GjKSQxKgX4Q2kJIBKibYd6W2PxLTTH/hwbSusIGQKjXR6dMz Ig== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5j7xgxtx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 May 2022 09:01:34 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24J8l8SZ003882;
+        Thu, 19 May 2022 09:01:33 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5j7xgxt3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 May 2022 09:01:33 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24J8wiI6020848;
+        Thu, 19 May 2022 09:01:31 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 3g2428wmqf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 May 2022 09:01:31 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24J91RgX59113822
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 19 May 2022 09:01:27 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C2F334C044;
+        Thu, 19 May 2022 09:01:27 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2D1FB4C040;
+        Thu, 19 May 2022 09:01:27 +0000 (GMT)
+Received: from [9.171.62.1] (unknown [9.171.62.1])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 19 May 2022 09:01:27 +0000 (GMT)
+Message-ID: <6060cfc8-6ae9-1710-3022-1edfbf53b1ca@de.ibm.com>
+Date:   Thu, 19 May 2022 11:01:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoVuxKGkt0IQ0yjb@hirez.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v9 2/3] s390x: KVM: guest support for topology function
+Content-Language: en-US
+To:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        frankja@linux.ibm.com, cohuck@redhat.com, david@redhat.com,
+        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
+        nrb@linux.ibm.com
+References: <20220506092403.47406-1-pmorel@linux.ibm.com>
+ <20220506092403.47406-3-pmorel@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+In-Reply-To: <20220506092403.47406-3-pmorel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZEhNCHMUTscsRMlEzW6Ljpk70RL7rqQE
+X-Proofpoint-ORIG-GUID: fQCwIjp9idH_71e1DkTjHc-vFXVWdTAb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-19_01,2022-05-19_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999 lowpriorityscore=0
+ adultscore=0 suspectscore=0 clxscore=1015 impostorscore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205190049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject: objtool: Fix symbol creation
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Tue, 17 May 2022 17:42:04 +0200
 
-Nathan reported objtool failing with the following messages:
 
-  warning: objtool: no non-local symbols !?
-  warning: objtool: gelf_update_symshndx: invalid section index
+Am 06.05.22 um 11:24 schrieb Pierre Morel:
+> We let the userland hypervisor know if the machine support the CPU
+> topology facility using a new KVM capability: KVM_CAP_S390_CPU_TOPOLOGY.
+> 
+> The PTF instruction will report a topology change if there is any change
+> with a previous STSI_15_1_2 SYSIB.
+> Changes inside a STSI_15_1_2 SYSIB occur if CPU bits are set or clear
+> inside the CPU Topology List Entry CPU mask field, which happens with
+> changes in CPU polarization, dedication, CPU types and adding or
+> removing CPUs in a socket.
+> 
+> The reporting to the guest is done using the Multiprocessor
+> Topology-Change-Report (MTCR) bit of the utility entry of the guest's
+> SCA which will be cleared during the interpretation of PTF.
+> 
+> To check if the topology has been modified we use a new field of the
+> arch vCPU to save the previous real CPU ID at the end of a schedule
+> and verify on next schedule that the CPU used is in the same socket.
+> We do not report polarization, CPU Type or dedication change.
 
-The problem is due to commit 4abff6d48dbc ("objtool: Fix code relocs
-vs weak symbols") failing to consider the case where an object would
-have no non-local symbols.
-
-The problem that commit tries to address is adding a STB_LOCAL symbol
-to the symbol table in light of the ELF spec's requirement that:
-
-  In each symbol table, all symbols with STB_LOCAL binding preced the
-  weak and global symbols.  As ``Sections'' above describes, a symbol
-  table section's sh_info section header member holds the symbol table
-  index for the first non-local symbol.
-
-The approach taken is to find this first non-local symbol, move that
-to the end and then re-use the freed spot to insert a new local symbol
-and increment sh_info.
-
-Except it never considered the case of object files without global
-symbols and got a whole bunch of details wrong -- so many in fact that
-it is a wonder it ever worked :/
-
-Specifically:
-
- - It failed to re-hash the symbol on the new index, so a subsequent
-   find_symbol_by_index() would not find it at the new location and a
-   query for the old location would now return a non-deterministic
-   choice between the old and new symbol.
-
- - It failed to appreciate that the GElf wrappers are not a valid disk
-   format (it works because GElf is basically Elf64 and we only
-   support x86_64 atm.)
-
- - It failed to fully appreciate how horrible the libelf API really is
-   and got the gelf_update_symshndx() call pretty much completely
-   wrong; with the direct consequence that if inserting a second
-   STB_LOCAL symbol would require moving the same STB_GLOBAL symbol
-   again it would completely come unstuck.
-
-Write a new elf_update_symbol() function that wraps all the magic
-required to update or create a new symbol at a given index.
-
-Specifically, gelf_update_sym*() require an @ndx argument that is
-relative to the @data argument; this means you have to manually
-iterate the section data descriptor list and update @ndx.
-
-Fixes: 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
----
- tools/objtool/elf.c |  198 +++++++++++++++++++++++++++++++++-------------------
- 1 file changed, 129 insertions(+), 69 deletions(-)
-
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -374,6 +374,9 @@ static void elf_add_symbol(struct elf *e
- 	struct list_head *entry;
- 	struct rb_node *pnode;
- 
-+	INIT_LIST_HEAD(&sym->pv_target);
-+	sym->alias = sym;
-+
- 	sym->type = GELF_ST_TYPE(sym->sym.st_info);
- 	sym->bind = GELF_ST_BIND(sym->sym.st_info);
- 
-@@ -438,8 +441,6 @@ static int read_symbols(struct elf *elf)
- 			return -1;
- 		}
- 		memset(sym, 0, sizeof(*sym));
--		INIT_LIST_HEAD(&sym->pv_target);
--		sym->alias = sym;
- 
- 		sym->idx = i;
- 
-@@ -603,24 +604,21 @@ static void elf_dirty_reloc_sym(struct e
- }
- 
- /*
-- * Move the first global symbol, as per sh_info, into a new, higher symbol
-- * index. This fees up the shndx for a new local symbol.
-+ * The libelf API is terrible; gelf_update_sym*() takes a data block relative
-+ * index value, *NOT* the symbol index. As such, iterate the data blocks and
-+ * adjust index until it fits.
-+ *
-+ * If no data block is found, allow adding a new data block provided the index
-+ * is only one past the end.
-  */
--static int elf_move_global_symbol(struct elf *elf, struct section *symtab,
--				  struct section *symtab_shndx)
-+static int elf_update_symbol(struct elf *elf, struct section *symtab,
-+			     struct section *symtab_shndx, struct symbol *sym)
- {
--	Elf_Data *data, *shndx_data = NULL;
--	Elf32_Word first_non_local;
--	struct symbol *sym;
--	Elf_Scn *s;
--
--	first_non_local = symtab->sh.sh_info;
--
--	sym = find_symbol_by_index(elf, first_non_local);
--	if (!sym) {
--		WARN("no non-local symbols !?");
--		return first_non_local;
--	}
-+	Elf32_Word shndx = sym->sec ? sym->sec->idx : SHN_UNDEF;
-+	Elf_Data *symtab_data = NULL, *shndx_data = NULL;
-+	Elf64_Xword entsize = symtab->sh.sh_entsize;
-+	int max_idx, idx = sym->idx;
-+	Elf_Scn *s, *t = NULL;
- 
- 	s = elf_getscn(elf->elf, symtab->idx);
- 	if (!s) {
-@@ -628,79 +626,124 @@ static int elf_move_global_symbol(struct
- 		return -1;
- 	}
- 
--	data = elf_newdata(s);
--	if (!data) {
--		WARN_ELF("elf_newdata");
--		return -1;
-+	if (symtab_shndx) {
-+		t = elf_getscn(elf->elf, symtab_shndx->idx);
-+		if (!t) {
-+			WARN_ELF("elf_getscn");
-+			return -1;
-+		}
- 	}
- 
--	data->d_buf = &sym->sym;
--	data->d_size = sizeof(sym->sym);
--	data->d_align = 1;
--	data->d_type = ELF_T_SYM;
-+	for (;;) {
-+		/* get next data descriptor for the relevant sections */
-+		symtab_data = elf_getdata(s, symtab_data);
-+		if (t)
-+			shndx_data = elf_getdata(t, shndx_data);
-+
-+		/* end-of-list */
-+		if (!symtab_data) {
-+			void *buf;
-+
-+			if (idx) {
-+				/* we don't do holes in symbol tables */
-+				WARN("index out of range");
-+				return -1;
-+			}
- 
--	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
--	elf_dirty_reloc_sym(elf, sym);
-+			/* if @idx == 0, it's the next contiguous entry, create it */
-+			symtab_data = elf_newdata(s);
-+			if (t)
-+				shndx_data = elf_newdata(t);
-+
-+			buf = calloc(1, entsize);
-+			if (!buf) {
-+				WARN("malloc");
-+				return -1;
-+			}
- 
--	symtab->sh.sh_info += 1;
--	symtab->sh.sh_size += data->d_size;
--	symtab->changed = true;
-+			symtab_data->d_buf = buf;
-+			symtab_data->d_size = entsize;
-+			symtab_data->d_align = 1;
-+			symtab_data->d_type = ELF_T_SYM;
-+
-+			symtab->sh.sh_size += entsize;
-+			symtab->changed = true;
-+
-+			if (t) {
-+				shndx_data->d_buf = &sym->sec->idx;
-+				shndx_data->d_size = sizeof(Elf32_Word);
-+				shndx_data->d_align = sizeof(Elf32_Word);
-+				shndx_data->d_type = ELF_T_WORD;
- 
--	if (symtab_shndx) {
--		s = elf_getscn(elf->elf, symtab_shndx->idx);
--		if (!s) {
--			WARN_ELF("elf_getscn");
-+				symtab_shndx->sh.sh_size += sizeof(Elf32_Word);
-+				symtab_shndx->changed = true;
-+			}
-+
-+			break;
-+		}
-+
-+		/* empty blocks should not happen */
-+		if (!symtab_data->d_size) {
-+			WARN("zero size data");
- 			return -1;
- 		}
- 
--		shndx_data = elf_newdata(s);
-+		/* is this the right block? */
-+		max_idx = symtab_data->d_size / entsize;
-+		if (idx < max_idx)
-+			break;
-+
-+		/* adjust index and try again */
-+		idx -= max_idx;
-+	}
-+
-+	/* something went side-ways */
-+	if (idx < 0) {
-+		WARN("negative index");
-+		return -1;
-+	}
-+
-+	/* setup extended section index magic and write the symbol */
-+	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
-+		sym->sym.st_shndx = shndx;
-+		if (!shndx_data)
-+			shndx = 0;
-+	} else {
-+		sym->sym.st_shndx = SHN_XINDEX;
- 		if (!shndx_data) {
--			WARN_ELF("elf_newshndx_data");
-+			WARN("no .symtab_shndx");
- 			return -1;
- 		}
-+	}
- 
--		shndx_data->d_buf = &sym->sec->idx;
--		shndx_data->d_size = sizeof(Elf32_Word);
--		shndx_data->d_align = 4;
--		shndx_data->d_type = ELF_T_WORD;
--
--		symtab_shndx->sh.sh_size += 4;
--		symtab_shndx->changed = true;
-+	if (!gelf_update_symshndx(symtab_data, shndx_data, idx, &sym->sym, shndx)) {
-+		WARN_ELF("gelf_update_symshndx");
-+		return -1;
- 	}
- 
--	return first_non_local;
-+	return 0;
- }
- 
- static struct symbol *
- elf_create_section_symbol(struct elf *elf, struct section *sec)
- {
- 	struct section *symtab, *symtab_shndx;
--	Elf_Data *shndx_data = NULL;
--	struct symbol *sym;
--	Elf32_Word shndx;
-+	Elf32_Word first_non_local, new_idx;
-+	struct symbol *sym, *old;
- 
- 	symtab = find_section_by_name(elf, ".symtab");
- 	if (symtab) {
- 		symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
--		if (symtab_shndx)
--			shndx_data = symtab_shndx->data;
- 	} else {
- 		WARN("no .symtab");
- 		return NULL;
- 	}
- 
--	sym = malloc(sizeof(*sym));
-+	sym = calloc(1, sizeof(*sym));
- 	if (!sym) {
- 		perror("malloc");
- 		return NULL;
- 	}
--	memset(sym, 0, sizeof(*sym));
--
--	sym->idx = elf_move_global_symbol(elf, symtab, symtab_shndx);
--	if (sym->idx < 0) {
--		WARN("elf_move_global_symbol");
--		return NULL;
--	}
- 
- 	sym->name = sec->name;
- 	sym->sec = sec;
-@@ -710,24 +753,41 @@ elf_create_section_symbol(struct elf *el
- 	// st_other 0
- 	// st_value 0
- 	// st_size 0
--	shndx = sec->idx;
--	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
--		sym->sym.st_shndx = shndx;
--		if (!shndx_data)
--			shndx = 0;
--	} else {
--		sym->sym.st_shndx = SHN_XINDEX;
--		if (!shndx_data) {
--			WARN("no .symtab_shndx");
-+
-+	/*
-+	 * Move the first global symbol, as per sh_info, into a new, higher
-+	 * symbol index. This fees up a spot for a new local symbol.
-+	 */
-+	first_non_local = symtab->sh.sh_info;
-+	new_idx = symtab->sh.sh_size / symtab->sh.sh_entsize;
-+	old = find_symbol_by_index(elf, first_non_local);
-+	if (old) {
-+		old->idx = new_idx;
-+
-+		hlist_del(&old->hash);
-+		elf_hash_add(symbol, &old->hash, old->idx);
-+
-+		elf_dirty_reloc_sym(elf, old);
-+
-+		if (elf_update_symbol(elf, symtab, symtab_shndx, old)) {
-+			WARN("elf_update_symbol move");
- 			return NULL;
- 		}
-+
-+		new_idx = first_non_local;
- 	}
- 
--	if (!gelf_update_symshndx(symtab->data, shndx_data, sym->idx, &sym->sym, shndx)) {
--		WARN_ELF("gelf_update_symshndx");
-+	sym->idx = new_idx;
-+	if (elf_update_symbol(elf, symtab, symtab_shndx, sym)) {
-+		WARN("elf_update_symbol");
- 		return NULL;
- 	}
- 
-+	/*
-+	 * Either way, we added a LOCAL symbol.
-+	 */
-+	symtab->sh.sh_info += 1;
-+
- 	elf_add_symbol(elf, sym);
- 
- 	return sym;
-
+I think we should not do this. When PTF returns with "has changed" the guest
+Linux will rebuild its schedule domains. And this is a really expensive
+operation as far as I can tell. And the host Linux scheduler WILL schedule
+too often to other CPUs. So in essence this will result in Linux guests
+rebuilding their scheduler domains all the time.
+So remove the "previous CPU logic" for now and only trigger an MTCR when
+userspace says so.  (eg. on config changes). The idea was to have user
+defined schedule domains. Following host schedule decisions will be
+nearly impossible.
