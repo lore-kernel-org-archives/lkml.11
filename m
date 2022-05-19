@@ -2,66 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D34ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2235AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243239AbiESRaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56474 "EHLO
+        id S242886AbiESRas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243145AbiESR3y (ORCPT
+        with ESMTP id S243208AbiESRaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:29:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8134F129EF9;
-        Thu, 19 May 2022 10:28:17 -0700 (PDT)
+        Thu, 19 May 2022 13:30:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AA1C07
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:29:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3451BB80759;
-        Thu, 19 May 2022 17:28:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F7D2C385AA;
-        Thu, 19 May 2022 17:28:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ECC1617EF
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:29:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74195C385AA;
+        Thu, 19 May 2022 17:29:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652981294;
-        bh=i58f70PRuG70kdoWJ6gO7NBrQrIhf+BpMs7DWWoeHj4=;
+        s=k20201202; t=1652981371;
+        bh=pAMdh9/R3I7a/8+4GVZ2KD6esehSzWVgjc9kd7I5PqU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KNaeEaA2Vm/ZX8tMZkuXJRN5T7+gyfGc/mghxe04HWGrgf1Y2FJIPsxwjDhOrz+JA
-         2X6eWq18n4NKIkCoJcl7McF5W/IvsGNnjVROdC1ni13Q+ZAaTu37NUR+G2TZG7fbHA
-         2cgrZdZIBLdf+BtKJeh3sXB6U+AT15R+TtXejt2I3h2VhoSyT+X8syIUH/SHyOEjnP
-         8JLuYd38H+TFgKyIH4iuNYG7K32i8/8BltbHpkU/aEuuW781MoGwu+PJ4QzH2M6pgY
-         +oAq2apJ/khmgoO2L3YMwC6z4hlANX2XXEVwTNrBYpLHfI6Adk7HRhMxxdoqNwQ8Jj
-         5pVIkP/4hWb/A==
-Date:   Thu, 19 May 2022 22:58:10 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        dmaengine@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] dmaengine: ti: deprecate '#dma-channels'
-Message-ID: <YoZ+KmEQTBMuxkAb@matsya>
-References: <20220427161126.647073-1-krzysztof.kozlowski@linaro.org>
- <20220427161126.647073-4-krzysztof.kozlowski@linaro.org>
+        b=VHrPdJdbdIZO3JP5Q3lP0hUqu40Hg2ms4yr+tw4ezT/HzL5HljDMDohamaVFnHmW3
+         4aeolGM02T04HW4Op7oAM7PhXbduMT1PBnN5IuDVjWGcHtauNHdLCM4l3KkRVdEAVG
+         sX7QhlFbzzS2qIIwLBM52tXJwIhMohlU+NB9p5rgaJ5au1imsNrM1Fixpwn8/l0CFF
+         5/4GV4xmfc5KBq/9k1ijtY3J0ZJNMbdGgLipWdioD7yUYzdpUaO0E45Dlvb7E0KMIC
+         U8cCmcTZI/FKtzZJgl8xWth3hzks0+XA+vApne++BQJcyRmDion/oWoIwrSZ0GVAuo
+         kHUf7UGaEz+tA==
+Date:   Thu, 19 May 2022 18:29:26 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
+Subject: Re: [PATCH] ASoC: max98090: Remove unneeded check in
+ max98090_put_enab_tlv()
+Message-ID: <YoZ+dmprwb5Ohto3@sirena.org.uk>
+References: <1652980212-21473-1-git-send-email-khoroshilov@ispras.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ppdkrA27TUG4wtEx"
 Content-Disposition: inline
-In-Reply-To: <20220427161126.647073-4-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1652980212-21473-1-git-send-email-khoroshilov@ispras.ru>
+X-Cookie: Some restrictions may apply.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27-04-22, 18:11, Krzysztof Kozlowski wrote:
-> The generic property, used in most of the drivers and defined in generic
-> dma-common DT bindings, is 'dma-channels'.  Switch to new property while
-> keeping backward compatibility.
 
-Applied, thanks
+--ppdkrA27TUG4wtEx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-~Vinod
+On Thu, May 19, 2022 at 08:10:12PM +0300, Alexey Khoroshilov wrote:
+> Variable sel is of unsigned int type, so sel < 0 is not required.
+>=20
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+>  	val =3D (val >> mc->shift) & mask;
+> =20
+> -	if (sel < 0 || sel > mc->max)
+> +	if (sel > mc->max)
+
+The check needs to be moved, not removed.  The userspace ABI allows
+passing in of negative values.
+
+--ppdkrA27TUG4wtEx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKGfnUACgkQJNaLcl1U
+h9At4Qf+Klf++o6ghreVouOuu6V81GODduKtt5M/lMTy6+q3iCORLhZxKFplkCVh
+6bQ88I9fwm4GRJXG6SsVKqyRG/HEAJKM2batDPlkZHi2KjX0u48WfFY67vMIzNpc
+MFkOkI2L94dm2PdkcVWXKROeEWdJHRl55Oz3NZNfM9ggYd2H0P1ddwtGIe82xAQW
+pwVuJWEkstrqvilKcwp2HcQzEko4tm3u6MoN8/H+TZsc7c/zEvSY3OxAv9wFnoD1
+1geFeHG8YlycJcnTc0zEEGFhaRDBvoqYTWqQLevlnxJx9GPMmNI1zlm4JsPhqZiE
+Z4AhXYOoxW8ySeRdopqDlftSHTrqEA==
+=HHuh
+-----END PGP SIGNATURE-----
+
+--ppdkrA27TUG4wtEx--
