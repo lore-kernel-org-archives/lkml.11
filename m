@@ -2,115 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0574C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4936DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241883AbiESSxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
+        id S242013AbiESSyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244210AbiESSwb (ORCPT
+        with ESMTP id S244346AbiESSyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:52:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C833766C8A
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:52:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46948B8242C
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 18:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F556C34100;
-        Thu, 19 May 2022 18:52:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1652986331;
-        bh=hZUTwgstPmefXYn68fhv3dUuy+vLjWAINx3Yp8d24P4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ajpYm5ghpHHLfN9MHvfGa+lF4OCjo+Og0WWuBq4QCmTWJbC5oli7n8mhGzUSLTCyu
-         EczWQRo+IKAoHhZ0s2gVn1GJDKffv4zTubfCFW7wtHpWxpMZQxvaOR1VDiXwHw2UTU
-         RTxrjtt48l38rs6pPA4pa+cBz+ooIMWWvB45k1zI=
-Date:   Thu, 19 May 2022 11:52:10 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <hch@infradead.org>, <arnd@arndb.de>, <anshuman.khandual@arm.com>
-Subject: Re: [PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
-Message-Id: <20220519115210.a6e41d5a997921354400557e@linux-foundation.org>
-In-Reply-To: <20220519082552.117736-5-wangkefeng.wang@huawei.com>
-References: <20220519082552.117736-1-wangkefeng.wang@huawei.com>
-        <20220519082552.117736-5-wangkefeng.wang@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 19 May 2022 14:54:01 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E79B3465B
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:54:00 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id d22so5541758plr.9
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:54:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cqXx+JOzkFXDkQqUC+tFOIFeOdrLRi5FsVZ7Q6tmusg=;
+        b=KAueedpohy9ZiOcBymMzJEsFCiqcuYuuPjIX8XP7LbpXV2v67n3Jr3nZKvJB2E/kIL
+         lg+zJ293d+WCNQvzx4uZJhzCn+5qWzB3138pkFQEueIaRqP7Suer+hZcBsAiB1hXKEmF
+         109AEgiCJr1wKeIF43FSfR65AKDHN6yjqbWxE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cqXx+JOzkFXDkQqUC+tFOIFeOdrLRi5FsVZ7Q6tmusg=;
+        b=kfUy4yX/6nqq74gt4mfl2mnyjPcAuD8xfbkyiz7JMD0aCOTVg34P5xaGboBh+EjReL
+         FARMezFZ5PKP9IbdOKvgvHduZ2oeXemI5tCMARFHrLMwVwg26GoTV2hA7eTqDXmxJGcU
+         YJyYL8os2xy3yXOXuxi6G5z4jyCDch3iDEa4a915YMvg+wQY+KyI64yGAz1fN8Obq2uF
+         El96em8C64p4U5C6bwngkn5DnklwAIvNZIQqy3l0k0cV6TPeGEYUIVEsqFEtQRxTM4/2
+         CYGVN2niOYs0jmBI8/aDzahs5BYBQfXUua7xLVOA6n9qKRNq4c4vQ+tbiJAnZe/+4I9Z
+         hFOw==
+X-Gm-Message-State: AOAM530Lm9rRTcuiN2SZtUpIY/tkWVKibuqGrFe92yAbA0jGcTZqXmFz
+        067P+/u5OXF/+cHbKtUTaHTsyma0C3LWUZ1zYqq0AA==
+X-Google-Smtp-Source: ABdhPJzi+RMNmnobsEMDELyM2l9/E1mnQZX5/Vb+7QiItPrOZ4eLgTdR5yT4+SAptOUz4GiCEPbBlLhNTH6u/2tbP6I=
+X-Received: by 2002:a17:902:b90b:b0:15f:bd0:18b5 with SMTP id
+ bf11-20020a170902b90b00b0015f0bd018b5mr6180510plb.97.1652986438537; Thu, 19
+ May 2022 11:53:58 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220519185057.1657115-1-tommaso.merciai@amarulasolutions.com>
+In-Reply-To: <20220519185057.1657115-1-tommaso.merciai@amarulasolutions.com>
+From:   Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+Date:   Thu, 19 May 2022 20:53:46 +0200
+Message-ID: <CAOf5uwnUPTc5zr8+QRwkr8L9104NY2LqX=oH0BOh6-fX_D=Eyg@mail.gmail.com>
+Subject: Re: [PATCH v2] net: phy: DP83822: enable rgmii mode if phy_interface_is_rgmii
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     alberto.bianchi@amarulasolutions.com,
+        linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 16:25:50 +0800 Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+Hi Tommaso
 
-> Add special hook for architecture to verify or setup addr, size
-> or prot when ioremap() or iounmap(), which will make the generic
-> ioremap more useful.
-> 
->   arch_ioremap() return a pointer,
->     - IS_ERR means return an error
->     - NULL means continue to remap
->     - a non-NULL, non-IS_ERR pointer is directly returned
->   arch_iounmap() return a int value,
->     - 0 means continue to vunmap
->     - error code means skip vunmap and return directly
-> 
-> ...
+On Thu, May 19, 2022 at 8:50 PM Tommaso Merciai
+<tommaso.merciai@amarulasolutions.com> wrote:
 >
-> --- a/include/asm-generic/io.h
-> +++ b/include/asm-generic/io.h
-> @@ -964,6 +964,30 @@ static inline void iounmap(volatile void __iomem *addr)
->  #elif defined(CONFIG_GENERIC_IOREMAP)
->  #include <linux/pgtable.h>
->  
-> +/*
-> + * Arch code can implement the following two special hooks when using GENERIC_IOREMAP
-> + * arch_ioremap() return a pointer,
-> + *   - IS_ERR means return an error
-> + *   - NULL means continue to remap
-> + *   - a non-NULL, non-IS_ERR pointer is returned directly
-> + * arch_iounmap() return a int,
-> + *   - 0 means continue to vunmap
-> + *   - error code means skip vunmap and return directly
-> + */
-> +#ifndef arch_ioremap
-> +static inline void __iomem *arch_ioremap(phys_addr_t phys_addr, size_t size, unsigned long prot)
-> +{
-> +	return NULL;
-> +}
-
-Maybe should do
-
-	#define arch_ioremap arch_ioremap
-
-here
-
-> +#endif
+> RGMII mode can be enable from dp83822 straps, and also writing bit 9
+> of register 0x17 - RMII and Status Register (RCSR).
+> When phy_interface_is_rgmii rgmii mode must be enabled, same for
+> contrary, this prevents malconfigurations of hw straps
+>
+> References:
+>  - https://www.ti.com/lit/gpn/dp83822i p66
+>
+> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> Suggested-by: Alberto Bianchi <alberto.bianchi@amarulasolutions.com>
+> Tested-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> ---
+> Changes since v1:
+>  - Improve commit msg
+>  - Add definition of bit 9 reg rcsr (rgmii mode en)
+>  - Handle case: phy_interface_is_rgmii is false
+>
+>  drivers/net/phy/dp83822.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+>
+> diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+> index ce17b2af3218..7cb9d084707b 100644
+> --- a/drivers/net/phy/dp83822.c
+> +++ b/drivers/net/phy/dp83822.c
+> @@ -94,6 +94,9 @@
+>  #define DP83822_WOL_INDICATION_SEL BIT(8)
+>  #define DP83822_WOL_CLR_INDICATION BIT(11)
+>
+> +/* RCSR bits */
+> +#define DP83822_RGMII_MODE_EN  BIT(9)
 > +
-> +#ifndef arch_iounmap
-> +static inline int arch_iounmap(void __iomem *addr)
-> +{
-> +	return 0;
-> +}
+>  /* RSCR bits */
+>  #define DP83822_RX_CLK_SHIFT   BIT(12)
+>  #define DP83822_TX_CLK_SHIFT   BIT(11)
 
-and here.
+BIT(9) should go here
 
-It shouldn't matter a lot because this file has inclusion guards. 
-However it seems tidier and perhaps other code will want to know
-whether this was defined.  Dunno.
+#define DP83822_RGMII_MODE_EN  BIT(9)
+#define DP83822_RX_CLK_SHIFT   BIT(12)
+#define DP83822_TX_CLK_SHIFT   BIT(11)
 
+You duplicate the comments up.
 
-Otherwise, 
+> @@ -408,6 +411,12 @@ static int dp83822_config_init(struct phy_device *phydev)
+>                         if (err)
+>                                 return err;
+>                 }
+> +
+> +               phy_set_bits_mmd(phydev, DP83822_DEVADDR,
+> +                                       MII_DP83822_RCSR, DP83822_RGMII_MODE_EN);
+> +       } else {
+> +               phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
+> +                                       MII_DP83822_RCSR, DP83822_RGMII_MODE_EN);
+>         }
+>
+>         if (dp83822->fx_enabled) {
+> --
+> 2.25.1
+>
 
-Acked-by: Andrew Morton <akpm@linux-foundation.org>
+Michael
 
-Please take this patch and [2/6] and [3/6] via the appropriate arm tree.
+-- 
+Michael Nazzareno Trimarchi
+Co-Founder & Chief Executive Officer
+M. +39 347 913 2170
+michael@amarulasolutions.com
+__________________________________
 
+Amarula Solutions BV
+Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
+T. +31 (0)85 111 9172
+info@amarulasolutions.com
+www.amarulasolutions.com
