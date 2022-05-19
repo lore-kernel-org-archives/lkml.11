@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0044C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89730C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242915AbiESR2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
+        id S240725AbiESR2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242862AbiESR0J (ORCPT
+        with ESMTP id S242783AbiESRZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:26:09 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF6ADFF6A;
-        Thu, 19 May 2022 10:25:40 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id s14so5374712plk.8;
-        Thu, 19 May 2022 10:25:40 -0700 (PDT)
+        Thu, 19 May 2022 13:25:44 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CE5C9ECE;
+        Thu, 19 May 2022 10:25:32 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id i24so5706065pfa.7;
+        Thu, 19 May 2022 10:25:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Conle3R7/rWLrdvm5pHUbuFYVfzx4ZhW28hlaDoo5UE=;
-        b=h6nyI75WW6zrfYSF1n9gm4XCazCn1PGX6/HpgzdprVrmdogWSiHO3kJjCPbEgsqbax
-         xx+VfzKLCLRocuARWkTVz1ctSLEeuDN+M5Wr4h6N4FFviA1UdQrZh1GwiwRAQDR0zLHO
-         /fVg1CAoMI/APsK5Vbxs02R9nvaMunqQ18aOgFoq+5/cWUA951dj/hlSgVzh+y+rXMh2
-         7YAZfgDC5V6BIOE3O+xeys/OtT8Wv/60sS5xaGcmS2SppkVYHPvc3KTssYxFMWCSs9ak
-         lAVxSFOwo24iNnk5A6J7e9jjn9OyAa9R9YU83Qku0+/1m8vRk8D9YnUMuZKul7frOXMM
-         TUyw==
+        bh=M4VpQ9FA/yOtZ7kv3MA0tILWqoI98zOrKzzcPQLN1bE=;
+        b=VS336rDNF126aiqs0zDhNVmRlLhtdgOCtQzOvqIe2Yzq4a3SGLnU0Wa5V7UjGDyzr8
+         HxiGB68x6vSj4roCHekfpfutPa3ii3iKfD5PkDTOztas057DLWq5mqhTKXCOEM4R/nUs
+         3lLvfn3LhzinKCo56cWZvPp5dPpaRJlN3OdgsJC8bpu/VUxPJbTgWFsFj5neYnMLUiPi
+         cEaeRm3mSfKibmHRgk9FvrOuIYVE2bS1+Cy7niekwndpz+L5ARq1Q09uI4m1P8dWNNzx
+         mBSSZvvkdDNtvD3XJdi/owL8ae1dB+A/1s1tOtvvKYixCm1VFyjKk2S0Fm/w04gx9dQc
+         YMLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Conle3R7/rWLrdvm5pHUbuFYVfzx4ZhW28hlaDoo5UE=;
-        b=kRBku3ynqv4m8zvu14mWu40umivqboCErFAEUQjyjG4kY25MIG03Y906+/qNNfCnx/
-         TvqEYL95YBgH+xomRxN84bjr4Wb4a0HUzkxC1fgZbh8sfsWHcLJtSWV3EY5chaQTYCOf
-         fTWDpIl3ghIsc0M3lNnhgXjs2wgD0cGMRCMerALTtjQSO/llT3uVAztVH2xSVLonzaAm
-         /X04qTycms2zRP8JYlrX/nibJo8gxGK88uzOixeKfP6HxJwY97vMfRxiQZPMjpq3grT3
-         r8iekYwgj8vrassZG3Hk3qW6zHCQXouaRJ22W90HDI7zzrvtk7qHrl5IjSPO0jlR0l/K
-         VClQ==
-X-Gm-Message-State: AOAM531/jgmcnLdj2b4D0VVttOaJiQiPiJREWqBHDIJQ8hKxS+XUlLhy
-        VhGMU89lLj7KDc4Tsrhac8UvkOwjIHh1
-X-Google-Smtp-Source: ABdhPJwPhcmLCAs6EVuey2Jc5ggnwZaqeYmHuvaGHSvzD3g45sk0aMZm/vyLoY0KgK+9sbwRmyCGxw==
-X-Received: by 2002:a17:90a:e392:b0:1df:b078:8dbe with SMTP id b18-20020a17090ae39200b001dfb0788dbemr6776271pjz.105.1652981139849;
-        Thu, 19 May 2022 10:25:39 -0700 (PDT)
+        bh=M4VpQ9FA/yOtZ7kv3MA0tILWqoI98zOrKzzcPQLN1bE=;
+        b=VtbZZu70W3MCBATFPcq8ze2rnsAoifXvnwW8LOa0aEnvIKMLHac6X6mLsqX2f8z7Zg
+         Dv7NOkuSr+lHmbO1N8bRbyW4SzvnfXUg7GWBaD+Uf5NOubAYaCCr8uZqUuz4zXJkHi4R
+         krA+R1TFj5A6D7t5QSYelKlFVSfM90Aj5VY0u22uT8X0pOFX2qk7smQe7ZVzHF6bApFO
+         RerqQBLsubsat6FA5HGD2hNHKlXaxlAqJBPwNssaZEr3uEy3mgywG6IzyrP55oEnpc+/
+         yhp2v6e+/LxF+QqGrs38M8GtAYLdM4ahswO03bWIVFKKNt+mqB0nhh3hF9OsfX3Ve+ex
+         1kiA==
+X-Gm-Message-State: AOAM532HAa1oFMo4Q+3J6f1U/pJ3Z2Kmvhg05ev/tJdz9rxkSla6hgIk
+        231p+xJVKeBgUIr19qSEERT8kTewYQFS
+X-Google-Smtp-Source: ABdhPJyHPF4eVFHphoTFrwK/26y6X6rTq/0g6vrr7JSEA1842SO8X+Q8rU+gTBd5uMonppR1gwCSUw==
+X-Received: by 2002:a63:5fcf:0:b0:3f6:298d:e2ea with SMTP id t198-20020a635fcf000000b003f6298de2eamr4902749pgb.561.1652981131850;
+        Thu, 19 May 2022 10:25:31 -0700 (PDT)
 Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.36
+        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:25:39 -0700 (PDT)
+        Thu, 19 May 2022 10:25:31 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
         pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        andriy.shevchenko@linux.intel.com, willy@infradead.org,
-        x86@kernel.org
-Subject: [PATCH v2 27/28] x86/resctrl: Convert to printbuf
-Date:   Thu, 19 May 2022 13:24:20 -0400
-Message-Id: <20220519172421.162394-28-kent.overstreet@gmail.com>
+        andriy.shevchenko@linux.intel.com, willy@infradead.org
+Subject: [PATCH v2 24/28] clk: tegra: bpmp: Convert to printbuf
+Date:   Thu, 19 May 2022 13:24:17 -0400
+Message-Id: <20220519172421.162394-25-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
 References: <20220519172421.162394-1-kent.overstreet@gmail.com>
@@ -66,83 +65,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This converts from seq_buf to printbuf. We're using printbuf in external
-buffer mode, so it's a direct conversion, aside from some trivial
-refactoring in cpu_show_meltdown() to make the code more consistent.
+This converts from seq_buf to printbuf, which is similar but heap
+allocates the string buffer.
+
+Previously in this code the string buffer was allocated on the stack;
+this means we've added a new potential memory allocation failure. This
+is fine though since it's only for a dev_printk() message.
+
+Memory allocation context: printbuf doesn't take gfp flags, instead we
+prefer the new memalloc_no*_(save|restore) interfaces to be used. Here
+the surrounding code is already allocating with GFP_KERNEL, so
+everything is fine.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: x86@kernel.org
 ---
- arch/x86/kernel/cpu/resctrl/rdtgroup.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/clk/tegra/clk-bpmp.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index b57b3db9a6..8e4f7773b7 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -19,7 +19,7 @@
- #include <linux/fs_parser.h>
- #include <linux/sysfs.h>
- #include <linux/kernfs.h>
+diff --git a/drivers/clk/tegra/clk-bpmp.c b/drivers/clk/tegra/clk-bpmp.c
+index 6ecf18f71c..77a8c47806 100644
+--- a/drivers/clk/tegra/clk-bpmp.c
++++ b/drivers/clk/tegra/clk-bpmp.c
+@@ -5,7 +5,7 @@
+ 
+ #include <linux/clk-provider.h>
+ #include <linux/device.h>
 -#include <linux/seq_buf.h>
 +#include <linux/printbuf.h>
- #include <linux/seq_file.h>
- #include <linux/sched/signal.h>
- #include <linux/sched/task.h>
-@@ -51,7 +51,7 @@ static struct kernfs_node *kn_mongrp;
- /* Kernel fs node for "mon_data" directory under root */
- static struct kernfs_node *kn_mondata;
+ #include <linux/slab.h>
  
--static struct seq_buf last_cmd_status;
-+static struct printbuf last_cmd_status;
- static char last_cmd_status_buf[512];
- 
- struct dentry *debugfs_resctrl;
-@@ -59,13 +59,13 @@ struct dentry *debugfs_resctrl;
- void rdt_last_cmd_clear(void)
+ #include <soc/tegra/bpmp.h>
+@@ -360,39 +360,38 @@ static void tegra_bpmp_clk_info_dump(struct tegra_bpmp *bpmp,
+ 				     const struct tegra_bpmp_clk_info *info)
  {
- 	lockdep_assert_held(&rdtgroup_mutex);
--	seq_buf_clear(&last_cmd_status);
-+	printbuf_reset(&last_cmd_status);
+ 	const char *prefix = "";
+-	struct seq_buf buf;
++	struct printbuf buf = PRINTBUF;
+ 	unsigned int i;
+-	char flags[64];
+-
+-	seq_buf_init(&buf, flags, sizeof(flags));
+ 
+ 	if (info->flags)
+-		seq_buf_printf(&buf, "(");
++		pr_buf(&buf, "(");
+ 
+ 	if (info->flags & TEGRA_BPMP_CLK_HAS_MUX) {
+-		seq_buf_printf(&buf, "%smux", prefix);
++		pr_buf(&buf, "%smux", prefix);
+ 		prefix = ", ";
+ 	}
+ 
+ 	if ((info->flags & TEGRA_BPMP_CLK_HAS_SET_RATE) == 0) {
+-		seq_buf_printf(&buf, "%sfixed", prefix);
++		pr_buf(&buf, "%sfixed", prefix);
+ 		prefix = ", ";
+ 	}
+ 
+ 	if (info->flags & TEGRA_BPMP_CLK_IS_ROOT) {
+-		seq_buf_printf(&buf, "%sroot", prefix);
++		pr_buf(&buf, "%sroot", prefix);
+ 		prefix = ", ";
+ 	}
+ 
+ 	if (info->flags)
+-		seq_buf_printf(&buf, ")");
++		pr_buf(&buf, ")");
+ 
+ 	dev_printk(level, bpmp->dev, "%03u: %s\n", info->id, info->name);
+-	dev_printk(level, bpmp->dev, "  flags: %lx %s\n", info->flags, flags);
++	dev_printk(level, bpmp->dev, "  flags: %lx %s\n", info->flags, printbuf_str(&buf));
+ 	dev_printk(level, bpmp->dev, "  parents: %u\n", info->num_parents);
+ 
+ 	for (i = 0; i < info->num_parents; i++)
+ 		dev_printk(level, bpmp->dev, "    %03u\n", info->parents[i]);
++
++	printbuf_exit(&buf);
  }
  
- void rdt_last_cmd_puts(const char *s)
- {
- 	lockdep_assert_held(&rdtgroup_mutex);
--	seq_buf_puts(&last_cmd_status, s);
-+	pr_str(&last_cmd_status, s);
- }
- 
- void rdt_last_cmd_printf(const char *fmt, ...)
-@@ -74,7 +74,7 @@ void rdt_last_cmd_printf(const char *fmt, ...)
- 
- 	va_start(ap, fmt);
- 	lockdep_assert_held(&rdtgroup_mutex);
--	seq_buf_vprintf(&last_cmd_status, fmt, ap);
-+	vpr_buf(&last_cmd_status, fmt, ap);
- 	va_end(ap);
- }
- 
-@@ -833,7 +833,7 @@ static int rdt_last_cmd_status_show(struct kernfs_open_file *of,
- 	int len;
- 
- 	mutex_lock(&rdtgroup_mutex);
--	len = seq_buf_used(&last_cmd_status);
-+	len = printbuf_written(&last_cmd_status);
- 	if (len)
- 		seq_printf(seq, "%.*s", len, last_cmd_status_buf);
- 	else
-@@ -3248,8 +3248,8 @@ int __init rdtgroup_init(void)
- {
- 	int ret = 0;
- 
--	seq_buf_init(&last_cmd_status, last_cmd_status_buf,
--		     sizeof(last_cmd_status_buf));
-+	last_cmd_status = PRINTBUF_EXTERN(last_cmd_status_buf,
-+					  sizeof(last_cmd_status_buf));
- 
- 	ret = rdtgroup_setup_root();
- 	if (ret)
+ static int tegra_bpmp_probe_clocks(struct tegra_bpmp *bpmp,
 -- 
 2.36.0
 
