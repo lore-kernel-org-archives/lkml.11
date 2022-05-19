@@ -2,128 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 036A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:46:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD63C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244102AbiESSqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
+        id S243300AbiESSrf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243300AbiESSpu (ORCPT
+        with ESMTP id S235971AbiESSr3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:45:50 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200E2109E;
-        Thu, 19 May 2022 11:45:47 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id 137so5831613pgb.5;
-        Thu, 19 May 2022 11:45:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5SU+w9hgi+POXdxltfAITobv8QuuLB+odkG94GhTEgs=;
-        b=HCPGXLIowEc4TfgLek+X1SwnRfZRLrsaNkVMgzWo3/y686rkolUMxTgvCnVXNzWJqz
-         pXCIpNKvu51NII8Py9T5e+JZPGhlHoZ2QM5xGzFgsML2ELFnPvQrhrMPHzpN5OKYkzhH
-         jFnQmoIgbCo9hwUpTXeyU+PLfVR6VPKujV3sD9V25PVW5Lr1AlSdGJwhDgFGpdjUFJfR
-         O/UEKSPjNkyjnK3mwuDHBlWQgYT+Aw/s2eu56nS3JoibZvQobz7VCOHQaxfNd0o5CWua
-         2xzEx9Kym2ErT7tZcWyZdnHkNz6lFf07t8YTshfoRYJD8SY+6bOkJvMamPhiBwo52Szn
-         Am4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5SU+w9hgi+POXdxltfAITobv8QuuLB+odkG94GhTEgs=;
-        b=QZ3TiqXac96hGkPkX7mAL/Sg/tEmA13rUvgO4w5BHtOgv6tlBZ140uvdGRn3UXhl8p
-         nI2RUm4Q+txagLQvuIb9mBrwF8GQvGobBKcFAUEE/6/dzdUwUfREGzKPs4CcgHhDCVkG
-         QntpZAt5WexRUSse2l2DK/5GMFGPcLufp/9ZIuGtTIXylEKgdk9za11SAnikdlW7s2Iv
-         ajFIMZf/iejdPeGUiFwhIY3hvZNKMSkPqW4OnehXcuPD0xp+QYmJExZwaknk4zBzQKko
-         mbuaUJYgjZECfyymYm02gyrdr2uGfpzKkWvNs37xebTHBEmcre+E+vIGXrA3jChe5gBC
-         P1/A==
-X-Gm-Message-State: AOAM5302pDBqKuc6k0Y3mOQRGwqWBaHK9D/BtqWa6sFsgcfYaqS95Eyo
-        UaXYK22gz0LwadHxaKOa7O3XYgxJVuk=
-X-Google-Smtp-Source: ABdhPJzTj/U5wGU2C/aGMOITBrjbWQSEEa8cjr65o044OgIUCMFwmEH2e/Gxe0Q9tsZLtevJro52xA==
-X-Received: by 2002:a05:6a00:1c76:b0:510:8b76:93b5 with SMTP id s54-20020a056a001c7600b005108b7693b5mr6171900pfw.44.1652985946249;
-        Thu, 19 May 2022 11:45:46 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 5-20020aa79245000000b0050dc76281c2sm2965pfp.156.2022.05.19.11.45.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 11:45:45 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Nishad Kamdar <nishadkamdar@gmail.com>,
-        =?UTF-8?q?Christian=20L=C3=B6hle?= <CLoehle@hyperstone.com>,
-        linux-mmc@vger.kernel.org (open list:MULTIMEDIA CARD (MMC), SECURE
-        DIGITAL (SD) AND...), linux-kernel@vger.kernel.org (open list),
-        alcooperx@gmail.com, kdasu.kdev@gmail.com
-Subject: [PATCH stable 4.19 v2 2/4] mmc: core: Specify timeouts for BKOPS and CACHE_FLUSH for eMMC
-Date:   Thu, 19 May 2022 11:45:34 -0700
-Message-Id: <20220519184536.370540-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519184536.370540-1-f.fainelli@gmail.com>
-References: <20220519184536.370540-1-f.fainelli@gmail.com>
+        Thu, 19 May 2022 14:47:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BBE9D057
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:47:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 59926CE26FA
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 18:47:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 591FAC385AA;
+        Thu, 19 May 2022 18:47:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652986044;
+        bh=fhw58TxNdXzkrYfdfbkqMnSdc7qK+D7DLSpOMWDBj+0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dPRCmITXN+5pHTu52MXgHA//qk8xVhPONUDh9RXwoaIzmeW3LPXnqu5m9uzurXhaO
+         P5U6z+8Hp0Ervd2SEtbWAL64LnJn0IzUNQKHeQ5q0jWN0Fka9TjMGOhLtkJE06J4nP
+         SdlTc9hqwz0RonMW+u/R2hOysludhYgBzZaG/1gcl3dqo1/S/EWim/ivLo8W/t8/yM
+         j4Of3wdX+8MkVlYyb/HM9WHyd+RaG7riiHwMkN/ti5n6OtDo2MDqHUogQ5/ua30uAW
+         WPf3KAN0hDePfnGHJkT8+ZJxSInobAeNWODD/+EKfobxy1RafjVKI3Zp0xwIN2S0E4
+         qrtuDn5vOykvw==
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     x86@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] x86/entry: Fix register corruption in compat syscall
+Date:   Thu, 19 May 2022 11:46:58 -0700
+Message-Id: <b5a26592c9dd60bbacdf97974a7433fd802a5593.1652985970.git.jpoimboe@kernel.org>
+X-Mailer: git-send-email 2.34.3
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+A panic was reported in the init process on AMD:
 
-commit 24ed3bd01d6a844fd5e8a75f48d0a3d10ed71bf9 upstream
+  Run /sbin/init as init process
+  init[1]: segfault at f7fd5ca0 ip 00000000f7f5bbc7 sp 00000000ffa06aa0 error 7 in libc.so[f7f51000+4e000]
+  Code: 8a 44 24 10 88 41 ff 8b 44 24 10 83 c4 2c 5b 5e 5f 5d c3 53 83 ec 08 8b 5c 24 10 81 fb 00 f0 ff ff 76 0c e8 ba dc ff ff f7 db <89> 18 83 cb ff 83 c4 08 89 d8 5b c3 e8 81 60 ff ff 05 28 84 07 00
+  Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+  CPU: 1 PID: 1 Comm: init Tainted: G        W         5.18.0-rc7-next-20220519 #1
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x57/0x7d
+   panic+0x10f/0x28d
+   do_exit.cold+0x18/0x48
+   do_group_exit+0x2e/0xb0
+   get_signal+0xb6d/0xb80
+   arch_do_signal_or_restart+0x31/0x760
+   ? show_opcodes.cold+0x1c/0x21
+   ? force_sig_fault+0x49/0x70
+   exit_to_user_mode_prepare+0x131/0x1a0
+   irqentry_exit_to_user_mode+0x5/0x30
+   asm_exc_page_fault+0x27/0x30
+  RIP: 0023:0xf7f5bbc7
+  Code: 8a 44 24 10 88 41 ff 8b 44 24 10 83 c4 2c 5b 5e 5f 5d c3 53 83 ec 08 8b 5c 24 10 81 fb 00 f0 ff ff 76 0c e8 ba dc ff ff f7 db <89> 18 83 cb ff 83 c4 08 89 d8 5b c3 e8 81 60 ff ff 05 28 84 07 00
+  RSP: 002b:00000000ffa06aa0 EFLAGS: 00000217
+  RAX: 00000000f7fd5ca0 RBX: 000000000000000c RCX: 0000000000001000
+  RDX: 0000000000000001 RSI: 00000000f7fd5b60 RDI: 00000000f7fd5b60
+  RBP: 00000000f7fd1c1c R08: 0000000000000000 R09: 0000000000000000
+  R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000000000
+  R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+   </TASK>
 
-The timeout values used while waiting for a CMD6 for BKOPS or a CACHE_FLUSH
-to complete, are not defined by the eMMC spec. However, a timeout of 10
-minutes as is currently being used, is just silly for both of these cases.
-Instead, let's specify more reasonable timeouts, 120s for BKOPS and 30s for
-CACHE_FLUSH.
+The task's CX register got corrupted by commit 8c42819b61b8 ("x86/entry:
+Use PUSH_AND_CLEAR_REGS for compat"), which overlooked the fact that
+compat SYSCALL apparently stores the user's CX value in BP.
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-2-ulf.hansson@linaro.org
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Before that commit, CX was saved from its stashed value in BP:
+
+	pushq   %rbp                    /* pt_regs->cx (stashed in bp) */
+
+But then it got changed to:
+
+	pushq	%rcx			/* pt_regs->cx */
+
+So the wrong value got saved and later restored back to the user.  Fix
+it by pushing the correct value again (BP) for regs->cx.
+
+Fixes: 8c42819b61b8 ("x86/entry: Use PUSH_AND_CLEAR_REGS for compat")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- drivers/mmc/core/mmc_ops.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/x86/entry/calling.h         | 8 ++++----
+ arch/x86/entry/entry_64_compat.S | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-index 6d759fc6165d..2b0bfead730a 100644
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -23,7 +23,9 @@
- #include "host.h"
- #include "mmc_ops.h"
+diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
+index a97cc78ecb92..29b36e9e4e74 100644
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -63,7 +63,7 @@ For 32-bit we have the following conventions - kernel is built with
+  * for assembly code:
+  */
  
--#define MMC_OPS_TIMEOUT_MS	(10 * 60 * 1000) /* 10 minute timeout */
-+#define MMC_OPS_TIMEOUT_MS		(10 * 60 * 1000) /* 10min*/
-+#define MMC_BKOPS_TIMEOUT_MS		(120 * 1000) /* 120s */
-+#define MMC_CACHE_FLUSH_TIMEOUT_MS	(30 * 1000) /* 30s */
+-.macro PUSH_REGS rdx=%rdx rax=%rax save_ret=0
++.macro PUSH_REGS rdx=%rdx rcx=%rcx rax=%rax save_ret=0
+ 	.if \save_ret
+ 	pushq	%rsi		/* pt_regs->si */
+ 	movq	8(%rsp), %rsi	/* temporarily store the return address in %rsi */
+@@ -73,7 +73,7 @@ For 32-bit we have the following conventions - kernel is built with
+ 	pushq   %rsi		/* pt_regs->si */
+ 	.endif
+ 	pushq	\rdx		/* pt_regs->dx */
+-	pushq   %rcx		/* pt_regs->cx */
++	pushq   \rcx		/* pt_regs->cx */
+ 	pushq   \rax		/* pt_regs->ax */
+ 	pushq   %r8		/* pt_regs->r8 */
+ 	pushq   %r9		/* pt_regs->r9 */
+@@ -115,8 +115,8 @@ For 32-bit we have the following conventions - kernel is built with
  
- static const u8 tuning_blk_pattern_4bit[] = {
- 	0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
-@@ -947,7 +949,7 @@ void mmc_run_bkops(struct mmc_card *card)
- 	 * urgent levels by using an asynchronous background task, when idle.
- 	 */
- 	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
--			EXT_CSD_BKOPS_START, 1, MMC_OPS_TIMEOUT_MS);
-+			 EXT_CSD_BKOPS_START, 1, MMC_BKOPS_TIMEOUT_MS);
- 	if (err)
- 		pr_warn("%s: Error %d starting bkops\n",
- 			mmc_hostname(card->host), err);
-@@ -965,7 +967,8 @@ int mmc_flush_cache(struct mmc_card *card)
+ .endm
  
- 	if (mmc_cache_enabled(card->host)) {
- 		err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
--				EXT_CSD_FLUSH_CACHE, 1, 0);
-+				 EXT_CSD_FLUSH_CACHE, 1,
-+				 MMC_CACHE_FLUSH_TIMEOUT_MS);
- 		if (err)
- 			pr_err("%s: cache flush error %d\n",
- 					mmc_hostname(card->host), err);
+-.macro PUSH_AND_CLEAR_REGS rdx=%rdx rax=%rax save_ret=0
+-	PUSH_REGS rdx=\rdx, rax=\rax, save_ret=\save_ret
++.macro PUSH_AND_CLEAR_REGS rdx=%rdx rcx=%rcx rax=%rax save_ret=0
++	PUSH_REGS rdx=\rdx, rcx=\rcx, rax=\rax, save_ret=\save_ret
+ 	CLEAR_REGS
+ .endm
+ 
+diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
+index ed2be3615b50..f76e674d22c4 100644
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -200,7 +200,7 @@ SYM_INNER_LABEL(entry_SYSCALL_compat_safe_stack, SYM_L_GLOBAL)
+ SYM_INNER_LABEL(entry_SYSCALL_compat_after_hwframe, SYM_L_GLOBAL)
+ 	movl	%eax, %eax		/* discard orig_ax high bits */
+ 	pushq	%rax			/* pt_regs->orig_ax */
+-	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
++	PUSH_AND_CLEAR_REGS rcx=%rbp rax=$-ENOSYS
+ 	UNWIND_HINT_REGS
+ 
+ 	movq	%rsp, %rdi
 -- 
-2.25.1
+2.34.3
 
