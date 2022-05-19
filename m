@@ -2,37 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A149EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C725DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:09:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229566AbiESHJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39222 "EHLO
+        id S234602AbiESHJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231504AbiESHJY (ORCPT
+        with ESMTP id S232424AbiESHJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:09:24 -0400
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5308B8BD0
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:09:21 -0700 (PDT)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202205190709182510517c384cdfebb4
+        Thu, 19 May 2022 03:09:25 -0400
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A922B8BDE
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:09:22 -0700 (PDT)
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202205190709208ecca78304bb084a89
         for <linux-kernel@vger.kernel.org>;
-        Thu, 19 May 2022 09:09:19 +0200
+        Thu, 19 May 2022 09:09:21 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=H/or2OZsQeDEkRCrMm6GNFDu44m+XF/7j107kxhZkho=;
- b=U60N1c8r560NMW3iOshF1O+ZUF4+ODYQfVrvQ1ouc/le0NpaIuF1yCaJxrjEbwFRUvf+Q+
- SZIqeS2+SJdT/RttYLUmCYghzTk07yYLFak43oXrcadr+Eq2q5X1X7C/4RQwJn0BOT1p9/QV
- Y2XyISlzon4sTC6tYcmdfBtugY3To=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=4Bq05jMmGOSBQBP7BvGVwVSPmvwgQZYvbIERYnoCYA0=;
+ b=ZRwTvThIX1+8Vk3ZvLPBe6Fspc9Co9mxNX8FQLvpZ2dCWwf4OcSrR+/kjNYlgF54a8znCj
+ Fucs9Z4/llHT1DQYmXlan6FpVIBCaXdNdKUHXMn4lW1/Re1R3Kk7ATLqDQXREx44BBpzoOA6
+ FaG3hChnupaB/x8q3TWysN7J5vH60=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH v2 1/9] tty: n_gsm: fix user open not possible at responder until initiator open
-Date:   Thu, 19 May 2022 09:07:49 +0200
-Message-Id: <20220519070757.2096-1-daniel.starke@siemens.com>
+Subject: [PATCH v2 4/9] tty: n_gsm: fix missing timer to handle stalled links
+Date:   Thu, 19 May 2022 09:07:52 +0200
+Message-Id: <20220519070757.2096-4-daniel.starke@siemens.com>
+In-Reply-To: <20220519070757.2096-1-daniel.starke@siemens.com>
+References: <20220519070757.2096-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
@@ -43,104 +45,141 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-After setting up the control channel on both sides the responder side may
-want to open a virtual tty to listen on until the initiator starts an
-application on a user channel. The current implementation allows the
-open() but no other operation, like termios. These fail with EINVAL.
-The responder sided application has no means to detect an open by the
-initiator sided application this way. And the initiator sided applications
-usually expect the responder sided application to listen on the user
-channel upon open.
-Set the user channel into half-open state on responder side once a user
-application opens the virtual tty to allow IO operations on it.
-Furthermore, keep the user channel constipated until the initiator side
-opens it to give the responder sided application the chance to detect the
-new connection and to avoid data loss if the responder sided application
-starts sending before the user channel is open.
+The current implementation does not handle the situation that no data is in
+the internal queue and needs to be sent out while the user tty fifo is
+full.
+Add a timer that moves more data from user tty down to the internal queue
+which is then serialized on the ldisc. This timer is triggered if no data
+was moved from a user tty to the internal queue within 10 * T1.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 31 +++++++++++++++++++++++++++++--
- 1 file changed, 29 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c | 43 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 35 insertions(+), 8 deletions(-)
 
-This commit was not changed as there have been no comments on it in v1.
-
-Link: https://lore.kernel.org/all/20220506144725.1946-1-daniel.starke@siemens.com/
+See patch 6 regarding changes since to v1.
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index fd8b86dde525..08fea3e7674d 100644
+index 0a9924445968..3a4a2394d970 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1493,6 +1493,8 @@ static void gsm_dlci_close(struct gsm_dlci *dlci)
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
- 	dlci->state = DLCI_CLOSED;
-+	/* Prevent us from sending data before the link is up again */
-+	dlci->constipated = true;
- 	if (dlci->addr != 0) {
- 		tty_port_tty_hangup(&dlci->port, false);
- 		spin_lock_irqsave(&dlci->lock, flags);
-@@ -1522,6 +1524,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 	del_timer(&dlci->t1);
- 	/* This will let a tty open continue */
- 	dlci->state = DLCI_OPEN;
-+	dlci->constipated = false;
- 	if (debug & 8)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Send current modem state */
-@@ -1602,6 +1605,25 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
- 	mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+@@ -244,6 +244,7 @@ struct gsm_mux {
+ 	struct list_head tx_list;	/* Pending data packets */
+ 
+ 	/* Control messages */
++	struct timer_list kick_timer;	/* Kick TX queuing on timeout */
+ 	struct timer_list t2_timer;	/* Retransmit timer for commands */
+ 	int cretries;			/* Command retry counter */
+ 	struct gsm_control *pending_cmd;/* Our current pending command */
+@@ -833,6 +834,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
+ 	list_add_tail(&msg->list, &gsm->tx_list);
+ 	gsm->tx_bytes += msg->len;
+ 	gsm_data_kick(gsm, dlci);
++	mod_timer(&gsm->kick_timer, jiffies + 10 * gsm->t1 * HZ / 100);
+ }
+ 
+ /**
+@@ -885,9 +887,6 @@ static int gsm_dlci_data_output(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+ 	size = len + h;
+ 
+ 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
+-	/* FIXME: need a timer or something to kick this so it can't
+-	 * get stuck with no work outstanding and no buffer free
+-	 */
+ 	if (!msg)
+ 		return -ENOMEM;
+ 	dp = msg->data;
+@@ -964,9 +963,6 @@ static int gsm_dlci_data_output_framed(struct gsm_mux *gsm,
+ 
+ 	size = len + overhead;
+ 	msg = gsm_data_alloc(gsm, dlci->addr, size, gsm->ftype);
+-
+-	/* FIXME: need a timer or something to kick this so it can't
+-	   get stuck with no work outstanding and no buffer free */
+ 	if (msg == NULL) {
+ 		skb_queue_tail(&dlci->skb_list, dlci->skb);
+ 		dlci->skb = NULL;
+@@ -1062,9 +1058,9 @@ static int gsm_dlci_modem_output(struct gsm_mux *gsm, struct gsm_dlci *dlci,
+  *	renegotiate DLCI priorities with optional stuff. Needs optimising.
+  */
+ 
+-static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
++static int gsm_dlci_data_sweep(struct gsm_mux *gsm)
+ {
+-	int len;
++	int len, ret = 0;
+ 	/* Priority ordering: We should do priority with RR of the groups */
+ 	int i = 1;
+ 
+@@ -1087,7 +1083,11 @@ static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
+ 		/* DLCI empty - try the next */
+ 		if (len == 0)
+ 			i++;
++		else
++			ret++;
+ 	}
++
++	return ret;
+ }
+ 
+ /**
+@@ -1806,6 +1806,30 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
+ 	}
  }
  
 +/**
-+ *	gsm_dlci_wait_open	-	wait for channel open procedure
-+ *	@dlci: DLCI to open
++ *	gsm_kick_timer	-	transmit if possible
++ *	@t: timer contained in our gsm object
 + *
-+ *	Wait for a DLCI opening from the other side. Asynchronously wait until
-+ *	we get a SABM and set off timers and the responses.
++ *	Transmit data from DLCIs if the queue is empty. We can't rely on
++ *	a tty wakeup except when we filled the pipe so we need to fire off
++ *	new data ourselves in other cases.
 + */
-+static void gsm_dlci_wait_open(struct gsm_dlci *dlci)
++static void gsm_kick_timer(struct timer_list *t)
 +{
-+	switch (dlci->state) {
-+	case DLCI_CLOSED:
-+	case DLCI_CLOSING:
-+		dlci->state = DLCI_OPENING;
-+		break;
-+	default:
-+		break;
-+	}
++	struct gsm_mux *gsm = from_timer(gsm, t, kick_timer);
++	unsigned long flags;
++	int sent = 0;
++
++	spin_lock_irqsave(&gsm->tx_lock, flags);
++	/* If we have nothing running then we need to fire up */
++	if (gsm->tx_bytes < TX_THRESH_LO)
++		sent = gsm_dlci_data_sweep(gsm);
++	spin_unlock_irqrestore(&gsm->tx_lock, flags);
++
++	if (sent && debug & 4)
++		pr_info("%s TX queue stalled\n", __func__);
 +}
 +
- /**
-  *	gsm_dlci_begin_close	-	start channel open procedure
-  *	@dlci: DLCI to open
-@@ -1745,10 +1767,13 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
- 	dlci->addr = addr;
- 	dlci->adaption = gsm->adaption;
- 	dlci->state = DLCI_CLOSED;
--	if (addr)
-+	if (addr) {
- 		dlci->data = gsm_dlci_data;
--	else
-+		/* Prevent us from sending data before the link is up */
-+		dlci->constipated = true;
-+	} else {
- 		dlci->data = gsm_dlci_command;
-+	}
- 	gsm->dlci[addr] = dlci;
- 	return dlci;
- }
-@@ -3163,6 +3188,8 @@ static int gsmtty_open(struct tty_struct *tty, struct file *filp)
- 	/* Start sending off SABM messages */
- 	if (gsm->initiator)
- 		gsm_dlci_begin_open(dlci);
-+	else
-+		gsm_dlci_wait_open(dlci);
- 	/* And wait for virtual carrier */
- 	return tty_port_block_til_ready(port, tty, filp);
- }
+ /*
+  *	Allocate/Free DLCI channels
+  */
+@@ -2261,6 +2285,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
+ 	}
+ 
+ 	/* Finish outstanding timers, making sure they are done */
++	del_timer_sync(&gsm->kick_timer);
+ 	del_timer_sync(&gsm->t2_timer);
+ 
+ 	/* Free up any link layer users and finally the control channel */
+@@ -2293,6 +2318,7 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
+ 	struct gsm_dlci *dlci;
+ 	int ret;
+ 
++	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
+ 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
+ 	init_waitqueue_head(&gsm->event);
+ 	spin_lock_init(&gsm->control_lock);
+@@ -2699,6 +2725,7 @@ static int gsmld_open(struct tty_struct *tty)
+ 
+ 	gsmld_attach_gsm(tty, gsm);
+ 
++	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
+ 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
+ 
+ 	return 0;
 -- 
 2.34.1
 
