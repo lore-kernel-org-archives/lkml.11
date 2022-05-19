@@ -2,80 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCD5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244595AbiESUGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 16:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
+        id S244607AbiESUGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 16:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239198AbiESUGe (ORCPT
+        with ESMTP id S244597AbiESUGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 16:06:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8683464BFD
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:06:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 021FF61C33
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:06:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE78C385AA;
-        Thu, 19 May 2022 20:06:29 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UyXaa50y"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652990788;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hmADdHULjYqs4wkpWmCIgpha8mSnfTgSG1iLN/3rKFQ=;
-        b=UyXaa50y21jgqcK7zgu6xHZsaJ646nk3IdZMvdNxslgWRs6WiulpdjTMp+4rsk/vDCqBx2
-        hwEirvT/5rfpNseXzX1bv4cvLO3PAbIUHYGyccFmyIrZQfsB66F0+7BEfyXLHdlSnzuoqp
-        CgLHWbjYAI8osAx7NR09b09lakbik+Y=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id cf4f919a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 19 May 2022 20:06:27 +0000 (UTC)
-Date:   Thu, 19 May 2022 22:05:29 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     tytso@mit.edu, hch@lst.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHSET 0/2] Fix splice from random/urandom
-Message-ID: <YoajCafKmgUbbaY0@zx2c4.com>
-References: <20220519193133.194138-1-axboe@kernel.dk>
+        Thu, 19 May 2022 16:06:50 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84ED6AA4C;
+        Thu, 19 May 2022 13:06:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652990807; x=1684526807;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=em9680kU19oyJd12oVrtmjdy90mEXzPAGRZB1JnG5kg=;
+  b=asTpI3wMXdy2fG138KEElUkwgqtdm7b1DCC0cS/o7i1i03e4Ol/mH+7O
+   AMu7u9p0hmq3HMxhB9vJdLAgLa6JS5ScErvMY0jzpOIKUDcChycdGgbtj
+   zuJY008ZLRt8Fsa9Rdohe2Fa5/jZxrW5MmFv160YWPqgOGyG5qPrfJsQq
+   5lv5Hxz8pp/ftCVffyQjeTYNgYxzg0luI9WYxjV2nJSsGmhKxHYzqZ0F3
+   1+1yBvnepytim5de3PdDhnC56PgHYmsAOvdy986ySdc3e+QOetN5o05a3
+   s2K4KFo3ZFbG5ETyHK0hMyYQbnYmmBqzaU/kMku3uraBkG6a5kpGq5WBu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="358768710"
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="358768710"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 13:06:47 -0700
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="557094209"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 13:06:47 -0700
+Date:   Thu, 19 May 2022 13:10:37 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Baolu Lu <baolu.lu@linux.intel.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>, vkoul@kernel.org,
+        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 2/6] iommu: Add a helper to do PASID lookup from
+ domain
+Message-ID: <20220519131037.08d7590f@jacob-builder>
+In-Reply-To: <41c717e3-2965-67ac-9140-72f4b071cd9a@linux.intel.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+        <20220518182120.1136715-3-jacob.jun.pan@linux.intel.com>
+        <41c717e3-2965-67ac-9140-72f4b071cd9a@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220519193133.194138-1-axboe@kernel.dk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jens,
+Hi Baolu,
 
-On Thu, May 19, 2022 at 01:31:31PM -0600, Jens Axboe wrote:
-> Hi,
+On Thu, 19 May 2022 14:41:06 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
+
+> > IOMMU group maintains a PASID array which stores the associated IOMMU
+> > domains. This patch introduces a helper function to do domain to PASID
+> > look up. It will be used by TLB flush and device-PASID attach
+> > verification.  
 > 
-> We recently had a failure on a kernel upgrade because splice no longer
-> works on random/urandom. This is due to:
+> Do you really need this?
 > 
-> 6e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
+> The IOMMU driver has maintained a device tracking list for each domain.
+> It has been used for cache invalidation when unmap() is called against
+> dma domain.
+Yes, I am aware of the device list. In v3, I stored DMA API PASID in device
+list of device_domain_info. Since we already have a pasid_array, Jason
+suggested to share the storage with the code. This helper is needed to
+reverse look up the DMA PASID based on the domain attached.
+Discussions here:
+https://lore.kernel.org/lkml/20220511170025.GF49344@nvidia.com/t/#mf7cb7d54d89e6e732a020dc22435260da0a49580
 
-Thanks for this. I'd noticed this a few months ago and assumed it has
-just always been that way, and hadn't gotten to looking at what was up.
+Thanks,
 
-I'll take a look at these patches in detail when I'm home in a few
-hours, but one thing maybe you can answer more easily than my digging
-is:
-
-There's a lot of attention in random.c devoted to not leaving any output
-around on the stack or in stray buffers. The explicit use of
-copy_to_user() makes it clear that the output isn't being copied
-anywhere other than what's the user's responsibility to cleanup. I'm
-wondering if the switch to copy_to_iter() introduces any buffering or
-gotchas that you might be aware of.
-
-Also you may need to rebase this on the random.git tree at
-https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git
-
-Regards,
-Jason
+Jacob
