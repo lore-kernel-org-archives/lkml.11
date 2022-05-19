@@ -2,101 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A259C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235709AbiESI6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 04:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
+        id S229669AbiESI7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 04:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiESI6s (ORCPT
+        with ESMTP id S233827AbiESI67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 04:58:48 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65479A3083
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:58:47 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id l13so1286916lfp.11
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:58:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=r1Wb7PaA4953uHIZsNFP9FIdN+kpe9dYq/ERCMXbxdw=;
-        b=so0qRwy3SJ/vzyWAM2e9B6qti1Qdo3hQoIHhp5uVHC1Dx4YajvB7Liu9/B9p6ByU2K
-         79s+t+ALqD3S2d29C7smaHUUKpYgT3knOxUlhHbwSVi/sB+4+p0p6CAgP+9TKd/M6FKo
-         UcPJFkWFzQTFKiVWVc6Bu5l5QS8WA26cn04Y4oV3Rj+NcwPBuWeBK65vMCZ2Li+x/4Z/
-         6RpIA/1l2DveUysr6NwZ+JMk9dKn3/XK2iUNm9yNVX/raz+yMRQFXF7+AqPasv76aNdT
-         I4KF9zrv0ephx3oc50Nkzvx4vetb3MitQd6JY398hmT70681SE5q1tmFZKCT4F2FMXaG
-         Ijbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=r1Wb7PaA4953uHIZsNFP9FIdN+kpe9dYq/ERCMXbxdw=;
-        b=Nmm2RWkjsw7SHjEu2jEdOp6D/GdLBQViizLh7nreVC7LqQ4psOWsnsioWA7a5w6uxP
-         UveM24/GQN+g2jqoJg/Zq40Wzpy7Zqgjn13wJgKQASz5hP9wOWB9GVwGXieHI+7VKSWz
-         bOjjwK4sjBRmxJhICnDTwEFB4bsii86R8RQAhg+7SS73/Ra15sBGtPwX17gUnkuMNz51
-         p7+Y3gQUJwnN9PN17fnE/AppoZ8measfFOuMfPWyVPGyvABG5Cx6UQByYhmmpxWXrIHr
-         uI3TQf6BKfumKFa/X2q7aHUS6y2j+W4b1R4z688WU3FMTRaJcX9XkFkt1RVJYG2CzMFz
-         C6nQ==
-X-Gm-Message-State: AOAM5309EzJ8h5WMdjbFvYDC2EG5WOe6iPgvQcDMHYX3I81gXzgmjw2e
-        hba6y6zyf0Lg3xg3JCGEDucDMw==
-X-Google-Smtp-Source: ABdhPJzM6Pe/gzEFe9YuKQN3PWZjIjxHS9s+k6JOENos+GlquY90h48vr7LikcF9bLZIeEcnnT/l1Q==
-X-Received: by 2002:a05:6512:b11:b0:474:2b91:99c4 with SMTP id w17-20020a0565120b1100b004742b9199c4mr2560165lfu.347.1652950725730;
-        Thu, 19 May 2022 01:58:45 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id m12-20020ac2424c000000b00473c87152bcsm214181lfl.127.2022.05.19.01.58.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 01:58:45 -0700 (PDT)
-Message-ID: <00252573-b6ac-4172-eb54-ce20d49a033b@linaro.org>
-Date:   Thu, 19 May 2022 10:58:44 +0200
+        Thu, 19 May 2022 04:58:59 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFFCA5026;
+        Thu, 19 May 2022 01:58:56 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24J8nFZA002716;
+        Thu, 19 May 2022 08:58:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=PW9pRZh/0g9UlTgZKMWzgw6MGsGz+5XiXcei0cxYmrk=;
+ b=bHp1ktdgA89ERzJwH0V5/8EjQ4gM2tX2LXlkLr4dstIAzCuWOHWb/laASeQo0YPsVZYr
+ wiB4FeliK+5Ql6qUTPuPuZyM+FJtYnfflvxG+yvfeAx/ktXQm4SfqKsbJUePZiEWcwh0
+ DXVaEZZ0VaI1hKpsVgjiug7qedijQ5Q8/Zw5VJWnpbOu57BWrqBIEvNkrpYV4ht50ZUT
+ LJAO3nGdFvgdZkoeeLQ4fWQ2F5/1kbABqwGnEkey9a6tDOupsM48Refg/9V1RiBymnJT
+ FYI1L2B2HiUX2kI5huuY8Zh0/jwtKsoFqHTV3TXm9EYW/X/zQnhZsKeaAnTSuR6p7KGK Zg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5jqgg53j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 May 2022 08:58:55 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24J8pHPH012272;
+        Thu, 19 May 2022 08:58:54 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5jqgg527-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 May 2022 08:58:54 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24J8v3rM027704;
+        Thu, 19 May 2022 08:58:51 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma02fra.de.ibm.com with ESMTP id 3g2428nn9r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 May 2022 08:58:51 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24J8is8938863284
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 19 May 2022 08:44:54 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7F48EAE056;
+        Thu, 19 May 2022 08:58:48 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C9BF5AE045;
+        Thu, 19 May 2022 08:58:47 +0000 (GMT)
+Received: from [9.171.67.171] (unknown [9.171.67.171])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 19 May 2022 08:58:47 +0000 (GMT)
+Message-ID: <c608db21-8030-a346-5294-d9d681685734@linux.ibm.com>
+Date:   Thu, 19 May 2022 11:02:38 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net v3] NFC: hci: fix sleep in atomic context bugs in
- nfc_hci_hcp_message_tx
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v9 0/3] s390x: KVM: CPU Topology
 Content-Language: en-US
-To:     Duoming Zhou <duoming@zju.edu.cn>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com
-References: <20220518115733.62111-1-duoming@zju.edu.cn>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220518115733.62111-1-duoming@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8
+To:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, frankja@linux.ibm.com,
+        cohuck@redhat.com, david@redhat.com, thuth@redhat.com,
+        imbrenda@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
+        seiden@linux.ibm.com, nrb@linux.ibm.com
+References: <20220506092403.47406-1-pmorel@linux.ibm.com>
+ <f9cb28d5-2aa5-f902-53ab-592b08672c62@de.ibm.com> <YoXZxhindugH4WxI@osiris>
+ <1e2bfeeb-6514-a55d-61eb-6391dcc96256@de.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <1e2bfeeb-6514-a55d-61eb-6391dcc96256@de.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: PiQBAJIUs3IfjcaLZdSylac6UXtMxIyB
+X-Proofpoint-GUID: yhiyBlCszgpKEzND9y6WXgeTCNoRpHim
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-19_01,2022-05-19_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ suspectscore=0 clxscore=1015 phishscore=0 lowpriorityscore=0 bulkscore=0
+ impostorscore=0 mlxlogscore=721 priorityscore=1501 spamscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205190049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/05/2022 13:57, Duoming Zhou wrote:
-> There are sleep in atomic context bugs when the request to secure
-> element of st21nfca is timeout. The root cause is that kzalloc and
-> alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
-> st21nfca_se_wt_timeout which is a timer handler. The call tree shows
-> the execution paths that could lead to bugs:
+
+
+On 5/19/22 10:07, Christian Borntraeger wrote:
+> Am 19.05.22 um 07:46 schrieb Heiko Carstens:
+>> On Wed, May 18, 2022 at 05:26:59PM +0200, Christian Borntraeger wrote:
+>>> Pierre,
+>>>
+>>> please use "KVM: s390x:" and not "s390x: KVM:" for future series.
+>>
+>> My grep arts ;) tell me that you probably want "KVM: s390:" without
+>> "x" for the kernel.
 > 
->    (Interrupt context)
-> st21nfca_se_wt_timeout
->   nfc_hci_send_event
->     nfc_hci_hcp_message_tx
->       kzalloc(..., GFP_KERNEL) //may sleep
->       alloc_skb(..., GFP_KERNEL) //may sleep
->       mutex_lock() //may sleep
-> 
-> This patch moves the operations that may sleep into a work item.
-> The work item will run in another kernel thread which is in
-> process context to execute the bottom half of the interrupt.
-> So it could prevent atomic context from sleeping.
-> 
-> Fixes: 2130fb97fecf ("NFC: st21nfca: Adding support for secure element")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> yes :-)
 
+Thanks, both of you.
+I change it accordingly.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Regards,
+Pierre
 
-
-Best regards,
-Krzysztof
+-- 
+Pierre Morel
+IBM Lab Boeblingen
