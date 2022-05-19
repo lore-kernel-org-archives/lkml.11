@@ -2,81 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 22:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 22:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245550AbiESWmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 18:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
+        id S245522AbiESWqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 18:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiESWmF (ORCPT
+        with ESMTP id S230521AbiESWqC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 18:42:05 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FD95676D;
-        Thu, 19 May 2022 15:42:02 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L44bs4CCHz4xD8;
-        Fri, 20 May 2022 08:42:01 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1653000121;
-        bh=GIVENiCMlvc6aPH0Jy6HumlSK7xSBXFznM7oT3mXn2I=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ArI0K3cRM22z01h3o5rMH0hUgavM6mt0JIkEi5d9ZH2o/0juFVuv1LkvgU+0CDYuL
-         hiBbKwoKLZYieDcCHWbhayJxh2VFh6i46sshF+2IIJuYbVkjzBC+3TUlzO7O/Ommq9
-         pNpOJiBlNA59N03oe1o5eOBm1sfNgOwpQhcFc6GUMvkaIgjUCvosycHvYOofM+LJA6
-         OhZGlPFJDODzEro6WnU5QutvKPBqVAfpX4z61R15IkKDLz2P2zOUTNMJ7rHqP+hIxR
-         9enG79y0FN8J3i0uSzUOLSgpYXQgmlhdFEluim1exGOhPO6ZFaG0R88UgV7kMgR3B6
-         To49bGxCg7tOQ==
-Date:   Fri, 20 May 2022 08:42:00 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Theodore Ts'o <tytso@mit.edu>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the ext4 tree
-Message-ID: <20220520084200.7262142d@canb.auug.org.au>
+        Thu, 19 May 2022 18:46:02 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174D91C924
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:46:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653000360; x=1684536360;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4WvROh5tFvwqX1BBN7Nubmp8LnwE/1Ah73J/GrFmz/w=;
+  b=cSEIfLWYU8Ykar58nMPeFdn6qo1iI4KygpAgpiirdr/3yOYR3Bq/f47p
+   ThHQQVGQCPT62LSYJckXVSjSLOYYHDeOXnK5fiITVKpg6+dk8Cn+guxo0
+   wBaP2/11RQtXcRDh1Smz2X+EVl3xen5PH05+CanBCgSJ9nwFjjyHujqZF
+   OnRhpBhaHIgR3Ibqq3TZwR67v+c6kIgagFWSAoDqSo6r7hgxnMfKWZQ2V
+   Wb/n6ifPlDMH6Rw9Chkntp9ZIt7lAZLCIynbeXC73cJaN6C2UWMjl5VFA
+   U+7iQDXeORmHnQehuVAsqcgKTOIPUE0/bdy2jDc9eqaFFYEFFoNHRQB5p
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="252922151"
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="252922151"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 15:45:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="640028243"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 19 May 2022 15:45:56 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrou4-00041D-9U;
+        Thu, 19 May 2022 22:45:56 +0000
+Date:   Fri, 20 May 2022 06:45:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [netfilter-nf-next:testing 9/12] core.c:undefined reference to
+ `nf_hook_bpf_create'
+Message-ID: <202205200652.Klq9MYkT-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Inb/zo2=/phR0AxxSqv7dGb";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/Inb/zo2=/phR0AxxSqv7dGb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git testing
+head:   4456ac35299c131e2ac26b4dc025b257d810277b
+commit: 11b2910d788799e8c68df305994260fd79a61e10 [9/12] netfilter: add bpf base hook program generator
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220520/202205200652.Klq9MYkT-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git/commit/?id=11b2910d788799e8c68df305994260fd79a61e10
+        git remote add netfilter-nf-next git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
+        git fetch --no-tags netfilter-nf-next testing
+        git checkout 11b2910d788799e8c68df305994260fd79a61e10
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Hi all,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Commits
+All errors (new ones prefixed by >>):
 
-  cb8435dc8ba3 ("ext4: reject the 'commit' option on ext2 filesystems")
-  6493792d3299 ("ext4: convert symlink external data block mapping to bdev")
-  9558cf14e8d2 ("ext4: add nowait mode for ext4_getblk()")
+   ld: net/netfilter/core.o: in function `nf_hook_entries_grow':
+>> core.c:(.text+0x893): undefined reference to `nf_hook_bpf_create'
 
-are missing a Signed-off-by from their committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Inb/zo2=/phR0AxxSqv7dGb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKGx7gACgkQAVBC80lX
-0GxeAAf+MYIRZ+Ah5ankEfdLLI0I8SuHl6sjo6iivOzcM4kYV6bEbNvIyCSXze7p
-7iv4xNs2FDlKFTfnbGbjlOyzRPmlkv4lgxsMMMYWbu6SUhfCDmC/4QeOzK0ZCDGF
-ulpQQn8wRm+4MWoPpwj37gGaXpjhS/2nOpUA1ia4uN7R9Lq+3LUfFrK8tx3KeECx
-TwrNibcY6p34HPNFC3YjPTnqt0wJnIs49dURkHqYbARxw7ziQ32CzTqvSzjA4dpH
-O7VfO2lEYgoRrXu9H7nfCm/v7Pw0zrAHYwurRv/+qkZY/KE0kPA1vrVyX7OOHIkt
-X5oaWbAXMk/J8KTmXWoAvFRd5VG+dQ==
-=T+am
------END PGP SIGNATURE-----
-
---Sig_/Inb/zo2=/phR0AxxSqv7dGb--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
