@@ -2,180 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E13DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 05:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F06FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 05:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233932AbiESFPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 01:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
+        id S233938AbiESFQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 01:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233921AbiESFP2 (ORCPT
+        with ESMTP id S233921AbiESFQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 01:15:28 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE1B994E3
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:15:26 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id bo5so4152164pfb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:15:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o8kBvwTpuQCpGlgQz4UivyYiv6vdmLNO0fD/1W/RRFw=;
-        b=DmBnZP61PAdCkSbyxB6731F3+Vdn1dSA9Sp5nkK8wvdhIt8HWTOjm5x4Mjcl+DwJRJ
-         6qi4/MNdtmICF7v441vBd+kfgY1hSqD6BcYMh4Wt6Ut73OGvDCbVGkMB/mqvV4IX9Z8P
-         wHF8IH5QKPm3PjOgrKZDDnAVMkVns3cbPcpdFCA026fMVycwV6LbahiaFXX2Sf02a5J9
-         cUPTNdGE1R4RDnsQ2Q4GfiUhtCY0/To4feEeTpbb7FMKGrnK8CcZxKDUWJzN2mIBu4/X
-         U8UxfTlBEMuDYi2y0aWMohyNvzuHuhRFR4bpey+egKHnyERcewpdIouqxrVpfPb0hlPj
-         eNNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o8kBvwTpuQCpGlgQz4UivyYiv6vdmLNO0fD/1W/RRFw=;
-        b=ssOBWEgssQ5qiK22m6nYVkRd2nliOLi0dkvcJyRCicq0W9zNa4fIk9++CvmxUno5ID
-         MbY3f3zorK1LZYmMQFXzO1MVyzJq1ni55B9NwOdKC+TFIjrXctevCNDDacgZWUDCBuFp
-         570oQo6aO1GOGdb6nwEpns9rzcglLK9Ac4sNeEuHIocofRveHxollyuz0DP5uq6Xzf6p
-         VxVA2uXaicW3wh+VfqezT9Bjovmd+6c0SJRqqhR72495XU2SaofiGrA3wP14rnsTHQ7Q
-         L2hO3b0inc8FaTDCru4FwF9YPsvsULpZq03qHB0dzs3epGhw3G25fHUS2ktcBN+ah+lY
-         TfQg==
-X-Gm-Message-State: AOAM5318wHpS8SF/qt77aTtBPqOqw9wK1WwtgRm1zA4vo4/oHiHppPkQ
-        fXQuCacYpYo4rPCXYCMF8rg51g==
-X-Google-Smtp-Source: ABdhPJzkBOnhHrE+4Bc35bpaxBRCk3/P09SRAJ9yBIozW4mar/09Moqazi4KrJGhMgoyYrxap1WNqQ==
-X-Received: by 2002:a63:fb02:0:b0:3c1:9513:2e11 with SMTP id o2-20020a63fb02000000b003c195132e11mr2558308pgh.258.1652937326393;
-        Wed, 18 May 2022 22:15:26 -0700 (PDT)
-Received: from kerodipc.Dlink ([49.206.10.235])
-        by smtp.gmail.com with ESMTPSA id j19-20020a056a00235300b0050dc76281a3sm2929007pfj.125.2022.05.18.22.15.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 22:15:26 -0700 (PDT)
-From:   Sunil V L <sunilvl@ventanamicro.com>
-To:     Ard Biesheuvel <ardb@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        Anup Patel <apatel@ventanamicro.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Abner Chang <abner.chang@hpe.com>, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Sunil V L <sunilvl@ventanamicro.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Sunil V L <sunil.vl@gmail.com>
-Subject: [PATCH V5 1/1] riscv/efi_stub: Add support for RISCV_EFI_BOOT_PROTOCOL
-Date:   Thu, 19 May 2022 10:45:12 +0530
-Message-Id: <20220519051512.136724-2-sunilvl@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519051512.136724-1-sunilvl@ventanamicro.com>
-References: <20220519051512.136724-1-sunilvl@ventanamicro.com>
+        Thu, 19 May 2022 01:16:40 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A55479E9F1
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:16:38 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C1B2F150C;
+        Wed, 18 May 2022 22:06:38 -0700 (PDT)
+Received: from [10.162.42.8] (unknown [10.162.42.8])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF64F3F66F;
+        Wed, 18 May 2022 22:06:35 -0700 (PDT)
+Message-ID: <381ed251-ecd0-4047-6ba3-793f23904b2c@arm.com>
+Date:   Thu, 19 May 2022 10:36:33 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 5/5] arm64: Add HAVE_IOREMAP_PROT support
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>, catalin.marinas@arm.com,
+        will@kernel.org, akpm@linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, hch@infradead.org, arnd@arndb.de
+References: <20220429103225.75121-1-wangkefeng.wang@huawei.com>
+ <20220429103225.75121-6-wangkefeng.wang@huawei.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <20220429103225.75121-6-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the support for getting the boot hart ID in
-Linux EFI stub using RISCV_EFI_BOOT_PROTOCOL. This protocol
-is preferred method over existing DT based solution since it
-works irrespective of DT or ACPI.
 
-The specification of the protocol is hosted at:
-https://github.com/riscv-non-isa/riscv-uefi
+On 4/29/22 16:02, Kefeng Wang wrote:
+> With ioremap_prot() defination from generic ioremap, also move
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
----
- drivers/firmware/efi/libstub/efistub.h    |  7 +++++
- drivers/firmware/efi/libstub/riscv-stub.c | 31 ++++++++++++++++++-----
- include/linux/efi.h                       |  1 +
- 3 files changed, 33 insertions(+), 6 deletions(-)
+s/defination/definition  ^^^^
 
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index edb77b0621ea..87aa66e8ef43 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -720,6 +720,13 @@ union efi_tcg2_protocol {
- 	} mixed_mode;
- };
- 
-+struct riscv_efi_boot_protocol {
-+	u64 revision;
-+
-+	efi_status_t (__efiapi * get_boot_hartid)(struct riscv_efi_boot_protocol *this,
-+						  unsigned long *boot_hartid);
-+};
-+
- typedef union efi_load_file_protocol efi_load_file_protocol_t;
- typedef union efi_load_file_protocol efi_load_file2_protocol_t;
- 
-diff --git a/drivers/firmware/efi/libstub/riscv-stub.c b/drivers/firmware/efi/libstub/riscv-stub.c
-index 9c460843442f..10c59295f379 100644
---- a/drivers/firmware/efi/libstub/riscv-stub.c
-+++ b/drivers/firmware/efi/libstub/riscv-stub.c
-@@ -21,9 +21,9 @@
- #define MIN_KIMG_ALIGN		SZ_4M
- #endif
- 
--typedef void __noreturn (*jump_kernel_func)(unsigned int, unsigned long);
-+typedef void __noreturn (*jump_kernel_func)(unsigned long, unsigned long);
- 
--static u32 hartid;
-+static unsigned long hartid;
- 
- static int get_boot_hartid_from_fdt(void)
- {
-@@ -47,14 +47,33 @@ static int get_boot_hartid_from_fdt(void)
- 	return 0;
- }
- 
-+static efi_status_t get_boot_hartid_from_efi(void)
-+{
-+	efi_guid_t boot_protocol_guid = RISCV_EFI_BOOT_PROTOCOL_GUID;
-+	efi_status_t status;
-+	struct riscv_efi_boot_protocol *boot_protocol;
-+
-+	status = efi_bs_call(locate_protocol, &boot_protocol_guid, NULL,
-+			     (void **)&boot_protocol);
-+	if (status == EFI_SUCCESS) {
-+		status = efi_call_proto(boot_protocol,
-+					get_boot_hartid, &hartid);
-+	}
-+	return status;
-+}
-+
- efi_status_t check_platform_features(void)
- {
- 	int ret;
-+	efi_status_t status;
- 
--	ret = get_boot_hartid_from_fdt();
--	if (ret) {
--		efi_err("/chosen/boot-hartid missing or invalid!\n");
--		return EFI_UNSUPPORTED;
-+	status = get_boot_hartid_from_efi();
-+	if (status != EFI_SUCCESS) {
-+		ret = get_boot_hartid_from_fdt();
-+		if (ret) {
-+			efi_err("Failed to get boot hartid!\n");
-+			return EFI_UNSUPPORTED;
-+		}
- 	}
- 	return EFI_SUCCESS;
- }
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..9822c730207c 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -380,6 +380,7 @@ void efi_native_runtime_setup(void);
- #define EFI_CONSOLE_OUT_DEVICE_GUID		EFI_GUID(0xd3b36f2c, 0xd551, 0x11d4,  0x9a, 0x46, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d)
- #define APPLE_PROPERTIES_PROTOCOL_GUID		EFI_GUID(0x91bd12fe, 0xf6c3, 0x44fb,  0xa5, 0xb7, 0x51, 0x22, 0xab, 0x30, 0x3a, 0xe0)
- #define EFI_TCG2_PROTOCOL_GUID			EFI_GUID(0x607f766c, 0x7455, 0x42be,  0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f)
-+#define RISCV_EFI_BOOT_PROTOCOL_GUID		EFI_GUID(0xccd15fec, 0x6f73, 0x4eec,  0x83, 0x95, 0x3e, 0x69, 0xe4, 0xb9, 0x40, 0xbf)
- #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
- #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
- #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
--- 
-2.25.1
+> pte_pgprot() from hugetlbpage.c into pgtable.h, then arm64 could
+> have HAVE_IOREMAP_PROT, which will enable generic_access_phys()
+> code.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+
+> ---
+>  .../features/vm/ioremap_prot/arch-support.txt          |  2 +-
+>  arch/arm64/Kconfig                                     |  1 +
+>  arch/arm64/include/asm/pgtable.h                       | 10 ++++++++++
+>  arch/arm64/mm/hugetlbpage.c                            | 10 ----------
+>  4 files changed, 12 insertions(+), 11 deletions(-)
+> 
+> diff --git a/Documentation/features/vm/ioremap_prot/arch-support.txt b/Documentation/features/vm/ioremap_prot/arch-support.txt
+> index a6dcbe5f47b6..b39ad5d61216 100644
+> --- a/Documentation/features/vm/ioremap_prot/arch-support.txt
+> +++ b/Documentation/features/vm/ioremap_prot/arch-support.txt
+> @@ -9,7 +9,7 @@
+>      |       alpha: | TODO |
+>      |         arc: |  ok  |
+>      |         arm: | TODO |
+> -    |       arm64: | TODO |
+> +    |       arm64: |  ok  |
+>      |        csky: | TODO |
+>      |       h8300: | TODO |
+>      |     hexagon: | TODO |
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index 56673209fdb9..5e5889049af0 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -186,6 +186,7 @@ config ARM64
+>  	select HAVE_FUNCTION_GRAPH_TRACER
+>  	select HAVE_GCC_PLUGINS
+>  	select HAVE_HW_BREAKPOINT if PERF_EVENTS
+> +	select HAVE_IOREMAP_PROT
+>  	select HAVE_IRQ_TIME_ACCOUNTING
+>  	select HAVE_KVM
+>  	select HAVE_NMI
+> diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+> index dff2b483ea50..1402a2739024 100644
+> --- a/arch/arm64/include/asm/pgtable.h
+> +++ b/arch/arm64/include/asm/pgtable.h
+> @@ -402,6 +402,16 @@ static inline pgprot_t mk_pmd_sect_prot(pgprot_t prot)
+>  	return __pgprot((pgprot_val(prot) & ~PMD_TABLE_BIT) | PMD_TYPE_SECT);
+>  }
+>  
+> +/*
+> + * Select all bits except the pfn
+> + */
+> +static inline pgprot_t pte_pgprot(pte_t pte)
+> +{
+> +	unsigned long pfn = pte_pfn(pte);
+> +
+> +	return __pgprot(pte_val(pfn_pte(pfn, __pgprot(0))) ^ pte_val(pte));
+> +}
+> +
+>  #ifdef CONFIG_NUMA_BALANCING
+>  /*
+>   * See the comment in include/linux/pgtable.h
+> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
+> index cbace1c9e137..38d03406f6aa 100644
+> --- a/arch/arm64/mm/hugetlbpage.c
+> +++ b/arch/arm64/mm/hugetlbpage.c
+> @@ -100,16 +100,6 @@ int pud_huge(pud_t pud)
+>  #endif
+>  }
+>  
+> -/*
+> - * Select all bits except the pfn
+> - */
+> -static inline pgprot_t pte_pgprot(pte_t pte)
+> -{
+> -	unsigned long pfn = pte_pfn(pte);
+> -
+> -	return __pgprot(pte_val(pfn_pte(pfn, __pgprot(0))) ^ pte_val(pte));
+> -}
+> -
+>  static int find_num_contig(struct mm_struct *mm, unsigned long addr,
+>  			   pte_t *ptep, size_t *pgsize)
+>  {
