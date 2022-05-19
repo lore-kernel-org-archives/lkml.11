@@ -2,106 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D10C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B63F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244927AbiESU6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 16:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40560 "EHLO
+        id S244944AbiESU6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 16:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244902AbiESU6C (ORCPT
+        with ESMTP id S244928AbiESU6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 16:58:02 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B41EC3D1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:58:00 -0700 (PDT)
+        Thu, 19 May 2022 16:58:08 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03558EC3D8
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:58:07 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id y13so11417969eje.2
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:58:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652993880; x=1684529880;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=u0Oy9BNZh8dXJmknsxZwwxQLExu6lgBD77SlAD1vJO8=;
-  b=vxdx+VWy9SsfWcHsctIt+ru159asf4YzuE0XWKWB09c0G8tgCvCsxrH5
-   WWR0xFhHqpk1FVy6DzEXz+u/TD87Y9xr8lbenOpEwSe5+wQR4kMFG2jrc
-   RwvwWmrzk+VZFGny0DIk+zGVbRoLpNVKRnV37LVFzmKU+/tyXJpkJiaez
-   o=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 19 May 2022 13:57:59 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 13:57:59 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 19 May 2022 13:57:59 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 19 May
- 2022 13:57:57 -0700
-Date:   Thu, 19 May 2022 16:57:55 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Zi Yan <ziy@nvidia.com>
-CC:     David Hildenbrand <david@redhat.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Oscar Salvador" <osalvador@suse.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v11 0/6] Use pageblock_order for cma and
- alloc_contig_range alignment.
-Message-ID: <YoavU/+NfQIzQiDF@qian>
-References: <20220425143118.2850746-1-zi.yan@sent.com>
- <20220426201855.GA1014@qian>
- <B621B4DD-5D11-4F0E-AFF5-F8684AE37E57@nvidia.com>
- <20220426210801.GA1038@qian>
- <2B9844C8-6D35-41E2-ACB2-9854E7A9C29F@nvidia.com>
- <20220427132720.GC71@qian>
- <1D88AE1B-4DFC-400F-A054-662E3824C9AF@nvidia.com>
- <A1956578-A851-4BF3-BD57-12571244DB5E@nvidia.com>
- <20220428123308.GA71@qian>
- <0E75B247-8150-48A3-83AE-56C586030006@nvidia.com>
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w7n9soc+YeiEuDs+/wVe5880ZbNB6SfvRzmD9yZCDg0=;
+        b=DBEkcJxwMHgrSW6HcJcRibGMLRAHktxTfe210zz70+cSSKn6ZpUgiva+kk1wpf11Zn
+         AEG+Mgw1hd0KW2hE0Q1vG6WOtJs0wkwyzpBg39QhS4doVKGMJsExBp8t3Mh2Q11oNnXz
+         Uj83mLI19GvO9WWx9wIiJ6kgKwKQLuX9IR+/Q=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w7n9soc+YeiEuDs+/wVe5880ZbNB6SfvRzmD9yZCDg0=;
+        b=PXh0koqGFTRNsrj1tkehHhnnVtIC9lBCE46sQX/0xaF3IHeZql0nSUD8qidxeVaadt
+         B8ML1YzyauJ2ADyHKkyP6IwDTTnyMM97Tj9zzzjFNSSNYRJWwrXDJcDNFccW9WkCFAwZ
+         PM/ZQJn8+BExEtIhNtA6ipXTwXUutVsC57lw1rZhfOc3IEZPMPxwq9vUHtZTy2M2St8i
+         SIQR+mTc/7iTRVO06IPRHklQOKEyCXsTZ2zEjAR1JpMhlsdLfZcZmF6TSBLxJ4Br/fbu
+         v0yRuCa2TukXu40cHRfJdqTaPPY6g5GBs28CE7qpISr0HJ7VGIGZa2tH0SZxEpKsfngl
+         wMXg==
+X-Gm-Message-State: AOAM532OiYEpHpan8fZLJfQ1FGQ+LBk3uprEYsVPhgldeeD2LtCg2Mdn
+        BqkQQEo69GaEDC0hzPbOdly0j8zjSuT5bIqN9zk=
+X-Google-Smtp-Source: ABdhPJz5AkiaoJxGZwErtSZtLfDLHnOFbeYUt+eZFmpa6DnBxoFucatvMNS5lfKH46EZBQfBo6bXWQ==
+X-Received: by 2002:a17:907:6daa:b0:6f4:4822:549d with SMTP id sb42-20020a1709076daa00b006f44822549dmr6262834ejc.322.1652993885193;
+        Thu, 19 May 2022 13:58:05 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id 4-20020a170906224400b006f3ef214da7sm2496448ejr.13.2022.05.19.13.58.04
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 13:58:04 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id j24so8811899wrb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:58:04 -0700 (PDT)
+X-Received: by 2002:a05:6000:2c1:b0:20c:5e37:3ed1 with SMTP id
+ o1-20020a05600002c100b0020c5e373ed1mr5575002wry.342.1652993554192; Thu, 19
+ May 2022 13:52:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <0E75B247-8150-48A3-83AE-56C586030006@nvidia.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org> <20220518225355.784371-3-ebiederm@xmission.com>
+In-Reply-To: <20220518225355.784371-3-ebiederm@xmission.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 19 May 2022 13:52:22 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UFK7h0oHGJ23y37ShO+z4vt9ubGE9E4m=jMECgNAAHgA@mail.gmail.com>
+Message-ID: <CAD=FV=UFK7h0oHGJ23y37ShO+z4vt9ubGE9E4m=jMECgNAAHgA@mail.gmail.com>
+Subject: Re: [PATCH 03/16] kdb: Use real_parent when displaying a list of processes
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Will Deacon <will@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
+        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 08:39:06AM -0400, Zi Yan wrote:
-> How about the one attached? I can apply it to next-20220428. Let me know
-> if you are using a different branch. Thanks.
+Hi,
 
-Zi, it turns out that the endless loop in isolate_single_pageblock() can
-still be reproduced on today's linux-next tree by running the reproducer a
-few times. With this debug patch applied, it keeps printing the same
-values.
+On Wed, May 18, 2022 at 3:54 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>
+> kdb has a bug that when using the ps command to display a list of
+> processes, if a process is being debugged the debugger as the parent
+> process.
+>
+> This is silly, and I expect it never comes up in ptractice.  As there
+> is very little point in using gdb and kdb simultaneously.  Update the
+> code to use real_parent so that it is clear kdb does not want to
+> display a debugger as the parent of a process.
 
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -399,6 +399,8 @@ static int isolate_single_pageblock(unsigned long boundary_pfn, gfp_t gfp_flags,
-                                };
-                                INIT_LIST_HEAD(&cc.migratepages);
+So I would tend to defer to Daniel, but I'm not convinced that the
+behavior you describe for kdb today _is_ actually silly.
 
-+                               printk_ratelimited("KK stucked pfn=%lu head_pfn=%lu nr_pages=%lu boundary_pfn=%lu\n", pfn, head_pfn, nr_pages, boundary_pfn);
-                                ret = __alloc_contig_migrate_range(&cc, head_pfn,
-                                                        head_pfn + nr_pages);
+If I was in kdb and I was listing processes, I might actually want to
+see that a process's parent was set to gdb. Presumably that would tell
+me extra information that might be relevant to my debug session.
 
- isolate_single_pageblock: 179 callbacks suppressed
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
- KK stucked pfn=2151120384 head_pfn=2151120384 nr_pages=512 boundary_pfn=2151120896
+Personally, I'd rather add an extra piece of information into the list
+showing the real parent if it's not the same as the parent. Then
+you're not throwing away information.
+
+-Doug
