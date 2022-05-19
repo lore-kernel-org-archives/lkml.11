@@ -2,225 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 309F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E75C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243999AbiESSbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
+        id S243968AbiESSdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243945AbiESSbT (ORCPT
+        with ESMTP id S234068AbiESSdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:31:19 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339556386
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:31:18 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id m25so7487090oih.2
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:31:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Z06dV0jy9Z09Mlv2qu5M8WQC5pe6nmMKzIWhA5pZHEM=;
-        b=QGK8bsVJtt/KFlXCYsIM7TkzinPW/WmuFW9nzb1RSwzutstwUoP6klxukOffbGHxl7
-         dMzB40UjZWcAzurfKlPm/kUlVWhAzNNWFUQFO/LPaErts83w9n7t948inntzt1ejnuD+
-         D4+4ASeIWPo+3sdNdFZQ7nySnenwmmRdji6fLbIINgHnQ0ItYt/iUsDStOwj5CAGmp5G
-         b+jLaHWsGmocbNjKhZ1MethlmRIvN3IUbll9gvIZnq9bmO3iPb8XhEyHWg/8XL3pjy1b
-         aI2DoPQ5TYuYlG5mBU4Om7BYqqZCpseqSTtTKNH8UFjaylQ2QzrmmDoFOwDtfUWKutg4
-         fClg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=Z06dV0jy9Z09Mlv2qu5M8WQC5pe6nmMKzIWhA5pZHEM=;
-        b=GU8g5cn8olImES7FriDmIP03gqQKRiA/ZltClK17f+hKbw17LOICNu60Pacm3lUyGy
-         wl2ByxnQsrtVPj555qDk23CTTtQ2zoMAZ2IqTHIc8tSTYaPZaI+vG8lNCvgXWky90WnX
-         2/EStL1rvYARyAjhcaE3ZanewaEJzsXjRdXdiCO7X3SHfNFg9QM/AsddHrEsKwoF/WlA
-         FK37mptILGAoU9Um4Hw9K4ZtNtha1A7QHixqQapeOQK9sA2Dudc1t2E3KHK/OedyXLZq
-         AvOFQil4PB7myb4C4MveEWIeF7P6RoPw0hYhQpzVTR+XdIHLQrYsOczKzmmMJe/sOJuF
-         Xj2g==
-X-Gm-Message-State: AOAM5307Udj3GDXx8eSLLuo2NcbD949Jwg1LqKB9qHug2UK9W0BdOrFu
-        0vPcnRysM2A17P7BDOomHRM=
-X-Google-Smtp-Source: ABdhPJwltmX5/J5vLQXNRgG6ibBfTelOTPDksm8dMXXj57ldvFkJiPMa3rrKOaymEcr9hbLT57jEyw==
-X-Received: by 2002:a05:6808:11ce:b0:2f9:d196:6597 with SMTP id p14-20020a05680811ce00b002f9d1966597mr3559632oiv.179.1652985077535;
-        Thu, 19 May 2022 11:31:17 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id h3-20020a056870d34300b000f193e656c5sm17719oag.15.2022.05.19.11.31.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 11:31:16 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 19 May 2022 11:31:15 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
-        brgerst@gmail.com, jiangshanlai@gmail.com,
-        Andrew.Cooper3@citrix.com, mark.rutland@arm.com,
-        Borislav Petkov <bp@suse.de>
-Subject: Re: [PATCH 3/6] x86/entry: Use PUSH_AND_CLEAR_REGS for compat
-Message-ID: <20220519183115.GA80510@roeck-us.net>
+        Thu, 19 May 2022 14:33:10 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8254646B3F
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:33:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652985189; x=1684521189;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=n+Od0sKsKim5mCbJh1QOz6Wy+mmPXxlDGr1pz+MMTCk=;
+  b=d8LWWgiJ1GmksEDPwWZOGHRCKgugpTYmW0cSiQ7ZOxwl5RbJyQuZOC8J
+   G4QFg3UHggHO7LA7ThwNWRoWukK6RNGBXub81v01D6PDxGS4x0L/isWd0
+   Uiv2zY5wuSNQyfxXLlkU2lo12Hk1yd66Ig7qrCtXWApruDMuAxTOWzNVW
+   gdEaXEFlrJVHXJGmHHf4ze9+23cCs7qb0Ve2oKXzzpkCt11LGyUxMZUkW
+   t/8SLkMOpjn+TRZCcTWE8pW6VXT7tK3jf3M5xddP9OOU0T/IPNFBiKlzY
+   5sOC24uAWiwt3xBjIOhWTz7IEb8vq9mHjdgugwDWf18P6Lq8vAgJsVewP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="252213648"
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="252213648"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 11:33:09 -0700
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="606623284"
+Received: from rlsharma-mobl.amr.corp.intel.com (HELO [10.212.180.228]) ([10.212.180.228])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 11:33:08 -0700
+Message-ID: <a9a4ba2f-6cfa-c59f-3921-e94d5c9a6148@intel.com>
+Date:   Thu, 19 May 2022 11:33:08 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] x86/tdx: Handle load_unaligned_zeropad() page-cross to a
+ shared page
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     seanjc@google.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        dan.j.williams@intel.com, david@redhat.com, hpa@zytor.com,
+        thomas.lendacky@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220517153021.11116-1-kirill.shutemov@linux.intel.com>
+ <e73cb19e-7dab-2fc1-b947-fac70fd607d2@intel.com>
+ <20220517174042.v6s7wm3u5j2ebaoq@black.fi.intel.com>
+ <c761e774-8014-6fa9-cf21-e7cd8f7aca54@intel.com>
+ <20220517201710.ixbpsaga5jzvokvy@black.fi.intel.com>
+ <083519ab-752f-9815-7741-22b3fcc03322@intel.com>
+ <20220519180739.2xnq7mjpa6hzcbsn@black.fi.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220519180739.2xnq7mjpa6hzcbsn@black.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 10:35:38AM -0700, Josh Poimboeuf wrote:
-> On Thu, May 19, 2022 at 10:11:31AM -0700, Josh Poimboeuf wrote:
-> > On Thu, May 19, 2022 at 07:00:09PM +0200, Peter Zijlstra wrote:
-> > > On Thu, May 19, 2022 at 09:24:11AM -0700, Guenter Roeck wrote:
-> > > > On Fri, May 06, 2022 at 02:14:34PM +0200, Peter Zijlstra wrote:
-> > > > > Since the upper regs don't exist for ia32 code, preserving them
-> > > > > doesn't hurt and it simplifies the code.
-> > > > > 
-> > > > > This doesn't add any attack surface that would not already be
-> > > > > available through INT80.
-> > > > > 
-> > > > > Notably:
-> > > > > 
-> > > > >  - 32bit SYSENTER: didn't clear si, dx, cx.
-> > > > > 
-> > > > >  - 32bit SYSCALL, INT80: *do* clear si since the C functions don't
-> > > > >    take a second argument.
-> > > > > 
-> > > > >  - 64bit: didn't clear si since the C functions take a second
-> > > > >    argument; except the error_entry path might have only one argument,
-> > > > >    so clearing si was missing here.
-> > > > > 
-> > > > > 32b SYSENTER should be clearing all those 3 registers, nothing uses them
-> > > > > and selftests pass.
-> > > > > 
-> > > > > Unconditionally clear rsi since it simplifies code.
-> > > > > 
-> > > > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > > > > Reviewed-by: Borislav Petkov <bp@suse.de>
-> > > > 
-> > > > linux-next (next-20220519) crashes due to this patch when booting
-> > > > q35:EPYC-Rome in qemu.
-> > > 
-> > > Could you try backing out each of the hunks one at a time? They're all
-> > > more or less independent.
-> > > 
-> > > My bet with this being a #PF on an AMD machine, it's either the SI clear
-> > > or the SYSCALL change.
-> > 
-> > I think this should fix it:
+On 5/19/22 11:07, Kirill A. Shutemov wrote:
+> On Tue, May 17, 2022 at 03:16:42PM -0700, Dave Hansen wrote:
+>> See?  Now everybody that goes and writes a new #VE exception helper has
+>> a chance of actually getting this right.  As it stands, if someone adds
+>> one more of these, they'll probably get random behavior.  This way, they
+>> actually have to choose.  They _might_ even go looking at the SDM.
 > 
-> Actually that one had a horrendous bug :-)
-> 
-> Guenter, can you try this one?
-> 
+> Okay. See below. Does it match what you had in mind?
 
-This fixes the problem for me.
+Looks close.
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+> BTW, I found a bug in tdx_early_handle_ve(). It didn't update RIP.
+> I don't know how it happend. Maybe got lost on the way upstream.
 
-Guenter
+Huh, so refactoring things instead of depending on magic hidden behavior
+helps find bugs?  Interesting.  ;)
 
-> From: Josh Poimboeuf <jpoimboe@kernel.org>
-> Subject: [PATCH] x86/entry: Fix register corruption in compat syscall
-> 
-> A panic was reported in the init process on AMD:
-> 
->   Run /sbin/init as init process
->   init[1]: segfault at f7fd5ca0 ip 00000000f7f5bbc7 sp 00000000ffa06aa0 error 7 in libc.so[f7f51000+4e000]
->   Code: 8a 44 24 10 88 41 ff 8b 44 24 10 83 c4 2c 5b 5e 5f 5d c3 53 83 ec 08 8b 5c 24 10 81 fb 00 f0 ff ff 76 0c e8 ba dc ff ff f7 db <89> 18 83 cb ff 83 c4 08 89 d8 5b c3 e8 81 60 ff ff 05 28 84 07 00
->   Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
->   CPU: 1 PID: 1 Comm: init Tainted: G        W         5.18.0-rc7-next-20220519 #1
->   Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
->   Call Trace:
->    <TASK>
->    dump_stack_lvl+0x57/0x7d
->    panic+0x10f/0x28d
->    do_exit.cold+0x18/0x48
->    do_group_exit+0x2e/0xb0
->    get_signal+0xb6d/0xb80
->    arch_do_signal_or_restart+0x31/0x760
->    ? show_opcodes.cold+0x1c/0x21
->    ? force_sig_fault+0x49/0x70
->    exit_to_user_mode_prepare+0x131/0x1a0
->    irqentry_exit_to_user_mode+0x5/0x30
->    asm_exc_page_fault+0x27/0x30
->   RIP: 0023:0xf7f5bbc7
->   Code: 8a 44 24 10 88 41 ff 8b 44 24 10 83 c4 2c 5b 5e 5f 5d c3 53 83 ec 08 8b 5c 24 10 81 fb 00 f0 ff ff 76 0c e8 ba dc ff ff f7 db <89> 18 83 cb ff 83 c4 08 89 d8 5b c3 e8 81 60 ff ff 05 28 84 07 00
->   RSP: 002b:00000000ffa06aa0 EFLAGS: 00000217
->   RAX: 00000000f7fd5ca0 RBX: 000000000000000c RCX: 0000000000001000
->   RDX: 0000000000000001 RSI: 00000000f7fd5b60 RDI: 00000000f7fd5b60
->   RBP: 00000000f7fd1c1c R08: 0000000000000000 R09: 0000000000000000
->   R10: 0000000000000000 R11: 0000000000000206 R12: 0000000000000000
->   R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
->    </TASK>
-> 
-> The task's CX register got corrupted by commit 8c42819b61b8 ("x86/entry:
-> Use PUSH_AND_CLEAR_REGS for compat"), which overlooked the fact that
-> compat SYSCALL had the user's CX value stored in BP.
-> 
-> Before that commit, CX was saved from its stashed value in BP:
-> 
-> 	pushq   %rbp                    /* pt_regs->cx (stashed in bp) */
-> 
-> But then it got changed to:
-> 
-> 	pushq	%rcx			/* pt_regs->cx */
-> 
-> resulting in the wrong value getting saved and later restored back to
-> the user.  Fix it by pushing the correct value again (BP) for regs->cx.
-> 
-> Fixes: 8c42819b61b8 ("x86/entry: Use PUSH_AND_CLEAR_REGS for compat")
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> ---
->  arch/x86/entry/calling.h         | 8 ++++----
->  arch/x86/entry/entry_64_compat.S | 2 +-
->  2 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
-> index a97cc78ecb92..29b36e9e4e74 100644
-> --- a/arch/x86/entry/calling.h
-> +++ b/arch/x86/entry/calling.h
-> @@ -63,7 +63,7 @@ For 32-bit we have the following conventions - kernel is built with
->   * for assembly code:
->   */
+> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+> index 9955b5a89df8..d2635ac52d9b 100644
+> --- a/arch/x86/coco/tdx/tdx.c
+> +++ b/arch/x86/coco/tdx/tdx.c
+> @@ -123,7 +123,7 @@ static u64 __cpuidle __halt(const bool irq_disabled, const bool do_sti)
+>  	return __tdx_hypercall(&args, do_sti ? TDX_HCALL_ISSUE_STI : 0);
+>  }
 >  
-> -.macro PUSH_REGS rdx=%rdx rax=%rax save_ret=0
-> +.macro PUSH_REGS rdx=%rdx rcx=%rcx rax=%rax save_ret=0
->  	.if \save_ret
->  	pushq	%rsi		/* pt_regs->si */
->  	movq	8(%rsp), %rsi	/* temporarily store the return address in %rsi */
-> @@ -73,7 +73,7 @@ For 32-bit we have the following conventions - kernel is built with
->  	pushq   %rsi		/* pt_regs->si */
->  	.endif
->  	pushq	\rdx		/* pt_regs->dx */
-> -	pushq   %rcx		/* pt_regs->cx */
-> +	pushq   \rcx		/* pt_regs->cx */
->  	pushq   \rax		/* pt_regs->ax */
->  	pushq   %r8		/* pt_regs->r8 */
->  	pushq   %r9		/* pt_regs->r9 */
-> @@ -115,8 +115,8 @@ For 32-bit we have the following conventions - kernel is built with
+> -static bool handle_halt(void)
+> +static int handle_halt(struct ve_info *ve)
+>  {
+>  	/*
+>  	 * Since non safe halt is mainly used in CPU offlining
+> @@ -134,9 +134,9 @@ static bool handle_halt(void)
+>  	const bool do_sti = false;
 >  
->  .endm
+>  	if (__halt(irq_disabled, do_sti))
+> -		return false;
+> +		return -EIO;
 >  
-> -.macro PUSH_AND_CLEAR_REGS rdx=%rdx rax=%rax save_ret=0
-> -	PUSH_REGS rdx=\rdx, rax=\rax, save_ret=\save_ret
-> +.macro PUSH_AND_CLEAR_REGS rdx=%rdx rcx=%rcx rax=%rax save_ret=0
-> +	PUSH_REGS rdx=\rdx, rcx=\rcx, rax=\rax, save_ret=\save_ret
->  	CLEAR_REGS
->  .endm
+> -	return true;
+> +	return ve->instr_len;
+>  }
+
+Ideally each of these would include a comment about why we can get the
+isntruction length from ve_info.  That "why" is currently a bit weak,
+but it's something like:
+
+	/*
+	 * In TDX guests, HLT is configured to cause exits.  Assume that
+	 * the TDX module has provided the "VM-exit instruction length".
+	 */
+
+It would be nice to have some central discussion of this too to explain
+that the TDX documentation is currently lacking here, but we don't need
+to repeat that part in a comment 6 different times.
+
+...
+>  /* Handle the kernel #VE */
+> -static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+> +static int virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+>  {
+
+/*
+ * Handle kernel #VEs.  On success, returns the number of
+ * bytes RIP should be incremented (>=0) or -errno on error.
+ */
+
+>  	switch (ve->exit_reason) {
+>  	case EXIT_REASON_HLT:
+> -		return handle_halt();
+> +		return handle_halt(ve);
+>  	case EXIT_REASON_MSR_READ:
+> -		return read_msr(regs);
+> +		return read_msr(regs, ve);
+>  	case EXIT_REASON_MSR_WRITE:
+> -		return write_msr(regs);
+> +		return write_msr(regs, ve);
+>  	case EXIT_REASON_CPUID:
+> -		return handle_cpuid(regs);
+> +		return handle_cpuid(regs, ve);
+>  	case EXIT_REASON_EPT_VIOLATION:
+>  		return handle_mmio(regs, ve);
+>  	case EXIT_REASON_IO_INSTRUCTION:
+> -		return handle_io(regs, ve->exit_qual);
+> +		return handle_io(regs, ve);
+>  	default:
+>  		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
+> -		return false;
+> +		return -EIO;
+>  	}
+>  }
 >  
-> diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
-> index ed2be3615b50..f76e674d22c4 100644
-> --- a/arch/x86/entry/entry_64_compat.S
-> +++ b/arch/x86/entry/entry_64_compat.S
-> @@ -200,7 +200,7 @@ SYM_INNER_LABEL(entry_SYSCALL_compat_safe_stack, SYM_L_GLOBAL)
->  SYM_INNER_LABEL(entry_SYSCALL_compat_after_hwframe, SYM_L_GLOBAL)
->  	movl	%eax, %eax		/* discard orig_ax high bits */
->  	pushq	%rax			/* pt_regs->orig_ax */
-> -	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
-> +	PUSH_AND_CLEAR_REGS rcx=%rbp rax=$-ENOSYS
->  	UNWIND_HINT_REGS
+>  bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
+>  {
+> -	bool ret;
+> +	int ret;
+
+'ret' is usually used for return values of *this* function.
+
+Let's give it a better name, please.
+
+>  	if (user_mode(regs))
+>  		ret = virt_exception_user(regs, ve);
+>  	else
+>  		ret = virt_exception_kernel(regs, ve);
 >  
->  	movq	%rsp, %rdi
-> -- 
-> 2.34.3
-> 
+> +	if (ret < 0)
+> +		return false;
+> +
+>  	/* After successful #VE handling, move the IP */
+> -	if (ret)
+> -		regs->ip += ve->instr_len;
+> +	regs->ip += ret;
+>  
+> -	return ret;
+> +	return true;
+>  }
+>  
+>  static bool tdx_tlb_flush_required(bool private)
+
