@@ -2,98 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8615C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229622AbiESHL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39752 "EHLO
+        id S234624AbiESHM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234770AbiESHLL (ORCPT
+        with ESMTP id S234513AbiESHMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:11:11 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2DEBC6C6
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:10:15 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id i11so7477818ybq.9
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9PYUOJAahsitVbIpvNcD/gQehbdmdTLlZnbyHBi5Wk8=;
-        b=DixNg2iwHsCb87oTKd00gG4y4PtOei2M0rvk2ZvAAiKWoUUH64dI1lLowWxpzxyFVS
-         qpS8Mdw81N+tnEXF0tPRGmVnxvnA0BQvav60mCgPyiIs2YQV83LuCNQVWZpnqzCzzPse
-         QowLhwdTloLQR877oY2q9xQiq4DyhiMG6tSWY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9PYUOJAahsitVbIpvNcD/gQehbdmdTLlZnbyHBi5Wk8=;
-        b=PgD43q/f/nLdXSVMQc7MMtIM19DYeTxeaEUP/EI06VdHCQKpp+YbB6jcMIEMZpZg0O
-         mH/dbXfjImy7CxCNHMucOXcvSMWeHF07XuIDrDexub9/SECDAv7uzl3bcOnFLG5AecX1
-         kPfkBRr9yPD1oVlOhaWW8rZuHPgzBlEzF1K+97auBH+F4zjq69tZn4dq4WCCtR3LMM6I
-         80KN2XpJ0kUa7vgrYt9oLwaW63bs1qKjw+ItVCNeyIF4unuuk8D5Lkyv8HC6MHAaXtRO
-         onw5psEGOD2wkdu/KbS6a0tfF53gkkvOJXhF57d30hA6hopSdPkz3BsScDpXZbxHPgR9
-         lPtg==
-X-Gm-Message-State: AOAM530+IEEN7zJ2eSgh/ZsEOjN/JElah7GxmK6wDDUkIEUURm+POdnk
-        SFiAKlxgUzB22p9yUVdIYPQ4C0KBzEVhkDmVm0TcJA==
-X-Google-Smtp-Source: ABdhPJwWutBdsJKd70SSTJQfb7qJen0UtR3se0WON605rlfXnbYysBkzw7c/nIy6U/FdwQFpm1DzXGo8E6dGdShBVbM=
-X-Received: by 2002:a05:6902:1407:b0:64a:ecc7:aa2 with SMTP id
- z7-20020a056902140700b0064aecc70aa2mr3051875ybu.645.1652944214392; Thu, 19
- May 2022 00:10:14 -0700 (PDT)
+        Thu, 19 May 2022 03:12:15 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A7B5640D
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:11:50 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C07A368AFE; Thu, 19 May 2022 09:11:46 +0200 (CEST)
+Date:   Thu, 19 May 2022 09:11:46 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org,
+        john.garry@huawei.com, hch@lst.de,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/dma: Add config for PCI SAC address trick
+Message-ID: <20220519071146.GB22301@lst.de>
+References: <ef8abf1c6b0839e39b272738fc7bc4d9699c8bcb.1652895419.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-References: <20220429064051.61552-1-linmiaohe@huawei.com> <20220429064051.61552-5-linmiaohe@huawei.com>
-In-Reply-To: <20220429064051.61552-5-linmiaohe@huawei.com>
-From:   Vitaly Wool <vitaly.wool@konsulko.com>
-Date:   Thu, 19 May 2022 09:10:03 +0200
-Message-ID: <CAM4kBB+SKzaFDCodVBZ4UbiFNrqJxAjEjaZCr=7FyW-rd4f39w@mail.gmail.com>
-Subject: Re: [PATCH 4/9] mm/z3fold: throw warning on failure of trylock_page
- in z3fold_alloc
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ef8abf1c6b0839e39b272738fc7bc4d9699c8bcb.1652895419.git.robin.murphy@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 8:40 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> If trylock_page fails, the page won't be non-lru movable page. When this
-> page is freed via free_z3fold_page, it will trigger bug on PageMovable
-> check in __ClearPageMovable. Throw warning on failure of trylock_page to
-> guard against such rare case just as what zsmalloc does.
+On Wed, May 18, 2022 at 06:36:59PM +0100, Robin Murphy wrote:
+> +config IOMMU_DMA_PCI_SAC_OPT
+> +	bool "Enable 64-bit legacy PCI optimisation by default"
+> +	depends on IOMMU_DMA
+> +	default X86
+> +	help
+> +	  Enable by default an IOMMU optimisation for 64-bit legacy PCI devices,
+> +	  wherein the DMA API layer will always first try to allocate a 32-bit
+> +	  DMA address suitable for a single address cycle, before falling back
+> +	  to allocating from the full usable address range. If your system has
+> +	  64-bit legacy PCI devices in 32-bit slots where using dual address
+> +	  cycles reduces DMA throughput significantly, this optimisation may be
+> +	  beneficial to overall performance.
 
-I don't see how this is better than what we currently have. We can
-check if a page is movable before calling __ClearPageMovable instead.
+The config option name sounds odd.  Yes, maybe for actual 64-bit PCI
+this actualy is an optimization.  But I'd think of it more as a
+workaround. and I'd probably word it as such.  I also would not not
+default to true for x86, just allow for that.  There is nothing
+fundamental about x86 wanting that, just that people use more crap
+drivers on x86.  An the fact that AMD SEV sets the high bit for
+encrypted memory has been weeding out at least some of them.
 
-~Vitaly
+> +bool iommu_dma_forcedac __read_mostly = !IS_ENABLED(CONFIG_IOMMU_DMA_PCI_SAC_OPT);
 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/z3fold.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
->
-> diff --git a/mm/z3fold.c b/mm/z3fold.c
-> index 4e6814c5694f..b3b4e65c107f 100644
-> --- a/mm/z3fold.c
-> +++ b/mm/z3fold.c
-> @@ -1122,10 +1122,9 @@ static int z3fold_alloc(struct z3fold_pool *pool, size_t size, gfp_t gfp,
->                 __SetPageMovable(page, pool->inode->i_mapping);
->                 unlock_page(page);
->         } else {
-> -               if (trylock_page(page)) {
-> -                       __SetPageMovable(page, pool->inode->i_mapping);
-> -                       unlock_page(page);
-> -               }
-> +               WARN_ON(!trylock_page(page));
-> +               __SetPageMovable(page, pool->inode->i_mapping);
-> +               unlock_page(page);
->         }
->         z3fold_page_lock(zhdr);
->
-> --
-> 2.23.0
->
+Overly long line here.
