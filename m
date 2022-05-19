@@ -2,140 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F8CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B734C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:07:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238633AbiESNGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S237325AbiESNHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238431AbiESNFu (ORCPT
+        with ESMTP id S238401AbiESNHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:05:50 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9A65FBB;
-        Thu, 19 May 2022 06:05:48 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id s188so2576871oie.4;
-        Thu, 19 May 2022 06:05:48 -0700 (PDT)
+        Thu, 19 May 2022 09:07:30 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E573172206
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:07:28 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2ef5380669cso55865677b3.9
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:07:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dz80QCD+6CE2WkSamufmrlzCM2Z5I/iGKYhm4E6fP5A=;
+        b=MzIskUvVCGTzeEoSrg5hcVYlo7SLpkrtZCNOsYBwMOrhNXwDPE9OAxjkAvKNpZKLYr
+         fAhN5ZnIJdUsbNCd9srngZcgYoGPUHJsLwlF7Eg6BVl3IYEGjo9ib6oGxOepWKl3eNDo
+         aGLbeGffL88cmr50mlTXtJOV82Qtef9gOFXp2DG3KtBSoUz2v4nwixnem4vYftiQiSbt
+         NmSh4w6wrPbgAvPtUD0/e9uCGa7QCCywBZ+1oCtc4VWeMVMxrAJeIDZApWC0mbtc1kYu
+         JM0JYeBsLjzZgefn7sz1IGWe5qGSyPdvHBVX/Aze8Zch7KPdDdbiy6Eq0VAP3dZre8gU
+         2e3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=Gt17Lfq2MMgEmt6V/TKx+0AiZ00DH5GmbDvbL37/fjw=;
-        b=bfT4tnqPg5ysrJOcizp4HogidXlJ0jyWuU36Pl8Nu0/VsHZG4EUaQxUTJhLeg3XyjP
-         2ewk1ulmca2D/SSd1cw7Z55axta65Jf3Hh0uK2u4PBufoUMDXSfJj4mDMl/7CEQzXc0e
-         /0HdZn7YvHEjTnvRkPigvLy1Fs+tTxauV6079udCQjEA6W0l4vO8UcvWRJKW3KZeNiBR
-         Mv+zuQtf9/i67+ARp3eIFFtJSZrgQzZg0EwvZyfV6jN6mBAi8fBstUGPz1zs1A+I77q0
-         kTKiWIk6Lw+rwh1xzxobkymL5Dvr6DgwBS1hAILupnkQZ7fqIj3uA1n3vwhdNuI1Spoa
-         3y7g==
-X-Gm-Message-State: AOAM532BoO9b1SNzRXpasBiu3cdVInHA3t7AKbzgwfjq2jYgSsJDyYGq
-        XM1UTAh4DU8RIOqwnhk2XA==
-X-Google-Smtp-Source: ABdhPJxuHzH+IqaJFjpxSmZnR3V5wGp3HRGfFGUUEJOESPOJAfQKGPapqfE24wE16oUt84cf9LCAzw==
-X-Received: by 2002:aca:c0c5:0:b0:325:9ed4:a240 with SMTP id q188-20020acac0c5000000b003259ed4a240mr2515515oif.289.1652965547373;
-        Thu, 19 May 2022 06:05:47 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y130-20020aca3288000000b00325cda1ff8dsm1834839oiy.12.2022.05.19.06.05.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 06:05:46 -0700 (PDT)
-Received: (nullmailer pid 1359567 invoked by uid 1000);
-        Thu, 19 May 2022 13:05:39 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Alec Su <ae40515@yahoo.com.tw>
-Cc:     linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, y.oudjana@protonmail.com,
-        krzysztof.kozlowski+dt@linaro.org, agross@kernel.org,
-        sboyd@codeaurora.org
-In-Reply-To: <20220519074112.25600-3-ae40515@yahoo.com.tw>
-References: <20220519074112.25600-1-ae40515@yahoo.com.tw> <20220519074112.25600-3-ae40515@yahoo.com.tw>
-Subject: Re: [PATCH 2/2] dt-bindings: arm: qcom: Document xiaomi,natrium board
-Date:   Thu, 19 May 2022 08:05:39 -0500
-Message-Id: <1652965539.974526.1359566.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dz80QCD+6CE2WkSamufmrlzCM2Z5I/iGKYhm4E6fP5A=;
+        b=5BMOtYxDeocrIORw7goPm1A8S563tvVAcS6Q1TlE/lDtVM/eH9V5CreEUk25ic0M71
+         q3XiggugSqOATd4lxyOewbr3B1Tbl50/Jfy2qjhptQcB8I+QRh1+D7xhwHPAGjkafdma
+         dTTY2efF5Vifxeb5U4U4e8JFlHagvbAMvjuNcGzpWev0txUaE4sO7hM9zd9awwM0xMHn
+         uOZQWV/RTQVisYUhrrCaZNut9b3xFy0TH9jEK44KZ3K8z5FA9X1hyElfUn0pCaEyXl54
+         NU9H7lEjlwMbGAmA5+rQKp1zR/vEW/YYFm5U18Xeufxzis4Cr2edfOo/+EIgAC76HUVa
+         O4VA==
+X-Gm-Message-State: AOAM530nvKngP4qo/HDKuL8AUx70AU/jvx7hWHEgyh7PEs7Hk1Cc21rn
+        HcSqSqctUmUySvANdDGIEm6g528eywHkxT7fJ+AeJQ==
+X-Google-Smtp-Source: ABdhPJxsBVzRbaWlrFp9iq73YG21rHNLjS99HbEgv2SgrFLzzd63ELklO9hMs9x/uNhmt9BWBLuhC4bI4+FgNBf1Avo=
+X-Received: by 2002:a81:1d48:0:b0:2f1:8ebf:25f3 with SMTP id
+ d69-20020a811d48000000b002f18ebf25f3mr4584461ywd.118.1652965648019; Thu, 19
+ May 2022 06:07:28 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220517032802.451743-1-Mr.Bossman075@gmail.com> <20220517032802.451743-5-Mr.Bossman075@gmail.com>
+In-Reply-To: <20220517032802.451743-5-Mr.Bossman075@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 19 May 2022 15:07:16 +0200
+Message-ID: <CACRpkdbu87tO0qqLKCaKDM_B0D7cNotsk6Rea4f94VhiuXNJQg@mail.gmail.com>
+Subject: Re: [PATCH v3 06/15] dt-bindings: pinctrl: add i.MXRT1170 pinctrl Documentation
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     linux-imx@nxp.com, robh+dt@kernel.org, mturquette@baylibre.com,
+        sboyd@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, aisheng.dong@nxp.com,
+        stefan@agner.ch, daniel.lezcano@linaro.org, tglx@linutronix.de,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, abel.vesa@nxp.com, dev@lynxeye.de,
+        marcel.ziswiler@toradex.com, tharvey@gateworks.com,
+        leoyang.li@nxp.com, sebastian.reichel@collabora.com,
+        cniedermaier@dh-electronics.com, clin@suse.com,
+        giulio.benetti@benettiengineering.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 07:41:12 +0000, Alec Su wrote:
-> Document Xiaomi Mi 5s Plus (xiaomi-natrium) smartphone which is based on
-> Snapdragon 821 SoC.
-> 
-> Signed-off-by: Alec Su <ae40515@yahoo.com.tw>
+On Tue, May 17, 2022 at 5:28 AM Jesse Taube <mr.bossman075@gmail.com> wrote:
+
+> Add i.MXRT1170 pinctrl binding Documentation
+>
+> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > ---
->  Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+> V1 -> V2:
+>  - Nothing done
+> V2 -> V3:
+>  - Nothing done
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+This patch applied to the pinctrl tree.
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/
-
-
-/: compatible: 'oneOf' conditional failed, one must be fixed:
-	arch/arm64/boot/dts/qcom/msm8916-alcatel-idol347.dtb
-	arch/arm64/boot/dts/qcom/msm8916-asus-z00l.dtb
-	arch/arm64/boot/dts/qcom/msm8916-huawei-g7.dtb
-	arch/arm64/boot/dts/qcom/msm8916-longcheer-l8150.dtb
-	arch/arm64/boot/dts/qcom/msm8916-longcheer-l8910.dtb
-	arch/arm64/boot/dts/qcom/msm8916-mtp.dtb
-	arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dtb
-	arch/arm64/boot/dts/qcom/msm8916-samsung-serranove.dtb
-	arch/arm64/boot/dts/qcom/msm8916-wingtech-wt88047.dtb
-	arch/arm64/boot/dts/qcom/msm8994-huawei-angler-rev-101.dtb
-	arch/arm64/boot/dts/qcom/msm8994-msft-lumia-octagon-cityman.dtb
-	arch/arm64/boot/dts/qcom/msm8994-sony-xperia-kitakami-ivy.dtb
-	arch/arm64/boot/dts/qcom/msm8994-sony-xperia-kitakami-karin.dtb
-	arch/arm64/boot/dts/qcom/msm8994-sony-xperia-kitakami-satsuki.dtb
-	arch/arm64/boot/dts/qcom/msm8994-sony-xperia-kitakami-sumire.dtb
-	arch/arm64/boot/dts/qcom/msm8994-sony-xperia-kitakami-suzuran.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz-r1-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz-r3.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-coachz-r3-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar-r2.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar-r3.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar-r4.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r4.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r5.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-nots-r9.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-r4.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-limozeen-r9.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r0.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r1-kb.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r1-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r3.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r3-kb.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r3-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r9.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r9-kb.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor-r9-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-pompom-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-pompom-r1-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-pompom-r2.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-pompom-r2-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-pompom-r3.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-pompom-r3-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7180-trogdor-r1-lte.dtb
-	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
-	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
-	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
-	arch/arm64/boot/dts/qcom/sm8150-hdk.dtb
-	arch/arm64/boot/dts/qcom/sm8150-microsoft-surface-duo.dtb
-	arch/arm64/boot/dts/qcom/sm8150-sony-xperia-kumano-bahamut.dtb
-	arch/arm64/boot/dts/qcom/sm8150-sony-xperia-kumano-griffin.dtb
-	arch/arm64/boot/dts/qcom/sm8250-hdk.dtb
-	arch/arm64/boot/dts/qcom/sm8250-sony-xperia-edo-pdx203.dtb
-	arch/arm64/boot/dts/qcom/sm8250-sony-xperia-edo-pdx206.dtb
-	arch/arm64/boot/dts/qcom/sm8350-microsoft-surface-duo2.dtb
-	arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx214.dtb
-	arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx215.dtb
-	arch/arm/boot/dts/qcom-msm8916-samsung-serranove.dtb
-
+Yours,
+Linus Walleij
