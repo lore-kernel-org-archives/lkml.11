@@ -2,117 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68203C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238357AbiESN7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56586 "EHLO
+        id S238907AbiESN7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237072AbiESN5I (ORCPT
+        with ESMTP id S236474AbiESN5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 19 May 2022 09:57:08 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B0838AB;
-        Thu, 19 May 2022 06:56:58 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 63F63240014;
-        Thu, 19 May 2022 13:56:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652968613;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UIKY8sH1X5ECVbyISXl1wSkKulCZceNUKGMFNeLBB58=;
-        b=dH4zG/rLfn5lYbDoNTUtI2jjvNpKLyNMlTWaHhX8zJXuzpS057KPCaTrElRlKJqiztw1SL
-        6cDNU52AmZBbS64wCDX99mR2mee3NMLZsxFm0pTSyhrUPDM1zR69Cx4gbDX6UFV4ANUdht
-        bLkjlOEuRSSXheDO5Nie6fMJwdzagP4oDIAj0ccaT9vmSCsyT425Nk87Yjgob5MxAhEHK7
-        459gkEsdaifm2rqribGwOUl+WFphaRd87RhixGgEnBxFGQ6mkjcYxJ9t0vyL3XOT3sPy62
-        lcNEGBRZL5Acis5qxAzkxQdIPyHvI0nmQZDQHfc0QuQ9LsrcP5b2vTONY2ISZQ==
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Richard Cochran <richardcochran@gmail.com>,
-        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 0/6] net: Introduce Ethernet Inband Extensions
-Date:   Thu, 19 May 2022 15:56:41 +0200
-Message-Id: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AAE26F4;
+        Thu, 19 May 2022 06:57:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652968626; x=1684504626;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8pp90tvf8kTP0zWhyfPDbb/zxfLJMKZ53ILcrsvHuto=;
+  b=dYUyw9CX6/yDqLELt+kPwVEs055TYPXWoGK6P2xDyzKJ6cKrqdhEWycE
+   QFHS3tnPKjl3JNEIp8DyqPCeAjsswZU9luVcAB9A3FVRiQPBWuESm1Map
+   0fyZATrh+A/bjEHstzSlIBvik+EfI8hR6ovSrP4FsVykfcaDmLXiH3SNq
+   USopS63thNEs5KUedPPTdbvZWqCT5DXDQG+cYYYW3vTcQdUb32tcZ+M39
+   pHv01wPvz9uoNPWE0fUondtONOtosmYAvM85l++t3IuXE6UWW/ymFu7VW
+   BdaGDXfi9gWmParHdH/u7Kc7ageL6SkecxlpESlUBJIKLQh6Zn50wEEl0
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="156730473"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 May 2022 06:57:02 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 19 May 2022 06:57:01 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 19 May 2022 06:56:59 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>
+CC:     <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
+        <conor.dooley@microchip.com>, <linux-kernel@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+Subject: [PATCH v4 2/2] MAINTAINERS: add PolarFire SoC's RTC
+Date:   Thu, 19 May 2022 14:55:23 +0100
+Message-ID: <20220519135523.594347-3-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220519135523.594347-1-conor.dooley@microchip.com>
+References: <20220519135523.594347-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello everyone,
+Add an entry for PolarFire SoC's RTC drver to the existing support
+for PolarFire SoC.
 
-This series introduces support for Ethernet in-band extensions, a
-mechanism proposed by Cisco as part of the USXGMII spec.
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-The idea is to leverage the 7 bytes preamble to convey meaningful data,
-in what's called an "extension".
-
-This series adds the QUSGMII mode, which is a quad variant of the
-USXGMII standard, and adds its support in the lan966x driver. In
-QUSGMII, extensions can be used.
-
-The only extension support thus far is the PCH mode, a way to convey
-part of a timestamp into the ethernet preamble. That's a pretty
-straightfoward extension, documented in the Cisco spec. Other extensions
-can exist, each being identified by a 2 bits code in the preamble,
-parsed by the hardware.
-
-We therefore need an API to synchronise which mode is supported by a
-given PHY, then a way to enable it in the PHY, from the MAC's control.
-
-This is done through a new phy_driver callback, .inband_ext_config(),
-that the MAC driver will call to ask a PHY driver to enable a given
-extension.
-
-The PCH mode that is added in this series is used to offload a bit
-the MDIO bus when doing PHY-side timestamping, by conveying the nanoseconds
-part of the timestamp into the preamble. The MAC driver then extracts
-the timestamp (using lan966x's IFH mechanism), puts the nanosecond part
-in the SKB. The RX deferred timestamping then asks the PHY for the rest
-of the timestamp.
-
-Other modes exists, such as Microchip's MCH mode, but this series only
-include PCH since it's simple enough and keeps the code reviewable.
-
-Thanks,
-
-Maxime
-
-Maxime Chevallier (6):
-  net: phy: Introduce QUSGMII PHY mode
-  dt-bindings: net: ethernet-controller: add QUSGMII mode
-  net: lan966x: Add QUSGMII support for lan966x
-  net: phy: Add support for inband extensions
-  net: lan966x: Allow using PCH extension for PTP
-  net: phy: micrel: Add QUSGMII support and PCH extension
-
- .../bindings/net/ethernet-controller.yaml     |   1 +
- Documentation/networking/phy.rst              |   9 ++
- .../ethernet/microchip/lan966x/lan966x_main.c |  14 +--
- .../ethernet/microchip/lan966x/lan966x_main.h |   6 ++
- .../microchip/lan966x/lan966x_phylink.c       |   9 +-
- .../ethernet/microchip/lan966x/lan966x_port.c |  33 ++++--
- .../ethernet/microchip/lan966x/lan966x_ptp.c  |  93 +++++++++++++++-
- .../ethernet/microchip/lan966x/lan966x_regs.h |  72 +++++++++++++
- drivers/net/phy/micrel.c                      | 102 ++++++++++++++++--
- drivers/net/phy/phy.c                         |  68 ++++++++++++
- drivers/net/phy/phylink.c                     |   3 +
- include/linux/phy.h                           |  28 ++++-
- 12 files changed, 413 insertions(+), 25 deletions(-)
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e8c52d0192a6..625d735f6a24 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16952,6 +16952,7 @@ L:	linux-riscv@lists.infradead.org
+ S:	Supported
+ F:	arch/riscv/boot/dts/microchip/
+ F:	drivers/mailbox/mailbox-mpfs.c
++F:	drivers/rtc/rtc-mpfs.c
+ F:	drivers/soc/microchip/
+ F:	include/soc/microchip/mpfs.h
+ 
 -- 
 2.36.1
 
