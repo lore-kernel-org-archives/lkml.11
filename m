@@ -2,170 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 05:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C134FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 05:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbiESFna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 01:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50782 "EHLO
+        id S234085AbiESFoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 01:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234079AbiESFn2 (ORCPT
+        with ESMTP id S230504AbiESFod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 01:43:28 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5F4AEE2D
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:43:27 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id w14so7162568lfl.13
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:43:27 -0700 (PDT)
+        Thu, 19 May 2022 01:44:33 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C22BA56E
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:44:32 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IMJ6iP009158;
+        Thu, 19 May 2022 05:44:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=OiD2wId4LUlyufxOrwwBe6mpHi0qusuJ/s2LUQ34kcY=;
+ b=r+/AZ9ixK+WcyHIeAxaG0uptHOvJjPl20iB4AR2gN4OH7CG/zXVygstWGLoSpIZqK9hC
+ FfBFMJ2fg9qpwxcHT8spDEcRw1dR3m8MfOaM/ZNjW3IqmcSrcAwjAas6uJuG8d7T4dMa
+ v64kCVAqkaDPEty5tYhT+RPh8ZvjImGrLHtVZEYrrsPur/1T0wZnkNHXXkBSdwYkTDa1
+ tw9E0eM+igHMeMfLRuOFjfI2V/gAfCILWHAAUbcfjB5IzanVMn5laeSi0D401MQhCJhG
+ Dk9PysCP91BcqVBiGt5QO2ZQ0dldUZE8LrSPSM9bwbUcUDUUeqyf1ZxJZ4AV/6a+5YjQ rw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g2310u6vm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 19 May 2022 05:44:20 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24J5Ppfp033619;
+        Thu, 19 May 2022 05:44:19 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2041.outbound.protection.outlook.com [104.47.66.41])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g22v523fn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 19 May 2022 05:44:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Zcv8xCndJDNB/JlQ5sutINAh4dZm0uGioV76+bgnNTZ1B4q7bZnb6/n1KgcRl6XC+ETs1iTVIoRNJgfm7vIMMKsStspwb/cIyi8bTpWoxM4fyo/jilc1VCQ/1/3QcaLwXQCz6MC3eAZ+DzMiZMITuF6uz1E6jFTZNr9JEvMSH1KpePdJlUAjVWwd7Tp4rf1zpm6TshiPbkKRVZpLhYTIxJz1Jg83BKnsn0+4bKu0lYoFN0Bi6B+h4PlbpO7OEGModnK6NsX45ri3EtGUCIj45sYnLiRbn2W06WUz+um9aIp2HC9KK1IevY+DxwkaQKjxB5t2OPk+jz2s7rrYo4IpWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OiD2wId4LUlyufxOrwwBe6mpHi0qusuJ/s2LUQ34kcY=;
+ b=Aivd+7DlMbcSzWKARG/wYsF2bqP4OWTNbTFKsYIxreg13CzHWKboDivbpYRK3LoRKrioy/suCssN+SuT+pP+coaGwXrzarLg1pYiqRe4AEHyGzwhbXsVVtcT+WpUhuDe1SlUoaYCJcwKgSnFKoYRFGnLCvyV4SETfKNfBVvZcOFBju+ACSyGjkN3lMGN/Hf+7SvirF1eCJ8Z+3wdkOPlUbgjQKf8A/EIQ5n+PJg67uZG0v5xB+1bDpRSkxm0sj/lrA1FTwvUbWdTknZFM1z4qp1JQLd3YoWGD3ni3WHNPFAY0yZti8vXN5C28Cz/58SI/Sv43g1lHybgzoUKCLUJ/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to;
-        bh=u3+sgWQFNAfOGIZAUaDZ1UcrATcR4oti1GuI3qCNhNE=;
-        b=fNNbkGT/rSdAeOwTV3gkL122nqoud/H77U4UQGh1g5HkJdugObHkCQ9yKkPwVbWV20
-         sxaWWWyRtmwo1U3+JLerEr1krylWx5w+NaHekxisD4ujZAm5lnXgkipSIxfvKBOASZPQ
-         WzlKrsmWvxZIp+y9gemWGYLp5LmUJ+3TlHXNqjQ5j0ijDIIG7Jer6SSeeMkPmhIb+hd+
-         OW7xWKpSQMa1no0Uvk7HKVTejuKHppLqmA+PiEmCwopHTIDaP8wH3/Bw4KyyXJhmSFL6
-         e5CoDuM+CYUPix4QOhnISlBBFDPEdkrGTb6kT3mzIAegxv9mf/CIyHxaL238+fu9B3Y/
-         tZaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to;
-        bh=u3+sgWQFNAfOGIZAUaDZ1UcrATcR4oti1GuI3qCNhNE=;
-        b=0sAlDjBWyE3LitbmcG8Y/Hf+X5TUAKVDTDrC+wDuRK2WgTBcyHgdt3RG+fPsQxZRR9
-         lsWKTKay1vRqIPScmIdQTAs1mF2TPyaKT5agOaSjjrx0PJfw2nmM0KrBznKzX8s3n+/x
-         vd4+TpdgUjCjbIZ0v+9FJ1UJqgKdRt/OzNbFRfBT7m5t46IpOMd7fnUB/Az8Pbol5ZaG
-         WkOmA32qshSMrmPvUft9gL65vAN8VMrKQxapm6O9VBGSNsxSVUwyMCKHHN/jCKHLUNAH
-         AoipLjswrgaSCf5bYuRc+1XoPGMXgTjYOMsjHLvAgNyNRQs+ymflAlOe+K+HoHk/wAKp
-         uPOg==
-X-Gm-Message-State: AOAM5331HX2h6kO+3GCdtMhhIyHnxmJZH+zvXXrFhZ7AOLTkZ/69qplV
-        W0a2HxgoSrwcOZ6CVwK6OuA=
-X-Google-Smtp-Source: ABdhPJxRplRcw3C73vdfN4WRCsou10nni5advjTFNt0DkL8+ClE/bAS6ml0yIx+dYdu+0d7gFtJDRQ==
-X-Received: by 2002:ac2:518b:0:b0:471:f81b:bb9f with SMTP id u11-20020ac2518b000000b00471f81bbb9fmr2072741lfi.638.1652939005595;
-        Wed, 18 May 2022 22:43:25 -0700 (PDT)
-Received: from [192.168.1.11] ([46.235.67.4])
-        by smtp.gmail.com with ESMTPSA id u14-20020a056512094e00b0047255d21187sm156305lft.182.2022.05.18.22.43.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 22:43:24 -0700 (PDT)
-Message-ID: <ff322920-6ddd-159d-b2f2-c0e4fc2e518f@gmail.com>
-Date:   Thu, 19 May 2022 08:43:23 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/4] staging: r8188eu: add error handling of rtw_read8
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OiD2wId4LUlyufxOrwwBe6mpHi0qusuJ/s2LUQ34kcY=;
+ b=yaJMYK47rEnoBAkx7H2M6iUjerd3+ZTiK3bWsyE53Z7F/lUR9o0jJMiQRrLIM1aiNTwL7vmSfpk+4CmPd7UzCiPvVsrDNqPaQyn3LX6lsxhJp4SAiOrr+WmQTByjFHhh1RU6gUagO2NGyWaTKhstYN5X4Lu+BRYsDKW0QG2LpGA=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CY4PR10MB1543.namprd10.prod.outlook.com
+ (2603:10b6:903:2e::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Thu, 19 May
+ 2022 05:44:17 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5273.014; Thu, 19 May 2022
+ 05:44:17 +0000
+Date:   Thu, 19 May 2022 08:43:56 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
 Cc:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
         phil@philpotter.co.uk, straube.linux@gmail.com,
         fmdefrancesco@gmail.com, linux-kernel@vger.kernel.org,
         linux-staging@lists.linux.dev
+Subject: Re: [PATCH 3/4] staging: r8188eu: add error handling of rtw_read32
+Message-ID: <20220519054356.GU4009@kadam>
 References: <cover.1652911343.git.paskripkin@gmail.com>
- <1a9834b705054dcd0b0be0d929084c44a224abaa.1652911343.git.paskripkin@gmail.com>
- <20220519043306.GS4009@kadam>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220519043306.GS4009@kadam>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------GunZfwRx57uANM4Icokey4Ry"
+ <5cab10528fed7d440ee57f93183d18c9de998adb.1652911343.git.paskripkin@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5cab10528fed7d440ee57f93183d18c9de998adb.1652911343.git.paskripkin@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0066.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::10)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 07fb2c96-b64f-4296-27d3-08da395a9ccf
+X-MS-TrafficTypeDiagnostic: CY4PR10MB1543:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR10MB1543823FF602F4868DF3C4118ED09@CY4PR10MB1543.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rgl8Tybrgtnm3md02oupF5gmtfvhfy1dUy6tnV/FuAWJCNCMeEmPO/BALjGaQxFgvZH14TmKdg2E+3wbRHSsoMyQ3cZzi+YN+dRbvHxYeVkEZoUUFHWKTv37LAEe0HkVTxyAPqTeTPBo2I2n2Uik02A5JpwY+UZUNmXVIWZTbw0nI3Qs+9SKi3hnihrpj4+wx3iJ+Jd7ZM1WhsaLpfpfXAOd76UTE2F67hu6a2HSifHbBpYPEKuuB3/XFBHPQycgBJSFexXQ8RNwiuOc/AlL5+7wRa8IPOl+fiYMOlZFQNjWc+UeWdxm4VNaB2s0uMuADoRpqGciboZUNXL7IwuSjRZ41YatIAWIXqac8DuVqWMlXuUVbW+V9kuZCqM+WNdCJv5NAROQnU/E3pFAtMgs5JmHXstMPXePTGSWv0fGLy4p43iDfpntJ8od8iiUBEt3zBBj7Za2Y/Lm44YazL8UnyOudSfwAZ8Cx4XxdjPjGB4ljYJNXKkJZ/qul+Mia4RxuxmCf7KkvUw3rmTGdbvghYjt6BapQiu5sDz6shxQF9fBI0d2eqD6pILFKIWXFsBpH+CSKutu9S55HWNNgVPpxjLe1bRPZcDgSdP7Bq/CO0q4+I76tQzdSCFpNLSzDjCWJNN6EO95SygMyu1qYEUHliommb5kFoTPUtMvijJYV67Gc2y12rGcLfjpn/XgkCYYGgW2DJBFqW2yXnNToPGy1Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(6486002)(316002)(186003)(6512007)(52116002)(8936002)(33716001)(66476007)(8676002)(66556008)(4326008)(86362001)(83380400001)(33656002)(1076003)(26005)(6916009)(6666004)(9686003)(508600001)(38100700002)(38350700002)(6506007)(5660300002)(2906002)(44832011)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1SajeVg5BcpxBG40uvkxgXy6JCyAeFXMRe/P29HYzamJuGpEf7OtnTQhM1D+?=
+ =?us-ascii?Q?eKiKrQ/Dadfd5f5TxCT2Kl2e2/LZ27n0Mr9yitUFguebNMEwuuKQFZ9IwuTx?=
+ =?us-ascii?Q?I/6lgi4HT3UJSIiDvd4IvnOqPbWP38DrlCpVQ4GrxmUoku/Zd98x3fnrv0mN?=
+ =?us-ascii?Q?7/z9WzIIWNoIRM8kgHcZaNg7ckw/YVGJKn6x1dq1chr85gFh2L2Nl+FzuouS?=
+ =?us-ascii?Q?cYo5fy/GR6N2rMPauVWnN0TGsjOT/oZbjVgMfuaB0Yuucj2NG30rhf4Nkh/k?=
+ =?us-ascii?Q?FOlI+loSyDFNcz30VQ6cK9vPW29R5qrH+U9ILWgOpoSNYk9S22uov2QNA4nx?=
+ =?us-ascii?Q?2omln+h3+rGVpDaUKhmnwo0eMXESiyXGszWvUj0l4RgoMH/RIuwRIG+KDnMm?=
+ =?us-ascii?Q?vQ0NB+2LSW12FMCd5SUyTO8gFwQppkCsvT+MgToi+lUEEw64gspmi6lzVlUu?=
+ =?us-ascii?Q?MqRv39DaQ3QXljLaj73Cb+qDRHG+jc7KLDPtrV+HPatVEbvKlGde7q9CGTBc?=
+ =?us-ascii?Q?ezNbpz8WCIAc/0KLZgOJ0BujtLrPFCqpPSjio9ywdw+7ph6O+FM9W9p+thPc?=
+ =?us-ascii?Q?Z4LtMcSKV4GwJ3SMyMxdSVI7icrTWPZ99LoxtTt0Z4zRU+1+cQamrOux034T?=
+ =?us-ascii?Q?Cn9rJdXTsVXEn/3P6ba3SUdvVr4ajB6UvNQWnjOBeQf/sDX9ryYWbaAD9bPi?=
+ =?us-ascii?Q?MWDC+XPmnCv27G8KCSa3jL692eH4uz6LYblQ1mcO9gceJU8KQxv8OX4dNkZX?=
+ =?us-ascii?Q?Q8FBuZv4AYsxdj0IFcWw50QpVJfgvLxQXnNZ5SxOaB40ADBkfj8ZBKjZRidJ?=
+ =?us-ascii?Q?AXySDHnBH0EZ7xXSKZmvH9++piU3GzSNa6+bSZO5RxtQmjFD7XnXDRIkAAy3?=
+ =?us-ascii?Q?1cdzlufHvrDiVQfLEVgdZ3iabjDcnJHsoUmj73sb1HMJxknX4zUekZw3yZnA?=
+ =?us-ascii?Q?q8rwvd+3zlaf6at+Q0/WEPh9nENfxTNmnpOhpskCFHZq/jXmePjtcQLW85fE?=
+ =?us-ascii?Q?fC/p7m4q+G6UB6VL4kgZDnoHTx+q8JhkCoR/BTtrpuLpS1go3lttlhu1qKXJ?=
+ =?us-ascii?Q?OgYyyzjhblJgTv9XHD9wRIHs0zELZxwhB89zooD3k0iO4mTQM7XYHxE2xbXo?=
+ =?us-ascii?Q?9NbAOFcPrQ3Xw0EFPzMjG7PzKsKC+ktmIwK8YN6XmqUNGZeMkD+VmvxTUM34?=
+ =?us-ascii?Q?onMdE44zoD3p+P9rsl1l/TwAVUU0OVK36tZk/quU6bdxU6ImFGWCM7Obc1Ua?=
+ =?us-ascii?Q?a4lXd5uJKMEz2FSbrllD7WY5GwpMbnDZTxgs1PQxhMAwSh2J5IVu6xpPuXh5?=
+ =?us-ascii?Q?oP8cmkBF6V/XYXgClsFKoc2czYVZ2cvPz2Tn3lTKZed37O8ggItovx8ABwS6?=
+ =?us-ascii?Q?dFr05i+kKmemZ1FKTRKaUKpiSVNUigbOe1Vz3vLJ/QH/48HZAA70SSCoWTHj?=
+ =?us-ascii?Q?7kkY4brZL7x/Br3+DwReG6/7m3X9IxmR1QlDkDE56CHUCuALlacZSIOIhmOO?=
+ =?us-ascii?Q?fSZmk7OnBauAkCeEHYRHV2RBqYFu6gqiVlFV+drLy4koSLCG4IbeoqT7sA0K?=
+ =?us-ascii?Q?bi4+eqpRa0o0L3CO6qs8CT3TQXtKCkxqR9x2l2ugZBaC8XLQtlv/uBOqvXuc?=
+ =?us-ascii?Q?Ke5+czFryyeU0Bok4EF6xmDEx/v4HFcePY3mtTnDoNjV8pJ/M0+MdSpyD3ok?=
+ =?us-ascii?Q?yJ+Drd2Q7HV28p2+TPNSulaZ3btQdrLaz1hh7aKLDjqI0dCXoFNo4xYBGZzU?=
+ =?us-ascii?Q?DQmYvgLEmaVRQ10qv2dAFhS8c4y7mtU=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07fb2c96-b64f-4296-27d3-08da395a9ccf
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 05:44:17.0757
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Z636Ao5OlQIIfbXbVPTRYolRE9gZF3+GfazPnYw0fsoVXPcgpyjI+eSjkgXcPYeXWeTa7zBSA0AeyCcBR+QAuBMGmk0CyvYDk8xOsk/YbFY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1543
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
+ definitions=2022-05-18_09:2022-05-17,2022-05-18 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
+ mlxlogscore=999 spamscore=0 suspectscore=0 malwarescore=0 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205190035
+X-Proofpoint-ORIG-GUID: kHS8r3SHf3dqPylbHzNthho8so1YVbqO
+X-Proofpoint-GUID: kHS8r3SHf3dqPylbHzNthho8so1YVbqO
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------GunZfwRx57uANM4Icokey4Ry
-Content-Type: multipart/mixed; boundary="------------2uSj0DxMnp10C85nNLvbYSWd";
- protected-headers="v1"
-From: Pavel Skripkin <paskripkin@gmail.com>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
- phil@philpotter.co.uk, straube.linux@gmail.com, fmdefrancesco@gmail.com,
- linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Message-ID: <ff322920-6ddd-159d-b2f2-c0e4fc2e518f@gmail.com>
-Subject: Re: [PATCH 1/4] staging: r8188eu: add error handling of rtw_read8
-References: <cover.1652911343.git.paskripkin@gmail.com>
- <1a9834b705054dcd0b0be0d929084c44a224abaa.1652911343.git.paskripkin@gmail.com>
- <20220519043306.GS4009@kadam>
-In-Reply-To: <20220519043306.GS4009@kadam>
+On Thu, May 19, 2022 at 01:12:01AM +0300, Pavel Skripkin wrote:
+> diff --git a/drivers/staging/r8188eu/core/rtw_efuse.c b/drivers/staging/r8188eu/core/rtw_efuse.c
+> index a2691c7f96f6..7105122c2ba0 100644
+> --- a/drivers/staging/r8188eu/core/rtw_efuse.c
+> +++ b/drivers/staging/r8188eu/core/rtw_efuse.c
+> @@ -47,9 +47,18 @@ ReadEFuseByte(
+>  
+>  	/* Check bit 32 read-ready */
+>  	retry = 0;
+> -	value32 = rtw_read32(Adapter, EFUSE_CTRL);
+> -	while (!(((value32 >> 24) & 0xff) & 0x80)  && (retry < 10000)) {
+> -		value32 = rtw_read32(Adapter, EFUSE_CTRL);
+> +	res = rtw_read32(Adapter, EFUSE_CTRL, &value32);
+> +	if (res)
+> +		return;
+> +
+> +	while (retry < 10000) {
+> +		res = rtw_read32(Adapter, EFUSE_CTRL, &value32);
+> +		if (res)
+> +			continue;
 
---------------2uSj0DxMnp10C85nNLvbYSWd
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Forever loop.  Always put the ++ in side the while ().  Apparently,
+Smatch does not catch this.  #Idea #Oppurtunity
 
-SGkgRGFuLA0KDQpPbiA1LzE5LzIyIDA3OjMzLCBEYW4gQ2FycGVudGVyIHdyb3RlOg0KPiBP
-biBUaHUsIE1heSAxOSwgMjAyMiBhdCAwMToxMTo1MUFNICswMzAwLCBQYXZlbCBTa3JpcGtp
-biB3cm90ZToNCj4+IEBAIC0yNDAsMTIgKzI1OSwxNCBAQCBpbnQgcnRsODE4OGVfZmlybXdh
-cmVfZG93bmxvYWQoc3RydWN0IGFkYXB0ZXIgKnBhZGFwdGVyKQ0KPj4gIHsNCj4+ICAJaW50
-IHJldCA9IF9TVUNDRVNTOw0KPj4gIAl1OCB3cml0ZV9md19yZXRyeSA9IDA7DQo+PiArCXU4
-IHJlZzsNCj4+ICAJdW5zaWduZWQgbG9uZyBmd2RsX3RpbWVvdXQ7DQo+PiAgCXN0cnVjdCBk
-dm9ial9wcml2ICpkdm9iaiA9IGFkYXB0ZXJfdG9fZHZvYmoocGFkYXB0ZXIpOw0KPj4gIAlz
-dHJ1Y3QgZGV2aWNlICpkZXZpY2UgPSBkdm9ial90b19kZXYoZHZvYmopOw0KPj4gIAlzdHJ1
-Y3QgcnRfZmlybXdhcmVfaGRyICpmd2hkciA9IE5VTEw7DQo+PiAgCXU4ICpmd19kYXRhOw0K
-Pj4gIAl1MzIgZndfc2l6ZTsNCj4+ICsJaW50IHJlczsNCj4+ICANCj4+ICAJaWYgKCFkdm9i
-ai0+ZmlybXdhcmUuZGF0YSkNCj4+ICAJCXJldCA9IGxvYWRfZmlybXdhcmUoJmR2b2JqLT5m
-aXJtd2FyZSwgZGV2aWNlKTsNCj4+IEBAIC0yNjksNyArMjkwLDExIEBAIGludCBydGw4MTg4
-ZV9maXJtd2FyZV9kb3dubG9hZChzdHJ1Y3QgYWRhcHRlciAqcGFkYXB0ZXIpDQo+PiAgDQo+
-PiAgCS8qICBTdWdnZXN0ZWQgYnkgRmlsZW4uIElmIDgwNTEgaXMgcnVubmluZyBpbiBSQU0g
-Y29kZSwgZHJpdmVyIHNob3VsZCBpbmZvcm0gRncgdG8gcmVzZXQgYnkgaXRzZWxmLCAqLw0K
-Pj4gIAkvKiAgb3IgaXQgd2lsbCBjYXVzZSBkb3dubG9hZCBGdyBmYWlsLiAyMDEwLjAyLjAx
-LiBieSB0eW5saS4gKi8NCj4+IC0JaWYgKHJ0d19yZWFkOChwYWRhcHRlciwgUkVHX01DVUZX
-REwpICYgUkFNX0RMX1NFTCkgeyAvKiA4MDUxIFJBTSBjb2RlICovDQo+PiArCXJlcyA9IHJ0
-d19yZWFkOChwYWRhcHRlciwgUkVHX01DVUZXREwsICZyZWcpOw0KPj4gKwlpZiAocmVzKQ0K
-Pj4gKwkJZ290byBleGl0Ow0KPiANCj4gWW91IGRpZG4ndCBpbnRyb2R1Y2UgdGhpcyBidWcs
-IGJ1dCB0aGlzIHBhdGggbmVlZHMgdG8gaGF2ZSBhbiBlcnJvciBjb2RlDQo+IHNldC4gIEFs
-c28gd2UgcmVhbGx5IG5lZWQgdG8gZ2V0IHJpZCBvZiB0aGUgX0ZBSUwgZ2FyYmFnZS4gIFdo
-ZW4gSSBzYXcNCj4gdGhpcywgSSBnb3QgInJldCIgYW5kICJyZXMiIG1peGVkIHVwIHNvIEkg
-dGhvdWdodCB3ZSB3ZXJlIHJldHVybmluZw0KPiBuZWdhdGl2ZSBlcnJvciBjb2RlcyBpbnN0
-ZWFkIG9mIF9GQUlMLiAgVGhhdCB3b3VsZCAgIEJ1dCB0aGVuIEkgc2F3IHdlDQo+IGFyZSBy
-ZXR1cm5pbmcgc3VjY2Vzcy4NCj4gDQoNCkkgc2VlIG5vdywgdGhhdCAncmVzJyBhbmQgJ3Jl
-dCcgZ290IG1peGVkIHVwIGluIG15IG1pbmQgdG9vLiBXaWxsIGZpeCB1cA0KDQoNCj4+ICsN
-Cj4+ICsJaWYgKHJlZyAmIFJBTV9ETF9TRUwpIHsgLyogODA1MSBSQU0gY29kZSAqLw0KPj4g
-IAkJcnR3X3dyaXRlOChwYWRhcHRlciwgUkVHX01DVUZXREwsIDB4MDApOw0KPj4gIAkJcnR3
-X3Jlc2V0XzgwNTEocGFkYXB0ZXIpOw0KPj4gIAl9DQo+PiBAQCAtMjc4LDcgKzMwMywxNCBA
-QCBpbnQgcnRsODE4OGVfZmlybXdhcmVfZG93bmxvYWQoc3RydWN0IGFkYXB0ZXIgKnBhZGFw
-dGVyKQ0KPj4gIAlmd2RsX3RpbWVvdXQgPSBqaWZmaWVzICsgbXNlY3NfdG9famlmZmllcyg1
-MDApOw0KPj4gIAl3aGlsZSAoMSkgew0KPj4gIAkJLyogcmVzZXQgdGhlIEZXREwgY2hrc3Vt
-ICovDQo+PiAtCQlydHdfd3JpdGU4KHBhZGFwdGVyLCBSRUdfTUNVRldETCwgcnR3X3JlYWQ4
-KHBhZGFwdGVyLCBSRUdfTUNVRldETCkgfCBGV0RMX0NIS1NVTV9SUFQpOw0KPj4gKwkJcmVz
-ID0gcnR3X3JlYWQ4KHBhZGFwdGVyLCBSRUdfTUNVRldETCwgJnJlZyk7DQo+PiArCQlpZiAo
-cmVzID09IC1FTk9ERVYpDQo+PiArCQkJYnJlYWs7DQo+PiArDQo+PiArCQlpZiAocmVzKQ0K
-Pj4gKwkJCWNvbnRpbnVlOw0KPiANCj4gVGhpcyBjb250aW51ZSBpcyB3cm9uZy4gIElmIHJl
-cyA9IC1FUEVSTSB0aGVuIGl0J3MgYSBmb3JldmVyIGxvb3AuDQo+IExldCdzIGp1c3QgYnJl
-YWsgZm9yIGV2ZXJ5IGVycm9yLg0KPiANCg0KSSB3YXMgdHJ5aW5nIHRvIGF2b2lkIHN0cmlj
-dCBicmVha2luZyB0aGUgbG9vcCBvbiBhbnkgZXJyb3IsIHNpbmNlIEkgYW0gDQphZnJhaWQg
-dGhpcyBtaWdodCBicmVhayB0aGUgZHJpdmVyLg0KDQpXaGF0IGFib3V0Og0KDQoJZG8gew0K
-CQkvKiByZXNldCB0aGUgRldETCBjaGtzdW0gKi8NCgkJcmV0ID0gcnR3X3JlYWQ4KHBhZGFw
-dGVyLCBSRUdfTUNVRldETCwgJnJlZyk7DQoJCWlmIChyZXQgPT0gLUVOT0RFViB8fCByZXQg
-PT0gLUVQRVJNKQ0KCQkJYnJlYWs7DQoNCgkJaWYgKHJldCkgew0KCQkJcmV0ID09IF9GQUlM
-Ow0KCQkJY29udGludWU7DQoJCX0NCg0KCQlydHdfd3JpdGU4KHBhZGFwdGVyLCBSRUdfTUNV
-RldETCwgcmVnIHwgRldETF9DSEtTVU1fUlBUKTsNCg0KCQlyZXQgPSB3cml0ZV9mdyhwYWRh
-cHRlciwgZndfZGF0YSwgZndfc2l6ZSk7DQoJfSB3aGlsZSAoIShyZXQgPT0gX1NVQ0NFU1Mg
-fHwNCgkJICAgICh0aW1lX2FmdGVyKGppZmZpZXMsIGZ3ZGxfdGltZW91dCkgJiYgd3JpdGVf
-ZndfcmV0cnkrKyA+PSAzKSkpDQoNClRoZSBpZGVhIGlzIHRvIGJyZWFrIG9ubHkgb24gZmF0
-YWwgZXJyb3JzIHRvIG1ha2UgdGhpbmdzIGxlc3Mgc3RyaWN0DQoNCg0KDQoNCldpdGggcmVn
-YXJkcywNClBhdmVsIFNrcmlwa2luDQo=
+> +
+> +		if (((value32 >> 24) & 0xff) & 0x80)
+> +			break;
+> +
+>  		retry++;
+>  	}
 
---------------2uSj0DxMnp10C85nNLvbYSWd--
+[ snip ]
 
---------------GunZfwRx57uANM4Icokey4Ry
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+> @@ -215,7 +222,10 @@ static int fw_free_to_go(struct adapter *padapter)
+>  	/*  polling for FW ready */
+>  	counter = 0;
+>  	do {
+> -		value32 = rtw_read32(padapter, REG_MCUFWDL);
+> +		res = rtw_read32(padapter, REG_MCUFWDL, &value32);
+> +		if (res)
+> +			continue;
+> +
+>  		if (value32 & WINTINI_RDY)
+>  			return _SUCCESS;
+>  		udelay(5);
 
------BEGIN PGP SIGNATURE-----
+You really want to do this delay on each iteration.  So write it like
+so:
 
-wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmKF2PsFAwAAAAAACgkQbk1w61LbBA23
-Bg/9GszjpUZIXl5vvWj1SmgQZhzXuRFPrGTVM0fUfCy8af4aeStmuBHpxfFZ8V4A7LHo2Od2ztun
-6NYvaXKui9JPsXwwsUpVuzHNVq7BCeTMs001z71BoXOgxMEfF1u1BZAPX0nwG1OnSPY8w7QreE7e
-IOWRwokzheXk7Ux7nzEK8UuAz4eVDlZTeeO9ZKkXVIjkily6rwjZceND64b+nFmFk1JIyAKlQMKR
-ibyiWq08jGxroOJJFGmVE8FNm+WlQ7YrbWTu//bF9K3qPYpuPz8Ro61kqXuAzzJMJviT/Ao0ob/l
-5qwIT7aF5b5sK5rbjwB10JmBaF+g8W3BEbsOaZL3xNsKmqV5oZR2qmDxCxRoyhXWS/ARoybuFeXk
-XGzNz0i6tw4OTYwRKkZkyKC8J+wvWnMCgtE3OT55FGIONreOWizR9I6yJh66ohOSbCU6duQ54YBP
-/L4ftmwTo0eqJsMes/FAELNZgynQPZZDZWAVJfGfxvgqtTEcH9EoeyCht57XqjTAsBMN/ZBtwMMi
-PByjY2/EK2Yzfm5j2/UsfevRDv+gvh5XQ37UsbDpVmlD9VyD01YuKYVfg8xxJRZQnUzFxkWI75ZC
-DsKSrN7g/AXBD09Kxd/5d3kyhmqOC5EZF1op2gcC5QqGazH/O638bSU14/D1Brr/R7ERPPK3pCLo
-sA0=
-=rxsY
------END PGP SIGNATURE-----
+		res = rtw_read32(padapter, REG_MCUFWDL, &value32);
+		if (!res && value32 & WINTINI_RDY)
+			return _SUCCESS;
+		udelay(5);
 
---------------GunZfwRx57uANM4Icokey4Ry--
+
+> diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+> index d4e59fab367c..e54d4139466d 100644
+> --- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+> +++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+> @@ -6023,6 +6023,7 @@ static void mlme_join(struct adapter *adapter, int type)
+>  	struct mlme_priv *mlmepriv = &adapter->mlmepriv;
+>  	u8 retry_limit = 0x30, reg;
+>  	int res;
+> +	u32 reg32;
+
+
+The reg32 should got before the res so it's in reverse Christmas tree
+order.
+
+[ snip ]
+
+> @@ -245,8 +246,18 @@ static void efuse_read_phymap_from_txpktbuf(
+>  		} while (time_before(jiffies, timeout));
+>  
+>  		/* data from EEPROM needs to be in LE */
+> -		lo32 = cpu_to_le32(rtw_read32(adapter, REG_PKTBUF_DBG_DATA_L));
+> -		hi32 = cpu_to_le32(rtw_read32(adapter, REG_PKTBUF_DBG_DATA_H));
+> +		res = rtw_read32(adapter, REG_PKTBUF_DBG_DATA_L, &reg32);
+> +		if (res)
+> +			return;
+> +
+> +		lo32 = cpu_to_le32(reg32);
+> +
+> +
+
+Double blank line.  Checkpatch?
+
+> @@ -596,12 +611,16 @@ static s32 _LLTWrite(struct adapter *padapter, u32 address, u32 data)
+>  	s32	count = 0;
+>  	u32	value = _LLT_INIT_ADDR(address) | _LLT_INIT_DATA(data) | _LLT_OP(_LLT_WRITE_ACCESS);
+>  	u16	LLTReg = REG_LLT_INIT;
+> +	int res;
+>  
+>  	rtw_write32(padapter, LLTReg, value);
+>  
+>  	/* polling */
+>  	do {
+> -		value = rtw_read32(padapter, LLTReg);
+> +		res = rtw_read32(padapter, LLTReg, &value);
+> +		if (res)
+> +			continue;
+
+This continue has the potential to lead to a forever loop.  The limit
+check needs to be a part of the do while() condition.  Probably send
+that patch first, by itself as a clean up before adding this continue.
+
+> +
+>  		if (_LLT_NO_ACTIVE == _LLT_OP_VALUE(value))
+>  			break;
+>  
+
+regards,
+dan carpenter
+
