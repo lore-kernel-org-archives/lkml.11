@@ -2,122 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D843C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240651AbiESPOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46194 "EHLO
+        id S236890AbiESPOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240712AbiESPOC (ORCPT
+        with ESMTP id S240568AbiESPOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:14:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C21EC33C
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:13:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E13CB8255C
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:13:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDF83C385AA;
-        Thu, 19 May 2022 15:13:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652973237;
-        bh=/qSDeChNAv8oe7nDJtJ4OauvaBSqyoKSFNDbkvdSOko=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JyruuCxe8g/67py8MJE/0LyeX0+M3b4Z5Jrzh2DF0F5Ixq5biz8JJknzvSjIzH0wZ
-         coWS2N0s26CFBAP8MSciSlS4FH46JUc6jfrvwxUfsKxOASUI/gg5G3DNxNjXvYyK2x
-         E7thJI5OGCnWdcKeVEBjz6Vi+WsgkoLWEiedRTwuUBJlxySeKIUnmvJdtVsukMUu8f
-         hGWPvSxxmjOK0he0yrD0NKI2+WCZ11+EvdbXAQx6bpiK6TtuH8+FkFyojQPfZsitxt
-         DvgxgDBu5xTFIj9B7XP4+28KA4dK38Er/lNVKLsfOAuKmYNrgzaAoeVMsGyR8rO8NR
-         mIniqIA9xVD0g==
-Date:   Thu, 19 May 2022 08:13:55 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Subject: Re: [PATCH v2] objtool: Fix symbol creation
-Message-ID: <20220519151355.x7j3xmkelpakw4gx@treble>
-References: <YoK4U9RgQ9N+HhXJ@dev-arch.thelio-3990X>
- <20220516214005.GQ76023@worktop.programming.kicks-ass.net>
- <YoPAZ6JfsF0LrQNc@hirez.programming.kicks-ass.net>
- <YoPCTEYjoPqE4ZxB@hirez.programming.kicks-ass.net>
- <20220518012429.4zqzarvwsraxivux@treble>
- <20220518074152.GB10117@worktop.programming.kicks-ass.net>
- <20220518173604.7gcrjjum6fo2m2ub@treble>
- <YoVuxKGkt0IQ0yjb@hirez.programming.kicks-ass.net>
- <20220519090029.GA6479@worktop.programming.kicks-ass.net>
+        Thu, 19 May 2022 11:14:38 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F6FE8BB7
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:14:36 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id h29so9704150lfj.2
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:14:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=itRG1VYF0gL4tx08osqrN69WT0ejZkjkV+TfO9bvWJE=;
+        b=XgTq/dYFSFIFbxx2d+NAGEPQm3O+J/Xh081BltdpCukFuUVx5ZvdL5/6n5afgOvTbL
+         D2Lsu8XJjBF19F1D3xlemyp4ReN6dVt4EUtw1qfSfIbzQbqBDM2VUzz74YHxrD6h/PLf
+         pdXLV3Q4UTGi73BXZ3WPW/TrqxFP3x15KKMdF/VDc/gNJJdh3Ff9G0DeFW2PrDcq/WIO
+         UIv0yynTIgEgExj9wF0p0LbfsE+2s/PTFMW+BpSlgDEqB1AAmudQLeKvudY/i2pcbXLu
+         iR0JMDdoejKsX2MEBe3udItgXtdQ2kmuNBPY2E3pJXOJ+wvOXHbR63P/cd/LC/oUxyLn
+         oPzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=itRG1VYF0gL4tx08osqrN69WT0ejZkjkV+TfO9bvWJE=;
+        b=52mSzvkp1xSV4VbU3VIxInYmyN/iT8p9npAFwMCD0MR7qSl48nVwLcbx5Lv8C0knzh
+         VoopbiidP9EeCuFd06vIap6NImep6SGBbIinA6t7ob+yu+8GwOC14pIa+3mch2XH0igr
+         9wK/2a7UGzHW+HWoe7Tx48yRQRx5tKSX691p4tiagbVknmtpzgBAGkxijdmQzPHq1M6G
+         2jkrKLg+Rfs9noSwazhA0pFYImWoNw0ZOJUvkq9/SMz2dMwoNSuk/HMfACFgXCaQ+XH8
+         r8GmKUKE4+Ij6mE5/X76vWcz+AriJ4rGr0MViObMq/EBymv062hhps2Wew7hoRct6NBY
+         oraA==
+X-Gm-Message-State: AOAM5300nqLWJoG1CbUwgKf+B9dk5KMxzmOKIqo6E/nQdg0IyZZ+oPQ+
+        fELDHn0piM2rsB8MpmgES8KpaQ==
+X-Google-Smtp-Source: ABdhPJx+3JBpSb/6KVkLPqV38qJezxmW0DN32Tjcs69+gzGm06TcInLF058I7nwCnnJw0PxwFRw1Gw==
+X-Received: by 2002:a05:6512:3e15:b0:477:a28b:3fcf with SMTP id i21-20020a0565123e1500b00477a28b3fcfmr3690979lfv.476.1652973275225;
+        Thu, 19 May 2022 08:14:35 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id l4-20020a2e99c4000000b0024f3d1dae90sm625817ljj.24.2022.05.19.08.14.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 08:14:34 -0700 (PDT)
+Message-ID: <92a21768-204d-fc68-8942-99e2bc3df4cf@linaro.org>
+Date:   Thu, 19 May 2022 17:14:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220519090029.GA6479@worktop.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/2] mailbox: correct kerneldoc
+Content-Language: en-US
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Jassi Brar <jassisinghbrar@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Tushar Khandelwal <Tushar.Khandelwal@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Peng Fan <peng.fan@nxp.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+References: <20220501103428.111286-1-krzysztof.kozlowski@linaro.org>
+ <20220519151334.64t5zsudz7dd35im@bogus>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220519151334.64t5zsudz7dd35im@bogus>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 11:00:29AM +0200, Peter Zijlstra wrote:
-> Subject: objtool: Fix symbol creation
-> From: Peter Zijlstra <peterz@infradead.org>
-> Date: Tue, 17 May 2022 17:42:04 +0200
+On 19/05/2022 17:13, Sudeep Holla wrote:
+> On Sun, May 01, 2022 at 12:34:27PM +0200, Krzysztof Kozlowski wrote:
+>> Correct kerneldoc warnings like:
+>>
+>>   drivers/mailbox/arm_mhu_db.c:47:
+>>     warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+>>   drivers/mailbox/qcom-ipcc.c:58:
+>>     warning: Function parameter or member 'num_chans' not described in 'qcom_ipcc'
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+>>  drivers/mailbox/arm_mhu_db.c | 2 +-
 > 
-> Nathan reported objtool failing with the following messages:
+> I thought I had copied it from arm_mhuc.c but apparently not. Anyways,
 > 
->   warning: objtool: no non-local symbols !?
->   warning: objtool: gelf_update_symshndx: invalid section index
+> Acked-by: Sudeep Holla <sudeep.holla@arm.com>
 > 
-> The problem is due to commit 4abff6d48dbc ("objtool: Fix code relocs
-> vs weak symbols") failing to consider the case where an object would
-> have no non-local symbols.
-> 
-> The problem that commit tries to address is adding a STB_LOCAL symbol
-> to the symbol table in light of the ELF spec's requirement that:
-> 
->   In each symbol table, all symbols with STB_LOCAL binding preced the
->   weak and global symbols.  As ``Sections'' above describes, a symbol
->   table section's sh_info section header member holds the symbol table
->   index for the first non-local symbol.
-> 
-> The approach taken is to find this first non-local symbol, move that
-> to the end and then re-use the freed spot to insert a new local symbol
-> and increment sh_info.
-> 
-> Except it never considered the case of object files without global
-> symbols and got a whole bunch of details wrong -- so many in fact that
-> it is a wonder it ever worked :/
-> 
-> Specifically:
-> 
->  - It failed to re-hash the symbol on the new index, so a subsequent
->    find_symbol_by_index() would not find it at the new location and a
->    query for the old location would now return a non-deterministic
->    choice between the old and new symbol.
-> 
->  - It failed to appreciate that the GElf wrappers are not a valid disk
->    format (it works because GElf is basically Elf64 and we only
->    support x86_64 atm.)
-> 
->  - It failed to fully appreciate how horrible the libelf API really is
->    and got the gelf_update_symshndx() call pretty much completely
->    wrong; with the direct consequence that if inserting a second
->    STB_LOCAL symbol would require moving the same STB_GLOBAL symbol
->    again it would completely come unstuck.
-> 
-> Write a new elf_update_symbol() function that wraps all the magic
-> required to update or create a new symbol at a given index.
-> 
-> Specifically, gelf_update_sym*() require an @ndx argument that is
-> relative to the @data argument; this means you have to manually
-> iterate the section data descriptor list and update @ndx.
-> 
-> Fixes: 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols")
-> Reported-by: Nathan Chancellor <nathan@kernel.org>
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Tested-by: Nathan Chancellor <nathan@kernel.org>
 
-Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
--- 
-Josh
+Thanks! Could someone pick these two patches?
+
+Best regards,
+Krzysztof
