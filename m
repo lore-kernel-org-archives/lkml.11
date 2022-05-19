@@ -2,219 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8388DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4464AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240131AbiESO7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
+        id S237478AbiESO7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240065AbiESO6s (ORCPT
+        with ESMTP id S240081AbiESO6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:58:48 -0400
+        Thu, 19 May 2022 10:58:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9036ADE312
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:58:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB45D6819;
+        Thu, 19 May 2022 07:58:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF84361A22
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:58:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0715BC3411C;
-        Thu, 19 May 2022 14:58:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B31561A0A;
+        Thu, 19 May 2022 14:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AFF1C385AA;
+        Thu, 19 May 2022 14:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652972326;
-        bh=5YGt+TwBa/VyBHNI6sHuOnprFZdkpVxNXEJJW70dIwI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNnqFL+i3ULdMHaAwSaLfdhT3EHzFK2lkLMfMu7uvYm+6St4v3Kmg1IG/7Jt5hgUa
-         ARueYJk04ax84ALa5g0e8kUHSecNUPCX9OsHBYJuK0DHonlM+DMV2mm9KwY77Q6f9U
-         NvOXVR3csqBCm7TglvwAman6Ym925XZBftoAtHKVhTP9iSVhI9wnZjzfvsU3kq1WCR
-         F3Q3SUMb/Ws2k5PT8nYVwDkVsxSqBtBsjm4t1rm5SUyTNYn7qe0RI6t2WJMD9npZpU
-         2IN56+uAVH3i5+sZJ9WzvgSfEnrCrfvhJrj9/C13C7KywjEN6Z4qp8VGnh1/mAX+uX
-         R7H8FlnR2AI4g==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: [PATCH 04/21] context_tracking: Rename __context_tracking_enter/exit() to __ct_user_enter/exit()
-Date:   Thu, 19 May 2022 16:58:06 +0200
-Message-Id: <20220519145823.618983-5-frederic@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519145823.618983-1-frederic@kernel.org>
-References: <20220519145823.618983-1-frederic@kernel.org>
+        s=k20201202; t=1652972331;
+        bh=1JQxQTlxaZfO+tcIR3YEL38bUDaUxamRUvfS6PQ/nSo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=kGlGl6s/QiWP392yedpgzZjzPzba4SABKrtwz2wQTX/mc8Om88/7ZnXsBeTkN3ugi
+         x5phwovTpaGoDsD7dwNOCJAOl0fdxh3/x7aGVU4tmY6r6gZnqoRe+yUlsIOhC4XrZ6
+         wYTnoAyd0isAO48/2pi9dZdpEtDpix+N/R7Kh/OS6mhy1O12fmPFwY5LvPAkauMyig
+         1cB9wo4jp0zl5VefTUAYeXTMry8/RgVcOL7HI/geX9Y8Xo/nQeDzoMsyf//BI6fWHr
+         +8L9jH8ZXeywCT1T9jRqIArQkhEM3SlbEcP1D5I8LDXIBmXaoImmeix74N3UoIfOhD
+         JLbldzxT8387Q==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-kernel@vger.kernel.org, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v2] net: wireless: marvell: mwifiex: fix sleep in atomic context bugs
+References: <20220519135345.109936-1-duoming@zju.edu.cn>
+Date:   Thu, 19 May 2022 17:58:47 +0300
+In-Reply-To: <20220519135345.109936-1-duoming@zju.edu.cn> (Duoming Zhou's
+        message of "Thu, 19 May 2022 21:53:45 +0800")
+Message-ID: <87zgjd1sd4.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The context tracking namespace is going to expand and some new functions
-will require even longer names. Start shrinking the context_tracking
-prefix to "ct" as is already the case for some existing macros, this
-will make the introduction of new functions easier.
+Duoming Zhou <duoming@zju.edu.cn> writes:
 
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc: Yu Liao<liaoyu15@huawei.com>
-Cc: Phil Auld <pauld@redhat.com>
-Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
-Cc: Alex Belits <abelits@marvell.com>
----
- include/linux/context_tracking.h | 12 ++++++------
- kernel/context_tracking.c        | 20 ++++++++++----------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+> There are sleep in atomic context bugs when uploading device dump
+> data on usb interface. The root cause is that the operations that
+> may sleep are called in fw_dump_timer_fn which is a timer handler.
+> The call tree shows the execution paths that could lead to bugs:
+>
+>    (Interrupt context)
+> fw_dump_timer_fn
+>   mwifiex_upload_device_dump
+>     dev_coredumpv(..., GFP_KERNEL)
+>       dev_coredumpm()
+>         kzalloc(sizeof(*devcd), gfp); //may sleep
+>         dev_set_name
+>           kobject_set_name_vargs
+>             kvasprintf_const(GFP_KERNEL, ...); //may sleep
+>             kstrdup(s, GFP_KERNEL); //may sleep
+>
+> This patch moves the operations that may sleep into a work item.
+> The work item will run in another kernel thread which is in
+> process context to execute the bottom half of the interrupt.
+> So it could prevent atomic context from sleeping.
+>
+> Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 
-diff --git a/include/linux/context_tracking.h b/include/linux/context_tracking.h
-index 7a14807c9d1a..773035124bad 100644
---- a/include/linux/context_tracking.h
-+++ b/include/linux/context_tracking.h
-@@ -14,8 +14,8 @@
- extern void context_tracking_cpu_set(int cpu);
- 
- /* Called with interrupts disabled.  */
--extern void __context_tracking_enter(enum ctx_state state);
--extern void __context_tracking_exit(enum ctx_state state);
-+extern void __ct_user_enter(enum ctx_state state);
-+extern void __ct_user_exit(enum ctx_state state);
- 
- extern void context_tracking_enter(enum ctx_state state);
- extern void context_tracking_exit(enum ctx_state state);
-@@ -38,13 +38,13 @@ static inline void user_exit(void)
- static __always_inline void user_enter_irqoff(void)
- {
- 	if (context_tracking_enabled())
--		__context_tracking_enter(CONTEXT_USER);
-+		__ct_user_enter(CONTEXT_USER);
- 
- }
- static __always_inline void user_exit_irqoff(void)
- {
- 	if (context_tracking_enabled())
--		__context_tracking_exit(CONTEXT_USER);
-+		__ct_user_exit(CONTEXT_USER);
- }
- 
- static inline enum ctx_state exception_enter(void)
-@@ -74,7 +74,7 @@ static inline void exception_exit(enum ctx_state prev_ctx)
- static __always_inline bool context_tracking_guest_enter(void)
- {
- 	if (context_tracking_enabled())
--		__context_tracking_enter(CONTEXT_GUEST);
-+		__ct_user_enter(CONTEXT_GUEST);
- 
- 	return context_tracking_enabled_this_cpu();
- }
-@@ -82,7 +82,7 @@ static __always_inline bool context_tracking_guest_enter(void)
- static __always_inline void context_tracking_guest_exit(void)
- {
- 	if (context_tracking_enabled())
--		__context_tracking_exit(CONTEXT_GUEST);
-+		__ct_user_exit(CONTEXT_GUEST);
- }
- 
- /**
-diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index 1f44b0461d14..554c2c9587eb 100644
---- a/kernel/context_tracking.c
-+++ b/kernel/context_tracking.c
-@@ -51,15 +51,15 @@ static __always_inline void context_tracking_recursion_exit(void)
- }
- 
- /**
-- * context_tracking_enter - Inform the context tracking that the CPU is going
-- *                          enter user or guest space mode.
-+ * __ct_user_enter - Inform the context tracking that the CPU is going
-+ *		     to enter user or guest space mode.
-  *
-  * This function must be called right before we switch from the kernel
-  * to user or guest space, when it's guaranteed the remaining kernel
-  * instructions to execute won't use any RCU read side critical section
-  * because this function sets RCU in extended quiescent state.
-  */
--void noinstr __context_tracking_enter(enum ctx_state state)
-+void noinstr __ct_user_enter(enum ctx_state state)
- {
- 	/* Kernel threads aren't supposed to go to userspace */
- 	WARN_ON_ONCE(!current->mm);
-@@ -101,7 +101,7 @@ void noinstr __context_tracking_enter(enum ctx_state state)
- 	}
- 	context_tracking_recursion_exit();
- }
--EXPORT_SYMBOL_GPL(__context_tracking_enter);
-+EXPORT_SYMBOL_GPL(__ct_user_enter);
- 
- /*
-  * FIXME: This function should be noinstr but the below local_irq_restore() is
-@@ -124,7 +124,7 @@ void context_tracking_enter(enum ctx_state state)
- 		return;
- 
- 	local_irq_save(flags);
--	__context_tracking_enter(state);
-+	__ct_user_enter(state);
- 	local_irq_restore(flags);
- }
- NOKPROBE_SYMBOL(context_tracking_enter);
-@@ -141,8 +141,8 @@ void context_tracking_user_enter(void)
- NOKPROBE_SYMBOL(context_tracking_user_enter);
- 
- /**
-- * context_tracking_exit - Inform the context tracking that the CPU is
-- *                         exiting user or guest mode and entering the kernel.
-+ * __ct_user_exit - Inform the context tracking that the CPU is
-+ * 		    exiting user or guest mode and entering the kernel.
-  *
-  * This function must be called after we entered the kernel from user or
-  * guest space before any use of RCU read side critical section. This
-@@ -152,7 +152,7 @@ NOKPROBE_SYMBOL(context_tracking_user_enter);
-  * This call supports re-entrancy. This way it can be called from any exception
-  * handler without needing to know if we came from userspace or not.
-  */
--void noinstr __context_tracking_exit(enum ctx_state state)
-+void noinstr __ct_user_exit(enum ctx_state state)
- {
- 	if (!context_tracking_recursion_enter())
- 		return;
-@@ -175,7 +175,7 @@ void noinstr __context_tracking_exit(enum ctx_state state)
- 	}
- 	context_tracking_recursion_exit();
- }
--EXPORT_SYMBOL_GPL(__context_tracking_exit);
-+EXPORT_SYMBOL_GPL(__ct_user_exit);
- 
- /*
-  * FIXME: This function should be noinstr but the below local_irq_save() is
-@@ -190,7 +190,7 @@ void context_tracking_exit(enum ctx_state state)
- 		return;
- 
- 	local_irq_save(flags);
--	__context_tracking_exit(state);
-+	__ct_user_exit(state);
- 	local_irq_restore(flags);
- }
- NOKPROBE_SYMBOL(context_tracking_exit);
+mwifiex patches go to wireless-next, not net tree.
+
+> ---
+> Changes in v2:
+>   - Fix compile problem.
+
+So you don't even compile test your patches? That's bad and in that case
+I'll just directly drop this. We expect that the patches are properly
+tested.
+
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
