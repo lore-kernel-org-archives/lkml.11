@@ -2,145 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56228C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234771AbiESTBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 15:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
+        id S230257AbiESTBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 15:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244263AbiESTAo (ORCPT
+        with ESMTP id S243651AbiESTB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 15:00:44 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4C7AF1E2;
-        Thu, 19 May 2022 12:00:41 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id m1so5579747plx.3;
-        Thu, 19 May 2022 12:00:41 -0700 (PDT)
+        Thu, 19 May 2022 15:01:29 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECD8286ED;
+        Thu, 19 May 2022 12:01:26 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id w4so8417876wrg.12;
+        Thu, 19 May 2022 12:01:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=afOne9J+lVfZqbo7IugW/yv7pVLW37G0GWCaPV/BtjM=;
-        b=CRQAOZdWKa10skPkYeoqOceAcov25PzE25aovkjd/QIyw4wyn7dsF6UpPoE5gz5Aq/
-         wfWvz0k8BZRdHgFHTUMPzLY4eicq0trWM13QL09iVy3RrWvs/LS9uqen3ZodXf6LGQ6V
-         kHFDxt8zoinwlXtLZWnOLlRXH5VTbU62MvD/Fl5wEVTu4BOOttf85i+xdiRhXoQil+7Z
-         6cPIk/CabhEg2vjMIiMcCd5bO7mkUrM9VCYoHoQ7LIdvUgdhxZsPYbhub7pOkv0rDlEJ
-         utZNY7VPz7FJQh/mdnxtmNgf6LcfGG7/8rP0M9yy3I8E+LAjg/P05Jh0Lb0Vjd95yqV/
-         VE7w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AnHJhI+ziwlPwu5NQv9qfEIlA0yv7rIa46hdD1NJODM=;
+        b=ZrADJC4tGLoNcGAx8Qx4Eb5CgbinQIveNghZ//NlZ8fWbRVGQ7LKm7TcI5hQhWwtIi
+         CWxfO5AbVAJwpI1Vck1+m97SJaLJFmWp9HxcucF8wENR1bYBt4ZvM9eiT8PILEnjX1iz
+         CR69gxZYZTZ0TdSPFAjmvTGRgWYczpVOkphmgREswSfNdrDeN4yKoqPjMnFDCX6E27Il
+         yqIBAKkdVQ5/ONOLwuQlQk4lnDVyF/iLieKy9sjvEX3K/Zv3xIP72WPpV/21SzBnVqil
+         Fx4bQKv2B5OhD9uENiKov8Co1Tufwqgbe8PQgh7qWPXXBkH90kFUWbbeA+qMBRqO0Ttc
+         Bx/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=afOne9J+lVfZqbo7IugW/yv7pVLW37G0GWCaPV/BtjM=;
-        b=CPSbgcwMULJMJnD4CtHi+G0tqg2hLDAn+LbhVKYTyzIgzTpBzrnQ1A+D74XLj3JhqC
-         i7nb9hfoZkYPdJFstPHWLGTTmWmRsP3k3UI519tso5I2T5oG13LY2B9R0ZfVCCxs30mY
-         XJWStdIvLD66PuWSLJ+bJYPhTTEGPNP7PA9Hd9IrgHzB+FX9avij1rdGOz11o8IX6x/L
-         3E8iuWzLYZlsbPqG3gkoe1XhiN+jZSe4p5Dg+WDIH77t2ls28NrzJ3ObbV4jQ05pgrCb
-         TcYZhOtsLwog/1p5BMZMX6J6zW8V2RDnNunGEInM9TzJusfOqoFMppQanbNhG7G3JZpC
-         /5LA==
-X-Gm-Message-State: AOAM532aToFoLNY8KbcwWEPseuoMfiNR095FE+ykdSoXyOdgosht8Mc/
-        iGORG7OslEkAe4SIOROO0uEbmMHii2o=
-X-Google-Smtp-Source: ABdhPJwUn1ssIajamwwqUO/M3HBOX6tgsAFF+fl8jN2M2lYOrz96bBwVyQxa6lJYfu+y08eJ7QZ/Jg==
-X-Received: by 2002:a17:90b:4b12:b0:1dc:dfdb:446 with SMTP id lx18-20020a17090b4b1200b001dcdfdb0446mr7107333pjb.150.1652986840558;
-        Thu, 19 May 2022 12:00:40 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id c11-20020a170902d48b00b001618b70dcc9sm4199358plg.101.2022.05.19.12.00.39
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AnHJhI+ziwlPwu5NQv9qfEIlA0yv7rIa46hdD1NJODM=;
+        b=FNVBhAUAOs/E9KMByFocCWNLp98FTebuYAC3L0Pdpm2eDd9bKzGSX19ToOVR18pugY
+         OBtwCebua4Xdq9PDHpNTzkFOTzvSjbGDHvvm9GDmdloR7YsDXPtYQz0qZd4urNSv0TOb
+         i0/NcflDhb7VnA13ykyB9DWSxPpyqbPxZ7ogwWdAQpMMXBMRW32Spksf242iUJ1ffSQP
+         w75ni9ql5NfW4z20VM9MuVENogzyuU4+q4xL9hO85Jc8u1WwU/i+z0Cyg65qtWXxesWs
+         72nKRkY9gxvPGVq/x8lQ3BQz1SbqfyyK0ASUTUOcfYetkCN3nofAdEiJOiyeMbuQLMdj
+         iI8A==
+X-Gm-Message-State: AOAM5333FZxmHbPbdQ/URFrHtN+wt15ZMw62OEGUojuuiBIWxi+HV/7k
+        PwpnXXjM9xExLidwLDpjjkZAqAylusM=
+X-Google-Smtp-Source: ABdhPJyvhOD959sAuMcgvEsVvIrvXhEaFh8Ke8XoUH7NYV+vpHFVBmrCAta15kxCI5oIdxA6psDWsg==
+X-Received: by 2002:a5d:47c5:0:b0:20e:73a0:79a0 with SMTP id o5-20020a5d47c5000000b0020e73a079a0mr1901351wrc.632.1652986885110;
+        Thu, 19 May 2022 12:01:25 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id h11-20020a05600c414b00b00395b809dfd3sm333767wmm.12.2022.05.19.12.01.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 12:00:40 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Nishad Kamdar <nishadkamdar@gmail.com>,
-        =?UTF-8?q?Christian=20L=C3=B6hle?= <CLoehle@hyperstone.com>,
-        linux-mmc@vger.kernel.org (open list:MULTIMEDIA CARD (MMC), SECURE
-        DIGITAL (SD) AND...), linux-kernel@vger.kernel.org (open list),
-        alcooperx@gmail.com, kdasu.kdev@gmail.com
-Subject: [PATCH stable 4.14 v2 3/3] mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
-Date:   Thu, 19 May 2022 12:00:30 -0700
-Message-Id: <20220519190030.377695-4-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519190030.377695-1-f.fainelli@gmail.com>
-References: <20220519190030.377695-1-f.fainelli@gmail.com>
+        Thu, 19 May 2022 12:01:24 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [PATCH v4 0/2] Add support for unprotected spare data page
+Date:   Thu, 19 May 2022 21:01:10 +0200
+Message-Id: <20220519190112.6344-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+Some background about this.
+On original qsdk ipq8064 based firmware there was a big separation from
+boot partition and user partition. With boot partition we refer to
+partition used to init the router (bootloader, spm firmware and other
+internal stuff) With user partition we refer to linux partition and data
+partition not used to init the router.
+When someone had to write to these boot partition a special mode was
+needed, to switch the nand driver to this special configuration.
 
-commit 533a6cfe08f96a7b5c65e06d20916d552c11b256 upstream
+Upstream version of the nandc driver totally dropped this and the result
+is that if someone try to read data from these partition a CRC warning
+is printed and if someone try to write that (if for example someone
+wants to replace the bootloader) result is a broken system as the data
+is badly written.
 
-All callers of __mmc_switch() should now be specifying a valid timeout for
-the CMD6 command. However, just to be sure, let's print a warning and
-default to use the generic_cmd6_time in case the provided timeout_ms
-argument is zero.
+This series comes to fix this.
 
-In this context, let's also simplify some of the corresponding code and
-clarify some related comments.
+A user can declare offset and size of these special partition using the
+qcom,boot-pages binding.
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-4-ulf.hansson@linaro.org
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/mmc/core/mmc_ops.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+An initial implementation of this assumed that the boot-pages started
+from the start of the nand but we discover that some device have backup
+of these special partition and we can have situation where we have this
+partition scheme
+- APPSBL (require special mode)
+- APPSBLENV (doesn't require special mode)
+- ART
+- APPSBLBK (back of APPSBL require special mode)
+- APPSBLENVBK (back of APPSBLENV doesn't require special mode)
+With this configuration we need to declare sparse boot page and we can't
+assume boot-pages always starts from the start of the nand.
 
-diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-index 5d806c2100ae..45cffccc7050 100644
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -458,10 +458,6 @@ static int mmc_poll_for_busy(struct mmc_card *card, unsigned int timeout_ms,
- 	bool expired = false;
- 	bool busy = false;
- 
--	/* We have an unspecified cmd timeout, use the fallback value. */
--	if (!timeout_ms)
--		timeout_ms = MMC_OPS_TIMEOUT_MS;
--
- 	/*
- 	 * In cases when not allowed to poll by using CMD13 or because we aren't
- 	 * capable of polling by using ->card_busy(), then rely on waiting the
-@@ -534,14 +530,20 @@ int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
- 
- 	mmc_retune_hold(host);
- 
-+	if (!timeout_ms) {
-+		pr_warn("%s: unspecified timeout for CMD6 - use generic\n",
-+			mmc_hostname(host));
-+		timeout_ms = card->ext_csd.generic_cmd6_time;
-+	}
-+
- 	/*
- 	 * If the cmd timeout and the max_busy_timeout of the host are both
- 	 * specified, let's validate them. A failure means we need to prevent
- 	 * the host from doing hw busy detection, which is done by converting
- 	 * to a R1 response instead of a R1B.
- 	 */
--	if (timeout_ms && host->max_busy_timeout &&
--		(timeout_ms > host->max_busy_timeout))
-+	if (host->max_busy_timeout &&
-+	    (timeout_ms > host->max_busy_timeout))
- 		use_r1b_resp = false;
- 
- 	cmd.opcode = MMC_SWITCH;
-@@ -552,10 +554,6 @@ int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
- 	cmd.flags = MMC_CMD_AC;
- 	if (use_r1b_resp) {
- 		cmd.flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
--		/*
--		 * A busy_timeout of zero means the host can decide to use
--		 * whatever value it finds suitable.
--		 */
- 		cmd.busy_timeout = timeout_ms;
- 	} else {
- 		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
+A user can use this form to declare sparse boot pages
+qcom,boot-pages = <0x0 0x0c80000 0x0c80000 0x0500000>;
+
+The driver internally will parse this array, convert it to nand pages
+and check internally on every read/write if this special configuration
+should used for that page or the normal one.
+
+The reason for all of this is that qcom FOR SOME REASON, disable ECC for
+spare data only for these boot partition and we need to reflect this
+special configuration to mute these warning and to permit actually
+writing to these pages.
+
+v4:
+- Fix wrong compatible set for boot-pages (ipq8074 instead of ipq806x)
+v3:
+- Fix typo in Docmunetation commit desription
+- Add items description for uint32-matrix
+v2:
+- Add fixes from Krzysztof in Documentation
+
+Ansuel Smith (2):
+  mtd: nand: raw: qcom_nandc: add support for unprotected spare data
+    pages
+  dt-bindings: mtd: qcom_nandc: document qcom,boot-pages binding
+
+ .../devicetree/bindings/mtd/qcom,nandc.yaml   |  26 +++
+ drivers/mtd/nand/raw/qcom_nandc.c             | 148 +++++++++++++++++-
+ 2 files changed, 169 insertions(+), 5 deletions(-)
+
 -- 
-2.25.1
+2.34.1
 
