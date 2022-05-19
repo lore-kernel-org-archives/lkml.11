@@ -2,135 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC002C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239888AbiESOhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52774 "EHLO
+        id S239877AbiESOiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239860AbiESOhP (ORCPT
+        with ESMTP id S239965AbiESOh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:37:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4EB4C9808D
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652971033;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nuigQAW97z185pYVkfJOlg+wlqI3p7gPUl8yWY860tc=;
-        b=FWeWC6dXfoAM0Kb1zQf2ifuNz3IstonhRSVQlf+HM5MRmu+3/vuVCEN14Efsun7U/OkDLa
-        jFcuFeCE1CO3ETUAmJCfEBew/S71T5n7bwvVt1GluIu/MnRIyMiwAwE48eoOlRz9kSqvAG
-        oXs/jCO60eWBZ5HFluAKNItojjn9XrI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-629-aO_ejIWoMNWNrp0QQQ9UdQ-1; Thu, 19 May 2022 10:37:10 -0400
-X-MC-Unique: aO_ejIWoMNWNrp0QQQ9UdQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 19 May 2022 10:37:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B49E8B92
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:37:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1E8D53833295;
-        Thu, 19 May 2022 14:37:09 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 337F67774;
-        Thu, 19 May 2022 14:37:05 +0000 (UTC)
-Date:   Thu, 19 May 2022 16:37:02 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v3 1/4] bpf_trace: check size for overflow in
- bpf_kprobe_multi_link_attach
-Message-ID: <20220519143702.GA22773@asgard.redhat.com>
-References: <cover.1652772731.git.esyr@redhat.com>
- <9e4171972a3d75e656073e0c25cd4071a6f652e4.1652772731.git.esyr@redhat.com>
- <CAEf4BzYpNZSY+D6_QP4NE2dN25g4wD43UmJyzmqXCL=HOE9HFA@mail.gmail.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id EF5E0CE24C1
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:37:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD88C385B8;
+        Thu, 19 May 2022 14:37:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652971061;
+        bh=0464BZO3U+wjKojrSum++rOWCaIV9ebLIZTil/7y5HA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BvXuIwMe5aBC3wbPIZmbNJfIGpWzAORaB+iTRLrjZEXfQVUtT6AKkHswCDRG/u2lo
+         Ik0Cqpkz/giCfnIZqWGGSomlLsG6oArjgWyYyk4mN0cN37fvHUYKCneXNfuaevQ9Nq
+         PyCydXOFpbZg6YTIKbMA0ooKvInHW79JFZLO4vXKpXOMgte0rM0lK+JRZYRpQelrCX
+         kGLrpOvp6amQEmClO0tqSZ4dcblHXmZRcKHeYI7DEQF4uUu+GwDylMDkP1EMuhGY8N
+         XRSz8+H/EtMpxcrxNW8QH6Fk5F06sKJDkoRliSSGM9qMGChAiXD4uNCtGTl6P4wgyd
+         ZOTbo9Avl25vQ==
+Date:   Thu, 19 May 2022 16:37:38 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     nicolas saenz julienne <nsaenz@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH 20/21] context_tracking: Convert state to atomic_t
+Message-ID: <20220519143738.GA612967@lothringen>
+References: <20220503100051.2799723-1-frederic@kernel.org>
+ <20220503100051.2799723-21-frederic@kernel.org>
+ <372364b33b8d4b93908c3822e18f7d295de2ede9.camel@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzYpNZSY+D6_QP4NE2dN25g4wD43UmJyzmqXCL=HOE9HFA@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+In-Reply-To: <372364b33b8d4b93908c3822e18f7d295de2ede9.camel@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 04:30:14PM -0700, Andrii Nakryiko wrote:
-> On Tue, May 17, 2022 at 12:36 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
-> >
-> > Check that size would not overflow before calculation (and return
-> > -EOVERFLOW if it will), to prevent potential out-of-bounds write
-> > with the following copy_from_user.  Use kvmalloc_array
-> > in copy_user_syms to prevent out-of-bounds write into syms
-> > (and especially buf) as well.
-> >
-> > Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-> > Cc: <stable@vger.kernel.org> # 5.18
-> > Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-> > ---
-> >  kernel/trace/bpf_trace.c | 7 ++++---
-> >  1 file changed, 4 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index 7141ca8..9c041be 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -2261,11 +2261,11 @@ static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32
-> >         int err = -ENOMEM;
-> >         unsigned int i;
-> >
-> > -       syms = kvmalloc(cnt * sizeof(*syms), GFP_KERNEL);
-> > +       syms = kvmalloc_array(cnt, sizeof(*syms), GFP_KERNEL);
-> >         if (!syms)
-> >                 goto error;
-> >
-> > -       buf = kvmalloc(cnt * KSYM_NAME_LEN, GFP_KERNEL);
-> > +       buf = kvmalloc_array(cnt, KSYM_NAME_LEN, GFP_KERNEL);
-> >         if (!buf)
-> >                 goto error;
-> >
-> > @@ -2461,7 +2461,8 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
-> >         if (!cnt)
-> >                 return -EINVAL;
-> >
-> > -       size = cnt * sizeof(*addrs);
-> > +       if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size))
-> > +               return -EOVERFLOW;
-> >         addrs = kvmalloc(size, GFP_KERNEL);
+On Wed, May 18, 2022 at 05:09:55PM +0200, nicolas saenz julienne wrote:
+> On Tue, 2022-05-03 at 12:00 +0200, Frederic Weisbecker wrote:
 > 
-> any good reason not to use kvmalloc_array() here as well and delegate
-> overflow to it. And then use long size (as expected by copy_from_user
-> anyway) everywhere?
-
-Just to avoid double calculation of size, otherwise I don't have
-any significant prefernce, other than -EOVERFLOW would not be reported
-separately (not sure if this a good or a bad thing), and that
-it would be a bit more cumbersome to incorporate the Yonghong's
-suggestion[1] about the INT_MAX check.
-
-[1] https://lore.kernel.org/lkml/412bf136-6a5b-f442-1e84-778697e2b694@fb.com/
-
-> >         if (!addrs)
-> >                 return -ENOMEM;
-> > --
-> > 2.1.4
-> >
+> [...]
 > 
+> > +/**
+> > + * ct_state() - return the current context tracking state if known
+> > + *
+> > + * Returns the current cpu's context tracking state if context tracking
+> > + * is enabled.  If context tracking is disabled, returns
+> > + * CONTEXT_DISABLED.  This should be used primarily for debugging.
+> > + */
+> > +static __always_inline int ct_state(void)
+> > +{
+> > +	int ret;
+> > +
+> > +	if (!context_tracking_enabled())
+> > +		return CONTEXT_DISABLED;
+> > +
+> > +	preempt_disable();
+> > +	ret = __ct_state();
+> > +	preempt_enable();
+> > +
+> > +	return ret;
+> > +}
+> > +
+> 
+> I can't see any use for this function with preemption enabled. You can't trust
+> the data due to CPU migration and it could be a source of bugs in the future.
+> Wouldn't it make more sense to move the burden into the callers? They all DTRT,
+> plus, this_cpu_ptr() will spew warnings if someone shows up and doesn't comply.
 
+I believe syscall_exit_to_user_mode_prepare() has preemption enabled.
+Then it's ok if we are scheduled away right before the check, it still applies
+on any CPU.
