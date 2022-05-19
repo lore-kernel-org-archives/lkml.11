@@ -2,171 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2472DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 877EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233569AbiESSBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
+        id S243516AbiESSBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243486AbiESSA7 (ORCPT
+        with ESMTP id S243498AbiESSBq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:00:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A2DA1BD;
-        Thu, 19 May 2022 11:00:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 19 May 2022 14:01:46 -0400
+Received: from smtp1.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6275A14F;
+        Thu, 19 May 2022 11:01:44 -0700 (PDT)
+Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36185B824A1;
-        Thu, 19 May 2022 18:00:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5540FC385AA;
-        Thu, 19 May 2022 18:00:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652983254;
-        bh=tMwvvcFd7Pc3TDADnKu1IpLVMpBVRu1prfu10GKvoVQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TWIl28N9vBe+Kbo5ix6DGCxrW3rbrzUeJgHQN5Xz5xWmTOcJTRXjMf7CT5J08iuFE
-         B4zaW/Fnn8X7I97NlUxtAFkBx7itzrexLh5vnMa2eBTPHJn3pHnR2i/UF+x9iFFoIm
-         E/MpB7p/lirlqoqkK68qt3j9uHSDsc5J2AS06tsa3WDsSV9IKFprclElB8QtZXqe+Y
-         Rx49V2RAcgWWw5BZQ2HCboxG5GcWUMbirDdnBZTIKjUWahMzdTtLLLWrGVWDM/nFeF
-         bXxCgt8P2s1S+9ku6SmwtQK1FKqpWCMQa2Z9wjSEA8xHhCPFDZ3moCSzq7YXtIsifc
-         VH5/8wpGKBsHA==
-Date:   Thu, 19 May 2022 23:30:50 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     sean.wang@mediatek.com, matthias.bgg@gmail.com,
-        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, nfraprado@collabora.com
-Subject: Re: [PATCH v2 1/2] dmaengine: mediatek-cqdma: Add SoC-specific match
- data
-Message-ID: <YoaF0mOudZ7zll/7@matsya>
-References: <20220503140624.117213-1-angelogioacchino.delregno@collabora.com>
- <20220503140624.117213-2-angelogioacchino.delregno@collabora.com>
+        by smtp1.de.adit-jv.com (Postfix) with ESMTPS id 5ECC73C00BA;
+        Thu, 19 May 2022 20:01:42 +0200 (CEST)
+Received: from vmlxhi-121.localdomain (10.72.92.132) by hi2exch02.adit-jv.com
+ (10.72.92.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Thu, 19 May
+ 2022 20:01:42 +0200
+From:   Michael Rodin <mrodin@de.adit-jv.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        <linux-media@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>
+CC:     Michael Rodin <mrodin@de.adit-jv.com>, <michael@rodin.online>,
+        <erosca@de.adit-jv.com>
+Subject: Improve error handling in the rcar-vin driver
+Date:   Thu, 19 May 2022 20:00:06 +0200
+Message-ID: <1652983210-1194-1-git-send-email-mrodin@de.adit-jv.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503140624.117213-2-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.72.92.132]
+X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
+ hi2exch02.adit-jv.com (10.72.92.28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03-05-22, 16:06, AngeloGioacchino Del Regno wrote:
-> On some SoCs the DST2 and SRC2 registers may be at a different offset:
-> add a match data structure and assign it to mt6765 as a preparation
-> for adding support for more SoCs.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  drivers/dma/mediatek/mtk-cqdma.c | 35 +++++++++++++++++++++++++-------
->  1 file changed, 28 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/dma/mediatek/mtk-cqdma.c b/drivers/dma/mediatek/mtk-cqdma.c
-> index f8847c48ba03..a2fb538d9483 100644
-> --- a/drivers/dma/mediatek/mtk-cqdma.c
-> +++ b/drivers/dma/mediatek/mtk-cqdma.c
-> @@ -48,8 +48,6 @@
->  #define MTK_CQDMA_DST			0x20
->  #define MTK_CQDMA_LEN1			0x24
->  #define MTK_CQDMA_LEN2			0x28
-> -#define MTK_CQDMA_SRC2			0x60
-> -#define MTK_CQDMA_DST2			0x64
->  
->  /* Registers setting */
->  #define MTK_CQDMA_EN_BIT		BIT(0)
-> @@ -126,9 +124,20 @@ struct mtk_cqdma_vchan {
->  	bool issue_synchronize;
->  };
->  
-> +/**
-> + * struct mtk_cqdma_plat_data - SoC specific parameters
-> + * @reg_dst2:               dst2 register offset
-> + * @reg_src2:               src2 register offset
-> + */
-> +struct mtk_cqdma_plat_data {
-> +	u8 reg_src2;
-> +	u8 reg_dst2;
-> +};
-> +
->  /**
->   * struct mtk_cqdma_device - The struct holding info describing CQDMA
->   *                          device
-> + * @plat:                   SoC-specific platform data
->   * @ddev:                   An instance for struct dma_device
->   * @clk:                    The clock that device internal is using
->   * @dma_requests:           The number of VCs the device supports to
-> @@ -137,6 +146,7 @@ struct mtk_cqdma_vchan {
->   * @pc:                     The pointer to all the underlying PCs
->   */
->  struct mtk_cqdma_device {
-> +	const struct mtk_cqdma_plat_data *plat;
->  	struct dma_device ddev;
->  	struct clk *clk;
->  
-> @@ -231,6 +241,8 @@ static int mtk_cqdma_hard_reset(struct mtk_cqdma_pchan *pc)
->  static void mtk_cqdma_start(struct mtk_cqdma_pchan *pc,
->  			    struct mtk_cqdma_vdesc *cvd)
->  {
-> +	struct mtk_cqdma_device *cqdma = to_cqdma_dev(cvd->ch);
-> +
->  	/* wait for the previous transaction done */
->  	if (mtk_cqdma_poll_engine_done(pc, true) < 0)
->  		dev_err(cqdma2dev(to_cqdma_dev(cvd->ch)), "cqdma wait transaction timeout\n");
-> @@ -243,17 +255,17 @@ static void mtk_cqdma_start(struct mtk_cqdma_pchan *pc,
->  	/* setup the source */
->  	mtk_dma_set(pc, MTK_CQDMA_SRC, cvd->src & MTK_CQDMA_ADDR_LIMIT);
->  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-> -	mtk_dma_set(pc, MTK_CQDMA_SRC2, cvd->src >> MTK_CQDMA_ADDR2_SHFIT);
-> +	mtk_dma_set(pc, cqdma->plat->reg_src2, cvd->src >> MTK_CQDMA_ADDR2_SHFIT);
->  #else
-> -	mtk_dma_set(pc, MTK_CQDMA_SRC2, 0);
-> +	mtk_dma_set(pc, cqdma->plat->reg_src2, 0);
->  #endif
->  
->  	/* setup the destination */
->  	mtk_dma_set(pc, MTK_CQDMA_DST, cvd->dest & MTK_CQDMA_ADDR_LIMIT);
->  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
-> -	mtk_dma_set(pc, MTK_CQDMA_DST2, cvd->dest >> MTK_CQDMA_ADDR2_SHFIT);
-> +	mtk_dma_set(pc, cqdma->plat->reg_dst2, cvd->dest >> MTK_CQDMA_ADDR2_SHFIT);
->  #else
-> -	mtk_dma_set(pc, MTK_CQDMA_DST2, 0);
-> +	mtk_dma_set(pc, cqdma->plat->reg_dst2, 0);
->  #endif
->  
->  	/* setup the length */
-> @@ -740,8 +752,13 @@ static void mtk_cqdma_hw_deinit(struct mtk_cqdma_device *cqdma)
->  	pm_runtime_disable(cqdma2dev(cqdma));
->  }
->  
-> +static const struct mtk_cqdma_plat_data cqdma_mt6765 = {
-> +	.reg_dst2 = 0x64,
-> +	.reg_src2 = 0x60,
+Hello,
 
-Please use the macros instead of magic numbers here
+this series is a followup to the other series [1] started by Niklas Söderlund
+where only the first patch has been merged. The overall idea is to be more
+compliant with the Renesas hardware manual which requires a reset or stop
+of capture in the VIN module before reset of CSI2. Another goal (achieved
+by the patch 3/3) is to be more resilient with respect to non-critical CSI2
+errors so the driver does not end in an endless restart loop.
 
-> +};
-> +
->  static const struct of_device_id mtk_cqdma_match[] = {
-> -	{ .compatible = "mediatek,mt6765-cqdma" },
-> +	{ .compatible = "mediatek,mt6765-cqdma", .data = &cqdma_mt6765 },
->  	{ /* sentinel */ }
->  };
->  MODULE_DEVICE_TABLE(of, mtk_cqdma_match);
-> @@ -758,6 +775,10 @@ static int mtk_cqdma_probe(struct platform_device *pdev)
->  	if (!cqdma)
->  		return -ENOMEM;
->  
-> +	cqdma->plat = device_get_match_data(&pdev->dev);
-> +	if (cqdma->plat)
-> +		return -EINVAL;
-> +
->  	dd = &cqdma->ddev;
->  
->  	cqdma->clk = devm_clk_get(&pdev->dev, "cqdma");
-> -- 
-> 2.35.1
+Patch 1/3 has been taken from [1] with some additional documentation changes.
+Patch 2/3 is included without any changes.
+Patch 3/3 is based on discussions in [2], where I also found one method to
+trigger CSI2 errors in the video pipeline on a Salvator board for testing
+by manipulating CSI2-related registers in the adv7482:
 
--- 
-~Vinod
+$ i2cset -f -y 4 0x64 0x00 0x04
+$ i2cset -f -y 4 0x64 0x00 0x24
+
+[1] https://lore.kernel.org/linux-renesas-soc/20211108160220.767586-1-niklas.soderlund+renesas@ragnatech.se/
+[2] https://lore.kernel.org/linux-renesas-soc/20220309192707.GA62903@vmlxhi-121.adit-jv.com/
+
