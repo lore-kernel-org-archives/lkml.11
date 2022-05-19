@@ -2,128 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB65C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242436AbiESRLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58676 "EHLO
+        id S242454AbiESRLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242432AbiESRLV (ORCPT
+        with ESMTP id S233983AbiESRLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:11:21 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21C1193EF
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:11:18 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id j28so7740715eda.13
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:11:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ctr4gplq7tIvfpEzcReXp2Tbx4VBOJ0VA7nTlFJ97VA=;
-        b=TUnSopuTxg2nJAUBxDLL9PhbokwuRBME0f+G4z3bOlAfsNI+Xhdm+gB1CqUu5jLpmF
-         +xRkF1+WV7wiqnwZSD7fTkd9u8G4oazcWW/CPUc7c1GnL/E7blfLlI6Uywp6psBzf/JP
-         2GtaIffxA1jbUDrVeOEBVTYaPsl5cTNaHvJeHpOb/AJ3rwvXqKA1BFkJrVYiPLTS7qVJ
-         hg7/vU2sdRawx3xjYU0E9IEKy8bIXBIjVCZj58qzVSdz6d7a7cc+xDbcBmQjjsavPovC
-         jsNR4CjFWhXaKqSFT4zGmNlO+umOS/8UWENUyBNAm9Xn3ZuZV3Ux/vC2BFQEesqt9kv3
-         00Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ctr4gplq7tIvfpEzcReXp2Tbx4VBOJ0VA7nTlFJ97VA=;
-        b=v6/23tpHp1y+jIBJaKUO90c8p0fPaWfyBnb3YsWQhcs/pGm7bqDLiJIrZeROCYVCMP
-         1xMHbLSZ45zdpt1kWfnrC8Cc9mc7Vdf9KzZh2yDba7Zf3q5iLyp62IueGCf5Pi5/J6SY
-         /NWiZw6R9Lo/Y47pVk5wgdN2gpkvkjpKsDMU7Q0kU90c4V1FD+6u4vMTbmJGaMWV5CC/
-         Z5LbWIIO+FOGYu5OQ2386fM4Ic9A6laeVK9WL4YexjT5oyshH4AJfvNG1yOUTAhbaYJy
-         X6G3nWz42q07xbDyveFJXpeg9u+fE8Pe6sRz7xLJWoyTq0wisbkd6h3PrBR5Ok0OuWjK
-         izjQ==
-X-Gm-Message-State: AOAM530OleIGeHewXMrA4dYrinbk2TwnK8juMni9fbKTpY96OCLEbQxw
-        BBbUS8t7BLfPJoGvQVl+TQowfhNnfcyySVIJFCUD7w==
-X-Google-Smtp-Source: ABdhPJzxeCfFVspMrH294SeXXh2amM4330ptlS97S6S9iL5xqvR4rTFUaueUXHN8XGTPkRFQUVQRAQ0TI0JZnvtiUtU=
-X-Received: by 2002:a05:6402:84a:b0:426:262d:967e with SMTP id
- b10-20020a056402084a00b00426262d967emr6618652edz.286.1652980276934; Thu, 19
- May 2022 10:11:16 -0700 (PDT)
+        Thu, 19 May 2022 13:11:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFC5205E2
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:11:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 43731CE26EB
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:11:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6DEBC385AA;
+        Thu, 19 May 2022 17:11:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652980291;
+        bh=zfXW98jVyxZ6zoL6xNX2NZNkEnIW/L5pHktyNLtrNGo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cOrGLBaZbWRP8x43zWCVXO5PL8CQuf+7D3hYJpKE+C9z6jzbP6BvE6FdaON3CnxWY
+         Bgxjyl7eyd5PvGkGXjqDfsdE/j+hKImVzZ4XR6bPEwfOW5KP8IbHgVfvlgjYoUxQnp
+         mwmbFgIJEBcvRe4D/AxTpgo47XGed4dnuw4GHasj2ECdgdUvCY6t6V1AtTja3n7M37
+         KIStclA/x5L3r5+oZQ7XPzStt1h2gU4MjVer79QFVDp8EaNtuNVOpP8l3k1co+IaZz
+         npBPFCilgTjoKRGFfgmGCjuDC8I2ghCX2U1A7uPSnTo00QWjweh8Kaz84W82HokrmX
+         IjLpTRA1x8cWA==
+Date:   Thu, 19 May 2022 10:11:29 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        brgerst@gmail.com, jiangshanlai@gmail.com,
+        Andrew.Cooper3@citrix.com, mark.rutland@arm.com,
+        Borislav Petkov <bp@suse.de>
+Subject: Re: [PATCH 3/6] x86/entry: Use PUSH_AND_CLEAR_REGS for compat
+Message-ID: <20220519171129.enw32izjhxsqc2xm@treble>
+References: <20220506121431.563656641@infradead.org>
+ <20220506121631.293889636@infradead.org>
+ <20220519162411.GA4095576@roeck-us.net>
+ <20220519170009.GL2578@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20220518073232.526443-1-davidgow@google.com> <CAGS_qxrOUYC5iycS436Rb-gEoEnYDa2OJLkQhEVXcDN0BEJ4YA@mail.gmail.com>
- <CANpmjNPSm8eZX7nAJyMts-4XdYB2ChXK17HApUpoHN-SOo7fRA@mail.gmail.com> <CABVgOS=X51T_=hwTumnzL2yECgcshWBp1RT0F3GiT3+Fe_vang@mail.gmail.com>
-In-Reply-To: <CABVgOS=X51T_=hwTumnzL2yECgcshWBp1RT0F3GiT3+Fe_vang@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Thu, 19 May 2022 10:11:06 -0700
-Message-ID: <CAGS_qxqsF-soqSM7-cO+tRD1Rg5fqrA07TGLRruxPE4i_rLdJw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] kunit: tool: Add x86_64-smp architecture for SMP testing
-To:     David Gow <davidgow@google.com>
-Cc:     Marco Elver <elver@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220519170009.GL2578@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 6:15 AM David Gow <davidgow@google.com> wrote:
->
-> I tend to agree that having both would be nice: I think there are
-> enough useful "machine configs" that trying to maintain, e.g, a 1:1
-> mapping with kernel architectures is going to leave a bunch of things
-> on the table, particularly as we add more tests for, e.g., drivers and
-> specific CPU models.
+On Thu, May 19, 2022 at 07:00:09PM +0200, Peter Zijlstra wrote:
+> On Thu, May 19, 2022 at 09:24:11AM -0700, Guenter Roeck wrote:
+> > On Fri, May 06, 2022 at 02:14:34PM +0200, Peter Zijlstra wrote:
+> > > Since the upper regs don't exist for ia32 code, preserving them
+> > > doesn't hurt and it simplifies the code.
+> > > 
+> > > This doesn't add any attack surface that would not already be
+> > > available through INT80.
+> > > 
+> > > Notably:
+> > > 
+> > >  - 32bit SYSENTER: didn't clear si, dx, cx.
+> > > 
+> > >  - 32bit SYSCALL, INT80: *do* clear si since the C functions don't
+> > >    take a second argument.
+> > > 
+> > >  - 64bit: didn't clear si since the C functions take a second
+> > >    argument; except the error_entry path might have only one argument,
+> > >    so clearing si was missing here.
+> > > 
+> > > 32b SYSENTER should be clearing all those 3 registers, nothing uses them
+> > > and selftests pass.
+> > > 
+> > > Unconditionally clear rsi since it simplifies code.
+> > > 
+> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > > Reviewed-by: Borislav Petkov <bp@suse.de>
+> > 
+> > linux-next (next-20220519) crashes due to this patch when booting
+> > q35:EPYC-Rome in qemu.
+> 
+> Could you try backing out each of the hunks one at a time? They're all
+> more or less independent.
+> 
+> My bet with this being a #PF on an AMD machine, it's either the SI clear
+> or the SYSCALL change.
 
-I agree that we don't necessarily need to maintain a 1:1 mapping.
-But I feel like we should have a pretty convincing reason for doing
-so, e.g. support for a CPU that requires we add in a bunch of
-kconfigs.
+I think this should fix it:
 
-This particular one feels simple enough to me.
-Given we already have to put specific instructions in the
-kcsan/.kunitconfig, I don't know if there's much of a difference in
-cost between these two commands
-
-$ ./tools/testing/kunit/kunit.py run --kunitconfig=kernel/kcsan
---arch=x86_64-smp
-$ ./tools/testing/kunit/kunit.py run --kunitconfig=kernel/kcsan
---arch=x86_64 --kconfig_add CONFIG_SMP=y --qemu_args "-smp 8"
-
-I've generally learned to prefer more explicit commands like the
-second, even if they're quite a bit longer.
-But I have the following biases
-* I use FZF heavily, so I don't re-type long commands much
-* I'm the person who proposed --kconfig_add and --qemu_args, so of
-course I'd think the longer form is easy to understand.
-so I'm not in a position to object to this change.
-
-
-Changing topics:
-Users can overwrite the '-smp 8' here via --qemu_args [1], so I'm much
-less worried about hard-coding any specific value in this file
-anymore.
-And given that, I think a more "natural" value for this file would be "-smp 2".
-I think anything that needs more than that should explicitly should --qemu_args.
-
-Thoughts?
-
-[1] tested with --qemu_args='-smp 4' --qemu_args='-smp 8'
-and I see the following in the test.log
- smpboot: Allowing 8 CPUs, 0 hotplug CPUs
-so QEMU respects the last value passed in, as expected.
-
->
-> The problem, of course, is that the --kconfig_add flags don't allow us
-> to override anything explicitly stated in either the kunitconfig or
-> qemu_config (and I imagine there could be problems with --qemu_config,
-> too).
-
-This patch would fix that.
-https://lore.kernel.org/linux-kselftest/20220519164512.3180360-1-dlatypov@google.com
-
-It introduces an overwriting priority of
-* --kconfig_add
-* kunitconfig / --kunitconfig
-* qemu_config
+diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
+index a97cc78ecb92..29b36e9e4e74 100644
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -63,7 +63,7 @@ For 32-bit we have the following conventions - kernel is built with
+  * for assembly code:
+  */
+ 
+-.macro PUSH_REGS rdx=%rdx rax=%rax save_ret=0
++.macro PUSH_REGS rdx=%rdx rcx=%rcx rax=%rax save_ret=0
+ 	.if \save_ret
+ 	pushq	%rsi		/* pt_regs->si */
+ 	movq	8(%rsp), %rsi	/* temporarily store the return address in %rsi */
+@@ -73,7 +73,7 @@ For 32-bit we have the following conventions - kernel is built with
+ 	pushq   %rsi		/* pt_regs->si */
+ 	.endif
+ 	pushq	\rdx		/* pt_regs->dx */
+-	pushq   %rcx		/* pt_regs->cx */
++	pushq   \rcx		/* pt_regs->cx */
+ 	pushq   \rax		/* pt_regs->ax */
+ 	pushq   %r8		/* pt_regs->r8 */
+ 	pushq   %r9		/* pt_regs->r9 */
+@@ -115,8 +115,8 @@ For 32-bit we have the following conventions - kernel is built with
+ 
+ .endm
+ 
+-.macro PUSH_AND_CLEAR_REGS rdx=%rdx rax=%rax save_ret=0
+-	PUSH_REGS rdx=\rdx, rax=\rax, save_ret=\save_ret
++.macro PUSH_AND_CLEAR_REGS rdx=%rdx rcx=%rcx rax=%rax save_ret=0
++	PUSH_REGS rdx=\rdx, rcx=\rcx, rax=\rax, save_ret=\save_ret
+ 	CLEAR_REGS
+ .endm
+ 
+diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
+index ed2be3615b50..2d40dd132442 100644
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -200,7 +200,7 @@ SYM_INNER_LABEL(entry_SYSCALL_compat_safe_stack, SYM_L_GLOBAL)
+ SYM_INNER_LABEL(entry_SYSCALL_compat_after_hwframe, SYM_L_GLOBAL)
+ 	movl	%eax, %eax		/* discard orig_ax high bits */
+ 	pushq	%rax			/* pt_regs->orig_ax */
+-	PUSH_AND_CLEAR_REGS rax=$-ENOSYS
++	PUSH_AND_CLEAR_REGS rax=$-ENOSYS rcx=%rbx
+ 	UNWIND_HINT_REGS
+ 
+ 	movq	%rsp, %rdi
