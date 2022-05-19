@@ -2,135 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E81BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C122DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245097AbiESVQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 17:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
+        id S245085AbiESVQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 17:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245085AbiESVPw (ORCPT
+        with ESMTP id S231966AbiESVQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 17:15:52 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D374910F7
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:15:50 -0700 (PDT)
+        Thu, 19 May 2022 17:16:49 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9326A009;
+        Thu, 19 May 2022 14:16:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652994950; x=1684530950;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nX+KNtxV6LhwhQ+aMKM6gPlNwu/uEushJibQXpPwDkg=;
-  b=JoE4SOhJykWOBZjaGRY3U7n0RWPQg7EJ1nfeW5jR8hDMZ2UrPIEj77SD
-   HPB3oyj2byMQ6Prn+q8MP+T+2Mzjs3B9URw3KjT9KPeGd8jThvKg1kPkz
-   QlOaUq3wwEAhbn+7MQ+gwicSJdm0jJDiSbMpZDP7Pj3CbDNQqdO7prtQH
-   EoUEafeHlisZXjv6ouO/xMeRbjsYLYdt2uI2p3v7jXIYGVHwAp8dzNYBw
-   xbQNb9zmigK0x1U65WdtVxz76Yd28q+Y/1T9Ax47iFxX7CRq+QDzmMfJM
-   /v4ZF/FX4HeacH1vuMD5cFtpvG0g7DJurpyTjZctgn0qLsN16GaH6EfXB
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="269970872"
+  t=1652995008; x=1684531008;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xO5sYrwPLYvDvNwBmDE02zb9y09MFDW+vVwtKqnVbS8=;
+  b=UaAUp5zEBNxaFzs87a7mievkkzWbqNP7OF2aW4ZzMmj36SfeigehrIvy
+   WhrNm8caZ3VBgr8qLTW3wih+7xELRMVXfK5mYUzP4tZUwjN4Q+L0mCuXy
+   ALUVVYdWa793rCGZs4IUOIEBKbHB6eJR9HdpfvW8S/eIlZ82yX9WP+z7B
+   Jd8HxO0wtGcE+p0gahROIt95+CiY26jc6Z+U+tGY4UmOmM1RF65zWgoYA
+   yOlhnXky4GHNEFJz0atgcObfMEKm8Am5s4fhqOCEXmpiejhbzRqfnmwqM
+   qWbnXSpwtjVY1k1FnWMM0criCxNjwKMkZHlKxQVqVmro/A8DseVVJi4Kt
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="259959399"
 X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="269970872"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 14:15:37 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="259959399"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 14:16:47 -0700
 X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="818197143"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 19 May 2022 14:15:36 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrnUd-0003xD-P2;
-        Thu, 19 May 2022 21:15:35 +0000
-Date:   Fri, 20 May 2022 05:14:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: mm/page_alloc.c:984:9: warning: iteration 119304648 invokes
- undefined behavior
-Message-ID: <202205200521.65W2rpLt-lkp@intel.com>
+   d="scan'208";a="524292762"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 14:16:44 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nrnVh-000GI8-MB;
+        Fri, 20 May 2022 00:16:41 +0300
+Date:   Fri, 20 May 2022 00:16:41 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
+        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org,
+        willy@infradead.org
+Subject: Re: [PATCH v2 07/28] lib/printbuf: Unit specifiers
+Message-ID: <YoazuWvIU63zNGJr@smile.fi.intel.com>
+References: <20220519172421.162394-1-kent.overstreet@gmail.com>
+ <20220519172421.162394-8-kent.overstreet@gmail.com>
+ <Yoam1bW/vni3srLc@smile.fi.intel.com>
+ <20220519202626.3x3kyqs3jttel7u4@moria.home.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220519202626.3x3kyqs3jttel7u4@moria.home.lan>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b015dcd62b86d298829990f8261d5d154b8d7af5
-commit: 44042b4498728f4376e84bae1ac8016d146d850b mm/page_alloc: allow high-order pages to be stored on the per-cpu lists
-date:   11 months ago
-config: powerpc-randconfig-r002-20220519 (https://download.01.org/0day-ci/archive/20220520/202205200521.65W2rpLt-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=44042b4498728f4376e84bae1ac8016d146d850b
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 44042b4498728f4376e84bae1ac8016d146d850b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+On Thu, May 19, 2022 at 04:26:26PM -0400, Kent Overstreet wrote:
+> On Thu, May 19, 2022 at 11:21:41PM +0300, Andy Shevchenko wrote:
+> > On Thu, May 19, 2022 at 01:24:00PM -0400, Kent Overstreet wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+...
 
-All warnings (new ones prefixed by >>):
+> > > +	if (v < 0)
+> > > +		pr_char(buf, '-');
+> > > +	pr_human_readable_u64(buf, abs(v));
+> > 
+> > Wouldn't -v work?
+> 
+> This is a bit terser
 
-   mm/page_alloc.c:3823:15: warning: no previous prototype for 'should_fail_alloc_page' [-Wmissing-prototypes]
-    3823 | noinline bool should_fail_alloc_page(gfp_t gfp_mask, unsigned int order)
-         |               ^~~~~~~~~~~~~~~~~~~~~~
-   {standard input}: Assembler messages:
-   {standard input}:6471: Error: unrecognized opcode: `wrteei'
-   {standard input}:6700: Error: unrecognized opcode: `wrtee'
-   mm/page_alloc.c: In function 'rmqueue.isra':
->> mm/page_alloc.c:984:9: warning: iteration 119304648 invokes undefined behavior [-Waggressive-loop-optimizations]
-     984 |         list_add(&page->lru, &area->free_list[migratetype]);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   mm/page_alloc.c:2305:21: note: within this loop
-    2305 |         while (high > low) {
-         |                ~~~~~^~~~~
-   {standard input}:9878: Error: unrecognized opcode: `wrteei'
-   {standard input}:10902: Error: unrecognized opcode: `wrtee'
-   {standard input}:11103: Error: unrecognized opcode: `wrteei'
-   {standard input}:11321: Error: unrecognized opcode: `wrtee'
-   {standard input}:12224: Error: unrecognized opcode: `wrteei'
-   {standard input}:12816: Error: unrecognized opcode: `wrtee'
-   {standard input}:12822: Error: unrecognized opcode: `wrteei'
-   {standard input}:12831: Error: unrecognized opcode: `wrtee'
-   {standard input}:14310: Error: unrecognized opcode: `wrteei'
-   {standard input}:14402: Error: unrecognized opcode: `wrteei'
-   {standard input}:14431: Error: unrecognized opcode: `wrteei'
-   {standard input}:14476: Error: unrecognized opcode: `wrtee'
-   {standard input}:14484: Error: unrecognized opcode: `wrtee'
-   {standard input}:14503: Error: unrecognized opcode: `wrtee'
-   {standard input}:17180: Error: unrecognized opcode: `wrteei'
-   {standard input}:17816: Error: unrecognized opcode: `wrtee'
-   {standard input}:17828: Error: unrecognized opcode: `wrtee'
+Have you checked assembly? Basically the question here is does the compiler see
+the same conditional and avoid duplicating it?
 
+...
 
-vim +984 mm/page_alloc.c
+> > > + * pr_human_readable_u64 - Print out a u64 according to printbuf unit options
+> > 
+> > Have you ever compile this? We have kernel doc validator running when compiling
+> > the code...
+> 
+> Yes I have, but I've never seen the kernel doc validator - can you point me to
+> something so I can get that working?
 
-5e1f0f098b4649 Mel Gorman      2019-03-05  977  
-6ab0136310961e Alexander Duyck 2020-04-06  978  /* Used for pages not on another list */
-6ab0136310961e Alexander Duyck 2020-04-06  979  static inline void add_to_free_list(struct page *page, struct zone *zone,
-6ab0136310961e Alexander Duyck 2020-04-06  980  				    unsigned int order, int migratetype)
-6ab0136310961e Alexander Duyck 2020-04-06  981  {
-6ab0136310961e Alexander Duyck 2020-04-06  982  	struct free_area *area = &zone->free_area[order];
-6ab0136310961e Alexander Duyck 2020-04-06  983  
-6ab0136310961e Alexander Duyck 2020-04-06 @984  	list_add(&page->lru, &area->free_list[migratetype]);
-6ab0136310961e Alexander Duyck 2020-04-06  985  	area->nr_free++;
-6ab0136310961e Alexander Duyck 2020-04-06  986  }
-6ab0136310961e Alexander Duyck 2020-04-06  987  
+I run `make W=1`, but I think the kernel doc validator is run anyway.
 
-:::::: The code at line 984 was first introduced by commit
-:::::: 6ab0136310961ebf4b5ecb565f0bf52c233dc093 mm: use zone and order instead of free area in free_list manipulators
+You always can run it manually
 
-:::::: TO: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+	scripts/kernel-doc -v -none lib/printbuf.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
+
+
