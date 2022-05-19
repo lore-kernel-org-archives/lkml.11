@@ -2,104 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 273C1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235531AbiESImC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 04:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        id S231923AbiESImf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 04:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235503AbiESIlz (ORCPT
+        with ESMTP id S231939AbiESIm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 04:41:55 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BFB6A423
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:41:52 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id g184so4472767pgc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:41:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZB7BWpRnlBzFfCqwBENpii045L63Udnz6UdJqFoKbrg=;
-        b=eBu42ys+IO+PrtxiPquedThK1eYYkiOQ9y24LY+CRYn8KUWwW/USGjjydW7q4KauzN
-         HNeOwV7MpJMqQBf54xArMEDqXhHOhRVSg7FBBzDBtUqtJX5WopXcBH0WZh7aeDhRNeCq
-         zor0fg3418FPsOA+3KOz4Kxrxah+Tq3JcyF2I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZB7BWpRnlBzFfCqwBENpii045L63Udnz6UdJqFoKbrg=;
-        b=dcDouqVgQlqnqQfL43g8mI63X1rg4MCkIusBLR7PNrEwfFv2fI6cPb51Qn5y9YI3MC
-         vdj+lWlW2eN9f0uIODO5wBJPuCOjZyyeDVPX/CDl+8XYODKvbId+kVy/u8IhO+sn+xHA
-         AGtDAFlL5uznLlvwbhEu6vewchciwuldOA46gSargOJz7oepcqKdHuAhv/k6LoCuFI5v
-         Hn2MdWwcbksliC0N8KEVQi0vFkvM5Efnxrn3OS8YuOJI/jYvICVUZhl34n7knHsYwNRP
-         kKlJrVn9S8hgyAOa9PUgpg08PWXAt+jmzf0fC10wItj9qBqzSnhopq2iEHVtnbnYpVEA
-         YaVA==
-X-Gm-Message-State: AOAM530Rq31sy/21jIQIUd5I5LQX/O6z4NRARqDuOtR4OW+qOn6fzEHw
-        PMI71SCc4WMYmpokR3sSf6YLPajLz5+H+fAIrwE=
-X-Google-Smtp-Source: ABdhPJwF4/cVUxxYJLVP49Ec+fM1+SLeiTfcIk2mNv3OvodJUJtgEWEcdDAlvxUs2qU7Hp9Y5zwzpQ==
-X-Received: by 2002:aa7:9e1e:0:b0:518:3ee0:57a7 with SMTP id y30-20020aa79e1e000000b005183ee057a7mr2511884pfq.42.1652949712085;
-        Thu, 19 May 2022 01:41:52 -0700 (PDT)
-Received: from judyhsiao0319.c.googlers.com.com (164.135.233.35.bc.googleusercontent.com. [35.233.135.164])
-        by smtp.gmail.com with ESMTPSA id m10-20020a170902f20a00b0015f33717794sm3066185plc.42.2022.05.19.01.41.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 01:41:51 -0700 (PDT)
-From:   Judy Hsiao <judyhsiao@chromium.org>
-To:     Andy Gross <agross@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
-        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
-        judyhsiao@google.com, tzungbi@chromium.org, swboyd@chromium.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
-Subject: [v1 3/3] arm64: dts: qcom: sc7280: include sc7280-herobrine-audio-rt5682.dtsi in villager and herobrine-r1
-Date:   Thu, 19 May 2022 08:41:19 +0000
-Message-Id: <20220519084119.675990-4-judyhsiao@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <20220519084119.675990-1-judyhsiao@chromium.org>
-References: <20220519084119.675990-1-judyhsiao@chromium.org>
+        Thu, 19 May 2022 04:42:28 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135C26AA55;
+        Thu, 19 May 2022 01:42:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652949747; x=1684485747;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=PgS8XNRf9GQ3vzLVLyP6y/ZH5DIQbtxz9BKblMVr4W8=;
+  b=YAD1FcJHuwvxr9/9jIeTBzaRlfxn/cT53uFLYdJySETbpHVN/bKaTPRk
+   6e2v/y41OXl+JL0hkXRByef8jGSVlSTBy+yFPK8s0BSZCihu/PiKKTSdr
+   lsKI4FLShh7RAA1POZCDNVHDo5lTF3rV2nV5+h6erHB2PNORhzfiqsLvC
+   KMOgZ2kfPaimxHJN3QwkheiwWhWUIgQ2dxJMueg8b2Q/a35393t1h/8mJ
+   61YqCnSlPRrf1xo1g/Xn7pXxbR58fIhgq4OTM+t/rnnJxqDuYMfhR3yfk
+   sCVso3eT2jkKSJmoPTH5PgqIsEFms5yxLJFqAgqxUZeCu2tYppMnEN5bi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="259672438"
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="259672438"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:42:26 -0700
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="598441086"
+Received: from ivanovbx-mobl1.ger.corp.intel.com ([10.249.33.234])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:42:24 -0700
+Date:   Thu, 19 May 2022 11:42:22 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH] serial: amba-pl011: move header content to .c
+In-Reply-To: <20220519075720.31402-1-jslaby@suse.cz>
+Message-ID: <b57ed6c-29c5-8bb6-fe5b-7f936a2117@linux.intel.com>
+References: <20220519075720.31402-1-jslaby@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="8323329-479117058-1652949746=:1628"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include sc7280-herobrine-audio-rt5682.dtsi in villager and herobrine-r1 as
-these boards use rt5682 codec.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
----
- arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts | 1 +
- arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts  | 1 +
- 2 files changed, 2 insertions(+)
+--8323329-479117058-1652949746=:1628
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-index b69ca09d9bfb..f68d28f8701b 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
- 
- #include "sc7280-herobrine.dtsi"
-+#include "sc7280-herobrine-audio-rt5682.dtsi"
- 
- / {
- 	model = "Google Herobrine (rev1+)";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-index d3d6ffad4eff..7a4acd3b9ee3 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-@@ -8,6 +8,7 @@
- /dts-v1/;
- 
- #include "sc7280-herobrine.dtsi"
-+#include "sc7280-herobrine-audio-rt5682.dtsi"
- 
- / {
- 	model = "Google Villager (rev0+)";
+On Thu, 19 May 2022, Jiri Slaby wrote:
+
+> There is no point keeping the header content separated. In this case, it
+> is only an enum. So move the enum to the appropriate source file.
+> 
+> Cc: Russell King <linux@armlinux.org.uk>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
 -- 
-2.36.1.124.g0e6072fb45-goog
-
+ i.
+--8323329-479117058-1652949746=:1628--
