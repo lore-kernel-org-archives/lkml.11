@@ -2,112 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54025C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 01:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D63B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 01:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232539AbiESBGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 21:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49478 "EHLO
+        id S232404AbiESBM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 21:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbiESBGZ (ORCPT
+        with ESMTP id S229603AbiESBMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 21:06:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1624F9E7;
-        Wed, 18 May 2022 18:06:24 -0700 (PDT)
-Received: from kwepemi100022.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3WrB0D1jzhZ13;
-        Thu, 19 May 2022 09:05:46 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100022.china.huawei.com (7.221.188.126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 09:06:22 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 19 May 2022 09:06:21 +0800
-Subject: Re: [PATCH -next v2 6/6] nbd: use pr_err to output error message
-To:     Joe Perches <joe@perches.com>, <josef@toxicpanda.com>,
-        <axboe@kernel.dk>, <ming.lei@redhat.com>
-CC:     <linux-block@vger.kernel.org>, <nbd@other.debian.org>,
-        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
-References: <20220518122618.1702997-1-yukuai3@huawei.com>
- <20220518122618.1702997-7-yukuai3@huawei.com>
- <f0acebb66b9b46ad472e0d0989dc0f5810cac3dd.camel@perches.com>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <65fe63ed-91d4-35bd-3e25-39c4457295d0@huawei.com>
-Date:   Thu, 19 May 2022 09:06:20 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Wed, 18 May 2022 21:12:55 -0400
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5A712D24;
+        Wed, 18 May 2022 18:12:54 -0700 (PDT)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-f1eafa567cso1538219fac.8;
+        Wed, 18 May 2022 18:12:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dm0pT+M2kdQ8FRbmsyDYG7h2MbeTEk0HslEwcbyXupE=;
+        b=q25MpA4lXiKaQDLn1qOYZNCg+hOpy6IN/gxtZRxNriV5ElMfh8TAagapewGD3LrjQg
+         hjhYSbInlxWkL0iRn058Jh5n14sBPuMfq3NtpBlVkfQ5afsAPPzr/YFHR5eQLnlUdoQA
+         UbhMx+d4268Zgq6Gugg2P1uZeLS2KOUhC7ajdgGtrFAE+KtHfhRxW9PobBCMB57C+Bqr
+         RpprA7SMZo9Cwps2GEadqpb3AzT8846UzX+nt1B8UqfIujyWPRpjNTn6g6Eqg+nyhOje
+         bOpJb4uW/LV3P8L1Npr2dajbvmG0AR+eRfLWFPmnmLBdeteh4KHwS2u9wZXydXRdAX7P
+         kh/w==
+X-Gm-Message-State: AOAM5333oTvhT+l7u/TZuYXKZzJMAGsYBzGHN/hdXQFcxH9pSIIvljm9
+        u4A0OrlDbv87KHxmzPV6HA==
+X-Google-Smtp-Source: ABdhPJxXxRG+njkKSFVY0tFBAwJuHh8x0LsBP7KO+7VZ1paiRDMleNdakKkuryEsLEYYJVNZZr8WLQ==
+X-Received: by 2002:a05:6870:61cd:b0:e9:8de7:9c51 with SMTP id b13-20020a05687061cd00b000e98de79c51mr1330385oah.50.1652922773248;
+        Wed, 18 May 2022 18:12:53 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id l13-20020a056870f14d00b000f169cbbb32sm1566263oac.43.2022.05.18.18.12.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 18:12:52 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Iskren Chernev <iskren.chernev@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: pinctrl: qcom: Drop 'maxItems' on 'wakeup-parent'
+Date:   Wed, 18 May 2022 20:12:09 -0500
+Message-Id: <20220519011210.170022-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <f0acebb66b9b46ad472e0d0989dc0f5810cac3dd.camel@perches.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ÔÚ 2022/05/19 2:12, Joe Perches Ð´µÀ:
-> On Wed, 2022-05-18 at 20:26 +0800, Yu Kuai wrote:
->> Instead of using the long printk(KERN_ERR "nbd: ...") to
->> output error message, defining pr_fmt and using
->> the short pr_err("") to do that. The replacemen is done
->> by using the following command:
->>
->>    sed -i 's/printk(KERN_ERR "nbd: /pr_err("/g' \
->> 		  drivers/block/nbd.c
-> 
-> It's also good to rewrap to 80 columns where possible.
-> 
->> diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-> []
->> @@ -2130,13 +2130,13 @@ static int nbd_genl_disconnect(struct sk_buff *skb, struct genl_info *info)
->>   	nbd = idr_find(&nbd_index_idr, index);
->>   	if (!nbd) {
->>   		mutex_unlock(&nbd_index_mutex);
->> -		printk(KERN_ERR "nbd: couldn't find device at index %d\n",
->> +		pr_err("couldn't find device at index %d\n",
->>   		       index);
-> 
-> like here
-> 
->>   		return -EINVAL;
->>   	}
->>   	if (!refcount_inc_not_zero(&nbd->refs)) {
->>   		mutex_unlock(&nbd_index_mutex);
->> -		printk(KERN_ERR "nbd: device at index %d is going down\n",
->> +		pr_err("device at index %d is going down\n",
->>   		       index);
-> 
-> and here and below...
-Hi, Josef
+'wakeup-parent' is a single phandle and not an array, so 'maxItems' is
+wrong. Drop it.
 
-Thanks for your advice, I'll send a new version.
-> 
->> @@ -2170,7 +2170,7 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
->>   	nbd = idr_find(&nbd_index_idr, index);
->>   	if (!nbd) {
->>   		mutex_unlock(&nbd_index_mutex);
->> -		printk(KERN_ERR "nbd: couldn't find a device at index %d\n",
->> +		pr_err("couldn't find a device at index %d\n",
->>   		       index);
->>   		return -EINVAL;
->>   	}
->> @@ -2192,7 +2192,7 @@ static int nbd_genl_reconfigure(struct sk_buff *skb, struct genl_info *info)
->>   	}
->>   	if (!refcount_inc_not_zero(&nbd->refs)) {
->>   		mutex_unlock(&nbd_index_mutex);
->> -		printk(KERN_ERR "nbd: device at index %d is going down\n",
->> +		pr_err("device at index %d is going down\n",
->>   		       index);
->>   		return -EINVAL;
->>   	}
-> 
-> 
-> 
-> .
-> 
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/pinctrl/qcom,qcm2290-pinctrl.yaml      | 3 +--
+ .../devicetree/bindings/pinctrl/qcom,sc7280-pinctrl.yaml       | 3 +--
+ .../devicetree/bindings/pinctrl/qcom,sm6115-pinctrl.yaml       | 3 +--
+ .../devicetree/bindings/pinctrl/qcom,sm8250-pinctrl.yaml       | 3 +--
+ .../devicetree/bindings/pinctrl/qcom,tlmm-common.yaml          | 1 -
+ 5 files changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,qcm2290-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,qcm2290-pinctrl.yaml
+index 206f4f238736..3f4f1c0360b5 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,qcm2290-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,qcm2290-pinctrl.yaml
+@@ -42,8 +42,7 @@ properties:
+   gpio-ranges:
+     maxItems: 1
+ 
+-  wakeup-parent:
+-    maxItems: 1
++  wakeup-parent: true
+ 
+ #PIN CONFIGURATION NODES
+ patternProperties:
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-pinctrl.yaml
+index 6c7c3f6a140e..2d228164357c 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,sc7280-pinctrl.yaml
+@@ -42,8 +42,7 @@ properties:
+   gpio-ranges:
+     maxItems: 1
+ 
+-  wakeup-parent:
+-    maxItems: 1
++  wakeup-parent: true
+ 
+ #PIN CONFIGURATION NODES
+ patternProperties:
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sm6115-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sm6115-pinctrl.yaml
+index cfcde405d30a..a7a2bb8bff46 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,sm6115-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,sm6115-pinctrl.yaml
+@@ -49,8 +49,7 @@ properties:
+   gpio-ranges:
+     maxItems: 1
+ 
+-  wakeup-parent:
+-    maxItems: 1
++  wakeup-parent: true
+ 
+ #PIN CONFIGURATION NODES
+ patternProperties:
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sm8250-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sm8250-pinctrl.yaml
+index cfa2c50fdb93..15bb1018cf21 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,sm8250-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,sm8250-pinctrl.yaml
+@@ -49,8 +49,7 @@ properties:
+   gpio-ranges:
+     maxItems: 1
+ 
+-  wakeup-parent:
+-    maxItems: 1
++  wakeup-parent: true
+ 
+ #PIN CONFIGURATION NODES
+ patternProperties:
+diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,tlmm-common.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,tlmm-common.yaml
+index 780f15bb5e40..c88c8dcb69d9 100644
+--- a/Documentation/devicetree/bindings/pinctrl/qcom,tlmm-common.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/qcom,tlmm-common.yaml
+@@ -42,7 +42,6 @@ properties:
+     description:
+       Specifying the interrupt-controller used to wake up the system when the
+       TLMM block has been powered down.
+-    maxItems: 1
+ 
+   gpio-reserved-ranges:
+     description:
+-- 
+2.34.1
+
