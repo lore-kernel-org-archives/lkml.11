@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6626C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238175AbiESM5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 08:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34506 "EHLO
+        id S236719AbiESM5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 08:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238227AbiESMzm (ORCPT
+        with ESMTP id S234713AbiESMzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 08:55:42 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D29A88B2;
-        Thu, 19 May 2022 05:55:37 -0700 (PDT)
-X-UUID: 8eb4c08d2680417882423d1082cedeb7-20220519
+        Thu, 19 May 2022 08:55:37 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D315A8890;
+        Thu, 19 May 2022 05:55:35 -0700 (PDT)
+X-UUID: ae53006ccc49492ea471649e8982384e-20220519
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:0c0c4dcc-31df-4884-804a-508388b9f89b,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:0c0c4dcc-31df-4884-804a-508388b9f89b,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:ed8fdf79-5ef6-470b-96c9-bdb8ced32786,C
-        OID:19d607bb3d72,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 8eb4c08d2680417882423d1082cedeb7-20220519
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.5,REQID:d5b53a54-a896-4a7c-8fdc-4b3f0fe1b49e,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:d68bcfe2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: ae53006ccc49492ea471649e8982384e-20220519
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2083496156; Thu, 19 May 2022 20:55:31 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+        with ESMTP id 1481731080; Thu, 19 May 2022 20:55:30 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 19 May 2022 20:55:30 +0800
+ Thu, 19 May 2022 20:55:29 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 19 May 2022 20:55:28 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 19 May 2022 20:55:30 +0800
+ Transport; Thu, 19 May 2022 20:55:28 +0800
 From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
 To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
         <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
@@ -51,9 +51,9 @@ CC:     <p.zabel@pengutronix.de>,
         <linux-mediatek@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v7 12/19] dt-bindings: arm: mediatek: Add #reset-cells property for MT8192/MT8195
-Date:   Thu, 19 May 2022 20:55:20 +0800
-Message-ID: <20220519125527.18544-13-rex-bc.chen@mediatek.com>
+Subject: [PATCH v7 02/19] clk: mediatek: reset: Fix written reset bit offset
+Date:   Thu, 19 May 2022 20:55:10 +0800
+Message-ID: <20220519125527.18544-3-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220519125527.18544-1-rex-bc.chen@mediatek.com>
 References: <20220519125527.18544-1-rex-bc.chen@mediatek.com>
@@ -64,46 +64,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We will use the infra_ao reset which is defined in mt8192-sys-clock
-and mt8195-sys-clock.
-The value of reset-cells is 1.
+Original assert/deassert bit is BIT(0), but it's more resonable to modify
+them to BIT(id % 32) which is based on id.
 
+This patch will not influence any previous driver because the reset is
+only used for thermal. The id (MT8183_INFRACFG_AO_THERM_SW_RST) is 0.
+
+Fixes: 64ebb57a3df6 ("clk: reset: Modify reset-controller driver")
 Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml       | 3 +++
- .../bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml       | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/clk/mediatek/reset.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml
-index 5705bcf1fe47..27f79175c678 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8192-sys-clock.yaml
-@@ -29,6 +29,9 @@ properties:
-   '#clock-cells':
-     const: 1
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index 9f3cb22aea1b..5191becb45dd 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -18,7 +18,7 @@ static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 	unsigned int reg = data->regofs + ((id / 32) << 4);
  
-+  '#reset-cells':
-+    const: 1
-+
- required:
-   - compatible
-   - reg
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml
-index 57a1503d95fe..95b6bdf99936 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8195-sys-clock.yaml
-@@ -37,6 +37,9 @@ properties:
-   '#clock-cells':
-     const: 1
+-	return regmap_write(data->regmap, reg, 1);
++	return regmap_write(data->regmap, reg, BIT(id % 32));
+ }
  
-+  '#reset-cells':
-+    const: 1
-+
- required:
-   - compatible
-   - reg
+ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+@@ -27,7 +27,7 @@ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+ 	unsigned int reg = data->regofs + ((id / 32) << 4) + 0x4;
+ 
+-	return regmap_write(data->regmap, reg, 1);
++	return regmap_write(data->regmap, reg, BIT(id % 32));
+ }
+ 
+ static int mtk_reset_assert(struct reset_controller_dev *rcdev,
 -- 
 2.18.0
 
