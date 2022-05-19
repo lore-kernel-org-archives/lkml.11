@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20384C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238103AbiESMu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 08:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51888 "EHLO
+        id S238121AbiESMua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 08:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238081AbiESMuW (ORCPT
+        with ESMTP id S235333AbiESMuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 08:50:22 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875CABA9B1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:50:20 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L3qRW2yyGz1JBst;
-        Thu, 19 May 2022 20:48:55 +0800 (CST)
+        Thu, 19 May 2022 08:50:21 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EF0CBA98C
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:50:19 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L3qPj11TNzQkLs;
+        Thu, 19 May 2022 20:47:21 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 20:50:17 +0800
+ 2022 20:50:15 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <hughd@google.com>
 CC:     <willy@infradead.org>, <vbabka@suse.cz>, <dhowells@redhat.com>,
@@ -29,12 +29,10 @@ CC:     <willy@infradead.org>, <vbabka@suse.cz>, <dhowells@redhat.com>,
         <surenb@google.com>, <peterx@redhat.com>, <rcampbell@nvidia.com>,
         <naoya.horiguchi@nec.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v4 2/5] mm/swapfile: Fix lost swap bits in unuse_pte()
-Date:   Thu, 19 May 2022 20:50:27 +0800
-Message-ID: <20220519125030.21486-3-linmiaohe@huawei.com>
+Subject: [PATCH v4 0/5] A few fixup patches for mm
+Date:   Thu, 19 May 2022 20:50:25 +0800
+Message-ID: <20220519125030.21486-1-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220519125030.21486-1-linmiaohe@huawei.com>
-References: <20220519125030.21486-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -46,47 +44,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is observed by code review only but not any real report.
+Hi everyone,
+This series contains a few patches to avoid mapping random data if swap
+read fails and fix lost swap bits in unuse_pte. Also we free hwpoison and
+swapin error entry in madvise_free_pte_range and so on. More details can
+be found in the respective changelogs. Thanks!
 
-When we turn off swapping we could have lost the bits stored in the swap
-ptes. The new rmap-exclusive bit is fine since that turned into a page
-flag, but not for soft-dirty and uffd-wp. Add them.
-
-Suggested-by: Peter Xu <peterx@redhat.com>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
 ---
- mm/swapfile.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+v4:
+  collect Reviewed-by per Naoya and David. Thanks for review!
+  fix infinite loop when swap in shmem error. Thanks Naoya for reporting
+the issue!
+v3:
+  collect Acked-by tag per David
+  remove unneeded pte wrprotect per David
+v2:
+  make the terminology consistent and collect Acked-by tag per David
+  fix lost swap bits in unuse_pte per Peter
+  free hwpoison and swapin error entry per Alistair
+  Many thanks Alistair, David and Peter for review!
+---
+Miaohe Lin (5):
+  mm/swapfile: unuse_pte can map random data if swap read fails
+  mm/swapfile: Fix lost swap bits in unuse_pte()
+  mm/madvise: free hwpoison and swapin error entry in
+    madvise_free_pte_range
+  mm/shmem: fix infinite loop when swap in shmem error at swapoff time
+  mm: filter out swapin error entry in shmem mapping
 
-diff --git a/mm/swapfile.c b/mm/swapfile.c
-index 226c7d3ba896..0beeaffc7dee 100644
---- a/mm/swapfile.c
-+++ b/mm/swapfile.c
-@@ -1774,7 +1774,7 @@ static int unuse_pte(struct vm_area_struct *vma, pmd_t *pmd,
- {
- 	struct page *swapcache;
- 	spinlock_t *ptl;
--	pte_t *pte;
-+	pte_t *pte, new_pte;
- 	int ret = 1;
- 
- 	swapcache = page;
-@@ -1823,8 +1823,12 @@ static int unuse_pte(struct vm_area_struct *vma, pmd_t *pmd,
- 		page_add_new_anon_rmap(page, vma, addr);
- 		lru_cache_add_inactive_or_unevictable(page, vma);
- 	}
--	set_pte_at(vma->vm_mm, addr, pte,
--		   pte_mkold(mk_pte(page, vma->vm_page_prot)));
-+	new_pte = pte_mkold(mk_pte(page, vma->vm_page_prot));
-+	if (pte_swp_soft_dirty(*pte))
-+		new_pte = pte_mksoft_dirty(new_pte);
-+	if (pte_swp_uffd_wp(*pte))
-+		new_pte = pte_mkuffd_wp(new_pte);
-+	set_pte_at(vma->vm_mm, addr, pte, new_pte);
- 	swap_free(entry);
- out:
- 	pte_unmap_unlock(pte, ptl);
+ include/linux/swap.h    |  7 ++++++-
+ include/linux/swapops.h | 10 ++++++++++
+ mm/madvise.c            | 18 ++++++++++++------
+ mm/memory.c             |  5 ++++-
+ mm/shmem.c              | 39 +++++++++++++++++++++++++++++++++++++++
+ mm/swap_state.c         |  3 +++
+ mm/swapfile.c           | 21 ++++++++++++++++++---
+ 7 files changed, 92 insertions(+), 11 deletions(-)
+
 -- 
 2.23.0
 
