@@ -2,115 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F43BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D59C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241433AbiESPoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47662 "EHLO
+        id S234328AbiESPpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233022AbiESPmO (ORCPT
+        with ESMTP id S241390AbiESPny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:42:14 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D735C845;
-        Thu, 19 May 2022 08:42:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652974933; x=1684510933;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XcUkjLL+YpWw11P834waxgWm/NgeT+vT/ACdu5U5CAo=;
-  b=lIi2fiLkt8EW9XmGeKZ3DL2Mw4ExFhwsBMFo4zIQLEv/mfuqfgqQw4Fv
-   WiIyXEhhsMc2f0ziJG0K4PN+zMsBDcRfrrAs6nwKqCBn++Ji8E8ZSNIQz
-   vGwtyLMGLnthYzd79cZNe8C5lzn+7Si8Yu9XG2XH7kv4PmBH0CbSqgehq
-   Plb4WxW7vbQ7k/azGC9hneLxIv8R7Z0283EBKlZTtpINJW9Dqu7zb9jJe
-   Jw98quqjDNz2AGxqLwXxz2qFG1q/6DhyIYuaQSf25patS3lqOtpf4xAJt
-   RR/H6S8c5COBVDvkq386+CF8m61nnwo9/ZcIlhMOk5+MsV+JTwXRhSCA4
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="272213468"
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="272213468"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 08:42:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="598635609"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 19 May 2022 08:42:03 -0700
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Subject: [PATCH v6 8/8] memfd_create.2: Describe MFD_INACCESSIBLE flag
-Date:   Thu, 19 May 2022 23:37:13 +0800
-Message-Id: <20220519153713.819591-9-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
-References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
+        Thu, 19 May 2022 11:43:54 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0CE5E769;
+        Thu, 19 May 2022 08:43:53 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id bq30so9855683lfb.3;
+        Thu, 19 May 2022 08:43:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=m5kPAYHdYcAvP0y9XTgXwmB1ZQjwIlMax/gKQxOCPRk=;
+        b=apT9tlxkaVfwr0nABaNIlf22EWq8+BlMG0XXnj6qRjSNqV1RxMYsV2cKb9qJxWV09r
+         rimoXcrswkwegkBW96uy9gdqvVq5PPWifgSPvatfAukoulgHYI0XDQGimO2qjAYMhHkp
+         jg8uvcr6GfYh0n8gTDq+GgnwNEvShlHYoXuvMEwj2cMnzSZOpjH6FufVMfNNKA72/P7h
+         Ao8oJKQcvfFCoqMSJe2yrw68j3iANY3qdYY2bghLZzdsOfJP2mvNV9EytanGnWaa2HXV
+         cqSFtXZujLThv3k081hxKCrsq04ULtXY9VsQOas/+LCWMVrk9JMFswryhiJqSGQd5fwq
+         4YTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=m5kPAYHdYcAvP0y9XTgXwmB1ZQjwIlMax/gKQxOCPRk=;
+        b=PtHdXeQF/AfLJWTOVEFgDFJ3dxtQAtqDl8LUX1Y1eJOoU9X6aTCJwVnISzOGKyNULX
+         IIgKsB1OH6w/97QF+yktR4oiS7V7xvHQiXHSDSYSWFd5ko7oh4J7IpYcgiZn+oplFejl
+         bBgFtESa5ASpaX7myEtm8WewCHSop0/wGD5Qtk0F2Oxgbi3mKt5GAQfyiFYHnSOejfQ5
+         T2y3LPtuwiR8ReN6QW3U6Uw512IZNXcA3ACqaq3lmU/KWWJkT4RNI98SQsFQ/s5Jn3Qo
+         wwsdTpK1kksDdFf4kp/K2lLtNsYVw+IotqCHsvDZ3hyRaYL2W2WntvGyFNlMvJvrwXQ6
+         0LfQ==
+X-Gm-Message-State: AOAM531rFz8iHT97w8mnb7TnjDjc1Yw3KZSfE0V4WRyMsnToKRPAAXLP
+        hgPC2fZZ+uFm5WtomlW4ccjlFJ3LlvOfTzoz
+X-Google-Smtp-Source: ABdhPJxl4SL3DRGmo4CMuax8LijL7oRpMQ8G4a0yUA745udxiALLACEvVsL1lFIOnhmPFTuJRTk4jA==
+X-Received: by 2002:a19:4f04:0:b0:477:b6c7:9771 with SMTP id d4-20020a194f04000000b00477b6c79771mr3659233lfb.182.1652975031556;
+        Thu, 19 May 2022 08:43:51 -0700 (PDT)
+Received: from [10.0.0.2] (89-69-162-27.dynamic.chello.pl. [89.69.162.27])
+        by smtp.gmail.com with ESMTPSA id g2-20020a19ee02000000b0047255d211a7sm321558lfb.214.2022.05.19.08.43.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 08:43:51 -0700 (PDT)
+Message-ID: <f6bb01be-d55d-a2b1-2d21-9abb48f3c445@gmail.com>
+Date:   Thu, 19 May 2022 17:43:39 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: Alternatives after removal of ReiserFS
+Content-Language: en-US
+To:     Jan Kara <jack@suse.cz>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     linux-kernel@vger.kernel.org, reiserfs-devel@vger.kernel.org
+References: <54db8933-f2f3-d31a-c71f-860285e25abf@gmail.com>
+ <2631780.mvXUDI8C0e@natalenko.name>
+ <20220519101652.iu5jbol2cjwr4y5c@quack3.lan>
+From:   =?UTF-8?Q?Micha=c5=82_Dec?= <moog621@gmail.com>
+In-Reply-To: <20220519101652.iu5jbol2cjwr4y5c@quack3.lan>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
----
- man2/memfd_create.2 | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Hello Jan and Oleksandr,
 
-diff --git a/man2/memfd_create.2 b/man2/memfd_create.2
-index 89e9c4136..2698222ae 100644
---- a/man2/memfd_create.2
-+++ b/man2/memfd_create.2
-@@ -101,6 +101,19 @@ meaning that no other seals can be set on the file.
- .\" FIXME Why is the MFD_ALLOW_SEALING behavior not simply the default?
- .\" Is it worth adding some text explaining this?
- .TP
-+.BR MFD_INACCESSIBLE
-+Disallow userspace access through ordinary MMU accesses via
-+.BR read (2),
-+.BR write (2)
-+and
-+.BR mmap (2).
-+The file size cannot be changed once initialized.
-+This flag cannot coexist with
-+.B MFD_ALLOW_SEALING
-+and when this flag is set, the initial set of seals will be
-+.B F_SEAL_SEAL,
-+meaning that no other seals can be set on the file.
-+.TP
- .BR MFD_HUGETLB " (since Linux 4.14)"
- .\" commit 749df87bd7bee5a79cef073f5d032ddb2b211de8
- The anonymous file will be created in the hugetlbfs filesystem using
--- 
-2.17.1
+I would prefer to avoid btrfs if possible. It ate my Gentoo root 
+filesystem in 2017. This incident has been resolved by reinstalling the 
+system because each attempt to fsck only made it even worse. I 
+appreciate it for excellent transparent compression and for generally 
+good support for Docker, but I can live without it.
 
+ >But given how cheap the storage is these days, people don't care as much.
+
+I don't like this kind of attitude because it encourages a decline in 
+quality in general. We'll learn to appreciate what we have once it 
+becomes scarce again.
+
+Thank you Jan and Oleksandr very much for your knowledge on xfs and 
+ext4. I'll make sure to put it to good use.
+
+Bestest regards,
+
+Michał Dec
+
+W dniu 19.05.2022 o 12:16, Jan Kara pisze:
+> On Thu 19-05-22 11:20:24, Oleksandr Natalenko wrote:
+>> Hello.
+>>
+>> On středa 18. května 2022 14:10:25 CEST Michał Dec wrote:
+>>> Does the Linux kernel actually offer any alternatives to users whose use
+>>> cases are satisfied by ReiserFS? These users will probably be stuck with
+>>> a much older kernel once ReiserFS is completely removed. I'm one of
+>>> those users and I use ReiserFS to keep around large quantities of small
+>>> files and quite ironically these are copies of the Linux kernel. I keep
+>>> around 2, maybe 3 separate kernel trees to make sure the kernels I have
+>>> on my devices can be rebuilt at any time.
+>> I think the advantage of using reiserfs for small files faded away over
+>> time and became an old tale that is being passed from one generation to
+>> another without any modern adequate testing.
+>>
+>> XFS should serve you well.
+> Yes, so the space savings of tail packing e.g. for the kernel tree are
+> likely still noticeable (my tree here has around half of the files with
+> size below 4k). But given how cheap the storage is these days, people don't
+> care as much. If space efficiency is important, it could be improved by using
+> 1k blocksize for xfs or ext4. Also btrfs does packing of small files so
+> for lots of small files it may be more space-efficient. And btrfs also
+> supports transparent compression so that can reduce space usage for larger
+> files even further.
+>
+> 								Honza
