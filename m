@@ -2,126 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E88D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D327C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbiESIlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 04:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        id S235506AbiESIlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 04:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232134AbiESIlc (ORCPT
+        with ESMTP id S235503AbiESIlg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 04:41:32 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7B95C67B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:41:28 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id f2so6131929wrc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:41:28 -0700 (PDT)
+        Thu, 19 May 2022 04:41:36 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5015EBE2
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:41:35 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso4596714pjb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:41:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Zu6Jc6vPHdx+DLxnR1TmqxY9QoEaPYsoi3ifcQsAFPk=;
-        b=zeI9nOw/qa+Ir+ahRG/199gpdKCGgQdPwFGR+2GBVeKkd9NQHKrv2Xw7orL32VuFDW
-         8lEdFQ9IGR1dsccUixD1tXCDoyNhYc/J2ByQd7JJRmOG+w/X5j+drTY1AKAc2eeJHe49
-         4sr4i5KYvm+qoMfX9m1iniaGMf0FR3SN2d1RYShRndhPYyGVCdaLxb/Owbvhw6oSS57w
-         G7K5vhCw5vbZkFBYKicU/3OC8PcN1mXDVxynmc7ajY11jdD/koUaa8JvqLEEEGZwKetp
-         QiXiyMkRK5PkGOSrnjchhLGA21lUwrWaR4wrm6YNdv/dPmCN8RtahpEb7G+tn1U7QAgf
-         rIVw==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9F4LJppyqE41q1h43fo/X8VtHTZjJ9e8kf5fIIkbl00=;
+        b=WJFhyIJFYS9f3bR81kq8k7S1IT6b4ctmIlFV09o1nN6goqGhtWhRtp729/39pPXNCP
+         eOWyRZfzQgZUADV66in2saYgYZg2XqVqOtr9kpUVn+f184+8c4eNOMBtIbyO/s/e2bzx
+         TMynds0f5ujgx7YWNE9URnPppPuj+8cw8OkAM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zu6Jc6vPHdx+DLxnR1TmqxY9QoEaPYsoi3ifcQsAFPk=;
-        b=YVCnVEKW+fsuJBphGJ0DaQYreum6VPZ3yp+Pc3E6I4UlRQLAcdjNN546GoZp4Zpd2h
-         6sPNxbi2XfHED+XdKn+qy/zxg6Jun41aLWUEpalP+kVCTH+7Oh7voJHT3Cxof8oV4eLd
-         CB3RevHKqtgJp+/LKGXHvggPVXixsa4ycJ2zTmpB3tDiFqDpQrAKiBRx0UM+ftY9befZ
-         EYVWF0jZY5B/h0rq49A8WoNKt+X5W3hLKR7l2Yg6OrnLg40ZI40E1LIAltd+QMFRwM6l
-         M8UwOOQgvJsNZJFa9j8s/wK/naS0En6/9bXX4C8fMT72BixK1+DrlnvPW/qwqO28MlOV
-         SrLw==
-X-Gm-Message-State: AOAM531/nHJpwe5eoqHOpn3CeVB5bSPZVJfdYHaxYZFWuBa+fwg/uyCm
-        Qx9a8WpytiTW0vbakNc4MnJK96MIVN4+ahha
-X-Google-Smtp-Source: ABdhPJzrgO0iDfpb9JSw3ooLZNe9BU6AWm/lFzSbPVM+AVlG0fAnS2+rHXjUPDoqv9BQp5C+QWdrtQ==
-X-Received: by 2002:adf:a459:0:b0:20d:3c9:44a1 with SMTP id e25-20020adfa459000000b0020d03c944a1mr2865603wra.560.1652949687055;
-        Thu, 19 May 2022 01:41:27 -0700 (PDT)
-Received: from localhost ([46.69.19.220])
-        by smtp.gmail.com with ESMTPSA id i29-20020adfaadd000000b0020c5253d8casm4599719wrc.22.2022.05.19.01.41.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9F4LJppyqE41q1h43fo/X8VtHTZjJ9e8kf5fIIkbl00=;
+        b=u3vhg9z9R4ECRFMqwmLFWKr5RG8YRGuAwhimOXjyplPxF/cYwCFgKHA8eTK41/DJEB
+         Eq3bojNeNxTr+8ZlLdhXtvshblRrNIIRssQdYYu1B5L1lWHWoTbqhIX3sDuWLgbaXVFv
+         ZzcVYwRSKdChXC/6IkW0o0hLGN8CGdH8Sn2X8S4a3dmpIeWsa49zQhxzuO0tc1jbF46o
+         5Xu66xfhoA10FTAf2/mHrvzN5k+Tcv1XbZ4PbUm8cpkxOFZJ1URUa1y/MHNXXPTBSPI7
+         145p3EvSqt4NppJTLXPNrhdWV0tybErX+jgL7cXidT5uzYt12xhAfOmIRsSXE1sF+J7Z
+         tROw==
+X-Gm-Message-State: AOAM531/6Sgfk9kwJKDfbosOAim6DkXmObcC7mRfkN8HPPHwV9jKu7FD
+        rP4rDa2W9KADvdLyg+BhkEiTOIppLtJSwA==
+X-Google-Smtp-Source: ABdhPJw+iNDACAe/dSBqzUI0O4XQGEgN1hO5zC0/gT+10HZzsJJK95BJlERBpDdb3hhiVNO/UA37vg==
+X-Received: by 2002:a17:902:b495:b0:15f:2a7b:b9d2 with SMTP id y21-20020a170902b49500b0015f2a7bb9d2mr3889302plr.20.1652949695018;
+        Thu, 19 May 2022 01:41:35 -0700 (PDT)
+Received: from judyhsiao0319.c.googlers.com.com (164.135.233.35.bc.googleusercontent.com. [35.233.135.164])
+        by smtp.gmail.com with ESMTPSA id m10-20020a170902f20a00b0015f33717794sm3066185plc.42.2022.05.19.01.41.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 01:41:26 -0700 (PDT)
-From:   Fam Zheng <fam.zheng@bytedance.com>
-X-Google-Original-From: Fam Zheng <fam@euphon.net>
-Date:   Thu, 19 May 2022 09:41:21 +0100
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     Kirill Tkhai <kirill.tkhai@openvz.org>, qemu-devel@nongnu.org,
-        dm-devel@redhat.com, linux-kernel@vger.kernel.org,
-        Kevin Wolf <kwolf@redhat.com>, hreitz@redhat.com,
-        Xie Yongji <xieyongji@bytedance.com>, sgarzare@redhat.com
-Subject: Re: Attaching qcow2 images to containers
-Message-ID: <20220519084121.GA6658@fam-dell>
-References: <YoSSkOQaGL0sBNOI@stefanha-x1.localdomain>
+        Thu, 19 May 2022 01:41:34 -0700 (PDT)
+From:   Judy Hsiao <judyhsiao@chromium.org>
+To:     Andy Gross <agross@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
+        judyhsiao@google.com, tzungbi@chromium.org, swboyd@chromium.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
+Subject: [v1 0/3] Add dtsi for sc7280 boards that using rt5682 codec
+Date:   Thu, 19 May 2022 08:41:16 +0000
+Message-Id: <20220519084119.675990-1-judyhsiao@chromium.org>
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoSSkOQaGL0sBNOI@stefanha-x1.localdomain>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-18 07:30, Stefan Hajnoczi wrote:
-> Hi Kirill,
-> I saw your "[PATCH 0/4] dm: Introduce dm-qcow2 driver to attach QCOW2
-> files as block device" patch series:
-> https://lore.kernel.org/linux-kernel/YkME5ZS2CpXuNmN6@infradead.org/T/
-> 
-> There has been recent work in vDPA (VIRTIO Data Path Acceleration) to
-> achieve similar functionality. The qemu-storage-daemon VDUSE export
-> attaches a virtio-blk device to the host kernel and QEMU's qcow2
-> implementation can be used:
-> https://patchew.org/QEMU/20220504074051.90-1-xieyongji@bytedance.com/
-> 
-> A container can then access this virtio-blk device (/dev/vda). Note that
-> the virtio-blk device is implemented in software using vDPA/VDUSE, there
-> is no virtio-pci device.
-> 
-> As a quick comparison with a dm-qcow2 target, this approach keeps the
-> qcow2 code in QEMU userspace and can take advantage of QEMU block layer
-> features (storage migration/mirroring/backup, snapshots, etc). On the
-> other hand, it's likely to be more heavyweight because bounce buffers
-> are required in VDUSE for security reasons, there is a separate
-> userspace process involved, and there's the virtio_blk.ko driver and an
-> emulated virtio-blk device involved.
-> 
-> Another similar feature that was recently added to QEMU is the
-> qemu-storage-daemon FUSE export:
-> 
->   $ qemu-storage-daemon \
->         --blockdev file,filename=test.img,node-name=drive0 \
-> 	--export fuse,node-name=drive0,id=fuse0,mountpoint=/tmp/foo
->   $ ls -alF /tmp/foo
->   -r--------. 1 me me 10737418240 May 18 07:22 /tmp/foo
-> 
-> This exports a disk image as a file via FUSE. Programs can access it
-> like a regular file and qemu-storage-daemon will do the qcow2 I/O on the
-> underlying file.
-> 
-> I wanted to mention these options for exposing qcow2 disk images to
-> processes/containers on the host. Depending on your use cases they might
-> be interesting. Performance comparisons against VDUSE and FUSE exports
-> would be interesting since these new approaches seem to be replacing
-> qemu-nbd.
+Put sound node and lpass_cpu node settings for boards that use rt5682
+codec in the sc7280-herobrine-audio-rt5682.dtsi as there are different
+choices of headset codec for herobrine projects. Common audio setting
+for the internal speaker is in sc7280-herobrine.dtsi.
 
-In addition, there was also qemu-tcmu, (more PoC compared to other options):
+Judy Hsiao (3):
+  arm64: dts: qcom: sc7280: Add drive strength property for secondary
+    MI2S
+  arm64: dts: qcom: sc7280: Add sc7280-herobrine-audio-rt5682.dtsi
+  arm64: dts: qcom: sc7280: include sc7280-herobrine-audio-rt5682.dtsi
+    in villager and herobrine-r1
 
-https://lists.gnu.org/archive/html/qemu-devel/2016-10/msg04408.html
+ .../qcom/sc7280-herobrine-audio-rt5682.dtsi   | 121 ++++++++++++++++++
+ .../qcom/sc7280-herobrine-herobrine-r1.dts    |   1 +
+ .../dts/qcom/sc7280-herobrine-villager-r0.dts |   1 +
+ .../arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  14 ++
+ 4 files changed, 137 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi
 
-Fam
-
-> 
-> Can you share more about your use cases for the dm-qcow2 target? It
-> could be useful for everyone I've CCed to be aware of various efforts in
-> this area.
-> 
-> Thanks,
-> Stefan
-
+-- 
+2.36.1.124.g0e6072fb45-goog
 
