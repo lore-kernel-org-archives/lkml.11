@@ -2,147 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6050EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 04:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A86CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 04:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233702AbiESEiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 00:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
+        id S233729AbiESElF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 00:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233697AbiESEiq (ORCPT
+        with ESMTP id S233764AbiESElC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 00:38:46 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFE68198E
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:38:45 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id f9so7679384ejc.0
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:38:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y0Kov6aZdluetrN4GQj4rWNqdgKSS3UrrNz8s7QqTl4=;
-        b=lb+cGOwjMv7chw9bEY0403JGbt094O5Lu+PxqVnMvWCHQYuNrnR9AXrzksddK59SIX
-         vv+K4FkFdVI4i9EHN05xvXKJX6/G6mYZEukCECzrLo1ktOjXOBEBO2NA0TpbSifxS3JK
-         jSye133I1fxiC8Up5HjHRLeIsFv4OtLR7/kTblmRYro7xfNaNpNb/jmhdxrJ6pgw+ecw
-         +cLtDZDX/mrmotv+NY4fwoomcWIvTV5WUh7FtftPMgAhDrSUwp6pkhiWgkMO4xgCHqXv
-         DNtBysmq/un5ct30v8dhYXjgU+DkDGj+OpxvGLv14AvD4XpqG8SU2f2iMmo0GAi+AAWu
-         u0vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y0Kov6aZdluetrN4GQj4rWNqdgKSS3UrrNz8s7QqTl4=;
-        b=YIsVVPr1l7b9+wuNek12XI+O/zb6QN8CE/L9lO+LLLHPpN1tgLsXAqhJaBg2LdJ5C+
-         sjCar2W5NgsERUEwt6d74VYPbybJZQ7ajmViWr4wi7aJi0BPP5N9LHajc8j4VFnSdGSm
-         c1cneVBGagJl/oAmMV8I5Gvbmg6w/f++UsMCHiA6dCnwxonWOn0RtAXY2pS67NsLI/jh
-         vtD4Q6VPHe3WlchPvOgdsUcOivF9mRFABR3t+e8wkA3vgRtjnucDWqSTgGJV0XNAiGDC
-         4thDdc8bjJ24XJ1OIwnr0CWHtdDyZwRnJfY8zD8ezdtnHCx2OnvlKNQCoegszeI/Ov11
-         9hYQ==
-X-Gm-Message-State: AOAM530HYkr0vGMBXmX0JBCJatMJI+C4lxeschXSPBK3X7K881KsZbGP
-        mGc1l+kdZd/wb2NskrAYeCG1EUTG+zBLNOhN8DAW0ZKHXT8awZbQ
-X-Google-Smtp-Source: ABdhPJxeEiNQJNA3d/l8Al5ft81eWo6HMUJUyxb6p+J94ov9RvTStETt94fsJB+tXQ6WvGOzqTuDiuLorNtjdFYir1E=
-X-Received: by 2002:a05:6000:78b:b0:20d:101b:2854 with SMTP id
- bu11-20020a056000078b00b0020d101b2854mr2187889wrb.300.1652935112801; Wed, 18
- May 2022 21:38:32 -0700 (PDT)
+        Thu, 19 May 2022 00:41:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9065C661;
+        Wed, 18 May 2022 21:41:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22BDD619B9;
+        Thu, 19 May 2022 04:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16E44C385B8;
+        Thu, 19 May 2022 04:41:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652935260;
+        bh=ydUDPQfiDFXRRUsRJHQC3B3uycrZ1kC9Z7zzJcg/1HE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Us05cmksIJ7DW7J0qyymfrkO8pUQpwexdf3W+0QjTVkBTbg+e7quQlI5eQ3/R84yl
+         xdLE++bqOJ7Bsmxifq8X6NOTcB+cG5/EGawKvvsSdHFZ32m9MzttDnQshSmVT92kP/
+         8BTM9OWJGUYtwk6ewx7tydIOTYpBW/AQJQzH3fcKgrFGgG5T1hefei6jYGo3ES4F2W
+         QOxNv+CeHpbsLlwY6Kwk1teQywwRepeIt+c7PcmZoja3lMvHvTpgRELyQINahjMCUQ
+         0R8L8OXTUbU0ZgFv4mb5Z9gOaxwmQZODjcQbOv+Adx6Cfs4ujU5GcOfQy55gQ9XMa6
+         9s/DH2hrqHaEg==
+Date:   Wed, 18 May 2022 21:40:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Harini Katakam <harini.katakam@xilinx.com>
+Cc:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
+        <radhey.shyam.pandey@xilinx.com>
+Subject: Re: [PATCH net v3] net: macb: Fix PTP one step sync support
+Message-ID: <20220518214058.2a964dba@kernel.org>
+In-Reply-To: <20220518170756.7752-1-harini.katakam@xilinx.com>
+References: <20220518170756.7752-1-harini.katakam@xilinx.com>
 MIME-Version: 1.0
-References: <20220518145125.1494156-1-kan.liang@linux.intel.com>
-In-Reply-To: <20220518145125.1494156-1-kan.liang@linux.intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 18 May 2022 21:38:20 -0700
-Message-ID: <CAP-5=fWKmR-bDbiocSAd4qkrf7_ge+e1_gYLjQqRfGyc8FP4Sw@mail.gmail.com>
-Subject: Re: [PATCH] perf regs x86: Fix arch__intr_reg_mask() for the hybrid platform
-To:     kan.liang@linux.intel.com
-Cc:     acme@kernel.org, mingo@redhat.com, namhyung@kernel.org,
-        jolsa@kernel.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, peterz@infradead.org,
-        zhengjun.xing@linux.intel.com, Ammy Yi <ammy.yi@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 7:52 AM <kan.liang@linux.intel.com> wrote:
->
-> From: Kan Liang <kan.liang@linux.intel.com>
->
-> The X86 specific arch__intr_reg_mask() is to check whether the kernel
-> and hardware can collect XMM registers. But it doesn't work on some
-> hybrid platform.
->
-> Without the patch on ADL-N,
->
-> $perf record -I?
-> available registers: AX BX CX DX SI DI BP SP IP FLAGS CS SS R8 R9 R10
-> R11 R12 R13 R14 R15
->
-> The config of the test event doesn't contain the PMU information. The
-> kernel may fail to initialize it on the correct hybrid PMU and return
-> the wrong non-supported information.
->
-> Add the PMU information into the config for the hybrid platform. The
-> same register set is supported among different hybrid PMUs. Checking
-> the first available one is good enough.
->
-> With the patch on ADL-N,
->
-> $perf record -I?
-> available registers: AX BX CX DX SI DI BP SP IP FLAGS CS SS R8 R9 R10
-> R11 R12 R13 R14 R15 XMM0 XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 XMM9
-> XMM10 XMM11 XMM12 XMM13 XMM14 XMM15
->
-> Fixes: 6466ec14aaf4 ("perf regs x86: Add X86 specific arch__intr_reg_mask()")
-> Reported-by: Ammy Yi <ammy.yi@intel.com>
-> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+On Wed, 18 May 2022 22:37:56 +0530 Harini Katakam wrote:
+> PTP one step sync packets cannot have CSUM padding and insertion in
+> SW since time stamp is inserted on the fly by HW.
+> In addition, ptp4l version 3.0 and above report an error when skb
+> timestamps are reported for packets that not processed for TX TS
+> after transmission.
+> Add a helper to identify PTP one step sync and fix the above two
+> errors. Add a common mask for PTP header flag field "twoStepflag".
+> Also reset ptp OSS bit when one step is not selected.
+> 
+> Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
+> Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-Acked-by: Ian Rogers <irogers@google.com>
-
-> ---
->  tools/perf/arch/x86/util/perf_regs.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
->
-> diff --git a/tools/perf/arch/x86/util/perf_regs.c b/tools/perf/arch/x86/util/perf_regs.c
-> index 207c56805c55..0ed177991ad0 100644
-> --- a/tools/perf/arch/x86/util/perf_regs.c
-> +++ b/tools/perf/arch/x86/util/perf_regs.c
-> @@ -9,6 +9,8 @@
->  #include "../../../util/perf_regs.h"
->  #include "../../../util/debug.h"
->  #include "../../../util/event.h"
-> +#include "../../../util/pmu.h"
-> +#include "../../../util/pmu-hybrid.h"
->
->  const struct sample_reg sample_reg_masks[] = {
->         SMPL_REG(AX, PERF_REG_X86_AX),
-> @@ -284,12 +286,22 @@ uint64_t arch__intr_reg_mask(void)
->                 .disabled               = 1,
->                 .exclude_kernel         = 1,
->         };
-> +       struct perf_pmu *pmu;
-
-nit: this could have smaller scope if just be declared in the if-block.
-
-Thanks,
-Ian
-
->         int fd;
->         /*
->          * In an unnamed union, init it here to build on older gcc versions
->          */
->         attr.sample_period = 1;
->
-> +       if (perf_pmu__has_hybrid()) {
-> +               /*
-> +                * The same register set is supported among different hybrid PMUs.
-> +                * Only check the first available one.
-> +                */
-> +               pmu = list_first_entry(&perf_pmu__hybrid_pmus, typeof(*pmu), hybrid_list);
-> +               attr.config |= (__u64)pmu->type << PERF_PMU_TYPE_SHIFT;
-> +       }
-> +
->         event_attr_init(&attr);
->
->         fd = sys_perf_event_open(&attr, 0, -1, -1, 0);
-> --
-> 2.35.1
->
+Acked-by: Jakub Kicinski <kuba@kernel.org>
