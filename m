@@ -2,142 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF1FC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF98C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbiESHEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S231393AbiESHEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiESHEB (ORCPT
+        with ESMTP id S229784AbiESHEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:04:01 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09CC275;
-        Thu, 19 May 2022 00:04:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id CF6261F9DC;
-        Thu, 19 May 2022 07:03:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652943838; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=395st/CngVntAAOn5uSBsdHcf6UJsehUQOcbe6ab9wI=;
-        b=qJ/FgyV3p4LuXUdkZjoAbs2+ewn4o7aNZN0S67D2rC96Mde70WoKxt5D1iYy3vIxFGNywX
-        NYQFStO7xXozlUSKqQPZCblT/M2McgEFa5ttVGDSrZzFsBjH4DUBLxqHsrlOhubnXz8Ip9
-        VRfQAfc3f6HDJx77hS/XQSQpNXuMeJQ=
-Received: from suse.cz (unknown [10.100.201.202])
+        Thu, 19 May 2022 03:04:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F876275
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:04:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 813A52C141;
-        Thu, 19 May 2022 07:03:55 +0000 (UTC)
-Date:   Thu, 19 May 2022 09:03:52 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>,
-        Julius Werner <jwerner@chromium.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        zhenwei pi <pizhenwei@bytedance.com>
-Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Message-ID: <YoXr2AD+Jc/ukUhJ@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com>
- <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
- <YoOpyW1+q+Z5as78@alley>
- <YoSnGmBJ3kYs5WMf@alley>
- <fbbd0a8d-2ef4-4a39-4b75-354918e85778@igalia.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0699361AEC
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:04:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 911EEC34100;
+        Thu, 19 May 2022 07:04:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652943879;
+        bh=Vs92SomJTwmxqLbZCSx0G5mbJs8qlFgyVn/DAB8d1nc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UmizLoVRvN+mTKwAZ8G24D9WBSEGXBdqRj62afY6VtuDYFW0e6UmxfACDvmuI0pPf
+         hNL1ZpH8Y3GqPRApSIbG4s3bipZME8aEf3m8hike+ZM02P3cOgaMDTXMtbaW/RtRKB
+         qc3Qy26wRnLtCrgdgsIED8mTkMWcPWXFoIspnlG4=
+Date:   Thu, 19 May 2022 09:04:34 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Chris Down <chris@chrisdown.name>
+Cc:     linux-kernel@vger.kernel.org, Petr Mladek <pmladek@suse.com>,
+        kernel-team@fb.com
+Subject: Re: [RFC PATCH] printk: console: Allow each console to have its own
+ loglevel
+Message-ID: <YoXsAkUgzIjJR90W@kroah.com>
+References: <YoUBh5BSsURDO71Z@chrisdown.name>
+ <YoUR6RlzkCNG7BU0@kroah.com>
+ <YoVM+KbdyJm8RSSr@chrisdown.name>
+ <YoVO23+fvsNPnpKh@kroah.com>
+ <YoVWpZKHD7aec0CJ@chrisdown.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fbbd0a8d-2ef4-4a39-4b75-354918e85778@igalia.com>
+In-Reply-To: <YoVWpZKHD7aec0CJ@chrisdown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-05-18 10:16:20, Guilherme G. Piccoli wrote:
-> On 18/05/2022 04:58, Petr Mladek wrote:
-> > [...]
-> >> I does similar things like kmsg_dump() so it should be called in
-> >> the same location (after info notifier list and before kdump).
-> >>
-> >> A solution might be to put it at these notifiers at the very
-> >> end of the "info" list or make extra "dump" notifier list.
+On Wed, May 18, 2022 at 09:27:17PM +0100, Chris Down wrote:
+> Greg Kroah-Hartman writes:
+> > > If you're talking about properly freeing the memory, I suppose it should
+> > > happen by doing something like the following in unregister_console():
+> > > 
+> > >     if (!console_drivers)
+> > >         /* free the class object under console lock */
+> > > 
+> > > ...right? Let me know if I'm misunderstanding you.
 > > 
-> > I just want to point out that the above idea has problems.
-> > Notifiers storing kernel log need to be treated as kmsg_dump().
-> > In particular, we would  need to know if there are any.
-> > We do not need to call "info" notifier list before kdump
-> > when there is no kernel log dumper registered.
+> > You can't do that as the driver core should now be managing the
+> > lifespace of that object.  You can't "know" when the object's memory is
+> > to be freed EXCEPT in the release function.
 > > 
+> > So free it there please.
+> > 
+> > Or do not tie the lifepan of the console class device object to the
+> > console object, and keep it separate.  I don't remember exactly how you
+> > tied them together here, sorry.
 > 
-> Notifiers respect the priority concept, which is just a number that
-> orders the list addition (and the list is called in order).
+> [...]
 > 
-> I've used the last position to panic_print() [in patch 25] - one idea
-> here is to "reserve" the last position (represented by INT_MIN) for
-> notifiers that act like kmsg_dump(). I couldn't find any IIRC, but that
-> doesn't prevent us to save this position and comment about that.
+> > > > Do you ever free the class?
+> > > 
+> > > Currently no. What do you think about the above proposal to do it once the
+> > > console driver list is exhausted?
+> > 
+> > If the code can never be unloaded, no, don't worry about it.
+> 
+> So just so I understand, there's no problem here if we're not going to free
+> the class object, correct? These two stanzas in your reply refer to the same
+> thing, right?
 
-I would ignore it for now. If anyone would want to safe the log
-then they would need to read it. They will most likely use
-the existing kmsg_dump() infastructure. In fact, they should
-use it to avoid a code duplication.
+The two stanzas in my reply do NOT refer to the same thing.
 
-Best Regards,
-Petr
+The first one is for the device that is assigned to the class.  That
+must be freed and properly reference counted and handled as that is a
+dynamic object that can come and go as people add and remove consoles.
+
+The second is the 'struct class' itself.  You can register that and be
+done with it if your code can never be unloaded as it can not be a
+module.
+
+Hope that explains the confusion better.
+
+thanks,
+
+greg k-h
