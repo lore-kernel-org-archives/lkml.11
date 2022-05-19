@@ -2,120 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B63F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:59:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244944AbiESU6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 16:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
+        id S244947AbiESU73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 16:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244928AbiESU6I (ORCPT
+        with ESMTP id S244928AbiESU7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 16:58:08 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03558EC3D8
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:58:07 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id y13so11417969eje.2
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:58:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w7n9soc+YeiEuDs+/wVe5880ZbNB6SfvRzmD9yZCDg0=;
-        b=DBEkcJxwMHgrSW6HcJcRibGMLRAHktxTfe210zz70+cSSKn6ZpUgiva+kk1wpf11Zn
-         AEG+Mgw1hd0KW2hE0Q1vG6WOtJs0wkwyzpBg39QhS4doVKGMJsExBp8t3Mh2Q11oNnXz
-         Uj83mLI19GvO9WWx9wIiJ6kgKwKQLuX9IR+/Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w7n9soc+YeiEuDs+/wVe5880ZbNB6SfvRzmD9yZCDg0=;
-        b=PXh0koqGFTRNsrj1tkehHhnnVtIC9lBCE46sQX/0xaF3IHeZql0nSUD8qidxeVaadt
-         B8ML1YzyauJ2ADyHKkyP6IwDTTnyMM97Tj9zzzjFNSSNYRJWwrXDJcDNFccW9WkCFAwZ
-         PM/ZQJn8+BExEtIhNtA6ipXTwXUutVsC57lw1rZhfOc3IEZPMPxwq9vUHtZTy2M2St8i
-         SIQR+mTc/7iTRVO06IPRHklQOKEyCXsTZ2zEjAR1JpMhlsdLfZcZmF6TSBLxJ4Br/fbu
-         v0yRuCa2TukXu40cHRfJdqTaPPY6g5GBs28CE7qpISr0HJ7VGIGZa2tH0SZxEpKsfngl
-         wMXg==
-X-Gm-Message-State: AOAM532OiYEpHpan8fZLJfQ1FGQ+LBk3uprEYsVPhgldeeD2LtCg2Mdn
-        BqkQQEo69GaEDC0hzPbOdly0j8zjSuT5bIqN9zk=
-X-Google-Smtp-Source: ABdhPJz5AkiaoJxGZwErtSZtLfDLHnOFbeYUt+eZFmpa6DnBxoFucatvMNS5lfKH46EZBQfBo6bXWQ==
-X-Received: by 2002:a17:907:6daa:b0:6f4:4822:549d with SMTP id sb42-20020a1709076daa00b006f44822549dmr6262834ejc.322.1652993885193;
-        Thu, 19 May 2022 13:58:05 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id 4-20020a170906224400b006f3ef214da7sm2496448ejr.13.2022.05.19.13.58.04
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 13:58:04 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id j24so8811899wrb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:58:04 -0700 (PDT)
-X-Received: by 2002:a05:6000:2c1:b0:20c:5e37:3ed1 with SMTP id
- o1-20020a05600002c100b0020c5e373ed1mr5575002wry.342.1652993554192; Thu, 19
- May 2022 13:52:34 -0700 (PDT)
+        Thu, 19 May 2022 16:59:24 -0400
+Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com [136.143.188.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4BEEC3DD;
+        Thu, 19 May 2022 13:59:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1652993938; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=RiZQ0ZOTCial1OVArSdR7fF+wyx602CWnh9upFkwMOgiN5jQmc7ShQ7vWR2Wn4SEJ+ssuf1sS1/SPG7Z5AAH9/WoPz5tBjXfHjPorALtLNtbEQ3bMHdsD4+RiQs+J6zbLw7mOpz8ooiFpPwZr7hFlL6HikEpTAh3jX0Mzhr1fJU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1652993938; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=+lxcsbkWlW5OwDAWmQ8OTx1rv/aXJYWx9gMImQtgn8Q=; 
+        b=GOHuI5g9gHB4MCyQoxHacvW+aswhr5onkesYg+TC7HaCt5vjIPs2gt3tKwPfPlFJrYWRxYj8gbNOuAhDPOePwV6WEBasjV6WAo8DgvUQ/qmS7WHpDM9h0etJhCRu/Ym3Fgv1yQSJfjB3P82bZr3sh6dWp0+xFTCrD6RvmcY9pv0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=apertussolutions.com;
+        spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+        dmarc=pass header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1652993938;
+        s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+        h=Message-ID:Date:Date:MIME-Version:To:To:Cc:Cc:References:From:From:Subject:Subject:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=+lxcsbkWlW5OwDAWmQ8OTx1rv/aXJYWx9gMImQtgn8Q=;
+        b=rlYFZ24nM6N02tt/RhCI30K/UlgCtuaE+iIC4nQ6cTV/EsnpMIWUgJ2tmYWAYaYt
+        2SG20ToIvS5VQGiOEVw/Rs4GxsiUUxjbMg3PxrigsY8bkkqc/8GFj8tPaaakj6SPW42
+        8JnHonQc99bESroQHYUwJLiNhY/caMg0ViTQ68mc=
+Received: from [10.10.1.138] (static-72-81-132-2.bltmmd.fios.verizon.net [72.81.132.2]) by mx.zohomail.com
+        with SMTPS id 1652993933360319.6557389531473; Thu, 19 May 2022 13:58:53 -0700 (PDT)
+Message-ID: <f9622b47-c45f-8c91-cb85-e5db7fd541cf@apertussolutions.com>
+Date:   Thu, 19 May 2022 16:57:36 -0400
 MIME-Version: 1.0
-References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org> <20220518225355.784371-3-ebiederm@xmission.com>
-In-Reply-To: <20220518225355.784371-3-ebiederm@xmission.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 19 May 2022 13:52:22 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UFK7h0oHGJ23y37ShO+z4vt9ubGE9E4m=jMECgNAAHgA@mail.gmail.com>
-Message-ID: <CAD=FV=UFK7h0oHGJ23y37ShO+z4vt9ubGE9E4m=jMECgNAAHgA@mail.gmail.com>
-Subject: Re: [PATCH 03/16] kdb: Use real_parent when displaying a list of processes
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Will Deacon <will@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Miller <dougmill@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Matthew Garrett <mjg59@srcf.ucam.org>,
+        Daniel Kiper <daniel.kiper@oracle.com>
+Cc:     Alec Brown <alec.r.brown@oracle.com>,
+        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
+        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
+        "persaur@gmail.com" <persaur@gmail.com>,
+        "Yoder, Stuart" <stuart.yoder@arm.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
+        James Bottomley <James.Bottomley@HansenPartnership.com>,
+        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        grub-devel@gnu.org, James Morris <jmorris@namei.org>
+References: <20220329174057.GA17778@srcf.ucam.org>
+From:   "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Subject: Re: Linux DRTM on UEFI platforms
+In-Reply-To: <20220329174057.GA17778@srcf.ucam.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Wed, May 18, 2022 at 3:54 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->
-> kdb has a bug that when using the ps command to display a list of
-> processes, if a process is being debugged the debugger as the parent
-> process.
->
-> This is silly, and I expect it never comes up in ptractice.  As there
-> is very little point in using gdb and kdb simultaneously.  Update the
-> code to use real_parent so that it is clear kdb does not want to
-> display a debugger as the parent of a process.
+Greetings,
 
-So I would tend to defer to Daniel, but I'm not convinced that the
-behavior you describe for kdb today _is_ actually silly.
+Based on the discussions that occurred in this thread, there seems to be
+two issues at hand that should be decoupled, as their solutions can and
+should be implemented independently. These are:
+- the handling of the Dynamic Launch preamble
+- providing the complete kernel configuration for measurement
 
-If I was in kdb and I was listing processes, I might actually want to
-see that a process's parent was set to gdb. Presumably that would tell
-me extra information that might be relevant to my debug session.
+For the former, it is believed there is a consensus that Matthew's
+proposed callback approach would be the preferred method. Through some
+contemplating and prototyping, the determination is that this will in
+fact be an approach that will ultimately benefit the TrenchBoot project
+itself.
 
-Personally, I'd rather add an extra piece of information into the list
-showing the real parent if it's not the same as the parent. Then
-you're not throwing away information.
+In general, the preamble consists of two activities: 1. preparing the
+contents in memory and 2. preparing the hardware in order to call the
+Dynamic Launch instruction. In past implementations, these two
+activities were conducted sequentially, but in reality the time delta
+between the two may be arbitrary. Introducing this separation does not
+introduce any security concerns due to how the Dynamic Launch works. Any
+tampering of the contents in memory will either cause the Dynamic Launch
+to fail or result in a detectable difference in the Dynamic Launch
+measurement chain.
 
--Doug
+In order to separate the hardware interactions into what will be called
+the DLE Handler, this will require a collection of information regarding
+how the environment is set up. When working through what would be
+required, this led to the realization that this really should be
+generalized into a formal specification for TrenchBoot's Secure Launch.
+This will enable a reusable solution for the TrenchBoot project, versus
+implementing a one-off solution for Linux. A prototype of is near
+completion, for which below is a visual depiction along with a
+step-by-step walk through of how it would work for efi-stub.
+
+Secure Launch Flow:
+
+                         +-----------------+
+                         |                 |
+         +-------------->| Secure Launch   +---------------+
+         |               | Resource Table  |               |
+         |               |                 |    +------|---------------+
+         |               +--------+--------+    |      |         DLME  |
+         |                        |             |      v               |
+         |                        |             | +---------------+    |
+   +-----+---------+              v             | |               |    |
++--+-------------+ |       +-------------+      | | Secure Launch |    |
+|                | +------>|             +------->|     Entry     |    |
+| Bootloader(s)  | |       | DLE Handler |      | |               |    |
+|                +-+       |             |      | +---------------+    |
++----------------+         +-------------+      +----------------------+
+
+A quick note on the flow diagram, for simplicity all entities prior to
+the DLE Handler are represented by the "Bootloader(s)" block due to the
+fact that what entities are involved can and will vary. This is where
+both GRUB and efi-stub are being represented even though for Linux EFI,
+GRUB is considered the bootmanager while efi-stub is the bootloader.
+
+An efi-stub walk-thru:
+
+1. - GRUB
+1.1 - GRUB will initialize the Secure Launch Resource Table (SLRT)
+1.2 - GRUB will set up DLE Handler and register it in SLRT
+1.5 - GRUB will load Linux kernel
+1.3 - GRUB will set up DL environment appropriately for HW platform
+1.4 - GRUB will record DL setup in SLRT
+1.5 - GRUB will record SLRT location in platform's DL config structure
+1.5 - GRUB will register SLRT in EFI configuration table under SL GUID
+1.6 - GRUB will invoke efi-stub
+
+2. - efi-stub
+2.1 - efi-stub will check if SL GUID is in EFI configuration table
+2.2 - for each efi-stub config action, an SLRT EFI config event will be
+      recorded
+2.3 - efi-stub calls EBS() then jumps to DLE Handler registered in SLRT
+      while passing the SLRT address
+
+3. - DL Handler
+3.1 - DL Handler will retrieve SL Entry from SLRT
+3.2 - DL Handler will prepare HW for calling DL CPU instruction
+3.3 - DL Handler will execute DL CPU instruction
+
+4. SL Entry
+4.1 SL Entry will retrieve SLRT address from platform's DL config struct
+4.2 SL Entry will use policy in SLRT to determine what to measure
+4.3 SL Entry will set up HW to what Linux expects
+4.4 SL Entry will jump into Linux setup kernel
+4.5 SL Entry will record measurements into TPM prior to init process
+    starting
+
+While Matthew's original proposal was around having a location in the
+efi-stub for the callback to be registered, it is felt that it would be
+better suited as part of the Secure Launch specification. What is
+proposed is for the address of the DL Handler to be stored in the SLRT,
+details for the SLRT are below. Then the bootloader that is responsible
+for loading the DL Handler will register the SLRT in the EFI
+configuration table. Checking for the SLRT GUID in the EFI configuration
+table will enable the EFI bootoader responsible for calling EBS, in this
+case efi-stub, to know that a Dynamic Launch has been requested. It also
+seems this would be more in line with how EFI tends to work, versus a
+Linux-specific callback boot param or something similar.
+
+Hopefully this resolves the first of the two issues mentioned at the
+beginning of this email in a manner that addresses most of the concerns
+raised in the earlier discussions. This leaves the second issue over how
+to get an accurate measurement of how the kernel was configured by
+efi-stub. When reviewing the comments in the discussion, it was realized
+the originally requested approach was in fact in reverse. Instead of
+asking for efi-stub's internal API/ABI to be documented, Secure Launch
+should specify an ABI for how any bootloader should be invoking a Secure
+Launch entrypoint, particularly capturing how an EFI bootloader
+configured the environment. This is the second motivation for devising
+the SLRT. Specifying this ABI also provided the opportunity to
+incorporate a measurement policy and thus allowing for it to be
+separated away from sl-stub, as it is in the current implementation. For
+this discussion the focus will be on the portions of the SLRT relating
+to EFI Environments and in particular the EFI config event record
+mentioned in step 2.2 of the efi-stub walk-thru.
+
+First, a short review of what the Secure Launch Resource Table is and
+its purpose. The SLRT is to provide a platform and kernel agnostic
+configuration table of the meta-data pertinent to the Secure Launch
+entry points for the variety of kernels the TrenchBoot project will be
+seeking to support. The specification for the table is in progress, but
+the consensus is that it will consist of a header structure followed by
+a packed series of TLV records. The specification will describe the
+various types of records, but the ones of interests in this discussion
+are those that efi-stub would use to record how it configured the
+environment.
+
+The initially proposed TLV record, see below, for EFI configuration
+information was devised around allowing an EFI bootloader to save
+multiple config events under a single TLV record. In discussions on the
+specification thus far, there are questions if it would be better to
+have a TLV record for each config event or the proposed multiple events
+per TLV record. It is worth noting that an assumption is being made in
+the proposed record. The assumption is that a config event will either
+be setting a configuration value between 1 and 8 bytes, or it will be a
+data blob for which the address and size will be recorded. The question
+is whether that covers all actions the efi-stub does or expects that it
+will have to do in the near future.
+
+struct slrt_entry_efi_config_event {
+        struct slrt_entry_hdr hdr;
+        uint32_t identifier;                /* EFI bootloader ID */
+        uint16_t reserved;
+        uint16_t nr_entries;                /* Num cfg records */
+        struct efi_cfg_value values[0];     /* Array of cfg values */
+    };
+
+    struct efi_cfg_value {
+        uint64_t data;          /* cfg data (address or value) */
+        uint32_t size;          /* data size if data is an addr */
+        uint32_t flags;         /* 1L<0 IS_ADDR: data is an addr */
+        char evt_info[8];       /* event info str for TPM event log */
+    };
+
+Hopefully the general approach here is agreeable, as IMHO it does
+provide a fairly elegant approach to resolving the issues at hand.
+Details can always be negotiated to address various implementation
+concerns. Provided this is acceptable, then everyone here is welcome to
+provide input on the Secure Launch specification, link forthcoming.
+
+V/r,
+Daniel P. Smith
+Apertus Solutions, LLC
