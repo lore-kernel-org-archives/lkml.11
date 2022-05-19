@@ -2,127 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E15AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343655AbiESXnF (ORCPT
+        id S1343658AbiESXnX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46432 "EHLO
+        Thu, 19 May 2022 19:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231951AbiESXnB (ORCPT
+        with ESMTP id S1343642AbiESXnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:43:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136CEB042E;
-        Thu, 19 May 2022 16:43:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1B1461943;
-        Thu, 19 May 2022 23:43:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9BEC385AA;
-        Thu, 19 May 2022 23:42:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653003780;
-        bh=6JGyfhNXfNm06GnBDot5qMy5WIBj4ipB36DG8PIGeWk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PDDeKqV+B8s4g1Gv66ZmQTK/XyaX3H7n7/hVJ9z1x1I3SE8cSo7uEAKJ27J2PvKjW
-         68R61oWOiNwsgwwjDMdoCT11grrtc0Xlsp8L12B0gzJWr6PViSMOsraQAAsSqyS05o
-         wCREsib0UGEoKw2BhZv5rW7X7F1i0J8vsGgniXyc29mJ9tuht1Lx7cKRnQU7E6YXn/
-         mqLTVtoMsdT5x4sRDlHqNHXZY/sIaTryjTuntCXlz04hdJV00c1y+0yFAIVR8zHC8B
-         oCCnThSzW7wqKw90ygLEVR4V1XgAmhTK7HDcrak+yFRGhoZNYYuN7J5TbGjkRxodyf
-         aeQMgM4NJ2Gcg==
-Date:   Fri, 20 May 2022 02:41:21 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        James Bottomley <jejb@linux.ibm.com>, kernel@pengutronix.de,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        David Gstir <david@sigma-star.at>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Andreas Rammhold <andreas@rammhold.de>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Michael Walle <michael@walle.cc>,
-        John Ernberg <john.ernberg@actia.se>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: Re: [PATCH v10 0/7] KEYS: trusted: Introduce support for NXP
- CAAM-based trusted keys
-Message-ID: <YobVoQ+enx0IY4z1@kernel.org>
-References: <20220513145705.2080323-1-a.fatoum@pengutronix.de>
- <YoKZwFkfcl7ixTF4@kernel.org>
- <4d4ecd4b-9683-08a0-7a5f-11a7ff86ea6d@pengutronix.de>
- <c511995075cafb35bfefcbfe6fa6e84aa31c536f.camel@kernel.org>
- <6f6a5524-9661-9a9f-a674-915efa33f6f6@pengutronix.de>
- <YoUJgUbSRVnTfTj/@iki.fi>
+        Thu, 19 May 2022 19:43:19 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FEF11905C
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:43:18 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id v5-20020a17090a7c0500b001df84fa82f8so6505498pjf.5
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:43:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:from
+         :subject:content-transfer-encoding;
+        bh=KonITGC8b24pPGJKeGVvyl7Yn0hzGwQOqRY+o+LJZsk=;
+        b=RpxpIDLapZJZlhiqATdf8DiIf+nLRAEvQCq+++X1vi2A9tl7Q8grx12Vza0qIKE58z
+         mi3nSfhxtd+AVX45Y/FQ7bLv+2i7mUd8RIOxaNsMWck9OQRJnEeJCI3MXrgQB6IQVSUS
+         qNgCdNp/X8mDGmQnjgNyYbouExpm/K9Q565gtU1631bOa3oP1rOCqeKTIafBtAKubxge
+         ujTlHShXkLDtbOcN490iUi1QcuDLwGQyy0tPnFrjn8+teLzDzclxWhGceFCZ4hMiaJMm
+         LFBdYQC7GK2L+RRC45DD4E6ar4Gv4YAsNQSbTyxogCWkOEgs31aCXA9hfD1aPfh1dGim
+         H3qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:from:subject:content-transfer-encoding;
+        bh=KonITGC8b24pPGJKeGVvyl7Yn0hzGwQOqRY+o+LJZsk=;
+        b=yrUQjyHV/N612ss1hSmtoeEFhaH9hVA0eTGxcFYFHmrXm182GPEgHNcaA9Sz3jWi3s
+         WVVEBYyyELMWxmejGtH+a/X/0B4jylc876TsNsHwuZoKtgseUiZutWCrJN0UZANJQKnN
+         ira3o9gxj8RMFpS3AneqTgz39oGlz1a3sQNmBOPgom1fDe0aZDrpiQ0ieaVRRAI5gGTm
+         TfMPwcdw3i4JVrc5eM+gd3xDZkTumR7F3uvP/qtUUmV8qeaAjxmHdmfbtgLCjVR5TFqY
+         Q15sinyJ7OoyN2a9QxDpadNUvrdVWpiu77xFj04eXSyOX5qYkMkFZVNCPONv/th6tL+X
+         1Anw==
+X-Gm-Message-State: AOAM531Grxg5xPfYI2CC5JruAbeY9lLyIz28GX+rkkZTNMvMSOHn+ZVq
+        F+dt3B1gG88wo0FzKOHC7WkS74h3C52/pg==
+X-Google-Smtp-Source: ABdhPJzhHFe9lJvBKafFKUAY1pRa6T+CtSrKokdXVOQr0cLt53/hZc/fXU1CHWvrIHdmP0hJxcqsQg==
+X-Received: by 2002:a17:902:f78d:b0:14f:ce61:eaf2 with SMTP id q13-20020a170902f78d00b0014fce61eaf2mr7148968pln.124.1653003797430;
+        Thu, 19 May 2022 16:43:17 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id cp25-20020a056a00349900b0050dc76281c0sm220975pfb.154.2022.05.19.16.43.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 16:43:16 -0700 (PDT)
+Message-ID: <f871a510-d262-bc98-757e-204976e1b82c@kernel.dk>
+Date:   Thu, 19 May 2022 17:43:15 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoUJgUbSRVnTfTj/@iki.fi>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH] random: convert to using fops->write_iter()
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 05:58:09PM +0300, Jarkko Sakkinen wrote:
-> On Wed, May 18, 2022 at 06:36:18AM +0200, Ahmad Fatoum wrote:
-> > On 18.05.22 03:08, Jarkko Sakkinen wrote:
-> > > On Tue, 2022-05-17 at 14:44 +0200, Ahmad Fatoum wrote:
-> > >> Hello Herbert,
-> > >>
-> > >> On 16.05.22 20:36, Jarkko Sakkinen wrote:
-> > >>> On Fri, May 13, 2022 at 04:56:58PM +0200, Ahmad Fatoum wrote:
-> > >>> I can probably pick these unless objections?
-> > >>
-> > >> Pankaj has given his Reviewed-by for the CAAM parts he co-maintains,
-> > >> is it ok for this to go in via Jarkko's tree?
-> > >>
-> > >> Note that applying this series on top of jarkko/linux-tpmdd.git has a
-> > >> trivial conflict when merged with herbert/cryptodev-2.6.git:
-> > >> Two independently added Kconfig options need to coexist in
-> > >> drivers/crypto/caam/Kconfig.
-> > >>
-> > >> I can resend my series rebased if needed.
-> > >>
-> > >> Cheers,
-> > >> Ahmad
-> > >>
-> > >>>
-> > >>> BR, Jarkko
-> > >>>
-> > >>
-> > >>
-> > > 
-> > > This came up:
-> > > 
-> > > https://lore.kernel.org/keyrings/0e8da958a222e5c1dccaaf1600b08bdb8705b48e.camel@kernel.org/
-> > 
-> > And it turned out to be a misunderstanding. Or do you think there is still anything
-> > to do there?
-> > 
-> > Thanks,
-> > Ahmad
-> 
-> Oops, you're right, sorry.
-> 
-> Yeah, I guess I can pick these patches now.
+Now that the read side has been converted to fix a regression with
+splice, convert the write side as well to have some symmetry in the
+interface used (and help deprecate ->write()).
 
-Applied:
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 
-https://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/log/?h=next
+---
 
-BR, Jarkko
+Jason, this has only been booted. I did verify that it seems to take a
+write just fine, but I would appreciate if you could vet this one with
+your testing. Thanks!
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 41ca5966aa4f..3da04068c225 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1283,20 +1283,20 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
+ }
+ 
+-static int write_pool(const char __user *ubuf, size_t len)
++static size_t write_pool(struct iov_iter *iter)
+ {
+ 	size_t block_len;
+ 	int ret = 0;
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+ 
+-	while (len) {
+-		block_len = min(len, sizeof(block));
+-		if (copy_from_user(block, ubuf, block_len)) {
+-			ret = -EFAULT;
++	while (iov_iter_count(iter)) {
++		block_len = min(iov_iter_count(iter), sizeof(block));
++		if (!copy_from_iter(block, block_len, iter)) {
++			if (!ret)
++				ret = -EFAULT;
+ 			goto out;
+ 		}
+-		len -= block_len;
+-		ubuf += block_len;
++		ret += block_len;
+ 		mix_pool_bytes(block, block_len);
+ 		cond_resched();
+ 	}
+@@ -1306,16 +1306,9 @@ static int write_pool(const char __user *ubuf, size_t len)
+ 	return ret;
+ }
+ 
+-static ssize_t random_write(struct file *file, const char __user *ubuf,
+-			    size_t len, loff_t *ppos)
++static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *from)
+ {
+-	int ret;
+-
+-	ret = write_pool(ubuf, len);
+-	if (ret)
+-		return ret;
+-
+-	return (ssize_t)len;
++	return write_pool(from);
+ }
+ 
+ static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *to)
+@@ -1373,7 +1366,10 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ 			return -EINVAL;
+ 		credit_init_bits(ent_count);
+ 		return 0;
+-	case RNDADDENTROPY:
++	case RNDADDENTROPY: {
++		struct iov_iter iter;
++		struct iovec iov;
++
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+ 		if (get_user(ent_count, p++))
+@@ -1382,11 +1378,16 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ 			return -EINVAL;
+ 		if (get_user(size, p++))
+ 			return -EFAULT;
+-		retval = write_pool((const char __user *)p, size);
++
++		iov.iov_base = p;
++		iov.iov_len = size;
++		iov_iter_init(&iter, WRITE, &iov, 1, size);
++		retval = write_pool(&iter);
+ 		if (retval < 0)
+ 			return retval;
+ 		credit_init_bits(ent_count);
+ 		return 0;
++		}
+ 	case RNDZAPENTCNT:
+ 	case RNDCLEARPOOL:
+ 		/* No longer has any effect. */
+@@ -1412,7 +1413,7 @@ static int random_fasync(int fd, struct file *filp, int on)
+ 
+ const struct file_operations random_fops = {
+ 	.read_iter = random_read_iter,
+-	.write = random_write,
++	.write_iter = random_write_iter,
+ 	.poll = random_poll,
+ 	.unlocked_ioctl = random_ioctl,
+ 	.compat_ioctl = compat_ptr_ioctl,
+@@ -1423,7 +1424,7 @@ const struct file_operations random_fops = {
+ 
+ const struct file_operations urandom_fops = {
+ 	.read_iter = urandom_read_iter,
+-	.write = random_write,
++	.write_iter = random_write_iter,
+ 	.unlocked_ioctl = random_ioctl,
+ 	.compat_ioctl = compat_ptr_ioctl,
+ 	.fasync = random_fasync,
+
+-- 
+Jens Axboe
+
