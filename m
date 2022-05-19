@@ -2,110 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BA4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343672AbiESXoJ (ORCPT
+        id S1343690AbiESXoR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
+        Thu, 19 May 2022 19:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343642AbiESXoH (ORCPT
+        with ESMTP id S1343682AbiESXoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:44:07 -0400
-Received: from mail-4022.proton.ch (mail-4022.proton.ch [185.70.40.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B408CBA555
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:44:05 -0700 (PDT)
-Date:   Thu, 19 May 2022 23:43:57 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wujek.eu;
-        s=protonmail2; t=1653003843; x=1653263043;
-        bh=lPrxtgyGbqzHKGsEAjyQEVN37SrtZOBlF6GrEMqQqa4=;
-        h=Date:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:Cc:
-         Date:Subject:Reply-To:Feedback-ID:Message-ID;
-        b=xKJykPBBx/L5Vr1t7xUnI5x9TGXgE8IgXjj4CPVLrIdChu1VQn3ZH82SI2oW0PGSZ
-         0oYhG5ZxgtbNwK0EhUoDwMGqxdizlMseFdG/PSHw+duBPymJIBbbSBJI7A4vBAIBEV
-         iovnmzSL/nrfMGQLhd73LoECz/qmmqiNYzPiOmPeUv44l/B/NuOmxHh/Co6c94N519
-         fr9JYm8hFWS1iI2ROz8D/BnuSHjswIx9CAjSV6npxOSkS+QsHy+MpqTYueTM14+ShH
-         mIAdN1jFBaM+QSMh3nVSzbGAv/Utwu3pw8916kbMp5bc5Bjs4xR1pftuhMspj0ztmp
-         zIeBuSsCDUynA==
-From:   Adam Wujek <dev_public@wujek.eu>
-Cc:     Adam Wujek <dev_public@wujek.eu>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Adam Wujek <dev_public@wujek.eu>
-Subject: [PATCH 1/3] hwmon: (pmbus) add a function to check the presence of a block register
-Message-ID: <20220519234346.440398-1-dev_public@wujek.eu>
-Feedback-ID: 23425257:user:proton
+        Thu, 19 May 2022 19:44:14 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B79DB042E
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:44:13 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o13-20020a17090a9f8d00b001df3fc52ea7so10036066pjp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gz19fXcyvIXAl3oGhMxQAf+ufRc1Vu/yCr1pjqtWYnw=;
+        b=cEzhwuqns0Ti+qp+lGOzuo/YHGa90yGUqi/zDyTaJ7/+wDu9n2uicln2Gr4T7AkB7G
+         BVdcFEMBjWCpSQrU/TsfSqbIBE7PkrWzTv5q9QH3Jta1KAHQuidtVTCAKfDYCFXC5EDh
+         ucUAEjjXZ7tdG3ZUCOsr3RUmPsv2LfhGFQFe+ie+YXJ34tnJFCODnxtlLYSJUlvSylua
+         hAaCRKS4yoSpj7Q4+GwiF2JNieEv9wTHujeaQfJw+kkfMCyWrdJM7/P+6LNantZ6BfEp
+         iAb+fAmFjvJX5UAx0dsxvNx/0j/93asAvZPoADIPbHT5naMmKqwUlurr47NGpUEXb8v4
+         g33g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gz19fXcyvIXAl3oGhMxQAf+ufRc1Vu/yCr1pjqtWYnw=;
+        b=i4fDYUcej1pAy9X3Lm9QanS1y/mc9AyAMiVZCxHtdfKzmMjBM6Rg9Q+60Hh3Zo+ZSS
+         TtnTyJlVcjM4M36xwTZKNzamdQqu9HnNRejyuXbT2z9hdkjOZoG2kAoFmsvlasMFYs/N
+         25UO7WXIpTRzM1CD9MyUAdmnL9Ft2GSoTE67khZsERloom2Wt3bospIdjf6rlQvMBQji
+         TFxLrR/1kjVEOSfcaUKhHtZw2yRuN28Hi1ToEtPyeJKA0xa3mhFxQwn6rjPbHjnuHcXF
+         i+79PiNHhExLL9pxgHyXjNWvxeZF+R0FR5qoMlp8qChhYOPlupg0jCpCmJs2YqK397sP
+         TJ6A==
+X-Gm-Message-State: AOAM530Iy+zZXnEvqEQXBAOi3ldcNHmAVmWUI+EvTShWwkULJP8kyMZR
+        he1pwKG+1TsA0lQtmgpn4E7dpw==
+X-Google-Smtp-Source: ABdhPJwA+eGStKH/9DXOLfi6FBwqui0ASR5GQhJkzlEjCyIf0wjGR/UldJwHTn91xl0T2IGUdSxqhA==
+X-Received: by 2002:a17:90b:3806:b0:1df:99ce:d142 with SMTP id mq6-20020a17090b380600b001df99ced142mr7618845pjb.241.1653003853140;
+        Thu, 19 May 2022 16:44:13 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id x9-20020a17090a6b4900b001df313f6628sm366247pjl.21.2022.05.19.16.44.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 16:44:12 -0700 (PDT)
+Message-ID: <340465ab-4157-8051-d66f-9093b80dc653@kernel.dk>
+Date:   Thu, 19 May 2022 17:44:11 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCHSET 0/2] Fix splice from random/urandom
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220519193133.194138-1-axboe@kernel.dk>
+ <YoajCafKmgUbbaY0@zx2c4.com> <a6c843ff-a3d7-ce6a-4e99-70968834a02a@kernel.dk>
+ <8e6c98d4-03e9-3eb5-3d4e-b9a9faeb677a@kernel.dk> <YobPfgkzGrNPDDFI@zx2c4.com>
+ <60b82026-9c46-16ea-d9fa-05eb96ae2218@kernel.dk>
+ <CAHmME9rdJ=Pa=KOY6voryiHffWSkRKxC75+Wz-xoQOpowObwWw@mail.gmail.com>
+ <3bcbfde4-3247-b4ff-9a7c-963a9a510703@kernel.dk> <YobVLs3mpEFjJCh3@zx2c4.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <YobVLs3mpEFjJCh3@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Other functions (like pmbus_check_byte_register) cannot be used to check
-the presence of a block register, because it will generate error when PEC
-is used.
+On 5/19/22 5:39 PM, Jason A. Donenfeld wrote:
+> Hi Jens,
+> 
+> On Thu, May 19, 2022 at 05:33:01PM -0600, Jens Axboe wrote:
+>> On 5/19/22 5:25 PM, Jason A. Donenfeld wrote:
+>>> Hi Jens,
+>>>
+>>> On Fri, May 20, 2022 at 1:22 AM Jens Axboe <axboe@kernel.dk> wrote:
+>>>> I can certainly do the write side too. To fix this regression, I just
+>>>> valued doing read_iter first and I'd hate to hold that up to do the
+>>>> write side too. I'll do the write side later today, but let's keep them
+>>>> separate.
+>>>
+>>> Excellent, thanks. I plan to queue these up all in a row.
+>>
+>> Built and tested v2, just sent it out. Note that it deviates from your
+>> proposal a bit since with that we lost the
+>>
+>> if (!len)
+>> 	break;
+>>
+>> check, which is kind of important if you ever want to be done :-)
+> 
+> Heh, noticed that too, thanks.
 
-Signed-off-by: Adam Wujek <dev_public@wujek.eu>
----
- drivers/hwmon/pmbus/pmbus_core.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+:-)
 
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_c=
-ore.c
-index 55153a71c170..2634ac1fa3d5 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -421,6 +421,18 @@ static int _pmbus_read_byte_data(struct i2c_client *cl=
-ient, int page, int reg)
- =09return pmbus_read_byte_data(client, page, reg);
- }
+>> I'll do the write_iter side, but as mentioned, I'd prefer to keep it
+>> separate from this patchset as this one fixes a real regression that we
+>> need to get backported too.
+>  
+> No problem. Because of all the flux in random.c lately, I've been
+> preparing a massive backports branch, 2 branches actually, so I'll make
+> sure this is in there. Backport concern aside, though, I'll look for
+> your write_iter patch today. Thanks a bunch for doing this.
 
-+static int pmbus_read_block_data(struct i2c_client *client, int page, u8 r=
-eg,
-+=09=09=09=09 char *data_buf)
-+{
-+=09int rv;
-+
-+=09rv =3D pmbus_set_page(client, page);
-+=09if (rv < 0)
-+=09=09return rv;
-+
-+=09return i2c_smbus_read_block_data(client, reg, data_buf);
-+}
-+
- static struct pmbus_sensor *pmbus_find_sensor(struct pmbus_data *data, int=
- page,
- =09=09=09=09=09      int reg)
- {
-@@ -558,6 +570,20 @@ bool pmbus_check_word_register(struct i2c_client *clie=
-nt, int page, int reg)
- }
- EXPORT_SYMBOL_NS_GPL(pmbus_check_word_register, PMBUS);
+Sounds great, thanks - write patch has been sent out too.
 
-+static bool pmbus_check_block_register(struct i2c_client *client, int page=
-,
-+=09=09=09=09       int reg)
-+{
-+=09int rv;
-+=09struct pmbus_data *data =3D i2c_get_clientdata(client);
-+=09char data_buf[I2C_SMBUS_BLOCK_MAX + 2] =3D { 0 };
-+
-+=09rv =3D pmbus_read_block_data(client, page, reg, data_buf);
-+=09if (rv >=3D 0 && !(data->flags & PMBUS_SKIP_STATUS_CHECK))
-+=09=09rv =3D pmbus_check_status_cml(client);
-+=09pmbus_clear_fault_page(client, -1);
-+=09return rv >=3D 0;
-+}
-+
- const struct pmbus_driver_info *pmbus_get_driver_info(struct i2c_client *c=
-lient)
- {
- =09struct pmbus_data *data =3D i2c_get_clientdata(client);
---
-2.17.1
-
+-- 
+Jens Axboe
 
