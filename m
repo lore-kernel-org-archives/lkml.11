@@ -2,90 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17FECC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 00:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E265C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 00:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbiESAmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 20:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32810 "EHLO
+        id S231698AbiESAmr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 20:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232263AbiESAmB (ORCPT
+        with ESMTP id S230282AbiESAmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 20:42:01 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8F5E92BB0D
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 17:41:59 -0700 (PDT)
-Received: (qmail 208096 invoked by uid 1000); 18 May 2022 20:41:58 -0400
-Date:   Wed, 18 May 2022 20:41:58 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Dmitry Torokhov <dtor@chromium.org>,
-        linux-usb@vger.kernel.org, Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH] usb: Probe EHCI, OHCI controllers asynchronously
-Message-ID: <YoWSVhv1fxPR888p@rowland.harvard.edu>
-References: <20220518150150.1.Ie8ea0e945a9c15066237014be219eed60066d493@changeid>
+        Wed, 18 May 2022 20:42:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC18FB0407;
+        Wed, 18 May 2022 17:42:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92023617C6;
+        Thu, 19 May 2022 00:42:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9572C385A9;
+        Thu, 19 May 2022 00:42:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652920963;
+        bh=zmNRJAaXDXQx4amQA3NMoD0Oaa4WRs4hCXKUciYbCyo=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=iYFZMhX/CORPBGnQ2Mzvjif3e6iszkSNpCdkUQxE7yVOFEC/heSv/x+KQELAPAusA
+         OGXRH1WTqBDKa0PDSg6z1WvqyCSyN/vFXdtFP03fhyPrJyLbDsX//G1br7wvVXMtXx
+         4RvkTJadGgMiMUX1NFckAA7bXJ7RhvnE2XaFPZjcxFGrn70W7hcWbHMBQGN8wept2N
+         kyadsOW7U/XqjEY0/9xW4+MZ42Y4vhZeXMMMeVL/MDw3++OeFSjdmat7Wrcues1y7/
+         qSsYEUjX3qRfxgzYCBR+Mg7Ebu2tn2lBkHQAiSohT7yBF77xJ7+Wj2xgZoKgCiGiW4
+         ZwutDE6m/xIoA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518150150.1.Ie8ea0e945a9c15066237014be219eed60066d493@changeid>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220513073621.12923-1-mandyjh.liu@mediatek.com>
+References: <20220513073621.12923-1-mandyjh.liu@mediatek.com>
+Subject: Re: [PATCH v2] clk: mediatek: use en_mask as a pure div_en_mask
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     miles.chen@mediatek.com, wenst@chromium.org,
+        chun-jie.chen@mediatek.com,
+        angelogioacchino.delregno@collabora.com, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Mandy Liu <mandyjh.liu@mediatek.com>
+To:     Mandy Liu <mandyjh.liu@mediatek.com>, mturquette@baylibre.co
+Date:   Wed, 18 May 2022 17:42:40 -0700
+User-Agent: alot/0.10
+Message-Id: <20220519004242.E9572C385A9@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 03:02:51PM -0700, Brian Norris wrote:
-> From: Dmitry Torokhov <dtor@chromium.org>
-> 
-> initcall_debug shows that OHCI controllers take ~60ms to probe on
-> Rockchip RK3399 systems:
-> 
->   probe of fe3a0000.usb returned 1 after 58941 usecs
-> 
-> A few of these can add up to waste non-trivial amounts of time at boot.
-> 
-> These host controllers don't provide resources to other drivers, so
-> this shouldn't contribute to exposing race conditions.
-> 
-> Chrome OS kernels have carried this patch on some systems for a while
-> without issues. Similar patches have been merged for a variety of (e)MMC
-> host controllers for similar reasons.
-> 
-> Signed-off-by: Dmitry Torokhov <dtor@chromium.org>
-> [Brian: rewrote commit message, refreshed, but retained dtor's original
->  authorship ]
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+Quoting Mandy Liu (2022-05-13 00:36:21)
+> From: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+>=20
+> We no longer allow en_mask to be a combination of
+> pll_en_bit and div_en_mask, so remove pll_en_bit(bit0)
+> from en_mask to make en_mask a pure en_mask that only
+> used for pll dividers.
+>=20
+> This commit continues the work done in commit 7cc4e1bbe300
+> ("clk: mediatek: Fix asymmetrical PLL enable and disable
+> control") and commit f384c44754b7 ("clk: mediatek:
+> Add configurable enable control to mtk_pll_data") to
+> clean up en_mask(bit0) default setting.
+>=20
+> Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+> Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+> Signed-off-by: Mandy Liu <mandyjh.liu@mediatek.com>
+>=20
 > ---
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-
->  drivers/usb/host/ehci-platform.c | 1 +
->  drivers/usb/host/ohci-platform.c | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/drivers/usb/host/ehci-platform.c b/drivers/usb/host/ehci-platform.c
-> index 1115431a255d..f343967443e2 100644
-> --- a/drivers/usb/host/ehci-platform.c
-> +++ b/drivers/usb/host/ehci-platform.c
-> @@ -518,6 +518,7 @@ static struct platform_driver ehci_platform_driver = {
->  		.pm	= pm_ptr(&ehci_platform_pm_ops),
->  		.of_match_table = vt8500_ehci_ids,
->  		.acpi_match_table = ACPI_PTR(ehci_acpi_match),
-> +		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
->  	}
->  };
->  
-> diff --git a/drivers/usb/host/ohci-platform.c b/drivers/usb/host/ohci-platform.c
-> index 4a8456f12a73..47dfbfe9e519 100644
-> --- a/drivers/usb/host/ohci-platform.c
-> +++ b/drivers/usb/host/ohci-platform.c
-> @@ -334,6 +334,7 @@ static struct platform_driver ohci_platform_driver = {
->  		.name	= "ohci-platform",
->  		.pm	= &ohci_platform_pm_ops,
->  		.of_match_table = ohci_platform_ids,
-> +		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
->  	}
->  };
->  
-> -- 
-> 2.36.1.124.g0e6072fb45-goog
-> 
+Applied to clk-next
