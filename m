@@ -2,118 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229669AbiESI7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 04:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        id S229464AbiESI7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 04:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233827AbiESI67 (ORCPT
+        with ESMTP id S233827AbiESI7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 04:58:59 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFFCA5026;
-        Thu, 19 May 2022 01:58:56 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24J8nFZA002716;
-        Thu, 19 May 2022 08:58:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=PW9pRZh/0g9UlTgZKMWzgw6MGsGz+5XiXcei0cxYmrk=;
- b=bHp1ktdgA89ERzJwH0V5/8EjQ4gM2tX2LXlkLr4dstIAzCuWOHWb/laASeQo0YPsVZYr
- wiB4FeliK+5Ql6qUTPuPuZyM+FJtYnfflvxG+yvfeAx/ktXQm4SfqKsbJUePZiEWcwh0
- DXVaEZZ0VaI1hKpsVgjiug7qedijQ5Q8/Zw5VJWnpbOu57BWrqBIEvNkrpYV4ht50ZUT
- LJAO3nGdFvgdZkoeeLQ4fWQ2F5/1kbABqwGnEkey9a6tDOupsM48Refg/9V1RiBymnJT
- FYI1L2B2HiUX2kI5huuY8Zh0/jwtKsoFqHTV3TXm9EYW/X/zQnhZsKeaAnTSuR6p7KGK Zg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5jqgg53j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 May 2022 08:58:55 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24J8pHPH012272;
-        Thu, 19 May 2022 08:58:54 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5jqgg527-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 May 2022 08:58:54 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24J8v3rM027704;
-        Thu, 19 May 2022 08:58:51 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma02fra.de.ibm.com with ESMTP id 3g2428nn9r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 May 2022 08:58:51 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24J8is8938863284
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 May 2022 08:44:54 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7F48EAE056;
-        Thu, 19 May 2022 08:58:48 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C9BF5AE045;
-        Thu, 19 May 2022 08:58:47 +0000 (GMT)
-Received: from [9.171.67.171] (unknown [9.171.67.171])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 19 May 2022 08:58:47 +0000 (GMT)
-Message-ID: <c608db21-8030-a346-5294-d9d681685734@linux.ibm.com>
-Date:   Thu, 19 May 2022 11:02:38 +0200
+        Thu, 19 May 2022 04:59:30 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EADA502A;
+        Thu, 19 May 2022 01:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652950769; x=1684486769;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=05Fuppx/L9sCpsgYnyjfWyFaI5tXbG/b+Ttzw5ROFAg=;
+  b=avL7D8cSzgGgw4MppOZ8NF1YUoVk2pIrtrCyuFdFbLRlNowQN0a4f0iw
+   dC+a1a5jrh1QvhszNp5uDTSC9Ol3zlm5Yh2Sh0Toc8N0rXJS1aNQWWjeD
+   pDc6UYeAUDuGMoEFU/hxPotvk7W+rvRbtyCawlLOAutN1ht0QGx0Uqu5A
+   ye9n3vU0Jxh0zbsBEF926VvfsL4Mi8sMwhHJ1eNAQcSBBxhqwrhQww7an
+   MpPGUz8QyCg6Nh08N3WmNBIeOFM4QQkS3hq3NoVilAiZk2dSPITJQ1AgV
+   3RVqO1teTPdoEGkSPkxac7pNYCFIBmcQFN2aFtVUwztxTE+mN8rSWDTy+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="259679129"
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="259679129"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:59:28 -0700
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="598445933"
+Received: from ivanovbx-mobl1.ger.corp.intel.com ([10.249.33.234])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 01:59:26 -0700
+Date:   Thu, 19 May 2022 11:59:24 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Subject: Re: [PATCH 4/4] serial: pmac_zilog: remove initial print
+In-Reply-To: <20220519075653.31356-4-jslaby@suse.cz>
+Message-ID: <2adeae5a-cc42-5a3c-a1e0-2b26f294834@linux.intel.com>
+References: <20220519075653.31356-1-jslaby@suse.cz> <20220519075653.31356-4-jslaby@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 0/3] s390x: KVM: CPU Topology
-Content-Language: en-US
-To:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, frankja@linux.ibm.com,
-        cohuck@redhat.com, david@redhat.com, thuth@redhat.com,
-        imbrenda@linux.ibm.com, gor@linux.ibm.com, wintera@linux.ibm.com,
-        seiden@linux.ibm.com, nrb@linux.ibm.com
-References: <20220506092403.47406-1-pmorel@linux.ibm.com>
- <f9cb28d5-2aa5-f902-53ab-592b08672c62@de.ibm.com> <YoXZxhindugH4WxI@osiris>
- <1e2bfeeb-6514-a55d-61eb-6391dcc96256@de.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <1e2bfeeb-6514-a55d-61eb-6391dcc96256@de.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: PiQBAJIUs3IfjcaLZdSylac6UXtMxIyB
-X-Proofpoint-GUID: yhiyBlCszgpKEzND9y6WXgeTCNoRpHim
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-19_01,2022-05-19_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- suspectscore=0 clxscore=1015 phishscore=0 lowpriorityscore=0 bulkscore=0
- impostorscore=0 mlxlogscore=721 priorityscore=1501 spamscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205190049
+Content-Type: multipart/mixed; BOUNDARY="8323329-461353659-1652950754=:1628"
+Content-ID: <378db1e4-e6db-c394-358f-d690cb7870f7@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
+--8323329-461353659-1652950754=:1628
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <9e628ba6-962-3ab-bd6a-436b56f87c8e@linux.intel.com>
 
-On 5/19/22 10:07, Christian Borntraeger wrote:
-> Am 19.05.22 um 07:46 schrieb Heiko Carstens:
->> On Wed, May 18, 2022 at 05:26:59PM +0200, Christian Borntraeger wrote:
->>> Pierre,
->>>
->>> please use "KVM: s390x:" and not "s390x: KVM:" for future series.
->>
->> My grep arts ;) tell me that you probably want "KVM: s390:" without
->> "x" for the kernel.
+On Thu, 19 May 2022, Jiri Slaby wrote:
+
+> Don't report about the driver when loaded. It's unneeded and frowned
+> upon nowadays.
 > 
-> yes :-)
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> Cc: Paul Mackerras <paulus@samba.org>
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
 
-Thanks, both of you.
-I change it accordingly.
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-Regards,
-Pierre
+for patches 2-4.
 
 -- 
-Pierre Morel
-IBM Lab Boeblingen
+ i.
+--8323329-461353659-1652950754=:1628--
