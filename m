@@ -2,112 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9023DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2472DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243490AbiESR75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
+        id S233569AbiESSBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243483AbiESR7w (ORCPT
+        with ESMTP id S243486AbiESSA7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:59:52 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12800D9E86
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:59:51 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id a38so2857990pgl.9
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:59:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZG6+lov3cxhj/3dSakUHhK2uNdevz22kJZXDGdoSRa0=;
-        b=HvGK5AoIKlR1DmUqXH/3JrsgrNgbI6CxqpjF7swr+ovrKu9ZKjE7XFxxmYv5z3A4vQ
-         zFvQc+wGmpLaOyrkIJfRysB6FfJmuK3rzqDDq5QwJ8NqQicHM1NYueDGQHY29Zvh8kHv
-         72G71y5GU883B6GtWgxh3517kplrz9FUDcsN/S9p18ysjhsmBWGWVLC6+jrce5mXeS6T
-         hJn8crK4Rfll/pVc0Gv4CF49L5PbbjNKLks6UUXq/cSzeSqtlzT/NQv9bHnwLI+Udrs2
-         SiGoXwNhhOVN26ONktooTtWmXg4Z+AJ3q26Zn8cOCnchPiM8WqoZ8sfHvLkx6kvoibLf
-         jBiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZG6+lov3cxhj/3dSakUHhK2uNdevz22kJZXDGdoSRa0=;
-        b=bwWEHuqWzAinRouZcGbAv2ELvap9assTUBxtCwkTTyVA5cBe9GUvvwX7L0LkNh1dTS
-         PrL8hOFdetTbOgTEtjTkVC1iQ6lr7okdzptIuaawUpgtDgyi/2tWqvcd0YShElHmZuUm
-         NPoeLwrbb4oBAu+4NYSgKGrGAx7eRxu1XqBBFQ6FggPxnfuLfkraYrLWBkd7LfIAKJuA
-         /ss0PrUejPpoprhR+tz4Y48mAlUK9p3NLR9lIGldi9arFmMwoZ1171oGzE7e5spzV5g8
-         mZ1qVyNeTGjtKtHtU5Gg9pk3UEUn8SEyIhtVJja9gcSgvBp+co4Gs9mAObg0eoKuI1mM
-         /34A==
-X-Gm-Message-State: AOAM532q3XaSnvQMfdFnOFmN0qTp3hmSDDkhjM78TnhSDS+hgl18aKVl
-        n6Ci5L0FNMepSt90jCb9EVqNrA==
-X-Google-Smtp-Source: ABdhPJwJrgaenuQoJ3gtMljcMqROuGtxxtaXevg8lRhJyXVzkZRsV/Svi9mn3qMabsx3sZ23y479Zg==
-X-Received: by 2002:a65:554d:0:b0:3c6:3f22:72cd with SMTP id t13-20020a65554d000000b003c63f2272cdmr4900212pgr.283.1652983190330;
-        Thu, 19 May 2022 10:59:50 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id x7-20020a170902b40700b0015e8d4eb254sm4009372plr.158.2022.05.19.10.59.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:59:49 -0700 (PDT)
-Date:   Thu, 19 May 2022 17:59:46 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Lei Wang <lei4.wang@intel.com>
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, chenyi.qiang@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: VMX: Read BNDCFGS if not from_vmentry
-Message-ID: <YoaFknp7Swj0DdRw@google.com>
-References: <20220421091331.11196-1-lei4.wang@intel.com>
+        Thu, 19 May 2022 14:00:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A2DA1BD;
+        Thu, 19 May 2022 11:00:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36185B824A1;
+        Thu, 19 May 2022 18:00:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5540FC385AA;
+        Thu, 19 May 2022 18:00:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652983254;
+        bh=tMwvvcFd7Pc3TDADnKu1IpLVMpBVRu1prfu10GKvoVQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TWIl28N9vBe+Kbo5ix6DGCxrW3rbrzUeJgHQN5Xz5xWmTOcJTRXjMf7CT5J08iuFE
+         B4zaW/Fnn8X7I97NlUxtAFkBx7itzrexLh5vnMa2eBTPHJn3pHnR2i/UF+x9iFFoIm
+         E/MpB7p/lirlqoqkK68qt3j9uHSDsc5J2AS06tsa3WDsSV9IKFprclElB8QtZXqe+Y
+         Rx49V2RAcgWWw5BZQ2HCboxG5GcWUMbirDdnBZTIKjUWahMzdTtLLLWrGVWDM/nFeF
+         bXxCgt8P2s1S+9ku6SmwtQK1FKqpWCMQa2Z9wjSEA8xHhCPFDZ3moCSzq7YXtIsifc
+         VH5/8wpGKBsHA==
+Date:   Thu, 19 May 2022 23:30:50 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     sean.wang@mediatek.com, matthias.bgg@gmail.com,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, nfraprado@collabora.com
+Subject: Re: [PATCH v2 1/2] dmaengine: mediatek-cqdma: Add SoC-specific match
+ data
+Message-ID: <YoaF0mOudZ7zll/7@matsya>
+References: <20220503140624.117213-1-angelogioacchino.delregno@collabora.com>
+ <20220503140624.117213-2-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220421091331.11196-1-lei4.wang@intel.com>
+In-Reply-To: <20220503140624.117213-2-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 21, 2022, Lei Wang wrote:
-> In the migration case, if nested state is set after MSR state, the value
-> needs to come from the current MSR value.
+On 03-05-22, 16:06, AngeloGioacchino Del Regno wrote:
+> On some SoCs the DST2 and SRC2 registers may be at a different offset:
+> add a match data structure and assign it to mt6765 as a preparation
+> for adding support for more SoCs.
 > 
-> Signed-off-by: Lei Wang <lei4.wang@intel.com>
-> Reported-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  arch/x86/kvm/vmx/nested.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/dma/mediatek/mtk-cqdma.c | 35 +++++++++++++++++++++++++-------
+>  1 file changed, 28 insertions(+), 7 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index f18744f7ff82..58a1fa7defc9 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -3381,7 +3381,8 @@ enum nvmx_vmentry_status nested_vmx_enter_non_root_mode(struct kvm_vcpu *vcpu,
->  	if (!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_DEBUG_CONTROLS))
->  		vmx->nested.vmcs01_debugctl = vmcs_read64(GUEST_IA32_DEBUGCTL);
->  	if (kvm_mpx_supported() &&
-> -		!(vmcs12->vm_entry_controls & VM_ENTRY_LOAD_BNDCFGS))
-> +	    (!from_vmentry ||
+> diff --git a/drivers/dma/mediatek/mtk-cqdma.c b/drivers/dma/mediatek/mtk-cqdma.c
+> index f8847c48ba03..a2fb538d9483 100644
+> --- a/drivers/dma/mediatek/mtk-cqdma.c
+> +++ b/drivers/dma/mediatek/mtk-cqdma.c
+> @@ -48,8 +48,6 @@
+>  #define MTK_CQDMA_DST			0x20
+>  #define MTK_CQDMA_LEN1			0x24
+>  #define MTK_CQDMA_LEN2			0x28
+> -#define MTK_CQDMA_SRC2			0x60
+> -#define MTK_CQDMA_DST2			0x64
+>  
+>  /* Registers setting */
+>  #define MTK_CQDMA_EN_BIT		BIT(0)
+> @@ -126,9 +124,20 @@ struct mtk_cqdma_vchan {
+>  	bool issue_synchronize;
+>  };
+>  
+> +/**
+> + * struct mtk_cqdma_plat_data - SoC specific parameters
+> + * @reg_dst2:               dst2 register offset
+> + * @reg_src2:               src2 register offset
+> + */
+> +struct mtk_cqdma_plat_data {
+> +	u8 reg_src2;
+> +	u8 reg_dst2;
+> +};
+> +
+>  /**
+>   * struct mtk_cqdma_device - The struct holding info describing CQDMA
+>   *                          device
+> + * @plat:                   SoC-specific platform data
+>   * @ddev:                   An instance for struct dma_device
+>   * @clk:                    The clock that device internal is using
+>   * @dma_requests:           The number of VCs the device supports to
+> @@ -137,6 +146,7 @@ struct mtk_cqdma_vchan {
+>   * @pc:                     The pointer to all the underlying PCs
+>   */
+>  struct mtk_cqdma_device {
+> +	const struct mtk_cqdma_plat_data *plat;
+>  	struct dma_device ddev;
+>  	struct clk *clk;
+>  
+> @@ -231,6 +241,8 @@ static int mtk_cqdma_hard_reset(struct mtk_cqdma_pchan *pc)
+>  static void mtk_cqdma_start(struct mtk_cqdma_pchan *pc,
+>  			    struct mtk_cqdma_vdesc *cvd)
+>  {
+> +	struct mtk_cqdma_device *cqdma = to_cqdma_dev(cvd->ch);
+> +
+>  	/* wait for the previous transaction done */
+>  	if (mtk_cqdma_poll_engine_done(pc, true) < 0)
+>  		dev_err(cqdma2dev(to_cqdma_dev(cvd->ch)), "cqdma wait transaction timeout\n");
+> @@ -243,17 +255,17 @@ static void mtk_cqdma_start(struct mtk_cqdma_pchan *pc,
+>  	/* setup the source */
+>  	mtk_dma_set(pc, MTK_CQDMA_SRC, cvd->src & MTK_CQDMA_ADDR_LIMIT);
+>  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+> -	mtk_dma_set(pc, MTK_CQDMA_SRC2, cvd->src >> MTK_CQDMA_ADDR2_SHFIT);
+> +	mtk_dma_set(pc, cqdma->plat->reg_src2, cvd->src >> MTK_CQDMA_ADDR2_SHFIT);
+>  #else
+> -	mtk_dma_set(pc, MTK_CQDMA_SRC2, 0);
+> +	mtk_dma_set(pc, cqdma->plat->reg_src2, 0);
+>  #endif
+>  
+>  	/* setup the destination */
+>  	mtk_dma_set(pc, MTK_CQDMA_DST, cvd->dest & MTK_CQDMA_ADDR_LIMIT);
+>  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+> -	mtk_dma_set(pc, MTK_CQDMA_DST2, cvd->dest >> MTK_CQDMA_ADDR2_SHFIT);
+> +	mtk_dma_set(pc, cqdma->plat->reg_dst2, cvd->dest >> MTK_CQDMA_ADDR2_SHFIT);
+>  #else
+> -	mtk_dma_set(pc, MTK_CQDMA_DST2, 0);
+> +	mtk_dma_set(pc, cqdma->plat->reg_dst2, 0);
+>  #endif
+>  
+>  	/* setup the length */
+> @@ -740,8 +752,13 @@ static void mtk_cqdma_hw_deinit(struct mtk_cqdma_device *cqdma)
+>  	pm_runtime_disable(cqdma2dev(cqdma));
+>  }
+>  
+> +static const struct mtk_cqdma_plat_data cqdma_mt6765 = {
+> +	.reg_dst2 = 0x64,
+> +	.reg_src2 = 0x60,
 
-Gah, my bad, this isn't correct either.  The minor issue is that it should check
-vmx->nested.nested_run_pending, not just from_vmentry.  If nested state is restored
-and a VM-Entry is pending, then the MSRs that were saved+restore were L1's MSRs,
-not L2's MSRs.
+Please use the macros instead of magic numbers here
 
-That won't cause problems because the consumption correctly checks nested_run_pending,
-it's just confusing and an unnecessary VMREAD.
+> +};
+> +
+>  static const struct of_device_id mtk_cqdma_match[] = {
+> -	{ .compatible = "mediatek,mt6765-cqdma" },
+> +	{ .compatible = "mediatek,mt6765-cqdma", .data = &cqdma_mt6765 },
+>  	{ /* sentinel */ }
+>  };
+>  MODULE_DEVICE_TABLE(of, mtk_cqdma_match);
+> @@ -758,6 +775,10 @@ static int mtk_cqdma_probe(struct platform_device *pdev)
+>  	if (!cqdma)
+>  		return -ENOMEM;
+>  
+> +	cqdma->plat = device_get_match_data(&pdev->dev);
+> +	if (cqdma->plat)
+> +		return -EINVAL;
+> +
+>  	dd = &cqdma->ddev;
+>  
+>  	cqdma->clk = devm_clk_get(&pdev->dev, "cqdma");
+> -- 
+> 2.35.1
 
-But that's a moot point because vmcs01 will not hold the correct value in the SMM
-case.  Luckily, BNDCFGS is easy to handle because it's unconditionally saved on
-VM-Exit, which means that vmcs12 is guaranteed to hold the correct value for both
-SMM and state restore (without pending entry) because the pseudo-VM-Exit for both
-will always save vmcs02's value into vmcs12.
-
-GUEST_IA32_DEBUGCTL is a much bigger pain because it's conditionally saved on
-exit.   I think the least awful approach would be to save L2's value into
-vmcs01_debugctl prior to the forced exit in vmx_enter_smm(), but that will require
-more changes to the state restore flow.  Grr.
-
-I'll send patches for both BNDCFGS and IA32_DEBUGCTL, and will take a careful look
-at the PKS stuff too.  I'm guessing it should follow the BNDCFGS logic.
-
-Sorry for the runaround.
+-- 
+~Vinod
