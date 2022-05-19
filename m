@@ -2,74 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3360EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E95C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240898AbiESPwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        id S239441AbiESPww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241852AbiESPvL (ORCPT
+        with ESMTP id S238806AbiESPwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:51:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1114CD43;
-        Thu, 19 May 2022 08:51:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98D9EB82567;
-        Thu, 19 May 2022 15:51:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB8E9C385AA;
-        Thu, 19 May 2022 15:51:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652975461;
-        bh=r9Wo8B3nzcUu8zDEETKXZj2bCnuLNN3Xnn23m34TtgU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0Zhf/Yo6O4nlyGEVC9StXVCXAphUO2SgZ1qOaBFzTg3MTBt0i4Hp50mVW/t56+bEt
-         nPB6GWjxIxIEvBwxwHJQmFpyutbl0GA8QP0w/PgBWhAdgYU/qk+BtUwfftv7DlLFKF
-         H1A1Rf+EumQdBp2fZ5cBKNp6dUPrORWly1/E1uNU=
-Date:   Thu, 19 May 2022 17:50:58 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Li Li <dualli@google.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Subject: Re: [PATCH v2] binder: convert `BINDER_*` ioctl `#define`s into an
- `enum`
-Message-ID: <YoZnYkRjC+TfdB1i@kroah.com>
-References: <20220517102813.10310-1-ojeda@kernel.org>
- <CANiq72=4YKUoUjbs3484mdjsDCXX1V6qf8MrzhW0FN3ZbbDaAg@mail.gmail.com>
+        Thu, 19 May 2022 11:52:49 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16BDC62129;
+        Thu, 19 May 2022 08:52:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652975567; x=1684511567;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ezlFNIw1YV6/IbC1LgUXiEe8pIzsUQQCD7W/6KfdQOQ=;
+  b=ygvkjK/p9ql3ncXECqxnuOJTWK5JE7oqDpBcL6TRyCXtLhxUQsvJtk8H
+   ocYyBR6MgjkXUkUjNB/bzoHLOVHC74cIru8mLJ5nFOrcE2s6PTWGFpCVx
+   outXibwSHJhk9bh/Cn13AiQPils1sVTh6dcjmKkLuKNckrmP44WHiP/oo
+   0=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 19 May 2022 08:52:46 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 08:52:46 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 19 May 2022 08:52:45 -0700
+Received: from [10.110.66.23] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 19 May
+ 2022 08:52:44 -0700
+Message-ID: <b68d6586-20ef-7409-6496-5dd81b54bc32@quicinc.com>
+Date:   Thu, 19 May 2022 08:52:42 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANiq72=4YKUoUjbs3484mdjsDCXX1V6qf8MrzhW0FN3ZbbDaAg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] mwifiex: Fix potential dereference of NULL pointer
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>, Yongzhi Liu <lyz_cs@pku.edu.cn>
+CC:     <amitkarwar@gmail.com>, <ganapathi017@gmail.com>,
+        <sharvari.harisangam@nxp.com>, <huxinming820@gmail.com>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <arend.vanspriel@broadcom.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <fuyq@stu.pku.edu.cn>
+References: <1652957839-127949-1-git-send-email-lyz_cs@pku.edu.cn>
+ <87r14p1qkw.fsf@kernel.org>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <87r14p1qkw.fsf@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 03:39:42PM +0200, Miguel Ojeda wrote:
-> Hi Greg,
+On 5/19/2022 8:37 AM, Kalle Valo wrote:
+> Yongzhi Liu <lyz_cs@pku.edu.cn> writes:
+> Format is wrong, it should be:
 > 
-> On Tue, May 17, 2022 at 12:28 PM Miguel Ojeda <ojeda@kernel.org> wrote:
-> >
-> > bindgen (a tool which generates the "raw" C bindings for Rust) only
-> > works (so far) with "simple" C `#define`s. In order to avoid having
-> > to manually maintain these constants in the (potential) Rust side,
-> > this patch converts them into an `enum`.
-> 
-> Given the discussion in v1's thread [0], I think we should hold on
-> applying the patch (just letting you know here in v2).
-> 
-> [0] https://lore.kernel.org/lkml/CANiq72=_UAF5DRHCmW4qNt-Wi3yV6vPEjdLhBTijG_ZGgfpaTA@mail.gmail.com/
-> 
-> Cheers,
-> Miguel
+> Fixes: 21c5c83ce833 ("mwifiex: support sysfs initiated device coredump")
 
-Yeah, I'll drop this from my queue, sorry.
+And no blank line between the Fixes tag and the Signed-off-by tag
 
-greg k-h
