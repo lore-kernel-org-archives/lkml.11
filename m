@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67887C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235846AbiESRsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
+        id S243227AbiESRsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243143AbiESRsH (ORCPT
+        with ESMTP id S243140AbiESRsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 19 May 2022 13:48:07 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F3BB0409
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDF7B0408
         for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:48:06 -0700 (PDT)
 Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24J6k19E002261;
-        Thu, 19 May 2022 12:47:56 -0500
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24J5MiMw023727;
+        Thu, 19 May 2022 12:47:58 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=WCDKyNszpTkK132PkGJoQgMJ3LGwxsgI4k0HIIXEq10=;
- b=Y9N8YgVdqMXuWPcWXfGzzsH3aycf4OxE5FYooT7WVFI5qCMU5vz/MSpmf7C0N6YygpM2
- CL8k8F0TbQ/lfCXP4Nd5iVILW81400HV1fNUo2CJ1Fc3QCZgS57J//A4Ao5hml4NKCTW
- C/j0qc8I5zzIyC/UsmM60ebgy8okQ5q4gSutMQPU2kFuNq+BS08STGYuoAA4YcGFZRNz
- 0F4Px05UFU0gjsxRvtBpRXw1M4ZtKy8Va98w8FgnB1WABo60WRum0ra0T2Y4ZIfqqiRc
- 4XSKsr/9O/NGuj+yiweBkLEVQFuCttVZq7cgirVUOcKjrq4pQ8GIv1GrOWbk+ASgd8Vf XQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3g29u37ted-6
+ bh=i1KBfpmWq85BkKRplVpoCF4sGjk4Y2NdJNchd02pEJA=;
+ b=W88ZVcfJhmPnzUxupTGM9MsmjLQCGtMHwMqPD1YJJo/dAeDjRrGUDtmVtjf7vIfDge23
+ g3jpR9Vk8WAdX1rmA6JE8Ua8urL+RRMkUCg4l9EG0ePlDwbXZQCvvfI/VuZrulnJXQpf
+ gL3zZt25y/k18DZ2Tllqf31CT4j79O1pKP5ue2J0RHNJWqbbyJjWGyNbjMHGFgdaLuN6
+ CJ4/6Vhbp5gqWiMCHEq+5d8IKZFRPQO/ozMbxuMFjIA6kknn8KuxoRX6J9atQ2aiE8ih
+ 7sI5ouMXQk1Mr1rX4inziEhxR5H1mfhhsY9OkVx5qID6J2qlH1h8NAxlzHnqx88qApyH WA== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3g29u37tee-8
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 19 May 2022 12:47:55 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 19 May 2022 12:47:57 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 18:47:54 +0100
+ 2022 18:47:56 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Thu, 19 May 2022 18:47:54 +0100
+ Transport; Thu, 19 May 2022 18:47:56 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.59])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 3EB02476;
-        Thu, 19 May 2022 17:47:54 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id AA5C8476;
+        Thu, 19 May 2022 17:47:55 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Subject: [PATCH v3 11/17] ASoC: cs35l41: Add common cs35l41 enter hibernate function
-Date:   Thu, 19 May 2022 18:47:43 +0100
-Message-ID: <20220519174749.15459-12-vitalyr@opensource.cirrus.com>
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v3 14/17] ALSA: hda: hda_cs_dsp_ctl: Add fw id strings
+Date:   Thu, 19 May 2022 18:47:46 +0100
+Message-ID: <20220519174749.15459-15-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220519174749.15459-1-vitalyr@opensource.cirrus.com>
 References: <20220519174749.15459-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: E_2ngAPO-9OaDrTzAcEMdMrPdkLpwg1y
-X-Proofpoint-ORIG-GUID: E_2ngAPO-9OaDrTzAcEMdMrPdkLpwg1y
+X-Proofpoint-GUID: qjMIQxDJpqHELbsaoxr2Ja2eYVTl37xm
+X-Proofpoint-ORIG-GUID: qjMIQxDJpqHELbsaoxr2Ja2eYVTl37xm
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -66,16 +65,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-Since the CS35L41 HDA driver also support hibernation, it
-makes sense to move code from the ASoC driver to enter
-hibernation into common code.
-
-Since HDA must support laptops which do not support hibernation
-due to lack of external boost GPIO it is necessary to
-ensure the function returns an error when an unsupported
-boost type is in use.
-
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+This will be used to define the firmware names.
 
 Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
 Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
@@ -84,75 +74,42 @@ Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 Changes since v2:
  - No change
  
- include/sound/cs35l41.h        |  2 ++
- sound/soc/codecs/cs35l41-lib.c | 19 +++++++++++++++++++
- sound/soc/codecs/cs35l41.c     | 10 +---------
- 3 files changed, 22 insertions(+), 9 deletions(-)
+ sound/pci/hda/hda_cs_dsp_ctl.c | 8 ++++++++
+ sound/pci/hda/hda_cs_dsp_ctl.h | 2 ++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/include/sound/cs35l41.h b/include/sound/cs35l41.h
-index f848ba1e75b3..9ac5918269a5 100644
---- a/include/sound/cs35l41.h
-+++ b/include/sound/cs35l41.h
-@@ -885,6 +885,8 @@ void cs35l41_configure_cs_dsp(struct device *dev, struct regmap *reg, struct cs_
- int cs35l41_set_cspl_mbox_cmd(struct device *dev, struct regmap *regmap,
- 			      enum cs35l41_cspl_mbox_cmd cmd);
- int cs35l41_write_fs_errata(struct device *dev, struct regmap *regmap);
-+int cs35l41_enter_hibernate(struct device *dev, struct regmap *regmap,
-+			    enum cs35l41_boost_type b_type);
- int cs35l41_exit_hibernate(struct device *dev, struct regmap *regmap);
- int cs35l41_init_boost(struct device *dev, struct regmap *regmap,
- 		       struct cs35l41_hw_cfg *hw_cfg);
-diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
-index e726a38f1997..0c7d1c791279 100644
---- a/sound/soc/codecs/cs35l41-lib.c
-+++ b/sound/soc/codecs/cs35l41-lib.c
-@@ -1322,6 +1322,25 @@ int cs35l41_write_fs_errata(struct device *dev, struct regmap *regmap)
- }
- EXPORT_SYMBOL_GPL(cs35l41_write_fs_errata);
+diff --git a/sound/pci/hda/hda_cs_dsp_ctl.c b/sound/pci/hda/hda_cs_dsp_ctl.c
+index 3b837d000a00..4cf5f7c2e267 100644
+--- a/sound/pci/hda/hda_cs_dsp_ctl.c
++++ b/sound/pci/hda/hda_cs_dsp_ctl.c
+@@ -30,6 +30,14 @@ static const char * const hda_cs_dsp_fw_text[HDA_CS_DSP_NUM_FW] = {
+ 	[HDA_CS_DSP_FW_MISC] =     "Misc",
+ };
  
-+int cs35l41_enter_hibernate(struct device *dev, struct regmap *regmap,
-+			    enum cs35l41_boost_type b_type)
-+{
-+	if (!cs35l41_safe_reset(regmap, b_type)) {
-+		dev_dbg(dev, "System does not support Suspend\n");
-+		return -EINVAL;
-+	}
++const char * const hda_cs_dsp_fw_ids[HDA_CS_DSP_NUM_FW] = {
++	[HDA_CS_DSP_FW_SPK_PROT] = "spk-prot",
++	[HDA_CS_DSP_FW_SPK_CALI] = "spk-cali",
++	[HDA_CS_DSP_FW_SPK_DIAG] = "spk-diag",
++	[HDA_CS_DSP_FW_MISC] =     "misc",
++};
++EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_fw_ids, SND_HDA_CS_DSP_CONTROLS);
 +
-+	dev_dbg(dev, "Enter hibernate\n");
-+	regmap_write(regmap, CS35L41_WAKESRC_CTL, 0x0088);
-+	regmap_write(regmap, CS35L41_WAKESRC_CTL, 0x0188);
-+
-+	// Don't wait for ACK since bus activity would wake the device
-+	regmap_write(regmap, CS35L41_DSP_VIRT1_MBOX_1, CSPL_MBOX_CMD_HIBERNATE);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(cs35l41_enter_hibernate);
-+
- static void cs35l41_wait_for_pwrmgt_sts(struct device *dev, struct regmap *regmap)
+ static inline struct hda_cs_dsp_coeff_ctl *bytes_ext_to_ctl(struct soc_bytes_ext *ext)
  {
- 	const int pwrmgt_retries = 10;
-diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
-index be7d02517739..a115ea35b92d 100644
---- a/sound/soc/codecs/cs35l41.c
-+++ b/sound/soc/codecs/cs35l41.c
-@@ -1335,15 +1335,7 @@ static int __maybe_unused cs35l41_runtime_suspend(struct device *dev)
- 	if (!cs35l41->dsp.preloaded || !cs35l41->dsp.cs_dsp.running)
- 		return 0;
+ 	return container_of(ext, struct hda_cs_dsp_coeff_ctl, bytes_ext);
+diff --git a/sound/pci/hda/hda_cs_dsp_ctl.h b/sound/pci/hda/hda_cs_dsp_ctl.h
+index 65b9c5c68957..265d8024eec9 100644
+--- a/sound/pci/hda/hda_cs_dsp_ctl.h
++++ b/sound/pci/hda/hda_cs_dsp_ctl.h
+@@ -27,6 +27,8 @@ struct hda_cs_dsp_ctl_info {
+ 	const char *amp_name;
+ };
  
--	dev_dbg(cs35l41->dev, "Enter hibernate\n");
--
--	cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type);
--	regmap_write(cs35l41->regmap, CS35L41_WAKESRC_CTL, 0x0088);
--	regmap_write(cs35l41->regmap, CS35L41_WAKESRC_CTL, 0x0188);
--
--	// Don't wait for ACK since bus activity would wake the device
--	regmap_write(cs35l41->regmap, CS35L41_DSP_VIRT1_MBOX_1,
--		     CSPL_MBOX_CMD_HIBERNATE);
-+	cs35l41_enter_hibernate(dev, cs35l41->regmap, cs35l41->hw_cfg.bst_type);
- 
- 	regcache_cache_only(cs35l41->regmap, true);
- 	regcache_mark_dirty(cs35l41->regmap);
++extern const char * const hda_cs_dsp_fw_ids[HDA_CS_DSP_NUM_FW];
++
+ int hda_cs_dsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl, struct hda_cs_dsp_ctl_info *info);
+ void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl);
+ int hda_cs_dsp_remove_kcontrol(struct snd_card *card, const char *name);
 -- 
 2.34.1
 
