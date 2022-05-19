@@ -2,121 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 260E9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92333C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243249AbiESRuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
+        id S243358AbiESRuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243339AbiESRsz (ORCPT
+        with ESMTP id S242496AbiESRti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:48:55 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D729B225B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:48:48 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24J66mcZ012194;
-        Thu, 19 May 2022 12:47:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=cpKA7D3u60Un0Q7jaRk6044JdqC+LVcgSD1wYGWQh3U=;
- b=SqrJe/6t3mCfdPAhoyNtZaf7TguwmlWXArwWaOUmQL62Uf/qDTwUkPOPOWb00r8rKahn
- AS/fI+ZRyF/jYCb89xoXP2aFWkutaH99fzB6nJf4XL5/56yYU8eAn9y7T7xT6SuuZF3p
- sKG/l927Z2MN/f5OCYtz9cRElq+kV9ST1O/UjGfgWC/JdkbtUONftEY7TmZIAw5vBivn
- fS2kYbsMjOM6Congsc2ks9FT/2NMO81rLvjJ5gxusYJz05vEM2IkkJbuwtRSbaQm8nzQ
- pCtIeFqFtqQBrRrbiHztOgPLaqPB5GrPv20689ZsuCbuuKuRUEWvhaO9hiYNt40v8/Lu qQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3g28upfavr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 19 May 2022 12:47:59 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 18:47:57 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Thu, 19 May 2022 18:47:57 +0100
-Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.59])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 2F299476;
-        Thu, 19 May 2022 17:47:57 +0000 (UTC)
-From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v3 17/17] ALSA: hda: cs35l41: Add module parameter to control firmware load
-Date:   Thu, 19 May 2022 18:47:49 +0100
-Message-ID: <20220519174749.15459-18-vitalyr@opensource.cirrus.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220519174749.15459-1-vitalyr@opensource.cirrus.com>
-References: <20220519174749.15459-1-vitalyr@opensource.cirrus.com>
+        Thu, 19 May 2022 13:49:38 -0400
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938DAAF303;
+        Thu, 19 May 2022 10:49:00 -0700 (PDT)
+Received: by mail-qv1-f49.google.com with SMTP id j3so5158838qvn.0;
+        Thu, 19 May 2022 10:49:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ypz7+YxgISOOflvYtmwnpKygymqNnA7Map87dQNKlcs=;
+        b=2PENtJvcVjDtbysgbjoIPodk1YP5YvyIInfhwrV6XBobmsM/GXlt7hmw2mAAyWnPZw
+         n/8IwhWbtsxYEBEaYcbwjMTBnFbqI5M5Fy1RtiSX8x8YE3QvBPv10V7630pepan8JOcK
+         GXFrmFtdXGicyQYaSTF712C+eRVaq2irb0dkKGeLk/VtyUHW7eJDFDIxIMpRLUC+prAp
+         eyOUWY9L2oheoDah65Uc/slL/iCNshanCUZoS01f6OjGTALY5jTfpVMVtse6rbkbc/6R
+         kjb+GRY0EH528s3rLxz20JfWs9jpbrEh+M6ZVsB0HBgmhGh0AVzilaOrunZI1og8gBiC
+         l/xQ==
+X-Gm-Message-State: AOAM532U5nSCR4uq379vt3n1kO2iQtfp/E2oqC6WuGe7cXJfUvrIAPtu
+        yHIsm4aMmVPKSTPcdVO1eSxCYEnP9sBOsg==
+X-Google-Smtp-Source: ABdhPJw5tyo+TSVr8lt/1CZ1cJBraalNy3xt8peVxfJUpEdgSgWClwdBxmOpiVoknVbmEvN0vxf2kA==
+X-Received: by 2002:a05:6214:5298:b0:461:c745:3b87 with SMTP id kj24-20020a056214529800b00461c7453b87mr5154812qvb.61.1652982539242;
+        Thu, 19 May 2022 10:48:59 -0700 (PDT)
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
+        by smtp.gmail.com with ESMTPSA id l63-20020a37a242000000b0069fc13ce21bsm1628795qke.76.2022.05.19.10.48.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 10:48:58 -0700 (PDT)
+Received: by mail-yb1-f172.google.com with SMTP id t26so10309046ybt.3;
+        Thu, 19 May 2022 10:48:58 -0700 (PDT)
+X-Received: by 2002:a25:4289:0:b0:64d:746f:5311 with SMTP id
+ p131-20020a254289000000b0064d746f5311mr5263711yba.89.1652982538414; Thu, 19
+ May 2022 10:48:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: 3hbDY2jHkOjnuYNYeRimszsI8YEz0aBO
-X-Proofpoint-ORIG-GUID: 3hbDY2jHkOjnuYNYeRimszsI8YEz0aBO
-X-Proofpoint-Spam-Reason: safe
+References: <YoUBh5BSsURDO71Z@chrisdown.name> <CAMuHMdU2tUU6FAM-nK9oxd0GwcO3WwvZp9Um4=w5By+N0P0kXA@mail.gmail.com>
+ <YoZWFi0AtmA9fvv/@chrisdown.name>
+In-Reply-To: <YoZWFi0AtmA9fvv/@chrisdown.name>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 19 May 2022 19:48:46 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU5=XW28XBdEx9ofrrysUCqqtoaS7=0U8Mr7TF3XdntWw@mail.gmail.com>
+Message-ID: <CAMuHMdU5=XW28XBdEx9ofrrysUCqqtoaS7=0U8Mr7TF3XdntWw@mail.gmail.com>
+Subject: Re: [RFC PATCH] printk: console: Allow each console to have its own loglevel
+To:     Chris Down <chris@chrisdown.name>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Binding <sbinding@opensource.cirrus.com>
+Hi Chris,
 
-By default, the driver will automatically load DSP firmware
-for the amps, if available. Adding this option allows the
-autoload to be optional, which allows for different configurations.
+CC DT
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
----
+On Thu, May 19, 2022 at 4:37 PM Chris Down <chris@chrisdown.name> wrote:
+> Geert Uytterhoeven writes:
+> >All of the above options are appropriate for "classic" systems,
+> >where the console device is selected using the "console=" option.
+> >
+> >On systems using Device tree, the serial console device is selected
+> >using the "chosen/stout-path" property in DT, and the graphical
+> >console is usually auto-detected and auto-enabled through DRM.
+> >Do you envision a way to specify a specific console loglevel on the
+> >kernel command line on such systems?
+>
+> Interesting question! I hadn't really thought about device tree. I actually
+> have very little understanding of how it works to be honest :-)
+>
+> I'm happy to add loglevel support to device tree, I assume I'd add another
+> property under the chosen node, like chosen/stdout-loglevel.
 
-Changes since v2:
- - Added module paramter to control firmware loading
- 
- sound/pci/hda/cs35l41_hda.c | 20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
+Please do not add a new property there.
+IMHO, the loglevel should be specified on the kernel command line,
+and not be fixed using a DT property.
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 06abd03e2996..8aea09870bc2 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -30,6 +30,11 @@
- #define CAL_R_DSP_CTL_TYPE		5
- #define CAL_R_DSP_CTL_ALG		205
- 
-+static bool firmware_autostart = 1;
-+module_param(firmware_autostart, bool, 0444);
-+MODULE_PARM_DESC(firmware_autostart, "Allow automatic firmware download on boot"
-+			     "(0=Disable, 1=Enable) (default=1); ");
-+
- static const struct reg_sequence cs35l41_hda_config[] = {
- 	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, // 3072000Hz, BCLK Input, PLL_REFCLK_EN = 1
- 	{ CS35L41_DSP_CLK_CTRL,		0x00000003 }, // DSP CLK EN
-@@ -779,11 +784,16 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
- 
- 	cs35l41->firmware_type = HDA_CS_DSP_FW_SPK_PROT;
- 
--	cs35l41->request_fw_load = true;
--	mutex_lock(&cs35l41->fw_mutex);
--	if (cs35l41_smart_amp(cs35l41) < 0)
--		dev_warn(cs35l41->dev, "Cannot Run Firmware, reverting to dsp bypass...\n");
--	mutex_unlock(&cs35l41->fw_mutex);
-+	if (firmware_autostart) {
-+		dev_dbg(cs35l41->dev, "Firmware Autostart.\n");
-+		cs35l41->request_fw_load = true;
-+		mutex_lock(&cs35l41->fw_mutex);
-+		if (cs35l41_smart_amp(cs35l41) < 0)
-+			dev_warn(cs35l41->dev, "Cannot Run Firmware, reverting to dsp bypass...\n");
-+		mutex_unlock(&cs35l41->fw_mutex);
-+	} else {
-+		dev_dbg(cs35l41->dev, "Firmware Autostart is disabled.\n");
-+	}
- 
- 	cs35l41_create_controls(cs35l41);
- 
--- 
-2.34.1
+Typically, boot loaders (e.g. U-Boot) replace the command line
+specified in chosen/stdout-path in DT by something retrieved from
+the boot environment (e.g. user-specifief bootargs in NVMEM).
 
+> I have some questions, though:
+>
+> 1. It looks like DT is standardised. Do I need to get standards approval first?
+> 2. Is there documentation on how to reliably test DT changes?
+
+The DT specification can be found at
+https://www.devicetree.org/specifications/
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
