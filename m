@@ -2,185 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83411C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A194AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243799AbiESSTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34212 "EHLO
+        id S243090AbiESSTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243806AbiESSSX (ORCPT
+        with ESMTP id S237697AbiESSTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:18:23 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CE4EBA98
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:18:21 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5CD0C5C01FC;
-        Thu, 19 May 2022 14:18:19 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 19 May 2022 14:18:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        invisiblethingslab.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1652984299; x=
-        1653070699; bh=p/ZcdHvmtB8X1rkCDJsKxIe35fAqtqdi3lNcAexvvSo=; b=P
-        gZzioXTTzenseX65+yBfXdA8/uzdM3p94L6iHsPd3BJfqvwcboOTcO/BHCn0T/LN
-        edSz1SM9MB+SyXd3ZTJ6pJRUTGKdZuBuqdUtzWyrDEjdYe+LwXcmvDrlSPpz1ygM
-        38NJpPrU0kx2LeJVMyiQZxVl5BT0XloxnhrTuyi81zJxi6b5XiGdynYyFc2BWGXK
-        vPnsfC0Enf0A0eq3/zJ6WJ+ioxEcvyw8ZVAsKXrUdLRpG7InuX/cIc6tI2TgxtPj
-        VzD2rcpCFGmqTNSYziIEIHvrJItJ5gofJn4gRKch75hk4cBYVBnUrAQOda4mPjhk
-        LH8ofMDuf6VF2id38XPjQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1652984299; x=1653070699; bh=p/ZcdHvmtB8X1rkCDJsKxIe35fAq
-        tqdi3lNcAexvvSo=; b=Evw7E5LD2FXeQTxFHCfso+lRe/JtkQrZYFw5W0mBCzqo
-        MMV46hiPpAQX5q5iDScPgFexHo48yJEkBdfx7h109FGeQ8UAh2eU/L/wNac3P4Mp
-        iRyW0LhqrjDQPnvZUl1LKkNWJIBXbCyfv5m/cq4N0hUXVcXeZH9hq94pU5VAim98
-        9S3jmvi3bhIBMlYDi5ibNeuh9kDidt62ZjpYwuzO9+kTA+AiEC/KLXQR1gv40KSF
-        /WSzmes4KTssmmceM16KeFaPxLqqBEsf+8O7rA0vToKTNm0gIyZFEezl8OJGYrmf
-        n/UyMRRlWzZuq/+weMrtt7+5XIW4UVTkDGmS8+1wBA==
-X-ME-Sender: <xms:6omGYkGbeux4b-4ZA-qTob4PcH-XanARcynrHAL2ybpZRtX4ZJMUXQ>
-    <xme:6omGYtWckp2o4nNzepllyqk8mOkVi6XyrFJ1VEKekSSjW-5kPn_1AJOoNkvfLctss
-    Ub4_mb3dcZk9zw>
-X-ME-Received: <xmr:6omGYuJ8EBLp0RR9Js7tSqZkVqLoiq61-JJG9iHemxspt-YhUkWE2ldBRhwT>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedriedugdduvdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepffgvmhhi
-    ucforghrihgvucfqsggvnhhouhhruceouggvmhhisehinhhvihhsihgslhgvthhhihhngh
-    hslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepuedthefhtddvffefjeejvdehvdej
-    ieehffehkeekheegleeuleevleduteehteetnecuffhomhgrihhnpehgihhthhhusgdrtg
-    homhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegu
-    vghmihesihhnvhhishhisghlvghthhhinhhgshhlrggsrdgtohhm
-X-ME-Proxy: <xmx:6omGYmGkc-Iu38g7NVj8l1LGP7UQNUt9uu7DXYC762occKCqP3goEw>
-    <xmx:6omGYqXnmzTkMWNpp16j0SCXZQp_arxcQwnh3RZiYX1GS3GW4WUGgg>
-    <xmx:6omGYpN7gpszV1ofG5-NptgXkroqLlKf0krVLwxrlKUwR9oVcinrew>
-    <xmx:64mGYjOtj_p8aaEOarmLAwEhbbTMaIFxc9WUDPVPia1G3Q5f6pDDuA>
-Feedback-ID: iac594737:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 19 May 2022 14:18:18 -0400 (EDT)
-Date:   Thu, 19 May 2022 14:17:46 -0400
-From:   Demi Marie Obenour <demi@invisiblethingslab.com>
-To:     Juergen Gross <jgross@suse.com>,
-        Xen developer discussion <xen-devel@lists.xenproject.org>
-Cc:     Boris Ostrovski <boris.ostrovsky@oracle.com>,
-        Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, linux-kernel@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>
-Subject: Re: Hang in 5.17.4+ that appears to be due to Xen
-Message-ID: <YoaJ6KB+GRXHG3Mv@itl-email>
-References: <Yn/Tgj1Ehs/BdpHp@itl-email>
- <55436ae1-8255-1898-00df-51261080cd41@suse.com>
+        Thu, 19 May 2022 14:19:44 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8EA8BD18
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652984383; x=1684520383;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=fUFGhBMKkfbTh5xB0/i+oE1IXEQOrkqxSXR0nKzg2Go=;
+  b=bgFVP6eSXLvcTUH2EJfYnD0bLeBJLLMg75XAMfc3KwKcNZeNwqXH/POU
+   IxBUGWKCNNX5AlK6Fa8ny1slRHe5l0FuEsKRawOrIPMZzZmlYMHAECEw+
+   ev7mQ1kUXW+nQtelUmxpestZaXA7wrjJ/rcJg96voL+7zAW/+vreBY1jU
+   DTQIChtuS/cCPUqZvdzM++85SK0A15uhe3MrUNRTth/l8D4LqpIBSvHX7
+   Ilnp0VTy4Nj0iXGVzbZwg/wNSjTdVJ2oItT3ZthNfxESg2a2QMxvq3L0I
+   9Jx3zvhoVWpJ83rPt/Cyj7qrF6thM34Rkr24nm392ro5SNi6xFfS1g3OS
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="252207006"
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="252207006"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 11:19:43 -0700
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="598720227"
+Received: from hzhan51-mobl.ccr.corp.intel.com (HELO chenyu5-mobl1) ([10.255.30.125])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 11:19:36 -0700
+Date:   Fri, 20 May 2022 02:19:31 +0800
+From:   Chen Yu <yu.c.chen@intel.com>
+To:     K Prateek Nayak <kprateek.nayak@amd.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        Tim Chen <tim.c.chen@intel.com>,
+        Chen Yu <yu.chen.surf@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Barry Song <21cnbao@gmail.com>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Len Brown <len.brown@intel.com>,
+        Ben Segall <bsegall@google.com>,
+        Aubrey Li <aubrey.li@intel.com>,
+        Abel Wu <wuyun.abel@bytedance.com>,
+        Zhang Rui <rui.zhang@intel.com>, linux-kernel@vger.kernel.org,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Subject: Re: [PATCH v3] sched/fair: Introduce SIS_UTIL to search idle CPU
+ based on sum of util_avg
+Message-ID: <20220519181931.GA23577@chenyu5-mobl1>
+References: <20220428182442.659294-1-yu.c.chen@intel.com>
+ <ed985eb5-abc7-34f4-7a10-e3a08800b324@amd.com>
+ <20220514105544.GA20541@chenyu5-mobl1>
+ <adfb65ab-8621-b6c0-bb77-39c9be3486b7@amd.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="2ArJoZLmXtBnMmHx"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <55436ae1-8255-1898-00df-51261080cd41@suse.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <adfb65ab-8621-b6c0-bb77-39c9be3486b7@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 16, 2022 at 04:22:34PM +0530, K Prateek Nayak wrote:
+[snip] 
+> I've ran the benchmark in two sets of 3 runs rebooting
+> in between on each kernel version:
+> 
+> - tip
+> 
+> Test:                   tip-r0                  tip-r1                  tip-r2
+>  1-groups:         4.64 (0.00 pct)         4.90 (-5.60 pct)        4.99 (-7.54 pct)
+>  2-groups:         5.54 (0.00 pct)         5.56 (-0.36 pct)        5.58 (-0.72 pct)
+>  4-groups:         6.24 (0.00 pct)         6.18 (0.96 pct)         6.20 (0.64 pct)
+>  8-groups:         7.54 (0.00 pct)         7.50 (0.53 pct)         7.54 (0.00 pct)
+> 16-groups:        10.85 (0.00 pct)        11.17 (-2.94 pct)       10.91 (-0.55 pct)
+> 
+> Test:                   tip-r3                  tip-r4                  tip-r5
+>  1-groups:         4.68 (0.00 pct)         4.97 (-6.19 pct)        4.98 (-6.41 pct)
+>  2-groups:         5.60 (0.00 pct)         5.62 (-0.35 pct)        5.66 (-1.07 pct)
+>  4-groups:         6.24 (0.00 pct)         6.23 (0.16 pct)         6.24 (0.00 pct)
+>  8-groups:         7.54 (0.00 pct)         7.50 (0.53 pct)         7.46 (1.06 pct)
+> 16-groups:        10.81 (0.00 pct)        10.84 (-0.27 pct)       10.81 (0.00 pct)
+> 
+> - SIS_UTIL
+> 
+> 
+> Test:                SIS_UTIL-r0              SIS_UTIL-r1             SIS_UTIL-r2
+>  1-groups:         4.68 (0.00 pct)         5.03 (-7.47 pct)        4.96 (-5.98 pct)
+>  2-groups:         5.45 (0.00 pct)         5.48 (-0.55 pct)        5.50 (-0.91 pct)
+>  4-groups:         6.10 (0.00 pct)         6.07 (0.49 pct)         6.14 (-0.65 pct)
+>  8-groups:         7.52 (0.00 pct)         7.51 (0.13 pct)         7.52 (0.00 pct)
+> 16-groups:        11.63 (0.00 pct)        11.48 (1.28 pct)        11.51 (1.03 pct)
+> 
+> Test:                SIS_UTIL-r3              SIS_UTIL-r4             SIS_UTIL-r5
+>  1-groups:         4.80 (0.00 pct)         5.00 (-4.16 pct)        5.06 (-5.41 pct)
+>  2-groups:         5.51 (0.00 pct)         5.58 (-1.27 pct)        5.58 (-1.27 pct)
+>  4-groups:         6.14 (0.00 pct)         6.11 (0.48 pct)         6.06 (1.30 pct)
+>  8-groups:         7.35 (0.00 pct)         7.38 (-0.40 pct)        7.40 (-0.68 pct)
+> 16-groups:        11.03 (0.00 pct)        11.29 (-2.35 pct)       11.14 (-0.99 pct)
+> 
+> - Comparing the best and bad data points for 16-groups with each
+> kernel version:
+> 
+> Test:                   tip-good             SIS_UTIL-good
+>  1-groups:         4.68 (0.00 pct)         4.80 (-2.56 pct)
+>  2-groups:         5.60 (0.00 pct)         5.51 (1.60 pct)
+>  4-groups:         6.24 (0.00 pct)         6.14 (1.60 pct)
+>  8-groups:         7.54 (0.00 pct)         7.35 (2.51 pct)
+> 16-groups:        10.81 (0.00 pct)        11.03 (-2.03 pct)
+> 
+> Test:                   tip-good             SIS_UTIL-bad
+>  1-groups:         4.68 (0.00 pct)         4.68 (0.00 pct)
+>  2-groups:         5.60 (0.00 pct)         5.45 (2.67 pct)
+>  4-groups:         6.24 (0.00 pct)         6.10 (2.24 pct)
+>  8-groups:         7.54 (0.00 pct)         7.52 (0.26 pct)
+> 16-groups:        10.81 (0.00 pct)        11.63 (-7.58 pct)
+> 
+> Test:                   tip-bad             SIS_UTIL-good
+>  1-groups:         4.90 (0.00 pct)         4.80 (2.04 pct)
+>  2-groups:         5.56 (0.00 pct)         5.51 (0.89 pct)
+>  4-groups:         6.18 (0.00 pct)         6.14 (0.64 pct)
+>  8-groups:         7.50 (0.00 pct)         7.35 (2.00 pct)
+> 16-groups:        11.17 (0.00 pct)        11.03 (1.25 pct)
+> 
+> Test:                   tip-bad             SIS_UTIL-bad
+>  1-groups:         4.90 (0.00 pct)         4.68 (4.48 pct)
+>  2-groups:         5.56 (0.00 pct)         5.45 (1.97 pct)
+>  4-groups:         6.18 (0.00 pct)         6.10 (1.29 pct)
+>  8-groups:         7.50 (0.00 pct)         7.52 (-0.26 pct)
+> 16-groups:        11.17 (0.00 pct)        11.63 (-4.11 pct)
+> 
+> Hackbench consistently reports > 11 for 16-group
+> case with SIS_UTIL however only once with SIS_PROP
+>
+Mel has mentioned that, although it is 'overloaded', the nature of hackbench
+would benefit from scanning for more CPUs because there is frequent context switch,
+thus there is more chance to get idle.
+> > I'm thinking of taking nr_llc number into consideration to adjust the search depth,
+> > something like:
+> > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> > index dd52fc5a034b..39b914599dce 100644
+> > --- a/kernel/sched/fair.c
+> > +++ b/kernel/sched/fair.c
+> > @@ -9302,6 +9302,9 @@ static inline void update_idle_cpu_scan(struct lb_env *env,
+> >         llc_util_pct = (sum_util * 100) / (nr_llc * SCHED_CAPACITY_SCALE);
+> >         nr_scan = (100 - (llc_util_pct * llc_util_pct / 72)) * nr_llc / 100;
+> >         nr_scan = max(nr_scan, 0);
+> > +       if (nr_llc <= 16 && nr_scan)
+> > +               nr_scan = nr_llc;
+> > +
+> This will behave closer to the initial RFC on systems with smaller LLC.
+> I can do some preliminary testing with this and get back to you.
+> >         WRITE_ONCE(sd_share->nr_idle_scan, nr_scan);
+> >  }
+> >
+> > I'll offline the CPUs to make it 16 CPUs per LLC, and check what hackbench behaves.
+> Thank you for looking into this.
+>
+OK, I've done some tests and recorded the number of CPUs SIS_PROP and SIS_UTIL
+want to scan(the nr).
 
---2ArJoZLmXtBnMmHx
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 19 May 2022 14:17:46 -0400
-From: Demi Marie Obenour <demi@invisiblethingslab.com>
-To: Juergen Gross <jgross@suse.com>,
-	Xen developer discussion <xen-devel@lists.xenproject.org>
-Cc: Boris Ostrovski <boris.ostrovsky@oracle.com>,
-	Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>,
-	linux-kernel@vger.kernel.org,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-	David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-	Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-	DRI Development <dri-devel@lists.freedesktop.org>
-Subject: Re: Hang in 5.17.4+ that appears to be due to Xen
+1. 16 CPUs online, 16 groups of hackbench (total 64 threads)
+   Most of time SIS_PROP would scan for 4 CPUs, while SIS_UTIL scans for 2 CPUs.
 
-On Mon, May 16, 2022 at 08:48:17AM +0200, Juergen Gross wrote:
-> On 14.05.22 17:55, Demi Marie Obenour wrote:
-> > In https://github.com/QubesOS/qubes-issues/issues/7481, a user reported
-> > that Xorg locked up when resizing a VM window.  While I do not have the
-> > same hardware the user does and thus cannot reproduce the bug, the stack
-> > trace seems to indicate a deadlock between xen_gntdev and i915.  It
-> > appears that gnttab_unmap_refs_sync() is waiting for i915 to free the
-> > pages, while i915 is waiting for the MMU notifier that called
-> > gnttab_unmap_refs_sync() to return.  Result: deadlock.
-> >=20
-> > The problem appears to be that a mapped grant in PV mode will stay in
-> > the =E2=80=9Cinvalidating=E2=80=9D state until it is freed.  While MMU =
-notifiers are
-> > allowed to sleep, it appears that they cannot wait for the page to be
-> > freed, as is happening here.  That said, I am not very familiar with
-> > this code, so my diagnosis might be incorrect.
->=20
-> All I can say for now is that your patch seems to be introducing a use af=
-ter
-> free issue, as the parameters of the delayed work might get freed now bef=
-ore
-> the delayed work is being executed.
->=20
-> I don't know why this is happening only with rather recent kernels, as the
-> last gntdev changes in this area have been made in kernel 4.13.
->=20
-> I'd suggest to look at i915, as quite some work has happened in the code
-> visible in your stack backtraces rather recently. Maybe it would be possi=
-ble
-> to free the pages in i915 before calling the MMU notifier?
+2. 112 CPUs online, 16 groups of hackbench (total 448 threads)
+   Most of time SIS_PROP would scan for 4 CPUs, but there is a small part of
+   SIS_PROP would scan the entire LLC, which could be time costly. 
+   The number of CPUs scanned by SIS_UTIL ranges in [2, 20] and it looks like a
+   Normal Distribution.
 
-Honestly, I would rather fix this in gntdev, regardless of where the
-actual bug lies.  GPU drivers get little testing under Xen, so if
-something like this happens again, it is likely to remain undiscovered
-until a Qubes user files a bug report.  This results in a bad experience
-for Qubes users.  I would much rather code that works on bare metal work
-in Xen dom0 too.  I have had random hangs in the past (with various
-kernel versions) that might be due to similar problems.
+(I'll send you the plot picture offline so you can have a view of how these data
+look like)
 
-Furthermore, similar problems can arise whenever a driver removes an
-MMU notifier on userspace pages that someone else has references to.  It
-is hard for me to see how this is the fault of the driver that removed
-the MMU notifier.  I find it much more plausible that the correct fix is
-on the Xen side: allocate the delayed work parameters on the heap, and
-free them after the work is finished.  This eliminates this entire class
-of bugs.
---=20
-Sincerely,
-Demi Marie Obenour (she/her/hers)
-Invisible Things Lab
+This means, for 16 CPUs case, the extrem overloaded hackbench would benefit from
+scanning for more CPUs. But for 112 CPUs platform, using SIS_UTIL seems to be more
+reasonable because it does not have 'jitters' to scan for the whole LLC.
 
---2ArJoZLmXtBnMmHx
-Content-Type: application/pgp-signature; name="signature.asc"
+Let me revise the patch according to Peter and Mel's suggestion, and send
+a v4 (then cook the complementary patch to deal with system having 16
+CPUs per LLC domain).
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEdodNnxM2uiJZBxxxsoi1X/+cIsEFAmKGiegACgkQsoi1X/+c
-IsGnpg/+OOZRF3GOjff1/VSuGntrXoauU8RINbU98Rfv9GpTzq1h6l4EdlqIX7kX
-OFO2d6uVwkuJNFWOu0TWf5Yqz9k/G0fK2q2GUTikDYq3YyTmvUbsClkKBtJVjGxY
-mkHM21nJ/ao7ZET/UyKI8obwWeuC/VHIcTjjB2iKe4sYtltyWd9gfiJweJxt7Nd2
-C/FqerrslTLEz42B/OO31qstbqxuXadl7L6kQhq3CIhtVl+ZEA8/8p92BKaEP/Wp
-Lsv2jkfDGIEmAWvZuEvaTkS19yQCeKq3jBoUgXHuYwSdEIX0A7x+MblengVfqrFv
-ZFYF5TVn7HSziGTVahYm/McAH2kCfmVsSh5DAB8v+k4EyDUsrbaPLSJGZboQsutb
-yUeqSueUV+fPvnD6XyWORtIQvOmeF9ecUWH9AUcWEtDrC1DxCeJADYcmE+RuLYuv
-t3t9OEo2SB55CmS28u9BIYFmlUDDKVvsQ3xUxDR9114HY++Dulj0W1R3ZrW0mWHH
-49OrKp47DvmdaX1OyRhI/3RaPc4u+OTV8Z/1jWL0cHrybsimiTkjySKPXonIaO2E
-emd+UWqLoYAyQLZ+u8alEI5s7IBjeXPcL8VEwh6K7nblCjK3yfqdOCyYRem+1lgx
-JlHonk/YOiLPfZG1xN29p+/vRnzQBaZR28py7GpsVBsniWQQxS4=
-=DHnk
------END PGP SIGNATURE-----
-
---2ArJoZLmXtBnMmHx--
+thanks,
+Chenyu
+> --
+> Thanks and Regards,
+> Prateek
+> 
