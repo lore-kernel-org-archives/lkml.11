@@ -2,75 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5761C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCAF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343521AbiESXRg (ORCPT
+        id S1343490AbiESXTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
+        Thu, 19 May 2022 19:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237386AbiESXRb (ORCPT
+        with ESMTP id S234213AbiESXTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:17:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895F3E8BA0;
-        Thu, 19 May 2022 16:17:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 437D8B828D4;
-        Thu, 19 May 2022 23:17:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEF9FC385AA;
-        Thu, 19 May 2022 23:17:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653002248;
-        bh=FDxKvt20YoDXr8Bm7tgCaGymC59FE8E9GRHh3mTeuEU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PHMZ4EJyOqhsf4Uvougsi717EDEZosl7F2qLKJ5kjUoJgCwXwGG1qbNSlcZr9M9fr
-         c9Wbpqz5qiK9FfjAv48d+zr5xhyw4ldPzOx4I0/H3YGblRJLqW6atvsvHG7QRDova3
-         3YfdnmwqcRDDS/9E9zYwqpewqA4ukN72uFdt4aTRF4fLUtSOA9MKB0Qqh7yhJClpZM
-         XTijom0LhGHQ4Y+knwKN63CrrWkci8yqJEGr9e/1spYOYUszFN2ryRYISsa0A+KGZK
-         SmtMpzN/xmIJ8wuhKcUBO4+M5zlxuLBBj7avbjvPSs2gwZldUMmFEzY3JFvblVRvaU
-         eEU0rOyiOGMPw==
-Date:   Thu, 19 May 2022 16:17:26 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: linux-next: Tree for May 19 (net/ethernet/mellanox/mlx5/core/)
-Message-ID: <20220519161726.08cd9301@kernel.org>
-In-Reply-To: <47e365e7-60a3-62ea-65e2-e046cbdcc999@infradead.org>
-References: <20220519194922.5d1bac4a@canb.auug.org.au>
-        <47e365e7-60a3-62ea-65e2-e046cbdcc999@infradead.org>
+        Thu, 19 May 2022 19:19:34 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77C3F74A7
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:19:33 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id o13-20020a17090a9f8d00b001df3fc52ea7so10000022pjp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:19:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HkpLX5d+0MkqzwvQ+3AzHLCEwixfF+WafpJiNTDl1Es=;
+        b=CFUdPM7hPWEqCmvntb3hYKm7lunX0hbEt78+UwJQUB3/uulVfQ3Jkhlbx2FjPY1sjS
+         8GBVHdJrYhD+u2PSOY+WnKMBKW5X/djPknhbdSXfcgNbJn1udy7GKyJ/dEg+uyHqS2gA
+         t+HFd+SUX45W7uMf0YnyR+u8mLbhbqWu8W3PpWf/dpiDDItFPh4ehpmDKc/U7MJiflu5
+         x1QscZl0If66fGcoTLjTN3fAu56rICItFmb1fwU2mKZwmS59cKb6SLEa8j0cXNU2SWKc
+         ZuBXAA2KlnPQQ6387jFGK5E4hLUswusf2vAKHmgrecl+oUidaSWkjD0a/fatJAn56ZYW
+         A5rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HkpLX5d+0MkqzwvQ+3AzHLCEwixfF+WafpJiNTDl1Es=;
+        b=Mq5QXaRnx2paop8ME381mcXMycKoaa4b87Qa/icfD+QrWqo14LY6vborn+92z+M3yV
+         C7kRblj4WB8UocN+TGfh/fPqMoURAfYIL3sD6sudAbdWpEIJP/IgtVi1oBxec7WDOWud
+         rI9WKjQY2JI3SI/x/MccrCNHZ/BMi4krDlTOU0/NhULYhb7DhIfsmCr8+86AcUvWtJl/
+         XOJBOZEUZxpHwoqZR9ZCjp/aY8mP1C5vSq0OA6NLeKPwEXQnu6Ch/m7muVTZDI7jKXBx
+         +oU/PVarw+WfC8SVxmoD/8fVoMjNZXiQ1nBf7Ot/BSb8MFVl0IaygZIv8GciwL3yxSEX
+         1NNA==
+X-Gm-Message-State: AOAM532Amhjblg7rPxr2V3iOqlNZNXJZlNmhbYvNh9lWFxt1lvsoXf2D
+        d0ECvaOuWvbmzm5XM2YQZzgA4A==
+X-Google-Smtp-Source: ABdhPJxRXPXhEkrDtQM7lD68+YgXNqr3oKWQQYmLAK3DQ7t1D+O9A2edXs39rm7tiEvPX9tpsPDHig==
+X-Received: by 2002:a17:902:d4c4:b0:161:bfc2:8e83 with SMTP id o4-20020a170902d4c400b00161bfc28e83mr6921147plg.57.1653002373237;
+        Thu, 19 May 2022 16:19:33 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id a5-20020a62d405000000b0050dc7628163sm232437pfh.61.2022.05.19.16.19.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 16:19:32 -0700 (PDT)
+Message-ID: <3553b935-0aca-3d3e-2495-12288f601b53@kernel.dk>
+Date:   Thu, 19 May 2022 17:19:31 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCHSET 0/2] Fix splice from random/urandom
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     tytso@mit.edu, hch@lst.de, linux-kernel@vger.kernel.org
+References: <20220519193133.194138-1-axboe@kernel.dk>
+ <YoajCafKmgUbbaY0@zx2c4.com> <a6c843ff-a3d7-ce6a-4e99-70968834a02a@kernel.dk>
+ <YobPB27Ozl7uqUEu@zx2c4.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <YobPB27Ozl7uqUEu@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 13:57:05 -0700 Randy Dunlap wrote:
-> On 5/19/22 02:49, Stephen Rothwell wrote:
-> > Hi all,
-> > 
-> > Changes since 20220518:  
+On 5/19/22 5:13 PM, Jason A. Donenfeld wrote:
+> Hi Jens,
 > 
-> on i386 or x86_64:
+> On Thu, May 19, 2022 at 02:49:13PM -0600, Jens Axboe wrote:
+>>> There's a lot of attention in random.c devoted to not leaving any output
+>>> around on the stack or in stray buffers. The explicit use of
+>>> copy_to_user() makes it clear that the output isn't being copied
+>>> anywhere other than what's the user's responsibility to cleanup. I'm
+>>> wondering if the switch to copy_to_iter() introduces any buffering or
+>>> gotchas that you might be aware of.
+>>
+>> No, it's just a wrapper around copying to the user memory pointed to by
+>> the iov_iter. No extra buffering or anything like that. So I think it
+>> should be fine in that respect, and it actually cleans up the code a bit
+>> imho since the copy_to_iter() since the return value of "bytes copied"
+>> is easier to work with than the "bytes not copied".
 > 
-> drivers/net/ethernet/mellanox/mlx5/core/lag/lag.o: in function `mlx5_lag_mpesw_init':
-> lag.c:(.text+0x408): multiple definition of `mlx5_lag_mpesw_init'; ld: DWARF error: could not find abbrev number 25
-> drivers/net/ethernet/mellanox/mlx5/core/lag/debugfs.o:debugfs.c:(.text+0x41c): first defined here
-> ld: drivers/net/ethernet/mellanox/mlx5/core/lag/lag.o: in function `mlx5_lag_mpesw_cleanup':
-> lag.c:(.text+0x40e): multiple definition of `mlx5_lag_mpesw_cleanup'; drivers/net/ethernet/mellanox/mlx5/core/lag/debugfs.o:debugfs.c:(.text+0x422): first defined here
-> 
-> 
-> x86_64 randconfig file is attached.
+> Alright, that's good to hear. So even for kernel->kernel writes, the
+> argument is that what ever buffers are used in the process are the same
+> ones that the user would be hitting anyway by calling write() on the
+> destination if this roundtripped through userspace, so nothing changes?
 
-Thanks, should be fixed by commit d935053a62fa ("net/mlx5: fix multiple
-definitions of mlx5_lag_mpesw_init / mlx5_lag_mpesw_cleanup") in net-next.
+The source and destination for the copies are exactly the same with the
+change as before, so no changes there. The non-user copy is a different
+helper.
+
+-- 
+Jens Axboe
 
