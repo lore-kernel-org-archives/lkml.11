@@ -2,116 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EECDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240598AbiESR2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56314 "EHLO
+        id S242693AbiESR2a convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242708AbiESRZY (ORCPT
+        with ESMTP id S243067AbiESR0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:25:24 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2917EAFB18;
-        Thu, 19 May 2022 10:25:20 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id d22so5362505plr.9;
-        Thu, 19 May 2022 10:25:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zZ5b0xdEpn+CBBGAkA6i9eo0UnhdgnmaKiuhK5IzIAE=;
-        b=nnzeicYYieFIceMJFH+7n68Pgzl2q2bBoiF9O1WjNCu5cSEMr+10//1MNuypvgaVM1
-         /bZ22uIrgQ71QtzfO/gAWHluPbZa9OJmocvpehzINqQvPgdjwNB6Shqx96PbdUuuJQ+I
-         sRmS8/ffi6dzUM+LzUEduSsbcDSBSUiUIxxvhrQkzwhIbKup0bbIYjsx3peaxVRSzO9O
-         Dt2PC0l3Nqp3HxfovEHYJIl1uwN1SLXTJP1neevx0kchvbNZdeQCkUrMnDKlZXjk6uhz
-         x1Qo+DPGi6yXQLEF/tomaBkSevvzEq9r8oObPGl1rFkH2voVtxJVUySVTiChXlXcaNE8
-         EcZA==
+        Thu, 19 May 2022 13:26:16 -0400
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4F83E5C0
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:25:56 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id e78so10159465ybc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:25:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zZ5b0xdEpn+CBBGAkA6i9eo0UnhdgnmaKiuhK5IzIAE=;
-        b=p0wzNbOMkQOitoa0zIKjDYjEJHhboig9uh01eQpmaVYmgMLB74BosIMYaI+BUtnuu4
-         qVr30USnoNEOWIP5gHepota1jgxqk+m8YYYgQuegKB9kW5oeI2sTmkjJG895EeLmkJVt
-         LuG3W+/vncimETvYjITXG/W/2OQmmhWQJ7RzotRGSsC9TsoF0NAai+nnCHB6UV0R+o89
-         eq7N2idwC+7KEwBmp/F5e4Y5k1En1L1vfZtS22Ygy5TOlFPcXn6sSoA8BDAxu4zyTByq
-         6N1fz8S0PCxA3OAWNM64jEJF85UJKLhJcyJKjEVMOJbudDM4kf6RKH7l9fUL4BihJHB5
-         iKKA==
-X-Gm-Message-State: AOAM532kdlOEg/lqTs/AXR/V7Dw4dhdrZ1NczGA6odVfFlTLGM8SHa7u
-        f/v7mKvhoqEmSwimuSPhFLqJfDoJx+r0
-X-Google-Smtp-Source: ABdhPJzoWpILxPY/FtcHe7auDf4GKTb4QiQq9qKUQETSfuC0bEz6CKeeIQzjc++0XSfsmCG5aefFGw==
-X-Received: by 2002:a17:90a:a384:b0:1dc:a407:b5ac with SMTP id x4-20020a17090aa38400b001dca407b5acmr6150964pjp.11.1652981119128;
-        Thu, 19 May 2022 10:25:19 -0700 (PDT)
-Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:25:18 -0700 (PDT)
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
-        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        andriy.shevchenko@linux.intel.com, willy@infradead.org
-Subject: [PATCH v2 19/28] vsprintf: flags_string() no longer takes printf_spec
-Date:   Thu, 19 May 2022 13:24:12 -0400
-Message-Id: <20220519172421.162394-20-kent.overstreet@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
-References: <20220519172421.162394-1-kent.overstreet@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1p7cU7b8qz6i860wpR3X62w6Sx8yiR8QDIbRQYHlwIQ=;
+        b=Prd/HQPFlhvog7ZVm5mppKaI114CCscEukhbV9IcZZZsHxSvz8KFzKqvPiUjSHxq3O
+         qtfUiD6ceGVfXiOjqIvdDddnsrkzVrmVlv3YyIW6XXYU2QLlowdM1Mdlo3F5biIpjf+r
+         HrTV4+bCD/A3fbS8LD263tiATnP+t/20njIP5sQzeBn9e1okO4zKJ/hHZmOWFa0SOm+L
+         Pg40nBLva/2x/G9zMN0rCgg06fhpXTZSvfAs/XA+9mkx2nOMw8hBH7A2hHYdOsiId+kv
+         DFjn+3kn27NH/Lds9IgRzoKHMl26IqfKsifWcqbuiWfq+jxcsbLgPIqBaI7UEm2csk+R
+         aeVA==
+X-Gm-Message-State: AOAM53175m5+3pfgykJhCq8A+8SNZA8WPI4VNtXw/NQ+QT4ejV+j1uti
+        sALYJf+kvrx3YtnphkRYKlVbzzcV8t+1qq0t18k=
+X-Google-Smtp-Source: ABdhPJwTxwEMQxUK35mCWaWi1cm/VjIPoKb/m6rnKE+9e0oVua5zcI6AUSs1yV7gVP1z00eB7CUn/8MYpCt0mLJePcQ=
+X-Received: by 2002:a25:d687:0:b0:64e:3a41:8d5 with SMTP id
+ n129-20020a25d687000000b0064e3a4108d5mr5431430ybg.622.1652981155848; Thu, 19
+ May 2022 10:25:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220519110232.1198823-1-dmitry.osipenko@collabora.com>
+In-Reply-To: <20220519110232.1198823-1-dmitry.osipenko@collabora.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 19 May 2022 19:25:45 +0200
+Message-ID: <CAJZ5v0gu7nOX=FPdVJkfCVXvKKKgSew2rMigudB2qNviAhE_Bw@mail.gmail.com>
+Subject: Re: [PATCH v10] notifier: Add atomic_notifier_call_chain_is_empty()
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We're attempting to consolidate printf_spec and format string handling
-in the top level vpr_buf(), this changes time_and_date() to not
-take printf_spec.
+On Thu, May 19, 2022 at 1:02 PM Dmitry Osipenko
+<dmitry.osipenko@collabora.com> wrote:
+>
+> Add atomic_notifier_call_chain_is_empty() that returns true if given
+> atomic call chain is empty.
+>
+> The first user of this new notifier API function will be the kernel
+> power-off core code that will support power-off call chains. The core
+> code will need to check whether there is a power-off handler registered
+> at all in order to decide whether to halt machine or power it off.
+>
+> Reviewed-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> ---
+>
+> Changelog:
+>
+> v10: - Corrected another doc-comment typo s/atomicnotifier/atomic_notifier/.
+>
+> v9: - Extended commit message with a usage example.
+>
+>     - Corrected doc-comment with s/blocking/atomic/.
+>
+>  include/linux/notifier.h |  2 ++
+>  kernel/notifier.c        | 13 +++++++++++++
+>  2 files changed, 15 insertions(+)
+>
+> diff --git a/include/linux/notifier.h b/include/linux/notifier.h
+> index 87069b8459af..95e2440037de 100644
+> --- a/include/linux/notifier.h
+> +++ b/include/linux/notifier.h
+> @@ -173,6 +173,8 @@ extern int blocking_notifier_call_chain_robust(struct blocking_notifier_head *nh
+>  extern int raw_notifier_call_chain_robust(struct raw_notifier_head *nh,
+>                 unsigned long val_up, unsigned long val_down, void *v);
+>
+> +extern bool atomic_notifier_call_chain_is_empty(struct atomic_notifier_head *nh);
+> +
+>  #define NOTIFY_DONE            0x0000          /* Don't care */
+>  #define NOTIFY_OK              0x0001          /* Suits me */
+>  #define NOTIFY_STOP_MASK       0x8000          /* Don't call further */
+> diff --git a/kernel/notifier.c b/kernel/notifier.c
+> index ba005ebf4730..137b902c985b 100644
+> --- a/kernel/notifier.c
+> +++ b/kernel/notifier.c
+> @@ -204,6 +204,19 @@ int atomic_notifier_call_chain(struct atomic_notifier_head *nh,
+>  EXPORT_SYMBOL_GPL(atomic_notifier_call_chain);
+>  NOKPROBE_SYMBOL(atomic_notifier_call_chain);
+>
+> +/**
+> + *     atomic_notifier_call_chain_is_empty - Check whether notifier chain is empty
+> + *     @nh: Pointer to head of the atomic notifier chain
+> + *
+> + *     Checks whether notifier chain is empty.
+> + *
+> + *     Returns true is notifier chain is empty, false otherwise.
+> + */
+> +bool atomic_notifier_call_chain_is_empty(struct atomic_notifier_head *nh)
+> +{
+> +       return !rcu_access_pointer(nh->head);
+> +}
+> +
+>  /*
+>   *     Blocking notifier chain routines.  All access to the chain is
+>   *     synchronized by an rwsem.
+> --
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
----
- lib/vsprintf.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 837a3f967e..971cf17d33 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -1916,12 +1916,12 @@ void format_page_flags(struct printbuf *out, unsigned long flags)
- 
- static noinline_for_stack
- void flags_string(struct printbuf *out, void *flags_ptr,
--		  struct printf_spec spec, const char *fmt)
-+		  const char *fmt)
- {
- 	unsigned long flags;
- 	const struct trace_print_flags *names;
- 
--	if (check_pointer_spec(out, flags_ptr, spec))
-+	if (check_pointer(out, flags_ptr))
- 		return;
- 
- 	switch (fmt[1]) {
-@@ -1936,7 +1936,7 @@ void flags_string(struct printbuf *out, void *flags_ptr,
- 		names = gfpflag_names;
- 		break;
- 	default:
--		return error_string_spec(out, "(%pG?)", spec);
-+		return error_string(out, "(%pG?)");
- 	}
- 
- 	return format_flags(out, flags, names);
-@@ -2313,7 +2313,8 @@ void pointer(struct printbuf *out, const char *fmt,
- #endif
- 
- 	case 'G':
--		return flags_string(out, ptr, spec, fmt);
-+		flags_string(out, ptr, fmt);
-+		return do_width_precision(out, prev_pos, spec);
- 	case 'O':
- 		return device_node_string(out, ptr, spec, fmt + 1);
- 	case 'f':
--- 
-2.36.0
-
+Applied as 5.19 material, thanks!
