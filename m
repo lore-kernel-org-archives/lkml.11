@@ -2,90 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28115C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:15:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEC8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232786AbiESCPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 22:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35476 "EHLO
+        id S232798AbiESCRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 22:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbiESCPT (ORCPT
+        with ESMTP id S232787AbiESCRO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 22:15:19 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4DA546A8;
-        Wed, 18 May 2022 19:15:18 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24J2F1qc022449
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 22:15:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1652926503; bh=igjMvarnb1k3A+zIuWFJEP3NaSDqgkSsgvM/hE55+cY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=p6bNezSfvBK2mgHxW0tUHIsgbAu9Tne30b9DIK+vFxzUAHjJm9u8Zo+uk2/SFeJ0P
-         ITdxTMQf0aKPPnMJKURPVkN/S2H9d7gkUgpo4gztL5XW3cFlwlOwh3ExMCQwRdd3aD
-         qEQxBbZuEAPGoa6nRn1a3aLopzmSfmHX8Peqv6SdFLXMEtdxhwSgrpJucj8xi4/z6T
-         Nca4yvOsUouCIrjVYPumuQrwC1yuckrZRw5h0VmtDKQtV3aNjUBfVYrxSn0HjrJVtl
-         7jAYZF3G0UHUG/0QRk179lF6qbibXxyraKh9Gh+ZAFCCBg2J0SOohH3Lx8bqjx/zaw
-         puDhnTEprtVeA==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id DE06915C3EC0; Wed, 18 May 2022 22:15:01 -0400 (EDT)
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Ye Bin <yebin10@huawei.com>, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, jack@suse.cz,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next v4] ext4: fix bug_on in ext4_writepages
-Date:   Wed, 18 May 2022 22:15:01 -0400
-Message-Id: <165292643905.1203195.1245014108401811377.b4-ty@mit.edu>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220516122634.1690462-1-yebin10@huawei.com>
-References: <20220516122634.1690462-1-yebin10@huawei.com>
+        Wed, 18 May 2022 22:17:14 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D884C03BA
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 19:17:13 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id s188so1093727oie.4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 19:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Y0e3s4RapEZi4G82QiUsPIelUiN1IwZyRHMRAQVsVPE=;
+        b=TjF3X4Yp0lgg/uvmElGGdNAeDdcPn9oRbm26OiQxEN0veObjN1zwzYv1fWgv9H6mkA
+         Q5ExoilldaN1jk8RmuAJvFMjgau4nOWa5vtPeK2Yi+09Ht3EciK7E/7K1upUH1+M4Kuf
+         IkOCKikay4euKRiYPMBBPnkI6L5GmmnqD9zil6r5BVJaW67STbw0ZOzrZsmrEpge/e0C
+         3IYhv6tS5jha+Xb5W+KCQknbJhrHB98OBX/t15tJ/9rm3Stz6plqgNgPNk99apyCy9Y9
+         LRtaiH5DOn1Q0Odedhump91EyePUY264rNNSFCGMG72Q0IZHo+p9Of+ORN+2aCjf8aCo
+         S7tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=Y0e3s4RapEZi4G82QiUsPIelUiN1IwZyRHMRAQVsVPE=;
+        b=sfAEu0p42e9zYAJr7mqFC8kD7zcyUkESrktbPWNA5Pr8B14yjiX3rx0p0btreM2E7P
+         xsrNKtskpGVF7XWJm4M3FJaiADmzITvgBQCZOMqhTJXUrd65u9dzQuaz2lzkNPya+tBy
+         A+ZieTAZDt25M1/C451pCOBYmfaxFLeXOBwJwW9fJLVifQf7NStpfBbCMTJHFvqGDfzu
+         02t6V19tc4ckF7GQIgCF5BzIpBP14zjtz0KV/c0taGtw7MBR47V0FzhyN5tRiVvW8UUS
+         YjGzA4o5NeYEMuKftFfidC6rpSild7n9eYz1w1d2+d7bN/mFgWEbI+ulL3D6kgPx9Fel
+         4E0w==
+X-Gm-Message-State: AOAM530SVZqsIMPi4b/+C2Hf4WLAuNh45x/qP0ihsvykYGEDr05r1rNz
+        Jq0+Dd6RZGEg2VyLlQlLjDI=
+X-Google-Smtp-Source: ABdhPJwLRMRuhNzPfOMPwta8qqogSiaN5c910UJjyq42LdbAbyM+PuLisYYCj19ZdZxfvWR70QSokA==
+X-Received: by 2002:aca:61c1:0:b0:2ec:d091:ff53 with SMTP id v184-20020aca61c1000000b002ecd091ff53mr1662399oib.235.1652926632701;
+        Wed, 18 May 2022 19:17:12 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id h61-20020a9d2f43000000b0060603221263sm1338227otb.51.2022.05.18.19.17.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 19:17:09 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 18 May 2022 19:17:06 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v1 3/4] powerpc/code-patching: Use jump_label for testing
+ freed initmem
+Message-ID: <20220519021706.GA3526833@roeck-us.net>
+References: <cover.1647962456.git.christophe.leroy@csgroup.eu>
+ <0aee964721cab7316cffde21a2ca223cee14d373.1647962456.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0aee964721cab7316cffde21a2ca223cee14d373.1647962456.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 20:26:34 +0800, Ye Bin wrote:
-> we got issue as follows:
-> EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
-> ------------[ cut here ]------------
-> kernel BUG at fs/ext4/inode.c:2708!
-> invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-> CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
-> RIP: 0010:ext4_writepages+0x1977/0x1c10
-> RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
-> RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
-> RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
-> RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
-> R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
-> R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
-> FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  do_writepages+0x130/0x3a0
->  filemap_fdatawrite_wbc+0x83/0xa0
->  filemap_flush+0xab/0xe0
->  ext4_alloc_da_blocks+0x51/0x120
->  __ext4_ioctl+0x1534/0x3210
->  __x64_sys_ioctl+0x12c/0x170
->  do_syscall_64+0x3b/0x90
+On Tue, Mar 22, 2022 at 04:40:20PM +0100, Christophe Leroy wrote:
+> Once init is done, initmem is freed forever so no need to
+> test system_state at every call to patch_instruction().
 > 
-> [...]
+> Use jump_label.
+> 
+> This reduces by 2% the time needed to activate ftrace on an 8xx.
+> 
 
-Applied, thanks!
+It also causes the qemu mpc8544ds emulation to crash.
 
-[1/1] ext4: fix bug_on in ext4_writepages
-      commit: eed67ff2ad862d1edca9cbba1e4a56c634cb0d46
+BUG: Unable to handle kernel data access on write at 0xc122eb34
+Faulting instruction address: 0xc001b580
+Oops: Kernel access of bad area, sig: 11 [#1]
+BE PAGE_SIZE=4K MPC8544 DS
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0-rc7-next-20220518 #1
+NIP:  c001b580 LR: c001b560 CTR: 00000003
+REGS: c5107dd0 TRAP: 0300   Not tainted  (5.18.0-rc7-next-20220518)
+MSR:  00009000 <EE,ME>  CR: 24000882  XER: 00000000
+DEAR: c122eb34 ESR: 00800000
+GPR00: c001b560 c5107ec0 c5120020 10000000 00000000 00000078 0c000000 cfffffff
+GPR08: c001e9ec 00000001 00000007 00000000 44000882 00000000 c0005178 00000000
+GPR16: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+GPR24: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 c1230000
+NIP [c001b580] free_initmem+0x48/0xa8
+LR [c001b560] free_initmem+0x28/0xa8
+Call Trace:
+[c5107ec0] [c001b560] free_initmem+0x28/0xa8 (unreliable)
+[c5107ee0] [c00051b0] kernel_init+0x38/0x150
+[c5107f00] [c001626c] ret_from_kernel_thread+0x5c/0x64
+Instruction dump:
+3fe0c123 912a00dc 90010024 48000665 3d20c218 8929fa65 2c090000 41820058
+813feb34 2c090000 4082003c 39200001 <913feb34> 80010024 3cc0c114 83e1001c
 
-Best regards,
--- 
-Theodore Ts'o <tytso@mit.edu>
+Reverting this patch fixes the problem.
+
+Guenter
+
+---
+# bad: [736ee37e2e8eed7fe48d0a37ee5a709514d478b3] Add linux-next specific files for 20220518
+# good: [42226c989789d8da4af1de0c31070c96726d990c] Linux 5.18-rc7
+git bisect start 'HEAD' 'v5.18-rc7'
+# bad: [555b5fa93f08980ccb6bc8e196226046fe047901] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git
+git bisect bad 555b5fa93f08980ccb6bc8e196226046fe047901
+# bad: [8f5ef5e622d3f217d6542779723566099f370c31] Merge branch 'for-next' of git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git
+git bisect bad 8f5ef5e622d3f217d6542779723566099f370c31
+# good: [2b7d17d4b7c1ff40f58b0d32be40fc0bb6c582fb] soc: document merges
+git bisect good 2b7d17d4b7c1ff40f58b0d32be40fc0bb6c582fb
+# good: [4964f9250fbf76cb0b9c1124d5b9ab65de9bfd0e] Merge branch 'clk-next' of git://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git
+git bisect good 4964f9250fbf76cb0b9c1124d5b9ab65de9bfd0e
+# bad: [18fae10a22071ccd0a2c44df2749ff482132774e] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git
+git bisect bad 18fae10a22071ccd0a2c44df2749ff482132774e
+# bad: [b4a5aaaa51e4ab7f03eec509d3710d50e52e87a6] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git
+git bisect bad b4a5aaaa51e4ab7f03eec509d3710d50e52e87a6
+# bad: [b6b1c3ce06ca438eb24e0f45bf0e63ecad0369f5] powerpc/rtas: Keep MSR[RI] set when calling RTAS
+git bisect bad b6b1c3ce06ca438eb24e0f45bf0e63ecad0369f5
+# good: [87ccc6684d3b57e3073f77cf28396b3037154193] powerpc/book3e: Fix sparse report in mm/nohash/fsl_book3e.c
+git bisect good 87ccc6684d3b57e3073f77cf28396b3037154193
+# good: [f31c618373f2051a32e30002d8eacad7bbbd3885] powerpc: Sort and de-dup primary opcodes in ppc-opcode.h
+git bisect good f31c618373f2051a32e30002d8eacad7bbbd3885
+# good: [9290c379d19774d8de6e2b895d756004dbad9ce5] powerpc/8xx: Simplify flush_tlb_kernel_range()
+git bisect good 9290c379d19774d8de6e2b895d756004dbad9ce5
+# bad: [d8d2af70b98109418bb16ff6638d7c1c4336f7fe] cxl/ocxl: Prepare cleanup of powerpc's asm/prom.h
+git bisect bad d8d2af70b98109418bb16ff6638d7c1c4336f7fe
+# bad: [b033767848c4115e486b1a51946de3bee2ac0fa6] powerpc/code-patching: Use jump_label for testing freed initmem
+git bisect bad b033767848c4115e486b1a51946de3bee2ac0fa6
+# good: [cb3ac45214c03852430979a43180371a44b74596] powerpc/code-patching: Don't call is_vmalloc_or_module_addr() without CONFIG_MODULES
+git bisect good cb3ac45214c03852430979a43180371a44b74596
+# first bad commit: [b033767848c4115e486b1a51946de3bee2ac0fa6] powerpc/code-patching: Use jump_label for testing freed initmem
