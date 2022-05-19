@@ -2,109 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2945BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA9F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237993AbiESMmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 08:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41274 "EHLO
+        id S235251AbiESMrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 08:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237985AbiESMmV (ORCPT
+        with ESMTP id S232653AbiESMrA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 08:42:21 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF070BA999
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:42:20 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id c2so4694307plh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:42:20 -0700 (PDT)
+        Thu, 19 May 2022 08:47:00 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7DA59965
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:46:56 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id p4so7523615lfg.4
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:46:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=Y1GovqMPzhvut8NvuPgiE/hNGUig6FYl6qCBlK+A9N4=;
-        b=vnd1gvTu/Unz1lkokq8fZ1Q1lmDQ1elM7Y8cAW4I2NJHcwmr/6cGQfK1KC21Om/YZb
-         xZPPMAAMAppCEewOclP02ef2kaT91sr5GjpGPC1oL2KaA+RY9RYRhvo10SRZrLg0Sc5V
-         vaupxPhIKwe/+31NpTqyGOy6FxyflJL0As91UnRvhoJNHfX2znOSRuNhsAhGqLPUIaHB
-         eh9vqB8sAOYQ14KIaRZVxrao0+yuVxp5bYIqqVzVwKC84iDa7rBWQYE57KEwM9XBhm2H
-         GEi+vD+qvMEClemRHMDmdfxVpU4ezocN8AOewDSY4Q9PHlTFBNQT3SkVrh3iYzK18Hiu
-         yBJQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vJNbUJe0I9bP1Pb8oaCFC6Y74eStu1CcrBu2o8mA4K8=;
+        b=Jy3PNajkRCtSCyOwWUvByidPiRuaczMd5h0dLGUVGPGr3KW8M6wBBLf/mjcAZnhmlk
+         +xDXwbgkzAWKFHNGEQEkRG/Fhifw3WPj86qUi15EShfXfq5Ygzjjb2TEJqiO9sQ1vnWt
+         G3THZOByZqygoZh+XurzGpZtIx+C9ZUSrFaJ44WX6M14jI/Ko4EAbr2XH29uO95VYdSm
+         6URnK2wsma+OaargCHDf4/yBHC3+kZNL78uGaVmy/p3dkjZE2NdW2E7Pq9ASypGMrXPY
+         w0eBNrOOGZYaBua2ngP0TlmElTPmFe+cEAlDE8VgUFfz9RSudIKyjRZ1WK0Yu41wf+tO
+         WVtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Y1GovqMPzhvut8NvuPgiE/hNGUig6FYl6qCBlK+A9N4=;
-        b=3rI3drpdfnq64iGAFt9dl/1Nq0WPcfvS1idp5jP577V3HqlcG4AkeGXASn2xuQD4Z2
-         XtOCK/I4tKWe4kctaFaYeXX2jyDlX9o7q0FDcmO6S6vzQzEvn+1biiSWLiFfNSORAH7O
-         68xPNIeO5nGTXEFHQiqwr/QkmpKTfFjlg0TMtvJ+9QfCDPOg0xKWOSopmtmtOjOGZh04
-         e8QJc5WdbcmfR4uSRNoRtyJLvEDQ1m5T9hXaZa0CGMyJeNJXFcU+qvXXfsEjaB4TFRkL
-         UZSI4JPiwdBytbCT6R0vpXJBN+jcO3gqrBiPzjN+IZTHTnSlt/xkWoG2+j+7vxh7JPFG
-         +kzg==
-X-Gm-Message-State: AOAM532QJXJ6pASDuMslcSwM9+2RPRLq4FnmJAgn3OCDHwk6SJUQ7N+u
-        IuBEo/4rNZ2qgsN2BRxUXKS7b8SjSGWQnw==
-X-Google-Smtp-Source: ABdhPJzk1auG0FAgzrLMkSSPdvHMZ/jOsnsDFWEuJ0YYtwakff2NjTBQZTp6GUnx/7N5SdpnKo9o2A==
-X-Received: by 2002:a17:902:f607:b0:161:5f47:b213 with SMTP id n7-20020a170902f60700b001615f47b213mr4504874plg.4.1652964140047;
-        Thu, 19 May 2022 05:42:20 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id s18-20020a634512000000b003c265b7d4f6sm3387809pga.44.2022.05.19.05.42.18
+        bh=vJNbUJe0I9bP1Pb8oaCFC6Y74eStu1CcrBu2o8mA4K8=;
+        b=NnV5cVKIRJWqv3uwrV07d4+9j2aMj5T/DBKwGuAII8Hgbrht4uM3luu81riWBTngDq
+         OLqWo0jn6FD+7LTGhxACcYZKwu2TPulFYb9F8FRhDa/Xb6SvYFg0fOJJ1hW3R33nuvnM
+         oQFfAURZC/6Q76H2o56+y8RFWdt3GWobgUV6BoIBpr6t45oznTZDeGMQDfcm0b32/m2o
+         lPDIZ+2cfwJBRWxLfjwvPJOSJrP+RwUBF3mmKmfO6GHWFr6Ca3COAjbXEPR60frTe+81
+         SAIoKo/hO5tSEHTHuGbnp/Abaube0DwKrV7qSNEjjTSpmuuATbULSxnoAPD3rS2otArK
+         tHWQ==
+X-Gm-Message-State: AOAM530PcrwcbHEQ/LsM960EFpZOoCS4F9gcrAdsfKJB12k9LscB0s/F
+        bEJk+Fuoym02gHTnDtq1LXx/cg==
+X-Google-Smtp-Source: ABdhPJycTA4+DGk4OsEDZYKf1XzCRbMtOTP4sw0tmlEGpAE+f2HTPwuH4+0TRq43pvsMZGWNjVCvsA==
+X-Received: by 2002:a05:6512:3195:b0:473:a219:1b0f with SMTP id i21-20020a056512319500b00473a2191b0fmr3258272lfe.439.1652964414752;
+        Thu, 19 May 2022 05:46:54 -0700 (PDT)
+Received: from ?IPV6:2001:470:dd84:abc0::8a5? ([2001:470:dd84:abc0::8a5])
+        by smtp.gmail.com with ESMTPSA id d23-20020a2e3317000000b0024f3d1daebdsm563370ljc.69.2022.05.19.05.46.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 05:42:19 -0700 (PDT)
-Message-ID: <c2d252a1-7223-4899-e5c9-e4bb27e2fc8a@kernel.dk>
-Date:   Thu, 19 May 2022 06:42:18 -0600
+        Thu, 19 May 2022 05:46:54 -0700 (PDT)
+Message-ID: <40f29157-52c0-001f-6c14-fb90b351756a@linaro.org>
+Date:   Thu, 19 May 2022 15:46:53 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [linux-next] build fails modpost: "blkcg_get_fc_appid"
- [drivers/nvme/host/nvme-fc.ko] undefined!
-Content-Language: en-US
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>,
-        linux-block <linux-block@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
-        sachinp@linux.vnet.com, mputtash@linux.vnet.com,
-        Christoph Hellwig <hch@lst.de>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>
-References: <86768c9d-9a9c-653b-ab99-86de3bc434d8@linux.vnet.ibm.com>
- <7b16694b-0281-d06d-7564-c4f26760a25e@kernel.dk>
- <fc5f8b96-3c93-5400-b917-a1d991cbe7c9@suse.de>
- <900f57bc-9978-9ba6-22fb-48f03fcf5011@kernel.dk>
-In-Reply-To: <900f57bc-9978-9ba6-22fb-48f03fcf5011@kernel.dk>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: Removal of qcom,board-id and qcom,msm-id
+Content-Language: en-GB
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Andy Gross <agross@kernel.org>,
+        Olof Johansson <olof@lixom.net>
+Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
+ <35051bec-98ea-b4c5-f734-06b3f22f3562@linaro.org>
+ <8a90ffbc-b376-9115-fb91-0b46d98873b7@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <8a90ffbc-b376-9115-fb91-0b46d98873b7@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/22 6:40 AM, Jens Axboe wrote:
-> On Thu, May 19, 2022 at 6:38 AM Hannes Reinecke <hare@suse.de> wrote:
+On 19/05/2022 14:53, Krzysztof Kozlowski wrote:
+> On 19/05/2022 13:39, Dmitry Baryshkov wrote:
+>> On 19/05/2022 13:44, Krzysztof Kozlowski wrote:
+>>> Hi,
+>>>
+>>> There was an old effort of removal of qcom,board-id and qcom,msm-id
+>>> properties from Qualcomm SoC-based boards like [1].
+>>>
+>>> First approach was to document them, which (obviously) was not well
+>>> received [2] [3] [4].
+>>>
+>>> The solution from Stephen was to encode these in the board compatible,
+>>> so bootloader can extract that information. That seemed to receive
+>>> positive comments, at least from Rob. [5]
+>>>
+>>> It was 2015... ~7 years later we are still things doing the same way,
+>>> still with undocumented properties: qcom,board-id and qcom,msm-id.
+>>>
+>>>
+>>> I would like to revive that topic, but before I start doing something
+>>> pointless - any guidance on last patch from Stephen [5]? Was it ok? Some
+>>> early NAKs?
 >>
->> On 5/19/22 14:14, Jens Axboe wrote:
->>> On 5/19/22 1:49 AM, Tasmiya Nalatwad wrote:
->>>> Greetings,
->>>>
->>>> linux-next build fails modpost: "blkcg_get_fc_appid" [drivers/nvme/host/nvme-fc.ko] undefined!
->>>>
->>>> Console Logs :
->>>>
->>>> [console-expect]#make -j 17 -s && make modules && make modules_install && make install
->>>> make -j 17 -s && make modules && make modules_install && make install
->>>> ERROR: modpost: "blkcg_get_fc_appid" [drivers/nvme/host/nvme-fc.ko] undefined!
->>>> make[1]: *** [scripts/Makefile.modpost:134: modules-only.symvers] Error 1
->>>> make: *** [Makefile:1914: modules] Error 2
->>>> make: *** Waiting for unfinished jobs....
->>>
->>> Christoph, can you fix this up?
->>>
->> Cannot reproduce with commit 21498d01d045c5b95b93e0a0625ae965b4330ebe.
->> Please share details.
+>> I do not quite fancy the idea of using extra tools to process dtb files.
+>> At this moment it is possible to concatenate several kernel-generated
+>> dtb files together. AOSP developers use this to have an image that boots
+>> on both RB3 and RB5 boards.
+>>
+>> I think that changing compat strings only makes sense if Qualcomm would
+>> use such compat strings in future. Otherwise we end up in a position
+>> where we have custom bootloaders for the RB3/RB5/etc, but the majority
+>> of the board requires extra processing steps.
 > 
-> The kerneltest bot also reported this a few days ago, you might be able
-> to find the details there as that includes config etc.
+> This was discussed in [2] [3] and [4] (previous links) and did not pass.
+> 
+> Do you have any new arguments for above objections from Arnd, Olof and
+> Rob? I don't think patch will get accepted if previous concerns during
+> review are not addressed...
 
-Here: https://lore.kernel.org/linux-mm/202205190527.o9wVEvHI-lkp@intel.com/
+I'm not sure if the patches to the dtbTool have landed or not.
+Anyway, as I said, I don't think post-processing the dtb is good way to 
+go. It makes extremely hard to check that the dtb, used by the kernel or 
+being a part of the boot.img, corresponds to this or that compiled dtb.
+
+> 
+>>
+>> So, I think, we should drop the unspecified usid aliases, document the
+>> board-id/msm-id/pmic-id properties and stick with them.
+> 
+> The existing properties need anyway documenting, probably as deprecated
+> so the schema can pass, because we cannot fix the bootloaders easly.
+> 
+>> They might be
+>> ugly, but they are expected/processed by the majority of devices present
+>> in the wild.
+> 
+> Any change in DTS affects only future devices, so not in the wild...
+
+It affects existing devices that have deployed bootloaders. So far we 
+could workaround thus by enforcing a single dtb attached to the kernel 
+image. However this doesn't play well for the distro (or AOSP) kernels, 
+where we'd like to have multiple dtb image attached.
+
+> 
+>>
+>>> [1]
+>>> https://elixir.bootlin.com/linux/v5.18-rc7/source/arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dts#L14
+>>>
+>>> [2] https://lore.kernel.org/all/7229476.C4So9noUlf@wuerfel/
+>>> [3]
+>>> https://lore.kernel.org/all/1450371534-10923-20-git-send-email-mtitinger+renesas@baylibre.com/
+>>> [4] https://lore.kernel.org/all/20151119153640.GC893@linaro.org/
+>>> [5]
+>>> https://lore.kernel.org/all/1448062280-15406-1-git-send-email-sboyd@codeaurora.org/
+
 
 -- 
-Jens Axboe
-
+With best wishes
+Dmitry
