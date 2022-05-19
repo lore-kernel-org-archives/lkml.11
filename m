@@ -2,92 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0713C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55148C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:57:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231522AbiESH4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
+        id S234310AbiESH5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiESH4g (ORCPT
+        with ESMTP id S229561AbiESH45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:56:36 -0400
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F221134B9B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:56:34 -0700 (PDT)
-Received: by mail-ua1-x935.google.com with SMTP id r22so1719775ual.3
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:56:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/sVrKXlJiB/91I00QzAeuxvXVjT/UwmC0od05LnN4Ac=;
-        b=AC38FJV1YuWB/BkOesEaJHr3dzZ7Q+idSrisH07SMypwxIVbFNgVBSAdRRwR3tLqyk
-         qfwgle2EbFIcdL92L8m3UrgASGG3WjWvXdWGzUO6PmhiMO7x/iJjuIekVu9gHlvVMtze
-         7TzqphYNHEBRTsUOi381kY0v85l/9awSZo/BE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/sVrKXlJiB/91I00QzAeuxvXVjT/UwmC0od05LnN4Ac=;
-        b=HB+YTL5QuWlXis5EJ82x0DX0I3Ti1QHDuvUWeO3PhHMD97F6qGz/SuHApFNJ/XBJJX
-         nQvsIiVGX7ak0A0/M2Qban8xi0PsLXl8ihk/mDilkTAFujVqeYMiYo7QA+5P3v+5G9x0
-         uhlHA/ojwTOy5ogfyb76NJ3d4SwKdZEsfwt5C6wyzZgBdNkW1RfQGgwRnopVMZuo65d1
-         HNnvuixWU/ont0VLb59c7Ku+nCeKPXzAvi5i29oTpYT/I9fGuMI2Y82MCkRfSNpnVFzq
-         eXKqsPub0/IwBE3UFLTax1qJJWvt9WNHtoQMyAAmNq7DZSOTH0RsX5gc8eqLgwERMUUC
-         SEbg==
-X-Gm-Message-State: AOAM531uj308z5OQnhVFK9Knw0i34wEXtnBpNRaWsWpjgSYyLrjXk08i
-        CKGF35KL578SSvrFPGpux4mbhLsoK/YM0ZsV10uwkw==
-X-Google-Smtp-Source: ABdhPJz4i7Oj3ex34dYsu4NsY1yNrvFQpe/Im0zienEazrsD4IFDnDjBf6pQTr/ySGIEDvbCJM5cQGeaV207VRGixJw=
-X-Received: by 2002:ab0:3492:0:b0:368:b577:bfd with SMTP id
- c18-20020ab03492000000b00368b5770bfdmr1449813uar.110.1652946993961; Thu, 19
- May 2022 00:56:33 -0700 (PDT)
+        Thu, 19 May 2022 03:56:57 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D015935852;
+        Thu, 19 May 2022 00:56:55 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id EF179210EA;
+        Thu, 19 May 2022 07:56:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1652947013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=RDxo6wzU5uioDacPmhT1bEtFr01wPXxQz320zi+IVxU=;
+        b=BISQseBJZCtvQEmOFCLqaO3nVcgvmxEkqpIa2zQcX87U1SaOb3Ma3j53NgkSaIDW4OYoYt
+        SQHTrhvvgwEyymWYHq4/B797Tmo0Df54e8LNygN6fllbJJSyNgEoV7FAi3ho+wxOJFYW2i
+        +BvxF/N0M0EKkXUzDMxe1HuE/yQhp9k=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1652947013;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=RDxo6wzU5uioDacPmhT1bEtFr01wPXxQz320zi+IVxU=;
+        b=y7UCf21lY6Q8W1XTugPD/U9psis1SjoI7NxWubQa7nZkTwpR5+JW6qPDoCLkpDE2Ii+ejV
+        /4ZjqFM2qLyKxQCw==
+Received: from localhost.localdomain (unknown [10.100.201.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B334E2C141;
+        Thu, 19 May 2022 07:56:53 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Subject: [PATCH 1/4] serial: pmac_zilog: remove unfinished DBDMA support
+Date:   Thu, 19 May 2022 09:56:50 +0200
+Message-Id: <20220519075653.31356-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220517082650.2005840-1-hsinyi@chromium.org> <20220517082650.2005840-4-hsinyi@chromium.org>
- <CAEVVKH8vJ4KZ8VX=paXdZ7Ci8rLF=nh4OA2eP96JzUDeeGEtJQ@mail.gmail.com>
-In-Reply-To: <CAEVVKH8vJ4KZ8VX=paXdZ7Ci8rLF=nh4OA2eP96JzUDeeGEtJQ@mail.gmail.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Thu, 19 May 2022 15:56:08 +0800
-Message-ID: <CAJMQK-gGH=5+7EwjFUVCuv2U4H0YAPGGPkuRz+00u4hnecfgQQ@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] squashfs: implement readahead
-To:     Xiongwei Song <sxwjean@gmail.com>
-Cc:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>,
-        Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 5:17 PM Xiongwei Song <sxwjean@gmail.com> wrote:
->
-> On Tue, May 17, 2022 at 4:28 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
-> >
-> > Implement readahead callback for squashfs. It will read datablocks
-> > which cover pages in readahead request. For a few cases it will
-> > not mark page as uptodate, including:
-> > - file end is 0.
-> > - zero filled blocks.
-> > - current batch of pages isn't in the same datablock or not enough in a
-> >   datablock.
-> > Otherwise pages will be marked as uptodate. The unhandled pages will be
-> > updated by readpage later.
-> >
-> > Suggested-by: Matthew Wilcox <willy@infradead.org>
-> > Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> > Reported-by: Matthew Wilcox <willy@infradead.org>
-> > Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
-> > Reported-by: Xiongwei Song <sxwjean@gmail.com>
->
-> "xiongwei.song@windriver.com" too.
->
-ack.
-<snip>
+The support for DBDMA was never completed. Remove the the code that only
+maps spaces without real work.
+
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/serial/pmac_zilog.c | 38 +--------------------------------
+ drivers/tty/serial/pmac_zilog.h |  9 --------
+ 2 files changed, 1 insertion(+), 46 deletions(-)
+
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index c903085acb8d..2953ff64a892 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -65,9 +65,6 @@
+ 
+ #include "pmac_zilog.h"
+ 
+-/* Not yet implemented */
+-#undef HAS_DBDMA
+-
+ static char version[] __initdata = "pmac_zilog: 0.6 (Benjamin Herrenschmidt <benh@kernel.crashing.org>)";
+ MODULE_AUTHOR("Benjamin Herrenschmidt <benh@kernel.crashing.org>");
+ MODULE_DESCRIPTION("Driver for the Mac and PowerMac serial ports.");
+@@ -1399,7 +1396,7 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ 		char	name[1];
+ 	} *slots;
+ 	int len;
+-	struct resource r_ports, r_rxdma, r_txdma;
++	struct resource r_ports;
+ 
+ 	/*
+ 	 * Request & map chip registers
+@@ -1411,35 +1408,6 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ 
+ 	uap->control_reg = uap->port.membase;
+ 	uap->data_reg = uap->control_reg + 0x10;
+-	
+-	/*
+-	 * Request & map DBDMA registers
+-	 */
+-#ifdef HAS_DBDMA
+-	if (of_address_to_resource(np, 1, &r_txdma) == 0 &&
+-	    of_address_to_resource(np, 2, &r_rxdma) == 0)
+-		uap->flags |= PMACZILOG_FLAG_HAS_DMA;
+-#else
+-	memset(&r_txdma, 0, sizeof(struct resource));
+-	memset(&r_rxdma, 0, sizeof(struct resource));
+-#endif	
+-	if (ZS_HAS_DMA(uap)) {
+-		uap->tx_dma_regs = ioremap(r_txdma.start, 0x100);
+-		if (uap->tx_dma_regs == NULL) {	
+-			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
+-			goto no_dma;
+-		}
+-		uap->rx_dma_regs = ioremap(r_rxdma.start, 0x100);
+-		if (uap->rx_dma_regs == NULL) {	
+-			iounmap(uap->tx_dma_regs);
+-			uap->tx_dma_regs = NULL;
+-			uap->flags &= ~PMACZILOG_FLAG_HAS_DMA;
+-			goto no_dma;
+-		}
+-		uap->tx_dma_irq = irq_of_parse_and_map(np, 1);
+-		uap->rx_dma_irq = irq_of_parse_and_map(np, 2);
+-	}
+-no_dma:
+ 
+ 	/*
+ 	 * Detect port type
+@@ -1505,8 +1473,6 @@ static int __init pmz_init_port(struct uart_pmac_port *uap)
+ 	    of_device_is_compatible(np->parent->parent, "gatwick")) {
+ 		/* IRQs on gatwick are offset by 64 */
+ 		uap->port.irq = irq_create_mapping(NULL, 64 + 15);
+-		uap->tx_dma_irq = irq_create_mapping(NULL, 64 + 4);
+-		uap->rx_dma_irq = irq_create_mapping(NULL, 64 + 5);
+ 	}
+ 
+ 	/* Setup some valid baud rate information in the register
+@@ -1526,8 +1492,6 @@ static void pmz_dispose_port(struct uart_pmac_port *uap)
+ 	struct device_node *np;
+ 
+ 	np = uap->node;
+-	iounmap(uap->rx_dma_regs);
+-	iounmap(uap->tx_dma_regs);
+ 	iounmap(uap->control_reg);
+ 	uap->node = NULL;
+ 	of_node_put(np);
+diff --git a/drivers/tty/serial/pmac_zilog.h b/drivers/tty/serial/pmac_zilog.h
+index fa85b0de5c2f..87337b748d6d 100644
+--- a/drivers/tty/serial/pmac_zilog.h
++++ b/drivers/tty/serial/pmac_zilog.h
+@@ -43,7 +43,6 @@ struct uart_pmac_port {
+ #define PMACZILOG_FLAG_TX_ACTIVE	0x00000040
+ #define PMACZILOG_FLAG_IS_IRDA		0x00000100
+ #define PMACZILOG_FLAG_IS_INTMODEM	0x00000200
+-#define PMACZILOG_FLAG_HAS_DMA		0x00000400
+ #define PMACZILOG_FLAG_RSRC_REQUESTED	0x00000800
+ #define PMACZILOG_FLAG_IS_OPEN		0x00002000
+ #define PMACZILOG_FLAG_IS_EXTCLK	0x00008000
+@@ -55,13 +54,6 @@ struct uart_pmac_port {
+ 	volatile u8			__iomem *control_reg;
+ 	volatile u8			__iomem *data_reg;
+ 
+-#ifdef CONFIG_PPC_PMAC
+-	unsigned int			tx_dma_irq;
+-	unsigned int			rx_dma_irq;
+-	volatile struct dbdma_regs	__iomem *tx_dma_regs;
+-	volatile struct dbdma_regs	__iomem *rx_dma_regs;
+-#endif
+-
+ 	unsigned char			irq_name[8];
+ 
+ 	struct ktermios			termios_cache;
+@@ -377,7 +369,6 @@ static inline void zssync(struct uart_pmac_port *port)
+ #define ZS_WANTS_MODEM_STATUS(UP)	((UP)->flags & PMACZILOG_FLAG_MODEM_STATUS)
+ #define ZS_IS_IRDA(UP)			((UP)->flags & PMACZILOG_FLAG_IS_IRDA)
+ #define ZS_IS_INTMODEM(UP)		((UP)->flags & PMACZILOG_FLAG_IS_INTMODEM)
+-#define ZS_HAS_DMA(UP)			((UP)->flags & PMACZILOG_FLAG_HAS_DMA)
+ #define ZS_IS_OPEN(UP)			((UP)->flags & PMACZILOG_FLAG_IS_OPEN)
+ #define ZS_IS_EXTCLK(UP)		((UP)->flags & PMACZILOG_FLAG_IS_EXTCLK)
+ 
+-- 
+2.36.1
+
