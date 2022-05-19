@@ -2,142 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D69A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90708C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:44:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242142AbiESQlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 12:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S232721AbiESQoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 12:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241788AbiESQlk (ORCPT
+        with ESMTP id S230039AbiESQn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 12:41:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 909BA59095
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:41:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25AE21477;
-        Thu, 19 May 2022 09:32:51 -0700 (PDT)
-Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B50B33F718;
-        Thu, 19 May 2022 09:32:50 -0700 (PDT)
-Date:   Thu, 19 May 2022 17:32:49 +0100
-From:   Ionela Voinescu <ionela.voinescu@arm.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Atish Patra <atishp@atishpatra.org>, linux-kernel@vger.kernel.org,
-        Atish Patra <atishp@rivosinc.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 0/8] arch_topology: Updates to add socket support and
- fix cluster ids
-Message-ID: <YoZxKJ6TiAsxTXNl@arm.com>
-References: <20220518093325.2070336-1-sudeep.holla@arm.com>
+        Thu, 19 May 2022 12:43:57 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CE559095
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:43:56 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id f10so5811195pjs.3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:43:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=221Yw0kf0kWHOuKCBmfC/ycEQMuPJsFgC9zSqVTAwSA=;
+        b=bu8vQ+GWvqJrRdEuq8YVrsfud1b3bQhlBNIuRQm9N4t2Lj3E7ojrr5du8GpLJyVQpt
+         zI6LAgP0cWVNyhkC2dx8jWx3d1dzS6qKn2apfQz90gm0zn8LV2J6jLUuu+darR0d5jp1
+         LpTWI9ig8g7I0oCfkW8terjt+U3QuRwraIIgfyUbQlX7hnu3WzrJLPVhPL16qrotB7X8
+         X0sGHQiLnxPwCuwzmOoubt1yCoAYcRgt5bbtFh+Kh0gFthhZS04NdGml6wCRoLPw4YTT
+         8exX0VVLnNWqt0NnU9LMNUK3s3E1Z3IQqSxPNndBTJ1hO64zu+VRfQofIL4ohxv4FNRK
+         FrmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=221Yw0kf0kWHOuKCBmfC/ycEQMuPJsFgC9zSqVTAwSA=;
+        b=MLk/Ec8NINVDjukt3OHxE/sdh8nnBqBftku4mHrxVdtDz6GBm/RognSaUoJWyGAAdw
+         sXx4cwp5db4iSYIE7LDJNMKfJ03VJLT45JY2WoyIP5FwxQKM56OacQD7QBb3sNWZ5WV0
+         3VpWk/aI68JO3qgMm7xunHgsENl1S+Dlzt18/wlhoBeWwlliVkf8aUYBDwW1LBvUycyc
+         Isgk32VJ0XQL1WZhCItSm3qiXxJzcyo8LpOkVJB7uGCQbDpV0tBDo/Bjj6LOCW2qWMzQ
+         oD626EhZQ1b/l+E7Vk+8xU3F/KiTDn5tx4B0M4mKmGJCtPFswNl1dTaxskEE4KZ8tJQR
+         3rPw==
+X-Gm-Message-State: AOAM530szMUzyiHwG3PXKFe83nZe3S5T0nSrYdw0AO+4/pDpYqTwilu6
+        32a1wZpoV1c6f0Z538d3lCVBng==
+X-Google-Smtp-Source: ABdhPJw2CROjZjF/tfI3pH/231wqbGMtrzoTlXEZCDadRe7+Y7fJupSq7bjozl06CSrvxLG1Gs7+EA==
+X-Received: by 2002:a17:902:b289:b0:161:872d:6f03 with SMTP id u9-20020a170902b28900b00161872d6f03mr5698065plr.30.1652978635790;
+        Thu, 19 May 2022 09:43:55 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id jh9-20020a170903328900b0015e8d4eb1f8sm4027559plb.66.2022.05.19.09.43.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 09:43:55 -0700 (PDT)
+Date:   Thu, 19 May 2022 16:43:51 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [RFC PATCH v3 06/19] KVM: x86: mmu: add gfn_in_memslot helper
+Message-ID: <YoZzx6f1XBWL3i8F@google.com>
+References: <20220427200314.276673-1-mlevitsk@redhat.com>
+ <20220427200314.276673-7-mlevitsk@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220518093325.2070336-1-sudeep.holla@arm.com>
+In-Reply-To: <20220427200314.276673-7-mlevitsk@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudeep,
+On Wed, Apr 27, 2022, Maxim Levitsky wrote:
+> This is a tiny refactoring, and can be useful to check
+> if a GPA/GFN is within a memslot a bit more cleanly.
 
-On Wednesday 18 May 2022 at 10:33:17 (+0100), Sudeep Holla wrote:
-> Hi All,
+This doesn't explain the actual motivation, which is to use the new helper from
+arch code.
+
+> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> ---
+>  include/linux/kvm_host.h | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
 > 
-> This series intends to fix some discrepancies we have in the CPU topology
-> parsing from the device tree /cpu-map node. Also this diverges from the
-> behaviour on a ACPI enabled platform. The expectation is that both DT
-> and ACPI enabled systems must present consistent view of the CPU topology.
-> 
-> Currently we assign generated cluster count as the physical package identifier
-> for each CPU which is wrong. The device tree bindings for CPU topology supports
-> sockets to infer the socket or physical package identifier for a given CPU.
-> Also we don't check if all the cores/threads belong to the same cluster before
-> updating their sibling masks which is fine as we don't set the cluster id yet.
-> 
-> These changes also assigns the cluster identifier as parsed from the device tree
-> cluster nodes within /cpu-map without support for nesting of the clusters.
-> Finally, it also add support for socket nodes in /cpu-map. With this the
-> parsing of exact same information from ACPI PPTT and /cpu-map DT node
-> aligns well.
-> 
-> The only exception is that the last level cache id information can be
-> inferred from the same ACPI PPTT while we need to parse CPU cache nodes
-> in the device tree.
-> 
-> P.S: I have not cc-ed Greg and Rafael so that all the users of arch_topology
-> agree with the changes first before we include them.
-> 
-> v1[1]->v2:
-> 	- Updated ID validity check include all non-negative value
-> 	- Added support to get the device node for the CPU's last level cache
-> 	- Added support to build llc_sibling on DT platforms
-> 
-> [1] https://lore.kernel.org/lkml/20220513095559.1034633-1-sudeep.holla@arm.com
-> 
-> Sudeep Holla (8):
->   arch_topology: Don't set cluster identifier as physical package identifier
->   arch_topology: Set thread sibling cpumask only within the cluster
->   arch_topology: Set cluster identifier in each core/thread from /cpu-map
->   arch_topology: Add support for parsing sockets in /cpu-map
->   arch_topology: Check for non-negative value rather than -1 for IDs validity
->   arch_topology: Avoid parsing through all the CPUs once a outlier CPU is found
->   of: base: add support to get the device node for the CPU's last level cache
->   arch_topology: Add support to build llc_sibling on DT platforms
-> 
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index 252ee4a61b58b..12e261559070b 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -1580,6 +1580,13 @@ int kvm_request_irq_source_id(struct kvm *kvm);
+>  void kvm_free_irq_source_id(struct kvm *kvm, int irq_source_id);
+>  bool kvm_arch_irqfd_allowed(struct kvm *kvm, struct kvm_irqfd *args);
+>  
+> +
+> +static inline bool gfn_in_memslot(struct kvm_memory_slot *slot, gfn_t gfn)
+> +{
+> +	return (gfn >= slot->base_gfn && gfn < slot->base_gfn + slot->npages);
+> +}
+> +
 
-Just a recommendation for patch-set structure: it would be best to have
-the following sequence to maintain the same scheduler topology and
-behaviour when partially applying the set (currently testing this on Juno,
-but should be the case for other platforms as well):
+Spurious newline.
 
-2/8 arch_topology: Set thread sibling cpumask only within the cluster
-5/8 arch_topology: Check for non-negative value rather than -1 for IDs validity
-6/8 arch_topology: Avoid parsing through all the CPUs once a outlier CPU is found
+> +
+>  /*
+>   * Returns a pointer to the memslot if it contains gfn.
+>   * Otherwise returns NULL.
+> @@ -1590,12 +1597,13 @@ try_get_memslot(struct kvm_memory_slot *slot, gfn_t gfn)
+>  	if (!slot)
+>  		return NULL;
+>  
+> -	if (gfn >= slot->base_gfn && gfn < slot->base_gfn + slot->npages)
+> +	if (gfn_in_memslot(slot, gfn))
+>  		return slot;
+>  	else
+>  		return NULL;
 
---> these are only preparation/cleanup patches and don't affect current
-functionality
+At this point, maybe:
 
-7/8 of: base: add support to get the device node for the CPU's last level cache
-8/8 arch_topology: Add support to build llc_sibling on DT platforms
+	if (!slot || !gfn_in_memslot(slot, gfn))
+		return NULL;
 
---> these will populate llc siblings but this list will be equal to
-core siblings (based on package_id) so nothing changes in the scheduler
-topology. Even if CONFIG_SCHED_CLUSTER=y, we still have cluster_id=-1 so
-nothing will change in that case either, for the patches so far.
+	return slot;
 
-1/8 arch_topology: Don't set cluster identifier as physical package identifier
-
---> 1/8 is the trouble maker if it's the first patch as it will result
-in having all CPUs in core_siblings so the topology will be flattened to
-just an MC level for a typical b.L system like Juno. But if you add it after
-all of the above patches, the llc_siblings will contribute to create the same
-MC and DIE levels we expect.
-
-3/8 arch_topology: Set cluster identifier in each core/thread from /cpu-map
-4/8 arch_topology: Add support for parsing sockets in /cpu-map
-
---> Here 3/8 will start creating complications when having clusters in
-DT and we have CONFIG_SCHED_CLUSTER=y. But I'll detail this in a reply
-to that patch. For CONFIG_SCHED_CLUSTER=n the topology and scheduler
-behaviour should be the same as before this set.
-
-Hope it helps,
-Ionela.
-
-
->  drivers/base/arch_topology.c  | 75 +++++++++++++++++++++++++++--------
->  drivers/of/base.c             | 33 +++++++++++----
->  include/linux/arch_topology.h |  1 +
->  include/linux/of.h            |  1 +
->  4 files changed, 85 insertions(+), 25 deletions(-)
-> 
-> --
-> 2.36.1
-> 
+>  }
+>  
+> +
+>  /*
+>   * Returns a pointer to the memslot that contains gfn. Otherwise returns NULL.
+>   *
+> -- 
+> 2.26.3
 > 
