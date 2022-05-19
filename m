@@ -2,114 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:09:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245022AbiESVGi convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 17:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
+        id S245019AbiESVJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 17:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244979AbiESVGg (ORCPT
+        with ESMTP id S240850AbiESVJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 17:06:36 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30C8C5BE56
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:06:29 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-94-pLza9LL4PAeN7Tz7PiBzzA-1; Thu, 19 May 2022 22:06:25 +0100
-X-MC-Unique: pLza9LL4PAeN7Tz7PiBzzA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Thu, 19 May 2022 22:06:24 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Thu, 19 May 2022 22:06:24 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kent Overstreet' <kent.overstreet@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@vger.kernel.org" <linux-mm@vger.kernel.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>
-CC:     "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "willy@infradead.org" <willy@infradead.org>
-Subject: RE: [PATCH v2 03/28] vsprintf: %pf(%p)
-Thread-Topic: [PATCH v2 03/28] vsprintf: %pf(%p)
-Thread-Index: AQHYa6VkVQCoxy629k+LRSm5RxWDEq0mrmAQ
-Date:   Thu, 19 May 2022 21:06:24 +0000
-Message-ID: <141b17a257274fc38291cdb07e0e23b6@AcuMS.aculab.com>
+        Thu, 19 May 2022 17:09:48 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC38EC3C6;
+        Thu, 19 May 2022 14:09:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652994587; x=1684530587;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=z0vwwnertIb8gyQoZWQ6y9deYebDJGKCpPTslvNseDk=;
+  b=csGsEWmrfgr4aMnmVFSqMoStfveldiQ5PVIL9ZsiYKdv0e1WstFiWw3N
+   TNnZ7xpCbkT+ZagIinA1sP6gJK13/DeDiMikOTvkBjQDbNH/x37FLgfn5
+   oslh6/wM38QoYv9LjIrL1b/TSozH8VIPqyKyP/KAbBO965qf0lQgL0fR8
+   881zSh3ExuFk0ecrprjjTYNWl7iE6wrjNMMYB7D3UQOzo6qhEXQpCWzE/
+   eHDPKd1+8foZJL6lVc2P2OZMmf6LZMJx/c0h1FuJHTDEK7xZ/Wd/WOOE4
+   eHjfe1jLeJJvIvvULHlSZcu4BnYgGDpVo0eqPwQLwGDYbf2aVvnyHTzqW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="269968524"
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="269968524"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 14:09:47 -0700
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="570429135"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 14:09:44 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nrnOv-000GHY-SP;
+        Fri, 20 May 2022 00:09:41 +0300
+Date:   Fri, 20 May 2022 00:09:41 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
+        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org,
+        willy@infradead.org
+Subject: Re: [PATCH v2 22/28] Input/joystick/analog: Convert from seq_buf ->
+ printbuf
+Message-ID: <YoayFe8PXexTtlK9@smile.fi.intel.com>
 References: <20220519172421.162394-1-kent.overstreet@gmail.com>
- <20220519172421.162394-4-kent.overstreet@gmail.com>
-In-Reply-To: <20220519172421.162394-4-kent.overstreet@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+ <20220519172421.162394-23-kent.overstreet@gmail.com>
+ <Yoaiy1lc+MCMZFTQ@smile.fi.intel.com>
+ <20220519201927.keuztpaa7q6nqcol@moria.home.lan>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519201927.keuztpaa7q6nqcol@moria.home.lan>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Overstreet
-> Sent: 19 May 2022 18:24
+On Thu, May 19, 2022 at 04:19:27PM -0400, Kent Overstreet wrote:
+> On Thu, May 19, 2022 at 11:04:27PM +0300, Andy Shevchenko wrote:
+> > On Thu, May 19, 2022 at 01:24:15PM -0400, Kent Overstreet wrote:
+
+..
+
+> This conversion predated my adding external buffers to printbufs - now the patch
+> is more of a direct conversion:
 > 
-> This implements two new format strings: both do the same thing, one more
-> compatible with current gcc format string checking, the other that we'd
-> like to standardize:
-> 
->  %p(%p) - more compatible
->  %(%p)  - more prettier
-> 
-> Both can take variable numbers of arguments, i.e. %(%p,%p,%p).
-> 
-> They're used to indicate that snprintf or pr_buf should interpret the
-> next argument as a pretty-printer function to call, and subsequent
-> arguments within the parentheses should be passed to the pretty-printer.
+> -- >8 --
+> Subject: [PATCH] Input/joystick/analog: Convert from seq_buf -> printbuf
 
-I suspect this a very good way to blow the kernel stack.
-The highest stack use is already very likely to be inside
-the printf code in an error path somewhere.
+This looks much better.
 
-...
-> The goal is to replace most of our %p format extensions with this
-> interface, and to move pretty-printers out of the core vsprintf.c code -
+-- 
+With Best Regards,
+Andy Shevchenko
 
-One advantage of the current scheme is that is reasonably safe
-and easy to use.
-Perhaps too many extra formats have been added recently.
-This all seems like a recipe for disaster with functions being
-called with the wrong number of parameters
-(I can't think how you can compile-time check it).
-
-Double copying using a temporary buffer isn't the end of the world.
-It is only a problem because pr_cont() is basically impossible.
-But since kernel printf ought to be formatted to reasonable
-line length that isn't really an issue.
-printf() is expensive an extra memory copy is probably noise.
-
-...
-> Currently, we can only call pretty printers with pointer arguments. This
-> could be changed to also allow at least integer arguments in the future
-> by using libffi.
-
-I'm sure I remember something else trying to use that.
-IIRC it is basically broken by design.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
