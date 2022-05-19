@@ -2,132 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A72C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240089AbiESO6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
+        id S240083AbiESO65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240062AbiESO6m (ORCPT
+        with ESMTP id S238833AbiESO6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:58:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDAED6819
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:58:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1896EB82559
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71C99C385AA;
-        Thu, 19 May 2022 14:58:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652972318;
-        bh=QnZHsoFGGDrgc6gDM8i1CtC1GfXotTEDdEW7fOq4DJY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SCcSxDBHc3EjqOSX9CTn8JfRdE2qAWLPE6CQSiOcI50le/xpR5meMkJsW1Ws5YFKW
-         84m05df44EiCby4AbTzdj+oUqzMIBrk4OjPZekSjWyZEqvFUvYV81gEiXa/j2ZyUl8
-         Q1SQs7DZweaW0+FvSJJOSHCjoVqFj4w0TxhSiOegOz1bdbIe2NV/bLF37w6xqUjR+G
-         gGSKT3Ykj4YKMEo6I4rMComriEHDiVX5kU1ltu9MkdQj5KU0KU9A1FR0pvyewxBqs6
-         DnmPAt1Uce1gpDZaZmZYfA8tJ/AsGb1GDJdOpO9kFIVkQ2KZ0VJClC8UZ2QzOGULOH
-         vzWoGUgou6qvw==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: [PATCH 02/21] rcu: Tag rcu_irq_*_irqson() as noinstr
-Date:   Thu, 19 May 2022 16:58:04 +0200
-Message-Id: <20220519145823.618983-3-frederic@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519145823.618983-1-frederic@kernel.org>
-References: <20220519145823.618983-1-frederic@kernel.org>
+        Thu, 19 May 2022 10:58:48 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D173DD80BB;
+        Thu, 19 May 2022 07:58:43 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 0AADC1F44EC7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652972322;
+        bh=Um2t/mQTT0Dfq5mGxwYI25I8sQfayys0cBiO/aP38w4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=LdfZwN5W6GT9WmGChNKa2aESgz37yUfbtnVDS6og+GqOBa53Qwpc+CCVFJtLhuLcq
+         /DAfg6JwEvY1KuxMLzketpMx9FiAKSxxZKKil5+D3iZ+PZKEKmIIYyw43k9ETR03Vu
+         bZ8iSTGJPaNrUjQ4mmCV80y3zhdRym/Ir02fTIzgW9bRRNy8ilj5JzAtDdlDCKYjm9
+         GC8fzeFrtkA/q6MEP5JdryG+TlLCS3lzkn2Rm21/GPtdOi0FwLVCYOE05ySIIukvch
+         v0N58JWyVSHRMyGvzgshdNk41n9pkic10Nh8PYR6GzVowVJjXKpXF2cTDEkQs76GsV
+         LHXLTrnSU0AgA==
+Message-ID: <3f3dd71b-6e5c-4e19-c8d6-ece88c7e0eb4@collabora.com>
+Date:   Thu, 19 May 2022 16:58:39 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v4 1/2] dt-bindings: pinctrl: Add MediaTek MT6795 pinctrl
+ bindings
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, sean.wang@kernel.org,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, nfraprado@collabora.com
+References: <20220517083957.11816-1-angelogioacchino.delregno@collabora.com>
+ <20220517083957.11816-2-angelogioacchino.delregno@collabora.com>
+ <CACRpkdaj42rcQdX1+dVWyHmexrq4UDQHB0JLHgfREY9kn0zv2A@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CACRpkdaj42rcQdX1+dVWyHmexrq4UDQHB0JLHgfREY9kn0zv2A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rcu_irq_*_irqson() functions can't be safely instrumented. Since they
-enter/exit to/from RCU idle mode, those functions must be tagged as
-"noinstr".
+Il 19/05/22 15:13, Linus Walleij ha scritto:
+> On Tue, May 17, 2022 at 10:40 AM AngeloGioacchino Del Regno
+> <angelogioacchino.delregno@collabora.com> wrote:
+> 
+>> Add devicetree and pinfunc bindings for MediaTek Helio X10 MT6795.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> 
+> Patch applied, along with patch 2.
+> 
+> BTW nice work on the X10!!
+> I can see from the feature matrix here:
+> https://wiki.postmarketos.org/wiki/Mediatek
+> that this enables a whole slew of cheapo phones and tablets to be used
+> with PostmarketOS.
+> 
 
-Unfortunately this involves converting the instrumentable
-local_irq_save()/local_irq_restore() to their raw counterparts. Precious
-debugging informations might be lost on the way until a better way out
-is found.
+I'm really happy to see that you appreciate this effort!
 
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Paul E. McKenney <paulmck@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc: Yu Liao<liaoyu15@huawei.com>
-Cc: Phil Auld <pauld@redhat.com>
-Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
-Cc: Alex Belits <abelits@marvell.com>
----
- kernel/rcu/tree.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Unfortunately though, the PostmarketOS wiki contains just a small subset of
+Helio X10 devices, there's many more around!!
 
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 02233b17cce0..ff97264d8077 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -843,13 +843,13 @@ void rcu_irq_exit_check_preempt(void)
-  * If you add or remove a call to rcu_irq_exit_irqson(), be sure to test
-  * with CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_irq_exit_irqson(void)
-+void noinstr rcu_irq_exit_irqson(void)
- {
- 	unsigned long flags;
- 
--	local_irq_save(flags);
-+	raw_local_irq_save(flags);
- 	rcu_irq_exit();
--	local_irq_restore(flags);
-+	raw_local_irq_restore(flags);
- }
- 
- /*
-@@ -1081,13 +1081,13 @@ noinstr void rcu_irq_enter(void)
-  * If you add or remove a call to rcu_irq_enter_irqson(), be sure to test
-  * with CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_irq_enter_irqson(void)
-+void noinstr rcu_irq_enter_irqson(void)
- {
- 	unsigned long flags;
- 
--	local_irq_save(flags);
-+	raw_local_irq_save(flags);
- 	rcu_irq_enter();
--	local_irq_restore(flags);
-+	raw_local_irq_restore(flags);
- }
- 
- /*
--- 
-2.25.1
+I'll start the trend with a Sony Xperia M5, hoping that someone else starts
+following up with some more :)))
+
+Cheers,
+Angelo
 
