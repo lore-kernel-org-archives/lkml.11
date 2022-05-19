@@ -2,317 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4917C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 22:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAD9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 22:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245510AbiESWdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 18:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
+        id S245520AbiESWfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 18:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239262AbiESWdJ (ORCPT
+        with ESMTP id S230505AbiESWfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 18:33:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1248B36F5;
-        Thu, 19 May 2022 15:33:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CF68615D7;
-        Thu, 19 May 2022 22:33:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A549C34116;
-        Thu, 19 May 2022 22:33:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652999587;
-        bh=Tp7rawmc+M7OF37XKMAK5aWfZEHG3hpjZBPn9xXUgoc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bpZE46jyo211E2mj4bv3i68xvYhJhSgZYtWjS13dJocWJSGu943q1j+JqLLVPU6eb
-         hhDWDJ8DMjoxY9lUMkUQMgR/6zG9TYCMjlD9NufRdjnFyZepJbZoYsbsIy3nNOENSF
-         NeIcoqEceJ4CkRSM+sTSt1DUHB3qV9uUhQEZ2iQg+dTqFLXRyvfx5RqA0W4QfK1/MZ
-         f1y/3WvSJTxCftAwLByoCx5GlcUuDTHpnIOEsx2XZgU7wqmHmGDktzze+M8cTCFURO
-         V9nmTQbYGLWa26d+hqP4s9AalxuwLbB+asiN3JEAT0iuhNSgx0HH2bO9Tgw2/2GwFF
-         bEVwXNqzFFQVQ==
-Date:   Fri, 20 May 2022 01:31:28 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Kristen Carlson Accardi <kristen@linux.intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, mhocko@suse.com, roman.gushchin@linux.dev,
-        hannes@cmpxchg.org, shakeelb@google.com
-Subject: Re: [PATCH v2] x86/sgx: Set active memcg prior to shmem allocation
-Message-ID: <YobFQJxLgfy5JsCV@iki.fi>
-References: <20220519210445.5310-1-kristen@linux.intel.com>
+        Thu, 19 May 2022 18:35:15 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D225C0387
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:35:13 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so8466314fac.7
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 15:35:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=VjlrbV4vJKI8XrHdrvSp11oTKl50bHpTcvsdSZU8U4M=;
+        b=XkI+w/MjL3A6mJl2TFEUT88gLNyZg00mKX8nHV7mXLrN8otWS80SaNXd/6sNN2XUTo
+         oZ+Tp90Cs1lq2W9ocDlCd23qD8CaCLRgFr3Mk8m9L4k0AktuSg7PaUdLtT8S9CHKYj5y
+         caMezmMFbAAhbmPNUrkS5UN0NVPZA+odXJR2g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=VjlrbV4vJKI8XrHdrvSp11oTKl50bHpTcvsdSZU8U4M=;
+        b=A2zC9aVECFkzOMJJdDnc6bPYrvPCgX2Hu+lDwb20Mf+RcQ44t+KPTRJhocpzDVr1pP
+         g29j7icH7jaO91qKu3LGws1YN33BOWnSCe3mjq4Yn2xNsK4H7BNC/cP6+PdH0vPN85Dh
+         xOn4ywPCfTMeo74k2WMMSp1y+u+02ciHjvK1YutrwAU1tsuvjO+XMxDJ/o+3nlnlaIKV
+         9XiLI/Pt50+nkYvlPnm7cnQRaYvZEAhF1HggOAMGJL5w3n16t5E90tuO+5qjfqVTP+TL
+         KLroDO6vkC8h5VEQO4fZzE/c03H2zRLlBGma9KixNW4pNJZsdqW7AcB/Dcwm0oE9lOWS
+         9eWA==
+X-Gm-Message-State: AOAM5335y8jJh2S9Q2HHn/x+5ayN15PE6zKUuyeVBVpEMaahbO5c7P+B
+        xRmYlGARAvzmg8LvNa4huDeE8AwEwiWk88RZbUuLcg==
+X-Google-Smtp-Source: ABdhPJyHbu0BSr9LBi52hxpKPmXOdW1xCXpPhmUrDoe9clR+KRpEObjnicQVOt9bttlw1GiBXVL+iYfOG64eiydGEFw=
+X-Received: by 2002:a05:6870:240d:b0:f1:b878:e97c with SMTP id
+ n13-20020a056870240d00b000f1b878e97cmr3776843oap.193.1652999712543; Thu, 19
+ May 2022 15:35:12 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 19 May 2022 15:35:11 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519210445.5310-1-kristen@linux.intel.com>
+In-Reply-To: <1652978825-5304-3-git-send-email-quic_sibis@quicinc.com>
+References: <1652978825-5304-1-git-send-email-quic_sibis@quicinc.com> <1652978825-5304-3-git-send-email-quic_sibis@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 19 May 2022 15:35:11 -0700
+Message-ID: <CAE-0n50iYAUmj6GEdCuOJ1d_SgeeFWtoxqWf7qN=jZ_js4wBcQ@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] dt-bindings: remoteproc: qcom: Convert SC7280 MSS
+ bindings to YAML
+To:     Sibi Sankar <quic_sibis@quicinc.com>, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
+Cc:     ohad@wizery.com, agross@kernel.org, mathieu.poirier@linaro.org,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mka@chromium.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 02:04:45PM -0700, Kristen Carlson Accardi wrote:
-> When the system runs out of enclave memory, SGX can reclaim EPC pages
-> by swapping to normal RAM. These backing pages are allocated via a
-> per-enclave shared memory area. Since SGX allows unlimited over
-> commit on EPC memory, the reclaimer thread can allocate a large
-> number of backing RAM pages in response to EPC memory pressure.
-> 
-> When the shared memory backing RAM allocation occurs during
-> the reclaimer thread context, the shared memory is charged to
-> the root memory control group, and the shmem usage of the enclave
-> is not properly accounted for, making cgroups ineffective at
-> limiting the amount of RAM an enclave can consume.
-> 
-> For example, when using a cgroup to launch a set of test
-> enclaves, the kernel does not properly account for 50% - 75% of
-> shmem page allocations on average. In the worst case, when
-> nearly all allocations occur during the reclaimer thread, the
-> kernel accounts less than a percent of the amount of shmem used
-> by the enclave's cgroup to the correct cgroup.
-> 
-> SGX stores a list of mm_structs that are associated with
-> an enclave. Pick one of them during reclaim and charge that
-> mm's memcg with the shmem allocation. The one that gets picked
-> is arbitrary, but this list almost always only has one mm. The
-> cases where there is more than one mm with different memcg's
-> are not worth considering.
-> 
-> Create a new function - sgx_encl_alloc_backing(). This function
-> is used whenever a new backing storage page needs to be
-> allocated. Previously the same function was used for page
-> allocation as well as retrieving a previously allocated page.
-> Prior to backing page allocation, if there is a mm_struct associated
-> with the enclave that is requesting the allocation, it is set
-> as the active memory control group.
-> 
-> Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
-> ---
-> V1 -> V2:
->  Changed sgx_encl_set_active_memcg() to simply return the correct
->  memcg for the enclave and renamed to sgx_encl_get_mem_cgroup().
-> 
->  Created helper function current_is_ksgxd() to improve readability.
-> 
->  Use mmget_not_zero()/mmput_async() when searching mm_list.
-> 
->  Move call to set_active_memcg() to sgx_encl_alloc_backing() and
->  use mem_cgroup_put() to avoid leaking a memcg reference.
-> 
->  Address review feedback regarding comments and commit log.
-> 
->  arch/x86/kernel/cpu/sgx/encl.c | 109 ++++++++++++++++++++++++++++++++-
->  arch/x86/kernel/cpu/sgx/encl.h |  11 +++-
->  arch/x86/kernel/cpu/sgx/main.c |   4 +-
->  3 files changed, 118 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
-> index 001808e3901c..6d10202612d6 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.c
-> +++ b/arch/x86/kernel/cpu/sgx/encl.c
-> @@ -32,7 +32,7 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
->  	else
->  		page_index = PFN_DOWN(encl->size);
->  
-> -	ret = sgx_encl_get_backing(encl, page_index, &b);
-> +	ret = sgx_encl_lookup_backing(encl, page_index, &b);
->  	if (ret)
->  		return ret;
->  
-> @@ -574,7 +574,7 @@ static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
->   *   0 on success,
->   *   -errno otherwise.
->   */
-> -int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
-> +static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
->  			 struct sgx_backing *backing)
->  {
->  	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
-> @@ -601,6 +601,111 @@ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
->  	return 0;
->  }
->  
-> +/*
-> + * When called from ksgxd, returns the mem_cgroup of a struct mm stored
-> + * in the enclave's mm_list. When not called from ksgxd, just returns
-> + * the mem_cgroup of the current task.
-> + */
-> +static struct mem_cgroup *sgx_encl_get_mem_cgroup(struct sgx_encl *encl)
-> +{
-> +	struct mem_cgroup *memcg = NULL;
-> +	struct sgx_encl_mm *encl_mm;
-> +	int idx;
+Quoting Sibi Sankar (2022-05-19 09:47:04)
+> diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+> new file mode 100644
+> index 000000000000..a936d84eefa6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+> @@ -0,0 +1,250 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/remoteproc/qcom,sc7280-mss-pil.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	/*
-> +	 * If called from normal task context, return the mem_cgroup
-> +	 * of the current task's mm. The remainder of the handling is for
-> +	 * ksgxd.
-> +	 */
-> +	if (!current_is_ksgxd())
-> +		return get_mem_cgroup_from_mm(current->mm);
+> +title: Qualcomm SC7280 MSS Peripheral Image Loader
 > +
-> +	/*
-> +	 * Search the enclave's mm_list to find an mm associated with
-> +	 * this enclave to charge the allocation to.
-> +	 */
-> +	idx = srcu_read_lock(&encl->srcu);
+> +maintainers:
+> +  - Sibi Sankar <quic_sibis@quicinc.com>
 > +
-> +	list_for_each_entry_rcu(encl_mm, &encl->mm_list, list) {
-> +		if (!mmget_not_zero(encl_mm->mm))
-> +			continue;
+> +description:
+> +  This document describes the hardware for a component that loads and boots firmware
+> +  on the Qualcomm Technology Inc. SC7280 Modem Hexagon Core.
 > +
-> +		memcg = get_mem_cgroup_from_mm(encl_mm->mm);
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - qcom,sc7280-mss-pil
 > +
-> +		mmput_async(encl_mm->mm);
+[..]
 > +
-> +		break;
-> +	}
+> +  resets:
+> +    items:
+> +      - description: AOSS restart
+> +      - description: PDC reset
 > +
-> +	srcu_read_unlock(&encl->srcu, idx);
+> +  reset-names:
+> +    items:
+> +      - const: mss_restart
+> +      - const: pdc_reset
 > +
-> +	/*
-> +	 * In the rare case that there isn't an mm associated with
-> +	 * the enclave, set memcg to the current active mem_cgroup.
-> +	 * This will be the root mem_cgroup if there is no active
-> +	 * mem_cgroup.
-> +	 */
-> +	if (!memcg)
-> +		return get_mem_cgroup_from_mm(NULL);
+> +  memory-region:
+> +    maxItems: 2
+> +    description: Phandle reference to the reserved-memory for the MBA region followed
+> +                 by the modem region.
 > +
-> +	return memcg;
-> +}
-> +
-> +/**
-> + * sgx_encl_alloc_backing() - allocate a new backing storage page
-> + * @encl:	an enclave pointer
-> + * @page_index:	enclave page index
-> + * @backing:	data for accessing backing storage for the page
-> + *
-> + * When called from ksgxd, sets the active memcg from one of the
-> + * mms in the enclave's mm_list prior to any backing page allocation,
-> + * in order to ensure that shmem page allocations are charged to the
-> + * enclave.
-> + *
-> + * Return:
-> + *   0 on success,
-> + *   -errno otherwise.
-> + */
-> +int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
-> +			   struct sgx_backing *backing)
-> +{
-> +	struct mem_cgroup *memcg, *old_memcg;
-> +	int ret;
-> +
-> +	memcg = sgx_encl_get_mem_cgroup(encl);
-> +
-> +	old_memcg = set_active_memcg(memcg);
-> +
-> +	ret = sgx_encl_get_backing(encl, page_index, backing);
-> +
-> +	set_active_memcg(old_memcg);
-> +
-> +	mem_cgroup_put(memcg);
+> +  firmware-name:
+> +    $ref: /schemas/types.yaml#/definitions/string-array
+> +    maxItems: 2
 
-This is too sparse IMHO.
+Instead of maxItems can this be
 
-I would rewrite it as:
+       items:
+         - description: Name of MBA firmware
+	 - description: Name of modem firmware
 
-	struct mem_cgroup *encl_memcg = sgx_encl_get_mem_cgroup(encl);
-	struct mem_cgroup *memcg = set_active_memcg(encl_memcg);
-	int ret;
+so that we know the order? Same for 'memory-region' above.
 
-	ret = sgx_encl_get_backing(encl, page_index, backing);
+> +    description:
+> +      The name of the MBA and modem firmware to be loaded for this remote processor.
+> +
+> +  qcom,halt-regs:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
 
-	set_active_memcg(memcg);
-	mem_cgroup_put(encl_memcg);
+Should this have maxItems: 1? Or that's implicit from description?
 
-I think old_memcg is not very documentative, whereas this also dclearly
-tells what is going on: enclave's memcg is temporarily swapped in order to
-perform page allocation, so that the allocations gets accounted from them
-correct cgroup.
+> +    description:
+> +      Phandle reference to a syscon representing TCSR followed by the
+> +      four offsets within syscon for q6, modem, nc and vq6 halt registers.
+> +
+> +  qcom,ext-regs:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+
+Should this have min/maxItems: 2?
+
+> +    description:
+> +      Two phandle references to syscons representing TCSR_REG and TCSR register
+> +      space followed by the two offsets within the syscon to force_clk_en/rscc_disable
+> +      and axim1_clk_off/crypto_clk_off registers respectively.
+> +
+> +  qcom,qaccept-regs:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    description:
+> +      Phandle reference to a syscon representing TCSR followed by the
+> +      three offsets within syscon for mdm, cx and axi qaccept registers.
+> +
+> +  qcom,qmp:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: Reference to the AOSS side-channel message RAM.
+> +
+> +  qcom,smem-states:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    description: States used by the AP to signal the Hexagon core
+> +    items:
+> +      - description: Stop the modem
+
+This one did items for a phandle array so I think we should follow the
+same above.
 
 > +
-> +	return ret;
-> +}
+> +  qcom,smem-state-names:
+> +    description: The names of the state bits used for SMP2P output
+> +    const: stop
 > +
-> +/**
-> + * sgx_encl_lookup_backing() - retrieve an existing backing storage page
-> + * @encl:	an enclave pointer
-> + * @page_index:	enclave page index
-> + * @backing:	data for accessing backing storage for the page
-> + *
-> + * Retrieve a backing page for loading data back into an EPC page with ELDU.
-> + * It is the caller's responsibility to ensure that it is appropriate to use
-> + * sgx_encl_lookup_backing() rather than sgx_encl_alloc_backing(). If lookup is
-> + * not used correctly, this will cause an allocation which is not accounted for.
-> + *
-> + * Return:
-> + *   0 on success,
-> + *   -errno otherwise.
-> + */
-> +int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
-> +			   struct sgx_backing *backing)
-> +{
-> +	return sgx_encl_get_backing(encl, page_index, backing);
-> +}
+> +  glink-edge:
+> +    $ref: qcom,glink-edge.yaml#
+> +    description:
+> +      Qualcomm G-Link subnode which represents communication edge, channels
+> +      and devices related to the DSP.
+[..]
+> +        power-domain-names = "cx", "mss";
 > +
->  /**
->   * sgx_encl_put_backing() - Unpin the backing storage
->   * @backing:	data for accessing backing storage for the page
-> diff --git a/arch/x86/kernel/cpu/sgx/encl.h b/arch/x86/kernel/cpu/sgx/encl.h
-> index fec43ca65065..2de3b150ab00 100644
-> --- a/arch/x86/kernel/cpu/sgx/encl.h
-> +++ b/arch/x86/kernel/cpu/sgx/encl.h
-> @@ -100,13 +100,20 @@ static inline int sgx_encl_find(struct mm_struct *mm, unsigned long addr,
->  	return 0;
->  }
->  
-> +static inline bool current_is_ksgxd(void)
-> +{
-> +	return current->mm ? false : true;
-> +}
+> +        memory-region = <&mba_mem>, <&mpss_mem>;
 > +
->  int sgx_encl_may_map(struct sgx_encl *encl, unsigned long start,
->  		     unsigned long end, unsigned long vm_flags);
->  
->  void sgx_encl_release(struct kref *ref);
->  int sgx_encl_mm_add(struct sgx_encl *encl, struct mm_struct *mm);
-> -int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
-> -			 struct sgx_backing *backing);
-> +int sgx_encl_lookup_backing(struct sgx_encl *encl, unsigned long page_index,
-> +			    struct sgx_backing *backing);
-> +int sgx_encl_alloc_backing(struct sgx_encl *encl, unsigned long page_index,
-> +			   struct sgx_backing *backing);
->  void sgx_encl_put_backing(struct sgx_backing *backing, bool do_write);
->  int sgx_encl_test_and_clear_young(struct mm_struct *mm,
->  				  struct sgx_encl_page *page);
-> diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
-> index 4b41efc9e367..7d41c8538795 100644
-> --- a/arch/x86/kernel/cpu/sgx/main.c
-> +++ b/arch/x86/kernel/cpu/sgx/main.c
-> @@ -310,7 +310,7 @@ static void sgx_reclaimer_write(struct sgx_epc_page *epc_page,
->  	encl->secs_child_cnt--;
->  
->  	if (!encl->secs_child_cnt && test_bit(SGX_ENCL_INITIALIZED, &encl->flags)) {
-> -		ret = sgx_encl_get_backing(encl, PFN_DOWN(encl->size),
-> +		ret = sgx_encl_alloc_backing(encl, PFN_DOWN(encl->size),
->  					   &secs_backing);
->  		if (ret)
->  			goto out;
-> @@ -381,7 +381,7 @@ static void sgx_reclaim_pages(void)
->  			goto skip;
->  
->  		page_index = PFN_DOWN(encl_page->desc - encl_page->encl->base);
-> -		ret = sgx_encl_get_backing(encl_page->encl, page_index, &backing[i]);
-> +		ret = sgx_encl_alloc_backing(encl_page->encl, page_index, &backing[i]);
->  		if (ret)
->  			goto skip;
->  
-> -- 
-> 2.20.1
-> 
+> +        qcom,qmp = <&aoss_qmp>;
+> +
+> +        qcom,smem-states = <&modem_smp2p_out 0>;
+> +        qcom,smem-state-names = "stop";
+> +
+> +        resets = <&aoss_reset AOSS_CC_MSS_RESTART>,
+> +                 <&pdc_reset PDC_MODEM_SYNC_RESET>;
+> +        reset-names = "mss_restart", "pdc_reset";
+> +
+> +        qcom,halt-regs = <&tcsr_mutex 0x23000 0x25000 0x28000 0x33000>;
+> +        qcom,ext-regs = <&tcsr 0x10000 0x10004 &tcsr_mutex 0x26004 0x26008>;
 
-BR, Jarkko
+Because it's two items I'd expect:
+	
+	<&tcsr 0x10000 0x10004>, <&tcsr_mutex 0x26004 0x26008>;
+
+> +        qcom,qaccept-regs = <&tcsr_mutex 0x23030 0x23040 0x23020>;
+> +
+> +        glink-edge {
+> +            interrupts-extended = <&ipcc IPCC_CLIENT_MPSS
+> +                                   IPCC_MPROC_SIGNAL_GLINK_QMP
+> +                                   IRQ_TYPE_EDGE_RISING>;
