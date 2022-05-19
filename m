@@ -2,118 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14389C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 21:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245363AbiESVmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 17:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
+        id S245174AbiESVnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 17:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244755AbiESVmH (ORCPT
+        with ESMTP id S245295AbiESVmn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 17:42:07 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B70107893
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:41:58 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so1008305otk.6
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=CpuiHu6st5jvRyMaG9VX7RMBtuAsBPj44JQMGd55xSk=;
-        b=X1FGonc0itVjTaJy5AqOZm4ZPWMp6o//luJ4v+XTffdBLPZrA1yullEKYrYVTwSLo3
-         1TK+BNFnpUwv1gFLulhTKSZfr/5MIgaqTHBHya7aH4f64OqcYFI9UARAqZnkjjAq2fjQ
-         XHJ1bWtRjdwOJL/jPAredUfs5ZGMzP0parqGKOQJ1hukOGUrww/Jx+ttLyJ7ce9u8aDV
-         gwG8WgOBlcQuOMOgIBiQKSuvyFhxiGHMTOJkGZWALAncZrzLeLH0C5L8tVpuzJdavhmX
-         PK7jQz3jbvgevAa4kyujYNTX7ZfCHzIBSL0rkiBVfBBxacwcVnT6zercCqaKtAiWlKCl
-         iJgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=CpuiHu6st5jvRyMaG9VX7RMBtuAsBPj44JQMGd55xSk=;
-        b=vQgWGYbCjm4OEMLQcnS3BPeLf1B62r633KfzWn33oVrLzW09/PigmjP+V0Mc0cK2D+
-         12lq8GQyBQyNYU4XCwEK8dIF92rs3XKeIhDBAvIxhiNX7JnIM+4/F27IPTBppTVKXl+y
-         +GBhnTSU2oREQQOrbrwxR81jYN373Xsou/xbmQ/rY9owHE5js3Wly0SUsVkyeBBW9Rjc
-         xzuS0iM9vKLadmxJ8x75DmNyQEV7ExwWLvgI+thb0W2JSiLWhAz3kThM2UJZ4k8lA2Yz
-         O7g25nU/kmjYpEvdzmRvNZkeza6c2FEeYBIufXlC9bRD6g9mbA1X/IJPgOJlkg7t8BCR
-         QKBQ==
-X-Gm-Message-State: AOAM5311JyR86XsjX6gVVBkrKOpkJZDr6/h+DE506XZNoycYnoeAggb8
-        e08LsXnwV52HDsxiGZeZ8/8=
-X-Google-Smtp-Source: ABdhPJwBml8d2YJQucekuCRaj6PIzvGEkJuWAcNUSWUvgdv8zUnJWbUcTHb2lE59ASNYwXO9JZWlAg==
-X-Received: by 2002:a05:6830:310c:b0:606:66c8:53d4 with SMTP id b12-20020a056830310c00b0060666c853d4mr2686287ots.129.1652996518130;
-        Thu, 19 May 2022 14:41:58 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id t187-20020aca5fc4000000b00325cda1ffb4sm188141oib.51.2022.05.19.14.41.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 14:41:57 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <28f3958f-dd25-cb1a-0a4c-040e7706ffc7@roeck-us.net>
-Date:   Thu, 19 May 2022 14:41:55 -0700
+        Thu, 19 May 2022 17:42:43 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A9710276A;
+        Thu, 19 May 2022 14:42:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652996562; x=1684532562;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/3alaUrGhPB4+i0xaXTLU1am7m7HDP8q4zTotaqRuP8=;
+  b=UA4aL0rDL/GOhxU3SDWcRPKx2m4TRnR1zHiSSq2vyTQ5T2V6hfKAwgQo
+   pR+CN7gLtKDPbRD3AbhKWYq9Y289yhp8TrnoFXdpfP8nj91onGj5dLC7Y
+   JrqfGCgOM04K9Eo4mxgpQmq4iJdzTeSoI7SVEKsu+U1icUQNcCYAxoP7F
+   4YjMvNg2a3cdXeqxmhoB21t1N8MpGcGxthvvbQjVe//snryNG9m6yOO9E
+   Jg3j2RfBB0I2Ba0BoyrkSpyldAozBFD01izAW5aWyEu91C0tIfhv3lHns
+   0OD8Y8IT9nz9o5XwHm7mnkVJ+j70fZalgMvirwDNMfvz8EUCpdxXPqrC1
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="335438455"
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="335438455"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 14:42:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="546331372"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 19 May 2022 14:42:36 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrnum-0003yC-86;
+        Thu, 19 May 2022 21:42:36 +0000
+Date:   Fri, 20 May 2022 05:42:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     longli@linuxonhyperv.com, "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Long Li <longli@microsoft.com>
+Subject: Re: [PATCH 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Message-ID: <202205200542.sMPnHzQW-lkp@intel.com>
+References: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220428172040.GA3623323@roeck-us.net> <YmvVkKXJWBoGqWFx@osiris>
- <yt9dk0apbicu.fsf@linux.ibm.com> <20220513165955.mkg5wvfi4dwpzoer@revolver>
- <YoOMsmq24FWsWWyr@osiris> <b18d5338-0031-a813-2825-207bea1b84cb@roeck-us.net>
- <20220519143541.dfzgoubmkboc6kk4@revolver>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] mapletree-vs-khugepaged
-In-Reply-To: <20220519143541.dfzgoubmkboc6kk4@revolver>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/22 07:35, Liam Howlett wrote:
-> * Guenter Roeck <linux@roeck-us.net> [220517 10:32]:
-> 
-> ...
->>
->> Another bisect result, boot failures with nommu targets (arm:mps2-an385,
->> m68k:mcf5208evb). Bisect log is the same for both.
-> ...
->> # first bad commit: [bd773a78705fb58eeadd80e5b31739df4c83c559] nommu: remove uses of VMA linked list
-> 
-> I cannot reproduce this on my side, even with that specific commit.  Can
-> you point me to the failure log, config file, etc?  Do you still see
-> this with the fixes I've sent recently?
-> 
+Hi,
 
-This was in linux-next; most recently with next-20220517.
-I don't know if that was up-to-date with your patches.
-The problem seems to be memory allocation failures.
-A sample log is at
-https://kerneltests.org/builders/qemu-m68k-next/builds/1065/steps/qemubuildcommand/logs/stdio
-The log history at
-https://kerneltests.org/builders/qemu-m68k-next?numbuilds=30
-will give you a variety of logs.
+I love your patch! Perhaps something to improve:
 
-The configuration is derived from m5208evb_defconfig, with initrd
-and command line embedded in the image. You can see the detailed
-configuration updates at
-https://github.com/groeck/linux-build-test/blob/master/rootfs/m68k/run-qemu-m68k.sh
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.18-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Qemu command line is
+url:    https://github.com/intel-lab-lkp/linux/commits/longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 42226c989789d8da4af1de0c31070c96726d990c
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220520/202205200542.sMPnHzQW-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/f082dc68ab65c498c978d574e62413d50286b4f9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
+        git checkout f082dc68ab65c498c978d574e62413d50286b4f9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/infiniband/hw/mana/
 
-qemu-system-m68k -M mcf5208evb -kernel vmlinux \
-     -cpu m5208 -no-reboot -nographic -monitor none
-     -append "rdinit=/sbin/init console=ttyS0,115200"
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-with initrd from
-https://github.com/groeck/linux-build-test/blob/master/rootfs/m68k/rootfs-5208.cpio.gz
+All warnings (new ones prefixed by >>):
 
-I use qemu v6.2, but any recent qemu version should work.
+>> drivers/infiniband/hw/mana/main.c:544:5: warning: no previous prototype for 'mana_ib_query_port' [-Wmissing-prototypes]
+     544 | int mana_ib_query_port(struct ib_device *ibdev, u32 port,
+         |     ^~~~~~~~~~~~~~~~~~
+--
+>> drivers/infiniband/hw/mana/qp.c:8:5: warning: no previous prototype for 'mana_ib_cfg_vport_steering' [-Wmissing-prototypes]
+       8 | int mana_ib_cfg_vport_steering(struct mana_ib_dev *dev, struct net_device *ndev,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/infiniband/hw/mana/qp.c:227:5: warning: no previous prototype for 'mana_ib_create_qp_raw' [-Wmissing-prototypes]
+     227 | int mana_ib_create_qp_raw(struct ib_qp *ibqp, struct ib_pd *ibpd,
+         |     ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/infiniband/hw/mana/qp.c:421:5: warning: no previous prototype for 'mana_ib_destroy_qp_raw' [-Wmissing-prototypes]
+     421 | int mana_ib_destroy_qp_raw(struct mana_ib_qp *qp, struct ib_udata *udata)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
 
-Hope this helps,
-Guenter
+
+vim +/mana_ib_query_port +544 drivers/infiniband/hw/mana/main.c
+
+   543	
+ > 544	int mana_ib_query_port(struct ib_device *ibdev, u32 port,
+   545			       struct ib_port_attr *props)
+   546	{
+   547		/* This version doesn't return port properties */
+   548		return 0;
+   549	}
+   550	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
