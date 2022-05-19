@@ -2,87 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA254C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242146AbiESR2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        id S242649AbiESR2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242575AbiESRZg (ORCPT
+        with ESMTP id S242748AbiESRZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 19 May 2022 13:25:36 -0400
-Received: from mail.wantyapps.xyz (unknown [IPv6:2001:19f0:5:305f:5400:3ff:fe88:abd4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512A4A88AA
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:25:24 -0700 (PDT)
-Received: from localhost (bzq-79-183-83-88.red.bezeqint.net [79.183.83.88])
-        by mail.wantyapps.xyz (Postfix) with ESMTPSA id 41DC57D654;
-        Thu, 19 May 2022 17:25:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wantyapps.xyz;
-        s=mail; t=1652981122;
-        bh=bwIKlOGYkL2L4Ao4onVXBZ5fa9b9XMy3wOyD2HdryOQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oQUhwKS+DczDCMjN3HbYDbECzhCixVy+OoQ5gWsypv1yLI2z+K/H/Thbk8xn8nEbF
-         45G8ezHEH3zy0jk9t3w76n96o7YtAM4cCOiorLVmsK+U7/HPTdxDb4YS2b1Scgdl8s
-         SkHbRRdGryTQORDrCUDksuCfncEgXMCl9gXskbpENN4v5auzz1TrWZh5FCersqOZS6
-         Q0W8NWdHL9sdiGX3MIVmIHlacYbJ09fcAM3aMIcNyKqnHSsqmeJ5SODukMgRhlBxYX
-         6t+GvpZVoCCSkqwTWTOdfX2ZiX6s/IalCK+9+UlaaHZ8H1vY01bMvajC27p5Qsi1Eq
-         fH1XgkGos0Vxw==
-From:   Uri Arev <me@wantyapps.xyz>
-Cc:     Uri Arev <me@wantyapps.xyz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Len Baker <len.baker@gmx.com>, Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Srivathsa Dara <srivathsa729.8@gmail.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: fbtft: fix checkpatch.pl struct should normally be const
-Date:   Thu, 19 May 2022 20:25:01 +0300
-Message-Id: <20220519172503.10821-1-me@wantyapps.xyz>
-X-Mailer: git-send-email 2.36.1
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33ADC1EC8;
+        Thu, 19 May 2022 10:25:30 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id qe3-20020a17090b4f8300b001dc24e4da73so6418786pjb.1;
+        Thu, 19 May 2022 10:25:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7B0kqteeN1eyAor+oWwIzsi+4oWzLA5TO8L9iLe1/34=;
+        b=nPqtZm7p2v7hAPXvOp5FvLWPKwjOUfVcVl7nNXUblqG3FYpYJbXYQvFLWKJ+8w5j31
+         1IJZZ3qknsRGl55pNTfXFgIY9oUbAfTmWFE/0OWuKQAw2Eoxj9PyaiXFDFPkDOpGMmlM
+         MqNM5pGOia/fB48No3VSI9urtCFGC10feuW4/a83Ureud/jN2ukq2kHwSpxzg6Whu1PZ
+         leIdKVqjV37XYm3FYpkMrR6Gp6fNidApn4YH8CemucGJ2jgfORIXGEwuKeEneYgvnQn2
+         h33A+2n6Zg1/VxTfEtNPQaBuBRObTh+LTk0RK3JzC88+0it8dFakz9u+iNlGyF1y3zFN
+         pxzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7B0kqteeN1eyAor+oWwIzsi+4oWzLA5TO8L9iLe1/34=;
+        b=h0bYX4D3DWlGebEAW3+sTCWODRYx/nGl1Otu6DM0sNFEpyuD+3rG+MdtOLNSXdh/JG
+         hJpuXQYQglXhWsDUg0AuhUcN5gbWHPU3qUaMChLaKk2SsuyLNgCHiLCCiejI/XokOqjh
+         6bdeOXhonAakV/KCXt5hmNAR4enfESdcBaVX99E0mexfLQv7P3Qmf5yKvZiB20GVZBwT
+         YTxCmOhvfi7K9MEjxvB7dfTZXLg5ddmvyPVI7hZJGlsLgwHSoK9d/f73Gzu4Rixyx3xJ
+         c46zaZjWaOkjZrNMCAXSD8ZjKdT8GxzgtFRa+2tdiRINV5eY4dgVtsBjO2EA2fbckRU3
+         gQPA==
+X-Gm-Message-State: AOAM531u5S65K6cjp7mrW15729S0MHLENGcS5g+lzehA3SVwQH50s6SI
+        A+AbHZELg8Wwv1ohw4q9tvRIlNqtlLQm
+X-Google-Smtp-Source: ABdhPJyk4ae2VWBS31RHITrOF+FdzGDA2lzJY8LITE45Phy9kfhfqDOAHepVXVuBLVNeymEnXEq8Qg==
+X-Received: by 2002:a17:903:2609:b0:161:58c6:77e7 with SMTP id jd9-20020a170903260900b0016158c677e7mr5532119plb.36.1652981129665;
+        Thu, 19 May 2022 10:25:29 -0700 (PDT)
+Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
+        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 10:25:28 -0700 (PDT)
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
+        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
+Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
+        andriy.shevchenko@linux.intel.com, willy@infradead.org
+Subject: [PATCH v2 23/28] mm/memcontrol.c: Convert to printbuf
+Date:   Thu, 19 May 2022 13:24:16 -0400
+Message-Id: <20220519172421.162394-24-kent.overstreet@gmail.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
+References: <20220519172421.162394-1-kent.overstreet@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This simple patch fixes a checkpatch.pl warning in `fbtft/fbtft-core.c`.
+This converts memory_stat_format() from seq_buf to printbuf. Printbuf is
+simalar to seq_buf except that it heap allocates the string buffer:
+here, we were already heap allocating the buffer with kmalloc() so the
+conversion is trivial.
 
-Reported by Checkpatch:
-WARNING: struct fb_ops should normally be const
-
-Signed-off-by: Uri Arev <me@wantyapps.xyz>
+Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- drivers/staging/fbtft/fbtft-core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/memcontrol.c | 68 ++++++++++++++++++++++++-------------------------
+ 1 file changed, 33 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
-index 9c4d797e7ae4..9ff2b8230caf 100644
---- a/drivers/staging/fbtft/fbtft-core.c
-+++ b/drivers/staging/fbtft/fbtft-core.c
-@@ -539,7 +539,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 36e9f38c91..4cb0b7bc1c 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -61,7 +61,7 @@
+ #include <linux/file.h>
+ #include <linux/tracehook.h>
+ #include <linux/psi.h>
+-#include <linux/seq_buf.h>
++#include <linux/printbuf.h>
+ #include "internal.h"
+ #include <net/sock.h>
+ #include <net/ip.h>
+@@ -1436,13 +1436,9 @@ static inline unsigned long memcg_page_state_output(struct mem_cgroup *memcg,
+ 
+ static char *memory_stat_format(struct mem_cgroup *memcg)
  {
- 	struct fb_info *info;
- 	struct fbtft_par *par;
--	struct fb_ops *fbops = NULL;
-+	const struct fb_ops *fbops = NULL;
- 	struct fb_deferred_io *fbdefio = NULL;
- 	u8 *vmem = NULL;
- 	void *txbuf = NULL;
-@@ -614,7 +614,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
- 	if (!vmem)
- 		goto alloc_fail;
+-	struct seq_buf s;
++	struct printbuf buf = PRINTBUF;
+ 	int i;
  
--	fbops = devm_kzalloc(dev, sizeof(struct fb_ops), GFP_KERNEL);
-+	const fbops = devm_kzalloc(dev, sizeof(struct fb_ops), GFP_KERNEL);
- 	if (!fbops)
- 		goto alloc_fail;
+-	seq_buf_init(&s, kmalloc(PAGE_SIZE, GFP_KERNEL), PAGE_SIZE);
+-	if (!s.buffer)
+-		return NULL;
+-
+ 	/*
+ 	 * Provide statistics on the state of the memory subsystem as
+ 	 * well as cumulative event counters that show past behavior.
+@@ -1459,49 +1455,51 @@ static char *memory_stat_format(struct mem_cgroup *memcg)
+ 		u64 size;
  
+ 		size = memcg_page_state_output(memcg, memory_stats[i].idx);
+-		seq_buf_printf(&s, "%s %llu\n", memory_stats[i].name, size);
++		pr_buf(&buf, "%s %llu\n", memory_stats[i].name, size);
+ 
+ 		if (unlikely(memory_stats[i].idx == NR_SLAB_UNRECLAIMABLE_B)) {
+ 			size += memcg_page_state_output(memcg,
+ 							NR_SLAB_RECLAIMABLE_B);
+-			seq_buf_printf(&s, "slab %llu\n", size);
++			pr_buf(&buf, "slab %llu\n", size);
+ 		}
+ 	}
+ 
+ 	/* Accumulated memory events */
+ 
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGFAULT),
+-		       memcg_events(memcg, PGFAULT));
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGMAJFAULT),
+-		       memcg_events(memcg, PGMAJFAULT));
+-	seq_buf_printf(&s, "%s %lu\n",  vm_event_name(PGREFILL),
+-		       memcg_events(memcg, PGREFILL));
+-	seq_buf_printf(&s, "pgscan %lu\n",
+-		       memcg_events(memcg, PGSCAN_KSWAPD) +
+-		       memcg_events(memcg, PGSCAN_DIRECT));
+-	seq_buf_printf(&s, "pgsteal %lu\n",
+-		       memcg_events(memcg, PGSTEAL_KSWAPD) +
+-		       memcg_events(memcg, PGSTEAL_DIRECT));
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGACTIVATE),
+-		       memcg_events(memcg, PGACTIVATE));
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGDEACTIVATE),
+-		       memcg_events(memcg, PGDEACTIVATE));
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREE),
+-		       memcg_events(memcg, PGLAZYFREE));
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREED),
+-		       memcg_events(memcg, PGLAZYFREED));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(PGFAULT),
++	       memcg_events(memcg, PGFAULT));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(PGMAJFAULT),
++	       memcg_events(memcg, PGMAJFAULT));
++	pr_buf(&buf, "%s %lu\n",  vm_event_name(PGREFILL),
++	       memcg_events(memcg, PGREFILL));
++	pr_buf(&buf, "pgscan %lu\n",
++	       memcg_events(memcg, PGSCAN_KSWAPD) +
++	       memcg_events(memcg, PGSCAN_DIRECT));
++	pr_buf(&buf, "pgsteal %lu\n",
++	       memcg_events(memcg, PGSTEAL_KSWAPD) +
++	       memcg_events(memcg, PGSTEAL_DIRECT));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(PGACTIVATE),
++	       memcg_events(memcg, PGACTIVATE));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(PGDEACTIVATE),
++	       memcg_events(memcg, PGDEACTIVATE));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(PGLAZYFREE),
++	       memcg_events(memcg, PGLAZYFREE));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(PGLAZYFREED),
++	       memcg_events(memcg, PGLAZYFREED));
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_FAULT_ALLOC),
+-		       memcg_events(memcg, THP_FAULT_ALLOC));
+-	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_COLLAPSE_ALLOC),
+-		       memcg_events(memcg, THP_COLLAPSE_ALLOC));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(THP_FAULT_ALLOC),
++	       memcg_events(memcg, THP_FAULT_ALLOC));
++	pr_buf(&buf, "%s %lu\n", vm_event_name(THP_COLLAPSE_ALLOC),
++	       memcg_events(memcg, THP_COLLAPSE_ALLOC));
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ 
+-	/* The above should easily fit into one page */
+-	WARN_ON_ONCE(seq_buf_has_overflowed(&s));
++	if (buf.allocation_failure) {
++		printbuf_exit(&buf);
++		return NULL;
++	}
+ 
+-	return s.buffer;
++	return buf.buf;
+ }
+ 
+ #define K(x) ((x) << (PAGE_SHIFT-10))
 -- 
-2.36.1
+2.36.0
 
