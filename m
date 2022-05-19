@@ -2,63 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE41C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC075C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242872AbiESR1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
+        id S239243AbiESR1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:27:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242680AbiESRZw (ORCPT
+        with ESMTP id S242823AbiESRZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:25:52 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DB5AF31A;
-        Thu, 19 May 2022 10:25:35 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id w17-20020a17090a529100b001db302efed6so5828315pjh.4;
-        Thu, 19 May 2022 10:25:35 -0700 (PDT)
+        Thu, 19 May 2022 13:25:58 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB6F332;
+        Thu, 19 May 2022 10:25:42 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so9369262pjb.2;
+        Thu, 19 May 2022 10:25:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2QRd1Hj7z8PQ6OGAWnpJxYHyy9vDcMOmiRfmbwhyjgQ=;
-        b=hRwvBgiXo+VzZn4+ZMIuphIGy3cRF1TZwhoAN7s4erqo0CFUk1qb6ydVp88d+2ipZi
-         yJUJi0Vh+xqciOv/aQqybtbFA0SnHgW11kIpK7xCdSLq/JtOf56mzXpce/OevP5i8ryj
-         RpxcKm3CLN2X/5r7tX2qLHOrtwgaScLaFuzYtEEMVLbqgiN74TV36cmO3hF12CqtCQ9C
-         DaNjTFnJRzNK8zou/DzS9HANilhYaiwS4DrM4QaSv9VKBFLV3uzkMAxedajyr7YJS54O
-         mz5s5WeLD5t36bFXc3CHmj6/16zZj8DfbVv8OsRa3DOkYQT1g2sPgZL2y5nd/1mksJZS
-         GRUA==
+        bh=brt3Yeauzwa5CMMxNRUyLq/zIk6506yKuvqwwF5DMC8=;
+        b=JSJdcqdSDHPjGSo+xJVkbFOfu6AOq9y9IhGph92HdwJ9MI/md7HGxr+0wkTaI+xCTl
+         4t96zC4F+ojZ6FCrrCQrG1mWOmOzNaR8Ktxz6/dolYM9VvRhqhqMRkvlPffCpt9VwykO
+         s2msXPGgxgbtioNQwfUaqOs9xfTQjgR+MUSf+TavLIkvPQ3C4E86pKabt8uM0tPzqP9W
+         FfOlJYzShD+Dg/Of9SseQ9vyGLfvezn4cnwWRhEow0rOASJZz0I6E0SKaWcrR8KjqaKr
+         e3OgDZUH8v1FkJ3np7ID3xTI+Du8pLJycLmew+44eYLIPrDcarYPLfLyFrFL2hYo7+QG
+         HoOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2QRd1Hj7z8PQ6OGAWnpJxYHyy9vDcMOmiRfmbwhyjgQ=;
-        b=Nx+ghqadCXiMw3XLPVVFJeheBcao1If5nqDgjCqc3OKTM3zTAmOm96KxukoYHzbwbv
-         Fl9xRj2OGpnpRrvxlPIT8Dx9YWW/k7g840AI/wN3ksaAZHegWMIbUPOw6zspe+nJFaQ0
-         U4rKeJ/Ica4hmuFGYlnCONLV8R/PFsHZg91nk6FdFgVbcGD2qg1VJ7e+gVsubj7cXyv/
-         36+WMVmPc8iSVf2wXk29TRn+TlKCTfgUSl2a54Diq5DAls4xa051vFvShvxYF1AWXLVI
-         7wHqU3D9hbmJ7olRwKDi/Yd/GCAcGM2kdnRazejvAXGWGNZGHbVmQcGIcAiD3KRRfRa2
-         e6VQ==
-X-Gm-Message-State: AOAM532bWHwubfXUfCLTqe1+fCflafci9W2/ZgmsUvXN2rlwO11LjkTe
-        xmZ3XBTZHnYb6tR59ST5fuGBCx5BPodr
-X-Google-Smtp-Source: ABdhPJwilFeifO0CVAPkBmNZUYBAAIobtr791UrG2yrXWCxaxjHkGeXGvgtvvCY54ifcmkoBoEresA==
-X-Received: by 2002:a17:90b:3e8b:b0:1dc:e471:1a69 with SMTP id rj11-20020a17090b3e8b00b001dce4711a69mr6878682pjb.60.1652981134105;
-        Thu, 19 May 2022 10:25:34 -0700 (PDT)
+        bh=brt3Yeauzwa5CMMxNRUyLq/zIk6506yKuvqwwF5DMC8=;
+        b=gpepObByyqoC1Ev+gMSONyJ33nyq0bmA4PWTTs3ijB+tEYZYJIvjic/HbZYhvzrwrZ
+         C8QJOpsJ81B/fAZyuHgCiUQrVkH1es9gC9mvTidGcHp/pYOwtNpkvpx70vtVA6Raa3oB
+         VXDZqBe3C7T0mHUXS3qMnNgo+1KjVJ7kASzaRQdLSRB1GTW5U2Lvs+71+9iZpUIRPd3/
+         yBtHK+2MmFIebzHFB+JCYP9b8wkG0+kFBR1cueT5vERVMg1j9hjvn+DLbwG8TIMKhIan
+         q0nGAnzODt3o/Qt5nOSf3EEtSAF0VUht9Ak0x98sR3AKyRlsWi0DgxyHqA9eb8Y8Yl61
+         xInw==
+X-Gm-Message-State: AOAM530EjPZj59lXcrBDWNN8ClRLMLeAMtqLaAXryNpggQUBzZZ5GgWW
+        kyGgC25qXHM1WV1UkaR1fAC2Y/lTaUqR
+X-Google-Smtp-Source: ABdhPJyRNZ55YmuAKFNKOY/V8a+Mw2JojTXrQcsM6jyTPrXRQTybLjqXiyjSo1Fyqw9hTeU1Y0M+/w==
+X-Received: by 2002:a17:90b:3903:b0:1df:d0b4:3b54 with SMTP id ob3-20020a17090b390300b001dfd0b43b54mr5463906pjb.40.1652981141801;
+        Thu, 19 May 2022 10:25:41 -0700 (PDT)
 Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.32
+        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.25.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:25:33 -0700 (PDT)
+        Thu, 19 May 2022 10:25:41 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
         pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
         andriy.shevchenko@linux.intel.com, willy@infradead.org,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        nvdimm@lists.linux.dev
-Subject: [PATCH v2 25/28] tools/testing/nvdimm: Convert to printbuf
-Date:   Thu, 19 May 2022 13:24:18 -0400
-Message-Id: <20220519172421.162394-26-kent.overstreet@gmail.com>
+        linux-pci@vger.kernel.org
+Subject: [PATCH v2 28/28] PCI/P2PDMA: Convert to printbuf
+Date:   Thu, 19 May 2022 13:24:21 -0400
+Message-Id: <20220519172421.162394-29-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
 References: <20220519172421.162394-1-kent.overstreet@gmail.com>
@@ -68,71 +66,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This converts from seq_buf to printbuf. Here we're using printbuf with
-an external buffer, meaning it's a direct conversion.
+This converts from seq_buf to printbuf. We're using printbuf in external
+buffer mode, so it's a direct conversion, aside from some trivial
+refactoring in cpu_show_meltdown() to make the code more consistent.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: Dan Williams <dan.j.williams@intel.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: nvdimm@lists.linux.dev
+Cc: linux-pci@vger.kernel.org
 ---
- tools/testing/nvdimm/test/ndtest.c | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ drivers/pci/p2pdma.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/nvdimm/test/ndtest.c b/tools/testing/nvdimm/test/ndtest.c
-index 3ca7c32e93..e9b642f7f8 100644
---- a/tools/testing/nvdimm/test/ndtest.c
-+++ b/tools/testing/nvdimm/test/ndtest.c
-@@ -12,7 +12,7 @@
- #include <linux/ndctl.h>
- #include <nd-core.h>
- #include <linux/printk.h>
+diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+index 1015274bd2..0d5c993386 100644
+--- a/drivers/pci/p2pdma.c
++++ b/drivers/pci/p2pdma.c
+@@ -17,7 +17,7 @@
+ #include <linux/memremap.h>
+ #include <linux/percpu-refcount.h>
+ #include <linux/random.h>
 -#include <linux/seq_buf.h>
 +#include <linux/printbuf.h>
+ #include <linux/xarray.h>
  
- #include "../watermark.h"
- #include "nfit_test.h"
-@@ -797,32 +797,30 @@ static ssize_t flags_show(struct device *dev,
- {
- 	struct nvdimm *nvdimm = to_nvdimm(dev);
- 	struct ndtest_dimm *dimm = nvdimm_provider_data(nvdimm);
--	struct seq_buf s;
-+	struct printbuf s = PRINTBUF_EXTERN(buf, PAGE_SIZE);
- 	u64 flags;
- 
- 	flags = dimm->flags;
- 
--	seq_buf_init(&s, buf, PAGE_SIZE);
- 	if (flags & PAPR_PMEM_UNARMED_MASK)
--		seq_buf_printf(&s, "not_armed ");
-+		pr_buf(&s, "not_armed ");
- 
- 	if (flags & PAPR_PMEM_BAD_SHUTDOWN_MASK)
--		seq_buf_printf(&s, "flush_fail ");
-+		pr_buf(&s, "flush_fail ");
- 
- 	if (flags & PAPR_PMEM_BAD_RESTORE_MASK)
--		seq_buf_printf(&s, "restore_fail ");
-+		pr_buf(&s, "restore_fail ");
- 
- 	if (flags & PAPR_PMEM_SAVE_MASK)
--		seq_buf_printf(&s, "save_fail ");
-+		pr_buf(&s, "save_fail ");
- 
- 	if (flags & PAPR_PMEM_SMART_EVENT_MASK)
--		seq_buf_printf(&s, "smart_notify ");
-+		pr_buf(&s, "smart_notify ");
- 
-+	if (printbuf_written(&s))
-+		pr_buf(&s, "\n");
- 
--	if (seq_buf_used(&s))
--		seq_buf_printf(&s, "\n");
--
--	return seq_buf_used(&s);
-+	return printbuf_written(&s);
+ enum pci_p2pdma_map_type {
+@@ -281,12 +281,9 @@ static int pci_bridge_has_acs_redir(struct pci_dev *pdev)
+ 	return 0;
  }
- static DEVICE_ATTR_RO(flags);
+ 
+-static void seq_buf_print_bus_devfn(struct seq_buf *buf, struct pci_dev *pdev)
++static void pr_bus_devfn(struct printbuf *buf, struct pci_dev *pdev)
+ {
+-	if (!buf)
+-		return;
+-
+-	seq_buf_printf(buf, "%s;", pci_name(pdev));
++	pr_buf(buf, "%s;", pci_name(pdev));
+ }
+ 
+ static bool cpu_supports_p2pdma(void)
+@@ -454,13 +451,11 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+ 	struct pci_dev *a = provider, *b = client, *bb;
+ 	bool acs_redirects = false;
+ 	struct pci_p2pdma *p2pdma;
+-	struct seq_buf acs_list;
+ 	int acs_cnt = 0;
+ 	int dist_a = 0;
+ 	int dist_b = 0;
+ 	char buf[128];
+-
+-	seq_buf_init(&acs_list, buf, sizeof(buf));
++	struct printbuf acs_list = PRINTBUF_EXTERN(buf, sizeof(buf));
+ 
+ 	/*
+ 	 * Note, we don't need to take references to devices returned by
+@@ -471,7 +466,7 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+ 		dist_b = 0;
+ 
+ 		if (pci_bridge_has_acs_redir(a)) {
+-			seq_buf_print_bus_devfn(&acs_list, a);
++			pr_bus_devfn(&acs_list, a);
+ 			acs_cnt++;
+ 		}
+ 
+@@ -500,7 +495,7 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+ 			break;
+ 
+ 		if (pci_bridge_has_acs_redir(bb)) {
+-			seq_buf_print_bus_devfn(&acs_list, bb);
++			pr_bus_devfn(&acs_list, bb);
+ 			acs_cnt++;
+ 		}
  
 -- 
 2.36.0
