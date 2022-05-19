@@ -2,131 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C349C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC33C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 08:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232221AbiESIuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 04:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50162 "EHLO
+        id S235603AbiESIuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 04:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbiESIuH (ORCPT
+        with ESMTP id S231838AbiESIuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 04:50:07 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671E09C2EA;
-        Thu, 19 May 2022 01:50:05 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id u15so4542082pfi.3;
-        Thu, 19 May 2022 01:50:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=3XkJqMzIT7yz4CKyXUBxz4w4fAs7UkUmXH0W4BT/7W8=;
-        b=n1mCNZHUe4ovgg3yfpu6pUERAgUVRG1zsB6BUoxgbNNr3Lnhg/oeXSGOndvSRtSfWD
-         dMmX7cA0U/sFSAicvg+f4kRaY6xakDFIU/wUUSLXn8JCMdYns3xgntTT2SxyYviJQXTC
-         a6ea3YAJ7bJWiHbz3AuLL/bX0STqTjs1n6/aXodw7QqPoVcfZmsb2VjJMhS47iJgWxBx
-         TD7uhK3p2bSHb6NsnDC2HWpN4e/yMP4lVRddQheY32ZUhDGt0+3G6gykd+2x4W8EeBEf
-         iXVgd8l/wfl5ZGWMYpP3sj295BejXYTJkbl0M1hjL0qtGa+Df6Tx8Fnx/8j8N1TB8Gbi
-         36cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3XkJqMzIT7yz4CKyXUBxz4w4fAs7UkUmXH0W4BT/7W8=;
-        b=R8kz+tI88+JQzG1xmY4NtpFPq5qTFA+cvnqtaNz4DXx7OohG4bmFaROuEkHGPzmDpJ
-         g4eUrqwbm8xyk4vzSHHYejepWPnThdiH5LSt2HkBHCRgLf13cRi8oXSibQP25wpEZ77N
-         1Um8gCTQQFRWr7bftUrdYDO0TXigqT6RVy8CgEV+w7/ufJd/ycyn3x12fqlGDYmI1nAk
-         GXwpPXOqYLx9RnbnQbyt2deGEmJjbKfLPK6/pztEMeAEdSS5jpUTYn74KGO4I2UWxCso
-         MZHYfI433nQ/1A3vaBargL83lXcjtYkP+8D14x2d1krS509inmkjpSSFDiXxKNLuZPwF
-         OZFQ==
-X-Gm-Message-State: AOAM530uNWhkCN5+eH+rFrad9nZwFoUVN3o6DG+VWR+bWqLciDceZNFt
-        rYrDADgCQW815kN/Q7co/uNDBuPLYF4=
-X-Google-Smtp-Source: ABdhPJzg+ucf7JA/MR7KeLOdvkun7oa5j/LfwORuKmFSUEigc9js36dXS+WdztpISTps7LqP1AFCwg==
-X-Received: by 2002:a05:6a00:1a89:b0:50d:fee4:cdb1 with SMTP id e9-20020a056a001a8900b0050dfee4cdb1mr3622808pfv.85.1652950204611;
-        Thu, 19 May 2022 01:50:04 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.84])
-        by smtp.googlemail.com with ESMTPSA id t18-20020a1709028c9200b0015e8d4eb2b4sm3121541plo.254.2022.05.19.01.50.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 May 2022 01:50:04 -0700 (PDT)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] KVM: eventfd: Fix false positive RCU usage warning
-Date:   Thu, 19 May 2022 01:49:13 -0700
-Message-Id: <1652950153-12489-1-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 19 May 2022 04:50:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31E009C2E7
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 01:50:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652950238;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=p92fXrJQ4gGF6gXdL4rpxaBMAzMtQCdZw00jmCIxVH0=;
+        b=RfvD9ZEbDJQn76vLk72WCqEDr+MJryQolwXrvX16OCmdpHaT32WOCBMnKpuvvZOyk0hSrZ
+        RjD4S7txL+Ky5t6PXYU8SAJFRLk7Qs3BCxj6eLsEUNmee4PHmQcxs0A5YhCaNJSnH6KFZ2
+        MCm3wCuBo3Vu/OwBxs4i2RrloLljDK4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-AYYgi-E3OmePuQW2dI8JAw-1; Thu, 19 May 2022 04:50:33 -0400
+X-MC-Unique: AYYgi-E3OmePuQW2dI8JAw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BD516802803;
+        Thu, 19 May 2022 08:50:32 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 95948400E114;
+        Thu, 19 May 2022 08:50:31 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] assoc_array: Fix BUG_ON during garbage collect
+From:   David Howells <dhowells@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     stable@vger.kernel.org,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        keyrings@vger.kernel.org, dhowells@redhat.com,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 19 May 2022 09:50:30 +0100
+Message-ID: <165295023086.3361286.8662079860706628540.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Stephen Brennan <stephen.s.brennan@oracle.com>
 
-The below is splatting when running kvm-unit-test.
+A rare BUG_ON triggered in assoc_array_gc:
 
-     =============================
-     WARNING: suspicious RCU usage
-     5.18.0-rc7 #5 Tainted: G          IOE
-     -----------------------------
-     /home/kernel/linux/arch/x86/kvm/../../../virt/kvm/eventfd.c:80 RCU-list traversed in non-reader section!!
-    
-     other info that might help us debug this:
-    
-    
-     rcu_scheduler_active = 2, debug_locks = 1
-     4 locks held by qemu-system-x86/35124:
-      #0: ffff9725391d80b8 (&vcpu->mutex){+.+.}-{4:4}, at: kvm_vcpu_ioctl+0x77/0x710 [kvm]
-      #1: ffffbd25cfb2a0b8 (&kvm->srcu){....}-{0:0}, at: vcpu_enter_guest+0xdeb/0x1900 [kvm]
-      #2: ffffbd25cfb2b920 (&kvm->irq_srcu){....}-{0:0}, at: kvm_hv_notify_acked_sint+0x79/0x1e0 [kvm]
-      #3: ffffbd25cfb2b920 (&kvm->irq_srcu){....}-{0:0}, at: irqfd_resampler_ack+0x5/0x110 [kvm]
-    
-     stack backtrace:
-     CPU: 2 PID: 35124 Comm: qemu-system-x86 Tainted: G          IOE     5.18.0-rc7 #5
-     Call Trace:
-      <TASK>
-      dump_stack_lvl+0x6c/0x9b
-      irqfd_resampler_ack+0xfd/0x110 [kvm]
-      kvm_notify_acked_gsi+0x32/0x90 [kvm]
-      kvm_hv_notify_acked_sint+0xc5/0x1e0 [kvm]
-      kvm_hv_set_msr_common+0xec1/0x1160 [kvm]
-      kvm_set_msr_common+0x7c3/0xf60 [kvm]
-      vmx_set_msr+0x394/0x1240 [kvm_intel]
-      kvm_set_msr_ignored_check+0x86/0x200 [kvm]
-      kvm_emulate_wrmsr+0x4f/0x1f0 [kvm]
-      vmx_handle_exit+0x6fb/0x7e0 [kvm_intel]
-      vcpu_enter_guest+0xe5a/0x1900 [kvm]
-      kvm_arch_vcpu_ioctl_run+0x16e/0xac0 [kvm]
-      kvm_vcpu_ioctl+0x279/0x710 [kvm]
-      __x64_sys_ioctl+0x83/0xb0
-      do_syscall_64+0x3b/0x90
-      entry_SYSCALL_64_after_hwframe+0x44/0xae
+    [3430308.818153] kernel BUG at lib/assoc_array.c:1609!
 
-resampler-list is traversed using srcu_read_lock() in irqfd_resampler_ack, 
-let's fix this false positive by list_for_each_entry_srcu() instead and 
-lockdep expression srcu_read_lock_head() be passed as the cond argument.
+Which corresponded to the statement currently at line 1593 upstream:
 
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+    BUG_ON(assoc_array_ptr_is_meta(p));
+
+Using the data from the core dump, I was able to generate a userspace
+reproducer[1] and determine the cause of the bug.
+
+[1]: https://github.com/brenns10/kernel_stuff/tree/master/assoc_array_gc
+
+After running the iterator on the entire branch, an internal tree node
+looked like the following:
+
+    NODE (nr_leaves_on_branch: 3)
+      SLOT [0] NODE (2 leaves)
+      SLOT [1] NODE (1 leaf)
+      SLOT [2..f] NODE (empty)
+
+In the userspace reproducer, the pr_devel output when compressing this
+node was:
+
+    -- compress node 0x5607cc089380 --
+    free=0, leaves=0
+    [0] retain node 2/1 [nx 0]
+    [1] fold node 1/1 [nx 0]
+    [2] fold node 0/1 [nx 2]
+    [3] fold node 0/2 [nx 2]
+    [4] fold node 0/3 [nx 2]
+    [5] fold node 0/4 [nx 2]
+    [6] fold node 0/5 [nx 2]
+    [7] fold node 0/6 [nx 2]
+    [8] fold node 0/7 [nx 2]
+    [9] fold node 0/8 [nx 2]
+    [10] fold node 0/9 [nx 2]
+    [11] fold node 0/10 [nx 2]
+    [12] fold node 0/11 [nx 2]
+    [13] fold node 0/12 [nx 2]
+    [14] fold node 0/13 [nx 2]
+    [15] fold node 0/14 [nx 2]
+    after: 3
+
+At slot 0, an internal node with 2 leaves could not be folded into the
+node, because there was only one available slot (slot 0). Thus, the
+internal node was retained. At slot 1, the node had one leaf, and was
+able to be folded in successfully. The remaining nodes had no leaves,
+and so were removed. By the end of the compression stage, there were 14
+free slots, and only 3 leaf nodes. The tree was ascended and then its
+parent node was compressed. When this node was seen, it could not be
+folded, due to the internal node it contained.
+
+The invariant for compression in this function is: whenever
+nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT, the node should contain all
+leaf nodes. The compression step currently cannot guarantee this, given
+the corner case shown above.
+
+To fix this issue, retry compression whenever we have retained a node,
+and yet nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT. This second
+compression will then allow the node in slot 1 to be folded in,
+satisfying the invariant. Below is the output of the reproducer once the
+fix is applied:
+
+    -- compress node 0x560e9c562380 --
+    free=0, leaves=0
+    [0] retain node 2/1 [nx 0]
+    [1] fold node 1/1 [nx 0]
+    [2] fold node 0/1 [nx 2]
+    [3] fold node 0/2 [nx 2]
+    [4] fold node 0/3 [nx 2]
+    [5] fold node 0/4 [nx 2]
+    [6] fold node 0/5 [nx 2]
+    [7] fold node 0/6 [nx 2]
+    [8] fold node 0/7 [nx 2]
+    [9] fold node 0/8 [nx 2]
+    [10] fold node 0/9 [nx 2]
+    [11] fold node 0/10 [nx 2]
+    [12] fold node 0/11 [nx 2]
+    [13] fold node 0/12 [nx 2]
+    [14] fold node 0/13 [nx 2]
+    [15] fold node 0/14 [nx 2]
+    internal nodes remain despite enough space, retrying
+    -- compress node 0x560e9c562380 --
+    free=14, leaves=1
+    [0] fold node 2/15 [nx 0]
+    after: 3
+
+Changes
+=======
+DH:
+ - Use false instead of 0.
+ - Reorder the inserted lines in a couple of places to put retained before
+   next_slot.
+
+ver #2)
+ - Fix typo in pr_devel, correct comparison to "<="
+
+
+Fixes: 3cb989501c26 ("Add a generic associative array implementation.")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Jarkko Sakkinen <jarkko@kernel.org>
+cc: Andrew Morton <akpm@linux-foundation.org>
+cc: keyrings@vger.kernel.org
+Link: https://lore.kernel.org/r/20220511225517.407935-1-stephen.s.brennan@oracle.com/ # v1
+Link: https://lore.kernel.org/r/20220512215045.489140-1-stephen.s.brennan@oracle.com/ # v2
 ---
- virt/kvm/eventfd.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
-index 59b1dd4a549e..2a3ed401ce46 100644
---- a/virt/kvm/eventfd.c
-+++ b/virt/kvm/eventfd.c
-@@ -77,7 +77,8 @@ irqfd_resampler_ack(struct kvm_irq_ack_notifier *kian)
+ lib/assoc_array.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/lib/assoc_array.c b/lib/assoc_array.c
+index 079c72e26493..ca0b4f360c1a 100644
+--- a/lib/assoc_array.c
++++ b/lib/assoc_array.c
+@@ -1461,6 +1461,7 @@ int assoc_array_gc(struct assoc_array *array,
+ 	struct assoc_array_ptr *cursor, *ptr;
+ 	struct assoc_array_ptr *new_root, *new_parent, **new_ptr_pp;
+ 	unsigned long nr_leaves_on_tree;
++	bool retained;
+ 	int keylen, slot, nr_free, next_slot, i;
  
- 	idx = srcu_read_lock(&kvm->irq_srcu);
+ 	pr_devel("-->%s()\n", __func__);
+@@ -1536,6 +1537,7 @@ int assoc_array_gc(struct assoc_array *array,
+ 		goto descend;
+ 	}
  
--	list_for_each_entry_rcu(irqfd, &resampler->list, resampler_link)
-+	list_for_each_entry_srcu(irqfd, &resampler->list, resampler_link,
-+	    srcu_read_lock_held(&kvm->irq_srcu))
- 		eventfd_signal(irqfd->resamplefd, 1);
++retry_compress:
+ 	pr_devel("-- compress node %p --\n", new_n);
  
- 	srcu_read_unlock(&kvm->irq_srcu, idx);
--- 
-2.25.1
+ 	/* Count up the number of empty slots in this node and work out the
+@@ -1553,6 +1555,7 @@ int assoc_array_gc(struct assoc_array *array,
+ 	pr_devel("free=%d, leaves=%lu\n", nr_free, new_n->nr_leaves_on_branch);
+ 
+ 	/* See what we can fold in */
++	retained = false;
+ 	next_slot = 0;
+ 	for (slot = 0; slot < ASSOC_ARRAY_FAN_OUT; slot++) {
+ 		struct assoc_array_shortcut *s;
+@@ -1602,9 +1605,14 @@ int assoc_array_gc(struct assoc_array *array,
+ 			pr_devel("[%d] retain node %lu/%d [nx %d]\n",
+ 				 slot, child->nr_leaves_on_branch, nr_free + 1,
+ 				 next_slot);
++			retained = true;
+ 		}
+ 	}
+ 
++	if (retained && new_n->nr_leaves_on_branch <= ASSOC_ARRAY_FAN_OUT) {
++		pr_devel("internal nodes remain despite enough space, retrying\n");
++		goto retry_compress;
++	}
+ 	pr_devel("after: %lu\n", new_n->nr_leaves_on_branch);
+ 
+ 	nr_leaves_on_tree = new_n->nr_leaves_on_branch;
+
 
