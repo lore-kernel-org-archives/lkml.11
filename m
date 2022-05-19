@@ -2,79 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbiESH5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        id S235075AbiESH5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234871AbiESH5L (ORCPT
+        with ESMTP id S235064AbiESH51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:57:11 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8D137A14;
-        Thu, 19 May 2022 00:57:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=tgepYw5nexzkSdGrWECyn2GcidGFnnV2G28XjZEYgZo=; b=AznSJfdbbB2IVJ1vyPGXWTsPnG
-        EJU7TfcGzrf5gXo3OUfHJnEUhbcY5hUaZx9n1ZuCBBHDi6BNVAo2CaDKd5D+Php3PKFrPYXspKkNg
-        ZSmeNgQEPblVBcdFgnZ9y48NesV8yJByzXeoOCalqgo2G1jwceZcPxb0O1ZLD0WIEb6PpDEZ5QLef
-        rH/9XEHG/kgYVy0HiRpbuimpV4xJigf3ChbN9XZ5FMSF9aOLTWXKMPlaE+JJzIQjr8ADcd27SWf0P
-        Wr4eIaffunA8GGRzMLl7SGDjMKGuTCFQYEvRxIE1Y///sGtCfFR1dla+TRE/jXlaUwmbmP0B5NF18
-        WhvnTGzQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrb19-00CXmu-MV; Thu, 19 May 2022 07:56:19 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 453D8980E0B; Thu, 19 May 2022 09:56:19 +0200 (CEST)
-Date:   Thu, 19 May 2022 09:56:19 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
-        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org,
-        Robert OCallahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Douglas Miller <dougmill@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Subject: Re: [PATCH 03/16] kdb: Use real_parent when displaying a list of
- processes
-Message-ID: <20220519075619.GE2578@worktop.programming.kicks-ass.net>
-References: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
- <20220518225355.784371-3-ebiederm@xmission.com>
+        Thu, 19 May 2022 03:57:27 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2363C49E;
+        Thu, 19 May 2022 00:57:22 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 5265E21B2F;
+        Thu, 19 May 2022 07:57:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1652947041; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=Z4alrCp3n4M0QAnk7ntgmbNwbf4GzlpevASy3Qy1ZPA=;
+        b=oDq8z7z9nwwgvEFVsyo8Bs3jDH/asiWOWdV+gl7rHnQDKeMRVNUWBRSef6oc+dYPa5mwQJ
+        y6b6XcUcXmSCECjDzY7kwtKlKzGUDUa7keDKShBDmOAWW9Fp71iHZCUwA73xjtoMAZanNG
+        fT7EkOEev5IbII4H+ep9ou8U38R28T0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1652947041;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=Z4alrCp3n4M0QAnk7ntgmbNwbf4GzlpevASy3Qy1ZPA=;
+        b=P9J+Ym70oKtZgRoiVhlbUKzD3IseUrsaIDdKZdyKzAYraA86AU22KUaPpks3D1wlb7IXt0
+        TsYa8mM5YxxOp6Bg==
+Received: from localhost.localdomain (unknown [10.100.201.122])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 1A8862C141;
+        Thu, 19 May 2022 07:57:21 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH] serial: amba-pl011: move header content to .c
+Date:   Thu, 19 May 2022 09:57:20 +0200
+Message-Id: <20220519075720.31402-1-jslaby@suse.cz>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518225355.784371-3-ebiederm@xmission.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 05:53:42PM -0500, Eric W. Biederman wrote:
-> kdb has a bug that when using the ps command to display a list of
-> processes, if a process is being debugged the debugger as the parent
-> process.
-> 
-> This is silly, and I expect it never comes up in ptractice.  As there
-                                                   ^^^^^^^^^
+There is no point keeping the header content separated. In this case, it
+is only an enum. So move the enum to the appropriate source file.
 
-Lol, love the new word :-)
+Cc: Russell King <linux@armlinux.org.uk>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ drivers/tty/serial/amba-pl011.c | 32 ++++++++++++++++++++++++++++--
+ drivers/tty/serial/amba-pl011.h | 35 ---------------------------------
+ 2 files changed, 30 insertions(+), 37 deletions(-)
+ delete mode 100644 drivers/tty/serial/amba-pl011.h
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 98c45a57e6e9..97ef41cb2721 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -42,8 +42,6 @@
+ #include <linux/io.h>
+ #include <linux/acpi.h>
+ 
+-#include "amba-pl011.h"
+-
+ #define UART_NR			14
+ 
+ #define SERIAL_AMBA_MAJOR	204
+@@ -55,6 +53,36 @@
+ #define UART_DR_ERROR		(UART011_DR_OE|UART011_DR_BE|UART011_DR_PE|UART011_DR_FE)
+ #define UART_DUMMY_DR_RX	(1 << 16)
+ 
++enum {
++	REG_DR,
++	REG_ST_DMAWM,
++	REG_ST_TIMEOUT,
++	REG_FR,
++	REG_LCRH_RX,
++	REG_LCRH_TX,
++	REG_IBRD,
++	REG_FBRD,
++	REG_CR,
++	REG_IFLS,
++	REG_IMSC,
++	REG_RIS,
++	REG_MIS,
++	REG_ICR,
++	REG_DMACR,
++	REG_ST_XFCR,
++	REG_ST_XON1,
++	REG_ST_XON2,
++	REG_ST_XOFF1,
++	REG_ST_XOFF2,
++	REG_ST_ITCR,
++	REG_ST_ITIP,
++	REG_ST_ABCR,
++	REG_ST_ABIMSC,
++
++	/* The size of the array - must be last */
++	REG_ARRAY_SIZE,
++};
++
+ static u16 pl011_std_offsets[REG_ARRAY_SIZE] = {
+ 	[REG_DR] = UART01x_DR,
+ 	[REG_FR] = UART01x_FR,
+diff --git a/drivers/tty/serial/amba-pl011.h b/drivers/tty/serial/amba-pl011.h
+deleted file mode 100644
+index 077eb12a3472..000000000000
+--- a/drivers/tty/serial/amba-pl011.h
++++ /dev/null
+@@ -1,35 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef AMBA_PL011_H
+-#define AMBA_PL011_H
+-
+-enum {
+-	REG_DR,
+-	REG_ST_DMAWM,
+-	REG_ST_TIMEOUT,
+-	REG_FR,
+-	REG_LCRH_RX,
+-	REG_LCRH_TX,
+-	REG_IBRD,
+-	REG_FBRD,
+-	REG_CR,
+-	REG_IFLS,
+-	REG_IMSC,
+-	REG_RIS,
+-	REG_MIS,
+-	REG_ICR,
+-	REG_DMACR,
+-	REG_ST_XFCR,
+-	REG_ST_XON1,
+-	REG_ST_XON2,
+-	REG_ST_XOFF1,
+-	REG_ST_XOFF2,
+-	REG_ST_ITCR,
+-	REG_ST_ITIP,
+-	REG_ST_ABCR,
+-	REG_ST_ABIMSC,
+-
+-	/* The size of the array - must be last */
+-	REG_ARRAY_SIZE,
+-};
+-
+-#endif
+-- 
+2.36.1
+
