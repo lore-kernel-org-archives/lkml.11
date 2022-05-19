@@ -2,73 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A68BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238647AbiESNTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52146 "EHLO
+        id S238669AbiESNUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbiESNTm (ORCPT
+        with ESMTP id S238662AbiESNUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:19:42 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2ACC8BD3
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:19:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=l7xioVIlid5Wh7WU7WZik6lZur+fLsYpq5g+mTWR0Pk=; b=b7a17+X2himp3SfbrlHjutD4cj
-        ceQv50Quxzo5sFDHtR7tWwnE83YvGYTrixHxz328sN1rnEAvZKhNgxCOAlJbEHAT3ZAhtqjzNN/3k
-        SzoBUjE8nyON1GXKlkJQsqh5cky8daxU89PvFipgxtLiZUoNVgQ6IFeYm2ZCjYuDSABhTKytHLj2n
-        FlPEw5KRtN+zrftwcAr4u1OQKbe2dxpuzW1qp8iAMrxHO9nvapnp0lNY6d+7qc55rP4MwkbDMbLiK
-        xMqPIlpTfzV3ax22Rlp+KvjVyUDSh51FI6vF1QO6EH/xqWpqf8EmN3A8fqcHXyZ0XYTgKRdjju2Dn
-        Wj4cF9kw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nrg3r-00CkWv-Cc; Thu, 19 May 2022 13:19:27 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id EBE42980E0B; Thu, 19 May 2022 15:19:26 +0200 (CEST)
-Date:   Thu, 19 May 2022 15:19:26 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Cc:     Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>, tglx@linutronix.de,
-        wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, Jonathan.JMChen@mediatek.com,
-        "chris.redpath@arm.com" <chris.redpath@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Donnefort <vdonnefort@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Christian Brauner <brauner@kernel.org>
-Subject: Re: [Bug] Race condition between CPU hotplug off flow and
- __sched_setscheduler()
-Message-ID: <20220519131926.GB6479@worktop.programming.kicks-ass.net>
-References: <4a0aa13c99ffd6aea6426f83314aa2a91bc8933f.camel@mediatek.com>
- <20220519131452.GG2578@worktop.programming.kicks-ass.net>
+        Thu, 19 May 2022 09:20:13 -0400
+X-Greylist: delayed 514 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 19 May 2022 06:20:12 PDT
+Received: from mail.sysgo.com (mail.sysgo.com [159.69.174.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1E3C8BF6;
+        Thu, 19 May 2022 06:20:12 -0700 (PDT)
+Date:   Thu, 19 May 2022 15:11:27 +0200
+From:   Vit Kabele <vit.kabele@sysgo.com>
+To:     linux-hyperv@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, decui@microsoft.com,
+        kys@microsoft.com, rudolf.marek@sysgo.com, vit@kabele.me,
+        wei.liu@kernel.org
+Subject: Hyper-V: Question about initializing hypercall interface
+Message-ID: <YoZB/+EYDDfowVbs@czspare1-lap.sysgo.cz>
+Mail-Followup-To: Vit Kabele <vit.kabele@sysgo.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        decui@microsoft.com, kys@microsoft.com, rudolf.marek@sysgo.com,
+        vit@kabele.me, wei.liu@kernel.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220519131452.GG2578@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 03:14:52PM +0200, Peter Zijlstra wrote:
-> On Thu, May 19, 2022 at 08:53:15PM +0800, Jing-Ting Wu wrote:
-> > Hi all
-> > 
-> > 
-> > There is a race condition between CPU hotplug off flow and
-> > __sched_setscheduler(), which will cause hang-up in CPU hotplug off
-> > flow.
-> 
-> Oooh, you're using core scheduling and the A/B are SMT siblings?
+Hello,
 
-Hmm, no.. lemme try again.
+I'm playing with the Hyper-V interface described in the documentation
+here [1] (version 6.0b) and I noticed inconsistency between the
+document and the actual code in arch/x86/hyperv/hv_init.c.
+
+Section 3.13 Establishing the Hypercall Interface states:
+
+> 5. The guest checks the Enable Hypercall Page bit. If it is set, the
+> interface is already active, and steps 6 and 7 should be omitted. 
+> 6.  The guest finds a page within its GPA space, preferably one that
+> is not occupied by RAM, MMIO, and so on. If the page is occupied, the
+> guest should avoid using the underlying page for other purposes. 
+> 7.  The guest writes a new value to the Hypercall MSR
+> (HV_X64_MSR_HYPERCALL) that includes the GPA from step 6 and sets the
+> Enable Hypercall Page bit to enable the interface.
+
+Yet the code in hv_init.c seems to skip the step 5. and performs the
+steps 6. and 7. unconditionally. Snippet below.
+
+```
+rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+hypercall_msr.enable = 1;
+
+if (hv_root_partition) {
+	...
+} else {
+    hypercall_msr.guest_physical_address = vmalloc_to_pfn(hv_hypercall_pg);
+    wrmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+}
+```
+
+1/ I thought that the specification is written in a way that allows
+hypervisor to locate the hypercall page on its own (for whatever reason)
+and just announce the location to the guest by setting the Enable bit in
+the MSR on initial read. A guest should then not attempt to remap the
+page (point 5. above), but instead create kernel mapping to the page
+reported by the hypervisor.
+
+2/ The Lock bit (bit 1) is ignored in the Linux implementation. If the
+hypervisor starts with Lock bit set, the init function allocates the
+hv_hypercall_pg and writes the value to the MSR, then:
+	a/ If the hypervisor ignores the write, the MSR remains unchanged,
+		but the global variable is already set. Attempt to do a
+		hypercall ends with call to undefined memory, because the code
+		in hv_do_hypercall() checks the global variable against NULL,
+		which will pass.
+	b/ The hypervisor injects #GP, in which case the guest crashes.
+
+Do I understand the specification correctly? If yes, then the issues
+here are real issues. If my understanding is wrong, what do I miss?
+
+-- 
+Best regards,
+Vit Kabele
+
+[1]: https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/tlfs
