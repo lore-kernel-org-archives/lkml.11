@@ -2,327 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08FDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 20:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245030AbiESUvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 16:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
+        id S244851AbiESUxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 16:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245007AbiESUvO (ORCPT
+        with ESMTP id S234953AbiESUx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 16:51:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B7FCCEBBC
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 13:50:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652993423;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+mSnnXB4zhv3CYExul+xHQ9kgIy3b08DY1pURDwXodQ=;
-        b=Lfo4Jz5K3XpsF9brLVT8Kwuu4gLJsVv2Vu/0CgiDzklQA6LLRYd4Kqfj/+jGezIeN8nj2H
-        qUVoCq/3c0kT+Y9s5gJQfDrZ4qX/vHUMOVfbmaVNvCbvICSH0KTBffYoWTL+nx8zz8eWtS
-        FZvpQvrCTaB2FJ2pm2H44GN15PdbNZQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-472-3Ijg7nXWNU-TVhgOs5HS6w-1; Thu, 19 May 2022 16:49:50 -0400
-X-MC-Unique: 3Ijg7nXWNU-TVhgOs5HS6w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B0CDF811E76;
-        Thu, 19 May 2022 20:49:49 +0000 (UTC)
-Received: from dqiao.bos.com (unknown [10.22.35.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C0331121319;
-        Thu, 19 May 2022 20:49:48 +0000 (UTC)
-From:   Donghai Qiao <dqiao@redhat.com>
-To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
-        peterz@infradead.org, heying24@huawei.com,
-        andriy.shevchenko@linux.intel.com, axboe@kernel.dk,
-        rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
-Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
-        Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH v4 02/11] smp: the definitions of cross call interface
-Date:   Thu, 19 May 2022 16:49:34 -0400
-Message-Id: <20220519204943.1079578-3-dqiao@redhat.com>
-In-Reply-To: <20220519204943.1079578-1-dqiao@redhat.com>
-References: <20220519204943.1079578-1-dqiao@redhat.com>
-Reply-To: dqiao@redhat.com
+        Thu, 19 May 2022 16:53:27 -0400
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A0610FC6;
+        Thu, 19 May 2022 13:53:24 -0700 (PDT)
+Received: by mail-oi1-f182.google.com with SMTP id v9so3223642oie.5;
+        Thu, 19 May 2022 13:53:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vr35W3paoABM6vUlppihSXBGzo4C7D5+LkOldPnsJ+s=;
+        b=KPqTRh30NiU17Q0Qp+Pc6KAoSKk+wgli+lZe/3wgNucePaGmXc3040IRQtpAYEoMXz
+         EOypjUg34WjUi+RTetmFCoc8tBPhjKiXscP7DSCDGpNwV1p3sCZm6/s9/Uz4atWfKcvB
+         84adZjoWqD08cxwLWCI5WNPoey+WmUAaoJ6TjV9mMXT8fglQ89tbjMLCHKBg9tr+SIHz
+         lddzihsODD5Bb2Gq/ofuc+Kmlet33thFDzHYyK7n2SodG9iLCSdEn84e8PyHcaaiqgra
+         g2m/UJuif9bXhTKmWtQStJuFRumSmqs0AjGMRgf5FUISFgaoZ7CYAFK5qqA0tzNChPhn
+         9VNQ==
+X-Gm-Message-State: AOAM530FVehJZ+7DEapJXT53V1oT8HCuFbMwNPUO64zlDulj72e5HeyQ
+        zBv4MyHrIYk1e9EVZST1Ag==
+X-Google-Smtp-Source: ABdhPJxZNVXs1r0C+wqkhBUfdG8DMxjc8+Bd0W1pj4yhH2bjTCZlQtoNSW+klCTJMiua+T7y8sJhaA==
+X-Received: by 2002:aca:6c5:0:b0:325:5bce:bbc1 with SMTP id 188-20020aca06c5000000b003255bcebbc1mr3824631oig.221.1652993603425;
+        Thu, 19 May 2022 13:53:23 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id dt10-20020a0568705a8a00b000e686d1387csm170976oab.22.2022.05.19.13.53.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 13:53:22 -0700 (PDT)
+Received: (nullmailer pid 2171348 invoked by uid 1000);
+        Thu, 19 May 2022 20:53:21 -0000
+Date:   Thu, 19 May 2022 15:53:21 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Joe Hung <joe_hung@ilitek.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2] dt-bindings: input: touchscreen: ilitek_ts_i2c:
+ Absorb ili2xxx bindings
+Message-ID: <20220519205321.GA2170924-robh@kernel.org>
+References: <0c5f06c9d262c1720b40d068b6eefe58ca406601.1638539806.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0c5f06c9d262c1720b40d068b6eefe58ca406601.1638539806.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The functions of cross CPU call interface are defined below :
+On Fri, 03 Dec 2021 14:58:26 +0100, Geert Uytterhoeven wrote:
+> While Linux uses a different driver, the Ilitek
+> ILI210x/ILI2117/ILI2120/ILI251x touchscreen controller Device Tree
+> binding documentation is very similar.
+> 
+>   - Drop the fixed reg value, as some controllers use a different
+>     address,
+>   - Make reset-gpios optional, as it is not always wired.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+> v2:
+>   - Add Reviewed-by.
+> ---
+>  .../bindings/input/ilitek,ili2xxx.txt         | 27 -------------------
+>  .../input/touchscreen/ilitek_ts_i2c.yaml      |  7 +++--
+>  2 files changed, 5 insertions(+), 29 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/input/ilitek,ili2xxx.txt
+> 
 
-int smp_call(int cpu, smp_call_func_t func, void *info,
-		unsigned int flags)
-
-int smp_call_cond(int cpu, smp_call_func_t func, void *info,
-		smp_cond_func_t condf, unsigned int flags)
-
-void smp_call_mask(const struct cpumask *mask, smp_call_func_t func,
-		void *info, unsigned int flags)
-
-void smp_call_mask_others(const struct cpumask *mask, smp_call_func_t func,
-		void *info, unsigned int flags)
-
-void smp_call_mask_cond(const struct cpumask *mask, smp_call_func_t func,
-		void *info, smp_cond_func_t condf, unsigned int flags)
-
-int smp_call_csd(int cpu, call_single_data_t *csd, unsigned int flags)
-
-Basically the set of functions above can cover the requirements for
-synchronous and asynchronous type of cross calls. The target CPUs
-can be specified as a unique one or all of the CPUs in a given cpumask
-or all of the CPUs in cpumask except the local CPU. The CPUs in cpumask
-can be as many as all the onlined CPUs or a set of selected CPUs.
-
-Although there is a constrain that cross calls cannot be called from
-context with disabled interrupts, the function smp_call_csd() is
-allowed to do so, which requires the callers to provide and maintain
-their own preallocated call_single_data_t structures.
-
-Signed-off-by: Donghai Qiao <dqiao@redhat.com>
----
-v1 -> v2: Removed 'x' from the function names and change XCALL to
-          SMP_CALL from the new macros
-v2 -> v3: In order to fix the issues that Peter pointed out previously:
-          Removed smp_call_any();
-          Changed smp_call_private to smp_call_csd;
-          Added smp_call_mask_others();
-          Modified the commit comments accordingly.
-
- include/linux/smp.h |  30 ++++++++
- kernel/smp.c        | 172 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 202 insertions(+)
-
-diff --git a/include/linux/smp.h b/include/linux/smp.h
-index 94bd901b4e4c..06a20454fd53 100644
---- a/include/linux/smp.h
-+++ b/include/linux/smp.h
-@@ -148,6 +148,36 @@ do {						\
- 	*(_csd) = CSD_INIT((_func), (_info));	\
- } while (0)
- 
-+
-+/*
-+ * smp_call Interface.
-+ *
-+ * Also see kernel/smp.c for the details.
-+ */
-+#define	SMP_CALL_TYPE_SYNC		CSD_TYPE_SYNC
-+#define	SMP_CALL_TYPE_ASYNC		CSD_TYPE_ASYNC
-+#define	SMP_CALL_TYPE_IRQ_WORK		CSD_TYPE_IRQ_WORK
-+#define	SMP_CALL_TYPE_TTWU		CSD_TYPE_TTWU
-+#define	SMP_CALL_TYPE_MASK		CSD_FLAG_TYPE_MASK
-+
-+#define	SMP_CALL_ALL	-1
-+
-+extern int smp_call(int cpu, smp_call_func_t func, void *info, unsigned int flags);
-+
-+extern int smp_call_cond(int cpu, smp_call_func_t func, void *info,
-+		smp_cond_func_t condf, unsigned int flags);
-+
-+extern void smp_call_mask(const struct cpumask *mask, smp_call_func_t func,
-+		void *info, unsigned int flags);
-+
-+void smp_call_mask_others(const struct cpumask *mask, smp_call_func_t func,
-+                void *info, unsigned int flags);
-+
-+extern void smp_call_mask_cond(const struct cpumask *mask, smp_call_func_t func,
-+		void *info, smp_cond_func_t condf, unsigned int flags);
-+
-+extern int smp_call_csd(int cpu, call_single_data_t *csd, unsigned int flags);
-+
- /*
-  * Enqueue a llist_node on the call_single_queue; be very careful, read
-  * flush_smp_call_function_queue() in detail.
-diff --git a/kernel/smp.c b/kernel/smp.c
-index 4d192ac85a91..906be125068f 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -1185,3 +1185,175 @@ int smp_call_on_cpu(unsigned int cpu, int (*func)(void *), void *par, bool phys)
- 	return sscs.ret;
- }
- EXPORT_SYMBOL_GPL(smp_call_on_cpu);
-+
-+
-+void __smp_call_mask_cond(const struct cpumask *mask,
-+		smp_call_func_t func, void *info,
-+		smp_cond_func_t cond_func, bool local_cpu,
-+		unsigned int flags)
-+{
-+}
-+
-+/*
-+ * smp_call Interface
-+ *
-+ * Consolidate the cross CPU call usage from the history below:
-+ *
-+ * Normally this interface cannot be used with interrupts disabled or
-+ * from a hardware interrupt handler or from a bottom half handler.
-+ * But there are two exceptions:
-+ * 1) It can be used during early boot while early_boot_irqs_disabled
-+ *    is. In this scenario, you should use local_irq_save/restore()
-+ *    instead of local_irq_disable/enable()
-+ * 2) Because smp_call_csd(cpu, csd, SMP_CALL_TYPE_ASYNC) is an asynchonous
-+ *    call with a preallocated csd structure, thus it can be called from
-+ *    the context where interrupts are disabled.
-+ */
-+
-+/*
-+ * Parameters:
-+ *
-+ * cpu: If cpu == SMP_CALL_ALL, the cross call is for all the online CPUs
-+ *      Otherwise, if 0 <= cpu < nr_cpu_ids, the cross call is for that cpu.
-+ *
-+ * func: It is the cross function that the destination CPUs need to execute.
-+ *       This function must be fast and non-blocking.
-+ *
-+ * info: It is the parameter to func().
-+ *
-+ * flags: The flags specify the manner the cross call is performaned in terms
-+ *	  of synchronous or asynchronous.
-+ *
-+ *	  A synchronous cross call will not return immediately until all
-+ *	  the destination CPUs have executed func() and responded the call.
-+ *
-+ *	  An asynchrouse cross call will return immediately as soon as it
-+ *	  has fired all the cross calls and run func() locally if needed
-+ *	  regardless the status of the target CPUs.
-+ *
-+ * Return: %0 on success or negative errno value on error.
-+ */
-+int smp_call(int cpu, smp_call_func_t func, void *info, unsigned int flags)
-+{
-+	return smp_call_cond(cpu, func, info, NULL, flags);
-+}
-+EXPORT_SYMBOL(smp_call);
-+
-+/*
-+ * Parameters:
-+ *
-+ * cond_func: This is a condition function cond_func(cpu, info) invoked by
-+ *	      the underlying cross call mechanism only. If the return value
-+ *	      from cond_func(cpu, info) is true, the cross call will be sent
-+ *	      to that cpu, otherwise not.
-+ *
-+ * Others: see smp_call().
-+ *
-+ * Return: %0 on success or negative errno value on error.
-+ */
-+int smp_call_cond(int cpu, smp_call_func_t func, void *info,
-+		    smp_cond_func_t cond_func, unsigned int flags)
-+{
-+	preempt_disable();
-+	if (cpu == SMP_CALL_ALL) {
-+		__smp_call_mask_cond(cpu_online_mask, func, info, cond_func, true, flags);
-+	} else if ((unsigned int)cpu < nr_cpu_ids) {
-+		__smp_call_mask_cond(cpumask_of(cpu), func, info, cond_func, true, flags);
-+	} else {
-+		preempt_enable();
-+		pr_warn("Invalid cpu ID = %d\n", cpu);
-+		return -ENXIO;
-+	}
-+	preempt_enable();
-+	return 0;
-+}
-+EXPORT_SYMBOL(smp_call_cond);
-+
-+/*
-+ * Parameters:
-+ *
-+ * mask: The cross call will be sent to all the CPUs in mask.
-+ *
-+ * Others: see smp_call().
-+ */
-+void smp_call_mask(const struct cpumask *mask, smp_call_func_t func,
-+		void *info, unsigned int flags)
-+{
-+	if (mask == NULL) {
-+		pr_warn("mask must not be NULL\n");
-+		return;
-+	}
-+
-+	preempt_disable();
-+	__smp_call_mask_cond(mask, func, info, NULL, true, flags);
-+	preempt_enable();
-+}
-+EXPORT_SYMBOL(smp_call_mask);
-+
-+/*
-+ * Parameters:
-+ *
-+ * mask: The cross call will be sent to all the CPUs in mask except
-+ *       the local CPU.
-+ *
-+ * Others: see smp_call().
-+ *
-+ * Besides, its the callers' discrimination as to whether preemption
-+ * needs to be disabled or not during the call.
-+ */
-+void smp_call_mask_others(const struct cpumask *mask, smp_call_func_t func,
-+		void *info, unsigned int flags)
-+{
-+	if (mask == NULL) {
-+		pr_warn("mask must not be NULL\n");
-+		return;
-+	}
-+
-+	__smp_call_mask_cond(mask, func, info, NULL, false, flags);
-+}
-+EXPORT_SYMBOL(smp_call_mask_others);
-+
-+/*
-+ * The combination of smp_call_cond() and smp_call_mask()
-+ */
-+void smp_call_mask_cond(const struct cpumask *mask,
-+		smp_call_func_t func, void *info,
-+		smp_cond_func_t cond_func,
-+		unsigned int flags)
-+{
-+	if (!mask) {
-+		/*
-+		 * If mask is NULL meaning for all CPUs,
-+		 * then cond_func must be provided.
-+		 */
-+		WARN_ON_ONCE(!cond_func);
-+		mask = cpu_online_mask;
-+	}
-+
-+	preempt_disable();
-+	__smp_call_mask_cond(mask, func, info, cond_func, true, flags);
-+	preempt_enable();
-+}
-+EXPORT_SYMBOL(smp_call_mask_cond);
-+
-+/*
-+ * This function provides an alternative way of sending a cross call to
-+ * only one destination CPU with a caller pre-allocated private csd instead
-+ * of using the csd resource in the cross call mechanism. Thus it is the
-+ * callers' responsibity to setup and maintain its own private csd.
-+ *
-+ * Because of that, this function can be used from the contexts with disabled
-+ * interrupts.
-+ *
-+ * Parameters
-+ *
-+ * cpu:   Must be a positive value less than nr_cpu_id.
-+ * csd:   The private csd provided by the callers.
-+ *
-+ * Others: see smp_call().
-+ */
-+int smp_call_csd(int cpu, call_single_data_t *csd, unsigned int flags)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(smp_call_csd);
--- 
-2.27.0
-
+Applied, thanks!
