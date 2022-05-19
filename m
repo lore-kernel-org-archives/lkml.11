@@ -2,493 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C704C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244528AbiESTWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 15:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
+        id S244500AbiESTXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 15:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244468AbiESTWN (ORCPT
+        with ESMTP id S243893AbiESTXE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 15:22:13 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B946A063
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:21:55 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id r27so6800038iot.1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:21:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nj+QqHclxUIqJDH12ZbmYOuUJ7MLUZBfcDbT0ZurC6A=;
-        b=RV3Qj5QqIqAPU2EriXPFEahyIhE7qT7HCRIPKUm8O/731OS5eZFILrdI4fXpPaXtOQ
-         p4S+KZWogys3AQIDCZWSJXEpwdXVD7WJ+v9/SijWMhQhfrTzWBk2dCcjmFZ1rmXpG0A0
-         4ZGq+wcwcVAmcs9AU60tnIawPIriX1m8HE1Z4=
+        Thu, 19 May 2022 15:23:04 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865A3541AD;
+        Thu, 19 May 2022 12:23:03 -0700 (PDT)
+Received: by mail-ot1-f48.google.com with SMTP id r3-20020a9d5cc3000000b0060ae1789875so1832002oti.13;
+        Thu, 19 May 2022 12:23:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nj+QqHclxUIqJDH12ZbmYOuUJ7MLUZBfcDbT0ZurC6A=;
-        b=B9hInETbeV8A5nmKYV3xT1qmW7QA3zo5/X80yGfHitUBObXRC1UQeKs+Eg5B9wOT+a
-         gPpzbNnHV+Nwsef22HCv3O/RvJ++/x6wYM4O8GmofaoGQ1ruNfwUNT9ZFv6ONc3QZc7t
-         UmbAyfKsI0te7RveDoqBSsRirOiSJ3TAL2oPX1jNBkrKiBcIIJGoBGAYxOSuN5zF/GWf
-         cSclNFgC+rkETy5BBwdiYVQd7+9CZv9eq05vwiFOxh+6THIm5PKZniv8RQHDoPRfeggb
-         7jpDGARQt5F9ngeafRZsMoC6ivC/40gAaECP/F6uUdBTZV4U4HeOIESTLfIOXGLoQRA0
-         tjlg==
-X-Gm-Message-State: AOAM531eJ3IpAhVa/C7qTVzgjRETCjKRxLT855yEb5ONv6aoYxxggrff
-        rIs3moCi0EHTKVS4IiHHdYLy1A==
-X-Google-Smtp-Source: ABdhPJxxWB+DQtWoeLRjEZZECX11LDvTCuFnq1VfzayEuFudrk4HaGoeemi46yKk7Kj4PzDJmjHBpg==
-X-Received: by 2002:a02:9984:0:b0:32d:aeff:c592 with SMTP id a4-20020a029984000000b0032daeffc592mr3518394jal.46.1652988114561;
-        Thu, 19 May 2022 12:21:54 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id w69-20020a025d48000000b0032b3a781751sm125970jaa.21.2022.05.19.12.21.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 12:21:54 -0700 (PDT)
-Subject: Re: [PATCH V6 2/4] cpufreq: amd-pstate: Add test module for
- amd-pstate driver
-To:     Meng Li <li.meng@amd.com>, Huang Rui <ray.huang@amd.com>,
-        linux-pm@vger.kernel.org
-Cc:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Nathan Fontenot <nathan.fontenot@amd.com>,
-        Deepak Sharma <deepak.sharma@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Xiaojian Du <Xiaojian.Du@amd.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220519134737.359290-1-li.meng@amd.com>
- <20220519134737.359290-3-li.meng@amd.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <79a43bff-f3ce-43f5-6959-ae8bcb747a77@linuxfoundation.org>
-Date:   Thu, 19 May 2022 13:21:51 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20220519134737.359290-3-li.meng@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=orrXJpfL6g4XiiOjKR9Uk/mezcrEThgaAMQXh56e974=;
+        b=erhTU/50Mvx3uIC8gPjVe5Nq7uOfgdNekdVA3fcqrVtiZVCl7g4nQiP+GVIc9T995S
+         fpNLQv8B9qQs3BPq9kbp1g520bc0Ngexp+vWkin4uxNVJKOopO0LiKsx4MdHYRzzxfYA
+         gRfZ9i9wH//AxkoNpjb5J07Ikh3biC1NNopkHv9snD0dhDUnt8B65qhfZECNtjXSzc+N
+         LD/GeLZ5nnnE0E0oMYv9PCcartlaxRjqdc9138V712+o4QcvttSOninyivfAv9O2lEy7
+         ba6DRn6nc8S6uhpKvt39wkmV+HkX7eWv+OyAd9ipdJm0fznW4tPFIf6xaYNVN5dgDS9b
+         ARrw==
+X-Gm-Message-State: AOAM5309GyHVzbV7bE3nNiKpTjJIq+XzRkG9IBzazHtiXr5DiCDYmZbp
+        ME09Iy1SeYLlOZls6au9lkFZ13ayIQ==
+X-Google-Smtp-Source: ABdhPJxa3ixUPZOqLI2uyA1deo55I/uUmEcrt+gWB5r7hOqwqFoCHJGoLjwwQDY+i31j1fH/bgfP0A==
+X-Received: by 2002:a9d:4698:0:b0:60a:eb23:ff1 with SMTP id z24-20020a9d4698000000b0060aeb230ff1mr800653ote.24.1652988182743;
+        Thu, 19 May 2022 12:23:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id ed11-20020a056870b78b00b000f200873c09sm64952oab.27.2022.05.19.12.23.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 12:23:02 -0700 (PDT)
+Received: (nullmailer pid 2044188 invoked by uid 1000);
+        Thu, 19 May 2022 19:23:01 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Harsh Agarwal <quic_harshq@quicinc.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>, quic_pkondeti@quicinc.com,
+        quic_ppratap@quicinc.com, linux-usb@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+In-Reply-To: <1652963695-10109-2-git-send-email-quic_harshq@quicinc.com>
+References: <1652963695-10109-1-git-send-email-quic_harshq@quicinc.com> <1652963695-10109-2-git-send-email-quic_harshq@quicinc.com>
+Subject: Re: [RFC 1/2] dt-bindings: usb: dwc3: Add support for multiport related properties
+Date:   Thu, 19 May 2022 14:23:01 -0500
+Message-Id: <1652988181.087976.2044186.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/22 7:47 AM, Meng Li wrote:
-> Add amd-pstate-ut module, which is conceptually out-of-tree module
-> and provides ways for selftests/amd-pstate driver to test various
-> kernel module-related functionality. This module will be expected by
-> some of selftests to be present and loaded.
+On Thu, 19 May 2022 18:04:54 +0530, Harsh Agarwal wrote:
+> Added support for multiport, mport, num-ssphy and num-hsphy
+> properties. These properties are used to support devices having
+> a multiport controller.
 > 
-> Signed-off-by: Meng Li <li.meng@amd.com>
-> Acked-by: Huang Rui <ray.huang@amd.com>
+> Signed-off-by: Harsh Agarwal <quic_harshq@quicinc.com>
 > ---
->   drivers/cpufreq/Kconfig.x86     |   6 +
->   drivers/cpufreq/Makefile        |   1 +
->   drivers/cpufreq/amd-pstate-ut.c | 278 ++++++++++++++++++++++++++++++++
->   3 files changed, 285 insertions(+)
->   create mode 100644 drivers/cpufreq/amd-pstate-ut.c
-> 
-> diff --git a/drivers/cpufreq/Kconfig.x86 b/drivers/cpufreq/Kconfig.x86
-> index 55516043b656..37ba282cd156 100644
-> --- a/drivers/cpufreq/Kconfig.x86
-> +++ b/drivers/cpufreq/Kconfig.x86
-> @@ -51,6 +51,12 @@ config X86_AMD_PSTATE
->   
->   	  If in doubt, say N.
->   
-> +config X86_AMD_PSTATE_UT
-> +	tristate "selftest for AMD Processor P-State driver"
-> +	depends on X86_AMD_PSTATE
-
-Please specify default value
-
-> +	help
-> +	  This kernel module is used for testing. It's safe to say M here.
-> +
->   config X86_ACPI_CPUFREQ
->   	tristate "ACPI Processor P-States driver"
->   	depends on ACPI_PROCESSOR
-> diff --git a/drivers/cpufreq/Makefile b/drivers/cpufreq/Makefile
-> index 285de70af877..49b98c62c5af 100644
-> --- a/drivers/cpufreq/Makefile
-> +++ b/drivers/cpufreq/Makefile
-> @@ -30,6 +30,7 @@ amd_pstate-y				:= amd-pstate.o amd-pstate-trace.o
->   
->   obj-$(CONFIG_X86_ACPI_CPUFREQ)		+= acpi-cpufreq.o
->   obj-$(CONFIG_X86_AMD_PSTATE)		+= amd_pstate.o
-> +obj-$(CONFIG_X86_AMD_PSTATE_UT)		+= amd-pstate-ut.o
->   obj-$(CONFIG_X86_POWERNOW_K8)		+= powernow-k8.o
->   obj-$(CONFIG_X86_PCC_CPUFREQ)		+= pcc-cpufreq.o
->   obj-$(CONFIG_X86_POWERNOW_K6)		+= powernow-k6.o
-> diff --git a/drivers/cpufreq/amd-pstate-ut.c b/drivers/cpufreq/amd-pstate-ut.c
-> new file mode 100644
-> index 000000000000..a510355b804e
-> --- /dev/null
-> +++ b/drivers/cpufreq/amd-pstate-ut.c
-> @@ -0,0 +1,278 @@
-> +// SPDX-License-Identifier: GPL-1.0-or-later
-> +/*
-> + * AMD Processor P-state Frequency Driver Unit Test
-> + *
-> + * Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
-> + *
-> + * Author: Meng Li <li.meng@amd.com>
-> + *
-> + * The AMD P-State Unit Test is a test module for testing the amd-pstate
-> + * driver. 1) It can help all users to verify their processor support
-> + * (SBIOS/Firmware or Hardware). 2) Kernel can have a basic function
-> + * test to avoid the kernel regression during the update. 3) We can
-> + * introduce more functional or performance tests to align the result
-> + * together, it will benefit power and performance scale optimization.
-> + *
-> + * At present, it only implements the basic framework and some simple
-> + * test cases. Next, 1) we will add a rst document. 2) we will add more
-> + * test cases to improve the depth and coverage of the test.
-> + */
-> +
-
-Rephrase this to say:
-
-This driver implements basic framework with plnas to enhance it with additional
-test cases to improve the depth and coverage of the test.
-
-Also you have the .rst in this patch series? Does the documentation comment
-still valid?
-
-> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> +
-> +#include "../tools/testing/selftests/kselftest_module.h"
-
-Remove this header include
-
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/moduleparam.h>
-> +#include <linux/fs.h>
-> +#include <linux/amd-pstate.h>
-> +
-> +#include <acpi/cppc_acpi.h>
-> +
-> +/*
-> + * Abbreviations:
-> + * aput: used as a shortform for AMD P-State unit test.
-> + * It helps to keep variable names smaller, simpler
-> + */
-> +
-> +KSTM_MODULE_GLOBALS();
-> +
-> +/*
-> + * Kernel module for testing the AMD P-State unit test
-> + */
-> +enum aput_result {
-
-Is "aput" short for amd_pstate_unit_test? Change "aput" to
-amd_pstate_ut instead. aput is rather confusing.
-
-Same comment file wide on all function names and structure names.
-
-
-> +	APUT_RESULT_PASS,
-> +	APUT_RESULT_FAIL,
-> +	MAX_APUT_RESULT,
-> +};
-> +
-> +struct aput_struct {
-> +	const char *name;
-> +	void (*func)(u32 index);
-> +	enum aput_result result;
-> +};
-> +
-> +static void aput_acpi_cpc(u32 index);
-> +static void aput_check_enabled(u32 index);
-> +static void aput_check_perf(u32 index);
-> +static void aput_check_freq(u32 index);
-> +
-> +static struct aput_struct aput_cases[] = {
-> +	{"acpi_cpc_valid",   aput_acpi_cpc         },
-> +	{"check_enabled",    aput_check_enabled    },
-> +	{"check_perf",       aput_check_perf       },
-> +	{"check_freq",       aput_check_freq       }
-> +};
-
-Add prefixes to these strings - amd_pstate_ut for example - it will
-be easier for users to parse the test output.
-
-> +
-> +static bool get_shared_mem(void)
-> +{
-> +	bool result = false;
-> +	char buf[5] = {0};
-> +	struct file *filp = NULL;
-> +	loff_t pos = 0;
-> +	ssize_t ret;
-> +
-> +	if (!boot_cpu_has(X86_FEATURE_CPPC)) {
-> +		filp = filp_open("/sys/module/amd_pstate/parameters/shared_mem", FMODE_PREAD, 0);
-
-Please add a define for this file and print this in error messages below.
-  
-> +		if (IS_ERR(filp))
-> +			pr_err("%s Open param file fail!\n", __func__);
-
-Add filename to the error message.
-
-> +		else {
-> +			ret = kernel_read(filp, &buf, sizeof(buf), &pos);
-> +			if (ret < 0)
-> +				pr_err("%s ret=%ld unable to read from param file!\n",
-> +					__func__, ret);
-
-Same here.
-
-> +			filp_close(filp, NULL);
-> +		}
-> +
-> +		if ('Y' == *buf)
-> +			result = true;
-> +	}
-> +
-> +	return result;
-> +}
-> +
-> +static void aput_acpi_cpc(u32 index)
-
-What does cpc stand for? Make the name descriptive to it is easeir to
-understand. Add a comment to say what this does.
-
-
-> +{
-> +	if (acpi_cpc_valid())
-> +		aput_cases[index].result = APUT_RESULT_PASS;
-> +	else
-> +		aput_cases[index].result = APUT_RESULT_FAIL;
-> +}
-> +
-> +static void aput_pstate_enable(u32 index)
-> +{
-> +	int ret = 0;
-> +	u64 cppc_enable = 0;
-> +
-> +	ret = rdmsrl_safe(MSR_AMD_CPPC_ENABLE, &cppc_enable);
-> +	if (ret) {
-> +		aput_cases[index].result = APUT_RESULT_FAIL;
-> +		pr_err("%s rdmsrl_safe MSR_AMD_CPPC_ENABLE ret=%d is error!\n", __func__, ret);
-
-Make this message to say what failed - did pstate enable fail?
-Just say that.  "is" isn't necessary in this setence
-
-> +		return;
-> +	}
-> +	if (cppc_enable)
-> +		aput_cases[index].result = APUT_RESULT_PASS;
-> +	else
-> +		aput_cases[index].result = APUT_RESULT_FAIL;
-> +}
-> +
-> +/*
-> + *Check if enabled amd pstate
-
-Change this to "check if amd pstate is enabled"
-
-> + */
-> +static void aput_check_enabled(u32 index)
-> +{
-> +	if (get_shared_mem())
-> +		aput_cases[index].result = APUT_RESULT_PASS;
-> +	else
-> +		aput_pstate_enable(index);
-> +}
-> +
-> +/*
-> + * Check if the each performance values are reasonable.
-
-Check if performance values are reasonable
-
-> + * highest_perf >= nominal_perf > lowest_nonlinear_perf > lowest_perf > 0
-> + */
-> +static void aput_check_perf(u32 index)
-> +{
-> +	int cpu = 0, ret = 0;
-> +	u32 highest_perf = 0, nominal_perf = 0, lowest_nonlinear_perf = 0, lowest_perf = 0;
-> +	u64 cap1 = 0;
-> +	struct cppc_perf_caps cppc_perf;
-> +	struct cpufreq_policy *policy = NULL;
-> +	struct amd_cpudata *cpudata = NULL;
-> +
-> +	highest_perf = amd_get_highest_perf();
-> +
-> +	for_each_possible_cpu(cpu) {
-> +		policy = cpufreq_cpu_get(cpu);
-> +		if (!policy)
-> +			break;
-> +		cpudata = policy->driver_data;
-> +
-> +		if (get_shared_mem()) {
-> +			ret = cppc_get_perf_caps(cpu, &cppc_perf);
-> +			if (ret) {
-> +				aput_cases[index].result = APUT_RESULT_FAIL;
-> +				pr_err("%s cppc_get_perf_caps ret=%d is error!\n", __func__, ret);
-
-Same here - say what failed - the return value is relevant, but does't give
-the right information. "is" isn't necessary in this setence
-
-> +				return;
-> +			}
-> +
-> +			nominal_perf = cppc_perf.nominal_perf;
-> +			lowest_nonlinear_perf = cppc_perf.lowest_nonlinear_perf;
-> +			lowest_perf = cppc_perf.lowest_perf;
-> +		} else {
-> +			ret = rdmsrl_safe_on_cpu(cpu, MSR_AMD_CPPC_CAP1, &cap1);
-> +			if (ret) {
-> +				aput_cases[index].result = APUT_RESULT_FAIL;
-> +				pr_err("%s read CPPC_CAP1 ret=%d is error!\n", __func__, ret);
-
-Same here - "is" isn't necessary in this setence
-
-> +				return;
-> +			}
-> +
-> +			nominal_perf = AMD_CPPC_NOMINAL_PERF(cap1);
-> +			lowest_nonlinear_perf = AMD_CPPC_LOWNONLIN_PERF(cap1);
-> +			lowest_perf = AMD_CPPC_LOWEST_PERF(cap1);
-> +		}
-> +
-> +		if ((highest_perf != READ_ONCE(cpudata->highest_perf)) ||
-> +			(nominal_perf != READ_ONCE(cpudata->nominal_perf)) ||
-> +			(lowest_nonlinear_perf != READ_ONCE(cpudata->lowest_nonlinear_perf)) ||
-> +			(lowest_perf != READ_ONCE(cpudata->lowest_perf))) {
-> +			aput_cases[index].result = APUT_RESULT_FAIL;
-> +			pr_err("%s cpu%d highest=%d %d nominal=%d %d lowest_nonlinear=%d %d lowest=%d %d are not equal!\n",
-> +				__func__, cpu, highest_perf, cpudata->highest_perf,
-> +				nominal_perf, cpudata->nominal_perf,
-> +				lowest_nonlinear_perf, cpudata->lowest_nonlinear_perf,
-> +				lowest_perf, cpudata->lowest_perf);
-
-Okay - are we testing for these to be equal. Say that in the message that they
-should be equal.
-
-> +			return;
-> +		}
-> +
-> +		if (!((highest_perf >= nominal_perf) &&
-> +			(nominal_perf > lowest_nonlinear_perf) &&
-> +			(lowest_nonlinear_perf > lowest_perf) &&
-> +			(lowest_perf > 0))) {
-> +			aput_cases[index].result = APUT_RESULT_FAIL;
-> +			pr_err("%s cpu%d highest=%d nominal=%d lowest_nonlinear=%d lowest=%d have error!\n",
-> +				__func__, cpu, highest_perf, nominal_perf,
-> +				lowest_nonlinear_perf, lowest_perf);
-
-What does this tell user - what does "have error" mean?
-
-> +			return;
-> +		}
-> +	}
-> +
-> +	aput_cases[index].result = APUT_RESULT_PASS;
-> +}
-> +
-> +/*
-> + * Check if the each frequency values are reasonable.
-> + * max_freq >= nominal_freq > lowest_nonlinear_freq > min_freq > 0
-> + * check max freq when set support boost mode.
-> + */
-> +static void aput_check_freq(u32 index)
-> +{
-> +	int cpu = 0;
-> +	struct cpufreq_policy *policy = NULL;
-> +	struct amd_cpudata *cpudata = NULL;
-> +
-> +	for_each_possible_cpu(cpu) {
-> +		policy = cpufreq_cpu_get(cpu);
-> +		if (!policy)
-> +			break;
-> +		cpudata = policy->driver_data;
-> +
-> +		if (!((cpudata->max_freq >= cpudata->nominal_freq) &&
-> +			(cpudata->nominal_freq > cpudata->lowest_nonlinear_freq) &&
-> +			(cpudata->lowest_nonlinear_freq > cpudata->min_freq) &&
-> +			(cpudata->min_freq > 0))) {
-> +			aput_cases[index].result = APUT_RESULT_FAIL;
-> +			pr_err("%s cpu%d max=%d nominal=%d lowest_nonlinear=%d min=%d have error!\n",
-> +				__func__, cpu, cpudata->max_freq, cpudata->nominal_freq,
-> +				cpudata->lowest_nonlinear_freq, cpudata->min_freq);
-
-Same comment as above about the clearity of the error message - what does
-"have error" mean
-
-> +			return;
-> +		}
-> +
-> +		if (cpudata->min_freq != policy->min) {
-> +			aput_cases[index].result = APUT_RESULT_FAIL;
-> +			pr_err("%s cpu%d cpudata_min_freq=%d policy_min=%d have error!\n",
-> +				__func__, cpu, cpudata->min_freq, policy->min);
-
-Same as above.
-
-> +			return;
-> +		}
-> +
-> +		if (cpudata->boost_supported) {
-> +			if ((policy->max == cpudata->max_freq) ||
-> +					(policy->max == cpudata->nominal_freq))
-> +				aput_cases[index].result = APUT_RESULT_PASS;
-> +			else {
-> +				aput_cases[index].result = APUT_RESULT_FAIL;
-> +				pr_err("%s cpu%d policy_max=%d cpu_max=%d cpu_nominal=%d have error!\n",
-> +					__func__, cpu, policy->max, cpudata->max_freq,
-> +					cpudata->nominal_freq);
-> +				return;
-> +			}
-> +		} else {
-> +			aput_cases[index].result = APUT_RESULT_FAIL;
-> +			pr_err("%s cpu%d not support boost!\n", __func__, cpu);
-
-cpu doesn't support boost?
-
-> +			return;
-> +		}
-> +	}
-> +}
-> +
-> +static void aput_do_test_case(void)
-> +{
-> +	u32 i = 0, arr_size = ARRAY_SIZE(aput_cases);
-> +
-> +	for (i = 0; i < arr_size; i++) {
-> +		pr_info("****** Begin %-5d\t %-20s\t ******\n", i+1, aput_cases[i].name);
-
-This is where adding prefix helps improving the test report.
-
-> +		aput_cases[i].func(i);
-> +		KSTM_CHECK_ZERO(aput_cases[i].result);
-> +		pr_info("****** End   %-5d\t %-20s\t ******\n", i+1, aput_cases[i].name);
-
-This is where adding prefix helps improving the test report.
-
-> +	}
-> +}
-> +
-> +static void __init selftest(void)
-
-Change this to amd_pstate_ut_selftest
-
-> +{
-> +	aput_do_test_case();
-> +}
-> +
-> +KSTM_MODULE_LOADERS(amd_pstate_ut);
-> +MODULE_AUTHOR("Meng Li <li.meng@amd.com>");
-> +MODULE_DESCRIPTION("Unit test for AMD P-state driver");
-> +MODULE_LICENSE("GPL");
+>  .../devicetree/bindings/usb/snps,dwc3.yaml         | 55 ++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
 > 
 
-thanks,
--- Shuah
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:367:8: [warning] wrong indentation: expected 6 but found 7 (indentation)
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:368:10: [warning] wrong indentation: expected 11 but found 9 (indentation)
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:370:11: [warning] wrong indentation: expected 11 but found 10 (indentation)
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:409:1: [error] syntax error: found character '\t' that cannot start any token (syntax)
+
+dtschema/dtc warnings/errors:
+make[1]: *** Deleting file 'Documentation/devicetree/bindings/usb/snps,dwc3.example.dts'
+Traceback (most recent call last):
+  File "/usr/local/bin/dt-extract-example", line 52, in <module>
+    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
+  File "/usr/local/lib/python3.10/dist-packages/ruamel/yaml/main.py", line 434, in load
+    return constructor.get_single_data()
+  File "/usr/local/lib/python3.10/dist-packages/ruamel/yaml/constructor.py", line 119, in get_single_data
+    node = self.composer.get_single_node()
+  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
+  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 773, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 852, in _ruamel_yaml.CParser._compose_sequence_node
+  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
+ruamel.yaml.scanner.ScannerError: while scanning a block scalar
+  in "<unicode string>", line 401, column 5
+found a tab character where an indentation space is expected
+  in "<unicode string>", line 409, column 1
+make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/usb/snps,dwc3.example.dts] Error 1
+make[1]: *** Waiting for unfinished jobs....
+./Documentation/devicetree/bindings/usb/dwc3-xilinx.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+./Documentation/devicetree/bindings/usb/snps,dwc3.yaml:  while scanning a block scalar
+  in "<unicode string>", line 401, column 5
+found a tab character where an indentation space is expected
+  in "<unicode string>", line 409, column 1
+./Documentation/devicetree/bindings/usb/amlogic,meson-g12a-usb-ctrl.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+./Documentation/devicetree/bindings/usb/samsung,exynos-dwc3.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+./Documentation/devicetree/bindings/usb/qcom,dwc3.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+./Documentation/devicetree/bindings/usb/fsl,imx8mp-dwc3.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+./Documentation/devicetree/bindings/usb/ti,keystone-dwc3.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+./Documentation/devicetree/bindings/usb/intel,keembay-dwc3.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+./Documentation/devicetree/bindings/usb/rockchip,dwc3.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/usb/snps,dwc3.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/snps,dwc3.yaml: ignoring, error parsing file
+make: *** [Makefile:1401: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
