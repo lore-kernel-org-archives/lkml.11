@@ -2,272 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18606C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 05:46:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 05:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234172AbiESFqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 01:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
+        id S233981AbiESFqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 01:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234259AbiESFp5 (ORCPT
+        with ESMTP id S233540AbiESFqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 01:45:57 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BC72B1A6;
-        Wed, 18 May 2022 22:45:46 -0700 (PDT)
+        Thu, 19 May 2022 01:46:47 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFB4101F4
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:46:46 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IMImiK007814;
+        Thu, 19 May 2022 05:46:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=TqjdaCZOb4lWpVsNnfQ/6xOy/2gqwj8DhfENbswVA3U=;
+ b=TJ+uB2LhugRXzu9szx2kpR7pRlmQHCgbNDPgMqeKuwNRxuOjgHXsBqgpz5v5OEL3FzFY
+ UKNs1sJvXrzk/K5KB04/4rv70zIPnJDXaeXUTW90ZrIB/GdjDewa5ghGxjaUIzOu9rD3
+ dXC/K5YIGJZzOUqH7MAR0kvZXmc/Tf9KxtjlejpQV9TMpXA1QdO2fDnCdSyqaD99HTwa
+ iPZGg89I/vSGB44tt3ncS/PFnA8Z09fcY/nS2hxOlHgPvqH6N4x99+XtSg7Wc9GbVcSy
+ X87JGXKqWnzmWfKHyePmk1wg0ZtoUeQl0R7C8SXG8fPR8Sy2sNJELSDZ50sY6Pa2ngoD MA== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g22ucawdw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 19 May 2022 05:46:40 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24J5Q2rf033350;
+        Thu, 19 May 2022 05:46:39 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2045.outbound.protection.outlook.com [104.47.66.45])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g22vaeu6m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 19 May 2022 05:46:39 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sqts3c31z+TDUmd70KoBsvrWLpUkdGnIh/lvIUE0+FZ+AB0/9X/SGeJBNXuqQ7yDF+V7dqp2rCTfWsVDIAkWi4yc82pw6eljLDMyVCggHxZjeddSzougL6B0n3UEjIdaqlu7IfthKf2iPq1VGEsZQUY1Arv22jlSwwstpO7/PIeOuueQUtbXdsE4zfDmLwOA2d9dFZIn+7RP0iX+H3hxWfiTeCzWAm9tAJd4hOik7tgxJl7Kxr5YP0C7FfrOSrudmbcL/NLEqxGlvMS6UwO2gZ85x2SdpU4EC2q5ZS7wL0te6VA+LYLuPNOaDEQ1ocozwNT2ETTEOTKKyfNnTtV5FQ==
+ b=cKvjq8deANBBZphwc3WWOs8qbQgcDJ1W/KZMVnnprIaffvfQKRj2Et5eOZ24Ekv9C+UeVJ7tSxpdZoxm9GHQrJt3YjAShCetuU4f9jI1a8nHRsGERUFmPvQS8LtMVwZ3EUb2CF9gTHau1aVNMpIsk3ZqWY9mKY5eCtcIC9t9WL0NMO/nA5zDq96nhf515jiXhk1x36gb9roABnlYBSCe19HgGWUvOa2Ad21peLrTkJLDURFNJMmyuDNlj1San1UWafQDi0Mq2ZbfVYlObL6dxtsNfAuokqw56jjkeBsco4tPKz3WI7HF/pBrPtr8Cwf7Uh/ael9oVk1L8JFcqoBDtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qcbfvJuStXNM/IGf3CTHyuTmWG2KevNzRLySONaUpeQ=;
- b=jhjJd0BIVE/Ezx4GBWz6X/9lfVL1uipVxN/Vo8maggjFJHO/c3eQF/iRT+EZTIHDizoaKsyDJ6JarFZvISqNSAIg+CRohV78jgF7MIfsj4MDcfI/PqFOJvVpAzvbS5Ofc+Fqk1Z9ch/lescFk8Auh0488nThi77XHEm6Z/CrCO+oDfeh23bjIJRRzdDlJ3DRdvpz8Hijhi5ExDWTFLyP33rMyDLrHmuaKfHUt0HQbL4Kl6HasKtHxcXbTAmClC5ZsREHrz/cjFKvkaqCqi6FWSY76PaPB4nqzzGlE7gjRBtB+FR6mYVnaWt2YKcvpvqBRagNn7vlXVDd3j5KvcObxg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=TqjdaCZOb4lWpVsNnfQ/6xOy/2gqwj8DhfENbswVA3U=;
+ b=LhDcLvq0bNVyva5sNmuyHvuTAxw3eRys+6Pd4RPQokHYdfaDkVKNwLfmfyA4NXXPMdQqC60dN52zfxofCxOszt924Lyp19U7uFurhjegbIpCCAX/2iCjPLU6BzgKVfNwG/k9n1lu05NNR76y0L2rmNj4Zd9UeYh1QiXOsJX6RK98SHNAwBUiZIkHphQBdSvuORTbhDfi3zWjDZCI267whF5WJD2CzmtRJ/FptinZzrnljunbWNXD1iQklu321q9HDpwWalfmtZdCjvUg0/y3dMNlEbYf21WfKpuUiMbt8KGV4GvO+HAI2w6wlmeIDsB9tcB1dK0lc7PSwBk7MFNpfw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qcbfvJuStXNM/IGf3CTHyuTmWG2KevNzRLySONaUpeQ=;
- b=Jx3wCMlnLtLXrt9fz4tklNnBOlLlUIkfSJCtdl9QCMMlHejpVIhsOV/gZuhL90rJhh5/Qt6+bPbgFRtuzz2FaSclib9C7zdYNTzTl0PTz4ZJKmvYNtLtw1u0bhQnVBpdzlW31dcQlR81L54Jq/+sMptDL/4KSjvfNH7DiXvt9us=
-Received: from MW4PR03CA0009.namprd03.prod.outlook.com (2603:10b6:303:8f::14)
- by SJ1PR12MB6241.namprd12.prod.outlook.com (2603:10b6:a03:458::15) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=TqjdaCZOb4lWpVsNnfQ/6xOy/2gqwj8DhfENbswVA3U=;
+ b=Cjboe3oIBgnF5KDxzJarJQ2STA4oz03gkmeLTwEhsLo3O/ai3WqIg5gVjq+Rj/a1oYN46IkLVUuY37A+tgfQ1Rn3DIG/apUa+bahV2gRQo8QaSQafCJvEfGhXasjWAeUyoi/E/guPhA0DWa4bXy0yYS87w9ijI9CNJ0YbHWiTNY=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by CY4PR10MB1543.namprd10.prod.outlook.com
+ (2603:10b6:903:2e::10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Thu, 19 May
- 2022 05:45:43 +0000
-Received: from CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8f:cafe::77) by MW4PR03CA0009.outlook.office365.com
- (2603:10b6:303:8f::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14 via Frontend
- Transport; Thu, 19 May 2022 05:45:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT033.mail.protection.outlook.com (10.13.174.247) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5273.14 via Frontend Transport; Thu, 19 May 2022 05:45:43 +0000
-Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 00:45:15 -0500
-From:   Ravi Bangoria <ravi.bangoria@amd.com>
-To:     <acme@kernel.org>
-CC:     <ravi.bangoria@amd.com>, <peterz@infradead.org>,
-        <rrichter@amd.com>, <mingo@redhat.com>, <mark.rutland@arm.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <irogers@google.com>, <james.clark@arm.com>,
-        <leo.yan@linaro.org>, <kan.liang@linux.intel.com>,
-        <ak@linux.intel.com>, <eranian@google.com>,
-        <like.xu.linux@gmail.com>, <x86@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
-        <kim.phillips@amd.com>, <santosh.shukla@amd.com>
-Subject: [PATCH v3 5/5] perf script ibs: Support new IBS bits in raw trace dump
-Date:   Thu, 19 May 2022 11:13:55 +0530
-Message-ID: <20220519054355.477-6-ravi.bangoria@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519054355.477-1-ravi.bangoria@amd.com>
-References: <20220519054355.477-1-ravi.bangoria@amd.com>
+ 2022 05:46:37 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5273.014; Thu, 19 May 2022
+ 05:46:37 +0000
+Date:   Thu, 19 May 2022 08:46:02 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     gregkh@linuxfoundation.org, Larry.Finger@lwfinger.net,
+        phil@philpotter.co.uk, straube.linux@gmail.com,
+        fmdefrancesco@gmail.com, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH 4/4] MAINTAINERS: add myself as r8188eu reviewer
+Message-ID: <20220519054602.GV4009@kadam>
+References: <cover.1652911343.git.paskripkin@gmail.com>
+ <42559eab6dd1a69c3fb11ee6ed1f33337041817d.1652911343.git.paskripkin@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <42559eab6dd1a69c3fb11ee6ed1f33337041817d.1652911343.git.paskripkin@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0018.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4c::23)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b3d9d55c-8579-4279-9e72-08da395ad08a
-X-MS-TrafficTypeDiagnostic: SJ1PR12MB6241:EE_
-X-Microsoft-Antispam-PRVS: <SJ1PR12MB6241C7808994F0590F90BD3AE0D09@SJ1PR12MB6241.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: ebb54a76-a12b-4ec5-3515-08da395aefe5
+X-MS-TrafficTypeDiagnostic: CY4PR10MB1543:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR10MB1543667255D23A133DCB99828ED09@CY4PR10MB1543.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6hSr9traPjfDvWudqnsCijwoiF6AOYK5EIkESw2B9PsWKN0zoda00uS301TuST9Ba7Tf/DKMZOuXDCRUjIMzLofGCCkE1kwt5lkBrvjMkSSKlLk9lhxPgeWHNGysRYHGm7y+S4mXUIzsG49u0IB/mXOQbBEKYeob4BgIv+OVv9nabkecQErEuPJKLfKmug/ZQVTo6c2B3oIyd16hNPo6Hu/co4e/cZAXL/0WBFnP60qxbvU27W0flZ4KaodcEuhL13sKo5jcvg+frAFMOPAQiZb3G9gT8Lcuk66I1rJ1Xw55GfuF7d+gAK3fAuzDFPCM6Vz9iCnnaClVJWTF5tTJYLW64Qr0VGES2CPj8bVa+WSlQf256sp670+Ymo2E90/fb7pf1O/uUdBjVVOgmNbRvgw6npN3cYyAOL0lW4a941VVM43g8exMo8C9Pf8Z1Q1qOKpzExQauzougLIZ5PormFKsOYEbIOuYW4cnIZ/8JwBmjwhER2EeBGC0aqkHBbpjXkuJ/v03Fsmvc+tY3atKwMwjxpSemDfFw+3WezsL4nfqGQEPQ4RxHF/lDLM5jnp0n7onCsU9hSXmep1Ls/B2w7IJTmMojTSEDWTZtRWJJ+Sc0HpMvkfiNyJNk3tu79j+3E61Bm9TOH+HTCys4YG2ZCL49EnkiuM469nY6ctc9bsbsWlrB1GGQ9Z+Ux4hDGOO262RGlqoApWk+G+MggSGRQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(4326008)(2616005)(2906002)(36756003)(6916009)(1076003)(7696005)(70586007)(70206006)(54906003)(508600001)(81166007)(82310400005)(36860700001)(356005)(8676002)(6666004)(40460700003)(44832011)(7416002)(5660300002)(26005)(186003)(47076005)(426003)(336012)(86362001)(83380400001)(316002)(8936002)(16526019)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 05:45:43.3056
+X-Microsoft-Antispam-Message-Info: cEst3TpsZMMOLIgQMbTZpMBptlh1cHnldxgHugwzkviTPWvSE99aSmSsWGyt9W73TSs6lJ4cRXmJ6QgE5OfHwB0+n3ld5camRCcVqueXK3nFyhRaQau3YWPQa3QkE24S6yF1NRZFHZ9hYcKvRzVyCyzvEfBv4E1wwqeeYYe3Z8nroqAXJzNBS13t5S1NNi6Pu2EpqNogkQSi2Rmu9XO5/uneaUDKi0N+c4JUPyKJU8SwJxtWGa+/ZwLZKIVnHeq7ouBgasCxyh/7rNPQF0LXfMPK97sGEBpBjGDLFZSLqmt0a22vBc0X3aVdoZ8TYOgr0gylfT+786mdscoqkKJSaz58dw3MBiNtdpBj+uZcBK/3XjB42MDZjxz8iuvZNJ2R6UMwSHD8wyUpLrlemogiTiKQxFCN1O8zj1yXhIq3nUUpuvFpiLydBhby26i+UvW2nsn2VamOVUBaho/Jn3w3x01/iuZpg0Sg6rVWtZ9oIZAHZtG280YGfDWTfVcxi/BhKc5lFTyG5eDduRflpDY612UbPVx1g0zNUHK7ppsQDdXZRWRejrO4LfhCoXexRQUZKnDJDtdS1y9+pVrinEQ1HHH0MjkWSmHdZ05satQKQjMD3gNrhidzDHPkVuqybB5n7CLHYFf4CHF+Ny5JyKgJ+ibaLr49bqfByw+q0SiVobhsvp4MvfeD+HyexZuMkI7mpNNSgNSQTn7iHcdq+phPqw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(6486002)(316002)(186003)(6512007)(52116002)(8936002)(33716001)(66476007)(8676002)(66556008)(4326008)(86362001)(4744005)(33656002)(1076003)(26005)(6916009)(6666004)(9686003)(508600001)(38100700002)(38350700002)(6506007)(5660300002)(2906002)(44832011)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2HtuIOqN073bsFp5XPAp36i7m3D18kmeWHIaprzpk/MdD8Emq4TbAHvbPEOb?=
+ =?us-ascii?Q?GiIuUpKavBZsrvAVqzHCf9PAXLXtypy6dQP+XeKfrVLq4DfONez9c2VWbrH7?=
+ =?us-ascii?Q?R0JhXC6oIKpQkp6zTwFqDfauCACsc9yVdwyGY7if0FyCFydQiuDMX1DEgHb7?=
+ =?us-ascii?Q?FgelXFnhn2EJPDq+0Iwl5qDFZo30ZwwFUxbgCmwibzPmaNTQGH4ufesnddIR?=
+ =?us-ascii?Q?APtbjcPUG9QgZhZWq32iVorddZsaOyo5d7QgPuzm9AKrxIkGS+R2XaFiJJ35?=
+ =?us-ascii?Q?QuNGDHALp9ukI+T+80omVtJ3a9SiyqpoVNA8B699RAq2cRTisGcm0vN7qOj3?=
+ =?us-ascii?Q?4HvCJpj37hffIuzjZ7DkE3L/Q+mDkVX4ycCgkEe/KLwxENQXU3kGtM+8Depv?=
+ =?us-ascii?Q?lYM2NSE4pFvpf1FA3pTyk3TJvbTSO1dxx5g0ERUOHtVRXnPKUj5pOF5QvMoB?=
+ =?us-ascii?Q?TlMjV2tBaXzTv8amoN7t0Um84mD6Nj+ZqeHBhPU6d3lYvBWlOOAffxK8tvtQ?=
+ =?us-ascii?Q?TN/+PLlA1EJgsw+5BEaYvgjV8r/yttMthwPVFse3P163eO7LbtvjgvIlHpY4?=
+ =?us-ascii?Q?eBzR1WSiGUs3cU0qkjQJtEshNGMk7jhkmSvZx5jckDS+RvdO39e2bgAhucRe?=
+ =?us-ascii?Q?NaG1R6r8nntkTZhkDRohHNhhQWctLquTy011TCGdZheHDrXGVOiX0wzqWkp4?=
+ =?us-ascii?Q?8HGu9XpLvOqGhNc/g6I4AB94qP19pXkCj2iR/NNF6FUm8MF/XY7uGUIrLRmp?=
+ =?us-ascii?Q?cRC8nW/1KwtiitTrS141AsoVBlqzcl2TMzK3MTJCGI+d7dnASqt5frRnfduL?=
+ =?us-ascii?Q?d5HZCXMBfSvgJV9ERo4Aic/d7s6SEHtazdMoeqdShXsEKh90h5HPLYZyGb1U?=
+ =?us-ascii?Q?hsBtpujWarLjswZytYm6djX4j+hY3l6r5U7zSHLMDJUiNZHs1U1PbAuMpV0o?=
+ =?us-ascii?Q?tOlFXZKOmkQDHY7QOakTNkppYYvIQyIzOJQc1IZTMY2QfldrEbxpRGXU7SHs?=
+ =?us-ascii?Q?lYlnRsvhOjjEMhj+MoouwEBAl5Ti6rWKooQovJGU2diLfr86Yxusey8YTM1F?=
+ =?us-ascii?Q?uiht+/ZRldDJlFcH+FXuA2Dn7p9K0j0eoBIzzDT+tHQAj7Lht45GS7MtVu68?=
+ =?us-ascii?Q?ZbOd9vJJziWf8zwsC8jWRz5wDzYQGaXzikBsgXl5A6d9KAnLEWHdRze2eXNj?=
+ =?us-ascii?Q?Ku8QY6D1/QDIufSXiKMe/JjJv/BS4h1ahAV7TG9cB+DLgjAAwqRGgE/jkHvP?=
+ =?us-ascii?Q?N7asqZ7PzbTwBMGpzFb7pqRua5pS/Jpd8OSJJzzBjesyal/gqJcbHVuy5FQV?=
+ =?us-ascii?Q?EhHGDzD+fpbjg9e/uQ/ytghSKkgJvx6OC/UrPXruLvKOhj1gOjLayOQtxI1b?=
+ =?us-ascii?Q?cs7sU1ZEjidhYr29AtMfxvEuwg3Pa7Iyp98l2XJupFfD2DzJ3RYckK6QY4y6?=
+ =?us-ascii?Q?wJPz4HM8kIVRt5L53NC+kZp6z383keJZxXJTcB3Iqyqs8+tzWGw/LzbmqTJ4?=
+ =?us-ascii?Q?IQR4aPx9aBgy7d2iumrxoR072QcY6AvArF1R84PcBYGBzsKBNlRPCOHmpxnv?=
+ =?us-ascii?Q?A+yCPPwCWbZQ5rtZ0lvy31Cdtx0dYaKz3hFIfph6dzaofL1VrQlGWI7X8yRc?=
+ =?us-ascii?Q?iifJq2OM+s+OsC+z5Ub0jQW0fhgFr3PR7VNUGyOAHPd4b8DD/mBV0X83wXV7?=
+ =?us-ascii?Q?SdxJf3It7ZWTaYUpp3AV/tcybNaks5+kMMmpwJb3RT74q8Hb77VJjc50wEcS?=
+ =?us-ascii?Q?r/V8YiMQHpdoY1MyayHQbVxaS7t3Xx4=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ebb54a76-a12b-4ec5-3515-08da395aefe5
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 05:46:36.9086
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3d9d55c-8579-4279-9e72-08da395ad08a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6241
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2RobFCqA+HqMPa0FbJuBsIOYmhxcw/TEqgwWP+tDeAvDp4Ndx3xlcKMizBGzRHKFXl6N8VHGqqJDCGcaiLODUCbFFUDZwAdCh1QFV4UOXzk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1543
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
+ definitions=2022-05-18_09:2022-05-17,2022-05-18 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 mlxscore=0
+ phishscore=0 suspectscore=0 mlxlogscore=999 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205190035
+X-Proofpoint-GUID: 9n0JKjeDm4AhWwQY1G3ay54qAtW6h-ga
+X-Proofpoint-ORIG-GUID: 9n0JKjeDm4AhWwQY1G3ay54qAtW6h-ga
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Interpret Additional set of IBS register bits while doing
-perf report/script raw dump.
+On Thu, May 19, 2022 at 01:12:06AM +0300, Pavel Skripkin wrote:
+> I was reviewing r8188eu patches for a while, but I am missing some of
+> them, since I am not in CC list. I want to be CC'ed to help reviewing
+> and testing more patches.
+> 
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 0a635f2ae5b9..bd38a2e465cc 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -18716,6 +18716,7 @@ F:	drivers/staging/olpc_dcon/
+>  STAGING - REALTEK RTL8188EU DRIVERS
+>  M:	Larry Finger <Larry.Finger@lwfinger.net>
+>  M:	Phillip Potter <phil@philpotter.co.uk>
+> +R:	Pavel Skripkin <paskripkin@gmail.com>
+>  S:	Supported
+>  F:	drivers/staging/r8188eu/
 
-IBS op pmu ex:
-  $ sudo ./perf record -c 130 -a -e ibs_op/l3missonly=1/ --raw-samples
-  $ sudo ./perf report -D
-  ...
-  ibs_op_ctl:     0000004500070008 MaxCnt       128 L3MissOnly 1 En 1
-        Val 1 CntCtl 0=cycles CurCnt        69
-  ibs_op_data:    0000000000710002 CompToRetCtr     2 TagToRetCtr   113
-        BrnRet 0  RipInvalid 0 BrnFuse 0 Microcode 0
-  ibs_op_data2:   0000000000000002 CacheHitSt 0=M-state RmtNode 0
-        DataSrc 2=A peer cache in a near CCX
-  ibs_op_data3:   000000681d1700a1 LdOp 1 StOp 0 DcL1TlbMiss 0
-        DcL2TlbMiss 0 DcL1TlbHit2M 0 DcL1TlbHit1G 1 DcL2TlbHit2M 0
-        DcMiss 1 DcMisAcc 0 DcWcMemAcc 0 DcUcMemAcc 0 DcLockedOp 0
-        DcMissNoMabAlloc 1 DcLinAddrValid 1 DcPhyAddrValid 1
-        DcL2TlbHit1G 0 L2Miss 1 SwPf 0 OpMemWidth  8 bytes
-        OpDcMissOpenMemReqs  7 DcMissLat   104 TlbRefillLat     0
+Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-IBS Fetch pmu ex:
-  $ sudo ./perf record -c 130 -a -e ibs_fetch/l3missonly=1/ --raw-samples
-  $ sudo ./perf report -D
-  ...
-  ibs_fetch_ctl:  3c1f00c700080008 MaxCnt     128 Cnt     128 Lat   199
-        En 1 Val 1 Comp 1 IcMiss 1 PhyAddrValid        1 L1TlbPgSz 4KB
-        L1TlbMiss 0 L2TlbMiss 0 RandEn 0 L2Miss 1 L3MissOnly 1
-        FetchOcMiss 1 FetchL3Miss 1
-
-With the DataSrc extensions, the source of data can be decoded among:
- - Local L3 or other L1/L2 in CCX.
- - A peer cache in a near CCX.
- - Data returned from DRAM.
- - A peer cache in a far CCX.
- - DRAM address map with "long latency" bit set.
- - Data returned from MMIO/Config/PCI/APIC.
- - Extension Memory (S-Link, GenZ, etc - identified by the CS target
-    and/or address map at DF's choice).
- - Peer Agent Memory.
-
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
----
- tools/perf/util/amd-sample-raw.c | 64 +++++++++++++++++++++++++++++---
- 1 file changed, 58 insertions(+), 6 deletions(-)
-
-diff --git a/tools/perf/util/amd-sample-raw.c b/tools/perf/util/amd-sample-raw.c
-index 3b623ea6ee7e..63303f583bc0 100644
---- a/tools/perf/util/amd-sample-raw.c
-+++ b/tools/perf/util/amd-sample-raw.c
-@@ -18,6 +18,7 @@
- #include "pmu-events/pmu-events.h"
- 
- static u32 cpu_family, cpu_model, ibs_fetch_type, ibs_op_type;
-+static bool zen4_ibs_extensions;
- 
- static void pr_ibs_fetch_ctl(union ibs_fetch_ctl reg)
- {
-@@ -39,6 +40,7 @@ static void pr_ibs_fetch_ctl(union ibs_fetch_ctl reg)
- 	};
- 	const char *ic_miss_str = NULL;
- 	const char *l1tlb_pgsz_str = NULL;
-+	char l3_miss_str[sizeof(" L3MissOnly _ FetchOcMiss _ FetchL3Miss _")] = "";
- 
- 	if (cpu_family == 0x19 && cpu_model < 0x10) {
- 		/*
-@@ -53,12 +55,19 @@ static void pr_ibs_fetch_ctl(union ibs_fetch_ctl reg)
- 		ic_miss_str = ic_miss_strs[reg.ic_miss];
- 	}
- 
-+	if (zen4_ibs_extensions) {
-+		snprintf(l3_miss_str, sizeof(l3_miss_str),
-+			 " L3MissOnly %d FetchOcMiss %d FetchL3Miss %d",
-+			 reg.l3_miss_only, reg.fetch_oc_miss, reg.fetch_l3_miss);
-+	}
-+
- 	printf("ibs_fetch_ctl:\t%016llx MaxCnt %7d Cnt %7d Lat %5d En %d Val %d Comp %d%s "
--	       "PhyAddrValid %d%s L1TlbMiss %d L2TlbMiss %d RandEn %d%s\n",
-+		"PhyAddrValid %d%s L1TlbMiss %d L2TlbMiss %d RandEn %d%s%s\n",
- 		reg.val, reg.fetch_maxcnt << 4, reg.fetch_cnt << 4, reg.fetch_lat,
- 		reg.fetch_en, reg.fetch_val, reg.fetch_comp, ic_miss_str ? : "",
- 		reg.phy_addr_valid, l1tlb_pgsz_str ? : "", reg.l1tlb_miss, reg.l2tlb_miss,
--		reg.rand_en, reg.fetch_comp ? (reg.fetch_l2_miss ? " L2Miss 1" : " L2Miss 0") : "");
-+		reg.rand_en, reg.fetch_comp ? (reg.fetch_l2_miss ? " L2Miss 1" : " L2Miss 0") : "",
-+		l3_miss_str);
- }
- 
- static void pr_ic_ibs_extd_ctl(union ic_ibs_extd_ctl reg)
-@@ -68,9 +77,15 @@ static void pr_ic_ibs_extd_ctl(union ic_ibs_extd_ctl reg)
- 
- static void pr_ibs_op_ctl(union ibs_op_ctl reg)
- {
--	printf("ibs_op_ctl:\t%016llx MaxCnt %9d En %d Val %d CntCtl %d=%s CurCnt %9d\n",
--	       reg.val, ((reg.opmaxcnt_ext << 16) | reg.opmaxcnt) << 4, reg.op_en, reg.op_val,
--	       reg.cnt_ctl, reg.cnt_ctl ? "uOps" : "cycles", reg.opcurcnt);
-+	char l3_miss_only[sizeof(" L3MissOnly _")] = "";
-+
-+	if (zen4_ibs_extensions)
-+		snprintf(l3_miss_only, sizeof(l3_miss_only), " L3MissOnly %d", reg.l3_miss_only);
-+
-+	printf("ibs_op_ctl:\t%016llx MaxCnt %9d%s En %d Val %d CntCtl %d=%s CurCnt %9d\n",
-+		reg.val, ((reg.opmaxcnt_ext << 16) | reg.opmaxcnt) << 4, l3_miss_only,
-+		reg.op_en, reg.op_val, reg.cnt_ctl,
-+		reg.cnt_ctl ? "uOps" : "cycles", reg.opcurcnt);
- }
- 
- static void pr_ibs_op_data(union ibs_op_data reg)
-@@ -84,7 +99,34 @@ static void pr_ibs_op_data(union ibs_op_data reg)
- 		reg.op_brn_ret, reg.op_rip_invalid, reg.op_brn_fuse, reg.op_microcode);
- }
- 
--static void pr_ibs_op_data2(union ibs_op_data2 reg)
-+static void pr_ibs_op_data2_extended(union ibs_op_data2 reg)
-+{
-+	static const char * const data_src_str[] = {
-+		"",
-+		" DataSrc 1=Local L3 or other L1/L2 in CCX",
-+		" DataSrc 2=A peer cache in a near CCX",
-+		" DataSrc 3=Data returned from DRAM",
-+		" DataSrc 4=(reserved)",
-+		" DataSrc 5=A peer cache in a far CCX",
-+		" DataSrc 6=DRAM address map with \"long latency\" bit set",
-+		" DataSrc 7=Data returned from MMIO/Config/PCI/APIC",
-+		" DataSrc 8=Extension Memory (S-Link, GenZ, etc)",
-+		" DataSrc 9=(reserved)",
-+		" DataSrc 10=(reserved)",
-+		" DataSrc 11=(reserved)",
-+		" DataSrc 12=Peer Agent Memory",
-+		/* 13 to 31 are reserved. Avoid printing them. */
-+	};
-+	int data_src = (reg.data_src_hi << 3) | reg.data_src_lo;
-+
-+	printf("ibs_op_data2:\t%016llx %sRmtNode %d%s\n", reg.val,
-+		(data_src == 1 || data_src == 2 || data_src == 5) ?
-+			(reg.cache_hit_st ? "CacheHitSt 1=O-State " : "CacheHitSt 0=M-state ") : "",
-+		reg.rmt_node,
-+		data_src < (int)ARRAY_SIZE(data_src_str) ? data_src_str[data_src] : "");
-+}
-+
-+static void pr_ibs_op_data2_default(union ibs_op_data2 reg)
- {
- 	static const char * const data_src_str[] = {
- 		"",
-@@ -103,6 +145,13 @@ static void pr_ibs_op_data2(union ibs_op_data2 reg)
- 	       reg.rmt_node, data_src_str[reg.data_src_lo]);
- }
- 
-+static void pr_ibs_op_data2(union ibs_op_data2 reg)
-+{
-+	if (zen4_ibs_extensions)
-+		return pr_ibs_op_data2_extended(reg);
-+	pr_ibs_op_data2_default(reg);
-+}
-+
- static void pr_ibs_op_data3(union ibs_op_data3 reg)
- {
- 	char l2_miss_str[sizeof(" L2Miss _")] = "";
-@@ -279,6 +328,9 @@ bool evlist__has_amd_ibs(struct evlist *evlist)
- 		pmu_mapping += strlen(pmu_mapping) + 1 /* '\0' */;
- 	}
- 
-+	if (perf_env__find_pmu_cap(env, 0, "ibs_op", "zen4_ibs_extensions"))
-+		zen4_ibs_extensions = 1;
-+
- 	if (ibs_fetch_type || ibs_op_type) {
- 		if (!cpu_family)
- 			parse_cpuid(env);
--- 
-2.27.0
-
+regards,
+dan carpenter
