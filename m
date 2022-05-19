@@ -2,147 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE52C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F12C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 19:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234372AbiESTah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 15:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
+        id S244544AbiESTbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 15:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244039AbiESTag (ORCPT
+        with ESMTP id S234869AbiESTbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 15:30:36 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377DE9BADB
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:30:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652988634; x=1684524634;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gW0voMhRUpZ+BKubudljiwKR2MKSo1rFvfRCNXZD01U=;
-  b=MRXsxfV8qB3wnIX7NC/SMpLI2lk0AS1Mc4r3QemOtua4vNQXRSFoRf5G
-   g0xHbPFPGXhz4Y8H1N/s9amw/lQoy0YKpBcV79pk7aVUC1XbmyJ9c2V++
-   jLA5yYUF7ivKZMrVcjPDySIxQOP5c4NnL+KQZjGhhuKpYzOWm/aB1Jg9x
-   hMcfhzcXzJE/rlSYcBsi0iclGbTwUm1cOPzA1iZ+d3yWZCNJVKVgZJ1R0
-   GIoFGV3sh8K0VV5B0gPX308FA0qnRq6ZRXfB6yiIEwLcyAFOtW4Bil+pQ
-   Y3KLirTgFd34LpGBmRl3FyQNBA4WoWDByJ87BVAjSnEvSrt6pAVSga4pF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="259922446"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="259922446"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 12:30:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="743085938"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 19 May 2022 12:30:32 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrlqx-0003tB-TP;
-        Thu, 19 May 2022 19:30:31 +0000
-Date:   Fri, 20 May 2022 03:29:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: fs/ntfs3/fsntfs.c:770:5: warning: stack frame size (2112) exceeds
- limit (1024) in 'ntfs_clear_mft_tail'
-Message-ID: <202205200352.WNFV7NdM-lkp@intel.com>
+        Thu, 19 May 2022 15:31:38 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B662340F1
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:31:38 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id s12so4302030iln.11
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 12:31:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=I26Y3sjJgoEOJyE8IwpRuHAsv+OINUDBnys4ArSZn+s=;
+        b=zyPwJW4kDBbt0MZCL9+U2rZ7ipHLh3t3CPzn4OFvK/hfH9J+xTSMEBoGc8YbbpajBF
+         kvmxZK1BTqM1hj7+FqPtdPBtyXV/65JvfrpOuyJurC+v5QwqgbeY4zSQ0WrdmLOiENZs
+         G/KogBc5C4jlSj88BMG3I/JHJWYPlAC16H9vosnAbf835Uxf+0z6DzxuaCBzxeQAg/K1
+         RXuTRw4fUSCAOEYknixIrZrMSZQWtizBDkdu13J6FIxgrd9fhyhrpQ8PrYS+/xYmJOfq
+         FU9m39x2oeyznJk6iWHN2V2kgnF1wIs+3zCwtQPpc4sQRzQAwNvpLAXD7b+lud55Hl1h
+         RYmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=I26Y3sjJgoEOJyE8IwpRuHAsv+OINUDBnys4ArSZn+s=;
+        b=GwEpGacNr5LLc69pia+LlN5sJMwNXZ+pADO+fzgOWvmORazxTrheE9YZc8uUFyRuZ8
+         njpx3zhXseEPnaYcEhWRb+IwcD6vz2U7eE+Lx38aOj0lIALXoJVnXFGgEGdsXvQfI4u4
+         DGFFRjyzZFkgcpWkYosJEXD/urHMMf8uFumkLXSkntQlbQG9ptL5d08fSS4wwzFiBsXG
+         SIynk1K98N4h5c73kVffW71kITlCcn3B+62HYkc9eaJun4jsN3qi2MdKvLwmSdX9bZTg
+         0Z96lk0USUfY1GX24KkbykJpdC81RR6ek8me1idP0yeDlTmTsJhVGiyIKbuCpop7f84B
+         LP4A==
+X-Gm-Message-State: AOAM5313ZCaaC+9GbylF72HH5Wwsk62C6ffgV18oUcXtehP4GVG8ZYSN
+        nKYW66UUFIo1q9NBF1KVQ14I/3FM5vlwLA==
+X-Google-Smtp-Source: ABdhPJxskmKOm5qmqWyBCY8GDoLgZa4TK1Lrzmc/3KngQmb+Np3MJtdrdzHgie9qgR/lZOOHQhWi6w==
+X-Received: by 2002:a92:3606:0:b0:2cf:45d6:c777 with SMTP id d6-20020a923606000000b002cf45d6c777mr3519301ila.110.1652988697409;
+        Thu, 19 May 2022 12:31:37 -0700 (PDT)
+Received: from m1.localdomain ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id y10-20020a05663824ca00b0032e7456da06sm134390jat.15.2022.05.19.12.31.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 12:31:36 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     tytso@mit.edu, Jason@zx2c4.com
+Cc:     hch@lst.de, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 1/2] random: convert to using fops->read_iter()
+Date:   Thu, 19 May 2022 13:31:32 -0600
+Message-Id: <20220519193133.194138-2-axboe@kernel.dk>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220519193133.194138-1-axboe@kernel.dk>
+References: <20220519193133.194138-1-axboe@kernel.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Konstantin,
+This is a pre-requisite to writing up splice() again for the random
+and urandom drivers.
 
-FYI, the error/warning still remains.
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+---
+ drivers/char/random.c | 37 +++++++++++++++++++------------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b015dcd62b86d298829990f8261d5d154b8d7af5
-commit: 6e5be40d32fb1907285277c02e74493ed43d77fe fs/ntfs3: Add NTFS3 in fs/Kconfig and fs/Makefile
-date:   9 months ago
-config: hexagon-randconfig-r011-20220519 (https://download.01.org/0day-ci/archive/20220520/202205200352.WNFV7NdM-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e00cbbec06c08dc616a0d52a20f678b8fbd4e304)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6e5be40d32fb1907285277c02e74493ed43d77fe
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6e5be40d32fb1907285277c02e74493ed43d77fe
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   fs/ntfs3/fsntfs.c:1874:9: warning: variable 'cnt' set but not used [-Wunused-but-set-variable]
-           size_t cnt, off;
-                  ^
->> fs/ntfs3/fsntfs.c:770:5: warning: stack frame size (2112) exceeds limit (1024) in 'ntfs_clear_mft_tail' [-Wframe-larger-than]
-   int ntfs_clear_mft_tail(struct ntfs_sb_info *sbi, size_t from, size_t to)
-       ^
-   2 warnings generated.
-
-
-vim +/ntfs_clear_mft_tail +770 fs/ntfs3/fsntfs.c
-
-82cae269cfa953 Konstantin Komarov 2021-08-13  763  
-82cae269cfa953 Konstantin Komarov 2021-08-13  764  /*
-82cae269cfa953 Konstantin Komarov 2021-08-13  765   * ntfs_clear_mft_tail
-82cae269cfa953 Konstantin Komarov 2021-08-13  766   *
-82cae269cfa953 Konstantin Komarov 2021-08-13  767   * formats empty records [from, to)
-82cae269cfa953 Konstantin Komarov 2021-08-13  768   * sbi->mft.bitmap is locked for write
-82cae269cfa953 Konstantin Komarov 2021-08-13  769   */
-82cae269cfa953 Konstantin Komarov 2021-08-13 @770  int ntfs_clear_mft_tail(struct ntfs_sb_info *sbi, size_t from, size_t to)
-82cae269cfa953 Konstantin Komarov 2021-08-13  771  {
-82cae269cfa953 Konstantin Komarov 2021-08-13  772  	int err;
-82cae269cfa953 Konstantin Komarov 2021-08-13  773  	u32 rs;
-82cae269cfa953 Konstantin Komarov 2021-08-13  774  	u64 vbo;
-82cae269cfa953 Konstantin Komarov 2021-08-13  775  	struct runs_tree *run;
-82cae269cfa953 Konstantin Komarov 2021-08-13  776  	struct ntfs_inode *ni;
-82cae269cfa953 Konstantin Komarov 2021-08-13  777  
-82cae269cfa953 Konstantin Komarov 2021-08-13  778  	if (from >= to)
-82cae269cfa953 Konstantin Komarov 2021-08-13  779  		return 0;
-82cae269cfa953 Konstantin Komarov 2021-08-13  780  
-82cae269cfa953 Konstantin Komarov 2021-08-13  781  	rs = sbi->record_size;
-82cae269cfa953 Konstantin Komarov 2021-08-13  782  	ni = sbi->mft.ni;
-82cae269cfa953 Konstantin Komarov 2021-08-13  783  	run = &ni->file.run;
-82cae269cfa953 Konstantin Komarov 2021-08-13  784  
-82cae269cfa953 Konstantin Komarov 2021-08-13  785  	down_read(&ni->file.run_lock);
-82cae269cfa953 Konstantin Komarov 2021-08-13  786  	vbo = (u64)from * rs;
-82cae269cfa953 Konstantin Komarov 2021-08-13  787  	for (; from < to; from++, vbo += rs) {
-82cae269cfa953 Konstantin Komarov 2021-08-13  788  		struct ntfs_buffers nb;
-82cae269cfa953 Konstantin Komarov 2021-08-13  789  
-82cae269cfa953 Konstantin Komarov 2021-08-13  790  		err = ntfs_get_bh(sbi, run, vbo, rs, &nb);
-82cae269cfa953 Konstantin Komarov 2021-08-13  791  		if (err)
-82cae269cfa953 Konstantin Komarov 2021-08-13  792  			goto out;
-82cae269cfa953 Konstantin Komarov 2021-08-13  793  
-82cae269cfa953 Konstantin Komarov 2021-08-13  794  		err = ntfs_write_bh(sbi, &sbi->new_rec->rhdr, &nb, 0);
-82cae269cfa953 Konstantin Komarov 2021-08-13  795  		nb_put(&nb);
-82cae269cfa953 Konstantin Komarov 2021-08-13  796  		if (err)
-82cae269cfa953 Konstantin Komarov 2021-08-13  797  			goto out;
-82cae269cfa953 Konstantin Komarov 2021-08-13  798  	}
-82cae269cfa953 Konstantin Komarov 2021-08-13  799  
-82cae269cfa953 Konstantin Komarov 2021-08-13  800  out:
-82cae269cfa953 Konstantin Komarov 2021-08-13  801  	sbi->mft.used = from;
-82cae269cfa953 Konstantin Komarov 2021-08-13  802  	up_read(&ni->file.run_lock);
-82cae269cfa953 Konstantin Komarov 2021-08-13  803  	return err;
-82cae269cfa953 Konstantin Komarov 2021-08-13  804  }
-82cae269cfa953 Konstantin Komarov 2021-08-13  805  
-
-:::::: The code at line 770 was first introduced by commit
-:::::: 82cae269cfa953032fbb8980a7d554d60fb00b17 fs/ntfs3: Add initialization of super block
-
-:::::: TO: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-:::::: CC: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 4c9adb4f3d5d..529afd31d549 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -528,11 +528,12 @@ void get_random_bytes(void *buf, size_t nbytes)
+ }
+ EXPORT_SYMBOL(get_random_bytes);
+ 
+-static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
++static ssize_t get_random_bytes_user(struct iov_iter *to)
+ {
+-	size_t len, left, ret = 0;
++	size_t len, ret = 0;
+ 	u32 chacha_state[CHACHA_STATE_WORDS];
+ 	u8 output[CHACHA_BLOCK_SIZE];
++	size_t nbytes = iov_iter_count(to);
+ 
+ 	if (!nbytes)
+ 		return 0;
+@@ -549,7 +550,7 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ 	 * the user directly.
+ 	 */
+ 	if (nbytes <= CHACHA_KEY_SIZE) {
+-		ret = nbytes - copy_to_user(buf, &chacha_state[4], nbytes);
++		ret = copy_to_iter(&chacha_state[4], nbytes, to);
+ 		goto out_zero_chacha;
+ 	}
+ 
+@@ -559,13 +560,10 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ 			++chacha_state[13];
+ 
+ 		len = min_t(size_t, nbytes, CHACHA_BLOCK_SIZE);
+-		left = copy_to_user(buf, output, len);
+-		if (left) {
+-			ret += len - left;
++		len = copy_to_iter(output, len, to);
++		if (!len)
+ 			break;
+-		}
+ 
+-		buf += len;
+ 		ret += len;
+ 		nbytes -= len;
+ 		if (!nbytes)
+@@ -1466,6 +1464,9 @@ static void try_to_generate_entropy(void)
+ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 		flags)
+ {
++	struct iovec iov = { .iov_base = buf };
++	struct iov_iter iter;
++
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+ 		return -EINVAL;
+ 
+@@ -1488,7 +1489,9 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 		if (unlikely(ret))
+ 			return ret;
+ 	}
+-	return get_random_bytes_user(buf, count);
++	iov.iov_len = count;
++	iov_iter_init(&iter, READ, &iov, 1, count);
++	return get_random_bytes_user(&iter);
+ }
+ 
+ static __poll_t random_poll(struct file *file, poll_table *wait)
+@@ -1540,8 +1543,7 @@ static ssize_t random_write(struct file *file, const char __user *buffer,
+ 	return (ssize_t)count;
+ }
+ 
+-static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
+-			    loff_t *ppos)
++static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *to)
+ {
+ 	static int maxwarn = 10;
+ 
+@@ -1556,21 +1558,20 @@ static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
+ 		maxwarn--;
+ 		if (__ratelimit(&urandom_warning))
+ 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+-				  current->comm, nbytes);
++				  current->comm, iov_iter_count(to));
+ 	}
+ 
+-	return get_random_bytes_user(buf, nbytes);
++	return get_random_bytes_user(to);
+ }
+ 
+-static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
+-			   loff_t *ppos)
++static ssize_t random_read_iter(struct kiocb *kiocb, struct iov_iter *to)
+ {
+ 	int ret;
+ 
+ 	ret = wait_for_random_bytes();
+ 	if (ret != 0)
+ 		return ret;
+-	return get_random_bytes_user(buf, nbytes);
++	return get_random_bytes_user(to);
+ }
+ 
+ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+@@ -1639,7 +1640,7 @@ static int random_fasync(int fd, struct file *filp, int on)
+ }
+ 
+ const struct file_operations random_fops = {
+-	.read = random_read,
++	.read_iter = random_read_iter,
+ 	.write = random_write,
+ 	.poll = random_poll,
+ 	.unlocked_ioctl = random_ioctl,
+@@ -1649,7 +1650,7 @@ const struct file_operations random_fops = {
+ };
+ 
+ const struct file_operations urandom_fops = {
+-	.read = urandom_read,
++	.read_iter = urandom_read_iter,
+ 	.write = random_write,
+ 	.unlocked_ioctl = random_ioctl,
+ 	.compat_ioctl = compat_ptr_ioctl,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
