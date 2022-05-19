@@ -2,126 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D726C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 06:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD683C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 06:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234491AbiESG5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 02:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48216 "EHLO
+        id S232051AbiESG6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 02:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbiESG5T (ORCPT
+        with ESMTP id S229630AbiESG6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 02:57:19 -0400
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF612B82FC;
-        Wed, 18 May 2022 23:57:17 -0700 (PDT)
-Received: by mail-qv1-f45.google.com with SMTP id p3so3974532qvi.7;
-        Wed, 18 May 2022 23:57:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gzrS6T4UAb2qdEQgZu6k0oKZv56WgMPrYtSuPn3Y25Q=;
-        b=jFiLap9aXNTvhYXJXo1Hxyh2Bte9gji9M8X6/SkfBjC3JCGBeXhaLDQiiE5rRexg1J
-         klNhTMDbsYGC/xwVuFCxWxiq32q2O2BDj2wpb3vEdatQDjor5T7cOY9UWdZ6qXEBF2hb
-         97aUgcsQrIVZT+ZNDMCLnkFk5TdK2wBch03Qo59D8l5JNRlef2DENm5AIHGILWlNhQlt
-         jv2db7XFz/ArA58Obr8wsYAq2Cv8cgNq0+n3tmE/1rPD55+A8Ll9NGHd5Wsd19sfhTO/
-         hAxH3fzcNGbszd52JR12pvpfJAo4Hf3/Vk9w/9r3oXjrQgduGC74k35+CFh28Tj+LZLb
-         ltPw==
-X-Gm-Message-State: AOAM532kKKPjiT3cAET89VqZ9MqJmwgC14dKMcjUD8CfqR6VkLhCO3p4
-        a9ip598QJvUyL/zAALNAhvyHol9ge4U77g==
-X-Google-Smtp-Source: ABdhPJw40O7odwSm9eb02Fn6l0eXoIYMGrs5cm4NVMarN4tUGw4k7x9oc4ZnTp+FbX3lcuUiqdOFEA==
-X-Received: by 2002:ad4:5dcf:0:b0:461:fef4:c2de with SMTP id m15-20020ad45dcf000000b00461fef4c2demr573656qvh.28.1652943436850;
-        Wed, 18 May 2022 23:57:16 -0700 (PDT)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id ci19-20020a05622a261300b002f39b99f6aasm866223qtb.68.2022.05.18.23.57.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 23:57:16 -0700 (PDT)
-Received: by mail-yb1-f170.google.com with SMTP id r1so7429846ybo.7;
-        Wed, 18 May 2022 23:57:16 -0700 (PDT)
-X-Received: by 2002:a25:e7ce:0:b0:64d:6028:96b9 with SMTP id
- e197-20020a25e7ce000000b0064d602896b9mr2858277ybh.365.1652943435982; Wed, 18
- May 2022 23:57:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220505193143.31826-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220505193143.31826-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdX0egGvyu94-=tJdvW0=q6Y==ZNkexCJpnmrNJezuiqDw@mail.gmail.com> <CA+V-a8sxZOZRXG_gsCnQGJdNDw-uVLmuTZ-dOsmUfhS9KL0Esg@mail.gmail.com>
-In-Reply-To: <CA+V-a8sxZOZRXG_gsCnQGJdNDw-uVLmuTZ-dOsmUfhS9KL0Esg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 19 May 2022 08:57:04 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW0hbVnCcbcC5E8J7Jc_UZPVSpHkmtPd3Haio-WnhhbpQ@mail.gmail.com>
-Message-ID: <CAMuHMdW0hbVnCcbcC5E8J7Jc_UZPVSpHkmtPd3Haio-WnhhbpQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/4] dt-bindings: clock: r9a07g043-cpg: Add Renesas
- RZ/Five CPG Clock and Reset Definitions
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
+        Thu, 19 May 2022 02:58:30 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7485BB82FD
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 23:58:28 -0700 (PDT)
+X-UUID: 5e06e23243c441ed9b7ba938ae37ae72-20220519
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:c0bcec9f-7c0c-4b7f-9dc2-8f6095442be5,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:2a19b09,CLOUDID:1fa3d379-5ef6-470b-96c9-bdb8ced32786,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 5e06e23243c441ed9b7ba938ae37ae72-20220519
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1184963467; Thu, 19 May 2022 14:58:22 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 19 May 2022 14:58:21 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 19 May 2022 14:58:18 +0800
+Message-ID: <1625ec1f4cded0f825d93743d3d03fcf83cad5aa.camel@mediatek.com>
+Subject: Re: [PATCH v5 2/2] iommu/mediatek: Allow page table PA up to 35bit
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     <yf.wang@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+        Ning Li <ning.li@mediatek.com>,
+        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
+        "moderated list:MEDIATEK IOMMU DRIVER" 
+        <linux-mediatek@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Date:   Thu, 19 May 2022 14:58:18 +0800
+In-Reply-To: <20220516141608.11709-3-yf.wang@mediatek.com>
+References: <20220516141608.11709-1-yf.wang@mediatek.com>
+         <20220516141608.11709-3-yf.wang@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhakar,
+On Mon, 2022-05-16 at 22:16 +0800, yf.wang@mediatek.com wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
+> 
+> Add the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT support, so that
+> allows
+> page table PA up to 35bit, not only in ZONE_DMA32.
 
-On Thu, May 19, 2022 at 7:45 AM Lad, Prabhakar
-<prabhakar.csengg@gmail.com> wrote:
-> On Tue, May 10, 2022 at 3:02 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Thu, May 5, 2022 at 9:32 PM Lad Prabhakar
-> > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > > Renesas RZ/Five SoC has almost the same clock structure compared to the
-> > > Renesas RZ/G2UL SoC, re-use the r9a07g043-cpg.h header file and just
-> > > ammend the RZ/Five CPG clock and reset definitions.
-> >
-> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> >
-> > > --- a/include/dt-bindings/clock/r9a07g043-cpg.h
-> > > +++ b/include/dt-bindings/clock/r9a07g043-cpg.h
-> > > @@ -108,6 +108,15 @@
-> > >  #define R9A07G043_ADC_ADCLK            76
-> > >  #define R9A07G043_ADC_PCLK             77
-> > >  #define R9A07G043_TSU_PCLK             78
-> > > +#define R9A07G043_NCEPLDM_DM_CLK       79      /* RZ/Five Only */
-> >
-> > While NCEPLDM_DM_CLK is listed in the clock list spreadsheet, its
-> > control bit is not documented.
-> >
-> > > +#define R9A07G043_NCEPLDM_ACLK         80      /* RZ/Five Only */
-> > > +#define R9A07G043_NCEPLDM_TCK          81      /* RZ/Five Only */
-> >
-> > While NCEPLDM_TCK is listed in the clock list spreadsheet, its
-> > control bit is not documented.
-> >
-> I have got the feedback for the above, NCEPLDM_DM_CLK and NCEPLDM_TCK
-> clocks cannot be stopped as a result there are no register bits for it
-> in the HW manual (clock spreadsheet will be updated). I will drop this
-> and send a v2 including your RB.
+Comment why this is needed.
 
-The question is not if the clocks can be stopped or not, but if there
-is any need to refer to them from a DT node.
-What's the nature of the future update to the clock spreadsheet?
+e.g. For single normal zone.
 
-Of course, if we don't add these clock definitions now, they can
-still be added later. DT binding definitions are append-only.
+> 
+> Signed-off-by: Ning Li <ning.li@mediatek.com>
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> ---
+>  drivers/iommu/mtk_iommu.c | 29 +++++++++++++++++++++++++----
+>  1 file changed, 25 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 6fd75a60abd6..1b9a876ef271 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -33,6 +33,7 @@
+>  
+>  #define REG_MMU_PT_BASE_ADDR			0x000
+>  #define MMU_PT_ADDR_MASK			GENMASK(31, 7)
+> +#define MMU_PT_ADDR_2_0_MASK			GENMASK(2, 0)
+>  
+>  #define REG_MMU_INVALIDATE			0x020
+>  #define F_ALL_INVLD				0x2
+> @@ -118,6 +119,7 @@
+>  #define WR_THROT_EN			BIT(6)
+>  #define HAS_LEGACY_IVRP_PADDR		BIT(7)
+>  #define IOVA_34_EN			BIT(8)
+> +#define PGTABLE_PA_35_EN		BIT(9)
+>  
+>  #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+>  		((((pdata)->flags) & (_x)) == (_x))
+> @@ -401,6 +403,9 @@ static int mtk_iommu_domain_finalise(struct
+> mtk_iommu_domain *dom,
+>  		.iommu_dev = data->dev,
+>  	};
+>  
+> +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
+> +		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
+> +
+>  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
+>  		dom->cfg.oas = data->enable_4GB ? 33 : 32;
+>  	else
+> @@ -450,6 +455,7 @@ static int mtk_iommu_attach_device(struct
+> iommu_domain *domain,
+>  	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+>  	struct device *m4udev = data->dev;
+>  	int ret, domid;
+> +	u32 regval;
+>  
+>  	domid = mtk_iommu_get_domain_id(dev, data->plat_data);
+>  	if (domid < 0)
+> @@ -472,8 +478,14 @@ static int mtk_iommu_attach_device(struct
+> iommu_domain *domain,
+>  			return ret;
+>  		}
+>  		data->m4u_dom = dom;
+> -		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+> -		       data->base + REG_MMU_PT_BASE_ADDR);
+> +
+> +		/* Bits[6:3] are invalid for mediatek platform */
+> +		if (MTK_IOMMU_HAS_FLAG(data->plat_data,
+> PGTABLE_PA_35_EN))
+> +			regval = (dom->cfg.arm_v7s_cfg.ttbr &
+> MMU_PT_ADDR_MASK) |
+> +				 (dom->cfg.arm_v7s_cfg.ttbr &
+> MMU_PT_ADDR_2_0_MASK);
 
-Thanks!
+The bits[2:0] has already handled in ARM_V7S_TTBR_35BIT_PA of
+patch[1/2], we need calculate it again here?
 
-Gr{oetje,eeting}s,
+1) Extend arm_v7s_cfg.ttbr to u64, then we could put the special ttbr
+logical into our file.
 
-                        Geert
+2) if 1) is not allowed, We have to put this in v7s.
+if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT) {
+       cfg->arm_v7s_cfg.ttbr = (paddr & GENMASK(31, 7)) |
+upper_32_bits(paddr);
+       return &data->iop;
+}
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+This need Robin/Will confirm.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> +		else
+> +			regval = dom->cfg.arm_v7s_cfg.ttbr &
+> MMU_PT_ADDR_MASK;
+
+Save this value to our data. then we don't need calculate it again in
+the resume cb.   
+
+> +		writel(regval, data->base + REG_MMU_PT_BASE_ADDR);
+>  
+>  		pm_runtime_put(m4udev);
+>  	}
+> @@ -987,6 +999,7 @@ static int __maybe_unused
+> mtk_iommu_runtime_resume(struct device *dev)
+>  	struct mtk_iommu_suspend_reg *reg = &data->reg;
+>  	struct mtk_iommu_domain *m4u_dom = data->m4u_dom;
+>  	void __iomem *base = data->base;
+> +	u32 regval;
+>  	int ret;
+>  
+>  	ret = clk_prepare_enable(data->bclk);
+> @@ -1010,7 +1023,14 @@ static int __maybe_unused
+> mtk_iommu_runtime_resume(struct device *dev)
+>  	writel_relaxed(reg->int_main_control, base +
+> REG_MMU_INT_MAIN_CONTROL);
+>  	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
+>  	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
+> -	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base +
+> REG_MMU_PT_BASE_ADDR);
+> +
+> +	/* Bits[6:3] are invalid for mediatek platform */
+> +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
+> +		regval = (m4u_dom->cfg.arm_v7s_cfg.ttbr &
+> MMU_PT_ADDR_MASK) |
+> +			 (m4u_dom->cfg.arm_v7s_cfg.ttbr &
+> MMU_PT_ADDR_2_0_MASK);
+> +	else
+> +		regval = m4u_dom->cfg.arm_v7s_cfg.ttbr &
+> MMU_PT_ADDR_MASK;
+> +	writel(regval, base + REG_MMU_PT_BASE_ADDR);
+>  
+>  	/*
+>  	 * Users may allocate dma buffer before they call
+> pm_runtime_get,
+> @@ -1038,7 +1058,8 @@ static const struct mtk_iommu_plat_data
+> mt2712_data = {
+>  
+>  static const struct mtk_iommu_plat_data mt6779_data = {
+>  	.m4u_plat      = M4U_MT6779,
+> -	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN,
+> +	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
+> +			 PGTABLE_PA_35_EN,
+>  	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+>  	.iova_region   = single_domain,
+>  	.iova_region_nr = ARRAY_SIZE(single_domain),
+
