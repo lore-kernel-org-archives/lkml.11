@@ -2,205 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2892C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A023CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239590AbiESRY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55702 "EHLO
+        id S241281AbiESRZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242548AbiESRYd (ORCPT
+        with ESMTP id S242582AbiESRYm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:24:33 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE52AA30A1;
-        Thu, 19 May 2022 10:24:30 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id a9so3631596pgv.12;
-        Thu, 19 May 2022 10:24:30 -0700 (PDT)
+        Thu, 19 May 2022 13:24:42 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDE3A5036;
+        Thu, 19 May 2022 10:24:38 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id bh5so5376893plb.6;
+        Thu, 19 May 2022 10:24:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=heShdPjUkQ8+JBgX4tOJfq2w1VNjC+2A7g0K5jxFZ4M=;
-        b=Sx1hc/wWJXW5FtKMwAcLPWO/DjI1leftUZIfPeJsDBP89EwPamQfnqfxOMyPrKUUUW
-         Wl0c7n8o690wAIt0amZp9etLHpgAoIlwD+y40MymMKB+3+9hCXGyznalVmgeJvRVJ3D+
-         vtCutaXZ5RBx+cbMPnanwXB9b+4gzi94nHfol5IDCFUc2GD2qr73gA1pXplv+qgXlT8a
-         lD1j0gSry7GAB9toeh/0ozAwTo5mLKi7MHfi19+fwRT5aReLXW25uVZUk8uD1VXc5hVx
-         JwuI6zuHZZYbZ85TAvqqYbP94xCnaEFsm5MoPrWMzq6P9B1PjqxdWdLK25B2Q+iGgrO5
-         uxkw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KezD3kfL2rJaxz73jmeIdmWUTP5JswkB1sqSfdCS7Nk=;
+        b=Sv4CpsY5gZOPnxw2hhkBifiwf/Z9F6vWxInFppvcO4lgxcigcYj6nCMSIcs4BWPZh0
+         wijlPWIeLY1qKHN9EYWbG5fFhlOZ+llQRVNikmUb7crMDg/YnHGUmSuQKRksQb1LIRvR
+         km7qLFcltoy5T2JtCR5vXcF6ii3S59rYsILQnEC7fWZCWnWV40Lw3CaxjZnt5GqeNiXH
+         BYDJlVkdyo122/rK+XpYlvj/nasdfE12T7zRa39WBh3fDZFhZ5nGDg+kEoanICGs5nPH
+         0Uv16gcGHTrrVaVhhA0U0QV1/wdctSpFdCRiDaocSYF/5CHVvTWdI2GgbD9t6OY48MdG
+         rd9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=heShdPjUkQ8+JBgX4tOJfq2w1VNjC+2A7g0K5jxFZ4M=;
-        b=xixO6yKu/uSvtFeyQ1432cf1fhIWmGiSZ3yY6LXKwcHJPDD7TW2GPL0yrJDZm7Zmfs
-         1EpcpAU+K9z8a+MfAqyYVRyxe7i4xtUVQsWH9xlhGgpuSbxyMlG6bxO/xgGQzb3XvEq+
-         xFQ46kilgTOYFlDO3gMvEo1K6a6nBWPrcgqAT+TIFcm/mwCdhslfK0EmCzG5c2DrrQNE
-         cy3UAzlhxFC4qlUAuDr7poQwfQaYsxoxgzw0B6agjB7YXy3x/rldtYjZkmelwDZHAui5
-         djgVcH1VHRevyl+pNpNWu/yfbbuYnBDcA/efdX4FjS8rALomQU3Kl8DWVhzml3QibOKe
-         Sq4A==
-X-Gm-Message-State: AOAM531OGcO3xLHC4W+8uY2HP3RIOgk2BmpGYxg+9B4GQNh+6oZrMVM+
-        waY6TN74jE5uioQm3/zqOpBynQXgxDqj
-X-Google-Smtp-Source: ABdhPJyDo9PNyo1VcJOEXA6NT8QYwgusA2ly6GSoKqMUuAsmEH3FY+vrrsIzqKnshcYrIolyTav2Fg==
-X-Received: by 2002:a63:f91a:0:b0:3f2:8963:78c4 with SMTP id h26-20020a63f91a000000b003f2896378c4mr4688519pgi.593.1652981069848;
-        Thu, 19 May 2022 10:24:29 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KezD3kfL2rJaxz73jmeIdmWUTP5JswkB1sqSfdCS7Nk=;
+        b=1PqxSgXfEawSaqc7R/80Ead+akH4/vrIC9r6/5wo9J05oWIPw36bEKTl0afrsw0i8r
+         cIxBdhiOr60U+zhkVjYUJGsun2fGePYKF0KHAieFvyE+GrWPJWepu4AU7OB3BcIbAnKY
+         NaFwPu3SAsrw+yH6FfeaSMK0fR+jX6d4bQxKF/RmWS0U7S0xyFsR5DAUgMzXzmu8S88W
+         Zv3RH/EDoRpZfOkoptsFCpfNx1hDo2aLEoFBEimAH+uAE14ng0IR4jXj7/sojMzj79l/
+         HaPmHEnNUr2KZbTGrfMtoGF9K6lxeVyxBeaz2WL4Nhf/iIn+U3yGNPI3u2GOQdtTc+rX
+         a5kg==
+X-Gm-Message-State: AOAM532suEbE2DF2B0llDHzbr59LGgd0F/B4o4gSOka+nxCkCey4KuEa
+        HWagj6AK8ZZ7h9u5WK2IrBOUHOQ04HJQ
+X-Google-Smtp-Source: ABdhPJxnqTf8vOeejJX87OBSIDtc6xFKWDKNsZsXQBir9VBe+WezI5BtPcdzvylFmNpsvnf7l1KQuw==
+X-Received: by 2002:a17:902:9a83:b0:15e:f718:4ced with SMTP id w3-20020a1709029a8300b0015ef7184cedmr5416529plp.69.1652981076974;
+        Thu, 19 May 2022 10:24:36 -0700 (PDT)
 Received: from zaphod.evilpiepirate.org (068-119-229-002.res.spectrum.com. [68.119.229.2])
-        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.24.27
+        by smtp.gmail.com with ESMTPSA id y4-20020a655a04000000b003c6ab6ba06csm3859126pgs.79.2022.05.19.10.24.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 10:24:28 -0700 (PDT)
+        Thu, 19 May 2022 10:24:36 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@vger.kernel.org,
         pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
         andriy.shevchenko@linux.intel.com, willy@infradead.org
-Subject: [PATCH v2 00/28] Printbufs (now with more printbufs!)
-Date:   Thu, 19 May 2022 13:23:53 -0400
-Message-Id: <20220519172421.162394-1-kent.overstreet@gmail.com>
+Subject: [PATCH v2 03/28] vsprintf: %pf(%p)
+Date:   Thu, 19 May 2022 13:23:56 -0400
+Message-Id: <20220519172421.162394-4-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220519172421.162394-1-kent.overstreet@gmail.com>
+References: <20220519172421.162394-1-kent.overstreet@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So there's a lot of new stuff since the first posting:
+This implements two new format strings: both do the same thing, one more
+compatible with current gcc format string checking, the other that we'd
+like to standardize:
 
- - Printbufs have been broken up into multiple patches that each add distinct
-   functionality - this is intended to make it easier to review and to see
-   what's used for what
+ %p(%p) - more compatible
+ %(%p)  - more prettier
 
- - Printbufs now support both auto-heap allocated buffers, and external/static
-   buffers: this was required for the vsprintf.c refactoring, and means they're
-   (almost) a direct replacement for seq_buf
+Both can take variable numbers of arguments, i.e. %(%p,%p,%p).
 
- - The big thing: a new %pf(%p) format string extension for calling pretty
-   printers from printf (idea from Matthew Wilcox)
+They're used to indicate that snprintf or pr_buf should interpret the
+next argument as a pretty-printer function to call, and subsequent
+arguments within the parentheses should be passed to the pretty-printer.
 
-   This is intended to replace most of our other format string extensions: e.g.
-   instead of writing
-     printf("%pg", bdev);
+A pretty printer takes as its first argument a printbuf, and then zero
+or more pointer arguments - integer arguments are not (currently) supported.
 
-   You'd now write
-     printf("%pf(%p)", bdev_name, bdev);
+Example usage:
 
-   The advantage of this is that pretty printers no longer have to live in
-   lib/vsprintf.c, and they're much more discoverable - you can cscope to the
-   pretty printer!
+static void foo_to_text(struct printbuf *out, struct foo *foo)
+{
+	pr_buf(out, "bar=%u baz=%u", foo->bar, foo->baz);
+}
 
-   And my hope is that this will help induce people to write lots more pretty
-   printers; since they can now live with the code they're printing and don't
-   require touching code in vsprintf.c, there's less friction to creating new
-   ones.
+printf("%(%p)", foo_to_text, foo);
 
-   We hope to standardize this extension as %(%p), but since gcc's printf format
-   checking doesn't yet understand that we're going with %pf(%p) for now.
+The goal is to replace most of our %p format extensions with this
+interface, and to move pretty-printers out of the core vsprintf.c code -
+this will get us better organization and better discoverability (you'll
+be able to cscope to pretty printer calls!), as well as eliminate a lot
+of dispatch code in vsprintf.c.
 
-   Currently, we only support pointer arguments to pretty-printers. I think we
-   can improve this in the future to support at least integer arguments as well,
-   i.e. "%(%u)" will eventually work. This will require using libffi to do it
-   correctly, but it looks like libffi is nearly suitable for in kernel use (it
-   supports all linux architectures, and configured with the features we want it
-   compiles down to practically nothing).
+Currently, we can only call pretty printers with pointer arguments. This
+could be changed to also allow at least integer arguments in the future
+by using libffi.
 
- - Massive vsprintf.c refactoring
+Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
+---
+ Documentation/core-api/printk-formats.rst | 19 ++++++
+ lib/test_printf.c                         | 17 +++++
+ lib/vsprintf.c                            | 81 ++++++++++++++++++++++-
+ 3 files changed, 115 insertions(+), 2 deletions(-)
 
-   printbufs are now the core data structure used by vsprintf.c - we're not
-   passing around a bunch of raw char pointers anymore! yay!
-
-   This gets us a sane standard calling convention for pretty printers - i.e.,
-   we need this for %pf(%p).
-
-   Couple notes on the refactoring:
-
-   - printf_spec has become a dumping ground of state, passed everywhere and
-     used inconsistently. The refactoring attempts to improve this, and
-     centralize printf_spec handling as much as possible near/in the top level
-     code that handles format strings. Some %p extensions use
-     field/width/precision in nonstandard ways; the refactoring patches make it
-     clearer where this is going on.
-
-   - a _lot_ of pretty printers were allocating secondary buffers on the stack,
-     mainly to avoid ever writing past the terminating null in the output
-     buffer. There was a test that checked for this, but it had no documentation
-     where the requirement came from nor does that requirement make any sense,
-     so I deleted it (if anyone knows anything about it, speak up!). The code
-     now takes the approach of just writing to the output buffer and then
-     truncating afterwards if required by the precision argument.
-
-     Yay, less stack usage!
-
-   - format string parsing is still a mess: I'd like to consolidate that to only
-     happen in one place, but that's going to be a much more involved
-     refactoring - and if we just switch to new-style calling pretty printers
-     directly, we'll be able to just delete all that code.
-
- - More seq_buf conversions
-
-   Using printbufs to clean up vsprintf.c meant adding a second, non
-   heap-allocated mode, so printbufs now do almost everything seq_buf does -
-   seq_buf has a read_pos member for some reason (tracing?) that I didn't get
-   into.
-
-   So now seq_buf is just used by the tracing code, and that can also probably
-   be converted to printbuf, but seq_buf is Steven's thing so I'll let him take
-   a look before getting into that.
-
-Kent Overstreet (28):
-  lib/printbuf: New data structure for printing strings
-  vsprintf: Convert to printbuf
-  vsprintf: %pf(%p)
-  lib/string_helpers: string_get_size() now returns characters wrote
-  lib/printbuf: Heap allocation
-  lib/printbuf: Tabstops, indenting
-  lib/printbuf: Unit specifiers
-  lib/pretty-printers: pr_string_option(), pr_bitflags()
-  vsprintf: Improve number()
-  vsprintf: pr_u64_minwidth(), pr_u64()
-  vsprintf: Lift pr_hex_bytes() out from hex_string()
-  test_printf: Drop requirement that sprintf not write past nul
-  vsprintf: Start consolidating printf_spec handling
-  vsprintf: Refactor resource_string()
-  vsprintf: Refactor fourcc_string()
-  vsprintf: Refactor ip_addr_string()
-  vsprintf: Refactor mac_address_string()
-  vsprintf: time_and_date() no longer takes printf_spec
-  vsprintf: flags_string() no longer takes printf_spec
-  vsprintf: Refactor device_node_string, fwnode_string
-  vsprintf: Refactor hex_string, bitmap_string_list, bitmap_string
-  Input/joystick/analog: Convert from seq_buf -> printbuf
-  mm/memcontrol.c: Convert to printbuf
-  clk: tegra: bpmp: Convert to printbuf
-  tools/testing/nvdimm: Convert to printbuf
-  powerpc: Convert to printbuf
-  x86/resctrl: Convert to printbuf
-  PCI/P2PDMA: Convert to printbuf
-
- Documentation/core-api/printk-formats.rst |   19 +
- arch/powerpc/kernel/process.c             |   16 +-
- arch/powerpc/kernel/security.c            |   75 +-
- arch/powerpc/platforms/pseries/papr_scm.c |   34 +-
- arch/x86/kernel/cpu/resctrl/rdtgroup.c    |   16 +-
- drivers/clk/tegra/clk-bpmp.c              |   21 +-
- drivers/input/joystick/analog.c           |   37 +-
- drivers/pci/p2pdma.c                      |   17 +-
- include/linux/kernel.h                    |    4 +
- include/linux/pretty-printers.h           |   11 +
- include/linux/printbuf.h                  |  225 +++
- include/linux/string_helpers.h            |    8 +-
- lib/Makefile                              |    2 +-
- lib/pretty-printers.c                     |   81 ++
- lib/printbuf.c                            |  252 ++++
- lib/string_helpers.c                      |   18 +-
- lib/test_printf.c                         |   23 +-
- lib/vsprintf.c                            | 1612 ++++++++++-----------
- mm/memcontrol.c                           |   68 +-
- tools/testing/nvdimm/test/ndtest.c        |   22 +-
- 20 files changed, 1527 insertions(+), 1034 deletions(-)
- create mode 100644 include/linux/pretty-printers.h
- create mode 100644 include/linux/printbuf.h
- create mode 100644 lib/pretty-printers.c
- create mode 100644 lib/printbuf.c
-
+diff --git a/Documentation/core-api/printk-formats.rst b/Documentation/core-api/printk-formats.rst
+index 5e89497ba3..e4ed40960e 100644
+--- a/Documentation/core-api/printk-formats.rst
++++ b/Documentation/core-api/printk-formats.rst
+@@ -625,6 +625,25 @@ Examples::
+ 	%p4cc	Y10  little-endian (0x20303159)
+ 	%p4cc	NV12 big-endian (0xb231564e)
+ 
++Calling a pretty printer function
++---------------------------------
++
++::
++
++        %p(%p)     pretty printer function taking one argument
++        %p(%p,%p)  pretty printer function taking two arguments
++
++For calling generic pretty printers. A pretty printer is a function that takes
++as its first argument a pointer to a printbuf, and then zero or more additional
++pointer arguments. For example:
++
++        void foo_to_text(struct printbuf *out, struct foo *foo)
++        {
++                pr_buf(out, "bar=%u baz=%u", foo->bar, foo->baz);
++        }
++
++        printf("%p(%p)", foo_to_text, foo);
++
+ Thanks
+ ======
+ 
+diff --git a/lib/test_printf.c b/lib/test_printf.c
+index 07309c45f3..1e1604ef1a 100644
+--- a/lib/test_printf.c
++++ b/lib/test_printf.c
+@@ -783,6 +783,22 @@ test_pointer(void)
+ 	fourcc_pointer();
+ }
+ 
++static void printf_test_fn(struct printbuf *out, void *p)
++{
++	int *i = p;
++
++	pr_buf(out, "%i", *i);
++}
++
++static void __init
++test_fn(void)
++{
++	int i = 1;
++
++	test("1", "%pf(%p)", printf_test_fn, &i);
++	test("1", "%(%p)", printf_test_fn, &i);
++}
++
+ static void __init selftest(void)
+ {
+ 	alloced_buffer = kmalloc(BUF_SIZE + 2*PAD_SIZE, GFP_KERNEL);
+@@ -794,6 +810,7 @@ static void __init selftest(void)
+ 	test_number();
+ 	test_string();
+ 	test_pointer();
++	test_fn();
+ 
+ 	kfree(alloced_buffer);
+ }
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 09b259e030..7fbeaf50d1 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -431,7 +431,8 @@ enum format_type {
+ 	FORMAT_TYPE_UINT,
+ 	FORMAT_TYPE_INT,
+ 	FORMAT_TYPE_SIZE_T,
+-	FORMAT_TYPE_PTRDIFF
++	FORMAT_TYPE_PTRDIFF,
++	FORMAT_TYPE_FN,
+ };
+ 
+ struct printf_spec {
+@@ -2512,7 +2513,16 @@ int format_decode(const char *fmt, struct printf_spec *spec)
+ 		return ++fmt - start;
+ 
+ 	case 'p':
+-		spec->type = FORMAT_TYPE_PTR;
++		fmt++;
++		if (fmt[0] == 'f' &&
++		    fmt[1] == '(') {
++			fmt += 2;
++			spec->type = FORMAT_TYPE_FN;
++		} else
++			spec->type = FORMAT_TYPE_PTR;
++		return fmt - start;
++	case '(':
++		spec->type = FORMAT_TYPE_FN;
+ 		return ++fmt - start;
+ 
+ 	case '%':
+@@ -2594,6 +2604,49 @@ set_precision(struct printf_spec *spec, int prec)
+ 	}
+ }
+ 
++static void call_pr_fn(struct printbuf *out, void *fn, void **fn_args, unsigned nr_args)
++{
++	typedef void (*printf_fn_0)(struct printbuf *);
++	typedef void (*printf_fn_1)(struct printbuf *, void *);
++	typedef void (*printf_fn_2)(struct printbuf *, void *, void *);
++	typedef void (*printf_fn_3)(struct printbuf *, void *, void *, void *);
++	typedef void (*printf_fn_4)(struct printbuf *, void *, void *, void *, void *);
++	typedef void (*printf_fn_5)(struct printbuf *, void *, void *, void *, void *, void *);
++	typedef void (*printf_fn_6)(struct printbuf *, void *, void *, void *, void *, void *, void *);
++	typedef void (*printf_fn_7)(struct printbuf *, void *, void *, void *, void *, void *, void *, void *);
++	typedef void (*printf_fn_8)(struct printbuf *, void *, void *, void *, void *, void *, void *, void *, void *);
++
++	switch (nr_args) {
++	case 0:
++		((printf_fn_0)fn)(out);
++		break;
++	case 1:
++		((printf_fn_1)fn)(out, fn_args[0]);
++		break;
++	case 2:
++		((printf_fn_2)fn)(out, fn_args[0], fn_args[1]);
++		break;
++	case 3:
++		((printf_fn_3)fn)(out, fn_args[0], fn_args[1], fn_args[2]);
++		break;
++	case 4:
++		((printf_fn_4)fn)(out, fn_args[0], fn_args[1], fn_args[2], fn_args[3]);
++		break;
++	case 5:
++		((printf_fn_5)fn)(out, fn_args[0], fn_args[1], fn_args[2], fn_args[3], fn_args[4]);
++		break;
++	case 6:
++		((printf_fn_6)fn)(out, fn_args[0], fn_args[1], fn_args[2], fn_args[3], fn_args[4], fn_args[5]);
++		break;
++	case 7:
++		((printf_fn_7)fn)(out, fn_args[0], fn_args[1], fn_args[2], fn_args[3], fn_args[4], fn_args[5], fn_args[6]);
++		break;
++	case 8:
++		((printf_fn_8)fn)(out, fn_args[0], fn_args[1], fn_args[2], fn_args[3], fn_args[4], fn_args[5], fn_args[6], fn_args[7]);
++		break;
++	}
++}
++
+ /**
+  * vpr_buf - Format a string, outputting to a printbuf
+  * @out: The printbuf to output to
+@@ -2657,6 +2710,30 @@ void vpr_buf(struct printbuf *out, const char *fmt, va_list args)
+ 				fmt++;
+ 			break;
+ 
++		case FORMAT_TYPE_FN: {
++			unsigned nr_args = 0;
++			void *fn_args[8];
++			void *fn = va_arg(args, void *);
++
++			while (1) {
++				if (WARN_ON_ONCE(nr_args == ARRAY_SIZE(fn_args)))
++					goto out;
++				if (*fmt++ != '%')
++					goto out;
++				if (*fmt++ != 'p')
++					goto out;
++				fn_args[nr_args++] = va_arg(args, void *);
++				if (*fmt == ')')
++					break;
++				if (*fmt++ != ',')
++					goto out;
++			}
++
++			call_pr_fn(out, fn, fn_args, nr_args);
++			fmt++; /* past trailing ) */
++			break;
++		}
++
+ 		case FORMAT_TYPE_PERCENT_CHAR:
+ 			__pr_char(out, '%');
+ 			break;
 -- 
 2.36.0
 
