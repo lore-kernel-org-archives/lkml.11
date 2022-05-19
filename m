@@ -2,76 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3313C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243344AbiESRuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
+        id S243335AbiESRva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243370AbiESRs6 (ORCPT
+        with ESMTP id S243466AbiESRuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:48:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAACBA57A;
-        Thu, 19 May 2022 10:48:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6F16618EC;
-        Thu, 19 May 2022 17:48:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD3DAC36AF2;
-        Thu, 19 May 2022 17:48:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652982534;
-        bh=+r1r8GFRbG7ATP7YpPleCIYRYj+oHJ89RWr+aaridB4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ab9WIT7Oa7Yx9M9CyQc4rJigtQ6df4mzWw2T2AJXMBJvDxKh0Gk3lCzJRy9UhvoTb
-         y9VoA+mW1lJM3edBHE9MRLt9j9kn+HZzhm0dKDVpF3EbqilnEcHPYqwaAmweUIKb6t
-         fcV4/Frq1VuWA+CHQNPKlWt0pCX2Mp+Iee0kzW41Vbi8zNs0BhccPtd/RFb4JBeB3P
-         IYq8b5HQDLMp1JqzhW6IEt0mePqI0II1D2GD5MMzt9fxjtYMStMAIGyXd+KYXsSBAd
-         vEGVnIxkJcM6l6zNoKZUW+nbJFCFS49VakIev7XUyYrCNH1MARgu0hJyFv/j3D3T4z
-         GjlFyN4x48EQQ==
-Date:   Thu, 19 May 2022 10:48:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Shay Drory <shayd@nvidia.com>
-Subject: Re: linux-next: manual merge of the rdma tree with the net tree
-Message-ID: <20220519104852.0b6afa26@kernel.org>
-In-Reply-To: <20220519040345.6yrjromcdistu7vh@sx1>
-References: <20220519113529.226bc3e2@canb.auug.org.au>
-        <20220519040345.6yrjromcdistu7vh@sx1>
+        Thu, 19 May 2022 13:50:10 -0400
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E503CEBAAC;
+        Thu, 19 May 2022 10:49:33 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2ff53d86abbso45358577b3.8;
+        Thu, 19 May 2022 10:49:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BX+badLi7qx6lRSHCK1/33oE5/AYvYHWEehVljXyvsk=;
+        b=6Gy/D+KP2Wb3kkNT9BOWsWAnwdu1xInuc5DK5zkp3LZB1Z10SVj8AJh3pWf1Y2XFDo
+         v6zn7RjRg6nvjlFMYKQJ83C//6PCKDuqM0jadCZLDgf4tQxZQSCBc9wvMR1k7+pFuMgQ
+         tMUUYDA2kxCYgOvkC0sfM4tcTr66PBBsxrO+RX6bocAmHrd4eDN5wkkpJitCUCGuMqL2
+         N7894QnySrCdYz+HchxofbJPNC6TuNyHuIOLb3y7LaHiCtbGPvYwaMDQUI9OtFKGHnTn
+         ayqX19M8pQO00ZnU0vClHhjT3r9rYvWZC75zKeKi09g9sidf77ZsAoDW83eDna5jUiZw
+         MgAg==
+X-Gm-Message-State: AOAM532cqtIqwrCvSv5YiYsRTFq2JDEvlfCeHzoU1pvVc2YDUTzl6jtd
+        fnXZVcV8l1QBakrhmVcsE7hD7qoXmIRHxKDmook=
+X-Google-Smtp-Source: ABdhPJxYaasrq1E+VvRksv4sPkVJnJRsukLKV9yMoT8yVJhv3kTUKh59QRR/CEDvkY439wQmeqE3d42FxG0MzNuL5iY=
+X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
+ b145-20020a811b97000000b002db640f49d8mr5769634ywb.326.1652982573217; Thu, 19
+ May 2022 10:49:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220518084536.508514-1-colin.i.king@gmail.com>
+In-Reply-To: <20220518084536.508514-1-colin.i.king@gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 19 May 2022 19:49:22 +0200
+Message-ID: <CAJZ5v0jTXo7fhBVhYiE8SceHqbT4U6b26ku8p+BKHBWTEmb6wA@mail.gmail.com>
+Subject: Re: [PATCH] powercap: intel_rapl: remove redundant store to value
+ after multiply
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 18 May 2022 21:03:45 -0700 Saeed Mahameed wrote:
-> >@@@ -1274,9 -1252,7 +1261,7 @@@ static void mlx5_unload(struct mlx5_cor
-> >  	mlx5_ec_cleanup(dev);
-> >  	mlx5_sf_hw_table_destroy(dev);
-> >  	mlx5_vhca_event_stop(dev);
-> > -	mlx5_cleanup_fs(dev);
-> > +	mlx5_fs_core_cleanup(dev);
-> >- 	mlx5_accel_ipsec_cleanup(dev);
-> >- 	mlx5_accel_tls_cleanup(dev);
-> >  	mlx5_fpga_device_stop(dev);
-> >  	mlx5_rsc_dump_cleanup(dev);
-> >  	mlx5_hv_vhca_cleanup(dev->hv_vhca);  
-> 
-> I already mentioned this to the netdev maintainers, same conflict should
-> appear in net-next, this is the correct resolution, Thanks Stephen.
+On Wed, May 18, 2022 at 10:45 AM Colin Ian King <colin.i.king@gmail.com> wrote:
+>
+> There is no need to store the result of the multiply back to variable value
+> after the multiplication. The store is redundant, replace *= with just *.
+>
+> Cleans up clang scan build warning:
+> warning: Although the value stored to 'value' is used in the enclosing
+> expression, the value is never actually read from 'value'
+> [deadcode.DeadStores]
+>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  drivers/powercap/intel_rapl_common.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/powercap/intel_rapl_common.c b/drivers/powercap/intel_rapl_common.c
+> index 83da499dd6ec..70e38278986d 100644
+> --- a/drivers/powercap/intel_rapl_common.c
+> +++ b/drivers/powercap/intel_rapl_common.c
+> @@ -1010,7 +1010,7 @@ static u64 rapl_compute_time_window_atom(struct rapl_package *rp, u64 value,
+>          * where time_unit is default to 1 sec. Never 0.
+>          */
+>         if (!to_raw)
+> -               return (value) ? value *= rp->time_unit : rp->time_unit;
+> +               return (value) ? value * rp->time_unit : rp->time_unit;
+>
+>         value = div64_u64(value, rp->time_unit);
+>
+> --
 
-FTR could you not have held off the mlx5_$verb_fs() -> mlx5_fs_$verb
-rename until net-next? This conflict looks avoidable :/
+Applied as 5.19 material, thanks!
