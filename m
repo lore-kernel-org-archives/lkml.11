@@ -2,129 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9560C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbiESPDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
+        id S240274AbiESPD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240319AbiESPC5 (ORCPT
+        with ESMTP id S240429AbiESPCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:02:57 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C018EC323
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:01:49 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p4so8218648lfg.4
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:01:49 -0700 (PDT)
+        Thu, 19 May 2022 11:02:45 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66123DDDC
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:01:01 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id r30so7539235wra.13
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 08:01:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g2iR/GvonzPEkGcOKxVcDjAfsuXSBx9Hn0L+1eWPrSQ=;
-        b=HYAMB4AH5gGz4FKZpC2Pc3mwADJ6aR5PiQjCis0N7SlAr8kC+vXCm5Hzs+VdDUuUx8
-         GtWWXgWyQi9xlLdHQ5SmUrcWRoNb1kVvTwaLJNIaTqno1NCCvCSnr+6tA1XCiZLZbNi1
-         7iV10GDmU+Oz5id5Bf6XxNnO7W+IAVjq1mTWw3jRs6eTeBfRu2v1rXL/FxyUL7BlQMhl
-         y+WChPaYFAr/Rl1/11pqisqSbS9p2yR+ofZ0NreKNON8BDBtcMK7cJZErvyT5TrVGnVl
-         Geig/30uhj0y4d2AU/Mk/BMB639SSrkn93FwJPGkscb/NPyxchmNnzmTvwl7hyDiBec0
-         qiiw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kk+3RWtEnWLHYV4TCesNJ2Di/nKpfHOUcfcAM49IYBo=;
+        b=GocAhr9e187YQKtgNkdpHhdUDju/RzbLC60GmlECdUgxlL9I3gef4M7pfbSDxlIaIp
+         v62nz9WQT97MIzuGBXzwXaJI6rFKb+lnMmoOJ8fvNlg7pMkL4m6swQOMzRYsys2E2oJD
+         H3IRH0JxDx9SIfvZgOqQWmTF+Oa6ZyWrzq4dASmiYpDFLTC8y1QfoqkmHNAuDSQREAuQ
+         0U/tVJv770uvuxvjLfvVNuwaDlunG7nqzURMPGudL6oymsTG1sWZvVDkSGtnSCei1Skt
+         SB1yPXw+ZGv89/VgytknCkzbZ4CZsI4+0loNWdEc8qssSvMV+4pw612yNGwpUqIvhMpK
+         mjAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g2iR/GvonzPEkGcOKxVcDjAfsuXSBx9Hn0L+1eWPrSQ=;
-        b=Im8PcwiNPjqnuWvyx32dFhxwxi8Yt8pNIFyrQWt986bJTzdZ3zFFUUANPR/KF2Fchn
-         Iwemn/KBrnJE4qS229wQaL9O0BDF/OvbwG/SxvblIgfPq3o/J/WPSQYnrY03BVKaK46K
-         IUGqvfftF2SuOMyC/d8m+D09unsdPD2OM9SjOqkVEu9w8MMq0YDMrMsWQInMobx0IpvF
-         3GOfjq1Prb89sUlNidQlkGg7bQgAS+9cPRA7oR84gY8iVCN02zQ4AuiBwINx5n1RunPc
-         HVPJ7H6ERqjVUcYSKbcI53FH7fTCp3RA4eArQxkqoTTwX+2DM3YYo7uDahICnHXhRZZ3
-         FE8A==
-X-Gm-Message-State: AOAM531L9ooP06uVssvz33YFAqi/ue6IOmpflcGK150ReRxFjsOTViyJ
-        waxpIMaghP1oub3+RecMBv4fDt9QtOxi7xduh+Xe7Q==
-X-Google-Smtp-Source: ABdhPJxw0Qbv9d+Xa7jvzrMcSnlYgfnl0FJGdgzk2/rToRD69bZ1rlXMTUlSZqgE16jOYnli1h1X36nomx5EWTFTuhk=
-X-Received: by 2002:a05:6512:114d:b0:473:b1ba:e589 with SMTP id
- m13-20020a056512114d00b00473b1bae589mr3804418lfg.206.1652972506965; Thu, 19
- May 2022 08:01:46 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kk+3RWtEnWLHYV4TCesNJ2Di/nKpfHOUcfcAM49IYBo=;
+        b=TzPM1Ew847EULdWeT2ifGEj9MhTpBFd6hFJN4XbzrNjT+qwvdrJhcrRx+Sn6Dgh7dW
+         lq8mpcKnsX8k+hVSyo559FSWFbpnlPG7ARk7xXjgZKA+NsyszdzyX+XvIxzt9RckQCpk
+         OAIpQwzBF4TX+IgePIzCFAWrV3KuLuqZkoLB32+0aOtUMGCAAf5hrQafNfHGvHuUFqt4
+         2lT11NtwBPSbzL2NkEwF/osu5S1lXdKEEq/UzebeldsPE2Y2+Bnhj0BGJ9t01rnMMK2W
+         i4PMw5FG+p1IJ7Wob8zTLeqQOHkHbYjxK0eb72SA88vzIAnukppxz/A9Xz1w0iQIw1yp
+         kjeA==
+X-Gm-Message-State: AOAM530zqTIUyc1CpX2hrFWM6btYqj/YW90NRVARpgUmktmzJTTMEoA2
+        Haeh5xvCsdK2jaS2orokiNJ6tA==
+X-Google-Smtp-Source: ABdhPJylYY9rrFf6GRrDFY2Lac6iGtccjiKcHwGCqD1nSDxFhzQsI4Dj5xx9fqZwOc2C3VS3Lw7IEA==
+X-Received: by 2002:a5d:4112:0:b0:20d:b5e:e9bb with SMTP id l18-20020a5d4112000000b0020d0b5ee9bbmr4434628wrp.655.1652972460359;
+        Thu, 19 May 2022 08:01:00 -0700 (PDT)
+Received: from [192.168.1.17] ([84.238.208.203])
+        by smtp.googlemail.com with ESMTPSA id f21-20020a7bcd15000000b003942a244f30sm8373216wmj.9.2022.05.19.08.00.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 08:00:59 -0700 (PDT)
+Message-ID: <270cf1d2-fd41-d206-06b6-78442641ba66@linaro.org>
+Date:   Thu, 19 May 2022 18:00:58 +0300
 MIME-Version: 1.0
-References: <000000000000367c2205d2549cb9@google.com> <0000000000009fa8ee05d60428f1@google.com>
- <CAOMGZ=E9Gmv6Fb_pi4p9RhQ_MvJVYs_6rkf37XfG0DYEMFNbNA@mail.gmail.com>
-In-Reply-To: <CAOMGZ=E9Gmv6Fb_pi4p9RhQ_MvJVYs_6rkf37XfG0DYEMFNbNA@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 19 May 2022 17:01:35 +0200
-Message-ID: <CACT4Y+biE2wCBcD6Z4vdVfKRpJMsRWYGjCjiiC+Ho2D91Qv-Qg@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in __bpf_prog_put
-To:     Vegard Nossum <vegard.nossum@gmail.com>
-Cc:     syzbot <syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, "David S. Miller" <davem@davemloft.net>,
-        fgheet255t@gmail.com, hawk@kernel.org, jakub@cloudflare.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        lmb@cloudflare.com, Linux Netdev List <netdev@vger.kernel.org>,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] media: venus: hfi_platform: Correct supported codecs for
+ sc7280
+Content-Language: en-US
+To:     Vikash Garodia <quic_vgarodia@quicinc.com>,
+        linux-media@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        vboma@qti.qualcomm.com
+References: <1652952678-14747-1-git-send-email-quic_vgarodia@quicinc.com>
+From:   Stanimir Varbanov <stanimir.varbanov@linaro.org>
+In-Reply-To: <1652952678-14747-1-git-send-email-quic_vgarodia@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 24 Jan 2022 at 12:42, Vegard Nossum <vegard.nossum@gmail.com> wrote:
->
-> On Thu, 20 Jan 2022 at 15:17, syzbot
-> <syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com> wrote:
-> >
-> > syzbot suspects this issue was fixed by commit:
-> >
-> > commit 218d747a4142f281a256687bb513a135c905867b
-> > Author: John Fastabend <john.fastabend@gmail.com>
-> > Date:   Tue Jan 4 21:46:45 2022 +0000
-> >
-> >     bpf, sockmap: Fix double bpf_prog_put on error case in map_link
->
-> I can confirm the above commit fixes the issue, but it references a
-> slightly different report. Looks like the only difference is
-> __bpf_prog_put instead of bpf_prog_put:
->
-> KASAN: vmalloc-out-of-bounds Read in __bpf_prog_put
-> KASAN: vmalloc-out-of-bounds Read in bpf_prog_put
->
-> However, looking at the stack traces for the two bugs shows that
-> __bpf_prog_put() is really the location for both reports, see:
->
-> https://syzkaller.appspot.com/bug?id=797cd651dd0d9bd921e4fa51b792f5afdc3f390f
->  kasan_report.cold+0x83/0xdf mm/kasan/report.c:450 mm/kasan/report.c:450
->  __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
-> kernel/bpf/syscall.c:1812
->  bpf_prog_put kernel/bpf/syscall.c:1829 [inline]
->  bpf_prog_put kernel/bpf/syscall.c:1829 [inline] kernel/bpf/syscall.c:1837
->
-> vs.
->
-> https://syzkaller.appspot.com/bug?extid=bb73e71cf4b8fd376a4f
->  kasan_report+0x19a/0x1f0 mm/kasan/report.c:450 mm/kasan/report.c:450
->  __bpf_prog_put kernel/bpf/syscall.c:1812 [inline]
->  __bpf_prog_put kernel/bpf/syscall.c:1812 [inline] kernel/bpf/syscall.c:1829
->  bpf_prog_put+0x8c/0x4f0 kernel/bpf/syscall.c:1829 kernel/bpf/syscall.c:1829
->
-> Looks to me like the compiler's inlining decision caused syzbot to see
-> __bpf_prog_put() instead of bpf_prog_put(), but I can't tell if it's
-> because it got inlined or because of the .constprop.0 suffix... I
-> guess syzbot skips the [inline] entries when deciding which function
-> to report the bug in?
-
-Not sure if you are still interested in this or not...
-But, yes, it's inline frames that are a problem, ".constprop.0" should
-be stripped.
-syzkaller parses non-symbolized kernel output w/o inlined frames to
-extract the title. This was a very early decision, not sure if it's
-the right one or not. On the other hand using inline frames can cause
-attribution to all the common one-liners.
-Now it's somewhat hard to change b/c if we change it, new crashes will
-be parsed differently and it will cause a storm of duplicates for
-already reported bugs.
 
 
-> In any case:
->
-> #syz dup: KASAN: vmalloc-out-of-bounds Read in bpf_prog_put
->
-> Vegard
+On 5/19/22 12:31, Vikash Garodia wrote:
+> VP8 codec is deprecated for sc7280 SOC. Fix in platform layer to
+> update the supported codecs accordingly.
+> 
+> Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
+> ---
+>  drivers/media/platform/qcom/venus/hfi_parser.c   |  6 ++++--
+>  drivers/media/platform/qcom/venus/hfi_platform.c | 21 +++++++++++++++++++++
+>  drivers/media/platform/qcom/venus/hfi_platform.h |  2 ++
+>  3 files changed, 27 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/media/platform/qcom/venus/hfi_parser.c b/drivers/media/platform/qcom/venus/hfi_parser.c
+> index 5b8389b..6cf74b2 100644
+> --- a/drivers/media/platform/qcom/venus/hfi_parser.c
+> +++ b/drivers/media/platform/qcom/venus/hfi_parser.c
+> @@ -234,6 +234,7 @@ static int hfi_platform_parser(struct venus_core *core, struct venus_inst *inst)
+>  	const struct hfi_plat_caps *caps = NULL;
+>  	u32 enc_codecs, dec_codecs, count = 0;
+>  	unsigned int entries;
+> +	int ret;
+>  
+>  	plat = hfi_platform_get(core->res->hfi_version);
+>  	if (!plat)
+> @@ -242,8 +243,9 @@ static int hfi_platform_parser(struct venus_core *core, struct venus_inst *inst)
+>  	if (inst)
+>  		return 0;
+>  
+> -	if (plat->codecs)
+> -		plat->codecs(&enc_codecs, &dec_codecs, &count);
+> +	ret = hfi_platform_get_codecs(core, &enc_codecs, &dec_codecs, &count);
+> +	if (ret)
+> +		return ret;
+>  
+>  	if (plat->capabilities)
+>  		caps = plat->capabilities(&entries);
+> diff --git a/drivers/media/platform/qcom/venus/hfi_platform.c b/drivers/media/platform/qcom/venus/hfi_platform.c
+> index f16f896..bc9b431 100644
+> --- a/drivers/media/platform/qcom/venus/hfi_platform.c
+> +++ b/drivers/media/platform/qcom/venus/hfi_platform.c
+> @@ -2,7 +2,9 @@
+>  /*
+>   * Copyright (c) 2020, The Linux Foundation. All rights reserved.
+>   */
+> +#include <linux/of_device.h>
+>  #include "hfi_platform.h"
+> +#include "core.h"
+>  
+>  const struct hfi_platform *hfi_platform_get(enum hfi_version version)
+>  {
+> @@ -66,3 +68,22 @@ hfi_platform_get_codec_lp_freq(enum hfi_version version, u32 codec, u32 session_
+>  	return freq;
+>  }
+>  
+> +int
+> +hfi_platform_get_codecs(struct venus_core *core, u32 *enc_codecs, u32 *dec_codecs, u32 *count)
+> +{
+> +	const struct hfi_platform *plat;
+> +
+> +	plat = hfi_platform_get(core->res->hfi_version);
+> +	if (!plat)
+> +		return -EINVAL;
+> +
+> +	plat->codecs(enc_codecs, dec_codecs, count);
+
+I guess some of the static code analyzers could complain, so please
+check plat->codecs for NULL:
+
+	if (!plat->codecs)
+		return -EINVAL;
+
+Otherwise look good to me:
+
+Acked-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+
+> +
+> +	if (of_device_is_compatible(core->dev->of_node, "qcom,sc7280-venus")) {
+> +		*enc_codecs &= ~HFI_VIDEO_CODEC_VP8;
+> +		*dec_codecs &= ~HFI_VIDEO_CODEC_VP8;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> diff --git a/drivers/media/platform/qcom/venus/hfi_platform.h b/drivers/media/platform/qcom/venus/hfi_platform.h
+> index 1dcf408..ec89a90 100644
+> --- a/drivers/media/platform/qcom/venus/hfi_platform.h
+> +++ b/drivers/media/platform/qcom/venus/hfi_platform.h
+> @@ -66,4 +66,6 @@ unsigned long hfi_platform_get_codec_vsp_freq(enum hfi_version version, u32 code
+>  					      u32 session_type);
+>  unsigned long hfi_platform_get_codec_lp_freq(enum hfi_version version, u32 codec,
+>  					     u32 session_type);
+> +int hfi_platform_get_codecs(struct venus_core *core, u32 *enc_codecs, u32 *dec_codecs,
+> +			    u32 *count);
+>  #endif
+
+-- 
+regards,
+Stan
