@@ -2,94 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2318C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 23:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343640AbiESXje (ORCPT
+        id S1343687AbiESXlb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 19:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40604 "EHLO
+        Thu, 19 May 2022 19:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236252AbiESXjc (ORCPT
+        with ESMTP id S232274AbiESXl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 19:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5647ED78E
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:39:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F877617FF
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 23:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DE52C385AA;
-        Thu, 19 May 2022 23:39:30 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="C1I8xTFf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1653003568;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=edjvbY7HX7Lcrbc+aJx5o8Hn+MKLeaVB2jN9HDZFfS8=;
-        b=C1I8xTFfxz9WdxLF7BHNwQYRMHm820W30KjpGT5tD45asjE/7Mm5FF/tXJXCBmz/3gSihm
-        TeXVwRaz0kP5J7s+A+b1NXyipneBaoXKpItUMT/rDY8CtMn1WPO/Xyw4pypV5LpddU09xA
-        F6z2T+piJkJLldQB67E8TKhsn4IFJDo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0ad65c0f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 19 May 2022 23:39:28 +0000 (UTC)
-Date:   Fri, 20 May 2022 01:39:26 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCHSET 0/2] Fix splice from random/urandom
-Message-ID: <YobVLs3mpEFjJCh3@zx2c4.com>
-References: <20220519193133.194138-1-axboe@kernel.dk>
- <YoajCafKmgUbbaY0@zx2c4.com>
- <a6c843ff-a3d7-ce6a-4e99-70968834a02a@kernel.dk>
- <8e6c98d4-03e9-3eb5-3d4e-b9a9faeb677a@kernel.dk>
- <YobPfgkzGrNPDDFI@zx2c4.com>
- <60b82026-9c46-16ea-d9fa-05eb96ae2218@kernel.dk>
- <CAHmME9rdJ=Pa=KOY6voryiHffWSkRKxC75+Wz-xoQOpowObwWw@mail.gmail.com>
- <3bcbfde4-3247-b4ff-9a7c-963a9a510703@kernel.dk>
+        Thu, 19 May 2022 19:41:28 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E30766ACB
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:41:27 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id q76so6322715pgq.10
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 16:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Y9COzyvBIeNRvhVZARn4Tr5Mm1d3dQnhuaiOOZjtkqk=;
+        b=cdNmdwWZwNLhDB9iFg27zK0z/Sw30NLINUvQdUJYod654q4zx/M+3VnWdLwUwLwI1T
+         OD+Eyv+KaBElZHITAvZ/sD57wk23rsKjfxsIdgzqCQ0nlANCer3Gem8sIjNEzYvKPM0b
+         UMb/VxEKb8KyRlguUCWyR1NGbHyCfePpG3fn5XlcAQLauA3vCXhy30tnP1X6LnYlB7lg
+         tV2rcl/BIgp60KT3AsOVrdEdtNLZY6k/rLKl6E0S3MettlmqcX7IYCtHY1ojpra1Vl8B
+         HXIEFEhaYeNljfi6YjWxIHPVL3gBd2aQ17OmYq0lBrVEwVGLc5pnf4wWwBd6hYpDzEY2
+         ytvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y9COzyvBIeNRvhVZARn4Tr5Mm1d3dQnhuaiOOZjtkqk=;
+        b=FEcB++w9OoZDpViM2SyY35xru57Ey8TbKZl56jXCWvqn7194T0Mm+yqby+ibwMUSBW
+         APZfnGl23Yw5oazVqrswjysm86LGzKjtZF0ZFqiwNoyFVHmmCFsd98njIPGInAfh+CFC
+         o+D+96yGM8hxM0ij++TyyKSOAKSBFpyt5IOEkehyhjKcwheALoBic08nG8zvSymx76Yl
+         /vmB6xhhwO2aZ58PaxWk6p6rA1NBvxnWzeESmvQwvP3EcHrJuIKYMjRmKEyXYzCSMyCW
+         s1/7ZjYk9Z6haFoIQcA7n6tmT8KpAeTT7DR7XRplcgpBtoFYYopVcjdPuzB7tJPAMObJ
+         x5qQ==
+X-Gm-Message-State: AOAM532RyKl7HRHgD3nMXQudElVU0IPpV0hvgdqQygNiO419DbLHlmZ1
+        4jvMbRKTlNChEJKnptEGatYMXQ==
+X-Google-Smtp-Source: ABdhPJyUnP4DU2ULl/GilAmOWqdi+HmycYrx10QrXHqJuODoh6QTRIRVzZJ4+S5hFEXuQ5VoYosVZA==
+X-Received: by 2002:a65:480a:0:b0:3c6:e629:3022 with SMTP id h10-20020a65480a000000b003c6e6293022mr5953237pgs.281.1653003686955;
+        Thu, 19 May 2022 16:41:26 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id t66-20020a628145000000b005183112db97sm246042pfd.74.2022.05.19.16.41.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 16:41:26 -0700 (PDT)
+Date:   Thu, 19 May 2022 23:41:22 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Zeng Guang <guang.zeng@intel.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>
+Subject: Re: [PATCH v9 0/9] IPI virtualization support for VM
+Message-ID: <YobVotf9CJ6dk9zw@google.com>
+References: <20220419153155.11504-1-guang.zeng@intel.com>
+ <2d33b71a-13e5-d377-abc2-c20958526497@redhat.com>
+ <cf178428-8c98-e7b3-4317-8282938976fd@intel.com>
+ <f0e633b3-38ea-f288-c74d-487387cefddc@redhat.com>
+ <YoK48P2UrrjxaRrJ@google.com>
+ <20220517135321.GA31556@gao-cwp>
+ <20220517140218.GA569@gao-cwp>
+ <20220519092906.GA3234@gao-cwp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3bcbfde4-3247-b4ff-9a7c-963a9a510703@kernel.dk>
+In-Reply-To: <20220519092906.GA3234@gao-cwp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jens,
-
-On Thu, May 19, 2022 at 05:33:01PM -0600, Jens Axboe wrote:
-> On 5/19/22 5:25 PM, Jason A. Donenfeld wrote:
-> > Hi Jens,
-> > 
-> > On Fri, May 20, 2022 at 1:22 AM Jens Axboe <axboe@kernel.dk> wrote:
-> >> I can certainly do the write side too. To fix this regression, I just
-> >> valued doing read_iter first and I'd hate to hold that up to do the
-> >> write side too. I'll do the write side later today, but let's keep them
-> >> separate.
-> > 
-> > Excellent, thanks. I plan to queue these up all in a row.
+On Thu, May 19, 2022, Chao Gao wrote:
+> On Tue, May 17, 2022 at 10:02:23PM +0800, Chao Gao wrote:
+> >+ Maxim
+> >
+> >On Tue, May 17, 2022 at 09:53:26PM +0800, Chao Gao wrote:
+> >>On Mon, May 16, 2022 at 08:49:52PM +0000, Sean Christopherson wrote:
+> >>>Shouldn't we have a solution for the read-only APIC_ID mess before this is merged?
 > 
-> Built and tested v2, just sent it out. Note that it deviates from your
-> proposal a bit since with that we lost the
+> Paolo & Sean,
 > 
-> if (!len)
-> 	break;
-> 
-> check, which is kind of important if you ever want to be done :-)
+> If a solution for read-only APIC ID mess is needed before merging IPIv
+> series, do you think the Maxim's patch [1] after some improvement will
+> suffice? Let us know if there is any gap.
 
-Heh, noticed that too, thanks.
+Yep, inhibiting APICv if APIC ID is changed should do the trick, and it's nice and
+simple.  I can't think of any gaps.
 
-> I'll do the write_iter side, but as mentioned, I'd prefer to keep it
-> separate from this patchset as this one fixes a real regression that we
-> need to get backported too.
- 
-No problem. Because of all the flux in random.c lately, I've been
-preparing a massive backports branch, 2 branches actually, so I'll make
-sure this is in there. Backport concern aside, though, I'll look for
-your write_iter patch today. Thanks a bunch for doing this.
-
-Jason
+> [1]: https://lore.kernel.org/all/20220427200314.276673-3-mlevitsk@redhat.com/
