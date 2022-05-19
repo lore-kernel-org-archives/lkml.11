@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC539C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84928C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240889AbiESPd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
+        id S241012AbiESPdd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241012AbiESPcs (ORCPT
+        with ESMTP id S241033AbiESPcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:32:48 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE251606E4;
-        Thu, 19 May 2022 08:32:43 -0700 (PDT)
+        Thu, 19 May 2022 11:32:50 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A569F5EDC5;
+        Thu, 19 May 2022 08:32:47 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E76ACFF80F;
-        Thu, 19 May 2022 15:32:39 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6730DFF80E;
+        Thu, 19 May 2022 15:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652974361;
+        t=1652974366;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KzRgECeLg8b+JOftEd+lYLYrupVVTVJ7ZgWpmv64DfU=;
-        b=B7XNeeqkkxFJgvseWqzReiqJqz98UoEV0tB65KjxFAWnnFt8GijfDc70bCGguEwTvIKk4n
-        WZ5ySVEkYmMNhVRg9ZCJylJ3LliqbeAAXqbAISAVgD49w5Ja8jlyOpsZT8lFQfpyDlIVae
-        MILlGbERi4P1mqOzQeZ2eQayMKII1E1ImhgqxWCB5oUs8wmB3seXhTtmmu25V1j6TVpzUS
-        0ETUjMXwzDREkPkxRQy6XtanTIdFKwZG1l3bX13G7xzwLj2RR4lCLQGHwtkpAArp+a2Z9w
-        HAT96ugGxygZU0eNerjUNW7VzCxEFLd5y7kZNmufqvRamElJAj2Fi4WSEGKKzw==
+        bh=HuqhlQ7LVqT6GLJ5DeWyUU+ZEsCqg/vVduE5lh7z7Dk=;
+        b=H5QsIp3wfpFbT34q2bQ8Sypfr3Rwi/NdMbGsB4Irve6u2HJfwfv4xhjfabMGOfpjCCi4CV
+        1wYRrLQI1uF9N7EMRh3whf5SJ3if3C/21ZMVm89YbO1uzIUJTt7auyOKY3YZ0x9Nd7JXpV
+        9cOh6xbxveMWsasjp/6LKGdddf31uPtCEqZfmRIgl5Z4fAgEiSFkTWs8EjUALFlm/K8eJ4
+        Ptp5zG54IugXQiyYPFZAAKgsCcoNXfmQG+ChiLiJQMclqy+jOM2O6MnCMzXH98dgkV8CXx
+        69UDWv/7wsP2UpAK+ES2y4USxqlU01cfDNMi5LCZU0GUEHmPKYXGZT50rv/nXA==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -54,9 +54,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port switch
-Date:   Thu, 19 May 2022 17:31:00 +0200
-Message-Id: <20220519153107.696864-7-clement.leger@bootlin.com>
+Subject: [PATCH net-next v5 08/13] net: dsa: rzn1-a5psw: add statistics support
+Date:   Thu, 19 May 2022 17:31:02 +0200
+Message-Id: <20220519153107.696864-9-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220519153107.696864-1-clement.leger@bootlin.com>
 References: <20220519153107.696864-1-clement.leger@bootlin.com>
@@ -67,155 +67,284 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
-present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
-This company does not exists anymore and has been bought by Synopsys.
-Since this IP can't be find anymore in the Synospsy portfolio, lets use
-Renesas as the vendor compatible for this IP.
+Add statistics support to the rzn1-a5psw driver by implementing the
+following dsa_switch_ops callbacks:
+- get_sset_count()
+- get_strings()
+- get_ethtool_stats()
+- get_eth_mac_stats()
+- get_eth_ctrl_stats()
+- get_rmon_stats()
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 131 ++++++++++++++++++
- 1 file changed, 131 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+ drivers/net/dsa/rzn1_a5psw.c | 174 +++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h |  46 ++++++++-
+ 2 files changed, 219 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-new file mode 100644
-index 000000000000..e3ab1cf1575d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-@@ -0,0 +1,131 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+index 3c5e905e3a0f..3ef68bf1c8c6 100644
+--- a/drivers/net/dsa/rzn1_a5psw.c
++++ b/drivers/net/dsa/rzn1_a5psw.c
+@@ -17,6 +17,57 @@
+ 
+ #include "rzn1_a5psw.h"
+ 
++struct a5psw_stats {
++	u16 offset;
++	const char name[ETH_GSTRING_LEN];
++};
 +
-+title: Renesas RZ/N1 Advanced 5 ports ethernet switch
++#define STAT_DESC(_offset) {	\
++	.offset = A5PSW_##_offset,	\
++	.name = __stringify(_offset),	\
++}
 +
-+maintainers:
-+  - Clément Léger <clement.leger@bootlin.com>
++static const struct a5psw_stats a5psw_stats[] = {
++	STAT_DESC(aFramesTransmittedOK),
++	STAT_DESC(aFramesReceivedOK),
++	STAT_DESC(aFrameCheckSequenceErrors),
++	STAT_DESC(aAlignmentErrors),
++	STAT_DESC(aOctetsTransmittedOK),
++	STAT_DESC(aOctetsReceivedOK),
++	STAT_DESC(aTxPAUSEMACCtrlFrames),
++	STAT_DESC(aRxPAUSEMACCtrlFrames),
++	STAT_DESC(ifInErrors),
++	STAT_DESC(ifOutErrors),
++	STAT_DESC(ifInUcastPkts),
++	STAT_DESC(ifInMulticastPkts),
++	STAT_DESC(ifInBroadcastPkts),
++	STAT_DESC(ifOutDiscards),
++	STAT_DESC(ifOutUcastPkts),
++	STAT_DESC(ifOutMulticastPkts),
++	STAT_DESC(ifOutBroadcastPkts),
++	STAT_DESC(etherStatsDropEvents),
++	STAT_DESC(etherStatsOctets),
++	STAT_DESC(etherStatsPkts),
++	STAT_DESC(etherStatsUndersizePkts),
++	STAT_DESC(etherStatsOversizePkts),
++	STAT_DESC(etherStatsPkts64Octets),
++	STAT_DESC(etherStatsPkts65to127Octets),
++	STAT_DESC(etherStatsPkts128to255Octets),
++	STAT_DESC(etherStatsPkts256to511Octets),
++	STAT_DESC(etherStatsPkts1024to1518Octets),
++	STAT_DESC(etherStatsPkts1519toXOctets),
++	STAT_DESC(etherStatsJabbers),
++	STAT_DESC(etherStatsFragments),
++	STAT_DESC(VLANReceived),
++	STAT_DESC(VLANTransmitted),
++	STAT_DESC(aDeferred),
++	STAT_DESC(aMultipleCollisions),
++	STAT_DESC(aSingleCollisions),
++	STAT_DESC(aLateCollisions),
++	STAT_DESC(aExcessiveCollisions),
++	STAT_DESC(aCarrierSenseErrors),
++};
 +
-+description: |
-+  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC family and
-+  handles 4 ports + 1 CPU management port.
+ static void a5psw_reg_writel(struct a5psw *a5psw, int offset, u32 value)
+ {
+ 	writel(value, a5psw->base + offset);
+@@ -324,6 +375,123 @@ static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
+ 	a5psw_port_fdb_flush(a5psw, port);
+ }
+ 
++static u64 a5psw_read_stat(struct a5psw *a5psw, u32 offset, int port)
++{
++	u32 reg_lo, reg_hi;
 +
-+allOf:
-+  - $ref: dsa.yaml#
++	reg_lo = a5psw_reg_readl(a5psw, offset + A5PSW_PORT_OFFSET(port));
++	/* A5PSW_STATS_HIWORD is latched on stat read */
++	reg_hi = a5psw_reg_readl(a5psw, A5PSW_STATS_HIWORD);
 +
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - renesas,r9a06g032-a5psw
-+      - const: renesas,rzn1-a5psw
++	return ((u64)reg_hi << 32) | reg_lo;
++}
 +
-+  reg:
-+    maxItems: 1
++static void a5psw_get_strings(struct dsa_switch *ds, int port, u32 stringset,
++			      uint8_t *data)
++{
++	unsigned int u;
 +
-+  mdio:
-+    $ref: /schemas/net/mdio.yaml#
-+    unevaluatedProperties: false
++	if (stringset != ETH_SS_STATS)
++		return;
 +
-+  clocks:
-+    items:
-+      - description: AHB clock used for the switch register interface
-+      - description: Switch system clock
++	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++) {
++		memcpy(data + u * ETH_GSTRING_LEN, a5psw_stats[u].name,
++		       ETH_GSTRING_LEN);
++	}
++}
 +
-+  clock-names:
-+    items:
-+      - const: hclk
-+      - const: clk
++static void a5psw_get_ethtool_stats(struct dsa_switch *ds, int port,
++				    uint64_t *data)
++{
++	struct a5psw *a5psw = ds->priv;
++	unsigned int u;
 +
-+  ethernet-ports:
-+    type: object
-+    properties:
-+      '#address-cells':
-+        const: 1
-+      '#size-cells':
-+        const: 0
++	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++)
++		data[u] = a5psw_read_stat(a5psw, a5psw_stats[u].offset, port);
++}
 +
-+    patternProperties:
-+      "^(ethernet-)?port@[0-4]$":
-+        type: object
-+        description: Ethernet switch ports
++static int a5psw_get_sset_count(struct dsa_switch *ds, int port, int sset)
++{
++	if (sset != ETH_SS_STATS)
++		return 0;
 +
-+        properties:
-+          pcs-handle:
-+            description:
-+              phandle pointing to a PCS sub-node compatible with
-+              renesas,rzn1-miic.yaml#
-+            $ref: /schemas/types.yaml#/definitions/phandle
++	return ARRAY_SIZE(a5psw_stats);
++}
 +
-+unevaluatedProperties: false
++static void a5psw_get_eth_mac_stats(struct dsa_switch *ds, int port,
++				    struct ethtool_eth_mac_stats *mac_stats)
++{
++	struct a5psw *a5psw = ds->priv;
 +
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
++#define RD(name) a5psw_read_stat(a5psw, A5PSW_##name, port)
++	mac_stats->FramesTransmittedOK = RD(aFramesTransmittedOK);
++	mac_stats->SingleCollisionFrames = RD(aSingleCollisions);
++	mac_stats->MultipleCollisionFrames = RD(aMultipleCollisions);
++	mac_stats->FramesReceivedOK = RD(aFramesReceivedOK);
++	mac_stats->FrameCheckSequenceErrors = RD(aFrameCheckSequenceErrors);
++	mac_stats->AlignmentErrors = RD(aAlignmentErrors);
++	mac_stats->OctetsTransmittedOK = RD(aOctetsTransmittedOK);
++	mac_stats->FramesWithDeferredXmissions = RD(aDeferred);
++	mac_stats->LateCollisions = RD(aLateCollisions);
++	mac_stats->FramesAbortedDueToXSColls = RD(aExcessiveCollisions);
++	mac_stats->FramesLostDueToIntMACXmitError = RD(ifOutErrors);
++	mac_stats->CarrierSenseErrors = RD(aCarrierSenseErrors);
++	mac_stats->OctetsReceivedOK = RD(aOctetsReceivedOK);
++	mac_stats->FramesLostDueToIntMACRcvError = RD(ifInErrors);
++	mac_stats->MulticastFramesXmittedOK = RD(ifOutMulticastPkts);
++	mac_stats->BroadcastFramesXmittedOK = RD(ifOutBroadcastPkts);
++	mac_stats->FramesWithExcessiveDeferral = RD(aDeferred);
++	mac_stats->MulticastFramesReceivedOK = RD(ifInMulticastPkts);
++	mac_stats->BroadcastFramesReceivedOK = RD(ifInBroadcastPkts);
++#undef RD
++}
 +
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
++static const struct ethtool_rmon_hist_range a5psw_rmon_ranges[] = {
++	{ 0, 64 },
++	{ 65, 127 },
++	{ 128, 255 },
++	{ 256, 511 },
++	{ 512, 1023 },
++	{ 1024, 1518 },
++	{ 1519, A5PSW_MAX_MTU },
++	{}
++};
 +
-+    switch@44050000 {
-+        compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-+        reg = <0x44050000 0x10000>;
-+        clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
-+        clock-names = "hclk", "clk";
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
++static void a5psw_get_rmon_stats(struct dsa_switch *ds, int port,
++				 struct ethtool_rmon_stats *rmon_stats,
++				 const struct ethtool_rmon_hist_range **ranges)
++{
++	struct a5psw *a5psw = ds->priv;
 +
-+        dsa,member = <0 0>;
++#define RD(name) a5psw_read_stat(a5psw, A5PSW_##name, port)
++	rmon_stats->undersize_pkts = RD(etherStatsUndersizePkts);
++	rmon_stats->oversize_pkts = RD(etherStatsOversizePkts);
++	rmon_stats->fragments = RD(etherStatsFragments);
++	rmon_stats->jabbers = RD(etherStatsJabbers);
++	rmon_stats->hist[0] = RD(etherStatsPkts64Octets);
++	rmon_stats->hist[1] = RD(etherStatsPkts65to127Octets);
++	rmon_stats->hist[2] = RD(etherStatsPkts128to255Octets);
++	rmon_stats->hist[3] = RD(etherStatsPkts256to511Octets);
++	rmon_stats->hist[4] = RD(etherStatsPkts512to1023Octets);
++	rmon_stats->hist[5] = RD(etherStatsPkts1024to1518Octets);
++	rmon_stats->hist[6] = RD(etherStatsPkts1519toXOctets);
++#undef RD
 +
-+        ethernet-ports {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
++	*ranges = a5psw_rmon_ranges;
++}
 +
-+            port@0 {
-+                reg = <0>;
-+                label = "lan0";
-+                phy-handle = <&switch0phy3>;
-+                pcs-handle = <&mii_conv4>;
-+            };
++static void a5psw_get_eth_ctrl_stats(struct dsa_switch *ds, int port,
++				     struct ethtool_eth_ctrl_stats *ctrl_stats)
++{
++	struct a5psw *a5psw = ds->priv;
++	u64 stat;
 +
-+            port@1 {
-+                reg = <1>;
-+                label = "lan1";
-+                phy-handle = <&switch0phy1>;
-+                pcs-handle = <&mii_conv3>;
-+            };
++	stat = a5psw_read_stat(a5psw, A5PSW_aTxPAUSEMACCtrlFrames, port);
++	ctrl_stats->MACControlFramesTransmitted = stat;
++	stat = a5psw_read_stat(a5psw, A5PSW_aRxPAUSEMACCtrlFrames, port);
++	ctrl_stats->MACControlFramesReceived = stat;
++}
 +
-+            port@4 {
-+                reg = <4>;
-+                ethernet = <&gmac1>;
-+                label = "cpu";
-+                fixed-link {
-+                  speed = <1000>;
-+                  full-duplex;
-+                };
-+            };
-+        };
+ static int a5psw_setup(struct dsa_switch *ds)
+ {
+ 	struct a5psw *a5psw = ds->priv;
+@@ -412,6 +580,12 @@ static const struct dsa_switch_ops a5psw_switch_ops = {
+ 	.phylink_mac_link_up = a5psw_phylink_mac_link_up,
+ 	.port_change_mtu = a5psw_port_change_mtu,
+ 	.port_max_mtu = a5psw_port_max_mtu,
++	.get_sset_count = a5psw_get_sset_count,
++	.get_strings = a5psw_get_strings,
++	.get_ethtool_stats = a5psw_get_ethtool_stats,
++	.get_eth_mac_stats = a5psw_get_eth_mac_stats,
++	.get_eth_ctrl_stats = a5psw_get_eth_ctrl_stats,
++	.get_rmon_stats = a5psw_get_rmon_stats,
+ 	.set_ageing_time = a5psw_set_ageing_time,
+ 	.port_bridge_join = a5psw_port_bridge_join,
+ 	.port_bridge_leave = a5psw_port_bridge_leave,
+diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
+index 306cab55db24..649165d37fde 100644
+--- a/drivers/net/dsa/rzn1_a5psw.h
++++ b/drivers/net/dsa/rzn1_a5psw.h
+@@ -146,7 +146,50 @@
+ 
+ #define A5PSW_STATS_HIWORD		0x900
+ 
+-#define A5PSW_DUMMY_WORKAROUND		0x5000
++/* Stats */
++#define A5PSW_aFramesTransmittedOK		0x868
++#define A5PSW_aFramesReceivedOK			0x86C
++#define A5PSW_aFrameCheckSequenceErrors		0x870
++#define A5PSW_aAlignmentErrors			0x874
++#define A5PSW_aOctetsTransmittedOK		0x878
++#define A5PSW_aOctetsReceivedOK			0x87C
++#define A5PSW_aTxPAUSEMACCtrlFrames		0x880
++#define A5PSW_aRxPAUSEMACCtrlFrames		0x884
++	/* If */
++#define A5PSW_ifInErrors			0x888
++#define A5PSW_ifOutErrors			0x88C
++#define A5PSW_ifInUcastPkts			0x890
++#define A5PSW_ifInMulticastPkts			0x894
++#define A5PSW_ifInBroadcastPkts			0x898
++#define A5PSW_ifOutDiscards			0x89C
++#define A5PSW_ifOutUcastPkts			0x8A0
++#define A5PSW_ifOutMulticastPkts		0x8A4
++#define A5PSW_ifOutBroadcastPkts		0x8A8
++	/* Ether */
++#define A5PSW_etherStatsDropEvents		0x8AC
++#define A5PSW_etherStatsOctets			0x8B0
++#define A5PSW_etherStatsPkts			0x8B4
++#define A5PSW_etherStatsUndersizePkts		0x8B8
++#define A5PSW_etherStatsOversizePkts		0x8BC
++#define A5PSW_etherStatsPkts64Octets		0x8C0
++#define A5PSW_etherStatsPkts65to127Octets	0x8C4
++#define A5PSW_etherStatsPkts128to255Octets	0x8C8
++#define A5PSW_etherStatsPkts256to511Octets	0x8CC
++#define A5PSW_etherStatsPkts512to1023Octets	0x8D0
++#define A5PSW_etherStatsPkts1024to1518Octets	0x8D4
++#define A5PSW_etherStatsPkts1519toXOctets	0x8D8
++#define A5PSW_etherStatsJabbers			0x8DC
++#define A5PSW_etherStatsFragments		0x8E0
 +
-+        mdio {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
++#define A5PSW_VLANReceived			0x8E8
++#define A5PSW_VLANTransmitted			0x8EC
 +
-+            reset-gpios = <&gpio0a 2 GPIO_ACTIVE_HIGH>;
-+            reset-delay-us = <15>;
-+            clock-frequency = <2500000>;
-+
-+            switch0phy1: ethernet-phy@1{
-+                reg = <1>;
-+            };
-+
-+            switch0phy3: ethernet-phy@3{
-+                reg = <3>;
-+            };
-+        };
-+    };
++#define A5PSW_aDeferred				0x910
++#define A5PSW_aMultipleCollisions		0x914
++#define A5PSW_aSingleCollisions			0x918
++#define A5PSW_aLateCollisions			0x91C
++#define A5PSW_aExcessiveCollisions		0x920
++#define A5PSW_aCarrierSenseErrors		0x924
+ 
+ #define A5PSW_VLAN_TAG(prio, id)	(((prio) << 12) | (id))
+ #define A5PSW_PORTS_NUM			5
+@@ -178,6 +221,7 @@
+  * @mdio_freq: MDIO bus frequency requested
+  * @pcs: Array of PCS connected to the switch ports (not for the CPU)
+  * @ds: DSA switch struct
++ * @stats_lock: lock to access statistics (shared HI counter)
+  * @lk_lock: Lock for the lookup table
+  * @reg_lock: Lock for register read-modify-write operation
+  * @bridged_ports: Mask of ports that are bridged and should be flooded
 -- 
 2.36.0
 
