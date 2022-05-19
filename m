@@ -2,174 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA30DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 15:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240280AbiESPCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 11:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
+        id S240283AbiESPCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 11:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240345AbiESPAP (ORCPT
+        with ESMTP id S240081AbiESPAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 11:00:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C376FEBE86
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:59:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 19 May 2022 11:00:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E48DEBA98
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:59:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652972367;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vLDeLvmK1CDBbyiav0ZvmXrDMQAvb2K5oFXxMwO8ya4=;
+        b=QzI3Yy62MBpnKqlvrrWiF9eQUa47thUydE5x5t0JkjnBdF8+cRxvcEL1nNEuWbZC02QFvK
+        OoHBxJtRJ7upl7kLB8pmfQaDnds5vy4kXbTqZOLxPm3HGCkNpaAPBkGuAA+8Q869weqYDD
+        Kh7A5ZE4PX6wBrJCRV5Q5RXq0vVbN/Y=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-661-Q7coxSBeOFSsVPOL9aBFtQ-1; Thu, 19 May 2022 10:59:24 -0400
+X-MC-Unique: Q7coxSBeOFSsVPOL9aBFtQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14734B82559
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B2FBC34115;
-        Thu, 19 May 2022 14:59:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652972371;
-        bh=GRE0l+2dS412Y9C5blW9JBsqJnLJQ6NYHnd1RmTCniw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U9oZ01Gz2LAMostoMtJZmd2d3YfnhGgtKEMqub8zO5VliIqOs3FPixBkW0ru9Ji/d
-         1sjbLylh2Vy41fC4s3b++hadfwGj11HcpBcGr25GZU1r/hbEGWfUBdTg0ipUm2qx3p
-         FkeojVlNqJSZYCyl63O/f21adpPbHxsD7t0CdN8N+LKiOTAIwgkh/zCw0uzc/iOE7w
-         5DLoB6HyDmCEZ87EYXaflxtNvPfNbwfTdmcTgWlNZtPkDM6iPTOSP2pTjbK8n6tDho
-         t8JvNznRZ2XbdRQgI750XZJAKwekI95UgTJ2ArnnVJ082xjIvUWb+RPbYGVbtg4liw
-         qPpb0zP1Gq9tQ==
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: [PATCH 16/21] rcu/context-tracking: Move deferred nocb resched to context tracking
-Date:   Thu, 19 May 2022 16:58:18 +0200
-Message-Id: <20220519145823.618983-17-frederic@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220519145823.618983-1-frederic@kernel.org>
-References: <20220519145823.618983-1-frederic@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7F881294EDE4;
+        Thu, 19 May 2022 14:59:23 +0000 (UTC)
+Received: from eperezma.remote.csb (unknown [10.39.193.126])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F566400E89E;
+        Thu, 19 May 2022 14:59:21 +0000 (UTC)
+From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     lvivier@redhat.com, netdev@vger.kernel.org, lulu@redhat.com,
+        eli@mellanox.com, sgarzare@redhat.com, parav@nvidia.com,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        lingshan.zhu@intel.com, linux-kernel@vger.kernel.org,
+        gdawar@xilinx.com
+Subject: [PATCH v2] vdpasim: allow to enable a vq repeatedly
+Date:   Thu, 19 May 2022 16:59:19 +0200
+Message-Id: <20220519145919.772896-1-eperezma@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To prepare for migrating the RCU eqs accounting code to context tracking,
-split the last-resort deferred nocb resched from rcu_user_enter() and
-move it into a separate call from context tracking.
+Code must be resilient to enable a queue many times.
 
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc: Yu Liao<liaoyu15@huawei.com>
-Cc: Phil Auld <pauld@redhat.com>
-Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
-Cc: Alex Belits <abelits@marvell.com>
+At the moment the queue is resetting so it's definitely not the expected
+behavior.
+
+v2: set vq->ready = 0 at disable.
+
+Fixes: 2c53d0f64c06 ("vdpasim: vDPA device simulator")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
 ---
- include/linux/rcupdate.h  |  6 ++++++
- kernel/context_tracking.c |  8 ++++++++
- kernel/rcu/tree.c         | 15 ++-------------
- 3 files changed, 16 insertions(+), 13 deletions(-)
+ drivers/vdpa/vdpa_sim/vdpa_sim.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-index 9b11cb60cbfd..abbcd3dfcf06 100644
---- a/include/linux/rcupdate.h
-+++ b/include/linux/rcupdate.h
-@@ -113,6 +113,12 @@ static inline void rcu_user_enter(void) { }
- static inline void rcu_user_exit(void) { }
- #endif /* CONFIG_NO_HZ_FULL */
- 
-+#if defined(CONFIG_NO_HZ_FULL) && (!defined(CONFIG_GENERIC_ENTRY) || !defined(CONFIG_KVM_XFER_TO_GUEST_WORK))
-+void rcu_irq_work_resched(void);
-+#else
-+static inline void rcu_irq_work_resched(void) { }
-+#endif
-+
- #ifdef CONFIG_RCU_NOCB_CPU
- void rcu_init_nohz(void);
- int rcu_nocb_cpu_offload(int cpu);
-diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index f53287d0d520..75a466c7d726 100644
---- a/kernel/context_tracking.c
-+++ b/kernel/context_tracking.c
-@@ -177,6 +177,8 @@ static __always_inline void context_tracking_recursion_exit(void)
-  */
- void noinstr __ct_user_enter(enum ctx_state state)
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+index ddbe142af09a..881f9864c437 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+@@ -353,11 +353,14 @@ static void vdpasim_set_vq_ready(struct vdpa_device *vdpa, u16 idx, bool ready)
  {
-+	lockdep_assert_irqs_disabled();
-+
- 	/* Kernel threads aren't supposed to go to userspace */
- 	WARN_ON_ONCE(!current->mm);
+ 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+ 	struct vdpasim_virtqueue *vq = &vdpasim->vqs[idx];
++	bool old_ready;
  
-@@ -198,6 +200,12 @@ void noinstr __ct_user_enter(enum ctx_state state)
- 				vtime_user_enter(current);
- 				instrumentation_end();
- 			}
-+			/*
-+			 * Other than generic entry implementation, we may be past the last
-+			 * rescheduling opportunity in the entry code. Trigger a self IPI
-+			 * that will fire and reschedule once we resume in user/guest mode.
-+			 */
-+			rcu_irq_work_resched();
- 			rcu_user_enter();
- 		}
- 		/*
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index daff3facad7e..927c971e340b 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -685,7 +685,7 @@ static DEFINE_PER_CPU(struct irq_work, late_wakeup_work) =
-  * last resort is to fire a local irq_work that will trigger a reschedule once IRQs
-  * get re-enabled again.
-  */
--noinstr static void rcu_irq_work_resched(void)
-+noinstr void rcu_irq_work_resched(void)
- {
- 	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
- 
-@@ -701,10 +701,7 @@ noinstr static void rcu_irq_work_resched(void)
- 	}
- 	instrumentation_end();
- }
--
--#else
--static inline void rcu_irq_work_resched(void) { }
--#endif
-+#endif /* #if !defined(CONFIG_GENERIC_ENTRY) || !defined(CONFIG_KVM_XFER_TO_GUEST_WORK) */
- 
- /**
-  * rcu_user_enter - inform RCU that we are resuming userspace.
-@@ -719,14 +716,6 @@ static inline void rcu_irq_work_resched(void) { }
-  */
- noinstr void rcu_user_enter(void)
- {
--	lockdep_assert_irqs_disabled();
--
--	/*
--	 * Other than generic entry implementation, we may be past the last
--	 * rescheduling opportunity in the entry code. Trigger a self IPI
--	 * that will fire and reschedule once we resume in user/guest mode.
--	 */
--	rcu_irq_work_resched();
- 	rcu_eqs_enter(true);
+ 	spin_lock(&vdpasim->lock);
++	old_ready = vq->ready;
+ 	vq->ready = ready;
+-	if (vq->ready)
++	if (vq->ready && !old_ready) {
+ 		vdpasim_queue_ready(vdpasim, idx);
++	}
+ 	spin_unlock(&vdpasim->lock);
  }
  
 -- 
-2.25.1
+2.27.0
 
