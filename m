@@ -2,211 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02790C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD6BC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232837AbiESHLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39784 "EHLO
+        id S234564AbiESHLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234641AbiESHKB (ORCPT
+        with ESMTP id S235050AbiESHLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:10:01 -0400
-X-Greylist: delayed 1309 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 19 May 2022 00:10:00 PDT
-Received: from hobbes.mraw.org (hobbes.mraw.org [195.154.31.160])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E098B8BD1
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:10:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mraw.org;
-        s=mail2022; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ZVh+YAaKcOaOd7PiCqP4FzS+Ls8WRX7rEJkHNugStCY=; b=0ZTHZoGZj0MH9tvsJKcYCkycgM
-        3N/0HfQuGk+iG6Um+lXucbzHdAA4tVZc0o+IC9iHXHChafFLgJGyBAymlOjjbiIyaeF6mrwHvkYHu
-        IQzMDlHJh1ACTv5fB57AGqsR2mUkqkq2zbxoxbhHannNTC5LmADXLE2Nu8n0XLPqFK+iP+9qb9XiV
-        oRFSXw271jzUsZ0B92J5x2AdwgwLh8nP5gzl67NM9nO68IdjlId36Uy0W099C72ifZaSG0M6WviVz
-        kJ8rDnJO/1uv2oRwuhlIxCMH0J7JIq5KFucko7XNRTn9HG4KPyXwpegWLyDQ1w0MHHZ/UfsluLZV4
-        qI5RoI9g==;
-Received: from 82-64-171-251.subs.proxad.net ([82.64.171.251] helo=mraw.org)
-        by hobbes.mraw.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <kibi@debian.org>)
-        id 1nrZwv-000kNM-QQ; Thu, 19 May 2022 08:47:53 +0200
-Date:   Thu, 19 May 2022 08:47:51 +0200
-From:   Cyril Brulebois <kibi@debian.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Jim Quinlan <jim2101024@gmail.com>, linux-pci@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, james.dutton@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com, james.quinlan@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] PCI: brcmstb: Fix regression regarding missing PCIe
- linkup
-Message-ID: <20220519064751.ttyfj6tyd3n5pm25@mraw.org>
-Organization: Debian
-References: <20220518194211.20143-1-jim2101024@gmail.com>
- <20220518221830.GA12467@bhelgaas>
+        Thu, 19 May 2022 03:11:22 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3908A27FE2;
+        Thu, 19 May 2022 00:10:58 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id EEC231F9F4;
+        Thu, 19 May 2022 07:10:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652944256; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7THzLll8eKXBdQTV/BzshDjJ4CbuTPvZ2Drio0SjPa0=;
+        b=iNV002yTnGws18wkL+wjwzCUiOQbFnIBzCvzuQ9zC6j/XT6HQQUbg2cKg66scEl5N8L8FM
+        n+XvVSOVMWgXm+ruBU4gtupg0QOVbq17mdJJ0943BsdgRgjFk9aNlQN2NQIMKOBCrmw+u5
+        a5ne6GRDqf0DnkXzE4Uki5Oltbo2kD8=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id CB1E62C141;
+        Thu, 19 May 2022 07:10:56 +0000 (UTC)
+Date:   Thu, 19 May 2022 09:10:56 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject: Re: [PATCH v2] random: remove mostly unused async readiness notifier
+Message-ID: <YoXtgLc+jtgPrUAM@alley>
+References: <YoTB2OlwQq4J4/2D@zx2c4.com>
+ <20220518095658.24085-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="v22k724qk4fbdqwj"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220518221830.GA12467@bhelgaas>
+In-Reply-To: <20220518095658.24085-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed 2022-05-18 11:56:58, Jason A. Donenfeld wrote:
+> The register_random_ready_notifier() notifier is somewhat complicated,
+> and was already recently rewritten to use notifier blocks. It is only
+> used now by one consumer in the kernel, vsprintf.c, for which the async
+> mechanism is really overly complex for what it actually needs. This
+> commit removes register_random_ready_notifier() and unregister_random_
+> ready_notifier(), because it just adds complication with little utility,
+> and changes vsprintf.c to just check on `!rng_is_initialized() &&
+> !rng_has_arch_random()`, which will eventually be true. Performance-
+> wise, that code was already using a static branch, so there's basically
+> no overhead at all to this change.
+> 
+> Cc: Petr Mladek <pmladek@suse.com>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+> Acked-by: Petr Mladek <pmladek@suse.com> # for vsprintf.c
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+> Changes v1->v2:
+> - Use a trylock instead of a spinlock to be NMI safe.
 
---v22k724qk4fbdqwj
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Looks good to me. My ack is already there. Feel free to use:
 
-Bjorn Helgaas <helgaas@kernel.org> (2022-05-18):
-> Cyril, if you have a chance to test this and verify that it fixes the
-> regression, we may still be able to squeeze this into v5.18.
->=20
-> I can add the Reported-by and Tested-by tags myself.
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-That looks good to me (some details below), and if that's no trouble
-please use those:
+if you would prefer it.
 
-  Reported-by: Cyril Brulebois <cyril@debamax.com>
-  Tested-by: Cyril Brulebois <cyril@debamax.com>
+Thanks a lot for updating the patch.
 
-> Jim Quinlan <jim2101024@gmail.com> (2022-05-18):
-> > Please do not accept this commit until someone with a CM4 has tested
-> > this solution; I have only emulated the problem and fix on different
-> > platform.
-
-Applying this patch on top of v5.18-rc7-48-gf993aed406ea, testing with a
-CM4 mounted on a Compute Module 4 IO Board, the boot is fine again.
-
-With an empty PCIe slot:
-
-    root@rpi4-20220428:~# dmesg|grep -i pci
-    [    0.158519] PCI: CLS 0 bytes, default 64
-    [    3.374963] shpchp: Standard Hot Plug PCI Controller Driver version:=
- 0.4
-    [    3.375959] brcm-pcie fd500000.pcie: host bridge /scb/pcie@7d500000 =
-ranges:
-    [    3.375994] brcm-pcie fd500000.pcie:   No bus range found for /scb/p=
-cie@7d500000, using [bus 00-ff]
-    [    3.376042] brcm-pcie fd500000.pcie:      MEM 0x0600000000..0x0603ff=
-ffff -> 0x00f8000000
-    [    3.376096] brcm-pcie fd500000.pcie:   IB MEM 0x0000000000..0x003fff=
-ffff -> 0x0400000000
-    [    3.376837] brcm-pcie fd500000.pcie: PCI host bridge to bus 0000:00
-    [    3.376864] pci_bus 0000:00: root bus resource [bus 00-ff]
-    [    3.376886] pci_bus 0000:00: root bus resource [mem 0x600000000-0x60=
-3ffffff] (bus address [0xf8000000-0xfbffffff])
-    [    3.376950] pci 0000:00:00.0: [14e4:2711] type 01 class 0x060400
-    [    3.377057] pci 0000:00:00.0: PME# supported from D0 D3hot
-    [    3.379455] pci 0000:00:00.0: bridge configuration invalid ([bus 00-=
-00]), reconfiguring
-    [    3.698799] brcm-pcie fd500000.pcie: link down
-    [    3.700816] pci_bus 0000:01: busn_res: [bus 01-ff] end is updated to=
- 01
-    [    3.700855] pci 0000:00:00.0: PCI bridge to [bus 01]
-    [    3.701216] pcieport 0000:00:00.0: PME: Signaling with IRQ 51
-    [    3.701621] pcieport 0000:00:00.0: AER: enabled with IRQ 51
-    [    3.702134] pci_bus 0000:01: busn_res: [bus 01] is released
-    [    3.702417] pci_bus 0000:00: busn_res: [bus 00-ff] is released
-
-With a PCIe=E2=86=92quad-USB extension board, and keyboard + USB stick on i=
-t:
-
-    root@rpi4-20220428:~# dmesg|grep -i pci|grep -v input:
-    [    0.157680] PCI: CLS 0 bytes, default 64
-    [    3.374070] shpchp: Standard Hot Plug PCI Controller Driver version:=
- 0.4
-    [    3.375080] brcm-pcie fd500000.pcie: host bridge /scb/pcie@7d500000 =
-ranges:
-    [    3.375116] brcm-pcie fd500000.pcie:   No bus range found for /scb/p=
-cie@7d500000, using [bus 00-ff]
-    [    3.375166] brcm-pcie fd500000.pcie:      MEM 0x0600000000..0x0603ff=
-ffff -> 0x00f8000000
-    [    3.375211] brcm-pcie fd500000.pcie:   IB MEM 0x0000000000..0x003fff=
-ffff -> 0x0400000000
-    [    3.375946] brcm-pcie fd500000.pcie: PCI host bridge to bus 0000:00
-    [    3.375972] pci_bus 0000:00: root bus resource [bus 00-ff]
-    [    3.375993] pci_bus 0000:00: root bus resource [mem 0x600000000-0x60=
-3ffffff] (bus address [0xf8000000-0xfbffffff])
-    [    3.376057] pci 0000:00:00.0: [14e4:2711] type 01 class 0x060400
-    [    3.376164] pci 0000:00:00.0: PME# supported from D0 D3hot
-    [    3.428109] brcm-pcie fd500000.pcie: link up, 5.0 GT/s PCIe x1 (SSC)
-    [    3.428175] pci 0000:01:00.0: [1106:3483] type 00 class 0x0c0330
-    [    3.428219] pci 0000:01:00.0: reg 0x10: [mem 0x00000000-0x00000fff 6=
-4bit]
-    [    3.428346] pci 0000:01:00.0: PME# supported from D0 D3cold
-    [    3.430673] pci 0000:00:00.0: BAR 14: assigned [mem 0x600000000-0x60=
-00fffff]
-    [    3.430706] pci 0000:01:00.0: BAR 0: assigned [mem 0x600000000-0x600=
-000fff 64bit]
-    [    3.430742] pci 0000:00:00.0: PCI bridge to [bus 01]
-    [    3.430761] pci 0000:00:00.0:   bridge window [mem 0x600000000-0x600=
-0fffff]
-    [    3.430976] pcieport 0000:00:00.0: enabling device (0000 -> 0002)
-    [    3.431150] pcieport 0000:00:00.0: PME: Signaling with IRQ 51
-    [    3.431552] pcieport 0000:00:00.0: AER: enabled with IRQ 51
-    [    3.431765] pci 0000:01:00.0: enabling device (0000 -> 0002)
-
-Both keyboard and storage on USB work fine.
-
-> > commit 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two
-> > funcs")
-> >=20
-> > as the first failing commit.  This commit is a regression, but is
-> > unrelated and was fixed by a subsequent commit in the original
-> > patchset.
-
-For completeness, since the original patchset was merged before
-v5.17-rc1, I verified that the latest release from the linux-5.17.y
-branch (i.e. v5.17.9) is also broken in the same way (not surprising
-but I thought I'd check anyway):
-
-    [    1.952374] Kernel panic - not syncing: Asynchronous SError Interrupt
-
-Testing this patch on top of v5.17.9, it also fixes the boot there (with
-or without the extension board on the PCIe slot), so it looks to me this
-patch could get cc'ed to stable for inclusion into the linux-5.17.y
-branch.
-
-
-Please let me know if you need more testing/feedback.
-
-
-Cheers,
---=20
-Cyril Brulebois (kibi@debian.org)            <https://debamax.com/>
-D-I release manager -- Release team member -- Freelance Consultant
-
---v22k724qk4fbdqwj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEtg6/KYRFPHDXTPR4/5FK8MKzVSAFAmKF6BMACgkQ/5FK8MKz
-VSBu/Q/+OLEWl2ywF6zYxLHTZD9LXRhfhgV7pvcAMJJerJOiFmfza3cOzhAw3yZv
-7c9klGFWjmdseLLxeLdFboMAnuQ/f1GhJiBmoT1K2lahNHe76R38vt3Up4SqWpVY
-9XAP/nM00cdH8DJ0T4k+0li4bGoXA4o4Ihnmq3NNObdooJHqw9qFFrFB8ZW4Kq9I
-+lsBBSAA9Alf3OBypYJsFnTpc2sCjGtafaEjCdVZwmj772EcEpbrS03ygh2WWjH9
-RYmWme5sCgH+a9y9LexdpKG9fjGFuhwRFYWg7dwVd2IgJEXd+0dTye4JO6PpqFix
-5BWvAopZyCWgMqbA/B4brcooKWCBxLqGmEO+/m9B7Mg/CGe1RcLGlVIu6eeaRUOo
-jylQgtDcm7b4pvMpMawxC8uYaRqfowpa7cmTe3EWviOkzdKPSzir3Jx8m6YNfNUN
-O7zx3aSb3VWxIFIc7R4DUO7M5X/EIHX2roHKgrQlUG0qpvpl3B1SIdG9hwADuYuO
-XkNszzfQjpIbKfdaqoT5B7CGTuN6USty6niqSNgQxthI6zbc4XdTzKA5ZzWNBdta
-Uwnz07lju/OOcOKBo/i1NoMDkBTOG9Mj9WtexEL1I6SeFgoPo4PX/+0h0Pn8nCnT
-UQlZjezFYP/WQNOnx2SlwAschTpvsJbZWqsk9AEa859A8NYzgaU=
-=Z39r
------END PGP SIGNATURE-----
-
---v22k724qk4fbdqwj--
+Best Regards,
+Petr
