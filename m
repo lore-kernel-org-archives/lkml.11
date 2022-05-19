@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4191C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF940C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240107AbiESO7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41450 "EHLO
+        id S237982AbiESO7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240085AbiESO6x (ORCPT
+        with ESMTP id S240084AbiESO6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:58:53 -0400
+        Thu, 19 May 2022 10:58:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B46AD809D
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:58:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D732D9E95
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:58:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51850B8235B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:58:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C433DC34117;
-        Thu, 19 May 2022 14:58:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8B37B82559
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 14:58:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D974C34116;
+        Thu, 19 May 2022 14:58:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652972330;
-        bh=Ez/muF9+kjJrmlCOLg5f0MjmhahBJ1sWlDpnRqsrmKg=;
+        s=k20201202; t=1652972322;
+        bh=uGn4/MomNIQOvt1kVzK6g2/4eo2NkPnsPiqsExJKXrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qSMJssJQUH8FPhYY8G1KHQy8NC3dAVyznjot4OJ/yXnANY3PaZEV+oc1IycR+TNz7
-         VrmxBOyGT4ArxHNT4sntSwI+8q1CnQXV0nj63qVGalgjhJv5rAFhVOIHhwrJA0XceK
-         X0iat5GLrPAq/v/F4X+t6P/VetdA66I2RDmo1OvImYzJyifApqTMe//PMM5fX0OLP5
-         3vmKLb0+ZBqwI7tYunZ87jw34QsytQ4NouQMwxAxreiZIG1yA/m9of3yH0LXoxPywT
-         GF4mu1jJdcI0rHknW64pK9rR8fHngTi/ESmRJ8dmnjTSVs/6ubpDLLo4gxQFwBze8s
-         1dDCwY2x3v5FQ==
+        b=OkckcXHIipdSEcK1lFwpcl+ldH9pyby0gNjKjRZ2jJuKCjEdwRxLT1HidrJ2f85sp
+         +oGZeSUd6hG7xrpUJwp/sMZwptybhkM5GSPg2+11BQER95BPagZZh/hzLKyOit3NEC
+         SvRuP71xFWjmluDiqztFCKSFvGClHkSVlJjNOYKisXEvd6vC/7xUZTr0iYkciu3Dul
+         8VPGK5IHHp0ZnutCqVXxREUomuaHXaRnpg/GcsvkoEDrRkRM7FNIPhKFj93vBa1yHU
+         Hvd4HHILNQpz/yBsvmZiARHLk/r2S3WWY48bZZhNF2+edkzu/YqbYSEx1BbCu0J3V4
+         Ol8dwCufAk+7g==
 From:   Frederic Weisbecker <frederic@kernel.org>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Frederic Weisbecker <frederic@kernel.org>,
@@ -50,9 +50,9 @@ Cc:     Frederic Weisbecker <frederic@kernel.org>,
         Uladzislau Rezki <uladzislau.rezki@sony.com>,
         Joel Fernandes <joel@joelfernandes.org>,
         Mark Rutland <mark.rutland@arm.com>
-Subject: [PATCH 05/21] context_tracking: Rename context_tracking_user_enter/exit() to user_enter/exit_callable()
-Date:   Thu, 19 May 2022 16:58:07 +0200
-Message-Id: <20220519145823.618983-6-frederic@kernel.org>
+Subject: [PATCH 03/21] context_tracking: Add a note about noinstr VS unsafe context tracking functions
+Date:   Thu, 19 May 2022 16:58:05 +0200
+Message-Id: <20220519145823.618983-4-frederic@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220519145823.618983-1-frederic@kernel.org>
 References: <20220519145823.618983-1-frederic@kernel.org>
@@ -62,12 +62,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-context_tracking_user_enter() and context_tracking_user_exit() are
-ASM callable versions of user_enter() and user_exit() for architectures
-that didn't manage to check the context tracking static key from ASM.
-Change those function names to better reflect their purpose.
+Some context tracking functions enter or exit into/from RCU idle mode
+while using trace-able and lockdep-aware IRQs (un-)masking. This could
+be easily solved with using raw versions of local_irq_*() but we would
+then lose some precious debugging informations.
 
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Another possible way to solve this may consist in using rude RCU-tasks
+in lockdep and irqsoff tracing.
+
+In any case and until this get solved, those functions can't get
+tagged as noinstr even though they should.
+
+Reported-by: Peter Zijlstra <peterz@infradead.org>
 Cc: Paul E. McKenney <paulmck@kernel.org>
 Cc: Peter Zijlstra <peterz@infradead.org>
 Cc: Thomas Gleixner <tglx@linutronix.de>
@@ -82,158 +88,61 @@ Cc: Yu Liao<liaoyu15@huawei.com>
 Cc: Phil Auld <pauld@redhat.com>
 Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
 Cc: Alex Belits <abelits@marvell.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 ---
- arch/arm/kernel/entry-header.S   |  8 ++++----
- arch/csky/kernel/entry.S         |  4 ++--
- arch/riscv/kernel/entry.S        |  6 +++---
- include/linux/context_tracking.h |  4 ++--
- kernel/context_tracking.c        | 20 ++++++++++++++------
- 5 files changed, 25 insertions(+), 17 deletions(-)
+ kernel/context_tracking.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/arm/kernel/entry-header.S b/arch/arm/kernel/entry-header.S
-index 9a1dc142f782..0c14dcc43e58 100644
---- a/arch/arm/kernel/entry-header.S
-+++ b/arch/arm/kernel/entry-header.S
-@@ -370,10 +370,10 @@ ALT_UP_B(.L1_\@)
- #ifdef CONFIG_CONTEXT_TRACKING
- 	.if	\save
- 	stmdb   sp!, {r0-r3, ip, lr}
--	bl	context_tracking_user_exit
-+	bl	user_exit_callable
- 	ldmia	sp!, {r0-r3, ip, lr}
- 	.else
--	bl	context_tracking_user_exit
-+	bl	user_exit_callable
- 	.endif
- #endif
- 	.endm
-@@ -382,10 +382,10 @@ ALT_UP_B(.L1_\@)
- #ifdef CONFIG_CONTEXT_TRACKING
- 	.if	\save
- 	stmdb   sp!, {r0-r3, ip, lr}
--	bl	context_tracking_user_enter
-+	bl	user_enter_callable
- 	ldmia	sp!, {r0-r3, ip, lr}
- 	.else
--	bl	context_tracking_user_enter
-+	bl	user_enter_callable
- 	.endif
- #endif
- 	.endm
-diff --git a/arch/csky/kernel/entry.S b/arch/csky/kernel/entry.S
-index a4ababf25e24..bc734d17c16f 100644
---- a/arch/csky/kernel/entry.S
-+++ b/arch/csky/kernel/entry.S
-@@ -23,7 +23,7 @@
- 	mfcr	a0, epsr
- 	btsti	a0, 31
- 	bt	1f
--	jbsr	context_tracking_user_exit
-+	jbsr	user_exit_callable
- 	ldw	a0, (sp, LSAVE_A0)
- 	ldw	a1, (sp, LSAVE_A1)
- 	ldw	a2, (sp, LSAVE_A2)
-@@ -160,7 +160,7 @@ ret_from_exception:
- 	cmpnei	r10, 0
- 	bt	exit_work
- #ifdef CONFIG_CONTEXT_TRACKING
--	jbsr	context_tracking_user_enter
-+	jbsr	user_enter_callable
- #endif
- 1:
- #ifdef CONFIG_PREEMPTION
-diff --git a/arch/riscv/kernel/entry.S b/arch/riscv/kernel/entry.S
-index c8b9ce274b9a..ecd132af2edf 100644
---- a/arch/riscv/kernel/entry.S
-+++ b/arch/riscv/kernel/entry.S
-@@ -112,11 +112,11 @@ _save_context:
- #endif
- 
- #ifdef CONFIG_CONTEXT_TRACKING
--	/* If previous state is in user mode, call context_tracking_user_exit. */
-+	/* If previous state is in user mode, call user_exit_callable(). */
- 	li   a0, SR_PP
- 	and a0, s1, a0
- 	bnez a0, skip_context_tracking
--	call context_tracking_user_exit
-+	call user_exit_callable
- skip_context_tracking:
- #endif
- 
-@@ -256,7 +256,7 @@ resume_userspace:
- 	bnez s1, work_pending
- 
- #ifdef CONFIG_CONTEXT_TRACKING
--	call context_tracking_user_enter
-+	call user_enter_callable
- #endif
- 
- 	/* Save unwound kernel stack pointer in thread_info */
-diff --git a/include/linux/context_tracking.h b/include/linux/context_tracking.h
-index 773035124bad..69532cd18f72 100644
---- a/include/linux/context_tracking.h
-+++ b/include/linux/context_tracking.h
-@@ -19,8 +19,8 @@ extern void __ct_user_exit(enum ctx_state state);
- 
- extern void context_tracking_enter(enum ctx_state state);
- extern void context_tracking_exit(enum ctx_state state);
--extern void context_tracking_user_enter(void);
--extern void context_tracking_user_exit(void);
-+extern void user_enter_callable(void);
-+extern void user_exit_callable(void);
- 
- static inline void user_enter(void)
- {
 diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index 554c2c9587eb..e4e7aad6c2bc 100644
+index 36a98c48aedc..1f44b0461d14 100644
 --- a/kernel/context_tracking.c
 +++ b/kernel/context_tracking.c
-@@ -130,15 +130,19 @@ void context_tracking_enter(enum ctx_state state)
+@@ -103,6 +103,11 @@ void noinstr __context_tracking_enter(enum ctx_state state)
+ }
+ EXPORT_SYMBOL_GPL(__context_tracking_enter);
+ 
++/*
++ * FIXME: This function should be noinstr but the below local_irq_restore() is
++ * unsafe because it involves illegal RCU uses through tracing and lockdep. This
++ * must be fixed first.
++ */
+ void context_tracking_enter(enum ctx_state state)
+ {
+ 	unsigned long flags;
+@@ -125,6 +130,10 @@ void context_tracking_enter(enum ctx_state state)
  NOKPROBE_SYMBOL(context_tracking_enter);
  EXPORT_SYMBOL_GPL(context_tracking_enter);
  
--/*
-+/**
-+ * user_enter_callable() - Unfortunate ASM callable version of user_enter() for
-+ * 			   archs that didn't manage to check the context tracking
-+ * 			   static key from low level code.
-+ *
-  * FIXME: This function should be noinstr but it unsafely calls local_irq_restore(),
-  * involving illegal RCU uses through tracing and lockdep. This must be fixed first.
-  */
--void context_tracking_user_enter(void)
-+void user_enter_callable(void)
++/*
++ * FIXME: This function should be noinstr but it unsafely calls local_irq_restore(),
++ * involving illegal RCU uses through tracing and lockdep. This must be fixed first.
++ */
+ void context_tracking_user_enter(void)
  {
  	user_enter();
+@@ -168,6 +177,11 @@ void noinstr __context_tracking_exit(enum ctx_state state)
  }
--NOKPROBE_SYMBOL(context_tracking_user_enter);
-+NOKPROBE_SYMBOL(user_enter_callable);
+ EXPORT_SYMBOL_GPL(__context_tracking_exit);
  
- /**
-  * __ct_user_exit - Inform the context tracking that the CPU is
-@@ -196,15 +200,19 @@ void context_tracking_exit(enum ctx_state state)
++/*
++ * FIXME: This function should be noinstr but the below local_irq_save() is
++ * unsafe because it involves illegal RCU uses through tracing and lockdep. This
++ * must be fixed first.
++ */
+ void context_tracking_exit(enum ctx_state state)
+ {
+ 	unsigned long flags;
+@@ -182,6 +196,10 @@ void context_tracking_exit(enum ctx_state state)
  NOKPROBE_SYMBOL(context_tracking_exit);
  EXPORT_SYMBOL_GPL(context_tracking_exit);
  
--/*
-+/**
-+ * user_exit_callable() - Unfortunate ASM callable version of user_exit() for
-+ * 			  archs that didn't manage to check the context tracking
-+ * 			  static key from low level code.
-+ *
-  * FIXME: This function should be noinstr but it unsafely calls local_irq_save(),
-  * involving illegal RCU uses through tracing and lockdep. This must be fixed first.
-  */
--void context_tracking_user_exit(void)
-+void user_exit_callable(void)
++/*
++ * FIXME: This function should be noinstr but it unsafely calls local_irq_save(),
++ * involving illegal RCU uses through tracing and lockdep. This must be fixed first.
++ */
+ void context_tracking_user_exit(void)
  {
  	user_exit();
- }
--NOKPROBE_SYMBOL(context_tracking_user_exit);
-+NOKPROBE_SYMBOL(user_exit_callable);
- 
- void __init context_tracking_cpu_set(int cpu)
- {
 -- 
 2.25.1
 
