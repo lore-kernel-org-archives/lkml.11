@@ -2,128 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61458C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD68C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241852AbiESQMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 12:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
+        id S241691AbiESQNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 12:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241083AbiESQMU (ORCPT
+        with ESMTP id S238856AbiESQNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 12:12:20 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BD0B0408;
-        Thu, 19 May 2022 09:12:16 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id n10so4925313qvi.5;
-        Thu, 19 May 2022 09:12:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hoTmvPXtyx3H4u3Zg8utb7mfNRoYWy4jUno7/0YMY70=;
-        b=QU4vYRdK5dCC+NlAE17xdmGaZa42VlKqy2ixfrb5jDTwuCDibubZHwAPDoIPkvWGil
-         u/Lxxxe+D91uiWhBcGR6QVGWw7+NrYV7/Su9HOeN/jjIZAyRRvVHOnJZuij1vI8XNVrd
-         PHRdTSOC5udVoJcdKHAsFPrwrTUIZTiap7yyzgKOziw5W1b8sxdRzSfq6hSwytewfEuM
-         8LXFYtBr01Uz+h8OYq6GfoORMk7ZqJ3TKNseqyTj1avAY1WvfiZxUd7dFqYILiwLu/M8
-         jjmwczJ0XieJetUpg03LOZqbpL1z1sweWcbo7D0pJPu3GiFJk0nSHI9CT0AIwuGn1GWf
-         2i1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hoTmvPXtyx3H4u3Zg8utb7mfNRoYWy4jUno7/0YMY70=;
-        b=0ZNtcrUJaOnuVxKvSBxJ/kbNk/pviI6KRwndaVX0vcwW65SDmvu8/0otHEUen/VEx0
-         KvylYiFrlWRis0zurguz7ZtVdzm8Z79vvS8SxJcAoQYpfAniA4++fsJE6yhcOAkpUJjD
-         HPZwtQKUAn5xVTwq7JmlK+QSmkrHPZrAypJcIuLRl4z7ZJfTJiXZ8NRrPjpBDnA3HRb/
-         eB85J7IPlmhGwO11Tic/ObLtZULJsALDGPLGBOWbqWzXVef4nyKbMCVNdcNDvBPE9j/+
-         KZAFu8IflCCsKWDn4rA8kzMUWuubImX2SZMc2NgtzSnjER/+Ik9PBotHLG6kSfTq38qw
-         qhMg==
-X-Gm-Message-State: AOAM531NefhuHmVSjIqfWXKP2X0fL8BO8omxFj0HSsqX+dgiRM6KnCKv
-        MCizIg+hrmoNY7OSP0M2sp1DbI4NE2qOtPAjr8w=
-X-Google-Smtp-Source: ABdhPJwSCu8SNKkW70TBPOYRAfUUgpVrzcUatZdXXFWzgqGKW36FPuMXIjJh5ltu9RJ6UyHdfErpYyEVta9wAVmUqt8=
-X-Received: by 2002:a05:6214:2245:b0:461:bc38:1f7d with SMTP id
- c5-20020a056214224500b00461bc381f7dmr4629705qvc.63.1652976735222; Thu, 19 May
- 2022 09:12:15 -0700 (PDT)
+        Thu, 19 May 2022 12:13:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15BCC8BC5;
+        Thu, 19 May 2022 09:13:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AF4361C44;
+        Thu, 19 May 2022 16:13:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8195EC385AA;
+        Thu, 19 May 2022 16:13:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652976816;
+        bh=81OaKyVNWmaXHa4F4LnauX9fnfls2XYBMy6iEUMaH/g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mF0DcOju2Tq07iFUb2PCuTbb0qta67wAVmAydPw0Igk/YOesy6KhoVHOA3ieGMszG
+         hEspJBMLtXJgnn0QfAl1Qf7cJz/tRm7GMTI4ZfWs6RBg2xWzQieMzA0kFG5JNnbjg+
+         HT2Fqp1fN5LaQICZfxMYmkLqdBuni+TEx5sYGq3c=
+Date:   Thu, 19 May 2022 18:13:34 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kushagra Verma <kushagra765@outlook.com>
+Cc:     balbi@kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] USB / dwc3: Fix multiple checkpatch warnings and
+ typos
+Message-ID: <YoZsrrXE1AUk6KsG@kroah.com>
+References: <HK0PR01MB2801538F9FA06A3B8F2B59CFF8D09@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
 MIME-Version: 1.0
-References: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
- <CAADnVQ+x-A87Z9_c+3vuRJOYm=gCOBXmyCJQ64CiCNukHS6FpA@mail.gmail.com>
- <6ae715b3-96b1-2b42-4d1a-5267444d586b@bytedance.com> <9c0c3e0b-33bc-51a7-7916-7278f14f308e@fb.com>
- <380fa11e-f15d-da1a-51f7-70e14ed58ffc@bytedance.com>
-In-Reply-To: <380fa11e-f15d-da1a-51f7-70e14ed58ffc@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 19 May 2022 09:12:04 -0700
-Message-ID: <CAADnVQL9naBBKzQdAOWu2ZH=i7HA1VDi7uNzsDQ1TM9Jr+c0Ww@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] bpf: avoid grabbing spin_locks of all cpus
- when no free elems
-To:     Feng Zhou <zhoufeng.zf@bytedance.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <HK0PR01MB2801538F9FA06A3B8F2B59CFF8D09@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 8:12 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote=
-:
->
-> =E5=9C=A8 2022/5/19 =E4=B8=8A=E5=8D=884:39, Yonghong Song =E5=86=99=E9=81=
-=93:
-> >
-> >
-> > On 5/17/22 11:57 PM, Feng Zhou wrote:
-> >> =E5=9C=A8 2022/5/18 =E4=B8=8B=E5=8D=882:32, Alexei Starovoitov =E5=86=
-=99=E9=81=93:
-> >>> On Tue, May 17, 2022 at 11:27 PM Feng zhou
-> >>> <zhoufeng.zf@bytedance.com> wrote:
-> >>>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
-> >>>>
-> >>>> We encountered bad case on big system with 96 CPUs that
-> >>>> alloc_htab_elem() would last for 1ms. The reason is that after the
-> >>>> prealloc hashtab has no free elems, when trying to update, it will
-> >>>> still
-> >>>> grab spin_locks of all cpus. If there are multiple update users, the
-> >>>> competition is very serious.
-> >>>>
-> >>>> So this patch add is_empty in pcpu_freelist_head to check freelist
-> >>>> having free or not. If having, grab spin_lock, or check next cpu's
-> >>>> freelist.
-> >>>>
-> >>>> Before patch: hash_map performance
-> >>>> ./map_perf_test 1
-> >
-> > could you explain what parameter '1' means here?
->
-> This code is here:
-> samples/bpf/map_perf_test_user.c
-> samples/bpf/map_perf_test_kern.c
-> parameter '1' means testcase flag, test hash_map's performance
-> parameter '2048' means test hash_map's performance when free=3D0.
-> testcase flag '2048' is added by myself to reproduce the problem phenomen=
-on.
+On Thu, May 19, 2022 at 08:48:22PM +0530, Kushagra Verma wrote:
+> This patch series fixes multiple checkpatch warnings and typos in drivers/usb/dwc3.
+> 
+> Kushagra Verma (3):
+>   USB / dwc3: Fix bare use of unsigned warning
+>   USB / dwc3: Fix a repeated word in ep0.c
+>   USB / dwc3: Fix typos in Kconfig
+> 
+>  drivers/usb/dwc3/Kconfig | 4 ++--
+>  drivers/usb/dwc3/core.c  | 4 ++--
+>  drivers/usb/dwc3/ep0.c   | 2 +-
+>  3 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> -- 
+> 2.36.1
+> 
+> 
 
-Please convert it to selftests/bpf/bench,
-so that everyone can reproduce the issue you're seeing
-and can assess whether it's a real issue or a corner case.
+For some reason you did not thread these properly at all, so our tools
+can not pick them up as they think these are all individual commits.
 
-Also please avoid adding indent in the patch.
-Instead of
- if (!s->extralist.is_empty) {
-  .. churn
+Also, please fix up the subject lines to match the driver style, and
+your changelog text needs some work, see the kernel documentation for
+how to write better ones (hint, never say "this patch")
 
-do
+thanks,
 
- if (s->extralist.is_empty)
+greg k-h
