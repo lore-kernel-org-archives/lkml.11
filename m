@@ -2,134 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A89C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9DFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235794AbiESNxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
+        id S239163AbiESNxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239288AbiESNum (ORCPT
+        with ESMTP id S239235AbiESNum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 19 May 2022 09:50:42 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F062D028B;
-        Thu, 19 May 2022 06:50:20 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id h9so254542qtx.2;
-        Thu, 19 May 2022 06:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GPQSto0N+lNtNNPY9TQEtm6CehsZLQib25ZHkbMOJIA=;
-        b=adkuYIA2mXgko5wthuK/XjjYRyngB+DETgkoIBQDD3HMWAj9jfOOH/RCTedqah5QZ7
-         bW8+W5vvpka6zCqHPWKMoAQz/YznRj0OaI2TS8ny4pIX+qNeHxSN+XX83GWkOaM2NGrB
-         Gs66YMt0zhFgyL5O4wKbfjvEHY3qa9YUrhEgiGvrbUX7oieTqFuBOXXpdy6DToMR/rDz
-         NsV17sJmk2u6ZU+FHtdO+hs69UKVVLIUS1eNemCHvpMPtUAV718m4dQBopAJ0HsXsQy4
-         taKSoA9cQlV8VdG8NAKdXkF+pJTgNU3zRBf8Xxm/1X7CfJk99n3ic3vuFl334U6RYV0v
-         5JOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GPQSto0N+lNtNNPY9TQEtm6CehsZLQib25ZHkbMOJIA=;
-        b=EQe0nN2uBXs214xU7cm7WLdzsEjuva6cBjxQ3T3HFhYUhSl3VL28YTA40/1isk6jze
-         g1CleAxRiUXatE6OPY/RT+e/IbXO8zxAqQx2BxxjE82hD/X+82u0aGydKJNnDJb7JJet
-         sYmrSWolER1WC/OMl9c6dUsZXHnU9PY+GXzJ0MPfAEa0yRkUIy58257ljQgGnEobs96J
-         J+sAgpT1eAEDvAW0EJTK8NZOLimNzT6e7iAOiNK5Wi6EPX+4IAV+byuQCMHc/+aXtA0b
-         0838BqYbkhRZlJQHn1fgVULlMzhAIZjGTOSnA0aN/3VYFHY6pf5W6g1/FE239dGvBJNj
-         h5tg==
-X-Gm-Message-State: AOAM532ix4jGVAavctqtq8KDbHfse2N6/eQTRbDHaNsL3dQNDoU5MiMn
-        BMXdps0pZTQ7eiKqtc7UTbY=
-X-Google-Smtp-Source: ABdhPJy2Mn4bJ/OGia0z2jO+j7RXe7CmgUJKP8L5VG0CbG61g4fYIWUGIMHMBGJozxeEppfkByZ6hQ==
-X-Received: by 2002:ac8:7d8e:0:b0:2f9:1176:c24b with SMTP id c14-20020ac87d8e000000b002f91176c24bmr2139993qtd.500.1652968186128;
-        Thu, 19 May 2022 06:49:46 -0700 (PDT)
-Received: from localhost.localdomain ([217.138.206.82])
-        by smtp.gmail.com with ESMTPSA id i186-20020a3754c3000000b0069fc13ce23dsm1315024qkb.110.2022.05.19.06.49.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 06:49:45 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 4/6] clk: mediatek: reset: Implement mtk_unregister_reset_controller() API
-Date:   Thu, 19 May 2022 17:47:26 +0400
-Message-Id: <20220519134728.456643-5-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220519134728.456643-1-y.oudjana@protonmail.com>
-References: <20220519134728.456643-1-y.oudjana@protonmail.com>
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 3DF21A5A87
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 06:50:18 -0700 (PDT)
+Received: (qmail 223673 invoked by uid 1000); 19 May 2022 09:49:30 -0400
+Date:   Thu, 19 May 2022 09:49:30 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Dmytro Bagrii <dimich.dmb@gmail.com>
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: core: Call disconnect() only if it is provided by
+ driver
+Message-ID: <YoZK6vJnAe/QgHzX@rowland.harvard.edu>
+References: <20220519132900.4392-1-dimich.dmb@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519132900.4392-1-dimich.dmb@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+On Thu, May 19, 2022 at 04:29:00PM +0300, Dmytro Bagrii wrote:
+> A driver may use devres allocations. Disconnect handler is not needed in
+> this case. Allow such driver to leave .disconnect field uninitialized in
+> struct usb_driver instead of providing empty stub function.
+> 
+> Signed-off-by: Dmytro Bagrii <dimich.dmb@gmail.com>
+> ---
+>  drivers/usb/core/driver.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/core/driver.c b/drivers/usb/core/driver.c
+> index 355ed33a2179..d7fe440b033c 100644
+> --- a/drivers/usb/core/driver.c
+> +++ b/drivers/usb/core/driver.c
+> @@ -455,7 +455,8 @@ static int usb_unbind_interface(struct device *dev)
+>  	if (!driver->soft_unbind || udev->state == USB_STATE_NOTATTACHED)
+>  		usb_disable_interface(udev, intf, false);
+>  
+> -	driver->disconnect(intf);
+> +	if (driver->disconnect)
+> +		driver->disconnect(intf);
+>  
+>  	/* Free streams */
+>  	for (i = 0, j = 0; i < intf->cur_altsetting->desc.bNumEndpoints; i++) {
 
-Add a function to unregister a reset controller previously
-registered with mtk_register_reset_controller() or
-mtk_register_reset_controller_with_dev(), and do the
-necessary cleanup.
+I'm very dubious about this change.  Disconnect routines generally do 
+more than just deallocation.
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
----
-Dependencies:
-- clk: mediatek: Move to struct clk_hw provider APIs (series)
-  https://patchwork.kernel.org/project/linux-mediatek/cover/20220510104804.544597-1-wenst@chromium.org/ 
-- Cleanup MediaTek clk reset drivers and support MT8192/MT8195 (series)
-  https://patchwork.kernel.org/project/linux-mediatek/cover/20220503093856.22250-1-rex-bc.chen@mediatek.com/
-- Export required symbols to compile clk drivers as module (single patch)
-  https://patchwork.kernel.org/project/linux-mediatek/patch/20220518111652.223727-7-angelogioacchino.delregno@collabora.com/
+Can you point to any drivers that would actually benefit from this?
 
- drivers/clk/mediatek/reset.c | 7 +++++++
- drivers/clk/mediatek/reset.h | 6 ++++++
- 2 files changed, 13 insertions(+)
-
-diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
-index 09862baf1d57..c1ab8c87ec27 100644
---- a/drivers/clk/mediatek/reset.c
-+++ b/drivers/clk/mediatek/reset.c
-@@ -232,4 +232,11 @@ struct mtk_clk_rst_data
- }
- EXPORT_SYMBOL_GPL(mtk_register_reset_controller_with_dev);
- 
-+void mtk_unregister_reset_controller(struct mtk_clk_rst_data *data)
-+{
-+	reset_controller_unregister(&data->rcdev);
-+	kfree(data);
-+}
-+EXPORT_SYMBOL_GPL(mtk_unregister_reset_controller);
-+
- MODULE_LICENSE("GPL");
-diff --git a/drivers/clk/mediatek/reset.h b/drivers/clk/mediatek/reset.h
-index 7418dd0d046f..0feaea4115a8 100644
---- a/drivers/clk/mediatek/reset.h
-+++ b/drivers/clk/mediatek/reset.h
-@@ -81,4 +81,10 @@ struct mtk_clk_rst_data
- *mtk_register_reset_controller_with_dev(struct device *dev,
- 					const struct mtk_clk_rst_desc *desc);
- 
-+/**
-+ * mtk_unregister_reset_controller - Unregister mediatek clock reset controller
-+ * @data: Pointer to previously registered struct mtk_clk_rst_data.
-+ */
-+void mtk_unregister_reset_controller(struct mtk_clk_rst_data *data);
-+
- #endif /* __DRV_CLK_MTK_RESET_H */
--- 
-2.36.1
-
+Alan Stern
