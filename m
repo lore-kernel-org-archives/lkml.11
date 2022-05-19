@@ -2,146 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4936DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38720C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242013AbiESSyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
+        id S244168AbiESSyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244346AbiESSyB (ORCPT
+        with ESMTP id S244336AbiESSyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:54:01 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E79B3465B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:54:00 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id d22so5541758plr.9
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:54:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cqXx+JOzkFXDkQqUC+tFOIFeOdrLRi5FsVZ7Q6tmusg=;
-        b=KAueedpohy9ZiOcBymMzJEsFCiqcuYuuPjIX8XP7LbpXV2v67n3Jr3nZKvJB2E/kIL
-         lg+zJ293d+WCNQvzx4uZJhzCn+5qWzB3138pkFQEueIaRqP7Suer+hZcBsAiB1hXKEmF
-         109AEgiCJr1wKeIF43FSfR65AKDHN6yjqbWxE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cqXx+JOzkFXDkQqUC+tFOIFeOdrLRi5FsVZ7Q6tmusg=;
-        b=kfUy4yX/6nqq74gt4mfl2mnyjPcAuD8xfbkyiz7JMD0aCOTVg34P5xaGboBh+EjReL
-         FARMezFZ5PKP9IbdOKvgvHduZ2oeXemI5tCMARFHrLMwVwg26GoTV2hA7eTqDXmxJGcU
-         YJyYL8os2xy3yXOXuxi6G5z4jyCDch3iDEa4a915YMvg+wQY+KyI64yGAz1fN8Obq2uF
-         El96em8C64p4U5C6bwngkn5DnklwAIvNZIQqy3l0k0cV6TPeGEYUIVEsqFEtQRxTM4/2
-         CYGVN2niOYs0jmBI8/aDzahs5BYBQfXUua7xLVOA6n9qKRNq4c4vQ+tbiJAnZe/+4I9Z
-         hFOw==
-X-Gm-Message-State: AOAM530Lm9rRTcuiN2SZtUpIY/tkWVKibuqGrFe92yAbA0jGcTZqXmFz
-        067P+/u5OXF/+cHbKtUTaHTsyma0C3LWUZ1zYqq0AA==
-X-Google-Smtp-Source: ABdhPJzi+RMNmnobsEMDELyM2l9/E1mnQZX5/Vb+7QiItPrOZ4eLgTdR5yT4+SAptOUz4GiCEPbBlLhNTH6u/2tbP6I=
-X-Received: by 2002:a17:902:b90b:b0:15f:bd0:18b5 with SMTP id
- bf11-20020a170902b90b00b0015f0bd018b5mr6180510plb.97.1652986438537; Thu, 19
- May 2022 11:53:58 -0700 (PDT)
+        Thu, 19 May 2022 14:54:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BAF1157FA
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:53:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58244B827DF
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 18:53:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D72EC385AA;
+        Thu, 19 May 2022 18:53:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652986416;
+        bh=WCYDb2YCgZNItGzE9mrZGS5AiI6n+Xdwc75DdSF177M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wzfGw9NMgh+JvbudQ+oica8GMYGoIonEOhvminkj37RW/0jbG8QIvsOJFRTzmgvT3
+         kIaSJtbFy/fpTaursBqhqbH5ASYqFjPw53IoIujLrdc0ZJfRteO0FfukGEp7/0kUpo
+         JWAsJopmX7vR6CB+A5KNMLb18RMt+wvNOon3z5y4=
+Date:   Thu, 19 May 2022 20:53:33 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Li Li <dualli@chromium.org>
+Cc:     dualli@google.com, tkjos@google.com, christian@brauner.io,
+        arve@android.com, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, maco@google.com, hridya@google.com,
+        surenb@google.com, joel@joelfernandes.org, kernel-team@android.com
+Subject: Re: [PATCH v2] Binder: add TF_UPDATE_TXN to replace outdated txn
+Message-ID: <YoaSLaNVMQIM7vvn@kroah.com>
+References: <YoZnVrU8Dih+urv6@kroah.com>
+ <20220519183454.1660573-1-dualli@chromium.org>
 MIME-Version: 1.0
-References: <20220519185057.1657115-1-tommaso.merciai@amarulasolutions.com>
-In-Reply-To: <20220519185057.1657115-1-tommaso.merciai@amarulasolutions.com>
-From:   Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Date:   Thu, 19 May 2022 20:53:46 +0200
-Message-ID: <CAOf5uwnUPTc5zr8+QRwkr8L9104NY2LqX=oH0BOh6-fX_D=Eyg@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: DP83822: enable rgmii mode if phy_interface_is_rgmii
-To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Cc:     alberto.bianchi@amarulasolutions.com,
-        linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519183454.1660573-1-dualli@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tommaso
-
-On Thu, May 19, 2022 at 8:50 PM Tommaso Merciai
-<tommaso.merciai@amarulasolutions.com> wrote:
->
-> RGMII mode can be enable from dp83822 straps, and also writing bit 9
-> of register 0x17 - RMII and Status Register (RCSR).
-> When phy_interface_is_rgmii rgmii mode must be enabled, same for
-> contrary, this prevents malconfigurations of hw straps
->
-> References:
->  - https://www.ti.com/lit/gpn/dp83822i p66
->
-> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-> Suggested-by: Alberto Bianchi <alberto.bianchi@amarulasolutions.com>
-> Tested-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+On Thu, May 19, 2022 at 11:34:54AM -0700, Li Li wrote:
+> From: Li Li <dualli@google.com>
+> 
+> When the target process is busy, incoming oneway transactions are
+> queued in the async_todo list. If the clients continue sending extra
+> oneway transactions while the target process is frozen, this queue can
+> become too large to accommodate new transactions. That's why binder
+> driver introduced ONEWAY_SPAM_DETECTION to detect this situation. It's
+> helpful to debug the async binder buffer exhausting issue, but the
+> issue itself isn't solved directly.
+> 
+> In real cases applications are designed to send oneway transactions
+> repeatedly, delivering updated inforamtion to the target process.
+> Typical examples are Wi-Fi signal strength and some real time sensor
+> data. Even if the apps might only care about the lastet information,
+> all outdated oneway transactions are still accumulated there until the
+> frozen process is thawed later. For this kind of situations, there's
+> no existing method to skip those outdated transactions and deliver the
+> latest one only.
+> 
+> This patch introduces a new transaction flag TF_UPDATE_TXN. To use it,
+> use apps can set this new flag along with TF_ONE_WAY. When such an
+> oneway transaction is to be queued into the async_todo list of a frozen
+> process, binder driver will check if any previous pending transactions
+> can be superseded by comparing their code, flags and target node. If
+> such an outdated pending transaction is found, the latest transaction
+> will supersede that outdated one. This effectively prevents the async
+> binder buffer running out and saves unnecessary binder read workloads.
+> 
+> Signed-off-by: Li Li <dualli@google.com>
 > ---
-> Changes since v1:
->  - Improve commit msg
->  - Add definition of bit 9 reg rcsr (rgmii mode en)
->  - Handle case: phy_interface_is_rgmii is false
->
->  drivers/net/phy/dp83822.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-> index ce17b2af3218..7cb9d084707b 100644
-> --- a/drivers/net/phy/dp83822.c
-> +++ b/drivers/net/phy/dp83822.c
-> @@ -94,6 +94,9 @@
->  #define DP83822_WOL_INDICATION_SEL BIT(8)
->  #define DP83822_WOL_CLR_INDICATION BIT(11)
->
-> +/* RCSR bits */
-> +#define DP83822_RGMII_MODE_EN  BIT(9)
+>  drivers/android/binder.c            | 85 ++++++++++++++++++++++++++++-
+>  drivers/android/binder_trace.h      |  4 ++
+>  include/uapi/linux/android/binder.h |  1 +
+>  3 files changed, 87 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+> index f3b639e89dd8..bb968cf2f9ec 100644
+> --- a/drivers/android/binder.c
+> +++ b/drivers/android/binder.c
+> @@ -2594,6 +2594,56 @@ static int binder_fixup_parent(struct list_head *pf_head,
+>  	return binder_add_fixup(pf_head, buffer_offset, bp->buffer, 0);
+>  }
+>  
+> +/**
+> + * binder_can_update_transaction() - Can a txn be superseded by an updated one?
+> + * @t1: the pending async txn in the frozen process
+> + * @t2: the new async txn to supersede the outdated pending one
+> + *
+> + * Return:  true if t2 can supersede t1
+> + *          false if t2 can not supersede t1
+> + */
+> +static bool binder_can_update_transaction(struct binder_transaction *t1,
+> +					  struct binder_transaction *t2)
+> +{
+> +	if ((t1->flags & t2->flags & (TF_ONE_WAY | TF_UPDATE_TXN)) !=
+> +	    (TF_ONE_WAY | TF_UPDATE_TXN) || !t1->to_proc || !t2->to_proc)
+> +		return false;
+> +	if (t1->to_proc->tsk == t2->to_proc->tsk && t1->code == t2->code &&
+> +	    t1->flags == t2->flags && t1->buffer->pid == t2->buffer->pid &&
+> +	    t1->buffer->target_node->ptr == t2->buffer->target_node->ptr &&
+> +	    t1->buffer->target_node->cookie == t2->buffer->target_node->cookie)
+> +		return true;
+> +	return false;
+> +}
 > +
->  /* RSCR bits */
->  #define DP83822_RX_CLK_SHIFT   BIT(12)
->  #define DP83822_TX_CLK_SHIFT   BIT(11)
-
-BIT(9) should go here
-
-#define DP83822_RGMII_MODE_EN  BIT(9)
-#define DP83822_RX_CLK_SHIFT   BIT(12)
-#define DP83822_TX_CLK_SHIFT   BIT(11)
-
-You duplicate the comments up.
-
-> @@ -408,6 +411,12 @@ static int dp83822_config_init(struct phy_device *phydev)
->                         if (err)
->                                 return err;
->                 }
+> +/**
+> + * binder_find_outdated_transaction_ilocked() - Find the outdated transaction
+> + * @t:		 new async transaction
+> + * @target_list: list to find outdated transaction
+> + *
+> + * Return: the outdated transaction if found
+> + *         NULL if no outdated transacton can be found
+> + *
+> + * Requires the proc->inner_lock to be held.
+> + */
+> +static struct binder_transaction *
+> +binder_find_outdated_transaction_ilocked(struct binder_transaction *t,
+> +					 struct list_head *target_list)
+> +{
+> +	struct binder_work *w;
 > +
-> +               phy_set_bits_mmd(phydev, DP83822_DEVADDR,
-> +                                       MII_DP83822_RCSR, DP83822_RGMII_MODE_EN);
-> +       } else {
-> +               phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
-> +                                       MII_DP83822_RCSR, DP83822_RGMII_MODE_EN);
->         }
->
->         if (dp83822->fx_enabled) {
-> --
-> 2.25.1
->
+> +	list_for_each_entry(w, target_list, entry) {
+> +		struct binder_transaction *t_queued;
+> +
+> +		if (w->type != BINDER_WORK_TRANSACTION)
+> +			continue;
+> +		t_queued = container_of(w, struct binder_transaction, work);
+> +		if (binder_can_update_transaction(t_queued, t))
+> +			return t_queued;
+> +	}
+> +	return NULL;
+> +}
+> +
+>  /**
+>   * binder_proc_transaction() - sends a transaction to a process and wakes it up
+>   * @t:		transaction to send
+> @@ -2619,6 +2669,7 @@ static int binder_proc_transaction(struct binder_transaction *t,
+>  	struct binder_node *node = t->buffer->target_node;
+>  	bool oneway = !!(t->flags & TF_ONE_WAY);
+>  	bool pending_async = false;
+> +	struct binder_transaction *t_outdated = NULL;
+>  
+>  	BUG_ON(!node);
+>  	binder_node_lock(node);
+> @@ -2646,12 +2697,24 @@ static int binder_proc_transaction(struct binder_transaction *t,
+>  	if (!thread && !pending_async)
+>  		thread = binder_select_thread_ilocked(proc);
+>  
+> -	if (thread)
+> +	if (thread) {
+>  		binder_enqueue_thread_work_ilocked(thread, &t->work);
+> -	else if (!pending_async)
+> +	} else if (!pending_async) {
+>  		binder_enqueue_work_ilocked(&t->work, &proc->todo);
+> -	else
+> +	} else {
+> +		if ((t->flags & TF_UPDATE_TXN) && proc->is_frozen) {
+> +			t_outdated = binder_find_outdated_transaction_ilocked(t,
+> +									      &node->async_todo);
+> +			if (t_outdated) {
+> +				binder_debug(BINDER_DEBUG_TRANSACTION,
+> +					     "txn %d supersedes %d\n",
+> +					     t->debug_id, t_outdated->debug_id);
+> +				list_del_init(&t_outdated->work.entry);
+> +				proc->outstanding_txns--;
+> +			}
+> +		}
+>  		binder_enqueue_work_ilocked(&t->work, &node->async_todo);
+> +	}
+>  
+>  	if (!pending_async)
+>  		binder_wakeup_thread_ilocked(proc, thread, !oneway /* sync */);
+> @@ -2660,6 +2723,22 @@ static int binder_proc_transaction(struct binder_transaction *t,
+>  	binder_inner_proc_unlock(proc);
+>  	binder_node_unlock(node);
+>  
+> +	/*
+> +	 * To reduce potential contention, free the outdated transaction and
+> +	 * buffer after releasing the locks.
+> +	 */
+> +	if (t_outdated) {
+> +		struct binder_buffer *buffer = t_outdated->buffer;
+> +
+> +		t_outdated->buffer = NULL;
+> +		buffer->transaction = NULL;
+> +		trace_binder_transaction_update_buffer_release(buffer);
+> +		binder_transaction_buffer_release(proc, NULL, buffer, 0, 0);
+> +		binder_alloc_free_buf(&proc->alloc, buffer);
+> +		kfree(t_outdated);
+> +		binder_stats_deleted(BINDER_STAT_TRANSACTION);
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/android/binder_trace.h b/drivers/android/binder_trace.h
+> index 8eeccdc64724..8cc07e6a4273 100644
+> --- a/drivers/android/binder_trace.h
+> +++ b/drivers/android/binder_trace.h
+> @@ -311,6 +311,10 @@ DEFINE_EVENT(binder_buffer_class, binder_transaction_failed_buffer_release,
+>  	TP_PROTO(struct binder_buffer *buffer),
+>  	TP_ARGS(buffer));
+>  
+> +DEFINE_EVENT(binder_buffer_class, binder_transaction_update_buffer_release,
+> +	     TP_PROTO(struct binder_buffer *buffer),
+> +	     TP_ARGS(buffer));
+> +
+>  TRACE_EVENT(binder_update_page_range,
+>  	TP_PROTO(struct binder_alloc *alloc, bool allocate,
+>  		 void __user *start, void __user *end),
+> diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
+> index 11157fae8a8e..0b291b1d29d1 100644
+> --- a/include/uapi/linux/android/binder.h
+> +++ b/include/uapi/linux/android/binder.h
+> @@ -271,6 +271,7 @@ enum transaction_flags {
+>  	TF_STATUS_CODE	= 0x08,	/* contents are a 32-bit status code */
+>  	TF_ACCEPT_FDS	= 0x10,	/* allow replies with file descriptors */
+>  	TF_CLEAR_BUF	= 0x20,	/* clear buffer on txn complete */
+> +	TF_UPDATE_TXN	= 0x40,	/* update the outdated pending async txn */
+>  };
+>  
+>  struct binder_transaction_data {
+> -- 
+> 2.36.1.124.g0e6072fb45-goog
+> 
+> _______________________________________________
+> devel mailing list
+> devel@linuxdriverproject.org
+> http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel
 
-Michael
+Hi,
 
--- 
-Michael Nazzareno Trimarchi
-Co-Founder & Chief Executive Officer
-M. +39 347 913 2170
-michael@amarulasolutions.com
-__________________________________
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Amarula Solutions BV
-Joop Geesinkweg 125, 1114 AB, Amsterdam, NL
-T. +31 (0)85 111 9172
-info@amarulasolutions.com
-www.amarulasolutions.com
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
