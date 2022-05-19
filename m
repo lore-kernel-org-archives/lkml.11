@@ -2,106 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFECBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC960C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234811AbiESHeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38558 "EHLO
+        id S234837AbiESHe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233587AbiESHeQ (ORCPT
+        with ESMTP id S230488AbiESHez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:34:16 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8CA939DC
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:34:15 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id e4so4654842ljb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:34:15 -0700 (PDT)
+        Thu, 19 May 2022 03:34:55 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF98D939E0;
+        Thu, 19 May 2022 00:34:54 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id p12so4453637pfn.0;
+        Thu, 19 May 2022 00:34:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ld3tNTOnejY2gRdAkG0gU54wZRhtwNMujkvL4qvMwkI=;
-        b=uVhNzYLoSIE1Q9t8tJmJL12I3Cm4x9BG9luOeDhB9VLhFK3mkwvFc/z3CCe11suOux
-         Wb0u8LQNWoPbikl+QQONfDCMn+bgq0BmOUOnVR913Wxgo2uHIbvbr+KJ5SvvMXlJYECH
-         63eCCRaz9p1pkEqEGE7LuT9op0BVY5/5A6kXtFz9qVwMM0x+i4Msz/avddlxOKmbHPNW
-         7Q7WIbHY6F3EsYL3KaBriWyFmHL3t9XEfHC+m8cpHgPvB6PV0q28i1gJYaQ5pCvFLwiB
-         NPxC+pWdqHVlJoAvxwV8eG2TreRRIV8bIOgEf3sOo0Zk5yEsZZkXgBN7B+sPvShPpWXO
-         lMaQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+YvGchU2DWnacdHZ8YXfbhTutS2B3ifrEudePvwfb/A=;
+        b=F105/nO//lUKNQdbEVPPJtf4UiN0Dpe4AhFvrF2atwPhUJRjs9cIbNZS7JmWT7bHIC
+         WH5VUE/wi4XlgzpqCuAFlNiEESKO5L6y2oAutIgqqo20VBEAI6ZQPAKHy9P9zRHoqAi5
+         esp+iJMGIRcpsije9YwIjnm/7i4ETyAM3N8mVDn2nt/Zk2yPpsssvjWdV4oKF4v8Pn3j
+         7qv8/x6dVuo3mJlfYiw005V+zUTtz8rDNGJ7V/wNojrQFqsMrsn1u5ph9NhmnorddmxR
+         ncan1LOhxq6nDfVhESnqC2vlFdceJLI9asmvavqWPV/wOBofZWNIH82QwVkAE6a59SuC
+         MAuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Ld3tNTOnejY2gRdAkG0gU54wZRhtwNMujkvL4qvMwkI=;
-        b=SWxP/x7hRfHwN+OPbLTxVheQP79u2a9q2rQjcdB462zwV93iZO6y0Y36IsunMPn/Gy
-         8dB+dQPT5UPzt5yYf80ndEEelqfUxdUtZnp1bmUj6VrcVuYz5wFarsYwp1IXGaL4x4cF
-         JUl8zwIKIBHWPLbYC2wpRTnQ33v1rZ/LuV2b59mbfXPsJZZLEuZmUIvp0XJ2vbmvQuW6
-         dUdTf2V7nUVcGEgwGpxHOeViTOgv62ZA+KnwRJZtntXfBoepTwxDlI6FgN1CKrVP2V4g
-         DPkfowGPMzbRTAgLmhj6jVCffcALNqUzqoPbbsZjecm0biA4glt39xZtfKqDCJsjbZiK
-         o1JA==
-X-Gm-Message-State: AOAM532Tqqb1b8PASCh+7ltBzwzkpsQcarAP88YTlVvS2CE1qbs0e4dr
-        OIxSK8AuzHSh4XLds4iqIojkLQ==
-X-Google-Smtp-Source: ABdhPJy5Ys+LYqZCN8u/Dc32BrKJ8PhvyCAatBFQj27NKp+j/2marUinA+vOpac2dpQockG3zQaMaQ==
-X-Received: by 2002:a05:651c:399:b0:24f:18d:5bbd with SMTP id e25-20020a05651c039900b0024f018d5bbdmr1824315ljp.481.1652945653930;
-        Thu, 19 May 2022 00:34:13 -0700 (PDT)
-Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id w8-20020ac24428000000b0047255d2113csm187708lfl.107.2022.05.19.00.34.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 00:34:13 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2] firmware: qcom_scm-legacy: correct kerneldoc
-Date:   Thu, 19 May 2022 09:34:10 +0200
-Message-Id: <20220519073410.7358-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        bh=+YvGchU2DWnacdHZ8YXfbhTutS2B3ifrEudePvwfb/A=;
+        b=lkC0vdXwMTzZUVIaA1D76MT2UPozS8BPYTwMEbI0/7hZ85GZLZRKkOcz6q/HlhxhGi
+         i73bUKblyT5G5MBWxery6eanDcdTdb8EjAx+sQN2V+BpktbVGMkKxBSwUUd+q3JDiQUw
+         9qyiXYcaU8HwouUzrrdMN+S7zu2vmnkTihV+6H332WPCg8GxMxHj8rar6YH18f89bXJX
+         oSP5HC7FALaO2olTD+orjbJmtGLacERcvI6/Smnad2imxNoqGGjTLj8hfngKuHrI/XeS
+         PJik0sbiL39DNCUweIwmIBCRhYVdNpwrojUGyHDI0ylZRmfqGKa68/6b3Kom2NxPJhLy
+         jKuQ==
+X-Gm-Message-State: AOAM533KCs5ASrIH0i1Qqs6lcDF5MFwdckMdgHNvgj9634sTn58ORpGx
+        yZ3KU9FOcAe3dYlp9JYQHnc=
+X-Google-Smtp-Source: ABdhPJyqsw1Lepw7anG+yYgDCfEZWYUotjEUoqobDngdtwvvKu2CEO6uDhZzL5/MeI9LM5czrC6kDg==
+X-Received: by 2002:a63:1c4e:0:b0:3f2:6da7:5d90 with SMTP id c14-20020a631c4e000000b003f26da75d90mr2922991pgm.429.1652945694272;
+        Thu, 19 May 2022 00:34:54 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-3.three.co.id. [180.214.232.3])
+        by smtp.gmail.com with ESMTPSA id l30-20020a635b5e000000b003c5e836eddasm2746463pgm.94.2022.05.19.00.34.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 00:34:53 -0700 (PDT)
+Message-ID: <08117fbe-e547-733f-89d5-802c4f2e2816@gmail.com>
+Date:   Thu, 19 May 2022 14:34:50 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] Fixed 'make htmldocs' warning:
+ Documentation/admin-guide/perf/hisi-pcie-pmu.rst: WARNING: document isn't
+ included in any toctree
+Content-Language: en-US
+To:     Praghadeesh T K S <praghadeeshthevendria@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     skhan@linuxfoundation.org, praghadeeshtks@zohomail.in
+References: <20220518082627.9144-1-praghadeeshthevendria@gmail.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220518082627.9144-1-praghadeeshthevendria@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct kerneldoc warnings like:
+On 5/18/22 15:26, Praghadeesh T K S wrote:
+> Cc: Shuah Khan <skhan@linuxfoundation.org>
+> Signed-off-by: Praghadeesh T K S <praghadeeshthevendria@gmail.com>
+> ---
+>  Documentation/admin-guide/perf/index.rst | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/admin-guide/perf/index.rst b/Documentation/admin-guide/perf/index.rst
+> index 5a8f252..69b23f0 100644
+> --- a/Documentation/admin-guide/perf/index.rst
+> +++ b/Documentation/admin-guide/perf/index.rst
+> @@ -8,6 +8,7 @@ Performance monitor support
+>     :maxdepth: 1
+>  
+>     hisi-pmu
+> +   hisi-pcie-pmu
+>     imx-ddr
+>     qcom_l2_pmu
+>     qcom_l3_pmu
 
-  drivers/firmware/qcom_scm-legacy.c:133:
-    warning: Function parameter or member 'dev' not described in 'scm_legacy_call'
+Hi,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This has been fixed in [1] and applied. Thanks anyway.
 
----
+[1]: https://lore.kernel.org/linux-doc/20220228031700.1669086-1-wanjiabing@vivo.com/
 
-Changes since v1:
-1. Split series per subsystem.
-2. Correct argument description (Stephen).
----
- drivers/firmware/qcom_scm-legacy.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/firmware/qcom_scm-legacy.c b/drivers/firmware/qcom_scm-legacy.c
-index 1829ba220576..9f918b9e6f8f 100644
---- a/drivers/firmware/qcom_scm-legacy.c
-+++ b/drivers/firmware/qcom_scm-legacy.c
-@@ -120,6 +120,9 @@ static void __scm_legacy_do(const struct arm_smccc_args *smc,
- /**
-  * scm_legacy_call() - Sends a command to the SCM and waits for the command to
-  * finish processing.
-+ * @dev:	device
-+ * @desc:	descriptor structure containing arguments and return values
-+ * @res:        results from SMC call
-  *
-  * A note on cache maintenance:
-  * Note that any buffers that are expected to be accessed by the secure world
-@@ -211,6 +214,7 @@ int scm_legacy_call(struct device *dev, const struct qcom_scm_desc *desc,
- /**
-  * scm_legacy_call_atomic() - Send an atomic SCM command with up to 5 arguments
-  * and 3 return values
-+ * @unused: device, legacy argument, not used, can be NULL
-  * @desc: SCM call descriptor containing arguments
-  * @res:  SCM call return values
-  *
 -- 
-2.32.0
-
+An old man doll... just what I always wanted! - Clara
