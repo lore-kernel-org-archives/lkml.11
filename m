@@ -2,139 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B42DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 12:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238168AbiESMul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 08:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
+        id S238136AbiESMuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 08:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238087AbiESMuX (ORCPT
+        with ESMTP id S238134AbiESMud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 08:50:23 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFEBBC6E6
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:50:21 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L3qSQ4xc6zhZBq;
-        Thu, 19 May 2022 20:49:42 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
- 2022 20:50:18 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <hughd@google.com>
-CC:     <willy@infradead.org>, <vbabka@suse.cz>, <dhowells@redhat.com>,
-        <neilb@suse.de>, <apopple@nvidia.com>, <david@redhat.com>,
-        <surenb@google.com>, <peterx@redhat.com>, <rcampbell@nvidia.com>,
-        <naoya.horiguchi@nec.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v4 4/5] mm/shmem: fix infinite loop when swap in shmem error at swapoff time
-Date:   Thu, 19 May 2022 20:50:29 +0800
-Message-ID: <20220519125030.21486-5-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220519125030.21486-1-linmiaohe@huawei.com>
-References: <20220519125030.21486-1-linmiaohe@huawei.com>
+        Thu, 19 May 2022 08:50:33 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671A1BC6FD
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:50:30 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id ck4so5482165ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 05:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vRE/oJtdGWdN444bPnrord4cMpAoUxxz8a+T8mrufqA=;
+        b=N4bXORpvmxzJvDMuETcmC63g8ePtxhxyMv7u7BDJcpfMrcfpL8QhERL80OsjtI3tpv
+         gIKsZRpervYUxhOP1C1U1qhYkgOikh/xXxjuSrfHTC6Do/8AHAVA8eq5AKfzgqhPJNXS
+         tVg67vgiAyzU6JLVN3PmghCkb7gaEtgqYLprU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vRE/oJtdGWdN444bPnrord4cMpAoUxxz8a+T8mrufqA=;
+        b=jqQnHCUPBdw8cnNdVQWGHUxek3ucWXZj2yQtjrsrHGwVrXJrr7QVIgI6FntlOoprMT
+         36GNBo1rGOs/qnQP4gze1zPqbAwgqsPGu0/L+o4flT6eTGUYXMcCWfQvKnjIZC0V0p+J
+         2FjovEsHM1egGe0qupTOm0dCa8RHsqBemBBkucBeM4z4aoVCgtaag2Fr56f+/y6lENf5
+         M9UioZ+XSwz+Ml2F5Mxwy5RToiDXQUNybVGf1qW2J+Q5rW/1u78Q0VfyfpXGG9zSPUVN
+         /UMtYO+NIIS4Q+g7dJDI+obVr6ZArk4QtdDOkfFFa27bRdaRZujP/lG8LdPFnIDKqQr6
+         x+oQ==
+X-Gm-Message-State: AOAM530Fz25+707wfq/sqb7s6eHEtCaRV3SoXlXK7A+c4aSTW4WojXdC
+        iInqcUWEDVgRvdLcH99L5OpzbKCbWqra9Ncdl0N0iw==
+X-Google-Smtp-Source: ABdhPJyigk/9qiR/DyzziY2RHs7Q1+TAfNZLV9nE6P5Zl0DrH+Z38HOA5BLPFbtuO4a/ughxjMuvbpiYu8tNyTpAujo=
+X-Received: by 2002:a17:907:6e0f:b0:6fe:382a:6657 with SMTP id
+ sd15-20020a1709076e0f00b006fe382a6657mr4117416ejc.192.1652964628871; Thu, 19
+ May 2022 05:50:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220509105847.8238-1-dharamhans87@gmail.com> <20220509105847.8238-2-dharamhans87@gmail.com>
+In-Reply-To: <20220509105847.8238-2-dharamhans87@gmail.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Thu, 19 May 2022 14:50:17 +0200
+Message-ID: <CAJfpeguEHFTk9u2h8-Le5aQYYPdSdTNY0nUj440YJUR8V3jY-Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] Allow non-extending parallel direct writes
+To:     Dharmendra Singh <dharamhans87@gmail.com>
+Cc:     linux-fsdevel@vger.kernel.org,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org, Bernd Schubert <bschubert@ddn.com>,
+        Dharmendra Singh <dsingh@ddn.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When swap in shmem error at swapoff time, there would be a infinite loop
-in the while loop in shmem_unuse_inode(). It's because swapin error is
-deliberately ignored now and thus info->swapped will never reach 0. So
-we can't escape the loop in shmem_unuse().
+On Mon, 9 May 2022 at 12:59, Dharmendra Singh <dharamhans87@gmail.com> wrote:
+>
+> From: Dharmendra Singh <dsingh@ddn.com>
+>
+> In general, as of now, in FUSE, direct writes on the same file are
+> serialized over inode lock i.e we hold inode lock for the full duration
+> of the write request. I could not found in fuse code a comment which
+> clearly explains why this exclusive lock is taken for direct writes.
+> Our guess is some USER space fuse implementations might be relying
+> on this lock for seralization and also it protects for the issues
+> arising due to file size assumption or write failures.  This patch
+> relaxes this exclusive lock in some cases of direct writes.
+>
+> With these changes, we allows non-extending parallel direct writes
+> on the same file with the help of a flag called FOPEN_PARALLEL_WRITES.
+> If this flag is set on the file (flag is passed from libfuse to fuse
+> kernel as part of file open/create), we do not take exclusive lock instead
+> use shared lock so that all non-extending writes can run in parallel.
+>
+> Best practise would be to enable parallel direct writes of all kinds
+> including extending writes as well but we see some issues such as
+> when one write completes and other fails, how we should truncate(if
+> needed) the file if underlying file system does not support holes
+> (For file systems which supports holes, there might be a possibility
+> of enabling parallel writes for all cases).
+>
+> FUSE implementations which rely on this inode lock for serialisation
+> can continue to do so and this is default behaviour i.e no parallel
+> direct writes.
+>
+> Signed-off-by: Dharmendra Singh <dsingh@ddn.com>
+> ---
+>  fs/fuse/file.c            | 45 ++++++++++++++++++++++++++++++++++++---
+>  include/uapi/linux/fuse.h |  2 ++
+>  2 files changed, 44 insertions(+), 3 deletions(-)
+>
+> diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+> index 829094451774..495138a68306 100644
+> --- a/fs/fuse/file.c
+> +++ b/fs/fuse/file.c
+> @@ -1541,14 +1541,48 @@ static ssize_t fuse_direct_read_iter(struct kiocb *iocb, struct iov_iter *to)
+>         return res;
+>  }
+>
+> +static bool fuse_direct_write_extending_i_size(struct kiocb *iocb,
+> +                                              struct iov_iter *iter)
+> +{
+> +       struct inode *inode = file_inode(iocb->ki_filp);
+> +       loff_t i_size;
+> +       loff_t offset;
+> +       size_t count;
+> +
+> +       if (iocb->ki_flags & IOCB_APPEND)
+> +               return true;
+> +
+> +       offset = iocb->ki_pos;
+> +       count = iov_iter_count(iter);
+> +       i_size = i_size_read(inode);
+> +
+> +       return offset + count <= i_size ? false : true;
+> +}
 
-In order to fix the issue, swapin_error entry is stored in the mapping
-when swapin error occurs. So the swapcache page can be freed and the
-user won't end up with a permanently mounted swap because a sector is
-bad. If the page is accessed later, the user process will be killed
-so that corrupted data is never consumed. On the other hand, if the
-page is never accessed, the user won't even notice it.
+This could be rewritten in much fewer lines:
 
-Reported-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/shmem.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+static bool fuse_is_extending_write(struct kiocb *iocb, struct iov_iter *iter)
+{
+    struct inode *inode = file_inode(iocb->ki_filp);
 
-diff --git a/mm/shmem.c b/mm/shmem.c
-index d3c7970e0179..d55dd972023a 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -1175,6 +1175,10 @@ static int shmem_find_swap_entries(struct address_space *mapping,
- 			continue;
- 
- 		entry = radix_to_swp_entry(folio);
-+		/*
-+		 * swapin error entries can be found in the mapping. But they're
-+		 * deliberately ignored here as we've done everything we can do.
-+		 */
- 		if (swp_type(entry) != type)
- 			continue;
- 
-@@ -1672,6 +1676,36 @@ static int shmem_replace_page(struct page **pagep, gfp_t gfp,
- 	return error;
- }
- 
-+static void shmem_set_folio_swapin_error(struct inode *inode, pgoff_t index,
-+					 struct folio *folio, swp_entry_t swap)
-+{
-+	struct address_space *mapping = inode->i_mapping;
-+	struct shmem_inode_info *info = SHMEM_I(inode);
-+	swp_entry_t swapin_error;
-+	void *old;
-+
-+	swapin_error = make_swapin_error_entry(&folio->page);
-+	old = xa_cmpxchg_irq(&mapping->i_pages, index,
-+			     swp_to_radix_entry(swap),
-+			     swp_to_radix_entry(swapin_error), 0);
-+	if (old != swp_to_radix_entry(swap))
-+		return;
-+
-+	folio_wait_writeback(folio);
-+	delete_from_swap_cache(&folio->page);
-+	spin_lock_irq(&info->lock);
-+	/*
-+	 * Don't treat swapin error folio as alloced. Otherwise inode->i_blocks won't
-+	 * be 0 when inode is released and thus trigger WARN_ON(inode->i_blocks) in
-+	 * shmem_evict_inode.
-+	 */
-+	info->alloced--;
-+	info->swapped--;
-+	shmem_recalc_inode(inode);
-+	spin_unlock_irq(&info->lock);
-+	swap_free(swap);
-+}
-+
- /*
-  * Swap in the page pointed to by *pagep.
-  * Caller has to make sure that *pagep contains a valid swapped page.
-@@ -1695,6 +1729,9 @@ static int shmem_swapin_folio(struct inode *inode, pgoff_t index,
- 	swap = radix_to_swp_entry(*foliop);
- 	*foliop = NULL;
- 
-+	if (is_swapin_error_entry(swap))
-+		return -EIO;
-+
- 	/* Look it up and read it in.. */
- 	page = lookup_swap_cache(swap, NULL, 0);
- 	if (!page) {
-@@ -1762,6 +1799,8 @@ static int shmem_swapin_folio(struct inode *inode, pgoff_t index,
- failed:
- 	if (!shmem_confirm_swap(mapping, index, swap))
- 		error = -EEXIST;
-+	if (error == -EIO)
-+		shmem_set_folio_swapin_error(inode, index, folio, swap);
- unlock:
- 	if (folio) {
- 		folio_unlock(folio);
--- 
-2.23.0
+    return (iocb->ki_flags & IOCB_APPEND) ||
+        iocb->ki_pos + iov_iter_count(iter) > i_size_read(inode);
+}
 
+
+> +
+>  static ssize_t fuse_direct_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>  {
+>         struct inode *inode = file_inode(iocb->ki_filp);
+> +       struct file *file = iocb->ki_filp;
+> +       struct fuse_file *ff = file->private_data;
+>         struct fuse_io_priv io = FUSE_IO_PRIV_SYNC(iocb);
+>         ssize_t res;
+> +       bool p_write = ff->open_flags & FOPEN_PARALLEL_WRITES ? true : false;
+
+Please just use "bool v = expr" instead of "bool v = expr ? true :
+false" as they are equivalent.
+
+> +       bool exclusive_lock = !p_write ||
+> +                              fuse_direct_write_extending_i_size(iocb, from) ?
+> +                              true : false;
+
+Same.
+
+> +
+> +       /*
+> +        * Take exclusive lock if
+> +        * - parallel writes are disabled.
+> +        * - parallel writes are enabled and i_size is being extended
+> +        * Take shared lock if
+> +        * - parallel writes are enabled but i_size does not extend.
+> +        */
+> +       if (exclusive_lock)
+> +               inode_lock(inode);
+> +       else
+> +               inode_lock_shared(inode);
+>
+> -       /* Don't allow parallel writes to the same file */
+> -       inode_lock(inode);
+>         res = generic_write_checks(iocb, from);
+>         if (res > 0) {
+>                 if (!is_sync_kiocb(iocb) && iocb->ki_flags & IOCB_DIRECT) {
+> @@ -1559,7 +1593,10 @@ static ssize_t fuse_direct_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>                         fuse_write_update_attr(inode, iocb->ki_pos, res);
+>                 }
+>         }
+> -       inode_unlock(inode);
+> +       if (exclusive_lock)
+> +               inode_unlock(inode);
+> +       else
+> +               inode_unlock_shared(inode);
+>
+>         return res;
+>  }
+> @@ -2900,7 +2937,9 @@ fuse_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+>         kref_put(&io->refcnt, fuse_io_release);
+>
+>         if (iov_iter_rw(iter) == WRITE) {
+> +
+
+Unnecessary empty line.
+
+>                 fuse_write_update_attr(inode, pos, ret);
+> +               /* For extending writes we already hold exclusive lock */
+>                 if (ret < 0 && offset + count > i_size)
+>                         fuse_do_truncate(file);
+>         }
+> diff --git a/include/uapi/linux/fuse.h b/include/uapi/linux/fuse.h
+> index d6ccee961891..ee5379d41906 100644
+> --- a/include/uapi/linux/fuse.h
+> +++ b/include/uapi/linux/fuse.h
+> @@ -301,6 +301,7 @@ struct fuse_file_lock {
+>   * FOPEN_CACHE_DIR: allow caching this directory
+>   * FOPEN_STREAM: the file is stream-like (no file position at all)
+>   * FOPEN_NOFLUSH: don't flush data cache on close (unless FUSE_WRITEBACK_CACHE)
+> + * FOPEN_PARALLEL_WRITES: Allow concurrent writes on the same inode
+>   */
+>  #define FOPEN_DIRECT_IO                (1 << 0)
+>  #define FOPEN_KEEP_CACHE       (1 << 1)
+> @@ -308,6 +309,7 @@ struct fuse_file_lock {
+>  #define FOPEN_CACHE_DIR                (1 << 3)
+>  #define FOPEN_STREAM           (1 << 4)
+>  #define FOPEN_NOFLUSH          (1 << 5)
+> +#define FOPEN_PARALLEL_WRITES  (1 << 6)
+>
+>  /**
+>   * INIT request/reply flags
+> --
+> 2.17.1
+>
