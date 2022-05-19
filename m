@@ -2,223 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 570A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D69A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 16:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241773AbiESQk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 12:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S242142AbiESQlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 12:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242136AbiESQkv (ORCPT
+        with ESMTP id S241788AbiESQlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 12:40:51 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121C1E77
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:40:48 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id k30so8001896wrd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:40:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g9gYzxWe5NPTbaNAHgbnlMxkb6BQm0o5fPGCfOasomw=;
-        b=odGYCXlYMgIzbmhlZajrwAIYrVzVwUGAygS7xDgeEP2rU4W9fYXMtAowdDXWjBuBmN
-         N8vUt46PYTxRHIXJUvYhROlIHPsqU+g8ONQJuDAnApcUSeY7b/s6sHKiwpUirq7+VyBb
-         T7moq/nxrXA/AYNVxABM+qr+9lTbgERS0jZv+fu7vIqCofJukIpMY8o8Oe8pKbdNmnKN
-         PonSzsSzBbtH4erc+IOjytHkSynceUJCBS5xGilAl5fN01iDARm7T9xNJsLRhFmiEd/Y
-         SzY4ujloji/i0hf3ldGrjkCz+MwG4nB7+jUg2kfQshpg+oVxpXyaY4KvU73lYn2yOa+7
-         rCvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g9gYzxWe5NPTbaNAHgbnlMxkb6BQm0o5fPGCfOasomw=;
-        b=H6aeZUgX3oHkIyGPw1ab3gEGoLHqKIUPoeE7aeikGhKrzyHxfE6aVznQCdmX0uhSkI
-         qLDulqb1uag+IJnl6GSsTwofJjOuzMWs5qQph4KpJ1sxQ/7VwfJLQ+6esYkOxOTbfsI8
-         OWLofQ7FA4DOIBgZdImqc7GLNLQjDnCtMT4JWavea1Yw1eAIQGPQHY3aAuTWOFVthCLd
-         xfpcM7SJ3St/T4txNUUYIYd54PUGPmaPCIMV69nC2P/hqbrdCxZYUeYm3S22Bu5pZoni
-         PBxiIzYOYJsNKB4cSm2y4vq7qJMUG96hIWFrbvTMkdhm5dNDVoeiCxfeiCUaiIGE6ego
-         VV0A==
-X-Gm-Message-State: AOAM531cAK2ZuLshWQwmBv38pi3RG806002L2h/mvFzXnJC0YvfdmYSq
-        h8ViwvtdAF8f0As/5/rSHHsKvtCnMmcJvQ==
-X-Google-Smtp-Source: ABdhPJwmsiBN/XwBVe8E5Ys3+WsVkowKP+Je5QRAj4S9lPWo204wsjJqP+iG7dMMB7RDwhMffQZlkw==
-X-Received: by 2002:a5d:4ad1:0:b0:20d:b23:fe1b with SMTP id y17-20020a5d4ad1000000b0020d0b23fe1bmr4752812wrs.579.1652978446569;
-        Thu, 19 May 2022 09:40:46 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id z6-20020a7bc146000000b003942a244ebesm77922wmi.3.2022.05.19.09.40.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 09:40:46 -0700 (PDT)
-Date:   Thu, 19 May 2022 17:40:21 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 08/10] iommu: Prepare IOMMU domain for IOPF
-Message-ID: <YoZy9fnJlN/RIVY4@myrica>
-References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
- <20220519072047.2996983-9-baolu.lu@linux.intel.com>
+        Thu, 19 May 2022 12:41:40 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 909BA59095
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 09:41:39 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25AE21477;
+        Thu, 19 May 2022 09:32:51 -0700 (PDT)
+Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B50B33F718;
+        Thu, 19 May 2022 09:32:50 -0700 (PDT)
+Date:   Thu, 19 May 2022 17:32:49 +0100
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Atish Patra <atishp@atishpatra.org>, linux-kernel@vger.kernel.org,
+        Atish Patra <atishp@rivosinc.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Qing Wang <wangqing@vivo.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 0/8] arch_topology: Updates to add socket support and
+ fix cluster ids
+Message-ID: <YoZxKJ6TiAsxTXNl@arm.com>
+References: <20220518093325.2070336-1-sudeep.holla@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220519072047.2996983-9-baolu.lu@linux.intel.com>
+In-Reply-To: <20220518093325.2070336-1-sudeep.holla@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 03:20:45PM +0800, Lu Baolu wrote:
-> This adds some mechanisms around the iommu_domain so that the I/O page
-> fault handling framework could route a page fault to the domain and
-> call the fault handler from it.
-> 
-> Add pointers to the page fault handler and its private data in struct
-> iommu_domain. The fault handler will be called with the private data
-> as a parameter once a page fault is routed to the domain. Any kernel
-> component which owns an iommu domain could install handler and its
-> private parameter so that the page fault could be further routed and
-> handled.
-> 
-> This also prepares the SVA implementation to be the first consumer of
-> the per-domain page fault handling model.
-> 
-> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h         |  3 ++
->  drivers/iommu/io-pgfault.c    |  7 ++++
->  drivers/iommu/iommu-sva-lib.c | 65 +++++++++++++++++++++++++++++++++++
->  3 files changed, 75 insertions(+)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e4ce2fe0e144..45f274b2640d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -100,6 +100,9 @@ struct iommu_domain {
->  	void *handler_token;
->  	struct iommu_domain_geometry geometry;
->  	struct iommu_dma_cookie *iova_cookie;
-> +	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
-> +						      void *data);
-> +	void *fault_data;
->  };
->  
->  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> index 1df8c1dcae77..aee9e033012f 100644
-> --- a/drivers/iommu/io-pgfault.c
-> +++ b/drivers/iommu/io-pgfault.c
-> @@ -181,6 +181,13 @@ static void iopf_handle_group(struct work_struct *work)
->   * request completes, outstanding faults will have been dealt with by the time
->   * the PASID is freed.
->   *
-> + * Any valid page fault will be eventually routed to an iommu domain and the
-> + * page fault handler installed there will get called. The users of this
-> + * handling framework should guarantee that the iommu domain could only be
-> + * freed after the device has stopped generating page faults (or the iommu
-> + * hardware has been set to block the page faults) and the pending page faults
-> + * have been flushed.
-> + *
->   * Return: 0 on success and <0 on error.
->   */
->  int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
-> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-> index 568e0f64edac..317ab8e8c149 100644
-> --- a/drivers/iommu/iommu-sva-lib.c
-> +++ b/drivers/iommu/iommu-sva-lib.c
-> @@ -72,6 +72,69 @@ struct mm_struct *iommu_sva_find(ioasid_t pasid)
->  }
->  EXPORT_SYMBOL_GPL(iommu_sva_find);
->  
-> +/*
-> + * I/O page fault handler for SVA
-> + *
-> + * Copied from io-pgfault.c with mmget_not_zero() added before
-> + * mmap_read_lock().
+Hi Sudeep,
 
-Comment doesn't really belong here, maybe better in the commit message.
-Apart from that
+On Wednesday 18 May 2022 at 10:33:17 (+0100), Sudeep Holla wrote:
+> Hi All,
+> 
+> This series intends to fix some discrepancies we have in the CPU topology
+> parsing from the device tree /cpu-map node. Also this diverges from the
+> behaviour on a ACPI enabled platform. The expectation is that both DT
+> and ACPI enabled systems must present consistent view of the CPU topology.
+> 
+> Currently we assign generated cluster count as the physical package identifier
+> for each CPU which is wrong. The device tree bindings for CPU topology supports
+> sockets to infer the socket or physical package identifier for a given CPU.
+> Also we don't check if all the cores/threads belong to the same cluster before
+> updating their sibling masks which is fine as we don't set the cluster id yet.
+> 
+> These changes also assigns the cluster identifier as parsed from the device tree
+> cluster nodes within /cpu-map without support for nesting of the clusters.
+> Finally, it also add support for socket nodes in /cpu-map. With this the
+> parsing of exact same information from ACPI PPTT and /cpu-map DT node
+> aligns well.
+> 
+> The only exception is that the last level cache id information can be
+> inferred from the same ACPI PPTT while we need to parse CPU cache nodes
+> in the device tree.
+> 
+> P.S: I have not cc-ed Greg and Rafael so that all the users of arch_topology
+> agree with the changes first before we include them.
+> 
+> v1[1]->v2:
+> 	- Updated ID validity check include all non-negative value
+> 	- Added support to get the device node for the CPU's last level cache
+> 	- Added support to build llc_sibling on DT platforms
+> 
+> [1] https://lore.kernel.org/lkml/20220513095559.1034633-1-sudeep.holla@arm.com
+> 
+> Sudeep Holla (8):
+>   arch_topology: Don't set cluster identifier as physical package identifier
+>   arch_topology: Set thread sibling cpumask only within the cluster
+>   arch_topology: Set cluster identifier in each core/thread from /cpu-map
+>   arch_topology: Add support for parsing sockets in /cpu-map
+>   arch_topology: Check for non-negative value rather than -1 for IDs validity
+>   arch_topology: Avoid parsing through all the CPUs once a outlier CPU is found
+>   of: base: add support to get the device node for the CPU's last level cache
+>   arch_topology: Add support to build llc_sibling on DT platforms
+> 
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Just a recommendation for patch-set structure: it would be best to have
+the following sequence to maintain the same scheduler topology and
+behaviour when partially applying the set (currently testing this on Juno,
+but should be the case for other platforms as well):
 
-> + */
-> +static enum iommu_page_response_code
-> +iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
-> +{
-> +	vm_fault_t ret;
-> +	struct mm_struct *mm;
-> +	struct vm_area_struct *vma;
-> +	unsigned int access_flags = 0;
-> +	struct iommu_domain *domain = data;
-> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
-> +	struct iommu_fault_page_request *prm = &fault->prm;
-> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
-> +
-> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
-> +		return status;
-> +
-> +	mm = domain_to_mm(domain);
-> +	if (IS_ERR_OR_NULL(mm) || !mmget_not_zero(mm))
-> +		return status;
-> +
-> +	mmap_read_lock(mm);
-> +
-> +	vma = find_extend_vma(mm, prm->addr);
-> +	if (!vma)
-> +		/* Unmapped area */
-> +		goto out_put_mm;
-> +
-> +	if (prm->perm & IOMMU_FAULT_PERM_READ)
-> +		access_flags |= VM_READ;
-> +
-> +	if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
-> +		access_flags |= VM_WRITE;
-> +		fault_flags |= FAULT_FLAG_WRITE;
-> +	}
-> +
-> +	if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
-> +		access_flags |= VM_EXEC;
-> +		fault_flags |= FAULT_FLAG_INSTRUCTION;
-> +	}
-> +
-> +	if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
-> +		fault_flags |= FAULT_FLAG_USER;
-> +
-> +	if (access_flags & ~vma->vm_flags)
-> +		/* Access fault */
-> +		goto out_put_mm;
-> +
-> +	ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);
-> +	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
-> +		IOMMU_PAGE_RESP_SUCCESS;
-> +
-> +out_put_mm:
-> +	mmap_read_unlock(mm);
-> +	mmput(mm);
-> +
-> +	return status;
-> +}
-> +
->  /*
->   * IOMMU SVA driver-oriented interfaces
->   */
-> @@ -94,6 +157,8 @@ iommu_sva_alloc_domain(struct bus_type *bus, struct mm_struct *mm)
->  	domain = &sva_domain->domain;
->  	domain->type = IOMMU_DOMAIN_SVA;
->  	domain->ops = bus->iommu_ops->sva_domain_ops;
-> +	domain->iopf_handler = iommu_sva_handle_iopf;
-> +	domain->fault_data = domain;
->  
->  	return domain;
->  }
-> -- 
-> 2.25.1
+2/8 arch_topology: Set thread sibling cpumask only within the cluster
+5/8 arch_topology: Check for non-negative value rather than -1 for IDs validity
+6/8 arch_topology: Avoid parsing through all the CPUs once a outlier CPU is found
+
+--> these are only preparation/cleanup patches and don't affect current
+functionality
+
+7/8 of: base: add support to get the device node for the CPU's last level cache
+8/8 arch_topology: Add support to build llc_sibling on DT platforms
+
+--> these will populate llc siblings but this list will be equal to
+core siblings (based on package_id) so nothing changes in the scheduler
+topology. Even if CONFIG_SCHED_CLUSTER=y, we still have cluster_id=-1 so
+nothing will change in that case either, for the patches so far.
+
+1/8 arch_topology: Don't set cluster identifier as physical package identifier
+
+--> 1/8 is the trouble maker if it's the first patch as it will result
+in having all CPUs in core_siblings so the topology will be flattened to
+just an MC level for a typical b.L system like Juno. But if you add it after
+all of the above patches, the llc_siblings will contribute to create the same
+MC and DIE levels we expect.
+
+3/8 arch_topology: Set cluster identifier in each core/thread from /cpu-map
+4/8 arch_topology: Add support for parsing sockets in /cpu-map
+
+--> Here 3/8 will start creating complications when having clusters in
+DT and we have CONFIG_SCHED_CLUSTER=y. But I'll detail this in a reply
+to that patch. For CONFIG_SCHED_CLUSTER=n the topology and scheduler
+behaviour should be the same as before this set.
+
+Hope it helps,
+Ionela.
+
+
+>  drivers/base/arch_topology.c  | 75 +++++++++++++++++++++++++++--------
+>  drivers/of/base.c             | 33 +++++++++++----
+>  include/linux/arch_topology.h |  1 +
+>  include/linux/of.h            |  1 +
+>  4 files changed, 85 insertions(+), 25 deletions(-)
+> 
+> --
+> 2.36.1
+> 
 > 
