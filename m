@@ -2,80 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 205DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:29:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93BBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 02:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232900AbiESC3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 18 May 2022 22:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
+        id S232888AbiESCbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 18 May 2022 22:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232888AbiESC3p (ORCPT
+        with ESMTP id S229437AbiESCbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 18 May 2022 22:29:45 -0400
-Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2ED2C6E64
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 19:29:19 -0700 (PDT)
-X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
-        R,40,3)
-Received: from 172.27.96.203
-        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(12590:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Thu, 19 May 2022 10:16:53 +0800 (CST)
-Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
- CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
+        Wed, 18 May 2022 22:31:19 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F1C62A3B;
+        Wed, 18 May 2022 19:31:17 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L3YjF4335z1JCFc;
+        Thu, 19 May 2022 10:29:53 +0800 (CST)
+Received: from dggpeml500010.china.huawei.com (7.185.36.155) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.6; Thu, 19 May 2022 10:16:50 +0800
-Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
- ([::1]) with mapi id 15.01.2507.006; Thu, 19 May 2022 10:16:50 +0800
-From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
-To:     Stephen Boyd <sboyd@kernel.org>
-CC:     "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mturquette@baylibre.com" <mturquette@baylibre.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>
-Subject: RE: [PATCH v15 05/10] clk: Add Sunplus SP7021 clock driver
-Thread-Topic: [PATCH v15 05/10] clk: Add Sunplus SP7021 clock driver
-Thread-Index: AQHYZcsXCsTwSBsje0a2OPS1GfS78a0h1u8AgADuCPCAAdLagIAA6WiQ
-Date:   Thu, 19 May 2022 02:16:50 +0000
-Message-ID: <7fcb969a0d0740459a9ebc403aeb556f@cqplus1.com>
-References: <cover.1652329411.git.qinjian@cqplus1.com>
- <9a71d17e9c70051db44c5545453ae8320ed8e0f8.1652329411.git.qinjian@cqplus1.com>
- <20220517021755.F1D05C385B8@smtp.kernel.org>
- <7febed72ae2747abb953a6f44a51102c@cqplus1.com>
- <20220518202049.6055BC385A9@smtp.kernel.org>
-In-Reply-To: <20220518202049.6055BC385A9@smtp.kernel.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.28.110.18]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ 15.1.2375.24; Thu, 19 May 2022 10:30:47 +0800
+Received: from [10.67.111.232] (10.67.111.232) by
+ dggpeml500010.china.huawei.com (7.185.36.155) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 19 May 2022 10:30:46 +0800
+Message-ID: <6eb03912-4292-8a5f-2103-eea401eccf08@huawei.com>
+Date:   Thu, 19 May 2022 10:30:40 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH -next] x86/events:Use struct_size() helper in kzalloc()
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+CC:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>, <tglx@linutronix.de>,
+        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, <linux-perf-users@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <johnny.chenyi@huawei.com>,
+        <chenjiahao16@huawei.com>, <chenlifu@huawei.com>,
+        <lizhengyu3@huawei.com>, <liaochang1@huawei.com>,
+        <wangzhu9@huawei.com>, <xuyihang@huawei.com>,
+        <chris.zjh@huawei.com>, <zouyipeng@huawei.com>
+References: <20220518131626.109123-1-linyujun809@huawei.com>
+ <20220518134920.GA8361@embeddedor>
+From:   "linyujun (C)" <linyujun809@huawei.com>
+In-Reply-To: <20220518134920.GA8361@embeddedor>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.111.232]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500010.china.huawei.com (7.185.36.155)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiA+ID4gPiArDQo+ID4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGZfcXVv
-dGllbnQgID0gZGYgLyBtOw0KPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IGRmX3JlbWFpbmRlciA9ICgoZGYgJSBtKSAqIDEwMDApIC8gbTsNCj4gPiA+ID4gKw0KPiA+ID4g
-PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmIChmcmVxID4gZGZfcXVvdGllbnQp
-IHsNCj4gPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGRmX3F1
-b3RpZW50ICA9IGZyZXEgLSBkZl9xdW90aWVudCAtIDE7DQo+ID4gPiA+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBkZl9yZW1haW5kZXIgPSAxMDAwIC0gZGZfcmVtYWlu
-ZGVyOw0KPiA+ID4NCj4gPiA+IFdoZXJlIGRvZXMgMTAwMCBjb21lIGZyb20/DQo+ID4NCj4gPiAx
-MDAwIGlzIGNvbWUgZnJvbSAiYm9ycm93IDEiIGluIGxhc3Qgb3BlcmF0aW9uLg0KPiANCj4gSXQn
-cyBzY2FsaW5nIHRoZSB2YWx1ZSByaWdodD8gV2hhdCBpcyBiZWluZyBzY2FsZWQ/IEFyZSB3ZSBj
-b252ZXJ0aW5nDQo+IHVuaXRzIHRvIEh6IGZyb20ga0h6Pw0KDQpIZXJlIGp1c3QgdXNpbmcgaW50
-ZWdlciByZXBsYWNlbWVudCBmbG9hdGluZyBwb2ludCBvcGVyYXRpb24sIGZvciBleGFtcGxlOg0K
-ZGYgPSAxMywgbSA9IDMNCjEzIC8gMyA9IDQuMzMzMzMzMzMNCmRmX3F1b3RpZW50ID0gNA0KZGZf
-cmVtYWluZGVyID0gMC4zMzMzMzMzICogMTAwMCAoYWNjdXJhdGUgdG8gMyBkZWNpbWFsIHBsYWNl
-cykgPSAzMzMNCg0K
+Thank you for your suggestion. I will modify the patch according
+to your suggestion and make the v2 version.
+
+Thanks
+--
+LinYujun
+
+在 2022/5/18 21:49, Gustavo A. R. Silva 写道:
+> On Wed, May 18, 2022 at 09:16:26PM +0800, Lin Yujun wrote:
+>> Replace sizeof() with struct_size() to avoid potential integer
+>> or heap overflow.
+> This is not exactly what the patch does.
+>
+> Your patch is replacing the open-coded calculation of the total amount
+> of memory to be allocated for rapl_pmus with struct_size().
+>
+>> Also, address the following sparse warnings:
+>> arch/x86/events/rapl.c:685:16: warning: using sizeof on a
+>> flexible structure
+> This does not address this warning because struct_size()
+> still make use of sizeof on the struct-with-flex-array,
+> internally.
+>
+> So, the mention to the sparse warning should be removed from
+> this changelog text.
+>
+>> Signed-off-by: Lin Yujun <linyujun809@huawei.com>
+>> ---
+>>   arch/x86/events/rapl.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
+>> index 77e3a47af5ad..c7e79f0ac04f 100644
+>> --- a/arch/x86/events/rapl.c
+>> +++ b/arch/x86/events/rapl.c
+>> @@ -685,7 +685,7 @@ static int __init init_rapl_pmus(void)
+>>   	int maxdie = topology_max_packages() * topology_max_die_per_package();
+>>   	size_t size;
+>>   
+>> -	size = sizeof(*rapl_pmus) + maxdie * sizeof(struct rapl_pmu *);
+>> +	size = struct_size(rapl_pmus, pmus, maxdie);
+>>   	rapl_pmus = kzalloc(size, GFP_KERNEL);
+> It seems that in this case, size could be entirely replaced by
+> struct_size().
+>
+> Thanks
+> --
+> Gustavo
+> .
