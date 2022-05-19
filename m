@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D35A4C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F2D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 13:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239156AbiESNuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 09:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
+        id S232392AbiESNwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 09:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239203AbiESNu1 (ORCPT
+        with ESMTP id S239079AbiESNuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 09:50:27 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E422F3A9;
-        Thu, 19 May 2022 06:50:04 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id a22so4753482qkl.5;
-        Thu, 19 May 2022 06:50:04 -0700 (PDT)
+        Thu, 19 May 2022 09:50:35 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DE7DFF65;
+        Thu, 19 May 2022 06:50:08 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id i68so3493356qke.11;
+        Thu, 19 May 2022 06:50:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vBqh7Tk2z2K1YwGYzAH4brkfEyxgFWvHmBvnWHs1Zp4=;
-        b=flFbqmZxx9iM5vRGY/4eQBnTHrzZe9ShyTGtUfoI5IhkuVrEkViYFtkY0ApjDpQSma
-         NKGWwmHhnQwHti46okHFeiW/Vtm17DAPZJx4zvDOTHmG7cBoWd2e0yPyDTGquH+Qw0d6
-         PIZzIC09nejA7WeWV0LroOLgNA0Hl2CcBLAa6vurXGShpfQxd3EoHmP9jF3cK9bC7Gnb
-         //ytY6uTxONFx3cQLZKrymmAgwdIYRK9wXCtm+RqcY2rS1IXl+TQa9gpzDfLsvfIOamZ
-         RM+kXX+Eb/JQ8cqxn9PD7HkJ80bnOMwV5J44IX4C0C/z80B65gpi5bxua3DxtdUtrUV5
-         484g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wwBfJw5/BJNtRay4oCR2RSqvzBCGfp1734JkjgoOzz4=;
+        b=fs/uXmWU4zDYd3zoUKnpovlsFnqcRqmWaXzoviY7wwM2pBe5X5WKqiF/JoNVYlXgqo
+         rd1qd9Pca064uvXp6jBK8L6PO0tKPNYhFtemVkpvOinxgzdQf0reeVTqxBroIjdI8lmf
+         ZzbDvr1GK9OPkNPRntI+WIQdO1NsTUvp0M820JOhdvjqfpLhrBarf+F33e5PcPb7lYDY
+         aeIsjzgla1dh87peoGViai6UGzX3IduUt7quVBqvOuii60owMzU8tZxKvEiAoV9zIiC0
+         LdnZ1xo8sWe6VpuZbVWl7fRERJF+yx+H4Qo43BuOxWLGcsKb9O58JZGN9087LAfxSO/S
+         asyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vBqh7Tk2z2K1YwGYzAH4brkfEyxgFWvHmBvnWHs1Zp4=;
-        b=TOzCxCuho+E8krO26p0HqpA5XzO2eNDD+ROZMrYAxm4z5vw/70kYX+5bpAOp9YZFaz
-         FdAjEjC+TwEvxo9w0GPIxReTwDGVhPHbxQS2dqxA+I7juifrKRTDoFZUZhRXVU9y/cwA
-         p4TatSOx5uZyFvLN/OFLnEJ+VKwFGHE8DE5BfPdgI5l5XHwG2PraqW8QzEtOOn9ElET5
-         ADSEpDCjS/KsplcnrwO/pkk9Quv2vFNhycuh/6HL20WEdB3lZMOBNNqKbwPaiMdxsMky
-         3xcfh8Q6VLafcTCWkGYLgzH7XRaLUEOGKjHrTSQVL2deaeAsO4QkI4lkmrf7fo5TdP7b
-         MiJA==
-X-Gm-Message-State: AOAM530xGYV/FGVX/Wn5S284M8bYL9W+y4cR9lyf+XwauGu6p1p1agMG
-        qaDhX3RzlNFsQWBYRQbj9TY=
-X-Google-Smtp-Source: ABdhPJy0wt0R0C+qdbicIKHg86HWjUDyYZscDjDdlgPI+3OgR1c1hrYBu5g+wbK5WOVdKMQ9Sqfrpw==
-X-Received: by 2002:a37:8641:0:b0:67e:85d1:f5e9 with SMTP id i62-20020a378641000000b0067e85d1f5e9mr3195651qkd.128.1652968155429;
-        Thu, 19 May 2022 06:49:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wwBfJw5/BJNtRay4oCR2RSqvzBCGfp1734JkjgoOzz4=;
+        b=PisAGzgag6/YjobR12C0KvAKkV7UuA+F5vtGBoI2/RQLDFxiaVuGqywIabLoieTmYV
+         pYm2yf3Bc8P9DkmvLJomnV+jyYEWsm3+Fsnuvmt7YQDJdzuVXAnf3mSt64Jne/MJYqe5
+         u+jLsgT1ktsccUmRnaqHlANlJMv/YzRCdFmd+mwZrLjV+8Y21dZaueZkWEcR7Bl2lSqN
+         tZW4TUjVW98cylnvZ6b2Xdrf6i6mmkwFj9mvEiC3oqTMXvtBjtoSdJ8MCp/wsPRKAJ3Q
+         PQQD926wwc5JFA4Olgh+IiFc0BYbDNaALqz5DZy5Ib/h7K4SHU9WAF9tF5umiH7bUGBG
+         ExNw==
+X-Gm-Message-State: AOAM5312ehEnax25P4qrYkg0UVX+aaUiz9Gv1VRPZSfro4DqO1qhqOvo
+        lS54/j2qqguKxQmLmp6vYGQ=
+X-Google-Smtp-Source: ABdhPJxXOzQEfbshSAFTXW/WKDfXcuWSh8vP79n1R4ztS9+cKHzly2gJ9NajNbLKHmij01cQOZXqDA==
+X-Received: by 2002:a05:620a:258b:b0:680:f66e:3381 with SMTP id x11-20020a05620a258b00b00680f66e3381mr2961492qko.291.1652968170786;
+        Thu, 19 May 2022 06:49:30 -0700 (PDT)
 Received: from localhost.localdomain ([217.138.206.82])
-        by smtp.gmail.com with ESMTPSA id i186-20020a3754c3000000b0069fc13ce23dsm1315024qkb.110.2022.05.19.06.49.08
+        by smtp.gmail.com with ESMTPSA id i186-20020a3754c3000000b0069fc13ce23dsm1315024qkb.110.2022.05.19.06.49.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 06:49:15 -0700 (PDT)
+        Thu, 19 May 2022 06:49:30 -0700 (PDT)
 From:   Yassine Oudjana <yassine.oudjana@gmail.com>
 X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
 To:     Michael Turquette <mturquette@baylibre.com>,
@@ -66,29 +66,24 @@ Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
         linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 0/6] clk: mediatek: Improvements to simple probe/remove and reset controller unregistration
-Date:   Thu, 19 May 2022 17:47:22 +0400
-Message-Id: <20220519134728.456643-1-y.oudjana@protonmail.com>
+Subject: [PATCH 2/6] clk: mediatek: Use mtk_clk_register_gates_with_dev in simple probe
+Date:   Thu, 19 May 2022 17:47:24 +0400
+Message-Id: <20220519134728.456643-3-y.oudjana@protonmail.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220519134728.456643-1-y.oudjana@protonmail.com>
+References: <20220519134728.456643-1-y.oudjana@protonmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series started as part of an earlier series adding support for the main
-clock controllers on MediaTek MT6735[1]. It has since been split off and
-expanded. It adds a new function to unregister a reset controller and expands
-the mtk_clk_simple_probe/remove functions to support the main 5 types of clocks:
-- PLLs		(new)
-- Fixed clocks	(new)
-- Fixed factors	(new)
-- Muxes		(new)
-- Gates		(supported previously)
-This should allow it to be used in most clock drivers, resulting in reduced
-code duplication. It will be used in MT6735 clock drivers in the upcoming v2
-of the MT6735 main clock controller series.
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
+Register gates with dev in mtk_clk_simple_probe.
+
+Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+---
 Dependencies:
 - clk: mediatek: Move to struct clk_hw provider APIs (series)
   https://patchwork.kernel.org/project/linux-mediatek/cover/20220510104804.544597-1-wenst@chromium.org/ 
@@ -97,23 +92,23 @@ Dependencies:
 - Export required symbols to compile clk drivers as module (single patch)
   https://patchwork.kernel.org/project/linux-mediatek/patch/20220518111652.223727-7-angelogioacchino.delregno@collabora.com/
 
-Yassine Oudjana (6):
-  clk: mediatek: gate: Export mtk_clk_register_gates_with_dev
-  clk: mediatek: Use mtk_clk_register_gates_with_dev in simple probe
-  clk: mediatek: reset: Return reset data pointer on register
-  clk: mediatek: reset: Implement mtk_unregister_reset_controller() API
-  clk: mediatek: Unregister reset controller on simple remove
-  clk: mediatek: Add support for other clock types in simple
-    probe/remove
+ drivers/clk/mediatek/clk-mtk.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- drivers/clk/mediatek/clk-gate.c   |   1 +
- drivers/clk/mediatek/clk-mt8192.c |   7 +-
- drivers/clk/mediatek/clk-mtk.c    | 123 +++++++++++++++++++++++++-----
- drivers/clk/mediatek/clk-mtk.h    |  22 +++++-
- drivers/clk/mediatek/reset.c      |  41 ++++++----
- drivers/clk/mediatek/reset.h      |  20 +++--
- 6 files changed, 167 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/clk/mediatek/clk-mtk.c b/drivers/clk/mediatek/clk-mtk.c
+index 41e60a7e8ff9..3a8875b6c37f 100644
+--- a/drivers/clk/mediatek/clk-mtk.c
++++ b/drivers/clk/mediatek/clk-mtk.c
+@@ -434,7 +434,8 @@ int mtk_clk_simple_probe(struct platform_device *pdev)
+ 	if (!clk_data)
+ 		return -ENOMEM;
+ 
+-	r = mtk_clk_register_gates(node, mcd->clks, mcd->num_clks, clk_data);
++	r = mtk_clk_register_gates_with_dev(node, mcd->clks, mcd->num_clks,
++					    clk_data, &pdev->dev);
+ 	if (r)
+ 		goto free_data;
+ 
 -- 
 2.36.1
 
