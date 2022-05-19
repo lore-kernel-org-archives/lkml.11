@@ -2,148 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BBEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E14C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243924AbiESS35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        id S243932AbiESSaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243896AbiESS3s (ORCPT
+        with ESMTP id S243927AbiESSaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:29:48 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92213EC31A;
-        Thu, 19 May 2022 11:29:46 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24JHnMi6011493;
-        Thu, 19 May 2022 18:29:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=xrNctW9hVKbrU4W6AMqU2wLjNusMYTB/FYWs1L1y5aQ=;
- b=jcmKmAuWXdoMkK8OykiBQWPVLx8rf31qjOnBo+YuWvZaKZFn6h6zCiW49Ftu+O9sqd0K
- 88Z5/Fz+yzzC5rjdgHa86D6KZ5I5ZS6umEM4ojtpRIipIjom6bPSHskQ8vWWA6Y4aOiW
- 6TUx7GL5h/G9c0sVX2Vptc40cZLECagSeAXDHFxHUVef5+eL7HxQ1CVqrEh5iEpqi8oS
- QCnOA5Qg1wpMIPEJd1nIBJMykJCFtfeTBbRDYRguEj3rP+L4hpqw/UEF/hvrBGXKyk/t
- XfHVRu7IUXYYnsaBgcMTzhDzXOp0yCroW8Y+A+J0p6YN4NRLxvDg1YMi8wSjLTME1h0+ WA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5tmkrtff-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 May 2022 18:29:38 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24JHq8FO020578;
-        Thu, 19 May 2022 18:29:37 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5tmkrtf8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 May 2022 18:29:37 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24JISpgC008710;
-        Thu, 19 May 2022 18:29:37 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma02wdc.us.ibm.com with ESMTP id 3g242a5k8p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 May 2022 18:29:37 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24JITaFW23134634
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 May 2022 18:29:36 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E8FF4136059;
-        Thu, 19 May 2022 18:29:35 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A007B136051;
-        Thu, 19 May 2022 18:29:34 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.37.97])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 19 May 2022 18:29:34 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     jgg@nvidia.com, joro@8bytes.org
-Cc:     will@kernel.org, alex.williamson@redhat.com, cohuck@redhat.com,
-        borntraeger@linux.ibm.com, schnelle@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, farman@linux.ibm.com,
-        iommu@lists.linux-foundation.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/s390: tolerate repeat attach_dev calls
-Date:   Thu, 19 May 2022 14:29:29 -0400
-Message-Id: <20220519182929.581898-1-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 19 May 2022 14:30:06 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AC4EBEB0
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:30:05 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id o13-20020a17090a9f8d00b001df3fc52ea7so9490269pjp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 11:30:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FUYzfmiDx2t3eNvqtBM4IkuZfRBiStdddEtxJ1+Q5P4=;
+        b=GCHHR8ZSisnYohqEDPLBYQ3HyYlNXRP543l8qieE+hzqeFk2RzGhvF1IW0gQ/BZvxN
+         FYto33uL+FTb4M31UXjjqhG/qBhMj4RgxLqoVeFGDV4E0+ieEpKCASBIzDj153jLrqfe
+         k/xETDYLHODUtNDtSn9qJINC44jUfw74udaVmqh6xS/ewHG5y4cSjixM2vkJfhC6Qh4+
+         0TOG23hegKwtWQLaqAgoNwo9UcGLD6c8ZnRWX7oCZ3kpHnaJE6L6yP5xfZZUPc6RoDSI
+         4tb7CjjVEO2nb4j6N50iAnhCPwMdb49CyBk1thQItcEo4SbvTZDsiq3LIsNOqwlrlVdC
+         /M9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FUYzfmiDx2t3eNvqtBM4IkuZfRBiStdddEtxJ1+Q5P4=;
+        b=hQW2zw3J2aEq4GRAKCvYyRjiXrK8Paxv4vagE57GJDQccxExkGJRspl5DheJy4PB9Q
+         33xXUA1Coi3lic9dZ2IF7nlqCdpZ1KSdwPQN45fnAOP/5jrj+Na4dKbjzZPDpm5v1O50
+         PqpFXuG7qaIsBflnBMr9ON6juzDGQxkJnOeEAcf9zJgI0FoI60R2UMUG6TkqdE7uQLOF
+         dWJ2S0uRj3VyhpJ70lHWOdoFOjpBj9AVCU5+FHbuurh6XzwcAKH1xngF3BWtJOV4caEo
+         V+LB1fDN3U2wWrZ6u0FwIabJlMRba5fi6YYvT0btHR0gR+m/JOQT2qUtdtPhVt0jZXh1
+         FU9A==
+X-Gm-Message-State: AOAM531RxbADR3ACTyEWcart0U7thI9TJh9s7ERs7NAm1q6NSp/HBvo9
+        PKY24KEr8xfKggMtGc3jR6w=
+X-Google-Smtp-Source: ABdhPJwp4Jg119KHzbAw6F3jp3rGg9319BFrF5433ADIYxmAsVsWv9pyRUYCnkHI29ja3f53was0Jg==
+X-Received: by 2002:a17:903:1c7:b0:161:9d6f:376a with SMTP id e7-20020a17090301c700b001619d6f376amr6024015plh.147.1652985004975;
+        Thu, 19 May 2022 11:30:04 -0700 (PDT)
+Received: from archlinux.localdomain ([140.121.198.213])
+        by smtp.googlemail.com with ESMTPSA id z5-20020a63e105000000b003c14af505f6sm3884674pgh.14.2022.05.19.11.29.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 11:30:04 -0700 (PDT)
+From:   Chih-En Lin <shiyn.lin@gmail.com>
+To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        William Kucharski <william.kucharski@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Chih-En Lin <shiyn.lin@gmail.com>,
+        Colin Cross <ccross@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Xu <peterx@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-kernel@vger.kernel.org, Kaiyang Zhao <zhao776@purdue.edu>,
+        Huichun Feng <foxhoundsk.tw@gmail.com>,
+        Jim Huang <jserv.tw@gmail.com>
+Subject: [RFC PATCH 0/6] Introduce Copy-On-Write to Page Table
+Date:   Fri, 20 May 2022 02:31:21 +0800
+Message-Id: <20220519183127.3909598-1-shiyn.lin@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: t1RilyYolHsJLOPLBzO2pxdNqh7SgUYc
-X-Proofpoint-ORIG-GUID: gjzwgNJ_9iqSM-ohudG6p3A8_pmMDcsd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-19_05,2022-05-19_03,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- impostorscore=0 malwarescore=0 mlxscore=0 bulkscore=0 clxscore=1011
- mlxlogscore=999 suspectscore=0 priorityscore=1501 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205190103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 0286300e6045 ("iommu: iommu_group_claim_dma_owner() must
-always assign a domain") s390-iommu will get called to allocate multiple
-unmanaged iommu domains for a vfio-pci device -- however the current
-s390-iommu logic tolerates only one.  Recognize that multiple domains can
-be allocated and handle switching between DMA or different iommu domain
-tables during attach_dev.
+When creating the user process, it usually uses the Copy-On-Write (COW)
+mechanism to save the memory usage and the cost of time for copying.
+COW defers the work of copying private memory and shares it across the
+processes as read-only. If either process wants to write in these
+memories, it will page fault and copy the shared memory, so the process
+will now get its private memory right here, which is called break COW.
 
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Presently this kind of technology is only used as the mapping memory.
+It still needs to copy the entire page table from the parent.
+It might cost a lot of time and memory to copy each page table when the
+parent already has a lot of page tables allocated. For example, here is
+the state table for mapping the 1 GB memory of forking.
+
+	    mmap before fork         mmap after fork
+MemTotal:       32746776 kB             32746776 kB
+MemFree:        31468152 kB             31463244 kB
+AnonPages:       1073836 kB              1073628 kB
+Mapped:            39520 kB                39992 kB
+PageTables:         3356 kB                 5432 kB
+
+This patch introduces Copy-On-Write to the page table. This patch only
+implements the COW on the PTE level. It's based on the paper
+On-Demand Fork [1]. Summary of the implementation for the paper:
+
+- Only implements the COW to the anonymous mapping
+- Only do COW to the PTE table which the range is all covered by a
+  single VMA.
+- Use the reference count to control the COW PTE table lifetime.
+  Decrease the counter when breaking COW or dereference the COW PTE
+  table. When the counter reduces to zero, free the PTE table.
+
+The paper is based on v5.6, and this patch is for v.518-rc6. And, this
+patch has some differences between the version of paper. To reduce the
+work of duplicating page tables, I adapted the restriction of the COW
+page table. Excluding the brk and shared memory, it will do the COW to
+all the PTE tables. With a reference count of one, we reuse the table
+when breaking COW. To handle the page table state of the process, it
+adds the ownership of the COW PTE table. It uses the address of the PMD
+index for the ownership of the PTE table to maintain the COW PTE table
+state to the RSS and pgtable_bytes.
+
+If we do the COW to the PTE table once as the time we touch the PMD
+entry, it cannot preserves the reference count of the COW PTE table.
+Since the address range of VMA may overlap the PTE table, the copying
+function will use VMA to travel the page table for copying it.
+So it may increase the reference count of the COW PTE table multiple
+times in one COW page table forking. Generically it will only increase
+once time as the child reference it. To solve this problem, it needs to
+check the destination of PMD entry does exist. And the reference count
+of the source PTE table is more than one before doing the COW.
+
+Here is the patch of a state table for mapping the 1 GB memory of
+forking.
+
+            mmap before fork         mmap after fork
+MemTotal:       32746776 kB             32746776 kB
+MemFree:        31471324 kB             31468888 kB
+AnonPages:       1073628 kB              1073660 kB
+Mapped:            39264 kB                39504 kB
+PageTables:         3304 kB                 3396 kB
+
+TODO list:
+- Handle the swap
+- Rewrite the TLB flush for zapping the COW PTE table.
+- Experiment COW to the entire page table. (Now just for PTE level)
+- Bug in some case from copy_pte_range()::vm_normal_page()::print_bad_pte().
+- Bug of Bad RSS counter in multiple times COW PTE table forking.
+
+[1] https://dl.acm.org/doi/10.1145/3447786.3456258
+
+This patch is based on v5.18-rc6.
+
 ---
- drivers/iommu/s390-iommu.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 3833e86c6e7b..c898bcbbce11 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -99,7 +99,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	if (!domain_device)
- 		return -ENOMEM;
- 
--	if (zdev->dma_table) {
-+	if (zdev->dma_table && !zdev->s390_domain) {
- 		cc = zpci_dma_exit_device(zdev);
- 		if (cc) {
- 			rc = -EIO;
-@@ -107,6 +107,9 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		}
- 	}
- 
-+	if (zdev->s390_domain)
-+		zpci_unregister_ioat(zdev, 0);
-+
- 	zdev->dma_table = s390_domain->dma_table;
- 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
- 				virt_to_phys(zdev->dma_table));
-@@ -136,7 +139,13 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	return 0;
- 
- out_restore:
--	zpci_dma_init_device(zdev);
-+	if (!zdev->s390_domain) {
-+		zpci_dma_init_device(zdev);
-+	} else {
-+		zdev->dma_table = zdev->s390_domain->dma_table;
-+		zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-+				   virt_to_phys(zdev->dma_table));
-+	}
- out_free:
- 	kfree(domain_device);
- 
-@@ -167,7 +176,7 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- 	}
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
--	if (found) {
-+	if (found && (zdev->s390_domain == s390_domain)) {
- 		zdev->s390_domain = NULL;
- 		zpci_unregister_ioat(zdev, 0);
- 		zpci_dma_init_device(zdev);
+Chih-En Lin (6):
+  mm: Add a new mm flag for Copy-On-Write PTE table
+  mm: clone3: Add CLONE_COW_PGTABLE flag
+  mm, pgtable: Add ownership for the PTE table
+  mm: Add COW PTE fallback function
+  mm, pgtable: Add the reference counter for COW PTE
+  mm: Expand Copy-On-Write to PTE table
+
+ include/linux/mm.h             |   2 +
+ include/linux/mm_types.h       |   2 +
+ include/linux/pgtable.h        |  44 +++++
+ include/linux/sched/coredump.h |   5 +-
+ include/uapi/linux/sched.h     |   1 +
+ kernel/fork.c                  |   6 +-
+ mm/memory.c                    | 329 ++++++++++++++++++++++++++++++---
+ mm/mmap.c                      |   4 +
+ mm/mremap.c                    |   5 +
+ 9 files changed, 373 insertions(+), 25 deletions(-)
+
 -- 
-2.27.0
+2.36.1
 
