@@ -2,140 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A51C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D012FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 07:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234886AbiESHZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 03:25:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        id S234957AbiESH0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 03:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234715AbiESHY7 (ORCPT
+        with ESMTP id S234777AbiESHZM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 03:24:59 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79488023C
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:24:58 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id e78so7506192ybc.12
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 00:24:58 -0700 (PDT)
+        Thu, 19 May 2022 03:25:12 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D765F8720F;
+        Thu, 19 May 2022 00:25:09 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id nk9-20020a17090b194900b001df2fcdc165so8047767pjb.0;
+        Thu, 19 May 2022 00:25:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6QjAwwxwtAPBPx+OeTR5L/KL5q3yUlrIq0gFBmYE7r8=;
-        b=MV73efXzQNZHid3RSq8DxrFnQffNHwbjltUA792xVO8th6yvXTPQ0021TSNky6MRS/
-         ELvAlkVAq/K4PV7sXYbiseqyl9svMlpQf0l6Hrgzm7qkEFpPjpBiokBx0oFxJ9EMhIFi
-         zFpRfgXtbZEDPYwRso06NoVufse1OzIx7R4Q0=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=izhcXDphxsSYMgLi7WOIxwg7ve9I4BtGghSY1eoBQEs=;
+        b=jZzhFSYQ6xCZWQ48bdsBqBDao2zARJZkZyDZsUfdzMeDDlGumxtck1+YKCQVqhOiwn
+         zzWbwYkxaOrsQSp52OnMaLSG80Kz+x8GL3kyJJ0cVGc7kyQU7uCwQfPJF4Avk0KuCMYd
+         vDGTVqQUNFa83s4j8Pm0YxbfhwEDkje/lPcSgsyK6vkjd+u2dQuyckvBZnFBAHrHLT9s
+         Eh/40tmJitMVYZkEJBUC+q8QLiZVn+Go8EtS5x/iCKhb3Tt0EpSQhib0cLLtuzuj7wHH
+         jx2826dhlVarBTt6wtB8eDqqsBZHqrT+Mbaki/HCwiHKTJfdhqWO0aXDHqi8BCeAepP4
+         gMyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6QjAwwxwtAPBPx+OeTR5L/KL5q3yUlrIq0gFBmYE7r8=;
-        b=Qp4RUYGOT0mGkF5sTioE/UuBgwKcfs5bQAgEOm3aucbe9BtEOh/M5MEv/+ldVX0J1G
-         fGgMxiz/aCb9TwsWQnb320dOdTPTElf0F73hShgHJqyL9RoWVPH3is8jOG1TlaDd2rIN
-         UqOSsQZdUVRAxvH3jz3RrETLZ04pe5dASwfbhSEzz1YQ/a0AEv8VIKqcQb6SHfP9KTKi
-         5m8vd8auwX0lY/dro/mU2nLkN7XLYHasAw94Jv6gjlOCJTTZim+LNN5vf6ZxtAey69bG
-         +zJPJMVB1Rb4yFFLt9SAcVkCrZHUi687MM3bh6xOZQO+0uVTh3MDkobN0iitqgRx5WdU
-         DP1A==
-X-Gm-Message-State: AOAM533cVdXJK5EHnpeC+/ewBYkiMmFhIkfw0taNa/nWw1risX7s8qBs
-        kISDJ99YxXqgVvbksOKB6WKhV0G1nSYPp/GMrAmVPA==
-X-Google-Smtp-Source: ABdhPJxo7X7HyndWjvS5Xv8GzWtggOsI1vFJxK7ql2rSaufrLJn2KFvOfhB3bkSKLj082fcG8X4a/8OhUocsP01ptDo=
-X-Received: by 2002:a05:6902:f:b0:64d:84a6:2386 with SMTP id
- l15-20020a056902000f00b0064d84a62386mr2878273ybh.437.1652945097903; Thu, 19
- May 2022 00:24:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220429064051.61552-1-linmiaohe@huawei.com> <20220429064051.61552-9-linmiaohe@huawei.com>
-In-Reply-To: <20220429064051.61552-9-linmiaohe@huawei.com>
-From:   Vitaly Wool <vitaly.wool@konsulko.com>
-Date:   Thu, 19 May 2022 09:24:46 +0200
-Message-ID: <CAM4kBB+xqh0zUJDHUaSNoDUz6nUK11CkPL0XfwEPJMA7xXEKXQ@mail.gmail.com>
-Subject: Re: [PATCH 8/9] mm/z3fold: fix z3fold_reclaim_page races with z3fold_free
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=izhcXDphxsSYMgLi7WOIxwg7ve9I4BtGghSY1eoBQEs=;
+        b=uMzI7muTf8g2wXdabfbD08l8e5c1gOPZG+6XXxle/kdw5HK8aBXlSuMoCeVIHwaDR+
+         GNXAvA44Q9sum+tWdSzEOVuxbBQHjnYMyfJCQLFk1Pzi90Cs4u9VnTkV002Yl1I8b1Tg
+         QiiLJ4xurzdc87boLrCwoBXaabR5X0f06v9YXdL2zK7zRY7pobbfn9tPyzkpb6IuiVed
+         3q4kJav2X5pERgCZ23valw3xz+SjUA0S/bT46BTxD5eFh08DEqCnr6W7OTlaueRXVmlO
+         4v6pt/yf/rifLakd2Mmrv+fNORnBynrO0sivzxEaM/p/J1Ad9AYhEBHO/U9qMozI1r2E
+         npJw==
+X-Gm-Message-State: AOAM530u1rLSwAZqv9Q+uFwnl8m0j52AXLuKoXiokMVLG8WNDtbQBK2Z
+        0GT0bx1WTJkEwJuLihSe2I0=
+X-Google-Smtp-Source: ABdhPJxRWMLiPZC1hEmCnRDpsE1fl+ZNEr/v7kfplga+jDdVtU/2eIrwAPw+PI8xO0UejtD6e40BnQ==
+X-Received: by 2002:a17:903:4044:b0:161:823e:6f93 with SMTP id n4-20020a170903404400b00161823e6f93mr3501687pla.172.1652945109335;
+        Thu, 19 May 2022 00:25:09 -0700 (PDT)
+Received: from localhost.localdomain ([116.89.141.50])
+        by smtp.gmail.com with ESMTPSA id b12-20020a170902650c00b00161ac982b9esm2974159plk.185.2022.05.19.00.25.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 00:25:08 -0700 (PDT)
+From:   Medad CChien <medadyoung@gmail.com>
+X-Google-Original-From: Medad CChien <ctcchien@nuvoton.com>
+To:     rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
+        mchehab@kernel.org, bp@alien8.de, robh+dt@kernel.org,
+        benjaminfair@google.com, yuenn@google.com, venture@google.com,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
+        tali.perry1@gmail.com, ctcchien@nuvoton.com
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: [PATCH v10 1/3] dt-bindings: edac: nuvoton: add NPCM memory controller
+Date:   Thu, 19 May 2022 15:24:52 +0800
+Message-Id: <20220519072454.24063-2-ctcchien@nuvoton.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220519072454.24063-1-ctcchien@nuvoton.com>
+References: <20220519072454.24063-1-ctcchien@nuvoton.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 8:40 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> Think about the below scene:
->
-> CPU1                            CPU2
-> z3fold_reclaim_page             z3fold_free
->  spin_lock(&pool->lock)          get_z3fold_header -- hold page_lock
->  kref_get_unless_zero
->                                  kref_put--zhdr->refcount can be 1 now
->  !z3fold_page_trylock
->   kref_put -- zhdr->refcount is 0 now
->    release_z3fold_page
->     WARN_ON(!list_empty(&zhdr->buddy)); -- we're on buddy now!
->     spin_lock(&pool->lock); -- deadlock here!
->
-> z3fold_reclaim_page might race with z3fold_free and will lead to pool lock
-> deadlock and zhdr buddy non-empty warning. To fix this, defer getting the
-> refcount until page_lock is held just like what __z3fold_alloc does. Note
-> this has the side effect that we won't break the reclaim if we meet a soon
-> to be released z3fold page now.
->
-> Fixes: dcf5aedb24f8 ("z3fold: stricter locking and more careful reclaim")
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/z3fold.c | 18 +++---------------
->  1 file changed, 3 insertions(+), 15 deletions(-)
->
-> diff --git a/mm/z3fold.c b/mm/z3fold.c
-> index 4a3cd2ff15b0..a7769befd74e 100644
-> --- a/mm/z3fold.c
-> +++ b/mm/z3fold.c
-> @@ -519,13 +519,6 @@ static void __release_z3fold_page(struct z3fold_header *zhdr, bool locked)
->         atomic64_dec(&pool->pages_nr);
->  }
->
-> -static void release_z3fold_page(struct kref *ref)
-> -{
-> -       struct z3fold_header *zhdr = container_of(ref, struct z3fold_header,
-> -                                               refcount);
-> -       __release_z3fold_page(zhdr, false);
-> -}
-> -
->  static void release_z3fold_page_locked(struct kref *ref)
->  {
->         struct z3fold_header *zhdr = container_of(ref, struct z3fold_header,
-> @@ -1317,12 +1310,7 @@ static int z3fold_reclaim_page(struct z3fold_pool *pool, unsigned int retries)
->                                 break;
->                         }
->
-> -                       if (kref_get_unless_zero(&zhdr->refcount) == 0) {
-> -                               zhdr = NULL;
-> -                               break;
-> -                       }
->                         if (!z3fold_page_trylock(zhdr)) {
-> -                               kref_put(&zhdr->refcount, release_z3fold_page);
->                                 zhdr = NULL;
->                                 continue; /* can't evict at this point */
->                         }
-> @@ -1333,14 +1321,14 @@ static int z3fold_reclaim_page(struct z3fold_pool *pool, unsigned int retries)
->                          */
->                         if (zhdr->foreign_handles ||
->                             test_and_set_bit(PAGE_CLAIMED, &page->private)) {
-> -                               if (!kref_put(&zhdr->refcount,
-> -                                               release_z3fold_page_locked))
-> -                                       z3fold_page_unlock(zhdr);
-> +                               z3fold_page_unlock(zhdr);
->                                 zhdr = NULL;
->                                 continue; /* can't evict such page */
->                         }
->                         list_del_init(&zhdr->buddy);
->                         zhdr->cpu = -1;
-> +                       /* See comment in __z3fold_alloc. */
-> +                       kref_get(&zhdr->refcount);
->                         break;
->                 }
->
+Document devicetree bindings for the Nuvoton BMC NPCM memory controller.
 
-Reviewed-by: Vitaly Wool <vitaly.wool@konsulko.com>
-> --
-> 2.23.0
->
+Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ .../edac/nuvoton,npcm-memory-controller.yaml  | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
+
+diff --git a/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml b/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
+new file mode 100644
+index 000000000000..a5c8d332d1c1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/edac/nuvoton,npcm-memory-controller.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Nuvoton NPCM Memory Controller
++
++maintainers:
++  - Medad CChien <ctcchien@nuvoton.com>
++  - Stanley Chu <yschu@nuvoton.com>
++
++description: |
++  The Nuvoton BMC SoC supports DDR4 memory with and without ECC (error
++  correction check).
++
++  The memory controller supports single bit error correction, double bit
++  error detection (in-line ECC in which a section (1/8th) of the memory
++  device used to store data is used for ECC storage).
++
++  Note, the bootloader must configure ECC mode for the memory controller.
++
++properties:
++  compatible:
++    enum:
++      - nuvoton,npcm750-memory-controller
++      - nuvoton,npcm845-memory-controller
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    minItems: 1
++    items:
++      - description: uncorrectable error interrupt
++      - description: correctable error interrupt
++
++  interrupt-names:
++    minItems: 1
++    items:
++      - const: ue
++      - const: ce
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    ahb {
++        #address-cells = <2>;
++        #size-cells = <2>;
++        mc: memory-controller@f0824000 {
++            compatible = "nuvoton,npcm750-memory-controller";
++            reg = <0x0 0xf0824000 0x0 0x1000>;
++            interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
++        };
++    };
+-- 
+2.17.1
+
