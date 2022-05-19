@@ -2,89 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46120C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbiESJvd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 05:51:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
+        id S231845AbiESJw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 05:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236334AbiESJvY (ORCPT
+        with ESMTP id S235192AbiESJwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 05:51:24 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92CE3B571
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:51:22 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id v5-20020a17090a7c0500b001df84fa82f8so4741268pjf.5
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:51:22 -0700 (PDT)
+        Thu, 19 May 2022 05:52:22 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7C06EC74
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:52:20 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id h8so5581706ljb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:52:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=Kz0h8AVlhDxqu2fBv10G2DB8irasLWVcOGHbwSABuog=;
-        b=j8zmNa4gMVNlK1u6bsG4t1uiZRogcunLjCd15/qrWM4n/t2ugaS7lRDlEPZ6jY+yIg
-         mTkGGLdzW/XF1HzWzoin/UaQRAH1HC3QmvuecgIwR59XLaQAahzL2pgVCOsQvNZj7cdz
-         VYmF4RqqxQQpgjr2ibTG/yK7t16feYxU3umPw8ojMW425llDHKVO+X5yB6azRO4u6S58
-         UzattIxywCxCfAijShBykl2CXmkGvvOSVCsH94kEZkUjIFlVSSr3OA351Ri9HUtPyFhO
-         1A35o6nL/k3nMH4PSxrKdHRFharWVdXlHgLosiZP6HKazU5lWFSTbsjROPCzR/ueoDD1
-         zBxg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=epUC6Np0BXS3QJtTF4KvMmglvF2IOB83BUZ5j+BV7l0=;
+        b=QBkFb4975luF3/Zu1UcADu2sFKXP2PZbztuUSfgRCSQzWdo7iEvLhpKikM5DvPo8nk
+         Eo3+Ep+W94le6m+kuS7j913LwgYFSlh9PaMjW2pBO8Lp6Z4JhD1UZ+OZBIOSv0alz8mw
+         W23zjqPyzL8JusYLmuYDzMc7VswVqCjaLPykqh7vYGjRntT6RnuNDvbI694WGaIB6q50
+         eU5k19neBexRw4dL3lbTcSonik8s+lma9WD9lEs8mfgUUS6bFXO2VBxjbDcmREJwdqTR
+         QahuxeqNjYU1rDKrGjrsgVTCnfh0g0uJFI87F6o0lmVPtxMNAEbWmyN5YYKOu3ILdghm
+         p6FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Kz0h8AVlhDxqu2fBv10G2DB8irasLWVcOGHbwSABuog=;
-        b=0QekHIhgUfnsASd1fcyDFEKTwYRgHvZZMT//5ROl+glf7b+QRJdtzVl1XW+BZXFXiM
-         TdNpJpVWLFU5+SFebWmA/Aph2TRb3qP+y7QbkSyD2feznT9bl8JFrx0hJ5UKryHj5r/F
-         vh+p5dy/xrmeLgg5QQxRLZ0lzfEnp1J3YEIMc80t07bQkXP83yryWqk9NmvJ+HLebGA3
-         b4Gs4KfOdCTZnanCm9ys6Cz8JIfwhzqTPUJrUgy67OmEjPjpZ3F4Cq3dM4O1dh+iRIPA
-         ETj7QzAydmgCe5XHesCNYHweqHrrZHwGg1hffbY48PjxdhI4iNoK26y0hiCuEuFMRwR2
-         n6dg==
-X-Gm-Message-State: AOAM5319O43CTMUE0xJoasdPmgvTYvNpW42mNAd5t5A0uMgg8oobu7H+
-        rChgP5bQNwU6gSPSVFzFuC2M/s1hQDEFfA==
-X-Google-Smtp-Source: ABdhPJw1fyrbaoYaCvEaPe+05dXjx+wf3KiemTb56WVrxGS0CtEIIiLvyqyF450u94ZVs2dzcF4H8w==
-X-Received: by 2002:a17:90b:1d0b:b0:1df:b3dc:5140 with SMTP id on11-20020a17090b1d0b00b001dfb3dc5140mr4289320pjb.225.1652953882156;
-        Thu, 19 May 2022 02:51:22 -0700 (PDT)
-Received: from Negi ([207.151.52.3])
-        by smtp.gmail.com with ESMTPSA id f186-20020a62dbc3000000b0050dc7628133sm3798073pfg.13.2022.05.19.02.51.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 02:51:21 -0700 (PDT)
-From:   Soumya Negi <soumya.negi97@gmail.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Soumya Negi <soumya.negi97@gmail.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: r8188eu: Remove multiple assignments
-Date:   Thu, 19 May 2022 02:50:11 -0700
-Message-Id: <20220519095012.5619-1-soumya.negi97@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=epUC6Np0BXS3QJtTF4KvMmglvF2IOB83BUZ5j+BV7l0=;
+        b=qUPDqGypPBo+ucU495Xl67zmpqDAa2+Fy/rLX/CcESgRh/fjzrVv+bEVFCvwiFgRs4
+         WehS9cHHIPivrSAmV5XDxLjogkFZVDgVaPKoF0aqIYzYAn22NR5gpunIE6g+K9kfPhBH
+         sLC5X3OHdH8a0s9LsBFw083wVR285SVAp8wM/uaH4NYfDq6cBneS8UBYuMsPIxly+D7d
+         DVv0UD4TXzNJ39v10GdkdbkSRz1PmPBR9L2UeYEEHGru2GwePzeuD1aTVgdmF8bgVf2H
+         qqtdGb9RyOgZCUloQrAiHxhscRA1jUfYnzUcqav0XSDYr+NGeagF7jZvptBA6ITY31pi
+         mkWw==
+X-Gm-Message-State: AOAM532Ss+i9Ra1c4CkthMW2zYMBdLWwXNl6H7iWhrv2Pd8cVp0E3Nji
+        NU0vXjOfd7Msqn/9n8h9VZSw6g==
+X-Google-Smtp-Source: ABdhPJzwM+VOYt2tfc4jbF1tCaPh17iewQ0ya7xVnWgl2uzwoGpo9v131U1CKPP7Pp2/u/0r5RQWzQ==
+X-Received: by 2002:a2e:9a84:0:b0:24f:4160:305d with SMTP id p4-20020a2e9a84000000b0024f4160305dmr2108933lji.375.1652953939236;
+        Thu, 19 May 2022 02:52:19 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id y2-20020a2e9d42000000b00253bb2564cbsm529363ljj.134.2022.05.19.02.52.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 02:52:18 -0700 (PDT)
+Message-ID: <b02873a1-ef1c-8ae6-2b7d-8e00c9db9ac0@linaro.org>
+Date:   Thu, 19 May 2022 11:52:17 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v6 3/3] arm64: dts: qcom: sc7280: Update SNPS Phy params
+ for SC7280 IDP device
+Content-Language: en-US
+To:     Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wesley Cheng <quic_wcheng@quicinc.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, quic_pkondeti@quicinc.com,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com
+References: <1652934489-23386-1-git-send-email-quic_kriskura@quicinc.com>
+ <1652934489-23386-4-git-send-email-quic_kriskura@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1652934489-23386-4-git-send-email-quic_kriskura@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Conform to Linux coding style.
-Issue found by checkpatch:-
-CHECK: multiple assignments should be avoided
+On 19/05/2022 06:28, Krishna Kurapati wrote:
+> Overriding the SNPS Phy tuning parameters for SC7280 IDP device.
+> 
+> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index 5eb6689..556fb04 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -325,6 +325,12 @@
+>  	vdda-pll-supply = <&vreg_l10c_0p8>;
+>  	vdda33-supply = <&vreg_l2b_3p0>;
+>  	vdda18-supply = <&vreg_l1c_1p8>;
+> +	qcom,hs-rise-fall-time-bp = <0>;
+> +	qcom,squelch-detector-bp = <(-2090)>;
+> +	qcom,hs-disconnect-bp = <1743>;
+> +	qcom,hs-amplitude-bp = <1780>;
+> +	qcom,hs-crossover-voltage-microvolt = <(-31000)>;
+> +	qcom,hs-output-impedance-micro-ohm = <2600000>;
 
-Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_br_ext.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Not correct property name.
 
-diff --git a/drivers/staging/r8188eu/core/rtw_br_ext.c b/drivers/staging/r8188eu/core/rtw_br_ext.c
-index e1b3e9d5250b..bca20fe5c983 100644
---- a/drivers/staging/r8188eu/core/rtw_br_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_br_ext.c
-@@ -53,7 +53,8 @@ static unsigned char *__nat25_find_pppoe_tag(struct pppoe_hdr *ph, unsigned shor
- 	unsigned char *cur_ptr, *start_ptr;
- 	unsigned short tagLen, tagType;
- 
--	start_ptr = cur_ptr = (unsigned char *)ph->tag;
-+	start_ptr = (unsigned char *)ph->tag;
-+	cur_ptr = (unsigned char *)ph->tag;
- 	while ((cur_ptr - start_ptr) < ntohs(ph->length)) {
- 		/*  prevent un-alignment access */
- 		tagType = (unsigned short)((cur_ptr[0] << 8) + cur_ptr[1]);
--- 
-2.17.1
 
+Best regards,
+Krzysztof
