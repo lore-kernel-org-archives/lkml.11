@@ -2,100 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55319C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 14:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239053AbiESOD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 10:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43922 "EHLO
+        id S239281AbiESOEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 10:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238688AbiESODy (ORCPT
+        with ESMTP id S236329AbiESOEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 10:03:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359D438AB
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 07:03:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 19 May 2022 10:04:39 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738C0387A8;
+        Thu, 19 May 2022 07:04:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1652969078; x=1684505078;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=0czR4Rztd8M0RS8cqQi+Tten5LECKymhcAxIJzh4FeI=;
+  b=gVx1eoRjNyAo2yy6/kjpb+VTaSjaCgaX/AcWJ97xLvR5JrvSZToWFbC1
+   2sdZW++a5lyjeq2DPq+8RxRmJ6vj7gkyZDUlUifpuHZhk6h+PS8Gq2F7B
+   Dzf4AS557D1U5y4/rOW5uKbT0MWBdO5A1YzBC3x8N5cTPf1Az5lKq2QNO
+   k=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="295878357"
+X-IronPort-AV: E=Sophos;i="5.91,237,1647298800"; 
+   d="scan'208";a="295878357"
+Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 16:04:35 +0200
+Received: from MUCSE822.infineon.com (MUCSE822.infineon.com [172.23.29.53])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6AF4618A8;
-        Thu, 19 May 2022 14:03:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A09DC385AA;
-        Thu, 19 May 2022 14:03:50 +0000 (UTC)
-Date:   Thu, 19 May 2022 10:03:48 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     YoPOhRctb8wwbmY5@carbon, Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Matthew Wilcox <willy@infradead.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Muchun Song <songmuchun@bytedance.com>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH v3] tracing: add 'accounted' entry into output of
- allocation tracepoints
-Message-ID: <20220519100348.101d027d@gandalf.local.home>
-In-Reply-To: <b728f944-e3ae-cdb6-5f02-2fb21466b2fb@openvz.org>
-References: <f6625cd8-90f9-6d48-50f6-7bb052bf479f@openvz.org>
-        <20220518160447.20a7b96f@gandalf.local.home>
-        <b728f944-e3ae-cdb6-5f02-2fb21466b2fb@openvz.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
+        Thu, 19 May 2022 16:04:35 +0200 (CEST)
+Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE822.infineon.com
+ (172.23.29.53) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 19 May
+ 2022 16:04:34 +0200
+Received: from [10.160.230.235] (172.23.8.247) by MUCSE807.infineon.com
+ (172.23.29.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 19 May
+ 2022 16:04:33 +0200
+Message-ID: <0dffeb79-3182-fab1-e25a-aab4107beb6e@infineon.com>
+Date:   Thu, 19 May 2022 16:04:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] dt-bindings: net: broadcom-bluetooth: Add property
+ for autobaud mode
+Content-Language: en-US
+From:   Hakan Jansson <hakan.jansson@infineon.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        <linux-bluetooth@vger.kernel.org>
+References: <cover.1651647576.git.hakan.jansson@infineon.com>
+ <64b59ca66cc22e6433a044e7bba2b3e97c810dc2.1651647576.git.hakan.jansson@infineon.com>
+ <CACRpkdY3xPcyNcJfdGbSP5rdcUV6hr87yJNDVDGZdRCfN+MqLA@mail.gmail.com>
+ <1e8cfbc6-8452-0e87-9713-536d235e5b51@infineon.com>
+ <CACRpkda4ByrS8RGAunno_S59+Y2yado4eObzwsVkM2Q=n-B+CQ@mail.gmail.com>
+ <d35fff90-ded7-2b1a-0e1a-f2db14cc4d07@infineon.com>
+In-Reply-To: <d35fff90-ded7-2b1a-0e1a-f2db14cc4d07@infineon.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE805.infineon.com (172.23.29.31) To
+ MUCSE807.infineon.com (172.23.29.33)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 14:35:46 +0300
-Vasily Averin <vvs@openvz.org> wrote:
+Hi Linus,
 
-> >> @@ -33,42 +35,46 @@ DECLARE_EVENT_CLASS(kmem_alloc,
-> >>  		__entry->bytes_req	= bytes_req;
-> >>  		__entry->bytes_alloc	= bytes_alloc;
-> >>  		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
-> >> +		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
-> >> +					  (s && s->flags & SLAB_ACCOUNT);  
-> > 
-> > Now you could make this even faster in the fast path and save just the
-> > s->flags.
-> > 
-> > 	__entry->sflags = s ? s->flags : 0;
-> >   
-> >>  	),
-> >>  
-> >> -	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s",
-> >> +	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s accounted=%s",
-> >>  		(void *)__entry->call_site,
-> >>  		__entry->ptr,
-> >>  		__entry->bytes_req,
-> >>  		__entry->bytes_alloc,
-> >> -		show_gfp_flags(__entry->gfp_flags))
-> >> +		show_gfp_flags(__entry->gfp_flags),
-> >> +		__entry->accounted ? "true" : "false")  
-> > 
-> > And then have: "accounted=%s":
-> > 
-> > 		(__entry->gfp_flags & __GFP_ACCOUNT) ||
-> > 		(__entry->sflags & SLAB_ACCOUNT) ? "true" : "false"  
-> 
-> Unfortunately this returns back sparse warnings about bitwise gfp_t and slab_flags_t casts.
-> Could you please explain why your variant is faster?
+I checked the state of this patch on Devicetree Bindings Patchwork and 
+it's marked "Changes Requested". I'd be happy to revise the patch but 
+it's not clear to me what changes are requested. Could you please help 
+guide me how to proceed?
 
-Micro-optimization, grant you, but it is faster because it moves some of
-the logic into the slow path (the read side), and takes it out of the fast
-path (the write side).
+Sorry if I'm missing something obvious here.
 
-The idea of tracing is to squeeze out every cycle we can to keep the
-tracing overhead down.
+Thanks,
+Håkan
 
-But it's really up to you if you need that. I'm not going to let this be a
-blocker. This is more of an FYI than anything else.
+On 5/5/2022 6:16 PM, Hakan Jansson wrote:
+>
+>
+> On 5/5/2022 4:13 PM, Linus Walleij wrote:
+>> I suppose a general flag could be useful but to be honest I don't know
+>>> if any other devices besides the ones using the Broadcom driver has any
+>>> use for it. You would probably also still want to be able to use
+>>> current-speed to set the link speed and end up using both
+>>> current-speed=x and current-speed-auto at the same time, which might
+>>> look a little confusing?
+>> I do not think it is more confusing than being able to use
+>> current-speed and brcm,uses-autobaud-mode at the same time.
+>>
+>>> Please let me know if you'd still prefer "current-speed-auto" over
+>>> "brcm,uses-autobaud-mode" and I'll revise the patch and rename it!
+>> It actually depends a bit.
+>>
+>> This:
+>>
+>>>>> +      The controller should be started in autobaud mode by asserting
+>>>>> +      BT_UART_CTS_N (i.e. host RTS) during startup. Only HCI 
+>>>>> commands supported
+>>>>> +      in autobaud mode should be used until patch FW has been 
+>>>>> loaded.
+>> sounds a bit vague?
+>
+> Yes, perhaps. I was thinking the details could be helpful but I can 
+> see how they might be perceived as vague and confusing. Maybe it would 
+> be better to just leave it at "The controller should be started in 
+> autobaud mode"?
+>
+>>
+>> Does it mean that CTS is asserted, then you send a bit (CTS then goes 
+>> low)
+>> and then CTS is asserted again when the device is ready to receieve more
+>> data? i.e is this some kind of one-bit mode, because it doesn't sound 
+>> like
+>> it is using CTS as it was used in legacy modems.
+>
+> CTS and RTS are actually used in the normal way during communication. 
+> The host will assert its RTS to indicate being ready to receive data 
+> from the controller. This flag just controls whether this happens 
+> before or after the controller is powered on. The controller will 
+> check the initial state of its BT_UART_CTS_N pin (connected to host's 
+> RTS) when starting up. It will enter autobaud mode if the signal is 
+> already asserted.
+>
+>> Some more explanation of this mode is needed so we can understand if
+>> this is something generic or a BRCM-only thing.
+>>
+>> Yours,
+>> Linus Walleij
+>
+> Thanks,
+> Håkan
 
--- Steve
