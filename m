@@ -2,214 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 04:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 05:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233855AbiESE7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 00:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
+        id S233917AbiESFIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 01:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233880AbiESE7M (ORCPT
+        with ESMTP id S233901AbiESFIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 00:59:12 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6856187232
-        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 21:59:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652936350; x=1684472350;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=G7jdHSG+9Ml5FFCJRQZdTKK7R+LHbizl6xTLD+h8S4I=;
-  b=gzw6u0y6OfBCKF5TThXDJMUr6ZIFmNgpnq+8JwELSjpxujjXY4nqgHwi
-   uggcvrzo4AZl7EsE9Hytn5oGlDGSY/6x4fZqraRN7QZz9cCXZRPmeWYR+
-   nD2dXjBgDWTW0Onqj2dQ3z+3evkyfbAtKkEwfN73I5FYoLkaJwoLcMWSx
-   fGXwqXiD6Yb22hSfzp8/vILB6Ie4setqDQS4NWmnpE0Cq41z+3iVjrwN/
-   ptuESRrvRiU4/dl/2c6hBE6Shy7lHHRn2z1PaKspJUvNoiMEi8VwU4Psr
-   H0XP58H0ikepliUlGFM/5n7XZcPZYHm++LSAIlTmYG43xhF/et5iG4IEN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="297318838"
-X-IronPort-AV: E=Sophos;i="5.91,236,1647327600"; 
-   d="scan'208";a="297318838"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 21:59:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,236,1647327600"; 
-   d="scan'208";a="627407381"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 18 May 2022 21:59:08 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrYFg-00035Z-2J;
-        Thu, 19 May 2022 04:59:08 +0000
-Date:   Thu, 19 May 2022 12:58:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [netfilter-nf-next:testing 9/12] net/netfilter/core.c:194:8: error:
- no member named 'hook_prog' in 'struct nf_hook_entries'
-Message-ID: <202205191257.Ihd0KGG2-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 19 May 2022 01:08:41 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21DD92D31
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:08:39 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2ff37db94e8so36885757b3.16
+        for <linux-kernel@vger.kernel.org>; Wed, 18 May 2022 22:08:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ssVw9Fz9ZtI8VSN2PnnCy16Ie6cjZqhXq7jkPcwK+VI=;
+        b=p1NA6cOyXSw5ouGNdhysoNKwpC+u544fyrDYu0KRc2c2e3ge13jLIY2R6C9yI7FNxq
+         lvhOpidQwLWrlHfaI75+qsSfVYwYmwzwxfCSsYuVmW20p+OGVFMJ11n4krPvP+4y4yQ3
+         ArzvvSz0qUdPdAjWkkkdSdgrgz6lcxZrq3hcwLXfVX1xbuRBis2dKkf871l1prfl+BVv
+         o7GhGIaYR4wz+MT62Ioh36TOJ/bKjcTPUZdj+8zF3R3erlBHaKgbD6RpGxh8SAEJFC1I
+         DBj+/pEpHKZXlI9DEH4YqWzNp7m8KXD40ml1jejz/hE/UOXcup3+tYdHpbBarswgdd+m
+         TrBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ssVw9Fz9ZtI8VSN2PnnCy16Ie6cjZqhXq7jkPcwK+VI=;
+        b=nOvTQONEDXOD29ka8vcbFKzu4Rb1EVvsXVMAr+bHUcELn8e2/ceiElLT+jLsrIFI/i
+         POecUiT7IL+CeCxfMGoMdyDEmNsiysMNJsn4UuRFL/KvEOpPRsQqEx0uw3m+RH7JE9kN
+         Uej9dlX8zlYd5+1hVWvAVkJJITtzHBeDrTUEprW3t2V14tq9i2m2ArwqzfQcCWO313OI
+         6AZFAzUbGwzrPvG4ttdx2B2dWWcCzuwHaaIjwTI6ku93LZzU9U5KcnuPtu4d0aXhSnkC
+         qV+EhDMApbRbsTKCh/BAwaqkf7//r18F64PfZ6E3Zv4HYSKCgVIHpVNrYV/qbFg0MaF8
+         Y2yA==
+X-Gm-Message-State: AOAM532y+Wx0hHcPYCNvxYFGaJUkNG9EArYPxrShoJDOuJenKedT+RK2
+        XD2UqvKdKvSdScasHFcYYnJ8frGSAKZbBA==
+X-Google-Smtp-Source: ABdhPJy6egbvWliClWw+tkL9hQFg8B3U3tLKaSMVV5VHERLmykIYj5eKmwucruUJqbwmeTA+EslCfrpd5FE0hQ==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
+ (user=shakeelb job=sendgmr) by 2002:a25:8c0c:0:b0:64e:a4ce:62db with SMTP id
+ k12-20020a258c0c000000b0064ea4ce62dbmr2743231ybl.294.1652936918833; Wed, 18
+ May 2022 22:08:38 -0700 (PDT)
+Date:   Thu, 19 May 2022 05:08:35 +0000
+In-Reply-To: <20220518223815.809858-1-vaibhav@linux.ibm.com>
+Message-Id: <20220519050835.ebpiukexgiys6t57@google.com>
+Mime-Version: 1.0
+References: <20220518223815.809858-1-vaibhav@linux.ibm.com>
+Subject: Re: [PATCH] memcg: provide reclaim stats via 'memory.reclaim'
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Vaibhav Jain <vaibhav@linux.ibm.com>
+Cc:     cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
+        Yosry Ahmed <yosryahmed@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git testing
-head:   40bcb3243ee8b8ffbd93213c51c3ca11981aa92a
-commit: d6058f935b80dfd90272cda816756fe23f9fd969 [9/12] netfilter: add bpf base hook program generator
-config: arm-randconfig-c002-20220518 (https://download.01.org/0day-ci/archive/20220519/202205191257.Ihd0KGG2-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e00cbbec06c08dc616a0d52a20f678b8fbd4e304)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git/commit/?id=d6058f935b80dfd90272cda816756fe23f9fd969
-        git remote add netfilter-nf-next git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
-        git fetch --no-tags netfilter-nf-next testing
-        git checkout d6058f935b80dfd90272cda816756fe23f9fd969
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash net/
+On Thu, May 19, 2022 at 04:08:15AM +0530, Vaibhav Jain wrote:
+> [1] Provides a way for user-space to trigger proactive reclaim by introducing
+> a write-only memcg file 'memory.reclaim'. However reclaim stats like number
+> of pages scanned and reclaimed is still not directly available to the
+> user-space.
+> 
+> This patch proposes to extend [1] to make the memcg file 'memory.reclaim'
+> readable which returns the number of pages scanned / reclaimed during the
+> reclaim process from 'struct vmpressure' associated with each memcg. This should
+> let user-space asses how successful proactive reclaim triggered from memcg
+> 'memory.reclaim' was ?
+> 
+> With the patch following command flow is expected:
+> 
+>  # echo "1M" > memory.reclaim
+> 
+>  # cat memory.reclaim
+>    scanned 76
+>    reclaimed 32
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yosry already mentioned the race issue with the implementation and I
+would prefer we don't create any new dependency on vmpressure which I
+think we should deprecate.
 
-All errors (new ones prefixed by >>):
-
->> net/netfilter/core.c:194:8: error: no member named 'hook_prog' in 'struct nf_hook_entries'
-                   new->hook_prog = hook_bpf_prog;
-                   ~~~  ^
-   net/netfilter/core.c:197:20: error: no member named 'hook_prog' in 'struct nf_hook_entries'
-                           old_prog = old->hook_prog;
-                                      ~~~  ^
->> net/netfilter/core.c:199:27: error: use of undeclared identifier 'bpf_dispatcher_nf_hook_base'; did you mean 'bpf_dispatcher_nop_func'?
-                   nf_hook_bpf_change_prog(BPF_DISPATCHER_PTR(nf_hook_base),
-                                           ^
-   include/linux/bpf.h:895:36: note: expanded from macro 'BPF_DISPATCHER_PTR'
-   #define BPF_DISPATCHER_PTR(name) (&bpf_dispatcher_##name)
-                                      ^
-   <scratch space>:65:1: note: expanded from here
-   bpf_dispatcher_nf_hook_base
-   ^
-   include/linux/bpf.h:847:45: note: 'bpf_dispatcher_nop_func' declared here
-   static __always_inline __nocfi unsigned int bpf_dispatcher_nop_func(
-                                               ^
->> net/netfilter/core.c:199:27: error: incompatible pointer types passing 'unsigned int (*)(const void *, const struct bpf_insn *, unsigned int (*)(const void *, const struct bpf_insn *))' to parameter of type 'struct bpf_dispatcher *' [-Werror,-Wincompatible-pointer-types]
-                   nf_hook_bpf_change_prog(BPF_DISPATCHER_PTR(nf_hook_base),
-                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/bpf.h:895:34: note: expanded from macro 'BPF_DISPATCHER_PTR'
-   #define BPF_DISPATCHER_PTR(name) (&bpf_dispatcher_##name)
-                                    ^~~~~~~~~~~~~~~~~~~~~~~~
-   include/net/netfilter/nf_hook_bpf.h:12:48: note: passing argument to parameter 'd' here
-   nf_hook_bpf_change_prog(struct bpf_dispatcher *d, struct bpf_prog *f, struct bpf_prog *t)
-                                                  ^
-   net/netfilter/core.c:319:26: error: use of undeclared identifier 'bpf_dispatcher_nf_hook_base'; did you mean 'bpf_dispatcher_nop_func'?
-           nf_hook_bpf_change_prog(BPF_DISPATCHER_PTR(nf_hook_base),
-                                   ^
-   include/linux/bpf.h:895:36: note: expanded from macro 'BPF_DISPATCHER_PTR'
-   #define BPF_DISPATCHER_PTR(name) (&bpf_dispatcher_##name)
-                                      ^
-   <scratch space>:108:1: note: expanded from here
-   bpf_dispatcher_nf_hook_base
-   ^
-   include/linux/bpf.h:847:45: note: 'bpf_dispatcher_nop_func' declared here
-   static __always_inline __nocfi unsigned int bpf_dispatcher_nop_func(
-                                               ^
-   net/netfilter/core.c:320:16: error: no member named 'hook_prog' in 'struct nf_hook_entries'
-                                   old ? old->hook_prog : NULL, hook_bpf_prog);
-                                         ~~~  ^
-   6 errors generated.
-
-
-vim +194 net/netfilter/core.c
-
-   123	
-   124	static struct nf_hook_entries *
-   125	nf_hook_entries_grow(const struct nf_hook_entries *old,
-   126			     const struct nf_hook_ops *reg)
-   127	{
-   128		unsigned int i, alloc_entries, nhooks, old_entries;
-   129		struct nf_hook_ops **orig_ops = NULL;
-   130		struct bpf_prog *hook_bpf_prog;
-   131		struct nf_hook_ops **new_ops;
-   132		struct nf_hook_entries *new;
-   133		bool inserted = false;
-   134	
-   135		alloc_entries = 1;
-   136		old_entries = old ? old->num_hook_entries : 0;
-   137	
-   138		if (old) {
-   139			orig_ops = nf_hook_entries_get_hook_ops(old);
-   140	
-   141			for (i = 0; i < old_entries; i++) {
-   142				if (orig_ops[i] != &dummy_ops)
-   143					alloc_entries++;
-   144			}
-   145		}
-   146	
-   147		if (alloc_entries > MAX_HOOK_COUNT)
-   148			return ERR_PTR(-E2BIG);
-   149	
-   150		new = allocate_hook_entries_size(alloc_entries);
-   151		if (!new)
-   152			return ERR_PTR(-ENOMEM);
-   153	
-   154		new_ops = nf_hook_entries_get_hook_ops(new);
-   155	
-   156		i = 0;
-   157		nhooks = 0;
-   158		while (i < old_entries) {
-   159			if (orig_ops[i] == &dummy_ops) {
-   160				++i;
-   161				continue;
-   162			}
-   163	
-   164			if (inserted || reg->priority > orig_ops[i]->priority) {
-   165				new_ops[nhooks] = (void *)orig_ops[i];
-   166				new->hooks[nhooks] = old->hooks[i];
-   167				i++;
-   168			} else {
-   169				new_ops[nhooks] = (void *)reg;
-   170				new->hooks[nhooks].hook = reg->hook;
-   171				new->hooks[nhooks].priv = reg->priv;
-   172				inserted = true;
-   173			}
-   174			nhooks++;
-   175		}
-   176	
-   177		if (!inserted) {
-   178			new_ops[nhooks] = (void *)reg;
-   179			new->hooks[nhooks].hook = reg->hook;
-   180			new->hooks[nhooks].priv = reg->priv;
-   181		}
-   182	
-   183		hook_bpf_prog = nf_hook_bpf_create(new);
-   184	
-   185		/* allocate_hook_entries_size() pre-inits ->hook_prog
-   186		 * to a fallback program that calls nf_hook_slow().
-   187		 *
-   188		 * Alternatively we could have nf_hook_entries_grow()
-   189		 * return an error here.
-   190		 */
-   191		if (hook_bpf_prog) {
-   192			struct bpf_prog *old_prog = NULL;
-   193	
- > 194			new->hook_prog = hook_bpf_prog;
-   195	
-   196			if (old)
-   197				old_prog = old->hook_prog;
-   198	
- > 199			nf_hook_bpf_change_prog(BPF_DISPATCHER_PTR(nf_hook_base),
-   200						old_prog, hook_bpf_prog);
-   201		}
-   202	
-   203		return new;
-   204	}
-   205	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Anyways my question is how are you planning to use these metrics i.e.
+scanned & reclaimed? I wonder if the data you are interested in can be
+extracted without a stable interface. Have you tried BPF way to get
+these metrics? We already have a tracepoint in vmscan tracing the
+scanned and reclaimed. 
