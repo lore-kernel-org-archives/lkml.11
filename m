@@ -2,205 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C99FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D26C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 09:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235888AbiESJWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 05:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59464 "EHLO
+        id S236006AbiESJYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 05:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231745AbiESJWD (ORCPT
+        with ESMTP id S235992AbiESJYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 05:22:03 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B48F05EBF5
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:22:00 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7D6041FB;
-        Thu, 19 May 2022 02:22:00 -0700 (PDT)
-Received: from bogus (unknown [10.57.66.157])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 042A03F73D;
-        Thu, 19 May 2022 02:21:58 -0700 (PDT)
-Date:   Thu, 19 May 2022 10:21:52 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     Qing Wang <wangqing@vivo.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] arch_topology: Use llc_id instead of package_id
-Message-ID: <20220519092152.ribckwulj77syhvn@bogus>
-References: <20220513090330.z25fwthekn4rjkwq@bogus>
- <afafbb0c-5279-bee8-1ef4-434733e2a552@arm.com>
- <20220513110312.wy6g5avs7ngkmhfu@bogus>
- <634a4b8c-84d2-51a9-ef54-33b81683c849@arm.com>
- <20220516103524.35swlxp2367baxx6@bogus>
- <beda044e-0b91-4359-c6bf-5e34c285fc5c@arm.com>
- <20220517105718.tvpmj2xxb2qj3bev@bogus>
- <b0b63d75-b2f4-2298-a85a-668c3a3e5b6b@arm.com>
- <20220518104344.wh5thzaw2zg4f6jq@bogus>
- <0a5a1220-dc31-690e-9ae3-ebff53a68305@arm.com>
+        Thu, 19 May 2022 05:24:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A3E49A76ED
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:24:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652952252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=17jbVsw+moEo6hJdd/lN8c/+3+IYlduGpqbhyDnKS8E=;
+        b=K0cmh4zrnteiWxB6Q4dFZihhTcvJ2tk3u2PoQGIw+H9LB31llvmgJLMa+OMoCZEMAkIqw0
+        ZCtYBzHB11OEuJSEXK1EYO5zypnvgApKwQQxAVWfLdiKZh+Fouvl7dVkw9+g9yrLCPlfGF
+        TdfWM+xGGewWPZRtvpQoJZz/5XHxt/o=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-153-2UpCg0R-MquPz8GcXgB4WQ-1; Thu, 19 May 2022 05:24:11 -0400
+X-MC-Unique: 2UpCg0R-MquPz8GcXgB4WQ-1
+Received: by mail-wm1-f72.google.com with SMTP id v124-20020a1cac82000000b003948b870a8dso4260279wme.2
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 02:24:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=17jbVsw+moEo6hJdd/lN8c/+3+IYlduGpqbhyDnKS8E=;
+        b=NOaLjEhATRwWrBFFzihWHGQ57ei4ILE4YFOZb/8EwoDJUXFLFg7HiWwNDuSHUNdmNV
+         Umw/VgJE+MGFk+V/vmmzJC6PPlUpu9qAFUBLlAVag8k6Zi81PMIebfXxiD/4KYBftmRJ
+         9Ucu5X3ElPx4kRJTwe43wMhspnXhgcepIAj7Et9leWcLUEU5hmLUdt9Ne51r496K8ZZ4
+         i0JLJj6qzJwZPSxOCP1bCktdVs/4IKctoAy1BkPAZNl3rMBChK/ODfp5usrvfjZb6ujS
+         4w9MtQ+t3Zpime1wVpu9wIdk/FaPjvQUzH5FopSgZjecS9YYC1oA/hE2NE8EylFZOUAR
+         TjRA==
+X-Gm-Message-State: AOAM530zDv/xcka1EdwqAtY+k213Ox6qMLH8pSG6+dj+TNURzGJ7QVC/
+        ChCInPrQ0xkZW57ZgJ6N2buGDeSjmnCJaSGm6X0A/4kvon/GVt/JR/YyXQ3xCzD/ie0lYP8iOp7
+        3HKx461njpy+UHnZVoGtmwinD+67g7Y5ydWCLY310AL8f53lsWQbpWTJP7tvQbFHNrLU4xf8egg
+        E=
+X-Received: by 2002:adf:d090:0:b0:20d:3d4:8845 with SMTP id y16-20020adfd090000000b0020d03d48845mr3268331wrh.162.1652952250463;
+        Thu, 19 May 2022 02:24:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx+cy933X3rEwzU9/Ah7qzOGFkRbtoIk3v5PlWkKn+OSJkQqFhd2q0Nx9n+x09aDxK01OAu4A==
+X-Received: by 2002:adf:d090:0:b0:20d:3d4:8845 with SMTP id y16-20020adfd090000000b0020d03d48845mr3268310wrh.162.1652952250251;
+        Thu, 19 May 2022 02:24:10 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id n10-20020a5d6b8a000000b0020c5253d8fasm4104647wrx.70.2022.05.19.02.24.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 02:24:09 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Colin Walters <walters@verbum.org>,
+        Peter Jones <pjones@redhat.com>,
+        Alexander Larsson <alexl@redhat.com>,
+        Alberto Ruiz <aruiz@redhat.com>,
+        Christian Kellner <ckellner@redhat.com>,
+        Lennart Poettering <lennart@poettering.net>,
+        Chung-Chiang Cheng <cccheng@synology.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Subject: [RFC PATCH 1/3] fat: add a vfat_rename2() and make existing .rename callback a helper
+Date:   Thu, 19 May 2022 11:23:41 +0200
+Message-Id: <20220519092343.2776414-2-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220519092343.2776414-1-javierm@redhat.com>
+References: <20220519092343.2776414-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0a5a1220-dc31-690e-9ae3-ebff53a68305@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 05:54:23PM +0200, Dietmar Eggemann wrote:
-> On 18/05/2022 12:43, Sudeep Holla wrote:
-> > On Wed, May 18, 2022 at 12:23:35PM +0200, Dietmar Eggemann wrote:
-> >> On 17/05/2022 12:57, Sudeep Holla wrote:
-> > [...]
-> 
-> [...]
-> 
-> >> I see. Your requirement is valid information under
-> >> /sys/devices/system/cpu/cpuX/{topology, cache} for userspace.
-> >>
-> >> I'm not sure that we can get core_siblings_list and package_cpus_list
-> >> correctly setup.
-> >>
-> >> With your patch we have now:
-> >>
-> >> root@juno:/sys/devices/system/cpu/cpu0/topology# cat core_siblings_list
-> >> 0-5
-> >> root@juno:/sys/devices/system/cpu/cpu0/topology# cat package_cpus_list
-> >> 0-5
-> >>
-> >> Before we had [0,3-5] for both.
-> >>
-> > 
-> > Correct and that was pure wrong for a single socket system. It must
-> > cover all the CPUs. Tools like lscpu reports them as 2 socket system
-> > which is wrong. There were reports for that but no one really chased it
-> > up to get it fixed. So assumed it is not so important but still it is
-> > wrong. ACPI platforms cared and wanted it fixed with ACPI PPTT since
-> > the PPTT support. So check the difference without my patches on Juno
-> > in DT and ACPI boot. We should get same output for both.
-> > 
-> >>
-> >> I'm afraid we can have 2 different mask here because of:
-> 
-> Sorry, s/can/can't
->
+Currently vfat only supports the RENAME_NOREPLACE flag which is handled by
+the virtual file system layer but doesn't support the RENAME_EXCHANGE flag.
 
-No worries I assumed and read it so.
+Add a vfat_rename2() function to be used as the .rename callback and move
+the current vfat_rename() handler to a helper. This is in preparation for
+implementing the RENAME_NOREPLACE flag using a different helper function.
 
-> >> 72 define_siblings_read_func(core_siblings, core_cpumask);
-> >>                                             ^^^^^^^^^^^^
-> >> 88 define_siblings_read_func(package_cpus, core_cpumask);
-> >>                                            ^^^^^^^^^^^^
-> >>
-> > 
-> > Yes even I got confused and the Documentation revealed one is deprecated
-> > or obsolete(Documentation/ABI/stable/sysfs-devices-system-cpu)
-> > 
-> >  74 What:           /sys/devices/system/cpu/cpuX/topology/package_cpus
-> >  75 Description:    internal kernel map of the CPUs sharing the same physical_package_id.
-> >  76                 (deprecated name: "core_siblings").
-> >  77 Values:         hexadecimal bitmask.
-> >  78
-> >  79 What:           /sys/devices/system/cpu/cpuX/topology/package_cpus_list
-> >  80 Description:    human-readable list of CPUs sharing the same physical_package_id.
-> >  81                 The format is like 0-3, 8-11, 14,17.
-> >  82                 (deprecated name: "core_siblings_list")
-> >  83 Values:         decimal list.
-> 
-> Ah, that makes it more clear to me! Thanks. So DIE boundary, i.e.
-> cpu_cpu_mask() {return cpumask_of_node(cpu_to_node(cpu))} is not related
-> to package cpumask at all. This is why we have the first if condition in
-> cpu_coregroup_mask():
-> 
-> 658 const cpumask_t *core_mask = cpumask_of_node(cpu_to_node(cpu));
-> ...
-> 661 if (cpumask_subset(&cpu_topology[cpu].core_sibling, core_mask)) {
-> 662  /* not numa in package, lets use the package siblings */
-> 663   core_mask = &cpu_topology[cpu].core_sibling;
->
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
-Correct, either I got confused with the names it was different from what
-I had seen last time I looked at these more than couple of years ago.
+ fs/fat/namei_vfat.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-> [...]
-> 
-> >> OK, we don't support Phantom domains via 1. level Cluster in cpu-map
-> >> anymore. We already explicitly informed the Android community. But I'm
-> >> sure people will only discover this if something breaks on their
-> >> platforms and they are able to detect this.
-> >>
-> > 
-> > Again if it was working just by cache with their own phantom domains that
-> > are not upstream, then nothing is broken. At-least I see that we have now
-> > fixed and aligned DT with ACPI. While I understand your concern, I see
-> > this as main issue and not sched domains which may or may not be using
-> > topology info incorrectly.
-> 
-> OK, lets see how you incorporated llc into the topology code in your v2
-> first.
->
-
-Sure, thanks for agreeing to review those implicitly 😄.
-
-> >>>> If we say we only support L2 sharing (asymmetric here since only CPU0-3
-> >>>> have it !!!) and we don't support Phantom then your approach will work
-> >>>> for such systems.
-> >>>
-> >>> Thanks, as I said what is *Phantom* domain ;) ? Can you point me to the
-> >>> DT or ACPI binding for the same ? Just kidding, I know they don't exist.
-> >>
-> >> They do ;-) 1. level Clusters ... but they are used for uArch
-> >> boundaries, not for LLC boundaries. That's the existing issue in DT,
-> >> topology information has 2 sources: (1) cpu-map and (2) cache info.
-> >>
-> > 
-> > Sure, they can fix or add more optimisation on top of what I have sent[1]
-> 
-> If you add llc parsing in your v2, they should have everything they need
-> for Armv9 with uArch boundaries and L2 complexes. What I'm interested in
-> is seeing how we solve the 2 sources (cache and cpu-map) issue here.
-
-Not sure if just llc with resolve what we need on those Armv9 systems unless
-L2 = LLC. If L2 != LLC, then my patches won't help that much.
-
-> Example:
-> 
-> cpu-map:
-> 
->  socket
->   cluster <-- (1)
->    core
->     thread
-> 
-> cache:
-> 
->  llc
-> 
-> How do people know that (1) is L2 and not LLC?
->
-
-We can get the cpumask of cpus sharing each unique cache in the system.
-That is not a problem, we have cacheinfo driver for that. But that is
-initialised quite late for a reason and if we need that info much early
-then that needs some reworking.
-
-My patches is addressing only LLC and hence much simpler.
-
-> But let us switch the discussion to you v2 on this one. I have to see
-> your implementation first.
->
-
-Sure, I just replied here just to address if there were any open questions.
-Let us discuss any issues in the below mail thread.
-
-> > [1] https://lore.kernel.org/lkml/20220518093325.2070336-1-sudeep.holla@arm.com
-> 
-> [...]
-
+diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
+index c573314806cf..88ccb2ee3537 100644
+--- a/fs/fat/namei_vfat.c
++++ b/fs/fat/namei_vfat.c
+@@ -889,9 +889,8 @@ static int vfat_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 	return err;
+ }
+ 
+-static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+-		       struct dentry *old_dentry, struct inode *new_dir,
+-		       struct dentry *new_dentry, unsigned int flags)
++static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
++		       struct inode *new_dir, struct dentry *new_dentry)
+ {
+ 	struct buffer_head *dotdot_bh;
+ 	struct msdos_dir_entry *dotdot_de;
+@@ -902,9 +901,6 @@ static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	int err, is_dir, update_dotdot, corrupt = 0;
+ 	struct super_block *sb = old_dir->i_sb;
+ 
+-	if (flags & ~RENAME_NOREPLACE)
+-		return -EINVAL;
+-
+ 	old_sinfo.bh = sinfo.bh = dotdot_bh = NULL;
+ 	old_inode = d_inode(old_dentry);
+ 	new_inode = d_inode(new_dentry);
+@@ -1021,13 +1017,24 @@ static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	goto out;
+ }
+ 
++static int vfat_rename2(struct user_namespace *mnt_userns, struct inode *old_dir,
++			struct dentry *old_dentry, struct inode *new_dir,
++			struct dentry *new_dentry, unsigned int flags)
++{
++	if (flags & ~RENAME_NOREPLACE)
++		return -EINVAL;
++
++	/* VFS already handled RENAME_NOREPLACE, handle it as a normal rename */
++	return vfat_rename(old_dir, old_dentry, new_dir, new_dentry);
++}
++
+ static const struct inode_operations vfat_dir_inode_operations = {
+ 	.create		= vfat_create,
+ 	.lookup		= vfat_lookup,
+ 	.unlink		= vfat_unlink,
+ 	.mkdir		= vfat_mkdir,
+ 	.rmdir		= vfat_rmdir,
+-	.rename		= vfat_rename,
++	.rename		= vfat_rename2,
+ 	.setattr	= fat_setattr,
+ 	.getattr	= fat_getattr,
+ 	.update_time	= fat_update_time,
 -- 
-Regards,
-Sudeep
+2.35.1
+
