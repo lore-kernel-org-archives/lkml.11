@@ -2,110 +2,303 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D451C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D75C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 18:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244052AbiESShk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 14:37:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
+        id S244056AbiESSpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 14:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbiESShe (ORCPT
+        with ESMTP id S233931AbiESSps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 14:37:34 -0400
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E825FF137A;
-        Thu, 19 May 2022 11:37:32 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2ff155c239bso66078717b3.2;
-        Thu, 19 May 2022 11:37:32 -0700 (PDT)
+        Thu, 19 May 2022 14:45:48 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5A8E03;
+        Thu, 19 May 2022 11:45:45 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id u15so5838164pfi.3;
+        Thu, 19 May 2022 11:45:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tqc9CjYXSuy6AdiCkGL4DWkq+ghQRYbszthnl1/c6ug=;
+        b=DLosP//U/yqmP4buDsONCNH/Ob1xACs5t9tAIStn+sl0+Vi/cQtkNdAw+x3WcmXQ+2
+         yPhSI9nOBaHVCutLBYmoQ/irIakkaWj8hA8+MINvPLi5cv0PvCcyMqLyHiMjxmrVyZmy
+         d0QkWDkvXFb/iR22eStlHemj/L4Aka2U0cawm5mQbighGlwLrRvdfOqVt4ombvVowyIq
+         8zTocD9IXxqfEqb3HyrP7e7Me8pd3u7ISA0TFmayH1NWrGol0qSqKEk54CdbRWhaV/5i
+         kja38E9QmGuwpSTKFMm/cKRzeP7h/8USyS4BZjVeT9Tr0TbLdriqjJ9/z1/1BrSmXhH5
+         4wRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yS1kEN+GXXpbhqkK6UqZTr2vL0SVZ2tag5VCxMz5nz0=;
-        b=jmrIfPusZI5fyymMsLl4c3Iq9DmivzrHUNu/I44fgo+jvKx/OWw3eeWc0T1+qJsud1
-         ShqudmELo0J8Efaj06AEY2YokyN8vyIu1lLFknZH6czkZ9h2lDe5iqVC3x1qGkLZEjWl
-         8LaLrAJPYybJDRuxMDUPB4Wi+UMXh69osi4KnRTVvm+2u5qNxWpi6rr0/L54URYq1ulE
-         3I0HptHzxn5KPXnl9QNM11SEPZUu/ttooBkDP5YbeQZU7Ff06xbvlZvRHJSJwVE6jPvu
-         eiQ1vorRNWbUK7BDgVSEl4TeFQVWORBh0OEwJU2I55cBia+kzK1Zo5UStCMGqPIPwbOV
-         XGQQ==
-X-Gm-Message-State: AOAM531JVbuxTJOpuV0lOPcC/tOXQRl1PoGfFlk4AkhcgCWUMj40ka9k
-        Y0HKv1xqEe71id7IrgTOy6LyvoOfAjOs3o1cvAs=
-X-Google-Smtp-Source: ABdhPJxWx4suARB6p5108TodMZoK6QfRDz1CDtEyftKwKTyQe+rLtQu08lC+lkjXIM1zM+NGYEffev9rMGnJpUozft8=
-X-Received: by 2002:a81:91d4:0:b0:2fe:e300:3581 with SMTP id
- i203-20020a8191d4000000b002fee3003581mr6273739ywg.7.1652985452189; Thu, 19
- May 2022 11:37:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tqc9CjYXSuy6AdiCkGL4DWkq+ghQRYbszthnl1/c6ug=;
+        b=QhaC9/exJezP1OArtkO9ara+xngOa/PMq7Zie1Z8Wmu60mgf4OsZ5k32cjOq9Dze9n
+         ConruTyQMZOXmWPEzaLj8IM+zu7RhAn1oQRj07j27KdlpHWKwP6jtEu3cZxWwvItKNFa
+         rGgd98oI85ZQDx/Q5Eovl21I8FRo0mwQTza2P8QdewjBWUfE5HAqeh7KrYvHbNZAVaLR
+         fCKR62tDEBbKAbSJYrtoFlzvpotAHyWzSh5WOna2YwRs2b8tO8QxVpBTOkTolHb9GSmI
+         HjO3zpRabwk3SpFGNgE3VYePWjaGVTOlQK8WA3WBMnXu4d4tVnmLd45sKMHh49iCY/5V
+         dojw==
+X-Gm-Message-State: AOAM531aRLFaD73av5Q/Vnn0Z/liVmTUV5/jzD4WPzlJ2eqAajhNncDq
+        9gmcJDyZ1EvEV4pkdJzNvthCN+TaRAY=
+X-Google-Smtp-Source: ABdhPJynkSnH8pHBmbNKiNxYCNpc7fxmj6jYs7F2C5z8LeHEfuohaVMAWE27vylvVZpTfsJz6XpUTw==
+X-Received: by 2002:a63:2057:0:b0:3f5:fd47:754f with SMTP id r23-20020a632057000000b003f5fd47754fmr5088566pgm.440.1652985944926;
+        Thu, 19 May 2022 11:45:44 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 5-20020aa79245000000b0050dc76281c2sm2965pfp.156.2022.05.19.11.45.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 11:45:44 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     stable@vger.kernel.org
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Jaehoon Chung <jh80.chung@samsung.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bean Huo <beanhuo@micron.com>,
+        Nishad Kamdar <nishadkamdar@gmail.com>,
+        =?UTF-8?q?Christian=20L=C3=B6hle?= <CLoehle@hyperstone.com>,
+        linux-mmc@vger.kernel.org (open list:MULTIMEDIA CARD (MMC), SECURE
+        DIGITAL (SD) AND...), linux-kernel@vger.kernel.org (open list),
+        alcooperx@gmail.com, kdasu.kdev@gmail.com
+Subject: [PATCH stable 4.19 v2 1/4] mmc: core: Cleanup BKOPS support
+Date:   Thu, 19 May 2022 11:45:33 -0700
+Message-Id: <20220519184536.370540-2-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220519184536.370540-1-f.fainelli@gmail.com>
+References: <20220519184536.370540-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-References: <20220511145704.698189-1-ulf.hansson@linaro.org>
-In-Reply-To: <20220511145704.698189-1-ulf.hansson@linaro.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 19 May 2022 20:37:21 +0200
-Message-ID: <CAJZ5v0gaaCYzCYdWhXjn7-S7MyAcDuM4epNp2eOr2_7h-cu4tw@mail.gmail.com>
-Subject: Re: [PATCH 00/14] PM: domains: Various improvements for genpd
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 4:57 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> The main goal with this series is to improve the way genpd deals with its
-> governor(s). Especially it turns allocation of governor related data to be
-> dynamically allocated. It also improves the execution path for runtime-
-> suspend/resume of devices (attached to a genpd of course) and the similar is
-> also done for genpd's power-on/off path.
->
-> Note that, patch 1->3 have already been sent before in a separate series [1],
-> but for simplicity I have included them here again.
->
-> Tests/reviews are as usual highly appreciated!
->
-> Kind regards
-> Ulf Hansson
->
-> [1]
-> https://www.spinics.net/lists/kernel/msg4335838.html
->
-> Ulf Hansson (14):
->   PM: domains: Add GENPD_FLAG_RPM_ALWAYS_ON for the always-on governor
->   PM: domains: Drop redundant code for genpd always-on governor
->   PM: domains: Don't check PM_QOS_FLAG_NO_POWER_OFF in genpd
->   PM: domains: Rename irq_safe_dev_in_no_sleep_domain() in genpd
->   PM: domains: Skip another warning in irq_safe_dev_in_sleep_domain()
->   PM: domains: Allocate gpd_timing_data dynamically based on governor
->   PM: domains: Move the next_wakeup variable into the struct
->     gpd_timing_data
->   PM: domains: Measure suspend/resume latencies in genpd based on
->     governor
->   PM: domains: Fixup QoS latency measurements for IRQ safe devices in
->     genpd
->   PM: domains: Fix initialization of genpd's next_wakeup
->   PM: domains: Clean up some code in pm_genpd_init() and genpd_remove()
->   PM: domains: Allocate governor data dynamically based on a genpd
->     governor
->   PM: domains: Measure power-on/off latencies in genpd based on a
->     governor
->   PM: domains: Trust domain-idle-states from DT to be correct by genpd
->
->  drivers/base/power/domain.c          | 201 +++++++++++++++++----------
->  drivers/base/power/domain_governor.c |  65 +++++----
->  include/linux/pm_domain.h            |  18 ++-
->  3 files changed, 173 insertions(+), 111 deletions(-)
->
-> --
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-All of the changes made by this series make sense to me, so I've
-queued it for 5.19.
+commit 0c204979c691f05666ecfb74501e7adfdde8fbf9 upstream
 
-Thanks!
+It's been ~6 years ago since we introduced the BKOPS support for eMMC
+cards. The current code is a bit messy and primarily that's because it
+prepares to support running BKOPS in an asynchronous mode. However, that
+mode has never been fully implemented/enabled. Instead BKOPS is always
+executed in synchronously, when the card has reported an urgent BKOPS
+level.
+
+For these reasons, let's make the code more readable by dropping the unused
+parts. Let's also rename mmc_start_bkops() to mmc_run_bkops(), as to make
+it more descriptive.
+
+Cc: Jaehoon Chung <jh80.chung@samsung.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/mmc/core/block.c   |  2 +-
+ drivers/mmc/core/card.h    |  6 +--
+ drivers/mmc/core/mmc.c     |  6 ---
+ drivers/mmc/core/mmc_ops.c | 87 ++++++++------------------------------
+ drivers/mmc/core/mmc_ops.h |  3 +-
+ 5 files changed, 21 insertions(+), 83 deletions(-)
+
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index 630f3bcba56d..d8bcf1e0b337 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -1944,7 +1944,7 @@ static void mmc_blk_urgent_bkops(struct mmc_queue *mq,
+ 				 struct mmc_queue_req *mqrq)
+ {
+ 	if (mmc_blk_urgent_bkops_needed(mq, mqrq))
+-		mmc_start_bkops(mq->card, true);
++		mmc_run_bkops(mq->card);
+ }
+ 
+ void mmc_blk_mq_complete(struct request *req)
+diff --git a/drivers/mmc/core/card.h b/drivers/mmc/core/card.h
+index 1170feb8f969..eef301452406 100644
+--- a/drivers/mmc/core/card.h
++++ b/drivers/mmc/core/card.h
+@@ -23,15 +23,13 @@
+ #define MMC_STATE_BLOCKADDR	(1<<2)		/* card uses block-addressing */
+ #define MMC_CARD_SDXC		(1<<3)		/* card is SDXC */
+ #define MMC_CARD_REMOVED	(1<<4)		/* card has been removed */
+-#define MMC_STATE_DOING_BKOPS	(1<<5)		/* card is doing BKOPS */
+-#define MMC_STATE_SUSPENDED	(1<<6)		/* card is suspended */
++#define MMC_STATE_SUSPENDED	(1<<5)		/* card is suspended */
+ 
+ #define mmc_card_present(c)	((c)->state & MMC_STATE_PRESENT)
+ #define mmc_card_readonly(c)	((c)->state & MMC_STATE_READONLY)
+ #define mmc_card_blockaddr(c)	((c)->state & MMC_STATE_BLOCKADDR)
+ #define mmc_card_ext_capacity(c) ((c)->state & MMC_CARD_SDXC)
+ #define mmc_card_removed(c)	((c) && ((c)->state & MMC_CARD_REMOVED))
+-#define mmc_card_doing_bkops(c)	((c)->state & MMC_STATE_DOING_BKOPS)
+ #define mmc_card_suspended(c)	((c)->state & MMC_STATE_SUSPENDED)
+ 
+ #define mmc_card_set_present(c)	((c)->state |= MMC_STATE_PRESENT)
+@@ -39,8 +37,6 @@
+ #define mmc_card_set_blockaddr(c) ((c)->state |= MMC_STATE_BLOCKADDR)
+ #define mmc_card_set_ext_capacity(c) ((c)->state |= MMC_CARD_SDXC)
+ #define mmc_card_set_removed(c) ((c)->state |= MMC_CARD_REMOVED)
+-#define mmc_card_set_doing_bkops(c)	((c)->state |= MMC_STATE_DOING_BKOPS)
+-#define mmc_card_clr_doing_bkops(c)	((c)->state &= ~MMC_STATE_DOING_BKOPS)
+ #define mmc_card_set_suspended(c) ((c)->state |= MMC_STATE_SUSPENDED)
+ #define mmc_card_clr_suspended(c) ((c)->state &= ~MMC_STATE_SUSPENDED)
+ 
+diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+index d9202f2726d1..745a4b07faff 100644
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -2026,12 +2026,6 @@ static int _mmc_suspend(struct mmc_host *host, bool is_suspend)
+ 	if (mmc_card_suspended(host->card))
+ 		goto out;
+ 
+-	if (mmc_card_doing_bkops(host->card)) {
+-		err = mmc_stop_bkops(host->card);
+-		if (err)
+-			goto out;
+-	}
+-
+ 	err = mmc_flush_cache(host->card);
+ 	if (err)
+ 		goto out;
+diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
+index 334678707deb..6d759fc6165d 100644
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -899,34 +899,6 @@ int mmc_can_ext_csd(struct mmc_card *card)
+ 	return (card && card->csd.mmca_vsn > CSD_SPEC_VER_3);
+ }
+ 
+-/**
+- *	mmc_stop_bkops - stop ongoing BKOPS
+- *	@card: MMC card to check BKOPS
+- *
+- *	Send HPI command to stop ongoing background operations to
+- *	allow rapid servicing of foreground operations, e.g. read/
+- *	writes. Wait until the card comes out of the programming state
+- *	to avoid errors in servicing read/write requests.
+- */
+-int mmc_stop_bkops(struct mmc_card *card)
+-{
+-	int err = 0;
+-
+-	err = mmc_interrupt_hpi(card);
+-
+-	/*
+-	 * If err is EINVAL, we can't issue an HPI.
+-	 * It should complete the BKOPS.
+-	 */
+-	if (!err || (err == -EINVAL)) {
+-		mmc_card_clr_doing_bkops(card);
+-		mmc_retune_release(card->host);
+-		err = 0;
+-	}
+-
+-	return err;
+-}
+-
+ static int mmc_read_bkops_status(struct mmc_card *card)
+ {
+ 	int err;
+@@ -943,22 +915,17 @@ static int mmc_read_bkops_status(struct mmc_card *card)
+ }
+ 
+ /**
+- *	mmc_start_bkops - start BKOPS for supported cards
+- *	@card: MMC card to start BKOPS
+- *	@from_exception: A flag to indicate if this function was
+- *			 called due to an exception raised by the card
++ *	mmc_run_bkops - Run BKOPS for supported cards
++ *	@card: MMC card to run BKOPS for
+  *
+- *	Start background operations whenever requested.
+- *	When the urgent BKOPS bit is set in a R1 command response
+- *	then background operations should be started immediately.
++ *	Run background operations synchronously for cards having manual BKOPS
++ *	enabled and in case it reports urgent BKOPS level.
+ */
+-void mmc_start_bkops(struct mmc_card *card, bool from_exception)
++void mmc_run_bkops(struct mmc_card *card)
+ {
+ 	int err;
+-	int timeout;
+-	bool use_busy_signal;
+ 
+-	if (!card->ext_csd.man_bkops_en || mmc_card_doing_bkops(card))
++	if (!card->ext_csd.man_bkops_en)
+ 		return;
+ 
+ 	err = mmc_read_bkops_status(card);
+@@ -968,44 +935,26 @@ void mmc_start_bkops(struct mmc_card *card, bool from_exception)
+ 		return;
+ 	}
+ 
+-	if (!card->ext_csd.raw_bkops_status)
++	if (!card->ext_csd.raw_bkops_status ||
++	    card->ext_csd.raw_bkops_status < EXT_CSD_BKOPS_LEVEL_2)
+ 		return;
+ 
+-	if (card->ext_csd.raw_bkops_status < EXT_CSD_BKOPS_LEVEL_2 &&
+-	    from_exception)
+-		return;
+-
+-	if (card->ext_csd.raw_bkops_status >= EXT_CSD_BKOPS_LEVEL_2) {
+-		timeout = MMC_OPS_TIMEOUT_MS;
+-		use_busy_signal = true;
+-	} else {
+-		timeout = 0;
+-		use_busy_signal = false;
+-	}
+-
+ 	mmc_retune_hold(card->host);
+ 
+-	err = __mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+-			EXT_CSD_BKOPS_START, 1, timeout, 0,
+-			use_busy_signal, true, false);
+-	if (err) {
++	/*
++	 * For urgent BKOPS status, LEVEL_2 and higher, let's execute
++	 * synchronously. Future wise, we may consider to start BKOPS, for less
++	 * urgent levels by using an asynchronous background task, when idle.
++	 */
++	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
++			EXT_CSD_BKOPS_START, 1, MMC_OPS_TIMEOUT_MS);
++	if (err)
+ 		pr_warn("%s: Error %d starting bkops\n",
+ 			mmc_hostname(card->host), err);
+-		mmc_retune_release(card->host);
+-		return;
+-	}
+ 
+-	/*
+-	 * For urgent bkops status (LEVEL_2 and more)
+-	 * bkops executed synchronously, otherwise
+-	 * the operation is in progress
+-	 */
+-	if (!use_busy_signal)
+-		mmc_card_set_doing_bkops(card);
+-	else
+-		mmc_retune_release(card->host);
++	mmc_retune_release(card->host);
+ }
+-EXPORT_SYMBOL(mmc_start_bkops);
++EXPORT_SYMBOL(mmc_run_bkops);
+ 
+ /*
+  * Flush the cache to the non-volatile storage.
+diff --git a/drivers/mmc/core/mmc_ops.h b/drivers/mmc/core/mmc_ops.h
+index a1390d486381..018a5e3f66d6 100644
+--- a/drivers/mmc/core/mmc_ops.h
++++ b/drivers/mmc/core/mmc_ops.h
+@@ -40,8 +40,7 @@ int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
+ 		bool use_busy_signal, bool send_status,	bool retry_crc_err);
+ int mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
+ 		unsigned int timeout_ms);
+-int mmc_stop_bkops(struct mmc_card *card);
+-void mmc_start_bkops(struct mmc_card *card, bool from_exception);
++void mmc_run_bkops(struct mmc_card *card);
+ int mmc_flush_cache(struct mmc_card *card);
+ int mmc_cmdq_enable(struct mmc_card *card);
+ int mmc_cmdq_disable(struct mmc_card *card);
+-- 
+2.25.1
+
