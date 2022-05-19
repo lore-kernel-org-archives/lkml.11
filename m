@@ -2,128 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C502C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 19 May 2022 17:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242161AbiESROB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 13:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S242447AbiESRPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 13:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiESRN6 (ORCPT
+        with ESMTP id S229489AbiESRPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 13:13:58 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C833EF38;
-        Thu, 19 May 2022 10:13:57 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id t25so10253816lfg.7;
-        Thu, 19 May 2022 10:13:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1GeQ5CSfJvGigHltvLwr+/AMpvXxe8TkHFBpsFCMoGA=;
-        b=TdBvBWDVEWL3pcu5nLPBl1EPC9H3IL+noe3T6LeZbzPC+5+ZtDKWACysqyNI780fWM
-         EhinHkcK54Yf/Wem4gND/KaOZYrl4IN6Plq4hdKSnifZQMadrC76DEGDmLAIzJBI8G9y
-         9IEO//urXsmPhCujWmwznefmJHEbO4qxrubFZxqumGRAV/rV2+D0saKwPYQOR4rXV3ci
-         FGWCZhM0Op2SnucUsqIndcf1tkMuKplscukgF9ehlYhoowmhV4IRBo70D+sFTMY/EmHC
-         aQ9XGMtq5dOT2NzxGhrl8zJDcCXvk3BPAudrj1qJOHUDStKl1MbKNwgGNdjMX/5X1ko3
-         i94w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1GeQ5CSfJvGigHltvLwr+/AMpvXxe8TkHFBpsFCMoGA=;
-        b=S4QfKnqwfFQT002NKhcNaHzotiP1Tw42CIEDnO/wboG4u4fQNm/Vte8IPK3OCAAlwm
-         ZNom+0gkqIIU+YCbwbEVd5Z2C7if21bNxgKLie+XSZObaGC9VDs5VtMZK9eY/C4/tRfT
-         UGxiKmhR6MTZvWKwcwbmUHaeSY6A5ISeVXvD+ZvGY3WKxUpOSQHpnZrKyH4/Acceuvw/
-         YEDzBcPB+LxqVQPacnmOs//FzLpbpLZivM4CiOOowbVTiqT0yQHdYhaJWTTW1rg6i15S
-         WsUGnnxiGZAfYbKeSQOFAe+RKMXQIQeFPeRI4hi8PWoZ7bqB28HImydIU82M7H1sIEiJ
-         GS6g==
-X-Gm-Message-State: AOAM532o7vgbdfH1GgIdNWS5M2Qcjo7nlsXsgt429JpgYUVMetqqhtIx
-        8F2z7Hy6J7E3v887anGm60rx/j1rFgqoFohl
-X-Google-Smtp-Source: ABdhPJyeM7zKyblXi+FfpBs3SWxkUhNENi6qL8LyFA+FOTtWR1NBOXVw8jN+jy2LSZKo4k65BBCP+A==
-X-Received: by 2002:a05:6512:16a7:b0:445:862e:a1ba with SMTP id bu39-20020a05651216a700b00445862ea1bamr3942866lfb.85.1652980435336;
-        Thu, 19 May 2022 10:13:55 -0700 (PDT)
-Received: from [192.168.0.110] ([217.115.104.30])
-        by smtp.gmail.com with ESMTPSA id c25-20020ac25319000000b0047255d210e6sm347685lfh.21.2022.05.19.10.13.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 10:13:54 -0700 (PDT)
-Message-ID: <36a83342-6c30-73a1-7759-971d2134420a@gmail.com>
-Date:   Thu, 19 May 2022 20:13:53 +0300
+        Thu, 19 May 2022 13:15:13 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61DC42A25
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 10:15:11 -0700 (PDT)
+Date:   Thu, 19 May 2022 10:15:04 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1652980510;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XfoNuzmTm649aI5ONkoIpBGqUyVi4ImAhh5x2MDNA7A=;
+        b=tbkH+5zeXm2NWvS6AkLQyXTqBthWWsx1EaknpKWCyUBbV43CW1+8lycyML1yFJ91XZW8f1
+        H6EANgEli+mveLHPxCTqhukZZhV6oU6y8L2H+DMtLc3KIf3dFEy7LwOrQmdMUp1+6OEpM9
+        vQDYh4WsO4H5V5BbrY26xZqYvcZ9vPs=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     Dave Chinner <dchinner@redhat.com>, linux-kernel@vger.kernel.org,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH v3 0/6] mm: introduce shrinker debugfs interface
+Message-ID: <YoZ7GA9cjQiylEP7@carbon>
+References: <20220509183820.573666-1-roman.gushchin@linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] usb: core: Call disconnect() only if it is provided by
- driver
-Content-Language: en-US-large
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220519132900.4392-1-dimich.dmb@gmail.com>
- <YoZKFrzirES9+f39@kroah.com> <3da73dd6-24c3-1870-f0bc-f8040826576b@gmail.com>
- <YoZybf0hq5LmwzKY@kroah.com>
-From:   Dmytro Bagrii <dimich.dmb@gmail.com>
-In-Reply-To: <YoZybf0hq5LmwzKY@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509183820.573666-1-roman.gushchin@linux.dev>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19.05.22 19:38, Greg KH wrote:
-> On Thu, May 19, 2022 at 06:27:17PM +0300, Dmytro Bagrii wrote:
->> On 19.05.22 16:45, Greg KH wrote:
->>> On Thu, May 19, 2022 at 04:29:00PM +0300, Dmytro Bagrii wrote:
->>>> A driver may use devres allocations. Disconnect handler is not needed in
->>>> this case. Allow such driver to leave .disconnect field uninitialized in
->>>> struct usb_driver instead of providing empty stub function.
->>>>
->>>> Signed-off-by: Dmytro Bagrii <dimich.dmb@gmail.com>
->>>> ---
->>>>  drivers/usb/core/driver.c | 3 ++-
->>>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/usb/core/driver.c b/drivers/usb/core/driver.c
->>>> index 355ed33a2179..d7fe440b033c 100644
->>>> --- a/drivers/usb/core/driver.c
->>>> +++ b/drivers/usb/core/driver.c
->>>> @@ -455,7 +455,8 @@ static int usb_unbind_interface(struct device *dev)
->>>>  	if (!driver->soft_unbind || udev->state == USB_STATE_NOTATTACHED)
->>>>  		usb_disable_interface(udev, intf, false);
->>>>  
->>>> -	driver->disconnect(intf);
->>>> +	if (driver->disconnect)
->>>> +		driver->disconnect(intf);
->>>>  
->>>>  	/* Free streams */
->>>>  	for (i = 0, j = 0; i < intf->cur_altsetting->desc.bNumEndpoints; i++) {
->>>> -- 
->>>> 2.36.1
->>>>
->>>
->>> What in-kernel driver has this issue and does not have a disconnect
->>> callback?
->>
->> I don't see such in-kernel USB drivers yet.
+On Mon, May 09, 2022 at 11:38:14AM -0700, Roman Gushchin wrote:
+> There are 50+ different shrinkers in the kernel, many with their own bells and
+> whistles. Under the memory pressure the kernel applies some pressure on each of
+> them in the order of which they were created/registered in the system. Some
+> of them can contain only few objects, some can be quite large. Some can be
+> effective at reclaiming memory, some not.
 > 
-> Great, then all is well.  We can not make kernel changes for out-of-tree
-> drivers for obvious reasons.
+> The only existing debugging mechanism is a couple of tracepoints in
+> do_shrink_slab(): mm_shrink_slab_start and mm_shrink_slab_end. They aren't
+> covering everything though: shrinkers which report 0 objects will never show up,
+> there is no support for memcg-aware shrinkers. Shrinkers are identified by their
+> scan function, which is not always enough (e.g. hard to guess which super
+> block's shrinker it is having only "super_cache_scan").
 > 
-> When you submit your driver, we will be glad to consider this change.
-> But as others changed, odds are your driver is incorrect and should have
-> a disconnect call.  Unless it is a very simple driver that could be done
-> instead in userspace with usbfs/libusb?
+> To provide a better visibility and debug options for memory shrinkers
+> this patchset introduces a /sys/kernel/debug/shrinker interface, to some extent
+> similar to /sys/kernel/slab.
+> 
+> For each shrinker registered in the system a directory is created.
+> As now, the directory will contain only a "scan" file, which allows to get
+> the number of managed objects for each memory cgroup (for memcg-aware shrinkers)
+> and each numa node (for numa-aware shrinkers on a numa machine). Other
+> interfaces might be added in the future.
+> 
+> To make debugging more pleasant, the patchset also names all shrinkers,
+> so that debugfs entries can have meaningful names.
+> 
+> 
+> v3:
+>   1) separated the "scan" part into a separate patch, by Dave
+>   2) merged *_memcg, *_node and *_memcg_node interfaces, by Dave
+>   3) shrinkers naming enhancements, by Christophe and Dave
+>   4) added signal_pending() check, by Hillf
+>   5) enabled by default, by Dave
 
-Ok, i agree, my propoposed change is premature.
-Of course, i'm checking the driver for memory, refcounts and other
-resources leakage during development and not going to publish it until make
-sure it works correctly.
-There are some limitations with libusb in my case, e.g. it is unable to
-bind existing in-tree drivers to a bus provided by hardware over USB.
-Thank you for explanation.
+Any comments? Thoughts? Objections?
 
--- 
-Best Regards,
-Dmytro Bagrii.
+Thanks!
