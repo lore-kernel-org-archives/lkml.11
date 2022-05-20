@@ -2,90 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1916CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350582AbiETPEo (ORCPT
+        id S1350588AbiETPE6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        Fri, 20 May 2022 11:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350566AbiETPEi (ORCPT
+        with ESMTP id S1345687AbiETPEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:04:38 -0400
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id C501516D4B3
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:04:33 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app3 (Coremail) with SMTP id cC_KCgAXftjsrYdiVwGUAA--.62375S2;
-        Fri, 20 May 2022 23:04:20 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        linux-mtd@lists.infradead.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] mtd: Fix deadlock caused by cancel_work_sync in sm_release
-Date:   Fri, 20 May 2022 23:04:12 +0800
-Message-Id: <20220520150412.52143-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgAXftjsrYdiVwGUAA--.62375S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7ZFW5XrWkWFy8Zr1DZw1DZFb_yoW8Jw1Dpr
-        WrCry8JFW8Ar4DJ34DKa13ZF4ru34kKFW7Kr1UK3W5ZrZ5XFnIg345KFyFgFWfGFy8A39I
-        vFs2grW5ZF1rZw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkq14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ryr
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
-        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUUE_M7UUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkQAVZdtZzBSQAZsp
+        Fri, 20 May 2022 11:04:55 -0400
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A059B16D4B4
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:04:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4cNdTLR0+sVu59nm7omJEvZjYUlwAhbNp7TATU5QFOg=; b=aytaTsI1Dl7vVRBhQNHxtOn3pY
+        xOrhyxm3Hy2BdYqfWuQvRVTQDYY2k8SsI5oxAD/TChIKkxOKz5iBpEeaGLm6xyCkiSYfTd6kmu+mN
+        t+F59OOW0ghSZi5v7Zr5PjdkcRBcYD1MEuXgKUbprFoQk7KM9n+YLrPIVxg4E+kRG7VORPwE6Y4Go
+        lmD1ysMtPVf165GJ/UhYRFmY6PoM8vIarTOIGbYi9rWingjmQAD+aoPuTRfd4D8nFVOKKbc65Psvi
+        D+vbgzk4TL7jjC7oky4WFKnxy+WgEEsjxQEVgu1TliFu7UPsiH3CtehkDnah5LwC7xje7dg1WPaeP
+        vvi3Hjbw==;
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ns4BN-00GcsM-W7; Fri, 20 May 2022 15:04:50 +0000
+Date:   Fri, 20 May 2022 15:04:49 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: Re: [PATCH] fs: prefer read_iter over read and write_iter over write
+Message-ID: <YoeuEXzGFdnCZIVs@zeniv-ca.linux.org.uk>
+References: <20220520135103.166972-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220520135103.166972-1-Jason@zx2c4.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a deadlock between sm_release and sm_cache_flush_work
-which is a work item. The cancel_work_sync in sm_release will
-not return until sm_cache_flush_work is finished. If we hold
-mutex_lock and use cancel_work_sync to wait the work item to
-finish, the work item also requires mutex_lock. As a result,
-the sm_release will be blocked forever. The race condition is
-shown below:
+On Fri, May 20, 2022 at 03:51:03PM +0200, Jason A. Donenfeld wrote:
+> Most kernel code prefers read_iter over read and write_iter over write,
+> yet the read function pointer is tested first. Reverse these so that the
+> iter function is always used first.
 
-    (Thread 1)             |   (Thread 2)
-sm_release                 |
-  mutex_lock(&ftl->mutex)  | sm_cache_flush_work
-                           |   mutex_lock(&ftl->mutex)
-  cancel_work_sync         |   ...
+NAK.  There are some weird devices (at the very least, one in sound)
+where data gets interpreted differently for write() and writev().
+There are several degrees of messiness:
+	1) packet-like semantics, where boundaries of iovecs are
+significant; writev() is equivalent to loop of write() calls, but
+*NOT* to write() on a single concatenated copy.  _Any_ short write
+on any segment (due to ->write() instance ignoring the rest of data
+as well as due to unmapped page halfway through) terminates writev().
+	2) similar, but more extreme - write() reports consuming all
+the data it's been given (assuming the damn thing parses) and
+ignores the excess.  writev() is equivalent to iterated write() on
+all segments, as long as each is valid.  Not uncommon, sadly...
+	3) completely unrelated interpretations of input for write()
+and for writev().  writev() is *NOT* equivalent to a loop of write()
+there.  Yes, such beasts exist.  And it's a user-visible ABI.
+Example: snd_pcm_write() vs. snd_pcm_writev().  Not a chance to
+retire that one any time soon, and the difference in semantics is
+that writev() is "feed several channels at once; the chunks for
+individual channels are covered by elements of iovec array".
+Worse one: qib_write() and qib_write_iter().  There we flat-out
+have different command sets for write() and for writev().  That,
+at least, might be possible to retire someday.
 
-This patch moves del_timer_sync and cancel_work_sync out of
-mutex_lock in order to mitigate deadlock.
+IIRC, for pcm the readv() vs. read() differences are same as for
+writev() vs. write() - parallel reads from different channels,
+each to its own iovec.
 
-Fixes: 7d17c02a01a1 ("mtd: Add new SmartMedia/xD FTL")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- drivers/mtd/sm_ftl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/mtd/sm_ftl.c b/drivers/mtd/sm_ftl.c
-index 0cff2cda1b5..7f955fade83 100644
---- a/drivers/mtd/sm_ftl.c
-+++ b/drivers/mtd/sm_ftl.c
-@@ -1111,9 +1111,9 @@ static void sm_release(struct mtd_blktrans_dev *dev)
- {
- 	struct sm_ftl *ftl = dev->priv;
- 
--	mutex_lock(&ftl->mutex);
- 	del_timer_sync(&ftl->timer);
- 	cancel_work_sync(&ftl->flush_work);
-+	mutex_lock(&ftl->mutex);
- 	sm_cache_flush(ftl);
- 	mutex_unlock(&ftl->mutex);
- }
--- 
-2.17.1
-
+It's a bad userland ABI design, but we are stuck with it - it's a couple
+of decades too late to change.
