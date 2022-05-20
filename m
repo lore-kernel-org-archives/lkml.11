@@ -2,120 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C43DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344996AbiETNZk (ORCPT
+        id S1347533AbiETN0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 09:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37276 "EHLO
+        Fri, 20 May 2022 09:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233476AbiETNZi (ORCPT
+        with ESMTP id S1349862AbiETN0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 09:25:38 -0400
-Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C76149D87;
-        Fri, 20 May 2022 06:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1653053136; x=1684589136;
-  h=message-id:date:mime-version:reply-to:subject:to:cc:
-   references:from:in-reply-to:content-transfer-encoding;
-  bh=ueeMunmKCP4jhgg4Syz+6Dr4CSdM4dVyt+HIIQmajf0=;
-  b=S8qVyzZb/73BfxTMjRyBc7CpPnxZnTses1oQ+3OQL5RYzmwxCxDQSpmt
-   pA4CgnwUeN1y5R934KPSSgZ6d87lQum3VEG/EzjoSGw2qkFF9GJIQQDtb
-   bdH9wsS9a1r+aX62IqHplhdUqt2+2HD0LeRPoIBAxuEyRLqStxOWK6oWE
-   Q=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="179009252"
-X-IronPort-AV: E=Sophos;i="5.91,239,1647298800"; 
-   d="scan'208";a="179009252"
-Received: from unknown (HELO mucxv001.muc.infineon.com) ([172.23.11.16])
-  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 15:25:34 +0200
-Received: from MUCSE805.infineon.com (MUCSE805.infineon.com [172.23.29.31])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv001.muc.infineon.com (Postfix) with ESMTPS;
-        Fri, 20 May 2022 15:25:34 +0200 (CEST)
-Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE805.infineon.com
- (172.23.29.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 20 May
- 2022 15:25:34 +0200
-Received: from [10.165.68.46] (10.165.68.46) by MUCSE818.infineon.com
- (172.23.29.44) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 20 May
- 2022 15:25:33 +0200
-Message-ID: <51a14f28-ce94-ade9-6512-a265f7b32dfb@infineon.com>
-Date:   Fri, 20 May 2022 15:28:42 +0200
+        Fri, 20 May 2022 09:26:11 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D75441F8E
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:26:09 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id w14so14262887lfl.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:26:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=/1UN+TaMaEHcux1d6IJ2KDdfHYHO4F5ExU+odphW0WU=;
+        b=duNEHjCO0S0AOhMSt8aOd7DDMhxLHCQYK4g5GNHpXgS79y73DaQzAHn91LKMBCeOgD
+         1ZCPBLge3Cn96dQLOkEBsSLL8tRzqmO3sGp3nbRNnSbFVVEe05nol/Ts0rtg+UAT5qf9
+         KrNsl2YTbt0ua/0c/1wDITK3tAgfp6sVbaMT/a5Z5VnEQvz8Oiu5GqFx3STskU1zBxBj
+         WAOOE/4pBlOlTxjiZHB9p7CsDOnB+gRVfv5zGcBZsLKkBGcQE8O7ImKGFxpuI6e/D3tb
+         3gHeJLsT5Hvg9DpkdOoOJfn7w5twy49l2wvF9yWDtJfERc9MdiKHDpnN+gWxhwOaosHA
+         xfbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=/1UN+TaMaEHcux1d6IJ2KDdfHYHO4F5ExU+odphW0WU=;
+        b=xzHqCojVquwapH4EN7uVa65YultU0WhjHIJGF2r5AprVix0FBE7g9JuOmLLmMfWguY
+         NU0I50oMODMmwKwyq/2cQ+oIaljUZ1lmxaqdQGRB9yBaGNhSPmq8KoszxVFS6jvyPdEu
+         FpmdwH3sVY1qjArmmwD/fyVQDVW9sq1KNSg80pIFACussK7TbMY72RCGDvHSV3I0iXc2
+         kRTq+cceAkLzcoY3H1sWMH8NDezvf7uDRvXY3PMXB5ydViEX+LW/2MXvtD6J+TaRlPLm
+         S6p28FktoBF+uIgga89D/DWnWr4TwQcpXks8WYHIPeoBC3GPGRnB6M6rEXfQGUnOD7p2
+         1d6w==
+X-Gm-Message-State: AOAM533TcAELlVSo5Qa53kzAU+j7EBbICVivux7FDLHJtrCWZK9NskBn
+        D0JlHN0F7+npQTZjP+uVy68Sjg==
+X-Google-Smtp-Source: ABdhPJwzB3/PlRlrkNXbK7mwUivWQKZ0qAFrQcRwuovyF2EoriPwqD771ALNFGv+zdxasA/ruuX6Zg==
+X-Received: by 2002:a05:6512:10cf:b0:473:b735:4fae with SMTP id k15-20020a05651210cf00b00473b7354faemr6947736lfg.93.1653053167466;
+        Fri, 20 May 2022 06:26:07 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id o3-20020ac24e83000000b0047794db1ffasm659901lfr.237.2022.05.20.06.26.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 06:26:06 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 61396104AAB; Fri, 20 May 2022 16:28:00 +0300 (+03)
+Date:   Fri, 20 May 2022 16:28:00 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Jakub =?utf-8?Q?Mat=C4=9Bna?= <matenajakub@gmail.com>
+Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
+        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
+        mgorman@techsingularity.net, willy@infradead.org,
+        liam.howlett@oracle.com, hughd@google.com, riel@surriel.com,
+        rostedt@goodmis.org, peterz@infradead.org, david@redhat.com
+Subject: Re: [RFC PATCH v3 1/6] [PATCH 1/6] mm: refactor of vma_merge()
+Message-ID: <20220520132800.hijytnlyjqeesjfj@box.shutemov.name>
+References: <20220516125405.1675-1-matenajakub@gmail.com>
+ <20220516125405.1675-2-matenajakub@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Reply-To: <stefan.mahnke-hartmann@infineon.com>
-Subject: Re: [PATCH] tpm: increase timeout for kselftests
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Johannes Holland <johannes.holland@infineon.com>
-CC:     <linux-integrity@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
-        <stefan.mahnke-hartmann@infineon.com>
-References: <20220510111607.22984-1-johannes.holland@infineon.com>
- <YnvSwJxOg+IZxrxz@kernel.org>
-From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-Organization: Infineon Technologies AG
-In-Reply-To: <YnvSwJxOg+IZxrxz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.165.68.46]
-X-ClientProxiedBy: MUCSE820.infineon.com (172.23.29.46) To
- MUCSE818.infineon.com (172.23.29.44)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220516125405.1675-2-matenajakub@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 16, 2022 at 02:54:00PM +0200, Jakub Matěna wrote:
+> Refactor vma_merge() to make it shorter, more understandable and
+> suitable for tracing of successful merges that are made possible by
+> following patches in the series. Main change is the elimination of code
+> duplicity in the case of merge next check. This is done by first doing
+> checks and caching the results before executing the merge itself. Exit
+> paths are also unified.
+> 
+> Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
 
+Okay, this looks good:
 
-On 11.05.22 17:14, Jarkko Sakkinen wrote:
-> On Tue, May 10, 2022 at 01:16:08PM +0200, Johannes Holland wrote:
->> Due to CreatePrimary commands which need to create RSA keys of
->> increasing size, the timeout value need to be raised, as well.
->> Default is 300s.
->>
->> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
->> ---
->> A timeout of anything below 600s still lead to occasional timeouts for
->> me. Therefore, I propose 600s as a new value. 
->>
->>  tools/testing/selftests/tpm2/settings | 2 ++
->>  1 file changed, 2 insertions(+)
->>  create mode 100644 tools/testing/selftests/tpm2/settings
->>
->> diff --git a/tools/testing/selftests/tpm2/settings b/tools/testing/selftests/tpm2/settings
->> new file mode 100644
->> index 000000000000..919bc3803f03
->> --- /dev/null
->> +++ b/tools/testing/selftests/tpm2/settings
->> @@ -0,0 +1,2 @@
->> +timeout=600
->> +
->> -- 
->> 2.34.1
->>
-> Could cope but I did not get why it needs to be raised.
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-The TPM2 SpaceTest testsuite currently creates 8 primary RSA 2k keys + 1 for
-setup. Generating a RSA2k key can take up to ~1-2 minutes on some of our TPMs.
-=> 2x9 = 18 minutes. In the kernel we even define a duration timeout for rsa2k
-keygen of 5 min per key! (TPM2_DURATION_LONG_LONG = 300000) => up to 45 minutes
-would be "acceptable".
+I would also consider renaming 'area' to 'vma'. 'area' feels wrong to me,
+but maybe it is only me.
 
-However since the average key generation time is much faster, a value of ~10
-minutes should be fine enough.
-
-The reason why you did not experience this yet on your test system is either
-because PTT TPMs are faster in that respect and/or some TPMs implement pre-gen
-mechanisms for key generation, (or just plain luck)
-
-BR, Stefan
-
-> BR, Jarkko
-
+-- 
+ Kirill A. Shutemov
