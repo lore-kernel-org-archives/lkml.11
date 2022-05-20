@@ -2,130 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F791C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238056AbiETDCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 23:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
+        id S1344981AbiETDEE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 23:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344969AbiETDCh (ORCPT
+        with ESMTP id S236425AbiETDEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 23:02:37 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D60B227D
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:02:34 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id 10so2881598plj.0
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=T49autrwazSVPbqM6JLQ0qnBuicehxkova35EuZCJaU=;
-        b=YAQzupJhJUp7xZHECAP6liV1GLyneKC7ORPbdztHF98+Q7076sqC9DSsyMYsCmP6cA
-         oWwweI2rAbNR1XW76OAHHX4lpS3lIfOkzqlEwwScfdtl/YFj4oxt/7O2AA+TtnDWZAu3
-         0/8tnXWRPpE/h6SoJ+lwC43FRUQPlDADpf0y0r99L9hq/jeXx3sg1Lw9uJenlEYTz3ce
-         X0kJzXObUKCU7TOOJ30K4XEuS8xNv1TIaxRHNg9Qf0/aDLsQIdKLa/l0wrOuRfha3dgu
-         2/KpF94tfXYOkEX/1t6Lf1IuRtSmd9XMFw8WvsUvYNNQY2Aq791p0vpJ09dUsT0RNHIi
-         hgEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=T49autrwazSVPbqM6JLQ0qnBuicehxkova35EuZCJaU=;
-        b=x622zvbF+QYsvuJzl5iboEWiK39b3mIMRSK+BycdGHYsyX9l2n76qQOKJLsaq6cZ7Y
-         F04ClIrHebAPMD6qHMz0WXn5saX8+UxUQMAjjSpd1lhr/SJi4Q5hz7MvGHUWxujopwCF
-         zT2YDXuIbkc3ZQAxYsuKQh5lep6iphcim14whPDeTVi2Tuw5hEvOUk8BFHPeRFSJKO+6
-         eXpb03/SkmaAONjncXY3XyMofEMWnQ0Z91X039TYJtJuLcwzCrb2SlEgfBTVXd8bwSaL
-         BETBRCUB9f6FJrz2ygmBwyGCdiMWWpVHGSM0kcBKWAH2AlD+XqylrQpFvPe183ncv4tR
-         j8oQ==
-X-Gm-Message-State: AOAM532XRWJgnANvjzMlqNdMjbMrByptlfDwJTOrUBVduxCLLpTjPm0k
-        EDASNVH5gQjUwxQlqBPdFd8O9Q==
-X-Google-Smtp-Source: ABdhPJwOjHkRwZ7scwMzECt6n/SIMuW/O/aZf3GaVbzT7jr3FkELxpScQ0hys0wR4wtFxD+F+4Ucpg==
-X-Received: by 2002:a17:903:1c7:b0:161:9d6f:376a with SMTP id e7-20020a17090301c700b001619d6f376amr7770822plh.147.1653015754279;
-        Thu, 19 May 2022 20:02:34 -0700 (PDT)
-Received: from [10.71.57.194] ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id n1-20020a170902e54100b0015e8d4eb219sm4574667plf.99.2022.05.19.20.02.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 20:02:33 -0700 (PDT)
-Message-ID: <344e2064-62f8-845e-7d1d-2afcaeb0e524@bytedance.com>
-Date:   Fri, 20 May 2022 11:02:24 +0800
+        Thu, 19 May 2022 23:04:01 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2EC63BD0
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:03:57 -0700 (PDT)
+X-UUID: 1298b89a944d442a916f18bf3db86044-20220520
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:db155855-e169-45a1-bccd-5a115a95ca12,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:833ae1e2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 1298b89a944d442a916f18bf3db86044-20220520
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 395612703; Fri, 20 May 2022 11:03:54 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 20 May 2022 11:03:53 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 20 May 2022 11:03:53 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 20 May 2022 11:03:41 +0800
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Min Guo <min.guo@mediatek.com>,
+        MandyJH Liu <mandyjh.liu@mediatek.com>,
+        Eddie Hung <eddie.hung@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        "Ulf Hansson" <ulf.hansson@linaro.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>
+Subject: [v3 PATCH] soc: mediatek: Add support always on flag
+Date:   Fri, 20 May 2022 11:03:40 +0800
+Message-ID: <20220520030340.25444-1-chunfeng.yun@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [External] Re: [PATCH] bpf: avoid grabbing spin_locks of all cpus
- when no free elems
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-References: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
- <CAADnVQ+x-A87Z9_c+3vuRJOYm=gCOBXmyCJQ64CiCNukHS6FpA@mail.gmail.com>
- <6ae715b3-96b1-2b42-4d1a-5267444d586b@bytedance.com>
- <9c0c3e0b-33bc-51a7-7916-7278f14f308e@fb.com>
- <380fa11e-f15d-da1a-51f7-70e14ed58ffc@bytedance.com>
- <CAADnVQL9naBBKzQdAOWu2ZH=i7HA1VDi7uNzsDQ1TM9Jr+c0Ww@mail.gmail.com>
-From:   Feng Zhou <zhoufeng.zf@bytedance.com>
-In-Reply-To: <CAADnVQL9naBBKzQdAOWu2ZH=i7HA1VDi7uNzsDQ1TM9Jr+c0Ww@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/5/20 上午12:12, Alexei Starovoitov 写道:
-> On Wed, May 18, 2022 at 8:12 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote:
->> 在 2022/5/19 上午4:39, Yonghong Song 写道:
->>>
->>> On 5/17/22 11:57 PM, Feng Zhou wrote:
->>>> 在 2022/5/18 下午2:32, Alexei Starovoitov 写道:
->>>>> On Tue, May 17, 2022 at 11:27 PM Feng zhou
->>>>> <zhoufeng.zf@bytedance.com> wrote:
->>>>>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->>>>>>
->>>>>> We encountered bad case on big system with 96 CPUs that
->>>>>> alloc_htab_elem() would last for 1ms. The reason is that after the
->>>>>> prealloc hashtab has no free elems, when trying to update, it will
->>>>>> still
->>>>>> grab spin_locks of all cpus. If there are multiple update users, the
->>>>>> competition is very serious.
->>>>>>
->>>>>> So this patch add is_empty in pcpu_freelist_head to check freelist
->>>>>> having free or not. If having, grab spin_lock, or check next cpu's
->>>>>> freelist.
->>>>>>
->>>>>> Before patch: hash_map performance
->>>>>> ./map_perf_test 1
->>> could you explain what parameter '1' means here?
->> This code is here:
->> samples/bpf/map_perf_test_user.c
->> samples/bpf/map_perf_test_kern.c
->> parameter '1' means testcase flag, test hash_map's performance
->> parameter '2048' means test hash_map's performance when free=0.
->> testcase flag '2048' is added by myself to reproduce the problem phenomenon.
-> Please convert it to selftests/bpf/bench,
-> so that everyone can reproduce the issue you're seeing
-> and can assess whether it's a real issue or a corner case.
->
-> Also please avoid adding indent in the patch.
-> Instead of
->   if (!s->extralist.is_empty) {
->    .. churn
->
-> do
->
->   if (s->extralist.is_empty)
+There is a t-phy shared by PCIe and USB3 on mt8195, if the t-phy is
+used by PCIe, when power off its mtcmos, need software reset it
+(workaround way, usually hardware do it, but has an issue on mt8195),
+but it has side effect to USB2 phy(works with USB3 phy to support
+USB3.2 Gen1), so add support GENPD_FLAG_ALWAYS_ON flag, and make its
+power always on;
+Another reason is that USB3.2 Gen1/2 need keep power always on when
+support runtime-pm due to hardware limitation until now;
 
-Ok, will do. Thanks.
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+---
+v3: make always-on flag exclusive with defualt-off flag
+
+v2: keep active_wakeup flag for mt8195
+---
+ drivers/soc/mediatek/mt8195-pm-domains.h | 2 +-
+ drivers/soc/mediatek/mtk-pm-domains.c    | 3 +++
+ drivers/soc/mediatek/mtk-pm-domains.h    | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/soc/mediatek/mt8195-pm-domains.h b/drivers/soc/mediatek/mt8195-pm-domains.h
+index 938f4d51f5ae..0529d130b675 100644
+--- a/drivers/soc/mediatek/mt8195-pm-domains.h
++++ b/drivers/soc/mediatek/mt8195-pm-domains.h
+@@ -67,7 +67,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8195[] = {
+ 		.ctl_offs = 0x334,
+ 		.pwr_sta_offs = 0x174,
+ 		.pwr_sta2nd_offs = 0x178,
+-		.caps = MTK_SCPD_ACTIVE_WAKEUP,
++		.caps = MTK_SCPD_ACTIVE_WAKEUP | MTK_SCPD_ALWAYS_ON,
+ 	},
+ 	[MT8195_POWER_DOMAIN_CSI_RX_TOP] = {
+ 		.name = "csi_rx_top",
+diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
+index 5ced254b082b..a3dae391a38a 100644
+--- a/drivers/soc/mediatek/mtk-pm-domains.c
++++ b/drivers/soc/mediatek/mtk-pm-domains.c
+@@ -428,6 +428,9 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+ 			dev_err(scpsys->dev, "%pOF: failed to power on domain: %d\n", node, ret);
+ 			goto err_put_subsys_clocks;
+ 		}
++
++		if (MTK_SCPD_CAPS(pd, MTK_SCPD_ALWAYS_ON))
++			pd->genpd.flags |= GENPD_FLAG_ALWAYS_ON;
+ 	}
+ 
+ 	if (scpsys->domains[id]) {
+diff --git a/drivers/soc/mediatek/mtk-pm-domains.h b/drivers/soc/mediatek/mtk-pm-domains.h
+index daa24e890dd4..7d3c0c36316c 100644
+--- a/drivers/soc/mediatek/mtk-pm-domains.h
++++ b/drivers/soc/mediatek/mtk-pm-domains.h
+@@ -8,6 +8,8 @@
+ #define MTK_SCPD_SRAM_ISO		BIT(2)
+ #define MTK_SCPD_KEEP_DEFAULT_OFF	BIT(3)
+ #define MTK_SCPD_DOMAIN_SUPPLY		BIT(4)
++/* can't set MTK_SCPD_KEEP_DEFAULT_OFF at the same time */
++#define MTK_SCPD_ALWAYS_ON		BIT(5)
+ #define MTK_SCPD_CAPS(_scpd, _x)	((_scpd)->data->caps & (_x))
+ 
+ #define SPM_VDE_PWR_CON			0x0210
+-- 
+2.18.0
 
