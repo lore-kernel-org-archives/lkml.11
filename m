@@ -2,112 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59969C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD534C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350308AbiETOcQ (ORCPT
+        id S1345450AbiETOcZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 10:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
+        Fri, 20 May 2022 10:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350303AbiETOcN (ORCPT
+        with ESMTP id S1350301AbiETOcN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 10:32:13 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D88612A5;
-        Fri, 20 May 2022 07:32:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653057132; x=1684593132;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=D+iRVt6FwtOPu5ZojACS+sJ1AtQ3Zo6GoLK4yiVBZC4=;
-  b=Bg5FsdWODh01AaTOPGIDviUTwUgx3Y5tKZVvpXBgGn04d0l6QzVjnxov
-   +XStU1RPy38Dc95PJ/gbIdXFNZiEOtpK780hw6PjCyIF4lr54H0nCbzrk
-   Ofgj/cLweRqKej+51yjZjlehANmcY1NyOGvQk396wJWWDJFaqadiIxOx6
-   ZsT8j7nmaxvuptAXo0y1R8V2eQz7jyUsLhKSZVYiqlAAJiVfyyGMKYExR
-   NdtK4VuO4eUER8hY+gr5Zl34fa1TODJeYGC/Bok56cQFZ6DR9qdt0vBaU
-   tKeA0pht2iHYugRAVCajJSXHMORJVs59HSf/o+K8eaMvJ7DAG1Y2FvB47
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="271439338"
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="271439338"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 07:32:10 -0700
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="662286642"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 07:32:09 -0700
-From:   matthew.gerlach@linux.intel.com
-To:     dinguyen@kernel.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Subject: [PATCH v6 0/3] Add device tree for Intel n6000
-Date:   Fri, 20 May 2022 07:32:05 -0700
-Message-Id: <20220520143208.1160506-1-matthew.gerlach@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F155DA36;
+        Fri, 20 May 2022 07:32:11 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id c14so7940438pfn.2;
+        Fri, 20 May 2022 07:32:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=DliqDdVLATY2qmDlzuw2Sy2dYKnj/zu7Z7ooTERfLQo=;
+        b=AWXXJlYZFLt3+B9c+JQnWf20eGJcpoHR/ApnEH6fCOCn8YZvan4Pq02t9vikOzSkcg
+         13DxQMQZi3ruNku7zwKXgu+ypa/cgl4ZGvUyMH1IrgxkK/yYUEwT6sH96W9A+XkJgVKG
+         wpg2pfHYrMxyQ3pLyTaT2E9i2ev5rWiPI21NGS1PJtIA+yOngssBxrL0UQwtf4FpejzY
+         edUMdlwNTnuB9sHMKyhBgA7UfWGAarRaSLwJoKndU4/4nkRSviDLogafeyJSUEoYOYSK
+         0wSN2/Et2XGodwhs5ED5oCQjVu/qHJCPdcq9TnOyFPSXpe+OqmNbrqAZJpr5Kpvx6BYy
+         iejQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=DliqDdVLATY2qmDlzuw2Sy2dYKnj/zu7Z7ooTERfLQo=;
+        b=o4LpRg8bxSYQ+0CRUygkSpHhF5UNjKlNc8Cid1dUNcfCfV8/t2CiUYqwsFn+IFINye
+         BhTIvG3cj9V+2nZCXWDG738nP17O9402iRPSAUUIuxeJgjao3v3Y8c6e9DXlqIn6bPOB
+         rqwMfzSx63klTJF95jO+gG1+cSndJA4zHEDHiLWINbDNcSWnl+BIZVar63rR+OoHEqTh
+         Kbu5gRcKhMyqNWy2SzSscjIiataDdkQK0be8mvYWfxx0yxxhng39FwMgvdSDOqOAAQU2
+         MmqkKKbVWBlAixspIiiqCflBaVx69I8T7BgEuTUVD7yEMkrEKWSq4HOGunQE3JM2srR8
+         6BEA==
+X-Gm-Message-State: AOAM533KpT+GP5u0OQaGH28+/5LR3fk9ellFvl6hl6pSMxaKuNSBcuSq
+        GOPB1wjQwSj2J9uY4HLH1R0=
+X-Google-Smtp-Source: ABdhPJwEjqQxlAIYNFza5WSzeMiUxPFvCIHxPPjZ8yx7cnNPUm3lAIkFIRppCawR/krh1/gazfxQYw==
+X-Received: by 2002:a65:6e88:0:b0:382:3851:50c8 with SMTP id bm8-20020a656e88000000b00382385150c8mr8895014pgb.270.1653057131297;
+        Fri, 20 May 2022 07:32:11 -0700 (PDT)
+Received: from [192.168.255.10] ([203.205.141.24])
+        by smtp.gmail.com with ESMTPSA id c17-20020a170902c1d100b0015e8d4eb243sm5661324plc.141.2022.05.20.07.32.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 07:32:10 -0700 (PDT)
+Message-ID: <e7b67a64-d5d4-b251-f414-f4e1ae08e199@gmail.com>
+Date:   Fri, 20 May 2022 22:32:06 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH 3/3] KVM: x86/svm/pmu: Drop 'enum index' for more counters
+ scalability
+Content-Language: en-US
+From:   Like Xu <like.xu.linux@gmail.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, sandipan.das@amd.com,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220510115718.93335-1-likexu@tencent.com>
+ <20220510115718.93335-3-likexu@tencent.com>
+In-Reply-To: <20220510115718.93335-3-likexu@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+The third patch is buggy, please ignore it.
+I will post a new version. Sorry for the noise.
 
-This patch set adds a device tree for the Hard Processor System (HPS)
-on an Agilex based Intel n6000 board.
-
-Patch 1 defines the device tree binding for the HPS Copy Engine IP
-used to copy a bootable image from host memory to HPS DDR.
-
-Patch 2 defines the binding for the Intel n6000 board itself.
-
-Patch 3 adds the device tree for the n6000 board.
-
-Changelog v5 -> v6:
-  - move copy engine binding from soc/intel to dma directory
-  - remove unnecessary parent device tree node from copy engine example
-
-Changelog v4 -> v5:
-  - add tags from Krzysztof Kozlowski
-
-Changelog v3 -> v4:
-  - move binding yaml from soc to soc/intel
-
-Changelog v2 -> v3:
-  - remove unused label
-  - move from misc to soc
-  - remove 0x from #address-cells/#size-cells values
-  - change hps_cp_eng@0 to dma-controller@0
-  - remote inaccurate 'items:' tag
-  - added Acked-by
-  - add unit number to memory node
-  - remove spi node with unaccepted compatible value
-
-Changelog v1 -> v2:
-  - add dt binding for copy enging
-  - add dt binding for n6000 board
-  - fix copy engine node name
-  - fix compatible field for copy engine
-  - remove redundant status field
-  - add compatibility field for the board
-  - fix SPDX
-  - fix how osc1 clock frequency is set
-
-Matthew Gerlach (3):
-  dt-bindings: soc: add bindings for Intel HPS Copy Engine
-  dt-bindings: intel: add binding for Intel n6000
-  arm64: dts: intel: add device tree for n6000
-
- .../bindings/arm/intel,socfpga.yaml           |  1 +
- .../bindings/dma/intel,hps-copy-engine.yaml   | 41 ++++++++++++
- arch/arm64/boot/dts/intel/Makefile            |  3 +-
- .../boot/dts/intel/socfpga_agilex_n6000.dts   | 66 +++++++++++++++++++
- 4 files changed, 110 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/dma/intel,hps-copy-engine.yaml
- create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
-
--- 
-2.25.1
-
+On 10/5/2022 7:57 pm, Like Xu wrote:
+> From: Like Xu<likexu@tencent.com>
+> 
+> If the number of AMD gp counters continues to grow, the code will
+> be very clumsy and the switch-case design of inline get_gp_pmc_amd()
+> will also bloat the kernel text size.
+> 
+> The target code is taught to manage two groups of MSRs, each
+> representing a different version of the AMD PMU counter MSRs.
+> The MSR addresses of each group are contiguous, with no holes,
+> and there is no intersection between two sets of addresses,
+> but they are discrete in functionality by design like this:
+> 
+> [Group A : All counter MSRs are tightly bound to all event select MSRs ]
+> 
+>    MSR_K7_EVNTSEL0			0xc0010000
+>    MSR_K7_EVNTSELi			0xc0010000 + i
+>    ...
+>    MSR_K7_EVNTSEL3			0xc0010003
+>    MSR_K7_PERFCTR0			0xc0010004
+>    MSR_K7_PERFCTRi			0xc0010004 + i
+>    ...
+>    MSR_K7_PERFCTR3			0xc0010007
+> 
+> [Group B : The counter MSRs are interleaved with the event select MSRs ]
+> 
+>    MSR_F15H_PERF_CTL0		0xc0010200
+>    MSR_F15H_PERF_CTR0		(0xc0010200 + 1)
+>    ...
+>    MSR_F15H_PERF_CTLi		(0xc0010200 + 2 * i)
+>    MSR_F15H_PERF_CTRi		(0xc0010200 + 2 * i + 1)
+>    ...
+>    MSR_F15H_PERF_CTL5		(0xc0010200 + 2 * 5)
+>    MSR_F15H_PERF_CTR5		(0xc0010200 + 2 * 5 + 1)
+> 
+> Rewrite get_gp_pmc_amd() in this way: first determine which group of
+> registers is accessed by the pass-in 'msr' address, then determine
+> which msr 'base' is referenced by 'type', applying different address
+> scaling ratios separately, and finally get the pmc_idx.
+> 
+> If the 'base' does not match its 'type', it continues to remain invalid.
+> 
+> Signed-off-by: Like Xu<likexu@tencent.com>
