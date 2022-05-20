@@ -2,149 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D21AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346340AbiETHVu (ORCPT
+        id S1346370AbiETHXF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
+        Fri, 20 May 2022 03:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346276AbiETHVr (ORCPT
+        with ESMTP id S241014AbiETHXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:21:47 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE0699680
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:21:44 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 17B021F975;
-        Fri, 20 May 2022 07:21:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1653031303; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TBN5hB0/WPFsCGSSaSWI79+b/MCuCRipw2TznjIJXMM=;
-        b=UAPf2WrwRzaKaTOqud9B3Zxza6x0ksyxYqr57T0xLu4aZEgB+f2r3BsBe4mb1sofkwwOXh
-        MUB1lYGzME/Ar3aV4GRM9p8wJJyAc4PEV19TOAdIX5vzb6l0vGkoqq3PJf+sWb/LQuWH+N
-        uxCYlMHLQIyzCDF0TTs+0psO3Ofj5o0=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9681D2C141;
-        Fri, 20 May 2022 07:21:42 +0000 (UTC)
-Date:   Fri, 20 May 2022 09:21:42 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     Liam Howlett <liam.howlett@oracle.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "guro@fb.com" <guro@fb.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "aarcange@redhat.com" <aarcange@redhat.com>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "oleg@redhat.com" <oleg@redhat.com>,
-        "david@redhat.com" <david@redhat.com>,
-        "jannh@google.com" <jannh@google.com>,
-        "shakeelb@google.com" <shakeelb@google.com>,
-        "peterx@redhat.com" <peterx@redhat.com>,
-        "jhubbard@nvidia.com" <jhubbard@nvidia.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "kernel-team@android.com" <kernel-team@android.com>
-Subject: Re: [PATCH v2 1/2] mm: drop oom code from exit_mmap
-Message-ID: <YodBhjkyNtc+Une7@dhcp22.suse.cz>
-References: <20220516075619.1277152-1-surenb@google.com>
- <20220519202149.3ywynqhbxlzp6uyn@revolver>
- <CAJuCfpHeAXSLjrXxgRaTXOEPPipcFq5MhP=uU0wkqeBoPUAcsQ@mail.gmail.com>
+        Fri, 20 May 2022 03:23:01 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB5D14ACB8;
+        Fri, 20 May 2022 00:22:58 -0700 (PDT)
+Received: from kwepemi100019.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L4J7w24STzhXbB;
+        Fri, 20 May 2022 15:22:04 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100019.china.huawei.com (7.221.188.189) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 20 May 2022 15:22:56 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 20 May 2022 15:22:54 +0800
+From:   Peng Liu <liupeng256@huawei.com>
+To:     <bhelgaas@google.com>, <tglx@linutronix.de>, <mingo@redhat.com>,
+        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, <lorenzo.pieralisi@arm.com>,
+        <guohanjun@huawei.com>, <sudeep.holla@arm.com>,
+        <rafael@kernel.org>, <lenb@kernel.org>,
+        <akpm@linux-foundation.org>, <logang@deltatee.com>,
+        <martin.oliveira@eideticom.com>, <thunder.leizhen@huawei.com>,
+        <axboe@kernel.dk>, <kch@nvidia.com>, <ming.lei@redhat.com>,
+        <shinichiro.kawasaki@wdc.com>, <mcgrof@kernel.org>,
+        <jiangguoqing@kylinos.cn>, <jpittman@redhat.com>,
+        <dave@stgolabs.net>, <liupeng256@huawei.com>,
+        <wangkefeng.wang@huawei.com>, <linux-block@vger.kernel.org>,
+        <linux-ia64@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-mm@kvack.org>
+Subject: [PATCH v2 0/2] null_blk: fix wrong use of nr_online_nodes
+Date:   Fri, 20 May 2022 07:37:45 +0000
+Message-ID: <20220520073747.1184091-1-liupeng256@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJuCfpHeAXSLjrXxgRaTXOEPPipcFq5MhP=uU0wkqeBoPUAcsQ@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 19-05-22 14:33:03, Suren Baghdasaryan wrote:
-> On Thu, May 19, 2022 at 1:22 PM Liam Howlett <liam.howlett@oracle.com> wrote:
-[...]
-> > arch_exit_mmap() was called under the write lock before, is it safe to
-> > call it under the read lock?
-> 
-> Ah, good catch. I missed at least one call chain which I believe would
-> require arch_exit_mmap() to be called under write lock:
-> 
-> arch_exit_mmap
->     ldt_arch_exit_mmap
->         free_ldt_pgtables
->             free_pgd_range
+Helper node_available() is introduced to judge whether a node can be
+used, and it is used to fix the wrong use of nr_online_nodes when
+numa node is sparse.
 
-Why would be this a problem? This is LDT mapped into page tables but as
-far as I know oom_reaper cannot really ever see that range because it is
-not really reachable from any VMA.
+v1->v2:
+  Modify comments as suggested by Bjorn Helgaas.
 
-> I'll need to check whether arch_exit_mmap() has to be called before
-> unmap_vmas(). If not, we could move it further down when we hold the
-> write lock.
-> Andrew, please remove this patchset from your tree for now until I fix this.
-> 
-> >
-> > >
-> > >       vma = mm->mmap;
-> > >       if (!vma) {
-> > >               /* Can happen if dup_mmap() received an OOM */
-> > > -             mmap_write_unlock(mm);
-> > > +             mmap_read_unlock(mm);
-> > >               return;
-> > >       }
-> > >
-> > > @@ -3138,6 +3121,16 @@ void exit_mmap(struct mm_struct *mm)
-> > >       /* update_hiwater_rss(mm) here? but nobody should be looking */
-> > >       /* Use -1 here to ensure all VMAs in the mm are unmapped */
-> > >       unmap_vmas(&tlb, vma, 0, -1);
-> > > +     mmap_read_unlock(mm);
-> > > +
-> > > +     /*
-> > > +      * Set MMF_OOM_SKIP to hide this task from the oom killer/reaper
-> > > +      * because the memory has been already freed. Do not bother checking
-> > > +      * mm_is_oom_victim because setting a bit unconditionally is cheaper.
-> > > +      */
-> > > +     set_bit(MMF_OOM_SKIP, &mm->flags);
-> > > +
-> > > +     mmap_write_lock(mm);
-> >
-> > Is there a race here?  We had a VMA but after the read lock was dropped,
-> > could the oom killer cause the VMA to be invalidated?
+Peng Liu (2):
+  numa: create node_available() helper
+  null_blk: fix wrong use of nr_online_nodes
 
-Nope, the oom killer itself doesn't do much beyond sending SIGKILL and
-scheduling the victim for the oom_reaper. dup_mmap is holding exclusive
-mmap_lock throughout the whole process.
+ arch/ia64/hp/common/sba_iommu.c |  2 +-
+ arch/x86/pci/acpi.c             |  2 +-
+ drivers/acpi/arm64/iort.c       |  2 +-
+ drivers/block/null_blk/main.c   | 45 ++++++++++++++++++++-------------
+ drivers/pci/pci-sysfs.c         |  2 +-
+ include/linux/nodemask.h        |  3 +++
+ mm/mempolicy.c                  |  2 +-
+ 7 files changed, 36 insertions(+), 22 deletions(-)
 
-> > I don't think so
-> > but the comment above about dup_mmap() receiving an OOM makes me
-> > question it.  The code before kept the write lock from when the VMA was
-> > found until the end of the mm edits - and it had the check for !vma
-> > within the block itself.  We are also hiding it from the oom killer
-> > outside the read lock so it is possible for oom to find it in that
-> > window, right?
-
-The oom killer's victim selection doesn't really depend on the
-mmap_lock. If there is a race and MMF_OOM_SKIP is not set yet then it
-will consider the task and very likely bail out anyway because the
-address space has already been unampped so oom_badness() would consider
-this task boring.
-
-oom_reaper on the other hand would just try to unmap in parallel but
-that is fine regardless of MMF_OOM_SKIP. Seeing the flag would allow to
-bail out early rather than just trying to unmap something that is no
-longer there. The only problem for the oom_reaper is to see page tables
-of the address space disappearing from udner its feet. That is excluded
-by the the exlusive lock and as Suren mentions mm->mmap == NULL check
-if the exit_mmap wins the race.
 -- 
-Michal Hocko
-SUSE Labs
+2.25.1
+
