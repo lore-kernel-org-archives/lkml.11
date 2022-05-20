@@ -2,66 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245460AbiETSgf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 14:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
+        id S1352881AbiETSgh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 14:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352804AbiETSg0 (ORCPT
+        with ESMTP id S1352789AbiETSg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 14:36:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6053466B
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:36:23 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F028948E46;
+        Fri, 20 May 2022 11:36:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6053361AB0
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 18:36:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B8921C34100;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B6B661A39;
+        Fri, 20 May 2022 18:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F2B72C34117;
         Fri, 20 May 2022 18:36:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653071782;
-        bh=4V8UnRGgHl3Vr8Z6NpBh9QUuMq42vEd6Jg/+gRKSmmE=;
+        s=k20201202; t=1653071783;
+        bh=JWiWTC+alje1MLpD9hvhHudkn1B2FU5SEi1F4LoWsJI=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=OYgSD5NAYjqNkJReIWuL9vlrIMvtkshcCsNAv1MgHJGXDK/v5SmInZX2uTmwkns0+
-         /K/PvHxCTIWejmakRlxSItwTx8oiJljUkVPordyIXfFZ/ll02D7JOyCOTX+cKXV/ln
-         GleNC4aAdK2isWeWUeq/Z6JhECu0SI6Nj6qEgx/BsYFPUkppzw+CR0noSHQ6h3V4mJ
-         NwiLQt5qcd7Z5tOI/ncDF+SHj1HFHb6AUSQqeVS5nfRo+NooHUHU1bz8RfnSf+bFFR
-         2swkqgleTIJGFuXePowJLN9NkAne1Y+uAcwCPGDuStjrb1xyFbJUp801bf4yHJkp1o
-         qqQMKM039Af2A==
+        b=lFHgdCHCjWtoa4d5dgql085AOV6RthGTVk4MNqqNTRpygElgkwZPbO2kAqY8ktPCV
+         yp3JdARlX74ryJc6Fr/SL53l9S9bZezxgU5pwaklnVII71UT2vBEcrpbAPHG+MsrxM
+         B9TCz+jevwdRxlJJn36j/s0eCZq+qJHxR6ZFkACA/TLLHAJsVXnlBi1cruZEQ0ResD
+         OeB6YHVyucSHXkKtF380nGtJ7/JwvsBGhWeH2H835i6BXG5TaDrBn3kdtdnP8eL3EJ
+         amR3rf62VGwnm3hTt5R10teMlBYj+PfNVSTw7rg/ewn7AgNmq5J8GklB5aYV1Qnc76
+         PK/C9/0qp9mZg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A440BF0389D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D507AF0393C;
         Fri, 20 May 2022 18:36:22 +0000 (UTC)
-Subject: Re: [GIT PULL] arm64 fixes for -rc8/final
+Subject: Re: [GIT PULL] gpio: fixes for v5.18
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220520115250.GA6700@willie-the-truck>
-References: <20220520115250.GA6700@willie-the-truck>
+In-Reply-To: <20220520171930.1029663-1-brgl@bgdev.pl>
+References: <20220520171930.1029663-1-brgl@bgdev.pl>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220520115250.GA6700@willie-the-truck>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git tags/arm64-fixes
-X-PR-Tracked-Commit-Id: 1d0cb4c8864addc362bae98e8ffa5500c87e1227
+X-PR-Tracked-Message-Id: <20220520171930.1029663-1-brgl@bgdev.pl>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-fixes-for-v5.18
+X-PR-Tracked-Commit-Id: 3ecb10175b1f776f076553c24e2689e42953fef5
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a956f4e281fe548a541a4970a6e8a0ec283b0d6d
-Message-Id: <165307178266.15282.16444731786720667906.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 3b5e1590a26713a8c76896f0f1b99f52ec24e72f
+Message-Id: <165307178286.15282.13722611357472088743.pr-tracker-bot@kernel.org>
 Date:   Fri, 20 May 2022 18:36:22 +0000
-To:     Will Deacon <will@kernel.org>
-Cc:     torvalds@linux-foundation.org, catalin.marinas@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <brgl@bgdev.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 20 May 2022 12:52:51 +0100:
+The pull request you sent on Fri, 20 May 2022 19:19:30 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git tags/arm64-fixes
+> git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-fixes-for-v5.18
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a956f4e281fe548a541a4970a6e8a0ec283b0d6d
+https://git.kernel.org/torvalds/c/3b5e1590a26713a8c76896f0f1b99f52ec24e72f
 
 Thank you!
 
