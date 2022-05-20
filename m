@@ -2,102 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51341C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:45:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347245AbiETImv (ORCPT
+        id S1347276AbiETIpg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39356 "EHLO
+        Fri, 20 May 2022 04:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347309AbiETImr (ORCPT
+        with ESMTP id S1345445AbiETIpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:42:47 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC2D55485;
-        Fri, 20 May 2022 01:42:45 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 60EF21F43F56
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653036164;
-        bh=VV7uxDN1Imb56z7LKukCJYplYNlWvJ/o/kgUG//vB80=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=CKGNnBlz4UxZuDv7oD+pHQm7jL3iCcv8u3ytZdgZt3UxC7Kn+CH4sbiXcbZSkW6zk
-         pp2ICEZD6VK0NzUkAbammKLfF42VOFCJusfNoIre8ZI3iQVTxKirFr/vrjwl67dqPg
-         GHIBJtyzT9A01nFU+FpgxyZ/4E8BrF/LtizIvVHejrd608DjOsCgioQ1l+XEKNOT+j
-         8UnYE5WsOQ6PN+uj2YiLL06m/9WTm7u+ow0CJzC+MTx23OJlMxvVOnwo/rIxhCkaHR
-         DD/JBHD04El4FpremJNnmTaH1ZYufM51vARbL03EBZhaV+MWvPwjPUgby88kldwWE7
-         ycqmpMXjAqvdA==
-Message-ID: <5b5f6656-8694-dc78-ef42-7ce301849aa4@collabora.com>
-Date:   Fri, 20 May 2022 10:42:40 +0200
+        Fri, 20 May 2022 04:45:32 -0400
+Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E598F9E9EB
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:45:30 -0700 (PDT)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id C6EE91E9; Fri, 20 May 2022 10:45:28 +0200 (CEST)
+Date:   Fri, 20 May 2022 10:45:27 +0200
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/5] iommu: Add blocking_domain_ops field in iommu_ops
+Message-ID: <YodVJ7ervpIdWfg+@8bytes.org>
+References: <20220516015759.2952771-1-baolu.lu@linux.intel.com>
+ <20220516015759.2952771-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 3/6] clk: mediatek: reset: Return reset data pointer on
- register
-Content-Language: en-US
-To:     Yassine Oudjana <yassine.oudjana@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-References: <20220519134728.456643-1-y.oudjana@protonmail.com>
- <20220519134728.456643-4-y.oudjana@protonmail.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220519134728.456643-4-y.oudjana@protonmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220516015759.2952771-3-baolu.lu@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 19/05/22 15:47, Yassine Oudjana ha scritto:
-> From: Yassine Oudjana <y.oudjana@protonmail.com>
-> 
-> Return a struct mtk_clk_rst_data * when registering a reset
-> controller in preparation for adding an unregister helper
-> that will take it as an argument. Make the necessary changes
-> in drivers that do not currently discard the return value
-> of register functions.
-> 
-> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+On Mon, May 16, 2022 at 09:57:56AM +0800, Lu Baolu wrote:
+>  	const struct iommu_domain_ops *default_domain_ops;
+> +	const struct iommu_domain_ops *blocking_domain_ops;
 
-Hello Yassine,
+I don't understand why extra domain-ops are needed for this. I think it
+would be more straight-forward to implement allocation of
+IOMMU_DOMAIN_BLOCKED domains in each driver and let the details be
+handled in the set_dev() call-back. The IOMMU driver can make sure DMA
+is blocked for a device when it encounters a IOMMU_DOMAIN_BLOCKED
+domain.
 
-Thanks for your efforts on helping to make the MediaTek clocks better - I agree
-(and I'm not the only one..) that there's a lot of work to do on this side.
+For IOMMUs that have no explicit way to block DMA could just use an
+unmanaged domain with an empty page-table.
 
-Though... I don't think that this is the right direction: you're right about
-properly unregistering (in patch 4/6) the reset controllers on rmmod/failure
-but I'm not sure that this kind of noise brings any benefit.
+Regards,
 
-Explaining:
-You definitely saw that there's a new register _with_dev, which uses devm ops
-and that's going to automatically cleanup in case of removal/failure.
-This is what we should do.
-
-Hence, my proposal is to drop patch 3/6, 4/6, 5/6 and (slowly, steadily) migrate
-all of the MediaTek clocks from CLK_OF_DECLARE() to platform drivers (which also
-means that we can eventually change them to tristate!), so that we slowly remove
-all users of all functions that are not "_with_dev", and that we finally remove
-all of these then-unused functions as well.
-
-Making sure that I don't get misunderstood:
-      I'm not implying that this huge migration work is on your shoulders!
-
-P.S.: Chen-Yu, Miles: do you also agree? :-)
-
-Cheers,
-Angelo
-
+	Joerg
