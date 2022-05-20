@@ -2,104 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA05C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F45C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350396AbiETOrM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 10:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44490 "EHLO
+        id S234821AbiETOrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 10:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234821AbiETOrK (ORCPT
+        with ESMTP id S1350411AbiETOrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 10:47:10 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 093396D848;
-        Fri, 20 May 2022 07:47:09 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id s3so11064173edr.9;
-        Fri, 20 May 2022 07:47:08 -0700 (PDT)
+        Fri, 20 May 2022 10:47:41 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6DF72235
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:47:40 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id n18so7557015plg.5
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:47:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SWTQFgB8L0HOjZtQc1uTglM1zJk6QTSSIlavXmQwbTw=;
-        b=kqbsM/w2QOwGxf2UjEnlVOncYqn2rwW8vphGroA5HeE2AtSamnO3PFv5sXcDBpwLr1
-         rrc4DEABL98OCWqPpH0vVGcgyJxmzR/HtoUmRpAOOgMJGnCAWo5EO69SXfO5ZrPU9Bj/
-         eP1vGtB9z20A6qW/OeA04MVbY8EF+E/1jW5Er72EmdxngcDfXQXR2pcdezafWxvrDRWt
-         D0SfozJgFeLbto3IiK2QzSe3rueCMiD9qh/EYguwxQe1sqTuik0T/NninI2M3oQAsxLK
-         gNYbmcR2Xv0ZHG9bgB4t3fU58kU+E5pm2+nB/HW6YjAdTRhUBtP8LQuK8FGnkkUuC2Sz
-         vbIw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zVVHAEEmHtd6Xr1McHOOkF0bHjzq13Enfst+KzXC/fA=;
+        b=DCZOfv5818BEulYuDkt1d5/g2ITF2okgF+6PJMwvkD0fgu5Aa2YIoQPEyecGL6bh9p
+         hMa9nSYl5TyGmC4gPhbGU1iGJ1ZO1m6IHH+IUot105yWqOqbM8kHZk+4yrW8QvVRLb9q
+         U3CmR6eV0/k1ZEH5FoaeZJQQAkXxV6awd0Uc31bQ1EqDu829RQhpALl0NQR3iOf66CDx
+         IhKCcel2A26b08DMzRqlbPkOLYoaaGFQ2HDQX4kFf+lMpFe97qbRoS09i+44LuwQgbMv
+         KZf248psQ6XGj1Fp2RjxcX9K9t9nC3qjwieNEPNX4Xfnn07biL+v5fQ4dPm/jl2O+RTG
+         LGzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SWTQFgB8L0HOjZtQc1uTglM1zJk6QTSSIlavXmQwbTw=;
-        b=UQGkEyXSzxRUKXzrnCI/No6Uu8rb+CTs09cjSxSKAoEoF1UqBI62q69gTZOdCpX0rH
-         DYs6TZswWOhbScKbDqBSDyJAxeg7kx1+JWxYGL9QrplIzxF4hys6XPZWYr5C5Kny16CT
-         sm+qh3qZ0zzVZo4CGZmNkcKB7gDxO4QGJcGD0HPfP59tcN9MjHsj7bl67JyjN84GKNbR
-         dn5PMFRLfL/WC2xSCTioUl0PhNTZFP4FwnCN1fArfyDqIMhGpQnN0ZtABCNEyi2eQw3H
-         Q1AYXs7o/tHb/59Gb2PIVmEnKMdm7q+lCr2mOrc4wpCpDOYqOBt5pGPAo2772Sz1G3eN
-         MdxQ==
-X-Gm-Message-State: AOAM533a/gjExsUBt2V9T/zagToEdKTet1HpZuBMtJqu05Z1G/OpxSOy
-        ZYQ+gCOgkoC3ds6s0rwNEU/twPfIQLc=
-X-Google-Smtp-Source: ABdhPJwoFRUDuX17QRDGhaE8MUYmI9XsJtewhQ+/m1a98o+oddwFTlmOHJFPz4XvmG2vEgnGz46+jw==
-X-Received: by 2002:a05:6402:3447:b0:42a:a449:ebb with SMTP id l7-20020a056402344700b0042aa4490ebbmr11130353edc.75.1653058027304;
-        Fri, 20 May 2022 07:47:07 -0700 (PDT)
-Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
-        by smtp.gmail.com with ESMTPSA id zp26-20020a17090684fa00b006f3ef214e2fsm3345013ejb.149.2022.05.20.07.47.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zVVHAEEmHtd6Xr1McHOOkF0bHjzq13Enfst+KzXC/fA=;
+        b=TZFxmqBV1jE45Nl9spb8W/6qdXsiqjcAvW6Hohh46Q8r+N1JatfiZf0xy3n18Rv7jA
+         UXL5DfPW/4kJz7ablMpQIixIUjxsx/L6vydLLw51ik6oYmGYbxXnV/qdEdNZiKy3qBee
+         ZAtwHU/5ZXyXzxvlIIe43gikXL0OxdJx+wHAfUTc2AJrjRLgumsxDfyVLgmnmzxpi5zd
+         HzbBgQ4EEmGY0ncWvEen0ihsPtHnKk/NUSSu7ovOn7g2Q8XcNNELYdNfek+oFvtq0u2h
+         BcJ0vdrIkXQd1+QiUX7Cxf1/9Zsm0U2+M+U+OM7iIhKCGht/1ToVKMk8BbXdehezpaUa
+         XIDw==
+X-Gm-Message-State: AOAM532jJYUagSupnpGCknEqIACgLxX46XqX12a/wr1ZpPKL/ZsQK04g
+        vlSQXBzr/uOUcG6SdbWSIQMwPg==
+X-Google-Smtp-Source: ABdhPJyRMbCAAWVZvRwKzWuxCupyvrVpKIv4kXvy0yE21CqqYPFziUDGjSqMnDtWNtk7TKJxXkXkmg==
+X-Received: by 2002:a17:90b:1650:b0:1df:a92d:c614 with SMTP id il16-20020a17090b165000b001dfa92dc614mr11073345pjb.205.1653058059443;
+        Fri, 20 May 2022 07:47:39 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id p36-20020a635b24000000b003c6a37b1628sm5336362pgb.13.2022.05.20.07.47.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 07:47:07 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] KVM: x86/mmu: Use try_cmpxchg64 in fast_pf_fix_direct_spte
-Date:   Fri, 20 May 2022 16:46:35 +0200
-Message-Id: <20220520144635.63134-1-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Fri, 20 May 2022 07:47:38 -0700 (PDT)
+Date:   Fri, 20 May 2022 14:47:35 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Yuan Yao <yuan.yao@linux.intel.com>
+Cc:     Yun Lu <luyun_611@163.com>, pbonzini@redhat.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, jmattson@google.com,
+        joro@8bytes.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: x86/mmu: optimizing the code in
+ mmu_try_to_unsync_pages
+Message-ID: <YoeqB2KAN/wsHMpk@google.com>
+References: <20220520060907.863136-1-luyun_611@163.com>
+ <20220520095428.bahy37jxkznqtwx5@yy-desk-7060>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220520095428.bahy37jxkznqtwx5@yy-desk-7060>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use try_cmpxchg64 instead of cmpxchg64 (*ptr, old, new) != old in
-fast_pf_fix_direct_spte. cmpxchg returns success in ZF flag, so this
-change saves a compare after cmpxchg (and related move instruction
-in front of cmpxchg).
+On Fri, May 20, 2022, Yuan Yao wrote:
+> On Fri, May 20, 2022 at 02:09:07PM +0800, Yun Lu wrote:
+> > There is no need to check can_unsync and prefetch in the loop
+> > every time, just move this check before the loop.
+> >
+> > Signed-off-by: Yun Lu <luyun@kylinos.cn>
+> > ---
+> >  arch/x86/kvm/mmu/mmu.c | 12 ++++++------
+> >  1 file changed, 6 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> > index 311e4e1d7870..e51e7735adca 100644
+> > --- a/arch/x86/kvm/mmu/mmu.c
+> > +++ b/arch/x86/kvm/mmu/mmu.c
+> > @@ -2534,6 +2534,12 @@ int mmu_try_to_unsync_pages(struct kvm *kvm, const struct kvm_memory_slot *slot,
+> >  	if (kvm_slot_page_track_is_active(kvm, slot, gfn, KVM_PAGE_TRACK_WRITE))
+> >  		return -EPERM;
+> >
+> > +	if (!can_unsync)
+> > +		return -EPERM;
+> > +
+> > +	if (prefetch)
+> > +		return -EEXIST;
+> > +
+> >  	/*
+> >  	 * The page is not write-tracked, mark existing shadow pages unsync
+> >  	 * unless KVM is synchronizing an unsync SP (can_unsync = false).  In
+> > @@ -2541,15 +2547,9 @@ int mmu_try_to_unsync_pages(struct kvm *kvm, const struct kvm_memory_slot *slot,
+> >  	 * allowing shadow pages to become unsync (writable by the guest).
+> >  	 */
+> >  	for_each_gfn_indirect_valid_sp(kvm, sp, gfn) {
+> > -		if (!can_unsync)
+> > -			return -EPERM;
+> > -
+> >  		if (sp->unsync)
+> >  			continue;
+> >
+> > -		if (prefetch)
+> > -			return -EEXIST;
+> > -
+> 
+> Consider the case that for_each_gfn_indirect_valid_sp() loop is
+> not triggered, means the gfn is not MMU page table page:
+> 
+> The old behavior when : return 0;
+> The new behavior with this change: returrn -EPERM / -EEXIST;
+> 
+> It at least breaks FNAME(sync_page) -> make_spte(prefetch = true, can_unsync = false)
+> which removes PT_WRITABLE_MASK from last level mapping unexpectedly.
 
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc: Wanpeng Li <wanpengli@tencent.com>
-Cc: Jim Mattson <jmattson@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>
----
-
-The patch is against tip tree.
----
- arch/x86/kvm/mmu/mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 311e4e1d7870..347bfd8bc5a3 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3073,7 +3073,7 @@ fast_pf_fix_direct_spte(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
- 	 *
- 	 * Compare with set_spte where instead shadow_dirty_mask is set.
- 	 */
--	if (cmpxchg64(sptep, old_spte, new_spte) != old_spte)
-+	if (!try_cmpxchg64(sptep, &old_spte, new_spte))
- 		return false;
- 
- 	if (is_writable_pte(new_spte) && !is_writable_pte(old_spte))
--- 
-2.35.3
-
+Yep, the flags should be queried if and only if there's at least one valid, indirect
+SP for th gfn.  And querying whether there's such a SP is quite expesnive and requires
+looping over a list, so checking every iteration of the loop is far cheaper.  E.g. each
+check is a single uop on modern CPUs as both gcc and clang are smart enough to stash
+the flags in registers so that there's no reload from memory on each loop.  And that
+also means the CPU can more than likely correctly predict subsequent iterations.
