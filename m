@@ -2,111 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9755DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353385AbiETULt (ORCPT
+        id S1353408AbiETUO1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 16:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56424 "EHLO
+        Fri, 20 May 2022 16:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238561AbiETULq (ORCPT
+        with ESMTP id S229635AbiETUOY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 16:11:46 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362F418540A
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:11:46 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-f1d2ea701dso11496162fac.10
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:11:46 -0700 (PDT)
+        Fri, 20 May 2022 16:14:24 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC02185407
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:14:24 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id q8so11152685oif.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:14:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:in-reply-to:references:from:user-agent:date:message-id
          :subject:to:cc;
-        bh=uCSJrMcblYtE68pI/o4aCmCDuyMBMTIK3XeFUPvOxus=;
-        b=Aod2ILs1RijYKXW4aXOU2BMwT5hq9+n39aXCSNpVCSiKiV2mBseP2mnnLb2FxS2Mwt
-         Q+miDEFv/E1MsuY0ay93RhZoZUTIMenvnIsznz8ZpLD8gyRukPy7eMXtndRB88hXyCzx
-         I+KHm+DSXBvQFXaHFU7xEQJL28LCFHnGlgQ5c=
+        bh=HWJji6gVytG9NaepPJsUpOE+oqctRwW53y/Rg2/3daI=;
+        b=L5wdilZPPhLeZ6H9txo7C+yQMMnJoaeLu6EewH66Q73sZn7CgIshPVfGQt58p2T1rF
+         z7QeS2uLJnC624MbM5zt8fBPnBh+VHRq7OO8RY0kOqZapAwf1WxaNEnVe9wSh6nhfAU1
+         u6lKg8SoY9PqpD/V98ioNwwwLlmY/2daDSeTc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:in-reply-to:references:from
          :user-agent:date:message-id:subject:to:cc;
-        bh=uCSJrMcblYtE68pI/o4aCmCDuyMBMTIK3XeFUPvOxus=;
-        b=7nzAKJraHEIHHDIslSv9fhJe9hWbcbcGi/5XJjMgvzvLurE3Q7wretR5x5CrgVKcRY
-         J6qi/h+teeJ4Gb5H7Gdkq+akToDHr5//83sfFPOod4YQSERusXmHDBGO1FUAIuyNK0mU
-         Ed8fVuE/Bg7Ttbqkw0brnc8Ufku6vS+SExwOiP+FwM+AELoOSLPxcG/nGhwJXRK3A7G9
-         uLPmiKb5Cc/NCZf7A3FUSYZgWqVFRVIY2XRng3zPgGkqIeAt8objETj9JUi1bOe5ocAV
-         IdLK1YqDwlue4y9cjicrdK+yKfthN6dcQrkDn9VQcsXrc49pckIfcGdZVWI8XSCDZyAN
-         UADQ==
-X-Gm-Message-State: AOAM533f5BLIybu67KZ+jF2iX6ADiXHYpXJzCH2N6pqC7Mqj5e63lRWN
-        vubpy2gRBsSpBI8JGFvp1ZyUiJrmOkb7k+RG6TP+Cw==
-X-Google-Smtp-Source: ABdhPJyZzp8Z8QM9GBZRwRI5IW+g6D1RrMyMk90vlJpNz5rkGtSO8wMKBpy5TYZYX78MlQGpAiU3hd3sIjiNZZb4lms=
-X-Received: by 2002:a05:6870:558e:b0:e1:db7c:26aa with SMTP id
- n14-20020a056870558e00b000e1db7c26aamr6766673oao.63.1653077504534; Fri, 20
- May 2022 13:11:44 -0700 (PDT)
+        bh=HWJji6gVytG9NaepPJsUpOE+oqctRwW53y/Rg2/3daI=;
+        b=qhj2/rJOT1K9ufYjG0h12RV5t5eCTKQkVKgo/28uUfZsn/fT/0M21IXygRHvu9FQIY
+         sUJ7TNH6g8t8VDdmIEEJr7I4Tnt+0d4vbuiAihjlSDj/MEELPKBfYootHG0ll3zzxUaz
+         5isR/qkMBS0bsOT0OAjNvyLmzfRIDvVmb/kW2llE4iEVCYv3Pyy0CH7+1F6ijRhXkQaS
+         MJcCdcdCvgTXXC6Lpc0ZHEZjDNsxQ4tdi4O79+sHa1D1OlF6rLa2fdNZotcblD2DXppe
+         QawJfdo+EPj9vpAO61cuKnjTSifr8LR+wSo23AkPBI6RH8WqlPBw3wUrbpvu4CsNpXOw
+         +OuA==
+X-Gm-Message-State: AOAM5334DA9VPbANF6YLHxLDr+cKw/E67rGux04eUZQar2L6qcK8jCZM
+        dL/YSNAHX4VVQXDFt0WknGGPBnyx0/Z4kyK1b9dOiw==
+X-Google-Smtp-Source: ABdhPJwP7L0SMXKFI6625vEQZTfFfECarUErW2tlmkzH+D2As2PkcfrO1Fh8376ZDCpcT7+qRqUbX8ACus/aB+6rZHQ=
+X-Received: by 2002:a05:6808:23c3:b0:326:bd8d:7993 with SMTP id
+ bq3-20020a05680823c300b00326bd8d7993mr6601653oib.63.1653077663519; Fri, 20
+ May 2022 13:14:23 -0700 (PDT)
 Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 20 May 2022 13:11:43 -0700
+ HTTPREST; Fri, 20 May 2022 13:14:23 -0700
 MIME-Version: 1.0
-In-Reply-To: <1652804494-19650-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1652804494-19650-1-git-send-email-quic_khsieh@quicinc.com>
+In-Reply-To: <1653077167-16684-2-git-send-email-quic_khsieh@quicinc.com>
+References: <1653077167-16684-1-git-send-email-quic_khsieh@quicinc.com> <1653077167-16684-2-git-send-email-quic_khsieh@quicinc.com>
 From:   Stephen Boyd <swboyd@chromium.org>
 User-Agent: alot/0.10
-Date:   Fri, 20 May 2022 13:11:43 -0700
-Message-ID: <CAE-0n51_Bp50XbjvA7-4ZAf2ReXbRCWxt3wLe3tcqAeUKjE2kw@mail.gmail.com>
-Subject: Re: [PATCH v7] drm/msm/dp: Always clear mask bits to disable
- interrupts at dp_ctrl_reset_irq_ctrl()
+Date:   Fri, 20 May 2022 13:14:23 -0700
+Message-ID: <CAE-0n51B3Crb0ZFUppu2MXAGfCEfRcO9FX-6KMTTcPia3w8TkQ@mail.gmail.com>
+Subject: Re: [PATCH v9 1/3] phy: qcom-edp: add regulator_set_load to edp phy
 To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
         airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
         dianders@chromium.org, dmitry.baryshkov@linaro.org,
-        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
+        dri-devel@lists.freedesktop.org, robdclark@gmail.com,
+        sean@poorly.run, vkoul@kernel.org
 Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
         quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Kuogee Hsieh (2022-05-17 09:21:34)
-> dp_catalog_ctrl_reset() will software reset DP controller. But it will
-> not reset programmable registers to default value. DP driver still have
-> to clear mask bits to interrupt status registers to disable interrupts
-> after software reset of controller.
+Quoting Kuogee Hsieh (2022-05-20 13:06:05)
+> This patch add regulator_set_load() before enable regulator at
+> eDP phy driver.
 >
-> At current implementation, dp_ctrl_reset_irq_ctrl() will software reset dp
-> controller but did not call dp_catalog_ctrl_enable_irq(false) to clear hpd
-> related interrupt mask bits to disable hpd related interrupts due to it
-> mistakenly think hpd related interrupt mask bits will be cleared by software
-> reset of dp controller automatically. This mistake may cause system to crash
-> during suspending procedure due to unexpected irq fired and trigger event
-> thread to access dp controller registers with controller clocks are disabled.
->
-> This patch fixes system crash during suspending problem by removing "enable"
-> flag condition checking at dp_ctrl_reset_irq_ctrl() so that hpd related
-> interrupt mask bits are cleared to prevent unexpected from happening.
->
-> Changes in v2:
-> -- add more details commit text
->
-> Changes in v3:
-> -- add synchrons_irq()
-> -- add atomic_t suspended
->
-> Changes in v4:
-> -- correct Fixes's commit ID
-> -- remove synchrons_irq()
->
-> Changes in v5:
-> -- revise commit text
->
-> Changes in v6:
-> -- add event_lock to protect "suspended"
->
-> Changes in v7:
-> -- delete "suspended" flag
->
-> Fixes: 989ebe7bc446 ("drm/msm/dp: do not initialize phy until plugin interrupt received")
 > Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 > ---
+>  drivers/phy/qualcomm/phy-qcom-edp.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
+> index cacd32f..0b7f318 100644
+> --- a/drivers/phy/qualcomm/phy-qcom-edp.c
+> +++ b/drivers/phy/qualcomm/phy-qcom-edp.c
+> @@ -639,6 +639,9 @@ static int qcom_edp_phy_probe(struct platform_device *pdev)
+>         if (ret)
+>                 return ret;
+>
+> +       regulator_set_load(edp->supplies[0].consumer, 21800); /* 1.2 V vdda-phy */
+> +       regulator_set_load(edp->supplies[1].consumer, 36000); /* 0.9 V vdda-pll */
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Why aren't there checks for errors on these API calls?
