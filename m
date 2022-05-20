@@ -2,189 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67AA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26DB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346732AbiETH6v (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
+        id S231274AbiETH7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 03:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235137AbiETH6r (ORCPT
+        with ESMTP id S1346737AbiETH7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:58:47 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFB714CDC7;
-        Fri, 20 May 2022 00:58:44 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 539C16000D;
-        Fri, 20 May 2022 07:58:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653033523;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gmGaXG6vGzUCTmc3IUGjVh5xf9GDtvuGXKgKOkXHkDg=;
-        b=FCXHREZ1qt+UdZYwm20wexqRvwxbDqkkHAKfHFOA3VGw4YAyYfARjkff3ES9CaI7GIKYMQ
-        m2vAYWqzYrk78/jCKZgcarpYAOHKcwxQjjPfsX9Ck7M+f6agVTNIa1TDrQQRQ/UQafHIqV
-        +7UqI8G9t+7sb3NTo7+rSFBhV4T964t1J54uqCAQO8zod+VWHVeJu4Q1pURLcGg4Sj2wpL
-        US/Cz2g2coP+0mGvpNLYQHuflJuF8xMi2tDGwRl/6GEGvJgGD72ccpA36fQTjfRoAtNxQ3
-        UXzClgUeebv7zaDPgbotVtR0hksllHZ+7SIqiw6KIseZwQiS+0OXfnA7VaIlAA==
-Date:   Fri, 20 May 2022 09:57:30 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings
- for Renesas RZ/N1 Advanced 5 port switch
-Message-ID: <20220520095730.512bbb8d@fixe.home>
-In-Reply-To: <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
-References: <20220519153107.696864-1-clement.leger@bootlin.com>
-        <20220519153107.696864-7-clement.leger@bootlin.com>
-        <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        Fri, 20 May 2022 03:59:01 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9376415AB30;
+        Fri, 20 May 2022 00:59:00 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24K7wZEs9003479, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24K7wZEs9003479
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 20 May 2022 15:58:35 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Fri, 20 May 2022 15:58:35 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 20 May 2022 15:58:35 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Fri, 20 May 2022 15:58:35 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
+Thread-Topic: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
+Thread-Index: AQHYapDkSUSPgT6yp0uu/6R2ZMJcV60m44iA
+Date:   Fri, 20 May 2022 07:58:35 +0000
+Message-ID: <69be9d5fd2c173ee45d011f40a07fe31c53d0928.camel@realtek.com>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+         <20220518082318.3898514-10-s.hauer@pengutronix.de>
+In-Reply-To: <20220518082318.3898514-10-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.17.21]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjAg5LiK5Y2IIDA2OjAwOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B72DB886C9375545B07F6DC8941B7B57@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 20 May 2022 09:13:23 +0200,
-Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
-
-> Hi Cl=C3=A9ment,
->=20
-> On Thu, May 19, 2022 at 5:32 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
-otlin.com> wrote:
-> > Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
-> > present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
-> > This company does not exists anymore and has been bought by Synopsys.
-> > Since this IP can't be find anymore in the Synospsy portfolio, lets use
-> > Renesas as the vendor compatible for this IP.
-> >
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> =20
->=20
-> Thanks for your patch!
->=20
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> > @@ -0,0 +1,131 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Renesas RZ/N1 Advanced 5 ports ethernet switch
-> > +
-> > +maintainers:
-> > +  - Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > +
-> > +description: |
-> > +  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC fami=
-ly and
-> > +  handles 4 ports + 1 CPU management port.
-> > +
-> > +allOf:
-> > +  - $ref: dsa.yaml#
-> > +
-> > +properties:
-> > +  compatible:
-> > +    items:
-> > +      - enum:
-> > +          - renesas,r9a06g032-a5psw
-> > +      - const: renesas,rzn1-a5psw
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  mdio:
-> > +    $ref: /schemas/net/mdio.yaml#
-> > +    unevaluatedProperties: false
-> > +
-> > +  clocks:
-> > +    items:
-> > +      - description: AHB clock used for the switch register interface
-> > +      - description: Switch system clock
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: hclk
-> > +      - const: clk =20
->=20
-> (Good, "clock-names" is present ;-)
->=20
-> Missing "power-domains" property.
->=20
-
-I do not use pm_runtime* in the switch driver. I should probably do that
-right ?
-
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/gpio/gpio.h>
-> > +    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
-> > +
-> > +    switch@44050000 {
-> > +        compatible =3D "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-> > +        reg =3D <0x44050000 0x10000>;
-> > +        clocks =3D <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G0=
-32_CLK_SWITCH>;
-> > +        clock-names =3D "hclk", "clk";
-> > +        pinctrl-names =3D "default";
-> > +        pinctrl-0 =3D <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>; =20
->=20
-> Usually we don't list pinctrl-* properties in examples.
->=20
-
-Acked, I'll remove that.
-
-> The rest LGTM (from an SoC integration PoV), so with the above fixed
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
->=20
-> Gr{oetje,eeting}s,
->=20
->                         Geert
->=20
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
-8k.org
->=20
-> In personal conversations with technical people, I call myself a hacker. =
-But
-> when I'm talking to journalists I just say "programmer" or something like=
- that.
->                                 -- Linus Torvalds
-
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+T24gV2VkLCAyMDIyLTA1LTE4IGF0IDEwOjIzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
+IEFkZCBzdXBwb3J0IGZvciB0aGUgcnR3ODgyMmJ1IGNoaXBzZXQgYmFzZWQgb24NCj4gaHR0cHM6
+Ly9naXRodWIuY29tL3VsbGkta3JvbGwvcnR3ODgtdXNiLmdpdA0KPiANCj4gU2lnbmVkLW9mZi1i
+eTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiAtLS0NCj4gIGRyaXZl
+cnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvS2NvbmZpZyAgICB8IDExICsrKysNCj4gIGRy
+aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvTWFrZWZpbGUgICB8ICAzICsNCj4gIGRy
+aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmIuYyB8IDE5ICsrKysrKw0K
+PiAgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJidS5jICAgIHwgNjIgKysr
+KysrKysrKysrKysrKysrKw0KPiAgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4
+MjJidS5oICAgIHwgMTUgKysrKysNCj4gIDUgZmlsZXMgY2hhbmdlZCwgMTEwIGluc2VydGlvbnMo
+KykNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0
+dzg4L3J0dzg4MjJidS5jDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9uZXQvd2lyZWxl
+c3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiANCj4gDQoNClsuLl0NCg0KPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiBi
+L2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmJ1LmgNCj4gbmV3IGZp
+bGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAwMDAwMDAwMDAwMC4uMjBmMDFlY2Q3NDQxNQ0KPiAt
+LS0gL2Rldi9udWxsDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgv
+cnR3ODgyMmJ1LmgNCj4gQEAgLTAsMCArMSwxNSBAQA0KPiArLyogU1BEWC1MaWNlbnNlLUlkZW50
+aWZpZXI6IEdQTC0yLjAgT1IgQlNELTMtQ2xhdXNlICovDQo+ICsvKiBDb3B5cmlnaHQoYykgMjAx
+OC0yMDE5ICBSZWFsdGVrIENvcnBvcmF0aW9uDQo+ICsgKi8NCj4gKw0KPiArI2lmbmRlZiBfX1JU
+V184ODIyQlVfSF8NCj4gKyNkZWZpbmUgX19SVFdfODgyMkJVX0hfDQo+ICsNCj4gKy8qIFVTQiBW
+ZW5kb3IvUHJvZHVjdCBJRHMgKi8NCj4gKyNkZWZpbmUgUlRXX1VTQl9WRU5ET1JfSURfUkVBTFRF
+SwkJMHgwQkRBDQoNCmxpa2Ugb3RoZXJzLCBtb3ZlIHRoaXMgdG8gdXNiLmgNCg0KDQotLQ0KUGlu
+Zy1LZQ0KDQoNCg==
