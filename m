@@ -2,92 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F686C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343945AbiETAUu (ORCPT
+        id S1343957AbiETAVE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 20:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
+        Thu, 19 May 2022 20:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233287AbiETAUr (ORCPT
+        with ESMTP id S1343956AbiETAUz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 20:20:47 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893DE5F95;
-        Thu, 19 May 2022 17:20:45 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id r9-20020a1c4409000000b00397345f2c6fso1240831wma.4;
-        Thu, 19 May 2022 17:20:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Idwq0MoqTy7Tv0jiF7ayAwzgmYGx9OERGs+EAcpebPw=;
-        b=Ov9xVfVWGpqZt51a/l83grmNWtbjtyjGBR2yWEHBITKw0KKc+/hUNALLMnDDgJltCB
-         e/+9DXoS430+8FVnoixT4+XTXCWANAvmad9LY8GFrNZ38mmRbtDxJQIBtq5SyB9geEWA
-         cJM0pAezAhrwwNm3I7HkBSJGoXrJ6nTA1uBvb8FxUw1al4skiUgVw43t340Ht3BXI0Xk
-         dhgEsJ+REiigGjSTh2z984MdBHNzUDHuUVktmZEbfiw4NKZBf2NizEqf6+i5MxzQlvLt
-         ePQghLAOsXoKyexRSmJlcU1/VlwrpI0c3rRKwmTcFEQLB0wmScVlcIDCN5FMqBq/udjb
-         eCjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Idwq0MoqTy7Tv0jiF7ayAwzgmYGx9OERGs+EAcpebPw=;
-        b=zmcOC5Z094ZOPf1Z5IJlTmXz4rvJfA3/t6O6A3jTcb924vqsG/rfipTRg2Dqgw4RMa
-         PmeLwhUMnrJSV/UfHs6xfCINU4Zvc5LLSaB+ngCDB6au3LETRJAxKKvfgEaxi4aHln8V
-         qOy9An0GASpHOmc+g1TVefZHzXGgLHgPFXllgYs+EGKOTKl8Wi62eV9+wtw02vogYxjW
-         yQNtZJxQ7mdHjdgRO0zGnBOvEAVxO/oNbZrGXg/mkXPIPyp29sShbnDKRY+Ehk0rj9uF
-         e2zLNBtieovmbykjxCwLcN1efcVJ7lbjCtISAmgIj0CLrEWPxf+rczN56czAClDkRdTG
-         E0kA==
-X-Gm-Message-State: AOAM532x6w0p5dLyWmD9TscOBzxSokG9dLhY84kfD6knIap9ziNgC9re
-        eO/Hf75oAGZeeF4ItcyaY60WI8uJ/nI=
-X-Google-Smtp-Source: ABdhPJyFeMsMJNuOGD1dfHQxmPFPDV/myYtzKSlWsWI6oxrQdl0j+X16zMNNeJe2D2n7WrodKT1jqA==
-X-Received: by 2002:a05:600c:378f:b0:397:3819:8230 with SMTP id o15-20020a05600c378f00b0039738198230mr806883wmr.10.1653006043871;
-        Thu, 19 May 2022 17:20:43 -0700 (PDT)
-Received: from localhost.localdomain ([41.232.195.220])
-        by smtp.gmail.com with ESMTPSA id i24-20020adfa518000000b0020e5d8dbbb8sm832736wrb.56.2022.05.19.17.20.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 17:20:43 -0700 (PDT)
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     outreachy@lists.linux.dev, roopa@nvidia.com,
-        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        eng.alaamohamedsoliman.am@gmail.com
-Subject: [PATCH net-next] net: mscc: fix the alignment in ocelot_port_fdb_del()
-Date:   Fri, 20 May 2022 02:20:40 +0200
-Message-Id: <20220520002040.4442-1-eng.alaamohamedsoliman.am@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 19 May 2022 20:20:55 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C274224BE0;
+        Thu, 19 May 2022 17:20:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653006054; x=1684542054;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AX9u0AjfkhQIv902pkLIaB2pcFVPrNmehZjTGBz16NU=;
+  b=mtdNsYRF+q2AdF6JvRpi9EUz8Qwia2g7y2xkHHWUnQGdev+VW+5yPics
+   qubndh+n8FMLi9x+3hNsrUwl4LvDkA5nbVC/VsZYS2FCzIddNqF0jDAtS
+   ebN+wsypSB6luy265BQy1d1Q5F6jati6qsXeYqY/XfEvMzdzpb0hPWChY
+   ghH+vYtWAXId7tBjSdcb+oiNbdtQ8NusS+PAgAlLVPc6AjwRGRfPnc8jf
+   HxMDcRhkdvfCVliekjAwSTxhse0S0ARg5QpvVsh69wpOh3zDbNgDz2tQe
+   6l+yN1RyuExN57sa5jNkXgWJ24AnEY1oF4WcKwqZoDo/ndCEayA3n5Fwc
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="272394418"
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="272394418"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 17:20:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="546392359"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 19 May 2022 17:20:48 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrqNs-000459-6h;
+        Fri, 20 May 2022 00:20:48 +0000
+Date:   Fri, 20 May 2022 08:20:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Meng Li <li.meng@amd.com>, Shuah Khan <skhan@linuxfoundation.org>,
+        Huang Rui <ray.huang@amd.com>, linux-pm@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Nathan Fontenot <nathan.fontenot@amd.com>,
+        Deepak Sharma <deepak.sharma@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Jinzhou Su <Jinzhou.Su@amd.com>,
+        Perry Yuan <Perry.Yuan@amd.com>,
+        Xiaojian Du <Xiaojian.Du@amd.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
+        Meng Li <li.meng@amd.com>
+Subject: Re: [PATCH V6 2/4] cpufreq: amd-pstate: Add test module for
+ amd-pstate driver
+Message-ID: <202205200812.g9S1SWP3-lkp@intel.com>
+References: <20220519134737.359290-3-li.meng@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519134737.359290-3-li.meng@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-align the extack argument of the ocelot_port_fdb_del()
-function.
+Hi Meng,
 
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
----
- drivers/net/ethernet/mscc/ocelot_net.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thank you for the patch! Perhaps something to improve:
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index be168a372498..5e6136e80282 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -775,7 +775,7 @@ static int ocelot_port_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- static int ocelot_port_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
- 			       struct net_device *dev,
- 			       const unsigned char *addr, u16 vid,
--				   struct netlink_ext_ack *extack)
-+			       struct netlink_ext_ack *extack)
- {
- 	struct ocelot_port_private *priv = netdev_priv(dev);
- 	struct ocelot_port *ocelot_port = &priv->port;
+[auto build test WARNING on shuah-kselftest/next]
+[also build test WARNING on rafael-pm/linux-next linux/master linus/master v5.18-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Meng-Li/Add-unit-test-module-for-AMD-P-State-driver/20220519-215444
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git next
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220520/202205200812.g9S1SWP3-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/5a00a68d142a32f76cf2e770d75463802273e7ed
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Meng-Li/Add-unit-test-module-for-AMD-P-State-driver/20220519-215444
+        git checkout 5a00a68d142a32f76cf2e770d75463802273e7ed
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/cpufreq/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/kernel.h:29,
+                    from arch/x86/include/asm/percpu.h:27,
+                    from arch/x86/include/asm/current.h:6,
+                    from arch/x86/include/asm/processor.h:17,
+                    from arch/x86/include/asm/timex.h:5,
+                    from include/linux/timex.h:65,
+                    from include/linux/time32.h:13,
+                    from include/linux/time.h:60,
+                    from include/linux/stat.h:19,
+                    from include/linux/module.h:13,
+                    from include/../tools/testing/selftests/kselftest_module.h:5,
+                    from drivers/cpufreq/amd-pstate-ut.c:23:
+   drivers/cpufreq/amd-pstate-ut.c: In function 'get_shared_mem':
+>> include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'ssize_t' {aka 'int'} [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:489:9: note: in expansion of macro 'printk'
+     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
+      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
+         |                         ^~~~~~~~
+   include/linux/printk.h:489:16: note: in expansion of macro 'KERN_ERR'
+     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~
+   drivers/cpufreq/amd-pstate-ut.c:83:33: note: in expansion of macro 'pr_err'
+      83 |                                 pr_err("%s ret=%ld unable to read from param file!\n",
+         |                                 ^~~~~~
+
+
+vim +5 include/linux/kern_levels.h
+
+314ba3520e513a Joe Perches 2012-07-30  4  
+04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
+04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
+04d2c8c83d0e3a Joe Perches 2012-07-30  7  
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
