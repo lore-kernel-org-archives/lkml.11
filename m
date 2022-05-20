@@ -2,61 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21962C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352715AbiETSfd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 14:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
+        id S244328AbiETSfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 14:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352758AbiETSev (ORCPT
+        with ESMTP id S1352752AbiETSet (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 14:34:51 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1D9195799;
-        Fri, 20 May 2022 11:34:49 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id w4so12575953wrg.12;
-        Fri, 20 May 2022 11:34:49 -0700 (PDT)
+        Fri, 20 May 2022 14:34:49 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E286166697;
+        Fri, 20 May 2022 11:34:48 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id u3so12626555wrg.3;
+        Fri, 20 May 2022 11:34:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wjg8wnQ7CNagw/pin+p1uhVqFDd1qdzK6h3HA8/ckYU=;
-        b=WUkF9vXStMYSQ8p5GX1ixQbfvcy+vI2uUylV0/WHHjNrPiSgGbgi1Y3Ikme1sImIB6
-         4pHnoQYJ6JM1GhkT9keQoMe0H4vhUCqEI2rvtRATnr4KmLNealg3tB/c6NhUky5L2+lt
-         Oke2LuqqYp5bb2Ga5CVo54+HhHXKfAVHfdv6RVlFD+x9rz/R6h9JLWQITy4QONVxUSK4
-         l0RolCwUgE3dsHv2wV2s+KcFE8/ZHwGjHg9XmGBKAGBZxsGWksb8KhOGbuQ3kHN7VTZV
-         eHDI+5XY32/UUxCausE67FhbQL0hEgTqxCD0FdtGTZJuWXdhzaK20L3kaxCFtkzmqXFS
-         CiZg==
+        bh=qUjvuoWXG9UUtB5iaUNqYFk22P1RS1LUvWgzlAZCFx8=;
+        b=cxNMpTAFuWKDIhN2tjtgTzcHUBXt6OLUdjX8CkMUG4ILZdFepZBnJGh78f/U+ubgbK
+         QEXqE2+NWORsqQ/LDWmesBeli9Yri9oXsfVwkU9T/BCYB/VdAXwXs1uO9X5YO+W4ozxT
+         +cWJGLN+TCd0UrT4fKmiLNIu0+HrHlPgrjt2Jm124P7EWb1UMnWaUVsnEqObXTq3kEUz
+         poL6P8AgOZIf40734QR64IOAuL1uN5lcIsH1uLLRDBuvYIPgN5o/8vrgHjW1y0rn71Ja
+         rJKbeZC7cG626vR96Sdje2lKqBMm9M31UngT8JLc1Pasb7kRiIpsr/GB3tNh998kIU9v
+         2YQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wjg8wnQ7CNagw/pin+p1uhVqFDd1qdzK6h3HA8/ckYU=;
-        b=giqBaFSW32JhdFJ4JIS/mMjKYBDKe82+kkONGoHqKpuJKtmWxFLTGAyZmY6rdtwv07
-         FnVzXTfow0E+GrwJGgn7ChWOpTRak7DIlNrZB/Xosl7MnYah6CgPNnBGO4nOmA6S8Vd8
-         VQJ7v8ncjBuHcWY3ed58ZTSIHJ4eaPbEMWoRyZxfH8sI6WuXCRW6CTjGsx81I7uAk+ZF
-         8aOCQBtaWriYYFlz/z0CMkbZPnFG2ja1cVTUr6VHaARP28uIx+OtIO52kytyk0r5DEbr
-         asR2KP18sULKYLgCVtm526zhj6mT2+qIwhlLjPMjMCBYgizup5aayf6AyRHBkuVzeMXe
-         reRA==
-X-Gm-Message-State: AOAM53371d/4ynknJ0xDk7r8U9rj2Xng2qssvzqIVd9Aotkuth1++xRu
-        WQl5WZcDDpA7VKi6qBCD6Vo=
-X-Google-Smtp-Source: ABdhPJw3uP+0cFdQwPb7WBWAD7LV5A3WxddLzvaZFT4/cnmahMassDStpjesLrwposHi81b4CHKs2w==
-X-Received: by 2002:a5d:51cd:0:b0:20e:5dcb:6300 with SMTP id n13-20020a5d51cd000000b0020e5dcb6300mr9117210wrv.458.1653071689158;
-        Fri, 20 May 2022 11:34:49 -0700 (PDT)
+        bh=qUjvuoWXG9UUtB5iaUNqYFk22P1RS1LUvWgzlAZCFx8=;
+        b=rn9Z/jsAUCZvAcTdkOMtFWjBnAMbiDnaHiUN3ASQvsBAAXNYBpmftt228nPtj+E9cN
+         rfsuvuA2cJpFITxWg0Jlz2O+7R3X1Lmpl5s8DQka61a+diOIHqTUqNBF4E3vFDoW0RKg
+         70YZk4J8m7KKRx8Fn3YTDgXKdBo6U9vNJolXgsuje5UnWVadkijBsbPawQkgaJ8gEvOs
+         y3cxZdQjsmPRVS6XTZfe6FY6fXYvdGPBOF+HrD0ySs8SQ9BZPDPPw1mXRrpizki94x69
+         i7g5jcvetfPoleDNp+Uaas/Wefm9jR6Sh0x5V8aE/Y6R1t8T1ggJOUQhX8X7P/Pt6Muw
+         fR4g==
+X-Gm-Message-State: AOAM53261GUTIWzYQWLZwH5Wr7CD6e7PgChjXTdQzyUdzMGLUocyGUtb
+        /Lzpy8oLqOo9CH5OHfDlz9k=
+X-Google-Smtp-Source: ABdhPJwFMngfZzHs1Ct+MyDR7vbVpw18F8Ve40ULToUpYV59j4RanOTU6pms5G5mJh9wNR8o8jh2iQ==
+X-Received: by 2002:adf:ebce:0:b0:20d:7859:494d with SMTP id v14-20020adfebce000000b0020d7859494dmr9301298wrn.590.1653071687104;
+        Fri, 20 May 2022 11:34:47 -0700 (PDT)
 Received: from xws.localdomain (pd9e5a9fe.dip0.t-ipconnect.de. [217.229.169.254])
-        by smtp.gmail.com with ESMTPSA id r9-20020adfa149000000b0020e62feca05sm3252081wrr.32.2022.05.20.11.34.48
+        by smtp.gmail.com with ESMTPSA id r9-20020adfa149000000b0020e62feca05sm3252081wrr.32.2022.05.20.11.34.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 11:34:48 -0700 (PDT)
+        Fri, 20 May 2022 11:34:46 -0700 (PDT)
 From:   Maximilian Luz <luzmaximilian@gmail.com>
-To:     Hans de Goede <hdegoede@redhat.com>
+To:     Hans de Goede <hdegoede@redhat.com>, Jiri Kosina <jikos@kernel.org>
 Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
         Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 08/10] platform/surface: aggregator_registry: Generify subsystem hub functionality
-Date:   Fri, 20 May 2022 20:34:20 +0200
-Message-Id: <20220520183422.7185-9-luzmaximilian@gmail.com>
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        platform-driver-x86@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 06/10] HID: surface-hid: Add support for hot-removal
+Date:   Fri, 20 May 2022 20:34:18 +0200
+Message-Id: <20220520183422.7185-7-luzmaximilian@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220520183422.7185-1-luzmaximilian@gmail.com>
 References: <20220520183422.7185-1-luzmaximilian@gmail.com>
@@ -66,382 +67,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Surface System Aggregator Module (SSAM) has multiple subsystems that
-can manage detachable devices. At the moment, we only support the "base"
-(BAS/0x11) subsystem, which is used on the Surface Book 3 to manage
-devices (including keyboard, touchpad, and secondary battery) connected
-to the base of the device.
+Add support for hot-removal of SSAM HID client devices.
 
-The Surface Pro 8 has a new type-cover with keyboard and touchpad, which
-is managed via the KIP/0x0e subsystem. The general procedure is the
-same, but with slightly different events and setup. To make
-implementation of the KIP hub easier and prevent duplication, generify
-the parts of the base hub that we can use for the KIP hub (or any
-potential future subsystem hubs).
+Once a device has been hot-removed, further communication with it should
+be avoided as it may fail and time out. While the device will be removed
+as soon as we detect hot-removal, communication may still occur during
+teardown, especially when unregistering notifiers.
 
-This also switches over to use the newly introduced "hot-remove"
-functionality, which should prevent communication issues when devices
-have been detached.
-
-Lastly, also drop the undocumented and unused sysfs "state" attribute of
-the base hub. It has at best been useful for debugging.
+While hot-removal is a surprise event that can happen at any time, try
+to avoid communication as much as possible once it has been detected to
+prevent timeouts that can slow down device removal and cause issues,
+e.g. when quickly re-attaching the device.
 
 Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
 ---
- .../surface/surface_aggregator_registry.c     | 269 ++++++++++--------
- 1 file changed, 153 insertions(+), 116 deletions(-)
+ drivers/hid/surface-hid/surface_hid_core.c | 38 +++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/surface/surface_aggregator_registry.c b/drivers/platform/surface/surface_aggregator_registry.c
-index 9f630e890ff7..09cbeee2428b 100644
---- a/drivers/platform/surface/surface_aggregator_registry.c
-+++ b/drivers/platform/surface/surface_aggregator_registry.c
-@@ -308,30 +308,159 @@ static int ssam_hub_register_clients(struct device *parent, struct ssam_controll
- }
+diff --git a/drivers/hid/surface-hid/surface_hid_core.c b/drivers/hid/surface-hid/surface_hid_core.c
+index e46330b2e561..87637f813de2 100644
+--- a/drivers/hid/surface-hid/surface_hid_core.c
++++ b/drivers/hid/surface-hid/surface_hid_core.c
+@@ -19,12 +19,30 @@
+ #include "surface_hid_core.h"
  
  
--/* -- SSAM base-hub driver. ------------------------------------------------- */
-+/* -- SSAM generic subsystem hub driver framework. -------------------------- */
- 
--/*
-- * Some devices (especially battery) may need a bit of time to be fully usable
-- * after being (re-)connected. This delay has been determined via
-- * experimentation.
-- */
--#define SSAM_BASE_UPDATE_CONNECT_DELAY		msecs_to_jiffies(2500)
-+enum ssam_hub_state {
-+	SSAM_HUB_UNINITIALIZED,		/* Only set during initialization. */
-+	SSAM_HUB_CONNECTED,
-+	SSAM_HUB_DISCONNECTED,
-+};
- 
--enum ssam_base_hub_state {
--	SSAM_BASE_HUB_UNINITIALIZED,
--	SSAM_BASE_HUB_CONNECTED,
--	SSAM_BASE_HUB_DISCONNECTED,
-+enum ssam_hub_flags {
-+	SSAM_HUB_HOT_REMOVED,
- };
- 
--struct ssam_base_hub {
-+struct ssam_hub {
- 	struct ssam_device *sdev;
- 
--	enum ssam_base_hub_state state;
-+	enum ssam_hub_state state;
-+	unsigned long flags;
++/* -- Utility functions. ---------------------------------------------------- */
 +
- 	struct delayed_work update_work;
-+	unsigned long connect_delay;
- 
- 	struct ssam_event_notifier notif;
-+
-+	int (*get_state)(struct ssam_hub *hub, enum ssam_hub_state *state);
- };
- 
-+static void ssam_hub_update_workfn(struct work_struct *work)
++static bool surface_hid_is_hot_removed(struct surface_hid_device *shid)
 +{
-+	struct ssam_hub *hub = container_of(work, struct ssam_hub, update_work.work);
-+	struct fwnode_handle *node = dev_fwnode(&hub->sdev->dev);
-+	enum ssam_hub_state state;
-+	int status = 0;
-+
-+	status = hub->get_state(hub, &state);
-+	if (status)
-+		return;
-+
 +	/*
-+	 * There is a small possibility that hub devices were hot-removed and
-+	 * re-added before we were able to remove them here. In that case, both
-+	 * the state returned by get_state() and the state of the hub will
-+	 * equal SSAM_HUB_CONNECTED and we would bail early below, which would
-+	 * leave child devices without proper (re-)initialization and the
-+	 * hot-remove flag set.
-+	 *
-+	 * Therefore, we check whether devices have been hot-removed via an
-+	 * additional flag on the hub and, in this case, override the returned
-+	 * hub state. In case of a missed disconnect (i.e. get_state returned
-+	 * "connected"), we further need to re-schedule this work (with the
-+	 * appropriate delay) as the actual connect work submission might have
-+	 * been merged with this one.
-+	 *
-+	 * This then leads to one of two cases: Either we submit an unnecessary
-+	 * work item (which will get ignored via either the queue or the state
-+	 * checks) or, in the unlikely case that the work is actually required,
-+	 * double the normal connect delay.
++	 * Non-ssam client devices, i.e. platform client devices, cannot be
++	 * hot-removed.
 +	 */
-+	if (test_and_clear_bit(SSAM_HUB_HOT_REMOVED, &hub->flags)) {
-+		if (state == SSAM_HUB_CONNECTED)
-+			schedule_delayed_work(&hub->update_work, hub->connect_delay);
++	if (!is_ssam_device(shid->dev))
++		return false;
 +
-+		state = SSAM_HUB_DISCONNECTED;
-+	}
-+
-+	if (hub->state == state)
-+		return;
-+	hub->state = state;
-+
-+	if (hub->state == SSAM_HUB_CONNECTED)
-+		status = ssam_hub_register_clients(&hub->sdev->dev, hub->sdev->ctrl, node);
-+	else
-+		ssam_remove_clients(&hub->sdev->dev);
-+
-+	if (status)
-+		dev_err(&hub->sdev->dev, "failed to update hub child devices: %d\n", status);
-+}
-+
-+static int ssam_hub_mark_hot_removed(struct device *dev, void *_data)
-+{
-+	struct ssam_device *sdev = to_ssam_device(dev);
-+
-+	if (is_ssam_device(dev))
-+		ssam_device_mark_hot_removed(sdev);
-+
-+	return 0;
-+}
-+
-+static void ssam_hub_update(struct ssam_hub *hub, bool connected)
-+{
-+	unsigned long delay;
-+
-+	/* Mark devices as hot-removed before we remove any. */
-+	if (!connected) {
-+		set_bit(SSAM_HUB_HOT_REMOVED, &hub->flags);
-+		device_for_each_child_reverse(&hub->sdev->dev, NULL, ssam_hub_mark_hot_removed);
-+	}
-+
-+	/*
-+	 * Delay update when the base/keyboard cover is being connected to give
-+	 * devices/EC some time to set up.
-+	 */
-+	delay = connected ? hub->connect_delay : 0;
-+
-+	schedule_delayed_work(&hub->update_work, delay);
-+}
-+
-+static int __maybe_unused ssam_hub_resume(struct device *dev)
-+{
-+	struct ssam_hub *hub = dev_get_drvdata(dev);
-+
-+	schedule_delayed_work(&hub->update_work, 0);
-+	return 0;
-+}
-+static SIMPLE_DEV_PM_OPS(ssam_hub_pm_ops, NULL, ssam_hub_resume);
-+
-+static int ssam_hub_setup(struct ssam_device *sdev, struct ssam_hub *hub)
-+{
-+	int status;
-+
-+	hub->sdev = sdev;
-+	hub->state = SSAM_HUB_UNINITIALIZED;
-+
-+	INIT_DELAYED_WORK(&hub->update_work, ssam_hub_update_workfn);
-+
-+	ssam_device_set_drvdata(sdev, hub);
-+
-+	status = ssam_device_notifier_register(sdev, &hub->notif);
-+	if (status)
-+		return status;
-+
-+	schedule_delayed_work(&hub->update_work, 0);
-+	return 0;
-+}
-+
-+static void ssam_hub_remove(struct ssam_device *sdev)
-+{
-+	struct ssam_hub *hub = ssam_device_get_drvdata(sdev);
-+
-+	ssam_device_notifier_unregister(sdev, &hub->notif);
-+	cancel_delayed_work_sync(&hub->update_work);
-+	ssam_remove_clients(&sdev->dev);
++	return ssam_device_is_hot_removed(to_ssam_device(shid->dev));
 +}
 +
 +
-+/* -- SSAM base-hub driver. ------------------------------------------------- */
-+
-+/*
-+ * Some devices (especially battery) may need a bit of time to be fully usable
-+ * after being (re-)connected. This delay has been determined via
-+ * experimentation.
-+ */
-+#define SSAM_BASE_UPDATE_CONNECT_DELAY		msecs_to_jiffies(2500)
-+
- SSAM_DEFINE_SYNC_REQUEST_R(ssam_bas_query_opmode, u8, {
- 	.target_category = SSAM_SSH_TC_BAS,
- 	.target_id       = 0x01,
-@@ -342,7 +471,7 @@ SSAM_DEFINE_SYNC_REQUEST_R(ssam_bas_query_opmode, u8, {
- #define SSAM_BAS_OPMODE_TABLET		0x00
- #define SSAM_EVENT_BAS_CID_CONNECTION	0x0c
+ /* -- Device descriptor access. --------------------------------------------- */
  
--static int ssam_base_hub_query_state(struct ssam_base_hub *hub, enum ssam_base_hub_state *state)
-+static int ssam_base_hub_query_state(struct ssam_hub *hub, enum ssam_hub_state *state)
+ static int surface_hid_load_hid_descriptor(struct surface_hid_device *shid)
  {
- 	u8 opmode;
  	int status;
-@@ -354,62 +483,16 @@ static int ssam_base_hub_query_state(struct ssam_base_hub *hub, enum ssam_base_h
- 	}
  
- 	if (opmode != SSAM_BAS_OPMODE_TABLET)
--		*state = SSAM_BASE_HUB_CONNECTED;
-+		*state = SSAM_HUB_CONNECTED;
- 	else
--		*state = SSAM_BASE_HUB_DISCONNECTED;
-+		*state = SSAM_HUB_DISCONNECTED;
++	if (surface_hid_is_hot_removed(shid))
++		return -ENODEV;
++
+ 	status = shid->ops.get_descriptor(shid, SURFACE_HID_DESC_HID,
+ 			(u8 *)&shid->hid_desc, sizeof(shid->hid_desc));
+ 	if (status)
+@@ -61,6 +79,9 @@ static int surface_hid_load_device_attributes(struct surface_hid_device *shid)
+ {
+ 	int status;
  
- 	return 0;
++	if (surface_hid_is_hot_removed(shid))
++		return -ENODEV;
++
+ 	status = shid->ops.get_descriptor(shid, SURFACE_HID_DESC_ATTRS,
+ 			(u8 *)&shid->attrs, sizeof(shid->attrs));
+ 	if (status)
+@@ -88,9 +109,18 @@ static int surface_hid_start(struct hid_device *hid)
+ static void surface_hid_stop(struct hid_device *hid)
+ {
+ 	struct surface_hid_device *shid = hid->driver_data;
++	bool hot_removed;
++
++	/*
++	 * Communication may fail for devices that have been hot-removed. This
++	 * also includes unregistration of HID events, so we need to check this
++	 * here. Only if the device has not been marked as hot-removed, we can
++	 * safely disable events.
++	 */
++	hot_removed = surface_hid_is_hot_removed(shid);
+ 
+ 	/* Note: This call will log errors for us, so ignore them here. */
+-	ssam_notifier_unregister(shid->ctrl, &shid->notif);
++	__ssam_notifier_unregister(shid->ctrl, &shid->notif, !hot_removed);
  }
  
--static ssize_t ssam_base_hub_state_show(struct device *dev, struct device_attribute *attr,
--					char *buf)
--{
--	struct ssam_base_hub *hub = dev_get_drvdata(dev);
--	bool connected = hub->state == SSAM_BASE_HUB_CONNECTED;
--
--	return sysfs_emit(buf, "%d\n", connected);
--}
--
--static struct device_attribute ssam_base_hub_attr_state =
--	__ATTR(state, 0444, ssam_base_hub_state_show, NULL);
--
--static struct attribute *ssam_base_hub_attrs[] = {
--	&ssam_base_hub_attr_state.attr,
--	NULL,
--};
--
--static const struct attribute_group ssam_base_hub_group = {
--	.attrs = ssam_base_hub_attrs,
--};
--
--static void ssam_base_hub_update_workfn(struct work_struct *work)
--{
--	struct ssam_base_hub *hub = container_of(work, struct ssam_base_hub, update_work.work);
--	struct fwnode_handle *node = dev_fwnode(&hub->sdev->dev);
--	enum ssam_base_hub_state state;
--	int status = 0;
--
--	status = ssam_base_hub_query_state(hub, &state);
--	if (status)
--		return;
--
--	if (hub->state == state)
--		return;
--	hub->state = state;
--
--	if (hub->state == SSAM_BASE_HUB_CONNECTED)
--		status = ssam_hub_register_clients(&hub->sdev->dev, hub->sdev->ctrl, node);
--	else
--		ssam_remove_clients(&hub->sdev->dev);
--
--	if (status)
--		dev_err(&hub->sdev->dev, "failed to update base-hub devices: %d\n", status);
--}
--
- static u32 ssam_base_hub_notif(struct ssam_event_notifier *nf, const struct ssam_event *event)
- {
--	struct ssam_base_hub *hub = container_of(nf, struct ssam_base_hub, notif);
--	unsigned long delay;
-+	struct ssam_hub *hub = container_of(nf, struct ssam_hub, notif);
+ static int surface_hid_open(struct hid_device *hid)
+@@ -109,6 +139,9 @@ static int surface_hid_parse(struct hid_device *hid)
+ 	u8 *buf;
+ 	int status;
  
- 	if (event->command_id != SSAM_EVENT_BAS_CID_CONNECTION)
- 		return 0;
-@@ -419,13 +502,7 @@ static u32 ssam_base_hub_notif(struct ssam_event_notifier *nf, const struct ssam
- 		return 0;
- 	}
- 
--	/*
--	 * Delay update when the base is being connected to give devices/EC
--	 * some time to set up.
--	 */
--	delay = event->data[0] ? SSAM_BASE_UPDATE_CONNECT_DELAY : 0;
--
--	schedule_delayed_work(&hub->update_work, delay);
-+	ssam_hub_update(hub, event->data[0]);
- 
- 	/*
- 	 * Do not return SSAM_NOTIF_HANDLED: The event should be picked up and
-@@ -435,27 +512,14 @@ static u32 ssam_base_hub_notif(struct ssam_event_notifier *nf, const struct ssam
- 	return 0;
- }
- 
--static int __maybe_unused ssam_base_hub_resume(struct device *dev)
--{
--	struct ssam_base_hub *hub = dev_get_drvdata(dev);
--
--	schedule_delayed_work(&hub->update_work, 0);
--	return 0;
--}
--static SIMPLE_DEV_PM_OPS(ssam_base_hub_pm_ops, NULL, ssam_base_hub_resume);
--
- static int ssam_base_hub_probe(struct ssam_device *sdev)
- {
--	struct ssam_base_hub *hub;
--	int status;
-+	struct ssam_hub *hub;
- 
- 	hub = devm_kzalloc(&sdev->dev, sizeof(*hub), GFP_KERNEL);
- 	if (!hub)
++	if (surface_hid_is_hot_removed(shid))
++		return -ENODEV;
++
+ 	buf = kzalloc(len, GFP_KERNEL);
+ 	if (!buf)
  		return -ENOMEM;
+@@ -126,6 +159,9 @@ static int surface_hid_raw_request(struct hid_device *hid, unsigned char reportn
+ {
+ 	struct surface_hid_device *shid = hid->driver_data;
  
--	hub->sdev = sdev;
--	hub->state = SSAM_BASE_HUB_UNINITIALIZED;
--
- 	hub->notif.base.priority = INT_MAX;  /* This notifier should run first. */
- 	hub->notif.base.fn = ssam_base_hub_notif;
- 	hub->notif.event.reg = SSAM_EVENT_REGISTRY_SAM;
-@@ -464,37 +528,10 @@ static int ssam_base_hub_probe(struct ssam_device *sdev)
- 	hub->notif.event.mask = SSAM_EVENT_MASK_NONE;
- 	hub->notif.event.flags = SSAM_EVENT_SEQUENCED;
- 
--	INIT_DELAYED_WORK(&hub->update_work, ssam_base_hub_update_workfn);
--
--	ssam_device_set_drvdata(sdev, hub);
--
--	status = ssam_device_notifier_register(sdev, &hub->notif);
--	if (status)
--		return status;
--
--	status = sysfs_create_group(&sdev->dev.kobj, &ssam_base_hub_group);
--	if (status)
--		goto err;
--
--	schedule_delayed_work(&hub->update_work, 0);
--	return 0;
-+	hub->connect_delay = SSAM_BASE_UPDATE_CONNECT_DELAY;
-+	hub->get_state = ssam_base_hub_query_state;
- 
--err:
--	ssam_device_notifier_unregister(sdev, &hub->notif);
--	cancel_delayed_work_sync(&hub->update_work);
--	ssam_remove_clients(&sdev->dev);
--	return status;
--}
--
--static void ssam_base_hub_remove(struct ssam_device *sdev)
--{
--	struct ssam_base_hub *hub = ssam_device_get_drvdata(sdev);
--
--	sysfs_remove_group(&sdev->dev.kobj, &ssam_base_hub_group);
--
--	ssam_device_notifier_unregister(sdev, &hub->notif);
--	cancel_delayed_work_sync(&hub->update_work);
--	ssam_remove_clients(&sdev->dev);
-+	return ssam_hub_setup(sdev, hub);
- }
- 
- static const struct ssam_device_id ssam_base_hub_match[] = {
-@@ -504,12 +541,12 @@ static const struct ssam_device_id ssam_base_hub_match[] = {
- 
- static struct ssam_device_driver ssam_base_hub_driver = {
- 	.probe = ssam_base_hub_probe,
--	.remove = ssam_base_hub_remove,
-+	.remove = ssam_hub_remove,
- 	.match_table = ssam_base_hub_match,
- 	.driver = {
- 		.name = "surface_aggregator_base_hub",
- 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
--		.pm = &ssam_base_hub_pm_ops,
-+		.pm = &ssam_hub_pm_ops,
- 	},
- };
++	if (surface_hid_is_hot_removed(shid))
++		return -ENODEV;
++
+ 	if (rtype == HID_OUTPUT_REPORT && reqtype == HID_REQ_SET_REPORT)
+ 		return shid->ops.output_report(shid, reportnum, buf, len);
  
 -- 
 2.36.1
