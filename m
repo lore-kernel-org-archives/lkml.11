@@ -2,108 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC46C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C418C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350116AbiETOKM (ORCPT
+        id S1350133AbiETOKT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 10:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
+        Fri, 20 May 2022 10:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbiETOKJ (ORCPT
+        with ESMTP id S1350120AbiETOKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 10:10:09 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F219A166441
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:10:07 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so11615559pjb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:10:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fw/8xtbO/77OBVSsbwuLK/fJrTcZqfjeO9mMBE3hl1k=;
-        b=gYcU/o1YFIQi1HnR+Y3q2DETW8SRnpOTtKvaPRlWdUw8SXyEhJJ5FsSzpyvqLX70Q2
-         aKLsQ1y7qD6APz9gC++fXm6VqF1jjZp/F8HtkvNJxkSSrVpznuOLbeN4qwSJ8Tg8tmo1
-         I+GpQnSf8tTXh1KeOuthM1uF9X5XURipi7EByr8hFzeDE2h5Zf97LtHHFcGW9EblFQjz
-         W8E9djzuFqAeGb/Nc0dqueeJjkyhkFB+QhhLpZ8OD6w3Jh1Q08ju723iERuneVr8ZOZY
-         mhfgLuGY93oxAEg9PGFkHdTJgGKIG1I3e3GPm6mKJI70s89pfsv1koiCOdObrtBSWVi+
-         Tt4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fw/8xtbO/77OBVSsbwuLK/fJrTcZqfjeO9mMBE3hl1k=;
-        b=6V24/LoPaTfnh0wXiaFjZ7jkdhYUMAYUb530JsCzvBMNQRvV1MYKmgEFS/bJ0+DlKW
-         S2WjymGJwh3RSOkbBQWoRdMRJiVyVn0LFqNib1N/SlI/XeYHN1PuvL2HFOu5rnHDzyuA
-         AQVwdNtJTYH0x6BRPikFZZwfLvnTrx0LhXKW7fHKti2zDBre/rF/1f9Ob0575SqpPZRF
-         WT+DV3+WETNhpjUbqM8Gi7fjQZ3q3mdW7lzYt8KuBYD3ITwd4oSwi47d2q11W9hC5pCx
-         Z2pLse7okgudQ5H+iieSCkmnO5L3tI4641YvGxIptf8PhdxlMTuDW7lTBIjavYAHjeLE
-         7UXQ==
-X-Gm-Message-State: AOAM533jFKy0cU87mQaOOEqUiFgn7sxfDpm4javBFfKWbG3u/UmQipPn
-        EUEkTslKu+LVZ7NVd4K8VgM=
-X-Google-Smtp-Source: ABdhPJzJvN7g9pmdcRYb5DB4rQeYTQqtb6Hw2+Lxb/5SjziGcIgoR9HpxUh4hxsH1WgmC4Y8Hh3tLA==
-X-Received: by 2002:a17:902:cf4c:b0:161:e3aa:2708 with SMTP id e12-20020a170902cf4c00b00161e3aa2708mr6644949plg.127.1653055807490;
-        Fri, 20 May 2022 07:10:07 -0700 (PDT)
-Received: from f34-buildvm.eng.vmware.com ([66.170.99.2])
-        by smtp.googlemail.com with ESMTPSA id m11-20020a170902d18b00b0015ee985999dsm5624673plb.97.2022.05.20.07.10.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 07:10:07 -0700 (PDT)
-From:   Shreenidhi Shedi <yesshedi@gmail.com>
-X-Google-Original-From: Shreenidhi Shedi <sshedi@vmware.com>
-To:     srivatsa@csail.mit.edu, amakhalov@vmware.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com
-Cc:     virtualization@lists.linux-foundation.org, pv-drivers@vmware.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org, yesshedi@gmail.com,
+        Fri, 20 May 2022 10:10:13 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D2B166441
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:10:11 -0700 (PDT)
+Received: from zn.tnic (p200300ea974657be329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:57be:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id AFFDC1EC0432;
+        Fri, 20 May 2022 16:10:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1653055805;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=Jw8Jjz7F/KFwbNnn4srCQ68W2G6++y7u/dhV8E5+6KU=;
+        b=YKuNyQq5+Wxqlgq1j8eVsbNGFuG5GC1HPYPlVA+ej5bySjFRaLngXPzI4psfQR3nBHlDBK
+        GV7UiNzmKppbzkLPb/pZSShOdrqGaB5sS9eO9qvw8S9cTWXe9HlYBuw8M6tPM6+crkuVbG
+        nrM+PcXEst6/DRTQD3iDchGEzopo0qc=
+Date:   Fri, 20 May 2022 16:10:01 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Shreenidhi Shedi <yesshedi@gmail.com>
+Cc:     srivatsa@csail.mit.edu, amakhalov@vmware.com, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com, hpa@zytor.com,
+        virtualization@lists.linux-foundation.org, pv-drivers@vmware.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
         Shreenidhi Shedi <sshedi@vmware.com>
-Subject: [PATCH v2] x86/vmware: use unsigned integer for shifting
-Date:   Fri, 20 May 2022 19:39:54 +0530
-Message-Id: <20220520140954.597725-1-sshedi@vmware.com>
-X-Mailer: git-send-email 2.36.1
+Subject: Re: [PATCH v1] x86/vmware: use unsigned integer for shifting
+Message-ID: <YoehOWHN7h8cFBK5@zn.tnic>
+References: <20220520114712.595583-1-sshedi@vmware.com>
+ <YoeA4pf5OWxfjE0J@zn.tnic>
+ <f05264ce-e90f-0b1a-4796-ec1f3b75c09c@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f05264ce-e90f-0b1a-4796-ec1f3b75c09c@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreenidhi Shedi <yesshedi@gmail.com>
+On Fri, May 20, 2022 at 07:33:30PM +0530, Shreenidhi Shedi wrote:
+> I deliberately did it because I was lacking clarity on using my org
+> mail & personal mail id.
 
-From: Shreenidhi Shedi <sshedi@vmware.com>
+You could have a look at Documentation/process/submitting-patches.rst
+and everything under Documentation/process/ in case you don't know what
+to do.
 
-Shifting signed 32-bit value by 31 bits is implementation-defined
-behaviour. Using unsigned is better option for this.
+Using checkpatch.pl on your patch before submitting it, is also
+something you should do.
 
-Fixes: 4cca6ea04d31 ("x86/apic: Allow x2apic without IR on VMware platform")
+HTH.
 
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
----
- arch/x86/kernel/cpu/vmware.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index c04b933f48d3..cd809c5b17f0 100644
---- a/arch/x86/kernel/cpu/vmware.c
-+++ b/arch/x86/kernel/cpu/vmware.c
-@@ -28,6 +28,7 @@
- #include <linux/cpu.h>
- #include <linux/reboot.h>
- #include <linux/static_call.h>
-+#include <linux/bits.h>
- #include <asm/div64.h>
- #include <asm/x86_init.h>
- #include <asm/hypervisor.h>
-@@ -476,8 +477,8 @@ static bool __init vmware_legacy_x2apic_available(void)
- {
- 	uint32_t eax, ebx, ecx, edx;
- 	VMWARE_CMD(GETVCPU_INFO, eax, ebx, ecx, edx);
--	return (eax & (1 << VMWARE_CMD_VCPU_RESERVED)) == 0 &&
--	       (eax & (1 << VMWARE_CMD_LEGACY_X2APIC)) != 0;
-+	return !(eax & BIT(VMWARE_CMD_VCPU_RESERVED)) &&
-+		(eax & BIT(VMWARE_CMD_LEGACY_X2APIC))
- }
- 
- #ifdef CONFIG_AMD_MEM_ENCRYPT
 -- 
-2.36.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
