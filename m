@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F1BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EFCC4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349369AbiETMky (ORCPT
+        id S1349530AbiETMlR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
+        Fri, 20 May 2022 08:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349276AbiETMkv (ORCPT
+        with ESMTP id S1349355AbiETMkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 08:40:51 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A392DD6;
-        Fri, 20 May 2022 05:40:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BB2D6B;
+        Fri, 20 May 2022 05:40:47 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 7F4261F462A8
+        with ESMTPSA id 58CB71F462B7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653050443;
-        bh=xWMNR+zE+UnsdH+9w2byRvIquFAh3MbREE3UdlA2/kw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eZa/Mw01gwpR5TW2F0uF/2dR9lSUFwkMtgGkX5+74375/19+cXM3TmNM1Y/4yfH8A
-         nUX/owvhX/WQE0lBu3nnf9ojmkg71Os26Xgx/pXC2Al30rxd1EGDTWWiyCAfs5+Ufs
-         5xAD92MHp6keq828bjx2tkC4mgx0XcuX8xX5bsFoSOMG6NhnZcDfBElzsLoiTKOJUr
-         EayO3WQfU/vRIhPhiO+rVA2zhwxPm7N/rJWZiDFSKdvVtLZAJOATke/0lCCUg6KVsu
-         i3nwyqKgXFg9U8uJvQJVjF28yUMbOTRSO/ne7jJJuvrMzHOI15PPngogFtgeGbD0Ql
-         d6XSX5MN4143w==
+        s=mail; t=1653050445;
+        bh=BoofczPYFKPT45RV7EHOivl9vCwrE/P2hpyIXUnhdmU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DeFRLtsJyZn3Ad8KZX20pAjUsCmKh9vxSx2ZT/ZIL0jqhSGN30Z7dNAz3Wr1Nlj6l
+         JlFIo6U/0pZhbtC+/gaQ1hkHs/KQkrCH3fQp2iCo5VXrOUh9h+opdaIeYMyLsiPq6H
+         rP4LYXkkNMP69XvMOSQhb7mvCF7xK5d/DyEzMQuzAo7THEKfDtBUhef1iI0AJO9W+6
+         U2p6Pai+t0v7/ke89D3shTX/V2WYoa1bXS2ZwrNouYCcbp/+94CdmKA1wBkE1zLCWD
+         dUqesVHsqGEy+srs41/dVeRR3fG8ohTCfAs4vgglPU+wPryaOCaXBqIgMQullwnnkO
+         xkIK/pjn39g3Q==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     lee.jones@linaro.org
@@ -38,50 +38,37 @@ Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         johnson.wang@mediatek.com, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/7] MediaTek Helio X10 MT6795 - MT6331/6332 PMIC Wrapper
-Date:   Fri, 20 May 2022 14:40:32 +0200
-Message-Id: <20220520124039.228314-1-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 4/7] dt-bindings: mfd: Add compatible for MT6331 PMIC
+Date:   Fri, 20 May 2022 14:40:36 +0200
+Message-Id: <20220520124039.228314-5-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220520124039.228314-1-angelogioacchino.delregno@collabora.com>
+References: <20220520124039.228314-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In an effort to give some love to the apparently forgotten MT6795 SoC,
-I am upstreaming more components that are necessary to support platforms
-powered by this one apart from a simple boot to serial console.
+Add a compatible for the MT6331 PMIC MFD device.
 
-This series introduces support in the PMIC Wrapper for a different PMIC
-topology, which is commonly found on smartphone boards, using one main
-PMIC and one Companion PMIC;
-be aware that this kind of topology is not *specific to* the Helio X10
-SoC, but common across many kinds of MediaTek smartphone oriented SoCs
-and board designs.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ Documentation/devicetree/bindings/mfd/mt6397.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-That said, support for the PMIC combo MT6331+MT6332 is provided in this
-series in a form that will be able to initialize the PMICs with crypto
-and DualIO but nothing else: these PMICs are very featureful, so I have
-decided to add this support in more than just one step, as there will
-be multiple patches for multiple different subsystems (..it's a mfd!..).
-
-Tested on a MT6795 Sony Xperia M5 (codename "Holly") smartphone.
-
-AngeloGioacchino Del Regno (7):
-  soc: mediatek: pwrap: Move PMIC read test sequence in function
-  soc: mediatek: pwrap: Add kerneldoc for struct pwrap_slv_type
-  soc: mediatek: mtk-pmic-wrap: Add support for companion PMICs
-  dt-bindings: mfd: Add compatible for MT6331 PMIC
-  soc: mediatek: mtk-pmic-wrap: Add support for MT6331 w/ MT6332
-    companion
-  dt-bindings: mediatek: pwrap: Add a compatible for MT6795 Helio X10
-  soc: mediatek: pwrap: Add support for MT6795 Helio X10
-
- .../devicetree/bindings/mfd/mt6397.txt        |   1 +
- .../bindings/soc/mediatek/pwrap.txt           |   1 +
- drivers/soc/mediatek/mtk-pmic-wrap.c          | 287 ++++++++++++++++--
- 3 files changed, 263 insertions(+), 26 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/mfd/mt6397.txt b/Documentation/devicetree/bindings/mfd/mt6397.txt
+index 293db2a71ef2..d59063503b0d 100644
+--- a/Documentation/devicetree/bindings/mfd/mt6397.txt
++++ b/Documentation/devicetree/bindings/mfd/mt6397.txt
+@@ -20,6 +20,7 @@ This document describes the binding for MFD device and its sub module.
+ Required properties:
+ compatible:
+ 	"mediatek,mt6323" for PMIC MT6323
++	"mediatek,mt6331" for PMIC MT6331 and MT6332
+ 	"mediatek,mt6358" for PMIC MT6358 and MT6366
+ 	"mediatek,mt6359" for PMIC MT6359
+ 	"mediatek,mt6397" for PMIC MT6397
 -- 
 2.35.1
 
