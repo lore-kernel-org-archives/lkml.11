@@ -2,119 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B588FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94583C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351304AbiETQD0 (ORCPT
+        id S1351308AbiETQDl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        Fri, 20 May 2022 12:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232960AbiETQDM (ORCPT
+        with ESMTP id S1351327AbiETQDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:03:12 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D005179C1F
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:03:10 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id g207so4392219qke.7
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:03:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Rl6lj9qx0jl8NDnbz3wyyCTgYol3jXu1zxcrwsJAVY0=;
-        b=hEocKPTB0k/SuvhhyFT5SNEVGtwTVR9duxGaCyxkEPY5PB/c8W8gWNKQ7wBHvRQDTN
-         v9JzO9ixObe7EqTnDEf+inUVqwi6/umiSrQFKktXHWrFUYsML5SMrrO8CRU51wbuky3i
-         Wl+xXCZOIJ3zhbLnT8eJCt4tUv+9hDCNqaXW/v79Pfq2q6zMeOCAuRCwBBK6qpk8D5Nd
-         +YGCkUJyHdekQg4X91lKQuCIjd/kPPyhS5Uv76TlZrckHPyN51WKd42D6fHaO5E2v4pk
-         r5vGMgpedKX1tbFxC2h0WBTKV2GYdZ9xdxdoV5NUIjV14YE66alofZdAacWqFHmzdGDW
-         czSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rl6lj9qx0jl8NDnbz3wyyCTgYol3jXu1zxcrwsJAVY0=;
-        b=nhgUIo4D7imGJdDtU7Jr9UZ0KBPocBZXNQsorR5153JVLQuhpzmNK79btPsfR9HkEA
-         ZnRx8t59mTB4yWpF8GUjTvf5MUxayKUJrJMUJfxE+GY3QqBewu1TVmtk4XZ3bQ4VwiGk
-         kYQWSssyS/vOxoSUyC/4sAIUkC0+lq1OKntuoyEJWs3YGqJrNHDU7A5YY2VSP6/jFV3i
-         oiJlEjpMmLSyjQnELL5bxBODXkeV4XacXp5Bu2PBap7Offutm65FJRntdk4huSwMzsHU
-         sk6RUQQeEBYrMdD0YVbyckBgAvu17RbQGSen1Rgq4t2boqZsOpWaw57et+kzSqFIQxlk
-         BNYg==
-X-Gm-Message-State: AOAM5339e+e/7m38DgTWFUdmMO9C60WVRJeZiFqUznNP3sM//JYZA4Nh
-        Dzqvw93pIuId8MG/WQy6LE8K3KBrwx6I9HQydVcuog==
-X-Google-Smtp-Source: ABdhPJyZI37QRWTmfOC38IDzqhvOTFVeCbuF71qmUeFydjmoyAbLvyiloaSslSvLRc7a3lrInN3ClO7mlUtVPua/8TU=
-X-Received: by 2002:a05:620a:4311:b0:67e:8a0f:4cd5 with SMTP id
- u17-20020a05620a431100b0067e8a0f4cd5mr6809701qko.363.1653062589769; Fri, 20
- May 2022 09:03:09 -0700 (PDT)
+        Fri, 20 May 2022 12:03:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2ED17997B
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:03:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AE30B82C7C
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 16:03:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EE89C34100;
+        Fri, 20 May 2022 16:03:25 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="jvghYB3M"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1653062604;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UxK/166niZcoEyIlhxcsA5FExBrWFEE1gjPJTAretrY=;
+        b=jvghYB3Mjr+uTh0z/fUkliKoagb2JlTzh/cpznczbWeL8ctfatbWEGAuk30sf8cC6yLfYw
+        BJRv3GvSOroLh7RWTNwR0Qk25GcXDyiUNpoz7IRQ4iwA1K1Hnt56xf6SuPWK913R7e3P6f
+        hw6Y4jY5vhbz668pUlRZft2ZXTW7OhI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 428e6b79 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 20 May 2022 16:03:23 +0000 (UTC)
+Date:   Fri, 20 May 2022 18:03:22 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v4 0/3] random: convert to using iters, for Al Viro
+Message-ID: <Yoe7ykNXjUerhywY@zx2c4.com>
+References: <20220520094459.116240-1-Jason@zx2c4.com>
+ <Yoey+FOYO69lS5qP@zx2c4.com>
+ <bbdeeca7-9c99-e661-6596-f04ea783a30b@kernel.dk>
+ <Yoe2PPA/pzqhf+GZ@zx2c4.com>
+ <0a6ed6b9-0917-0d83-5c45-70ff58fad429@kernel.dk>
+ <Yoe52RaMayvgodVW@zx2c4.com>
+ <79024675-9a4a-cb2b-a0ed-91067ef05783@kernel.dk>
 MIME-Version: 1.0
-References: <1653001902-26910-1-git-send-email-quic_khsieh@quicinc.com>
- <1653001902-26910-2-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n52yT6S4TLpc2e2-kkbMB2Fu2PcZskG-ZFLo7y1YVTyazQ@mail.gmail.com> <609bb4fc-1503-81ef-6fd8-dbb862c4ef80@quicinc.com>
-In-Reply-To: <609bb4fc-1503-81ef-6fd8-dbb862c4ef80@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Fri, 20 May 2022 19:02:58 +0300
-Message-ID: <CAA8EJpqaGqHrdtX6NUHs2YOgeievpkbm8JbwQOU8+KoW4YNf2g@mail.gmail.com>
-Subject: Re: [PATCH v6 1/3] phy: qcom-edp: add regulator_set_load to edp phy
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
-Cc:     Stephen Boyd <swboyd@chromium.org>, agross@kernel.org,
-        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
-        dianders@chromium.org, dri-devel@lists.freedesktop.org,
-        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org,
-        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <79024675-9a4a-cb2b-a0ed-91067ef05783@kernel.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 20 May 2022 at 18:09, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
->
->
-> On 5/19/2022 5:19 PM, Stephen Boyd wrote:
-> > Quoting Kuogee Hsieh (2022-05-19 16:11:40)
-> >> diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
-> >> index cacd32f..78b7306 100644
-> >> --- a/drivers/phy/qualcomm/phy-qcom-edp.c
-> >> +++ b/drivers/phy/qualcomm/phy-qcom-edp.c
-> >> @@ -87,14 +87,19 @@ struct qcom_edp {
-> >>
-> >>          struct clk_bulk_data clks[2];
-> >>          struct regulator_bulk_data supplies[2];
-> >> +       int enable_load[2];
-> >>   };
-> >>
-> >>   static int qcom_edp_phy_init(struct phy *phy)
-> >>   {
-> >>          struct qcom_edp *edp = phy_get_drvdata(phy);
-> >>          int ret;
-> >> +       int i;
-> >>
-> >> -       ret = regulator_bulk_enable(ARRAY_SIZE(edp->supplies), edp->supplies);
-> >> +       for (i = 0; i < 2; i++)
-> > Use ARRAY_SIZE(edp->supplies)?
-> >
-> >> +               regulator_set_load(edp->supplies[i].consumer, edp->enable_load[i]);
-> >> +
-> >> +       ret = regulator_bulk_enable(2, edp->supplies);
-> > Why is ARRAY_SIZE() usage removed?
->
->
-> remove it base on Dmitry's comment.
+Hi Jens,
 
-Ugh. I asked to remove the num_consumers variable, not the ARRAY_SIZE.
+On Fri, May 20, 2022 at 09:58:28AM -0600, Jens Axboe wrote:
+> On 5/20/22 9:55 AM, Jason A. Donenfeld wrote:
+> > Hi Jens,
+> > 
+> > On Fri, May 20, 2022 at 09:44:25AM -0600, Jens Axboe wrote:
+> >> Ran 32, 1k, 4k here and it does seem to be down aboout 3%. Which is
+> >> definitely bigger than I expected, particularly for larger reads. If
+> >> anything, the 32b read seems comparably better than eg 1k or 4k, which
+> >> is also unexpected. Let me do a bit of profiling to see what is up.
+> > 
+> > Something to keep in mind wrt 32b is that for complicated crypto
+> > reasons, the function has this logic:
+> > 
+> > - If len <= 32, generate one 64 byte block and give <= 32 bytes of it to
+> >   the caller.
+> > 
+> > - If len > 32, generate one 64 byte block, but give 0 of it to the
+> >   caller. Then generate ?len/64? blocks for the caller.
+> > 
+> > Put together, this means:
+> > 
+> > - 1..32, 1 block
+> > - 33..64, 2 blocks
+> > - 65..128, 3 blocks
+> > - 129..196, 4 blocks
+> > 
+> > So you get this sort of shelf where the amortization benefits don't
+> > really kick in until after 3 blocks.
+> 
+> Ah I see, I can see if 64b is closer to the change for eg 1k.
 
->
-> I will restore it back to use ARRY_SIZE
->
->
-> >
-> >>          if (ret)
-> >>                  return ret;
-> >>
+What I meant by providing all that detail is that from a cycles-per-byte
+perspective, smaller=more expensive. So it's possible that the
+difference in the patchset is less visible as it gets lost in the more
+expensive operation.
 
+> >> If you're worried about it, I'd just keep the read/write and add the
+> >> iter variants on the side.
+> >  
+> > Not a chance of that. These functions are already finicky as-is; I would
+> > really hate to have to duplicate all of these paths.
+> 
+> Then I'd say there are only two options:
+> 
+> - Add a helper that provides splice for something that only has
+>   read/write set.
 
+That'd be fine with me, but wouldn't it involve bringing back set_fs(),
+because of the copy_to_user() in there?
 
--- 
-With best wishes
-Dmitry
+> - Just accept that we're 3% slower reading from /dev/urandom for now,
+>   and maybe 1-2% for small reads. Can't really imagine this being a huge
+>   issue, how many high throughput /dev/urandom read situations exist in
+>   the real world?
+
+An option three might be that eventually the VFS overhead is worked out
+and read_iter() reaches parity. One can hope, I guess.
+
+Jason
