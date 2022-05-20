@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4CAC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 11:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 11:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348799AbiETLyP (ORCPT
+        id S1348795AbiETLym (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 07:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
+        Fri, 20 May 2022 07:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348791AbiETLyM (ORCPT
+        with ESMTP id S1348759AbiETLyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 07:54:12 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CED15D31E
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:54:10 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id br17so1589191lfb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:54:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rSuzs4n4Sskm3JHT6PT66YWFV3PUZnimPTSzRD2tWSg=;
-        b=wpU0Xbi3qNPhIsGbn3dTnIJjM0guksk6R0+2fenSiGhdpViMAQwecBOTD6TSGuyT+E
-         uUB+KkSPJLE2hZE1m+XHi+XvIEOYhdcwkMwKILksmRBLUSEF0AChl22J2FR+pR8Y6aoM
-         I6/nj+/ttx8o2pLGwFJmgVnxj/97Rp3IPxhNEoUV5nPKZTBvpzDr3ZGvseVYJROTwCte
-         u4DUBrDePqhdXtUs4xQWmHYCUHf4tfeMllUs7Pr7MU2nW8LpOHLwL5+MIHHyNC+B3n4G
-         6f5gY/5q/MMUUfU/9/CRzhAghdlEx6ErskRuy18t0iwPlUpIVTM9kMf4eZgqm4ztSp7A
-         DdMQ==
+        Fri, 20 May 2022 07:54:37 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29AE15E485
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:54:36 -0700 (PDT)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id F09953F1BA
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:54:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1653047674;
+        bh=deCcyVhVyKD2/JPpSzZpMIDpYKyl3Ap6BwhEK9M4/s8=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=u7Ue20mcGBggvASH0NedxN1/VKeVam6fMvZNh9hOIIpgF9Y823l9rKFVc+LA5K/Cv
+         QCEps+WSr91Pz6Z2DQPfmQIGLZEhLQlk2gCaFZwe91oCTi3THhU9PBPEeQvHosxILM
+         6tK6L9Fj54xBXESSQp5FZh1tLKK/rfxJD3D9ZfumfK4SsYcngEJtKc6d4vgEwZXW94
+         Lq6L6ZNnNWZE554P1K15f1HtJDD9EigXAW4/l6M9Ey1XXNKUS6o1wmHydLRWIbsZtT
+         TiVZRlwOtr/nTdw5bi4nrBc6p/7KUUCGBVRKDKBsin4hQ8Pp60AtvuXX2f+XAdfJpK
+         kRPLuRij4XteA==
+Received: by mail-ed1-f72.google.com with SMTP id y1-20020a056402170100b0042aa8f679fdso5550095edu.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:54:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=rSuzs4n4Sskm3JHT6PT66YWFV3PUZnimPTSzRD2tWSg=;
-        b=sEY9YLgsyOH6Yzz9WppjyPxyZk92Ddb8e38XbeRp1VtVBCCJuICCE8aCrELBXkA9M1
-         +UdKiSeuhEtfGsbDkIU/5I5GJKVyVXVDYaaRGmY1yqIC9MPgRjhlpdP1OQME7JLD631a
-         Nw/489Sv19Vv2IYg9KxRKEXZLyATcuytGArqmp47+J6ohFSPPndDM0mtNP+Nx+eB2YQ1
-         +qkWm/yPheqd4kcp9Sfn05cG+B/vASgusZXGcPgYfYBWN56KLnXm7jssHtrKE9sNjyqe
-         3mOzekCdMy0knEeK40BE78XH7wvVBf4llaH5HHLMSNNZuIpm2gvxc6cEGp2myqy+MVkf
-         M0nQ==
-X-Gm-Message-State: AOAM533SNEXPLipmMB7iL7FMBEamu37y3VroFgfEVpALmzmZw2qKg48Q
-        tafqtHQnbRkxhR1rAYVaXXyt2g==
-X-Google-Smtp-Source: ABdhPJwHbS3B+g10NGZBGRxnNDfdHe7p/uRXjL55A1oYzFJvqnTHUNryLFfceBT55K+P1aalTA9hvg==
-X-Received: by 2002:ac2:43a1:0:b0:478:5867:5047 with SMTP id t1-20020ac243a1000000b0047858675047mr1004918lfl.37.1653047648614;
-        Fri, 20 May 2022 04:54:08 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id o12-20020ac2494c000000b0047255d211a5sm632074lfi.212.2022.05.20.04.54.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 04:54:08 -0700 (PDT)
-Message-ID: <dc883b3b-9eba-e883-cedb-e848b13cf746@linaro.org>
-Date:   Fri, 20 May 2022 13:54:06 +0200
+        bh=deCcyVhVyKD2/JPpSzZpMIDpYKyl3Ap6BwhEK9M4/s8=;
+        b=qi19YdBkJxJn1/IDqYhbXQEKLIuRsMKxjgSIuHiVFwPm4O7QF4wvYMvNlmqD3G8mIw
+         zEKeYEYi7SinJRA+ByZUDYOh/Lq2ZoCU7UQumA7mmX01VlK0sdYOmAtMZH9AH7p1iH0G
+         hHbKIqh7arxTNVdIw+csYzvSztw4vADDiFxEYcbePqBXxxPTwyPDY6riz3UIvJkRwv/T
+         YeR+LsFKRADwXnRYI05+Y9URV8QoRYZ9OBum5qSEnu4QffDqmkB/ed9k/LmVCfAOASVk
+         udJLkTdCSS+6/FKgFjgzbdPb3emQ1T4DfqbvO4jfJJkFBk9UXZrCIp5ABvTZiy8YsClV
+         rjaQ==
+X-Gm-Message-State: AOAM533D4ueM7Rry579Po1CwOnhMBxYZid37+As1oXzoNUi0tDPftSyV
+        NQqSmmdh8/zpwZNsgTKNf2S5DUWxJ4UcWoRPUAuKWAxsE5Jyw9McYt+9D0pKT1Jmh+vSmMQkkmS
+        RNKfbwym3nM6xr/ACDwITdVTwIvgqA/bR1K8kYiCeAw==
+X-Received: by 2002:a17:907:3daa:b0:6fe:88ab:fe8c with SMTP id he42-20020a1709073daa00b006fe88abfe8cmr8136295ejc.575.1653047674687;
+        Fri, 20 May 2022 04:54:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzGYb7iuTm8Rlzr8a4NeJlgaXcvtLbYBbdOK1XLz9DVlSPQcOFRtd66KjcfayizB1DjW9FI2A==
+X-Received: by 2002:a17:907:3daa:b0:6fe:88ab:fe8c with SMTP id he42-20020a1709073daa00b006fe88abfe8cmr8136282ejc.575.1653047674537;
+        Fri, 20 May 2022 04:54:34 -0700 (PDT)
+Received: from gollum.fritz.box ([194.191.244.86])
+        by smtp.gmail.com with ESMTPSA id a12-20020aa7c80c000000b0042617ba637esm4231156edt.8.2022.05.20.04.54.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 04:54:34 -0700 (PDT)
+From:   Juerg Haefliger <juerg.haefliger@canonical.com>
+X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
+To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org,
+        Juerg Haefliger <juergh@canonical.com>
+Subject: [PATCH] KVM: PPC: Kconfig: Fix indentation
+Date:   Fri, 20 May 2022 13:54:31 +0200
+Message-Id: <20220520115431.147593-1-juergh@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/2] dt-bindings: arm: qcom: Document xiaomi,natrium board
-Content-Language: en-US
-To:     Alec Su <ae40515@yahoo.com.tw>, Rob Herring <robh@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, y.oudjana@protonmail.com,
-        krzysztof.kozlowski+dt@linaro.org, agross@kernel.org,
-        sboyd@codeaurora.org
-References: <20220519074112.25600-1-ae40515@yahoo.com.tw>
- <20220519074112.25600-3-ae40515@yahoo.com.tw>
- <1652965539.974526.1359566.nullmailer@robh.at.kernel.org>
- <7e5ecca1-aef7-ce90-7797-7f8be3b55715@yahoo.com.tw>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <7e5ecca1-aef7-ce90-7797-7f8be3b55715@yahoo.com.tw>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022 03:23, Alec Su wrote:
-> On 2022/5/19 21:05, Rob Herring wrote:
->> On Thu, 19 May 2022 07:41:12 +0000, Alec Su wrote:
->>> Document Xiaomi Mi 5s Plus (xiaomi-natrium) smartphone which is based on
->>> Snapdragon 821 SoC.
+The convention for indentation seems to be a single tab. Help text is
+further indented by an additional two whitespaces. Fix the lines that
+violate these rules.
 
-> 
-> I checked the full log. These warnings seem not the new warning caused
-> by the patch series. Look like these device trees are trying to match
-> with each of the compatible strings in qcom.yaml.
+Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+---
+ arch/powerpc/kvm/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/arch/powerpc/kvm/Kconfig b/arch/powerpc/kvm/Kconfig
+index ddd88179110a..fe84628bda64 100644
+--- a/arch/powerpc/kvm/Kconfig
++++ b/arch/powerpc/kvm/Kconfig
+@@ -149,7 +149,7 @@ config KVM_BOOK3S_HV_NESTED_PMU_WORKAROUND
+ 	  Old nested HV capable Linux guests have a bug where they don't
+ 	  reflect the PMU in-use status of their L2 guest to the L0 host
+ 	  while the L2 PMU registers are live. This can result in loss
+-          of L2 PMU register state, causing perf to not work correctly in
++	  of L2 PMU register state, causing perf to not work correctly in
+ 	  L2 guests.
+ 
+ 	  Selecting this option for the L0 host implements a workaround for
+-- 
+2.32.0
 
-Yes, I'll fix them.
-
-Best regards,
-Krzysztof
