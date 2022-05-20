@@ -2,93 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F156CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5208C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237486AbiETP5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
+        id S1351134AbiETP5k (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 11:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351212AbiETP4x (ORCPT
+        with ESMTP id S237537AbiETP5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:56:53 -0400
-X-Greylist: delayed 1389 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 08:56:51 PDT
-Received: from vern.gendns.com (vern.gendns.com [98.142.107.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70856B7CF
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:56:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3hmYwiverMb1N0J61Fi+8bzNM2DByfoLQaNKfPSLJ9k=; b=Ql9Sep6+YZYzeNT4c/2jhSUvgk
-        pu0cmPSjxKPfjL6DXri1z6i9804pTe+syIlCTXqR/QGA7ydZOV0hX1S/ExFEsalEIuAHjRZkjXyoR
-        l4brXxjojKL01gM75PAybV2oeWIcfcdpnsu1zbEAdiYJ9npo/V+Zq47sn7Wp4XvbIL9TuWmpxc3qz
-        38U6YAwnEWq5NKnTqAObF0dVKw2stIQQ/7vuC5Ix6qlVEDl5YukGLOzfrhmww72MeUmb/HoGlH72Y
-        iZFsZ1IiFTZkmyaJlAYX0eZsylJvWO6hfUevE1LEK+B2UD0l+vXYoiV8YCe9CbU03g64AM8q4ml5C
-        eU28VhJw==;
-Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:45970 helo=[192.168.0.134])
-        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.95)
-        (envelope-from <david@lechnology.com>)
-        id 1ns4d4-0003zy-OF;
-        Fri, 20 May 2022 11:33:40 -0400
-Message-ID: <cb4aadab-0724-35d6-0a97-dc4425f31bb9@lechnology.com>
-Date:   Fri, 20 May 2022 10:33:37 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] drm/st7735r: Fix module autoloading for Okaya RH128128T
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Fri, 20 May 2022 11:57:38 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97992A7768
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:57:37 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24KDhpfS012784;
+        Fri, 20 May 2022 15:57:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=h+FMIaMbYBHmr462sNYgkwt/IvmyaI0IcvD2SRf4XwY=;
+ b=trRjO9RkedfAEozyJ/l90fCrha7/oKs0gGqNWq68RlVgyBPahqrblSI6dPWjNJuJnKiC
+ PFcoSRxfK3ilsxy5fiw/Gy2qGOIjpboPifsQUYFKIbjLXTW6dI38OgVb3Upr3QTImKyd
+ okDUg/Nv3e3Y0RfvCH9qB8fWe8BBmHDZ1qCSwDpJccKVlaA2zLmjvoW7MbuZ8cqghcLT
+ HUs4EbNvW9uOz0ZnwztraiL0rnDA+fgj135fMAilnoi7WVg3gxK8Pme68bmeePqPcz1I
+ YBboF7jiQxznwGutDfTLIaJLTBpdr1r5BFbBIUXA0djT9+C3bDDX0nK73kNd0TwVi8IB aw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g6c4835mm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 15:57:29 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24KFUdZ3017013;
+        Fri, 20 May 2022 15:57:29 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g6c4835m2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 15:57:28 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24KFs9YN025089;
+        Fri, 20 May 2022 15:57:27 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3g2429h2wf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 15:57:27 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24KFvNwL20840808
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 20 May 2022 15:57:23 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D33C9AE055;
+        Fri, 20 May 2022 15:57:23 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8526AAE04D;
+        Fri, 20 May 2022 15:57:23 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.145.68.37])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 20 May 2022 15:57:23 +0000 (GMT)
+From:   Laurent Dufour <ldufour@linux.ibm.com>
+To:     mpe@ellerman.id.au, npiggin@gmail.com
+Cc:     aneesh.kumar@linux.ibm.com, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org
-References: <20220520091602.179078-1-javierm@redhat.com>
-From:   David Lechner <david@lechnology.com>
-In-Reply-To: <20220520091602.179078-1-javierm@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Subject: [PATCH] powerpc/64s: Don't read H_BLOCK_REMOVE characteristics in radix mode
+Date:   Fri, 20 May 2022 17:57:21 +0200
+Message-Id: <20220520155721.10211-1-ldufour@linux.ibm.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: LNzXv5lovOiCpHs6gGL84tbuLKGxxBaX
+X-Proofpoint-ORIG-GUID: 9FE4Q_Y2SokTdK3DT22wtauNZjiRzOL2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-20_04,2022-05-20_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ spamscore=0 impostorscore=0 priorityscore=1501 clxscore=1015 adultscore=0
+ suspectscore=0 lowpriorityscore=0 mlxlogscore=999 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205200105
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/20/22 4:16 AM, Javier Martinez Canillas wrote:
-> The SPI core always reports a "MODALIAS=spi:<foo>", even if the device was
-> registered via OF. This means that the st7735r.ko module won't autoload if
-> a DT has a node with a compatible "okaya,rh128128t" string.
-> 
-> In that case, kmod expects a "MODALIAS=of:N*T*Cokaya,rh128128t" uevent but
-> instead will get a "MODALIAS=spi:rh128128t", which is not present in the
-> list of aliases:
-> 
->    $ modinfo drivers/gpu/drm/tiny/st7735r.ko | grep alias
->    alias:          of:N*T*Cokaya,rh128128tC*
->    alias:          of:N*T*Cokaya,rh128128t
->    alias:          of:N*T*Cjianda,jd-t18003-t01C*
->    alias:          of:N*T*Cjianda,jd-t18003-t01
->    alias:          spi:jd-t18003-t01
-> 
-> To workaround this issue, add in the SPI table an entry for that device.
-> 
-> Fixes: d1d511d516f7 ("drm: tiny: st7735r: Add support for Okaya RH128128T")
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> ---
+There is no need to read the H_BLOCK_REMOVE characteristics when running in
+Radix mode because this hcall is never called.
 
-Acked-by: David Lechner <david@lechnology.com>
+Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+---
+ arch/powerpc/platforms/pseries/setup.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/powerpc/platforms/pseries/setup.c b/arch/powerpc/platforms/pseries/setup.c
+index c9fcc30a0365..654d2b999c25 100644
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -803,7 +803,8 @@ static void __init pSeries_setup_arch(void)
+ 
+ 	pseries_setup_security_mitigations();
+ #ifdef CONFIG_PPC_64S_HASH_MMU
+-	pseries_lpar_read_hblkrm_characteristics();
++	if (!radix_enabled())
++		pseries_lpar_read_hblkrm_characteristics();
+ #endif
+ 
+ 	/* By default, only probe PCI (can be overridden by rtas_pci) */
+-- 
+2.36.1
 
