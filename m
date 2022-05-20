@@ -2,62 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B95C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D892CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352067AbiETRMs (ORCPT
+        id S1352075AbiETRNb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 13:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
+        Fri, 20 May 2022 13:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349009AbiETRMo (ORCPT
+        with ESMTP id S238817AbiETRN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 13:12:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73402AE257;
-        Fri, 20 May 2022 10:12:43 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1653066761;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SXErZRvqjldlOjMLvYU3NoT+xSCUsvtODzyjR+hi/KQ=;
-        b=ki5HV+5SMfm4IW2KWiNtM52ROQelC40IiS5IeIL5TATYlDYpQ9g9tyUXXR1Z2BuqzmdMkz
-        ezwT5jcatnoxu5SQwfGec4kDly0oKUI0zgZL/3YndE3561BmL4VUoo2VAKVsNB7ajQINXt
-        ClOZG9fY1TuKWe0MBSryzWQQaQoa/paK+uIwlkP78bEbXdlgUU8a2OxqJ3h2ag1t+PlE4j
-        AddhYqcDkl9lgWqn7w0+jaGybczGfp3DM3ZXhf15/jGHNOQM/4rs3df5f50cItGrGoc6F2
-        IYD28ddfFMCyhLtg8TiLgQoXyxTQodanT4QDV1tB/6ZyBX6Zkl9ChRrzAYStuA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1653066761;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SXErZRvqjldlOjMLvYU3NoT+xSCUsvtODzyjR+hi/KQ=;
-        b=tWWe4JQBKfAEuyKQdjb0m7AbWmmbUcUBvoFtxz9DMtesd4zCdY0VYnZT+F0a7CgDDPqITK
-        wci0PPZY57hQIECg==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org, linux-spdx@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: Re: [PATCH] siphash: add SPDX tags as sole licensing authority
-In-Reply-To: <20220518132345.40615-1-Jason@zx2c4.com>
-References: <20220518132345.40615-1-Jason@zx2c4.com>
-Date:   Fri, 20 May 2022 19:12:41 +0200
-Message-ID: <87v8u0i0vq.ffs@tglx>
+        Fri, 20 May 2022 13:13:28 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A809AAFAFD;
+        Fri, 20 May 2022 10:13:27 -0700 (PDT)
+Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L4YFx32Hbz6H6mq;
+        Sat, 21 May 2022 01:13:09 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 20 May 2022 19:13:25 +0200
+Received: from localhost (10.122.247.231) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 20 May
+ 2022 18:13:24 +0100
+Date:   Fri, 20 May 2022 18:13:23 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Yongzhi Liu <lyz_cs@pku.edu.cn>
+CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <jic23@kernel.org>, <lars@metafoo.de>,
+        <linux-arm-msm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <fuyq@stu.pku.edu.cn>
+Subject: Re: [PATCH v2] iio: vadc: Fix potential dereference of NULL pointer
+Message-ID: <20220520181323.00002892@huawei.com>
+In-Reply-To: <1652939455-123139-1-git-send-email-lyz_cs@pku.edu.cn>
+References: <YoUtezVzsPB8MAEO@google.com>
+        <1652939455-123139-1-git-send-email-lyz_cs@pku.edu.cn>
+Organization: Huawei Technologies R&D (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.122.247.231]
+X-ClientProxiedBy: lhreml737-chm.china.huawei.com (10.201.108.187) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18 2022 at 15:23, Jason A. Donenfeld wrote:
-> The text "dual BSD/GPLv2 license" is somewhat ambiguous, and moving this
-> over to SPDX is overdue. This commit adds SPDX tags to the relevant
-> files and clarifies that it's GPLv2 only and 3-clause BSD. It also
-> removes the old text, so that the SPDX tags are the only source of the
-> information.
->
-> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+On Wed, 18 May 2022 22:50:55 -0700
+Yongzhi Liu <lyz_cs@pku.edu.cn> wrote:
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+> The return value of vadc_get_channel() needs to be checked
+> to avoid use of NULL pointer. Fix this by adding the null
+> pointer check on prop.
+> 
+> Fixes: 0917de94c ("iio: vadc: Qualcomm SPMI PMIC voltage ADC driver")
+> 
+> Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+This function has a lot of goto err; where err just results in
+a print.
+
+My suggestion is to just drop that print and use
+error specific prints as you have done here, then use direct returns.
+
+> ---
+>  drivers/iio/adc/qcom-spmi-vadc.c | 23 ++++++++++++++++++++++-
+>  1 file changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+> index 34202ba..9fa61fb 100644
+> --- a/drivers/iio/adc/qcom-spmi-vadc.c
+> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+> @@ -358,14 +358,25 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+>  
+>  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define 1.25V channel\n");
+> +		ret = -ENODEV;
+> +		goto err;
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_1);
+>  	if (ret)
+>  		goto err;
+>  
+>  	/* Try with buffered 625mV channel first */
+>  	prop = vadc_get_channel(vadc, VADC_SPARE1);
+> -	if (!prop)
+> +	if (!prop) {
+>  		prop = vadc_get_channel(vadc, VADC_REF_625MV);
+> +		if (!prop) {
+> +			dev_err(vadc->dev, "Please define 0.625V channel\n");
+> +			ret = -ENODEV;
+> +			goto err;
+> +		}
+> +	}
+>  
+>  	ret = vadc_do_conversion(vadc, prop, &read_2);
+>  	if (ret)
+> @@ -381,11 +392,21 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>  
+>  	/* Ratiometric calibration */
+>  	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define VDD channel\n");
+> +		ret = -ENODEV;
+> +		goto err;
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_1);
+>  	if (ret)
+>  		goto err;
+>  
+>  	prop = vadc_get_channel(vadc, VADC_GND_REF);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define GND channel\n");
+> +		ret = -ENODEV;
+> +		goto err;
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_2);
+>  	if (ret)
+>  		goto err;
+
