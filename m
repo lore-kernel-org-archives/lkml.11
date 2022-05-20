@@ -2,121 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C47C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346893AbiETIQN (ORCPT
+        id S1346903AbiETIRC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
+        Fri, 20 May 2022 04:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346875AbiETIQH (ORCPT
+        with ESMTP id S242281AbiETIQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:16:07 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826933DA48
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:16:04 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id u27so9594904wru.8
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=sgVdkj+m0vdYfC42vgmnXcgErywSFim9EldJP/IRKb8=;
-        b=UbCjQtGRYjLqlisKKVYQpJgMYj/br9KZw6pGqNIRnL84QxknHPwih4CK9F5I2S/7Ki
-         IiOelDJRDtgCgP298udFAK1aWzVaCZ7RT4ZahHcBGmee5L74RImyWtVZcWbHwwmS31Vb
-         KRCORvITE+zT6KppLMaGOMhi7pFikUYxpIb3NGlyYZ0qLcnYIJ2GAP6R1lpgYwgMX/LB
-         7IHc+a+uWC+czjVbCL9a0shS9FDqRkGALziE0pfwdtD6S7qevDZOKUIRXJ9/Z+5O3bhU
-         bak0XChjaPwOdMDWTkYPt7rKc16wH1TAgCSMNsAijtXjymRrf4RfcKq5SOzqu8iL3ZW/
-         z1bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=sgVdkj+m0vdYfC42vgmnXcgErywSFim9EldJP/IRKb8=;
-        b=nD+PaeQ5B9dBPnATJyKWAAhVQ/94DNb1Dk9BYCaNJBTJadmcuxhWtMfKJeaE9WI2+1
-         9aBA/mkq5zTFPRGQKGF3N8zDpAyUC6CJapz5VDBQNrVBnD2+1Qz6Qx4m+S1B6zJs6Og/
-         oiRFTU7wJUBecs1Uvc9bOUxd82B+xeHdBJYdm6YATiH5b1d1wYT/5Fax5SXAP8PVdc6s
-         0mp9voNW2Xh8fN+pmLOManQeKRWCVHYb2PEBt1m4HIv6BMCTWbX6ThjZfZR9/qXOCrxT
-         t9m7CJpRD3nwIeXOrAXIVgNatGkI9vsvjowkcjT7FTs46ZDaTFdUFJY3g90gXdO8uvT1
-         +VTA==
-X-Gm-Message-State: AOAM532260C1X77jNizJc1MzjqHAgIGV9OYCpMkcN0PB5e8YMzeB3qfu
-        6e/6ErqPzUmR3EMPUMU10c3xNeyOZVXE2A==
-X-Google-Smtp-Source: ABdhPJyJit3hnS/YjTniZmJ2kknMK6SoFyfAJ/HlzlsgZ7pfH0IL0m/0hSt8/6YePAJ85te1SjUyuQ==
-X-Received: by 2002:a5d:598b:0:b0:20e:6288:8c6a with SMTP id n11-20020a5d598b000000b0020e62888c6amr7114554wri.531.1653034563061;
-        Fri, 20 May 2022 01:16:03 -0700 (PDT)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id l6-20020a05600c088600b00397335cf750sm1283305wmp.47.2022.05.20.01.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 01:16:02 -0700 (PDT)
-Date:   Fri, 20 May 2022 10:15:55 +0200
-From:   LABBE Corentin <clabbe@baylibre.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] dt-bindings: net: Add documentation for optional
- regulators
-Message-ID: <YodOO6PfsjelCa1x@Red>
-References: <20220518200939.689308-1-clabbe@baylibre.com>
- <20220518200939.689308-5-clabbe@baylibre.com>
- <95f3f0a4-17e6-ec5f-6f2f-23a5a4993a44@linaro.org>
- <YoYqmAB3P7fNOSVG@sirena.org.uk>
- <c74b0524-60c6-c3af-e35f-13521ba2b02e@linaro.org>
- <YoYw2lKbgCiDXP0A@lunn.ch>
- <YoZm9eabWy/FNKu1@sirena.org.uk>
- <0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org>
+        Fri, 20 May 2022 04:16:59 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7675C762AD
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:16:58 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nrxoV-0001il-A1; Fri, 20 May 2022 10:16:47 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nrxoS-0004CF-BI; Fri, 20 May 2022 10:16:44 +0200
+Date:   Fri, 20 May 2022 10:16:44 +0200
+From:   "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: [PATCH 07/10] rtw88: Add rtw8723du chipset support
+Message-ID: <20220520081644.GD25578@pengutronix.de>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+ <20220518082318.3898514-8-s.hauer@pengutronix.de>
+ <819189eb24ecece40e9d0c2a51f54d4084bb9493.camel@realtek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org>
+In-Reply-To: <819189eb24ecece40e9d0c2a51f54d4084bb9493.camel@realtek.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:16:18 up 50 days, 20:45, 53 users,  load average: 0.03, 0.08,
+ 0.12
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, May 20, 2022 at 09:57:26AM +0200, Krzysztof Kozlowski a écrit :
-> On 19/05/2022 17:49, Mark Brown wrote:
-> > On Thu, May 19, 2022 at 01:58:18PM +0200, Andrew Lunn wrote:
-> >> On Thu, May 19, 2022 at 01:33:21PM +0200, Krzysztof Kozlowski wrote:
-> >>> On 19/05/2022 13:31, Mark Brown wrote:
-> >>>> On Thu, May 19, 2022 at 11:55:28AM +0200, Krzysztof Kozlowski wrote:
-> >>>>> On 18/05/2022 22:09, Corentin Labbe wrote:
+On Fri, May 20, 2022 at 07:47:44AM +0000, Pkshih wrote:
+> On Wed, 2022-05-18 at 10:23 +0200, Sascha Hauer wrote:
+> > Add support for the rtw8723du chipset based on
+> > https://github.com/ulli-kroll/rtw88-usb.git
 > > 
-> >>>>>> +  regulators:
-> >>>>>> +    description:
-> >>>>>> +       List of phandle to regulators needed for the PHY
+> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> > ---
+> >  drivers/net/wireless/realtek/rtw88/Kconfig    | 11 +++++
+> >  drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
+> >  drivers/net/wireless/realtek/rtw88/rtw8723d.c | 19 +++++++++
+> >  drivers/net/wireless/realtek/rtw88/rtw8723d.h |  1 +
+> >  .../net/wireless/realtek/rtw88/rtw8723du.c    | 40 +++++++++++++++++++
+> >  .../net/wireless/realtek/rtw88/rtw8723du.h    | 13 ++++++
+> >  6 files changed, 87 insertions(+)
+> >  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.c
+> >  create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723du.h
 > > 
-> >>>>> I don't understand that... is your PHY defining the regulators or using
-> >>>>> supplies? If it needs a regulator (as a supply), you need to document
-> >>>>> supplies, using existing bindings.
 > > 
-> >>>> They're trying to have a generic driver which works with any random PHY
-> >>>> so the binding has no idea what supplies it might need.
-> > 
-> >>> OK, that makes sense, but then question is why not using existing
-> >>> naming, so "supplies" and "supply-names"?
-> > 
-> >> I'm not saying it is not possible, but in general, the names are not
-> >> interesting. All that is needed is that they are all on, or
-> >> potentially all off to save power on shutdown. We don't care how many
-> >> there are, or what order they are enabled.
-> > 
-> > I think Krzysztof is referring to the name of the property rather than
-> > the contents of the -names property there.
 > 
-> Yes, exactly. Existing pattern for single regulator supply is
-> "xxx-supply", so why this uses a bit different pattern instead of
-> something more consistent ("supplies" and "supply-names")?
+> [...]
 > 
+> > diff --git a/drivers/net/wireless/realtek/rtw88/rtw8723du.c
+> > b/drivers/net/wireless/realtek/rtw88/rtw8723du.c
+> > new file mode 100644
+> > index 0000000000000..910f64c168131
+> > --- /dev/null
+> > +++ b/drivers/net/wireless/realtek/rtw88/rtw8723du.c
+> > @@ -0,0 +1,40 @@
+> > +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+> > +/* Copyright(c) 2018-2019  Realtek Corporation
+> > + */
+> > +
+> > +#include <linux/module.h>
+> > +#include <linux/usb.h>
+> > +#include "main.h"
+> > +#include "rtw8723du.h"
+> > +#include "usb.h"
+> > +
+> > +static const struct usb_device_id rtw_8723du_id_table[] = {
+> > +	/*
+> > +	 * ULLI :
+> > +	 * ID found in rtw8822bu sources
+> > +	 */
+> 
+> checkpatch.pl will tell us this comment block should be
+> 
+> /* ULLI :
+>  * ID found in rtw8822bu sources
+>  */
+> 
+> But, I think we can just "/* ULLI: ID found in rtw8822bu sources */" 
+> if we really want to keep this comment.
 
-I agree that supplies and supply-names are better.
-But in another answer Rob is against it, so if I understand well, we are stuck to use individual xxx-supply.
-I will try to create a new regulator_get_bulk_all() which scan all properties matching xxx-supply
+I'll drop this comment.
+
+> > +
+> > +#ifndef __RTW_8723DU_H_
+> > +#define __RTW_8723DU_H_
+> > +
+> > +/* USB Vendor/Product IDs */
+> > +#define RTW_USB_VENDOR_ID_REALTEK		0x0BDA
+> 
+> rtw8821cu.h and rtw8822bu.h define this too.
+> Can we move it to usb.h?
+
+Yes.
+
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
