@@ -2,171 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B609C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353401AbiETUGp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 16:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43612 "EHLO
+        id S242269AbiETUIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 16:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353414AbiETUGY (ORCPT
+        with ESMTP id S237646AbiETUIN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 16:06:24 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2F621E36;
-        Fri, 20 May 2022 13:06:22 -0700 (PDT)
+        Fri, 20 May 2022 16:08:13 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FA015F6EE
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:08:08 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id gh17so4488579ejc.6
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:08:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653077183; x=1684613183;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=PUvRDpvZT9v/W/ZNUZCWbBBqz/jvGvrHkHApZBnQyGA=;
-  b=tOeKaN6TRLuVlnZtSCsox/gM5vYcwLWQAiHrfNGoBvJKfrGnYVCEj1Jm
-   CZ5bwzl4ouMdbuGkUiBoJsYrGELv1YfZimZkSwqqw3tdOocIQOE7hmscW
-   ynGnzewPat8NSX1Ii+PKWFJjDgNtNxQHgq3BmcFDLLP56LWtqejcx37K1
-   U=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 20 May 2022 13:06:22 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 13:06:21 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 13:06:21 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 13:06:20 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v9 2/3] phy: qcom-qmp: add regulator_set_load to dp phy
-Date:   Fri, 20 May 2022 13:06:06 -0700
-Message-ID: <1653077167-16684-3-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1653077167-16684-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1653077167-16684-1-git-send-email-quic_khsieh@quicinc.com>
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hqeP5rdlyT9Ojb1o/Y+c7yG6gWz0o8Ya2ALrWN0i/h4=;
+        b=A6tATn1zlH3Ye7b1NXpayU3ySugX53PcyxEpLXWt24vF/to1SKuRlxfJtdLplXWXfq
+         A0noXbVj2uPtYxryi/uvbqcqTk9arKbWsQfNmCzY6HfD5gaBDDeHd01OvZk9xwBmCj94
+         IDsrT/ihzL2ZJm9QRmpcunQ9T/lHggMYZ7qko=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hqeP5rdlyT9Ojb1o/Y+c7yG6gWz0o8Ya2ALrWN0i/h4=;
+        b=3lqS15wdYSWzUqKaQTkr3XbylbOSZLHJXc64DcNfLFxOHNxloty+AS5DERV6Fh5HoG
+         h5jnJ0GqyWkZp3iSFrZ2FrmhQhDJXn1e4xJz8VffGltDpjY944Y6MLLckDlECO3N29cX
+         yxhIJ1LZjMEIyc0wyLLfav0asAYEp9+iAjkuIWnvRPatY+13VRYld7oku4FFwCl2V9t9
+         i/d+DKW6fxMCZnApnnh4IdLqG4bolF+gyYwr2L7Ye0//LYJokCe9ona9ixFm5y0ge6Cz
+         psYu6pP9ba7lnG0cf0Pc7wg82mraJyaKqBBi0YeWYq2I9GS6TB8gxsW24bgO7uIZ6vXc
+         xLOQ==
+X-Gm-Message-State: AOAM532FLoFydvnvD2DmcMFrRWfIOXhgLtGv6OKJjE4SkgUgDrbtHxka
+        1puPiCeh104+U8+OzudhUIYgyZPtldfOeOAlpnM=
+X-Google-Smtp-Source: ABdhPJxSLLhajuSsJnMsgmwtv7UMA5WN5hAnuoC5GC5jcfG6f4hdHR4N2qMygMj7y7dCI7ZnPR+BHw==
+X-Received: by 2002:a17:907:7da2:b0:6f4:dcb8:7b7 with SMTP id oz34-20020a1709077da200b006f4dcb807b7mr10132657ejc.443.1653077286954;
+        Fri, 20 May 2022 13:08:06 -0700 (PDT)
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
+        by smtp.gmail.com with ESMTPSA id b2-20020aa7df82000000b0042abfe32ac8sm4666694edy.30.2022.05.20.13.08.06
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 13:08:06 -0700 (PDT)
+Received: by mail-wm1-f51.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso4919234wmp.0
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:08:06 -0700 (PDT)
+X-Received: by 2002:a05:600c:3c99:b0:392:b49c:7b79 with SMTP id
+ bg25-20020a05600c3c9900b00392b49c7b79mr9500680wmb.199.1653077285694; Fri, 20
+ May 2022 13:08:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220518155252.1.I176d4254c79cfaafa38cbe36f066f02f819df9b6@changeid>
+In-Reply-To: <20220518155252.1.I176d4254c79cfaafa38cbe36f066f02f819df9b6@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 20 May 2022 13:07:53 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=X+4JhN8EScFDZAiduo6zy7c0pbr6EOJpSo25ctOW-zRA@mail.gmail.com>
+Message-ID: <CAD=FV=X+4JhN8EScFDZAiduo6zy7c0pbr6EOJpSo25ctOW-zRA@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280: Enable wifi for Chrome OS boards
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Kevin Lund <kglund@google.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add regulator_set_load() before enable regulator at
-DP phy driver.
+Hi,
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/phy/qualcomm/phy-qcom-qmp.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+On Wed, May 18, 2022 at 3:53 PM Matthias Kaehlcke <mka@chromium.org> wrote:
+>
+> Enable the 'wifi' and 'remoteproc_wpss' nodes for all sc7280
+> based Chrome OS boards. Delete the corresponding entries from
+> sc7280-idp.dtsi since this file includes sc7280-chrome-common.dtsi.
+>
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+>
+>  arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi | 13 +++++++++++++
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           | 11 -----------
+>  2 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index b144ae1..bd267c7 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -3130,6 +3130,7 @@ struct qmp_phy_cfg {
- 	int num_resets;
- 	/* regulators to be requested */
- 	const char * const *vreg_list;
-+	const unsigned int *vreg_enable_load;
- 	int num_vregs;
- 
- 	/* array of registers with different offsets */
-@@ -3346,6 +3347,10 @@ static const char * const qmp_phy_vreg_l[] = {
- 	"vdda-phy", "vdda-pll",
- };
- 
-+static const unsigned int qmp_phy_vreg_enable_load[] = {
-+	21800, 36000
-+};
-+
- static const struct qmp_phy_cfg ipq8074_usb3phy_cfg = {
- 	.type			= PHY_TYPE_USB3,
- 	.nlanes			= 1,
-@@ -3711,6 +3716,7 @@ static const struct qmp_phy_cfg sc7180_usb3phy_cfg = {
- 	.reset_list		= sc7180_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(sc7180_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v3_usb3phy_regs_layout,
- 
-@@ -3749,6 +3755,7 @@ static const struct qmp_phy_cfg sc7180_dpphy_cfg = {
- 	.reset_list		= sc7180_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(sc7180_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v3_usb3phy_regs_layout,
- 
-@@ -3940,6 +3947,7 @@ static const struct qmp_phy_cfg sm8150_usb3phy_cfg = {
- 	.reset_list		= msm8996_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v4_usb3phy_regs_layout,
- 
-@@ -4009,6 +4017,7 @@ static const struct qmp_phy_cfg sc8180x_dpphy_cfg = {
- 	.reset_list		= sc7180_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(sc7180_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v3_usb3phy_regs_layout,
- 
-@@ -4072,6 +4081,7 @@ static const struct qmp_phy_cfg sm8250_usb3phy_cfg = {
- 	.reset_list		= msm8996_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v4_usb3phy_regs_layout,
- 
-@@ -4139,6 +4149,7 @@ static const struct qmp_phy_cfg sm8250_dpphy_cfg = {
- 	.reset_list		= msm8996_usb3phy_reset_l,
- 	.num_resets		= ARRAY_SIZE(msm8996_usb3phy_reset_l),
- 	.vreg_list		= qmp_phy_vreg_l,
-+	.vreg_enable_load	= qmp_phy_vreg_enable_load,
- 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
- 	.regs			= qmp_v4_usb3phy_regs_layout,
- 
-@@ -6107,7 +6118,7 @@ static int qcom_qmp_phy_probe(struct platform_device *pdev)
- 	const struct qmp_phy_cfg *usb_cfg = NULL;
- 	const struct qmp_phy_cfg *dp_cfg = NULL;
- 	int num, id, expected_phys;
--	int ret;
-+	int ret, i;
- 
- 	qmp = devm_kzalloc(dev, sizeof(*qmp), GFP_KERNEL);
- 	if (!qmp)
-@@ -6175,6 +6186,12 @@ static int qcom_qmp_phy_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	if (cfg->vreg_enable_load) {
-+		for (i = 0; i < cfg->num_vregs; i++)
-+			regulator_set_load(qmp->vregs[i].consumer,
-+						cfg->vreg_enable_load[i]);
-+	}
-+
- 	num = of_get_available_child_count(dev->of_node);
- 	/* do we have a rogue child node ? */
- 	if (num > expected_phys)
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Looks right to me. You're also adding the firmware-name, but:
 
+* That's in the bindings.
+
+* The name you have there matches what's in the linux-firmware
+repository in commit 0d5e9f7e0aa1 ("ath11k: WCN6750 hw1.0: add to
+WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1")
+
+Hmmm, I guess one question is whether this same firmware would also be
+used for other, non-Chrome sc7280 devices. If so then the
+firmware-name probably belongs straight in sc7280.dtsi? I suppose that
+could always happen in a future change if/when we have other sc7280
+devices and it's clear that they're sharing firmware. Thus:
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+
+-Doug
