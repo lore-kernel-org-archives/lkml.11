@@ -2,46 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C81C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344670AbiETCAl (ORCPT
+        id S1344681AbiETCAo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 22:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35602 "EHLO
+        Thu, 19 May 2022 22:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232465AbiETCAd (ORCPT
+        with ESMTP id S233642AbiETCAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 19 May 2022 22:00:33 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592EEEC3CD
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:00:27 -0700 (PDT)
-X-UUID: 90072aa2a126403da1316885603b0603-20220520
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5CCEC3E1
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:00:28 -0700 (PDT)
+X-UUID: 678f8650941a41e6a635e18ff1ae7ee0-20220520
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:f0371811-abbd-47ed-bbd5-f85edc1ea991,OB:10,L
-        OB:10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:105
-X-CID-INFO: VERSION:1.1.5,REQID:f0371811-abbd-47ed-bbd5-f85edc1ea991,OB:10,LOB
-        :10,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:105
-X-CID-META: VersionHash:2a19b09,CLOUDID:bc47dee2-edbf-4bd4-8a34-dfc5f7bb086d,C
-        OID:24d3e0cdc46f,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 90072aa2a126403da1316885603b0603-20220520
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.5,REQID:9c1dffcf-4ed1-411f-be01-ab84a57e06b1,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:2a19b09,CLOUDID:284adee2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 678f8650941a41e6a635e18ff1ae7ee0-20220520
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
         (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1841095910; Fri, 20 May 2022 10:00:13 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 20 May 2022 10:00:13 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2041282179; Fri, 20 May 2022 10:00:21 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 20 May 2022 10:00:12 +0800
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Fri, 20 May 2022 10:00:20 +0800
 Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 20 May 2022 10:00:12 +0800
+ 15.2.792.3 via Frontend Transport; Fri, 20 May 2022 10:00:19 +0800
 From:   <xinlei.lee@mediatek.com>
 To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
         <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
@@ -52,9 +46,9 @@ CC:     <dri-devel@lists.freedesktop.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
         Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v7,1/4] drm/mediatek: Modify dsi funcs to atomic operations
-Date:   Fri, 20 May 2022 10:00:04 +0800
-Message-ID: <1653012007-11854-2-git-send-email-xinlei.lee@mediatek.com>
+Subject: [PATCH v7,4/4] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
+Date:   Fri, 20 May 2022 10:00:07 +0800
+Message-ID: <1653012007-11854-5-git-send-email-xinlei.lee@mediatek.com>
 X-Mailer: git-send-email 2.6.4
 In-Reply-To: <1653012007-11854-1-git-send-email-xinlei.lee@mediatek.com>
 References: <1653012007-11854-1-git-send-email-xinlei.lee@mediatek.com>
@@ -67,49 +61,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Because .enable & .disable are deprecated.
-Use .atomic_enable & .atomic_disable instead.
+In the dsi_enable function, mtk_dsi_rxtx_control is to
+pull up the MIPI signal operation. Before dsi_disable,
+MIPI should also be pulled down by writing a register
+instead of disabling dsi.
+
+If disable dsi without pulling the mipi signal low, the value of
+the register will still maintain the setting of the mipi signal being
+pulled high.
+After resume, even if the mipi signal is not pulled high, it will still
+be in the high state.
+
+Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
 
 Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
 Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 Reviewed-by: CK Hu <ck.hu@mediatek.com>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index bd3f5b485085..f880136cec09 100644
+index 25e84d9426bf..79c906868bc2 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -763,14 +763,16 @@ static void mtk_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	drm_display_mode_to_videomode(adjusted, &dsi->vm);
- }
+@@ -688,6 +688,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_lane0_ulp_mode_enter(dsi);
+ 	mtk_dsi_clk_ulp_mode_enter(dsi);
++	/* set the lane number as 0 to pull down mipi */
++	writel(0, dsi->regs + DSI_TXRX_CTRL);
  
--static void mtk_dsi_bridge_disable(struct drm_bridge *bridge)
-+static void mtk_dsi_bridge_atomic_disable(struct drm_bridge *bridge,
-+					  struct drm_bridge_state *old_bridge_state)
- {
- 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
- 
- 	mtk_output_dsi_disable(dsi);
- }
- 
--static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
-+static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
-+					 struct drm_bridge_state *old_bridge_state)
- {
- 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
- 
-@@ -779,8 +781,8 @@ static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
- 
- static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
- 	.attach = mtk_dsi_bridge_attach,
--	.disable = mtk_dsi_bridge_disable,
--	.enable = mtk_dsi_bridge_enable,
-+	.atomic_disable = mtk_dsi_bridge_atomic_disable,
-+	.atomic_enable = mtk_dsi_bridge_atomic_enable,
- 	.mode_set = mtk_dsi_bridge_mode_set,
- };
+ 	mtk_dsi_disable(dsi);
  
 -- 
 2.18.0
