@@ -2,93 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B80C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDAEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351633AbiETSVg (ORCPT
+        id S1351997AbiETSYe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 14:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54034 "EHLO
+        Fri, 20 May 2022 14:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352730AbiETSV1 (ORCPT
+        with ESMTP id S233230AbiETSYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 14:21:27 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79937338A5;
-        Fri, 20 May 2022 11:21:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1653070700;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=MaJX4dK0P5th0rZhmYmkDkUC5bQw4gZcWPFsntkqna0=;
-    b=clWdFrltBcCuNGcn5OZRufe9h0Wz1sbiCW42THUq0zdGsTZJhL9Ll7XLhDczL/Rq5b
-    EqOy6JuItQv/jgo1Vrfsly74nGKok/Z8hl8yERVSN0wtt2HAv8yvXt8edgAv4wu/Oi4d
-    l27Y7aaVoclGJa0BqQJk6BP7skbzTfR/RRzLNCh4r+rUl6BcyV09qfDcHdC+p9ERJzFa
-    SoqOeNU3dRARYDBF45Ky7uB0uCSYDUdFf83aTiobNtQ4nGkkDpEYFWIWGn7W5GF0PBol
-    GnR9siFnWXeDc9mJBpfArElVu1PlVXk+Q0n966ZiJVlNIE4kxzvdjPUy6TIcmRh6IMbP
-    1Lng==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrK85lg=="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id 9056edy4KIIKHeZ
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 20 May 2022 20:18:20 +0200 (CEST)
-Date:   Fri, 20 May 2022 20:18:19 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/9] dt-bindings: arm: qcom: add missing MSM8916 board
- compatibles
-Message-ID: <YofbXYbASdPtITMl@gerhold.net>
-References: <20220520123252.365762-1-krzysztof.kozlowski@linaro.org>
- <20220520123252.365762-5-krzysztof.kozlowski@linaro.org>
+        Fri, 20 May 2022 14:24:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A58190D19
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:24:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77A28617F7
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 18:24:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF42C385A9;
+        Fri, 20 May 2022 18:24:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653071068;
+        bh=5Tl4tCmdW+syn/4B/DwZY+zAZFIx2KKfFnqS2HaiuZY=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=j5rsN30XT1/x5v6PkXZAnyu2cOr1NFWbSvMdPIBh3VJKC2b5JGmRKu0iWG3CkMJd8
+         LUDkvPqoQfMFzpyHEp5PPEQ01nTFDRnkIcu4V8AJqEHudYk/ejxpdjJHccaCHiMXqs
+         il3GNFee/lrp9A2NjjTZxOt1BIDfJzBg5CzhnLFwJ/E5toKwJltIS3vU+WOYXbLMx3
+         PrNy+o8XnzYPrG+MG1P44IrhMiH/dKlwBQ0CSnLIdW+dnYU1uoylUeICfE+cJw06N9
+         +D8M91vJAol7eCVXY+ThWZUVZSA8ouYkOSMgHfDMEWLEZdN2+KmGBukxUbQY8pjcCD
+         vpjyixZ2L2L3Q==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 6E5485C05F8; Fri, 20 May 2022 11:24:28 -0700 (PDT)
+Date:   Fri, 20 May 2022 11:24:28 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com, w@1wt.eu
+Subject: [GIT PULL] nolibc changes for v5.19
+Message-ID: <20220520182428.GA3791250@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220520123252.365762-5-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 02:32:48PM +0200, Krzysztof Kozlowski wrote:
-> Document several board compatibles already present in Linux kernel.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Hello, Linus,
 
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+Once the merge window opens, please pull the latest nolibc changes from:
 
-> ---
->  Documentation/devicetree/bindings/arm/qcom.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-> index 88759f8a3049..71d857dcf6b6 100644
-> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
-> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-> @@ -160,8 +160,14 @@ properties:
->        - items:
->            - enum:
->                - alcatel,idol347
-> +              - asus,z00l
-> +              - huawei,g7
-> +              - longcheer,l8910
->                - samsung,a3u-eur
->                - samsung,a5u-eur
-> +              - samsung,j5
-> +              - samsung,serranove
-> +              - wingtech,wt88047
->            - const: qcom,msm8916
->  
->        - items:
-> -- 
-> 2.32.0
-> 
+  git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/nolibc.2022.05.20a
+  # HEAD 11dbdaeff41d9ec9376476889651fac4838bff99 tools/nolibc/string: Implement `strdup()` and `strndup()`
+
+----------------------------------------------------------------
+Pull request for nolibc library for v5.19
+
+This pull request adds a number of library functions and splits this
+library into multiple files.
+
+----------------------------------------------------------------
+Ammar Faizi (9):
+      tools/nolibc: x86-64: Update System V ABI document link
+      tools/nolibc: Replace `asm` with `__asm__`
+      tools/nolibc: Remove .global _start from the entry point code
+      tools/nolibc: i386: Implement syscall with 6 arguments
+      tools/nolibc/sys: Implement `mmap()` and `munmap()`
+      tools/nolibc/types: Implement `offsetof()` and `container_of()` macro
+      tools/nolibc/stdlib: Implement `malloc()`, `calloc()`, `realloc()` and `free()`
+      tools/nolibc/string: Implement `strnlen()`
+      tools/nolibc/string: Implement `strdup()` and `strndup()`
+
+Willy Tarreau (52):
+      tools/nolibc: use pselect6 on RISCV
+      tools/nolibc: guard the main file against multiple inclusion
+      tools/nolibc/std: move the standard type definitions to std.h
+      tools/nolibc/types: split syscall-specific definitions into their own files
+      tools/nolibc/arch: split arch-specific code into individual files
+      tools/nolibc/sys: split the syscall definitions into their own file
+      tools/nolibc/stdlib: extract the stdlib-specific functions to their own file
+      tools/nolibc/string: split the string functions into string.h
+      tools/nolibc/ctype: split the is* functions to ctype.h
+      tools/nolibc/ctype: add the missing is* functions
+      tools/nolibc/types: move the FD_* functions to macros in types.h
+      tools/nolibc/types: make FD_SETSIZE configurable
+      tools/nolibc/types: move makedev to types.h and make it a macro
+      tools/nolibc/stdlib: move ltoa() to stdlib.h
+      tools/nolibc/stdlib: replace the ltoa() function with more efficient ones
+      tools/nolibc/stdlib: add i64toa() and u64toa()
+      tools/nolibc/stdlib: add utoh() and u64toh()
+      tools/nolibc/stdio: add a minimal set of stdio functions
+      tools/nolibc/stdio: add stdin/stdout/stderr and fget*/fput* functions
+      tools/nolibc/stdio: add fwrite() to stdio
+      tools/nolibc/stdio: add a minimal [vf]printf() implementation
+      tools/nolibc/types: define EXIT_SUCCESS and EXIT_FAILURE
+      tools/nolibc/stdio: add perror() to report the errno value
+      tools/nolibc/sys: make open() take a vararg on the 3rd argument
+      tools/nolibc/stdlib: avoid a 64-bit shift in u64toh_r()
+      tools/nolibc/stdlib: make raise() use the lower level syscalls only
+      tools/nolibc/sys: make getpgrp(), getpid(), gettid() not set errno
+      tools/nolibc/string: use unidirectional variants for memcpy()
+      tools/nolibc/string: slightly simplify memmove()
+      tools/nolibc/string: add strncpy() and strlcpy()
+      tools/nolibc/string: add tiny versions of strncat() and strlcat()
+      tools/nolibc: move exported functions to their own section
+      tools/nolibc/arch: mark the _start symbol as weak
+      tools/nolibc/types: define PATH_MAX and MAXPATHLEN
+      tools/nolibc/string: export memset() and memmove()
+      tools/nolibc/errno: extract errno.h from sys.h
+      tools/nolibc/unistd: extract msleep(), sleep(), tcsetpgrp() to unistd.h
+      tools/nolibc/unistd: add usleep()
+      tools/nolibc/signal: move raise() to signal.h
+      tools/nolibc/time: create time.h with time()
+      tools/nolibc: also mention how to build by just setting the include path
+      tools/nolibc/stdlib: implement abort()
+      tools/nolibc/stdio: make printf(%s) accept NULL
+      tools/nolibc/stdlib: add a simple getenv() implementation
+      tools/nolibc/stdio: add support for '%p' to vfprintf()
+      tools/nolibc/string: add strcmp() and strncmp()
+      tools/nolibc/sys: add syscall definition for getppid()
+      tools/nolibc/types: add poll() and waitpid() flag definitions
+      tools/nolibc: add a makefile to install headers
+      tools/nolibc: add the nolibc subdir to the common Makefile
+      tools/nolibc/string: do not use __builtin_strlen() at -O0
+      tools/nolibc/stdlib: only reference the external environ when inlined
+
+ tools/Makefile                      |    4 +
+ tools/include/nolibc/Makefile       |   42 +
+ tools/include/nolibc/arch-aarch64.h |  199 +++
+ tools/include/nolibc/arch-arm.h     |  204 +++
+ tools/include/nolibc/arch-i386.h    |  219 +++
+ tools/include/nolibc/arch-mips.h    |  215 +++
+ tools/include/nolibc/arch-riscv.h   |  204 +++
+ tools/include/nolibc/arch-x86_64.h  |  215 +++
+ tools/include/nolibc/arch.h         |   32 +
+ tools/include/nolibc/ctype.h        |   99 ++
+ tools/include/nolibc/errno.h        |   27 +
+ tools/include/nolibc/nolibc.h       | 2540 +----------------------------------
+ tools/include/nolibc/signal.h       |   22 +
+ tools/include/nolibc/std.h          |   49 +
+ tools/include/nolibc/stdio.h        |  306 +++++
+ tools/include/nolibc/stdlib.h       |  423 ++++++
+ tools/include/nolibc/string.h       |  285 ++++
+ tools/include/nolibc/sys.h          | 1247 +++++++++++++++++
+ tools/include/nolibc/time.h         |   28 +
+ tools/include/nolibc/types.h        |  205 +++
+ tools/include/nolibc/unistd.h       |   54 +
+ 21 files changed, 4114 insertions(+), 2505 deletions(-)
+ create mode 100644 tools/include/nolibc/Makefile
+ create mode 100644 tools/include/nolibc/arch-aarch64.h
+ create mode 100644 tools/include/nolibc/arch-arm.h
+ create mode 100644 tools/include/nolibc/arch-i386.h
+ create mode 100644 tools/include/nolibc/arch-mips.h
+ create mode 100644 tools/include/nolibc/arch-riscv.h
+ create mode 100644 tools/include/nolibc/arch-x86_64.h
+ create mode 100644 tools/include/nolibc/arch.h
+ create mode 100644 tools/include/nolibc/ctype.h
+ create mode 100644 tools/include/nolibc/errno.h
+ create mode 100644 tools/include/nolibc/signal.h
+ create mode 100644 tools/include/nolibc/std.h
+ create mode 100644 tools/include/nolibc/stdio.h
+ create mode 100644 tools/include/nolibc/stdlib.h
+ create mode 100644 tools/include/nolibc/string.h
+ create mode 100644 tools/include/nolibc/sys.h
+ create mode 100644 tools/include/nolibc/time.h
+ create mode 100644 tools/include/nolibc/types.h
+ create mode 100644 tools/include/nolibc/unistd.h
