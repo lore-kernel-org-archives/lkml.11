@@ -2,143 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F686C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCBFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343957AbiETAVE (ORCPT
+        id S1343965AbiETAVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 20:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60094 "EHLO
+        Thu, 19 May 2022 20:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343956AbiETAUz (ORCPT
+        with ESMTP id S1343950AbiETAVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 20:20:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C274224BE0;
-        Thu, 19 May 2022 17:20:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653006054; x=1684542054;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AX9u0AjfkhQIv902pkLIaB2pcFVPrNmehZjTGBz16NU=;
-  b=mtdNsYRF+q2AdF6JvRpi9EUz8Qwia2g7y2xkHHWUnQGdev+VW+5yPics
-   qubndh+n8FMLi9x+3hNsrUwl4LvDkA5nbVC/VsZYS2FCzIddNqF0jDAtS
-   ebN+wsypSB6luy265BQy1d1Q5F6jati6qsXeYqY/XfEvMzdzpb0hPWChY
-   ghH+vYtWAXId7tBjSdcb+oiNbdtQ8NusS+PAgAlLVPc6AjwRGRfPnc8jf
-   HxMDcRhkdvfCVliekjAwSTxhse0S0ARg5QpvVsh69wpOh3zDbNgDz2tQe
-   6l+yN1RyuExN57sa5jNkXgWJ24AnEY1oF4WcKwqZoDo/ndCEayA3n5Fwc
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="272394418"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="272394418"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 17:20:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="546392359"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 19 May 2022 17:20:48 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrqNs-000459-6h;
-        Fri, 20 May 2022 00:20:48 +0000
-Date:   Fri, 20 May 2022 08:20:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Meng Li <li.meng@amd.com>, Shuah Khan <skhan@linuxfoundation.org>,
-        Huang Rui <ray.huang@amd.com>, linux-pm@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Nathan Fontenot <nathan.fontenot@amd.com>,
-        Deepak Sharma <deepak.sharma@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Xiaojian Du <Xiaojian.Du@amd.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        Meng Li <li.meng@amd.com>
-Subject: Re: [PATCH V6 2/4] cpufreq: amd-pstate: Add test module for
- amd-pstate driver
-Message-ID: <202205200812.g9S1SWP3-lkp@intel.com>
-References: <20220519134737.359290-3-li.meng@amd.com>
+        Thu, 19 May 2022 20:21:38 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203C99CF4B
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:21:37 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id i19so12742790eja.11
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:21:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+wYJNaePiHcWNH/q3h1ZhNLEV4dJ71MIiiBiHgAmbYA=;
+        b=NVM/bktb8CtRk0VgJ75AEtD+l1Etp4dc82+iRcIAsF62UYPJmJUe2sENhNxQGCGQpE
+         vCsHBMNUy7vONzvYsBEHm8ej3XihpZ8QIBEoXSsqArdCBjVJF4IByYjx2R35+TnR4FqV
+         VDBFu5MpvMXsafQZ0SE+nZWoCjniwY9mA1MNg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+wYJNaePiHcWNH/q3h1ZhNLEV4dJ71MIiiBiHgAmbYA=;
+        b=O/hb0l+eauUOydPJ+X6PDe+r5ewmtvfODcwmYH8ahg0XqFDgQKp2W3z6/cqJhzOWVO
+         D0h4lnYQfOWFfhVnjMGdSRtz8P217uUxSBManSLNa6KK/AyTC2rg/CwVGVEWZCMtK6tU
+         qUHDiM2qIZ6SPy3OHJqr4ROy4eCJzRfKvDkO78Pd90fcuZf3+7EW5orCrnaBHeYXAC+n
+         /dr8fEuc0TMNRviNYz/2SRX2YW5/iNoDh5xcjjltc/5XUkTPlWYj116+OUjfC65hk42T
+         /KPkmVmlAr2yszrGf/7GUtWijBSm0vQOZg8eY3CufG6fEpw3/5qY9bEEscTBDtvehGT5
+         4btw==
+X-Gm-Message-State: AOAM533V3oKoCvAOiV9Otv0z3dGcQYyOX04JsQ+BG8iG9KhcmZb/IA62
+        dfnXPo3e/3TIK9r+4/UxdNbbXbAYcyt+zsjQ3j0=
+X-Google-Smtp-Source: ABdhPJzPrJ8zGcRWMPOP2PJNJAK5Fbrl6/BgusQP8fQkCJvp56hibTuiFQhGnY465Zq2NEzWdwN8VQ==
+X-Received: by 2002:a17:907:6d25:b0:6f4:d753:f250 with SMTP id sa37-20020a1709076d2500b006f4d753f250mr6442505ejc.580.1653006095466;
+        Thu, 19 May 2022 17:21:35 -0700 (PDT)
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
+        by smtp.gmail.com with ESMTPSA id m5-20020a17090677c500b006f3ef214e28sm2638465ejn.142.2022.05.19.17.21.33
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 17:21:33 -0700 (PDT)
+Received: by mail-wr1-f53.google.com with SMTP id j24so9406563wrb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:21:33 -0700 (PDT)
+X-Received: by 2002:a5d:5085:0:b0:20d:5f6:63fa with SMTP id
+ a5-20020a5d5085000000b0020d05f663famr5861629wrt.679.1653006092752; Thu, 19
+ May 2022 17:21:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519134737.359290-3-li.meng@amd.com>
+References: <20220511155749.v3.1.I2dd93486c6952bd52f2020904de0133970d11b29@changeid>
+ <20220511155749.v3.2.I4ac7f55aa446699f8c200a23c10463256f6f439f@changeid>
+In-Reply-To: <20220511155749.v3.2.I4ac7f55aa446699f8c200a23c10463256f6f439f@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 19 May 2022 17:21:20 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=X7cr-=UwV_XbAYovTqeUYXO3LVLTU2bLiwf8wU2kGsLA@mail.gmail.com>
+Message-ID: <CAD=FV=X7cr-=UwV_XbAYovTqeUYXO3LVLTU2bLiwf8wU2kGsLA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] drm/probe-helper: For DP, add 640x480 if all other
+ modes are bad
+To:     dri-devel <dri-devel@lists.freedesktop.org>
+Cc:     freedreno <freedreno@lists.freedesktop.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Meng,
+Hi,
 
-Thank you for the patch! Perhaps something to improve:
+On Wed, May 11, 2022 at 3:58 PM Douglas Anderson <dianders@chromium.org> wrote:
+>
+> As per Displayport spec section 5.2.1.2 ("Video Timing Format") says
+> that all detachable sinks shall support 640x480 @60Hz as a fail safe
+> mode.
+>
+> A DP compliance test expected us to utilize the above fact when all
+> modes it presented to the DP source were not achievable. It presented
+> only modes that would be achievable with more lanes and/or higher
+> speeds than we had available and expected that when we couldn't do
+> that then we'd fall back to 640x480 even though it didn't advertise
+> this size.
+>
+> In order to pass the compliance test (and also support any users who
+> might fall into a similar situation with their display), we need to
+> add 640x480 into the list of modes. However, we don't want to add
+> 640x480 all the time. Despite the fact that the DP spec says all sinks
+> _shall support_ 640x480, they're not guaranteed to support it
+> _well_. Continuing to read the spec you can see that the display is
+> not required to really treat 640x480 equal to all the other modes. It
+> doesn't need to scale or anything--just display the pixels somehow for
+> failsafe purposes. It should also be noted that it's not hard to find
+> a display hooked up via DisplayPort that _doesn't_ support 640x480 at
+> all. The HP ZR30w screen I'm sitting in front of has a native DP port
+> and doesn't work at 640x480. I also plugged in a tiny 800x480 HDMI
+> display via a DP to HDMI adapter and that screen definitely doesn't
+> support 640x480.
+>
+> As a compromise solution, let's only add the 640x480 mode if:
+> * We're on DP.
+> * All other modes have been pruned.
+>
+> This acknowledges that 640x480 might not be the best mode to use but,
+> since sinks are _supposed_ to support it, we will at least fall back
+> to it if there's nothing else.
+>
+> Note that we _don't_ add higher resolution modes like 1024x768 in this
+> case. We only add those modes for a failed EDID read where we have no
+> idea what's going on. In the case where we've pruned all modes then
+> instead we only want 640x480 which is the only defined "Fail Safe"
+> resolution.
+>
+> This patch originated in response to Kuogee Hsieh's patch [1].
+>
+> [1] https://lore.kernel.org/r/1650671124-14030-1-git-send-email-quic_khsieh@quicinc.com
+>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Tested-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>
+> Changes in v3:
+> - Removed WARN_ON
+>
+> Changes in v2:
+> - Two underscores for __drm_helper_update_and_validate().
+> - Return err and use WARN_ON instead of returning a bool.
+>
+>  drivers/gpu/drm/drm_probe_helper.c | 27 ++++++++++++++++++++++-----
+>  1 file changed, 22 insertions(+), 5 deletions(-)
 
-[auto build test WARNING on shuah-kselftest/next]
-[also build test WARNING on rafael-pm/linux-next linux/master linus/master v5.18-rc7]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Pushed to drm-misc-next:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Meng-Li/Add-unit-test-module-for-AMD-P-State-driver/20220519-215444
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git next
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220520/202205200812.g9S1SWP3-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/5a00a68d142a32f76cf2e770d75463802273e7ed
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Meng-Li/Add-unit-test-module-for-AMD-P-State-driver/20220519-215444
-        git checkout 5a00a68d142a32f76cf2e770d75463802273e7ed
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/cpufreq/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/kernel.h:29,
-                    from arch/x86/include/asm/percpu.h:27,
-                    from arch/x86/include/asm/current.h:6,
-                    from arch/x86/include/asm/processor.h:17,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:65,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from include/../tools/testing/selftests/kselftest_module.h:5,
-                    from drivers/cpufreq/amd-pstate-ut.c:23:
-   drivers/cpufreq/amd-pstate-ut.c: In function 'get_shared_mem':
->> include/linux/kern_levels.h:5:25: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'ssize_t' {aka 'int'} [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
-     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/linux/printk.h:489:9: note: in expansion of macro 'printk'
-     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~
-   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
-      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
-         |                         ^~~~~~~~
-   include/linux/printk.h:489:16: note: in expansion of macro 'KERN_ERR'
-     489 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |                ^~~~~~~~
-   drivers/cpufreq/amd-pstate-ut.c:83:33: note: in expansion of macro 'pr_err'
-      83 |                                 pr_err("%s ret=%ld unable to read from param file!\n",
-         |                                 ^~~~~~
-
-
-vim +5 include/linux/kern_levels.h
-
-314ba3520e513a Joe Perches 2012-07-30  4  
-04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
-04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
-04d2c8c83d0e3a Joe Perches 2012-07-30  7  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+e7c254d75d16 drm/probe-helper: For DP, add 640x480 if all other modes are bad
