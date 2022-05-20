@@ -2,132 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B41AFC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:08:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:08:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347590AbiETJIB (ORCPT
+        id S1347582AbiETJIr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52174 "EHLO
+        Fri, 20 May 2022 05:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347443AbiETJH4 (ORCPT
+        with ESMTP id S1347452AbiETJIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:07:56 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1CD13C1E2;
-        Fri, 20 May 2022 02:07:53 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 24K8qZVf003709;
-        Fri, 20 May 2022 16:52:35 +0800 (GMT-8)
-        (envelope-from neal_liu@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 20 May
- 2022 17:06:21 +0800
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "Andrew Jeffery" <andrew@aj.id.au>,
-        Felipe Balbi <balbi@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Li Yang" <leoyang.li@nxp.com>
-CC:     Neal Liu <neal_liu@aspeedtech.com>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
+        Fri, 20 May 2022 05:08:44 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C37C13C1D5;
+        Fri, 20 May 2022 02:08:43 -0700 (PDT)
+X-UUID: fa57006af4d64a719e7146ce2c2c3ca2-20220520
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:4add1bdb-e9bd-4862-baff-fa1712f6496c,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:6946ff79-5ef6-470b-96c9-bdb8ced32786,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:-5,EDM:-3,IP:nil,URL:0,File:ni
+        l,QS:0,BEC:nil
+X-UUID: fa57006af4d64a719e7146ce2c2c3ca2-20220520
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1345200159; Fri, 20 May 2022 17:08:35 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Fri, 20 May 2022 17:08:34 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Fri, 20 May 2022 17:08:34 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     <angelogioacchino.delregno@collabora.com>
+CC:     <chun-jie.chen@mediatek.com>, <jose.exposito89@gmail.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linaro-mm-sig@lists.linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 3/3] dt-bindings: usb: add documentation for aspeed udc
-Date:   Fri, 20 May 2022 17:06:17 +0800
-Message-ID: <20220520090617.2225080-4-neal_liu@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220520090617.2225080-1-neal_liu@aspeedtech.com>
-References: <20220520090617.2225080-1-neal_liu@aspeedtech.com>
+        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <miles.chen@mediatek.com>, <mturquette@baylibre.com>,
+        <p.zabel@pengutronix.de>, <rex-bc.chen@mediatek.com>,
+        <sboyd@kernel.org>, <wenst@chromium.org>,
+        <y.oudjana@protonmail.com>, <yassine.oudjana@gmail.com>,
+        <~postmarketos/upstreaming@lists.sr.ht>
+Subject: Re: [PATCH 3/6] clk: mediatek: reset: Return reset data pointer on register
+Date:   Fri, 20 May 2022 17:08:34 +0800
+Message-ID: <20220520090834.28515-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <5b5f6656-8694-dc78-ef42-7ce301849aa4@collabora.com>
+References: <5b5f6656-8694-dc78-ef42-7ce301849aa4@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.10.10]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 24K8qZVf003709
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree binding documentation for the Aspeed USB2.0 Device
-Controller.
+> Il 19/05/22 15:47, Yassine Oudjana ha scritto:
+> > From: Yassine Oudjana <y.oudjana@protonmail.com>
+> > 
+> > Return a struct mtk_clk_rst_data * when registering a reset
+> > controller in preparation for adding an unregister helper
+> > that will take it as an argument. Make the necessary changes
+> > in drivers that do not currently discard the return value
+> > of register functions.
+> > 
+> > Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+> 
+> Hello Yassine,
+> 
+> Thanks for your efforts on helping to make the MediaTek clocks better - I agree
+> (and I'm not the only one..) that there's a lot of work to do on this side.
+> 
+> Though... I don't think that this is the right direction: you're right about
+> properly unregistering (in patch 4/6) the reset controllers on rmmod/failure
+> but I'm not sure that this kind of noise brings any benefit.
+> 
+> Explaining:
+> You definitely saw that there's a new register _with_dev, which uses devm ops
+> and that's going to automatically cleanup in case of removal/failure.
+> This is what we should do.
+> 
+> Hence, my proposal is to drop patch 3/6, 4/6, 5/6 and (slowly, steadily) migrate
+> all of the MediaTek clocks from CLK_OF_DECLARE() to platform drivers (which also
+> means that we can eventually change them to tristate!), so that we slowly remove
+> all users of all functions that are not "_with_dev", and that we finally remove
+> all of these then-unused functions as well.
+> 
+> Making sure that I don't get misunderstood:
+>       I'm not implying that this huge migration work is on your shoulders!
+> 
+> P.S.: Chen-Yu, Miles: do you also agree? :-)
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/usb/aspeed,ast2600-udc.yaml      | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/usb/aspeed,ast2600-udc.yaml
+Agreed. 3/6, 4/6, 5/6 introduce mtk_simple_clk_controller, but we just got
+ChenYu's patch merged to clk-next to switch to clk_hw_onecell_data, and
+hoplefully we can test them in v5.18 or v5.19.
+So I think we should wait for ChenYu's cleanup.
 
-diff --git a/Documentation/devicetree/bindings/usb/aspeed,ast2600-udc.yaml b/Documentation/devicetree/bindings/usb/aspeed,ast2600-udc.yaml
-new file mode 100644
-index 000000000000..c3b6be3d8002
---- /dev/null
-+++ b/Documentation/devicetree/bindings/usb/aspeed,ast2600-udc.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (c) 2020 Facebook Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/usb/aspeed,ast2600-udc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ASPEED USB 2.0 Device Controller
-+
-+maintainers:
-+  - Neal Liu <neal_liu@aspeedtech.com>
-+
-+description: |+
-+  The ASPEED USB 2.0 Device Controller implements 1 control endpoint and
-+  4 generic endpoints for AST260x.
-+
-+  Supports independent DMA channel for each generic endpoint.
-+  Supports 32/256 stages descriptor mode for all generic endpoints.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2600-udc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/aspeed-clock.h>
-+    udc: usb@1e6a2000 {
-+        compatible = "aspeed,ast2600-udc";
-+        reg = <0x1e6a2000 0x300>;
-+        interrupts = <9>;
-+        clocks = <&syscon ASPEED_CLK_GATE_USBPORT2CLK>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_usb2bd_default>;
-+    };
--- 
-2.25.1
+-	struct clk_hw_onecell_data *clk_data;
++	struct mtk_simple_clk_controller *clk_ctrl;
 
+thanks,
+Miles
+
+> 
+> Cheers,
+> Angelo
+> 
+> 
