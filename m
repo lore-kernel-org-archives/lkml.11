@@ -2,69 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C30D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F15FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347649AbiETJSk (ORCPT
+        id S1347674AbiETJTM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        Fri, 20 May 2022 05:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347700AbiETJSb (ORCPT
+        with ESMTP id S1347653AbiETJTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:18:31 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 201CD149171
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 02:18:27 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CF0A81477;
-        Fri, 20 May 2022 02:18:26 -0700 (PDT)
-Received: from [10.57.82.55] (unknown [10.57.82.55])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C14D83F66F;
-        Fri, 20 May 2022 02:18:25 -0700 (PDT)
-Message-ID: <c10de7b0-ca73-e2a8-bdc5-1a3a9edd5f30@arm.com>
-Date:   Fri, 20 May 2022 10:18:20 +0100
+        Fri, 20 May 2022 05:19:08 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204098CCEF;
+        Fri, 20 May 2022 02:19:06 -0700 (PDT)
+Date:   Fri, 20 May 2022 11:19:02 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1653038344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KWPubtkvQ2aCZReywxCS4p4fahrxBl0TxS5i1kN1rQo=;
+        b=gszbfQ6zI4nXwPJMDIOmIvbGJFBZwp7oLxEadOjquG+OVYnR3Ge7ZAFW7beHrFP5E39bA3
+        mMt0ZIiuaKlWdu1X/phpLUyYl5eCIYcfLJFdXTBJ2CQzA0NS/gSdgixkSRcqtcOdX8qPlQ
+        egaskZ3eqGPOyjvpABCn0ocGnlQqBGgRtpvNyiIheym7rYJ4DFJdF+YuvTXB6SakmKAEhg
+        TQHAHVkmxTCcl707FX5wL1CL+kRpvyX4zAs22iPpUZwdTxf62SS+EKZV4kf3/l9B5TYiYv
+        OLuXSWgvAHtHTTAev5t+P7kzoIK9GTj4sC0/goB2g+ZKi+n5tm20si1RksABKg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1653038344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KWPubtkvQ2aCZReywxCS4p4fahrxBl0TxS5i1kN1rQo=;
+        b=c2VdbW/XNEh+SkoJfHvsYMpGLND9/MSvmYh3p6cn2VPhVlrTN7OQ9dQVPzZE+VQ9Ws5wJG
+        sNmUjAxyeWk5FYDQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, oleg@redhat.com,
+        mingo@kernel.org, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org,
+        Robert O'Callahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Subject: Re: [PATCH 00/16] ptrace: cleanups and calling do_cldstop with only
+ siglock
+Message-ID: <YoddBrfDCzaXmh2E@linutronix.de>
+References: <20220421150248.667412396@infradead.org>
+ <20220421150654.817117821@infradead.org>
+ <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+ <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+ <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+ <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+ <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] iommu/amd: Set translation valid bit only when IO page
- tables are in used
-Content-Language: en-GB
-To:     Joerg Roedel <joro@8bytes.org>
-Cc:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        iommu@lists.linux-foundation.org, jon.grimm@amd.com,
-        linux-kernel@vger.kernel.org, vasant.hegde@amd.com
-References: <20220509074815.11881-1-suravee.suthikulpanit@amd.com>
- <Yn5YIfzmerwAM30M@8bytes.org> <1dfaf07e-040e-848b-db7c-86a107fd5cb3@amd.com>
- <YodMvV/8eii4KCLg@8bytes.org> <794e13dd-8eae-481d-711d-b5462fdbfb18@arm.com>
- <YodYTZzSd9fZucLT@8bytes.org>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YodYTZzSd9fZucLT@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-20 09:58, Joerg Roedel wrote:
-> On Fri, May 20, 2022 at 09:54:51AM +0100, Robin Murphy wrote:
->> The .def_domain type op already allows drivers to do exactly this sort of
->> override. You could also conditionally reject IOMMU_DOMAIN_PASSTHROUGH in
->> .domain_alloc for good measure, provided that (for now at least*) SNP is a
->> global thing rather than per-instance.
-> 
-> Yeah, that could work. I am just not sure the IOMMU core behaves well in
-> all situations when allocation IOMMU_DOMAIN_PASSTHROUGH suddenly starts
-> to fail. I would feel better if this is checked and tested :)
+On 2022-05-18 17:49:50 [-0500], Eric W. Biederman wrote:
+> After this set of changes only cgroup_enter_frozen should remain a
+> stumbling block for PREEMPT_RT in the ptrace_stop path.
 
-Well, iommu_group_alloc_default_domain() has the fallback and is 
-currently the only place that __iommu_domain_alloc() can be called with 
-a type other than IOMMU_DOMAIN_UNMANAGED, so by inspection it should be 
-fine. However if iommu_get_def_domain_type() says the right thing then 
-neither sysfs nor automatic default domains should get as far as even 
-trying to allocate an identity domain anyway - note that that's already 
-what happens for untrusted external devices. But either way should be 
-easy enough to verify with a quick hack, too.
+Yes, I can confirm that. I have no systemd-less system at hand which
+means I can't boot a kernel without CGROUP support. But after removing
+cgroup_{enter|leave}_frozen() in ptrace_stop() I don't see the problems
+I saw earlier.
 
-Cheers,
-Robin.
+Sebastian
