@@ -2,85 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8942C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC2FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352130AbiETRVn (ORCPT
+        id S1352148AbiETRWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 13:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
+        Fri, 20 May 2022 13:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352122AbiETRVg (ORCPT
+        with ESMTP id S1345306AbiETRWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 13:21:36 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C183EB90
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:21:34 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id jx22so3364817ejb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:21:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GBLh0J+t/T5q+hfavxvNCcW0ikmymnmk+L3i1gWEqLQ=;
-        b=QIZj/BbktjFwNItbM7A4GHMQdfprBs12g+gEp137eJ4gShNtIomOg5zNm2P1gwgbQl
-         JcpnYRSLPfvjVeHefqzcmEyVVGOOju/QhphTINFE94yCDUyCTHmAwoM9P5dfYZ74OpE0
-         jDHkLLqe60XGXbyWq6T5gTOzYc/8POk5KB2jJetIETnFh5xaK0tA0Pi2On1Lq8yIu5Gy
-         PtzF0eeLMjUgOViN+zq2FAefPcMi70cxeVqfm4dZCX5Jc2hkdWQLSK9ZXKYAq4sBIISF
-         2Sbgz8l18I7JbgptT6J01r8NH3TdpLVabFKFF2Yx7grm/f5F8tmaXcXV7ZivCcGYXkZI
-         x8Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GBLh0J+t/T5q+hfavxvNCcW0ikmymnmk+L3i1gWEqLQ=;
-        b=qUVVk5PA2xucGh/Rcb77foJxoL/WjQL6lXNbpo6LuIsqLGIYCXDF32DTFt11/8b888
-         c08TBydIMhhZLSZXKq+qi88f2lWNhwrBee+k2L68ZVhJrA6QktJioiHAdDgonpkRd+l4
-         asbkE7ki9MhS1KJGUqNlfi6jvalesBk8jpYydNpK103m2pw2jisYa07xoIMvDXTnbhbR
-         DkLGivdJ/o9JB09w8UU+GrKKxC0MiUbIEG18PRWjpnde9+QezEuKtCyjX4Sa7Xw663eY
-         wjCko6zg1Y6MFDG+KxH2bLIG2Jti0Zd/bAlE6AYXYX++N0jHMDLtjbzgdHn/qMqI78Hy
-         MJLg==
-X-Gm-Message-State: AOAM533pTp1L4XdYIDPGxEkA20TqFSBrfUwl8MPIeJ94eGpL3dAHS6XN
-        MVwDU0OYf6uHlConV8g4raC/Wul0BRBBvrgXc6J0LA==
-X-Google-Smtp-Source: ABdhPJzPOGzMa4WOrxVRY1ADDnO0nuDdJB8phnBRSLJYIZ9p8JWPCDylwwWy2QTLjqsGI8G2/nuNSho9l4qrI5EakkI=
-X-Received: by 2002:a17:907:6e04:b0:6f4:d6f3:c72a with SMTP id
- sd4-20020a1709076e0400b006f4d6f3c72amr9421686ejc.636.1653067293120; Fri, 20
- May 2022 10:21:33 -0700 (PDT)
+        Fri, 20 May 2022 13:22:53 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A70B16D4A9;
+        Fri, 20 May 2022 10:22:52 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 050A01F899;
+        Fri, 20 May 2022 17:22:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653067371;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U1vEEBx5l6lck/ZVYtVMS6/WSLGFTxzXzQhGy8n6n1Y=;
+        b=1K0EXYYgwzsP5pttWIVJPO7peR7LU+5/FGwrIehUJrgtYp1b2Z1gmnbsrlrvfd9lUvK2VA
+        zu24tnaYU76hI6QXg7nbkOeg0BgdflDuWpJoTzQjH360AGI4TCOxit8DE29sKLWYXVeAlH
+        Jl7ARw2GtOYQYSYYjCB3PhyECWDOHus=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653067371;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U1vEEBx5l6lck/ZVYtVMS6/WSLGFTxzXzQhGy8n6n1Y=;
+        b=fdfW8UYvFzHZKAsM32Bd+yUPieD8tKqZpNTkU0+Ww4cQ9TxtNrH3v7+6LIxP4Bdiz6Gq/f
+        1Yvz9mmtz7ulOzDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 83B7A13AF4;
+        Fri, 20 May 2022 17:22:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 53QXH2rOh2KIPwAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Fri, 20 May 2022 17:22:50 +0000
+Date:   Fri, 20 May 2022 19:18:30 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Pankaj Raghav <p.raghav@samsung.com>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier.gonz@samsung.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "pankydev8@gmail.com" <pankydev8@gmail.com>,
+        "gost.dev@samsung.com" <gost.dev@samsung.com>,
+        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "dm-devel@redhat.com" <dm-devel@redhat.com>,
+        "dsterba@suse.com" <dsterba@suse.com>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Adam Manzanares <a.manzanares@samsung.com>
+Subject: Re: [dm-devel] [PATCH v4 00/13] support non power of 2 zoned devices
+Message-ID: <20220520171830.GR18596@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier.gonz@samsung.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
+        Mike Snitzer <snitzer@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        Luis Chamberlain <mcgrof@kernel.org>, Theodore Ts'o <tytso@mit.edu>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "pankydev8@gmail.com" <pankydev8@gmail.com>,
+        "gost.dev@samsung.com" <gost.dev@samsung.com>,
+        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "dm-devel@redhat.com" <dm-devel@redhat.com>,
+        "dsterba@suse.com" <dsterba@suse.com>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        Jaegeuk Kim <jaegeuk@kernel.org>, Keith Busch <kbusch@kernel.org>,
+        Adam Manzanares <a.manzanares@samsung.com>
+References: <YoPAnj9ufkt5nh1G@mit.edu>
+ <7f9cb19b-621b-75ea-7273-2d2769237851@opensource.wdc.com>
+ <20220519031237.sw45lvzrydrm7fpb@garbanzo>
+ <69f06f90-d31b-620b-9009-188d1d641562@opensource.wdc.com>
+ <PH0PR04MB74166C87F694B150A5AE0F009BD09@PH0PR04MB7416.namprd04.prod.outlook.com>
+ <4a8f0e1b-0acb-1ed4-8d7a-c9ba93fcfd02@opensource.wdc.com>
+ <16f3f9ee-7db7-2173-840c-534f67bcaf04@suse.de>
+ <20220520062720.wxdcp5lkscesppch@mpHalley-2.localdomain>
+ <be429864-09cb-e3fb-2afe-46a3453c4d73@opensource.wdc.com>
+ <aee22e8a-b89b-378c-3d5b-238c1215b01d@samsung.com>
 MIME-Version: 1.0
-References: <20220520025624.3803776-1-zheyuma97@gmail.com>
-In-Reply-To: <20220520025624.3803776-1-zheyuma97@gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Fri, 20 May 2022 19:21:22 +0200
-Message-ID: <CAMRc=MdysKQK4zGa=GH5-T=NTWOiMHBEEd9hKeHYANgKzrwpTQ@mail.gmail.com>
-Subject: Re: [PATCH v3] gpio: ml-ioh: Convert to use managed functions pcim*
- and devm_*
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aee22e8a-b89b-378c-3d5b-238c1215b01d@samsung.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 4:56 AM Zheyu Ma <zheyuma97@gmail.com> wrote:
->
->  When removing the module, we will get the following flaw:
->
-> [   14.204955] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'gpio_ml_ioh'
-> [   14.205827] WARNING: CPU: 0 PID: 305 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
-> ...
-> [   14.220613]  ioh_gpio_remove+0xc5/0xe0 [gpio_ml_ioh]
-> [   14.221075]  pci_device_remove+0x92/0x240
->
-> Fix this by using managed functions, this makes the error handling more
-> simpler.
->
-> Fixes: e971ac9a564a ("gpio: ml-ioh: use resource management for irqs")
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> ---
+On Fri, May 20, 2022 at 11:30:09AM +0200, Pankaj Raghav wrote:
+> On 5/20/22 08:41, Damien Le Moal wrote:
+> >> Note that for F2FS there is no blocker. Jaegeuk picked the initial
+> >> patches, and he agreed to add native support.
+> > 
+> > And until that is done, f2fs will not work with these new !po2 devices...
+> > Having the new dm will avoid that support fragmentation which I personally
+> > really dislike. With the new dm, we can keep support for *all* zoned block
+> > devices, albeit needing a different setup depending on the device. That is
+> > not nice at all but at least there is a way to make things work continuously.
+> 
+> I see that many people in the community feel it is better to target the
+> dm layer for the initial support of npo2 devices. I can give it a shot
+> and maintain a native out-of-tree support for FSs for npo2 devices and
+> merge it upstream as we see fit later.
 
-Applied, thanks!
-
-Bart
+Some of the changes from your patchset are cleanups or abstracting the
+alignment and zone calculations, so this can be merged to minimize the
+out of tree code.
