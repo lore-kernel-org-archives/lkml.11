@@ -2,191 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB683C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A994C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243375AbiETMwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S1349639AbiETMxN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 08:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349583AbiETMvq (ORCPT
+        with ESMTP id S237024AbiETMxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:51:46 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54F233EB7;
-        Fri, 20 May 2022 05:51:44 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 2FCEC1F462BB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653051103;
-        bh=+QRSBoHse5q7vPQRO55UEJJKcrFXryf2svvX8jsupyQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jyuFBTkF79eteyDMwSvah/A/pUA/vOcE7Odgz8r6BhXRK6hrW4k+16RLhosbjd9iw
-         sYXMKW2rJ06URdIX95Ij2XiLt46P0mgFIGFcv8nCW/DtOD/8SJZ8kPDJUlZyIozsGn
-         q9ELUgVAztunisXSOuwaAh3XMxPP6qBAXLDAxhfVtI8z5YOUqAj0s5vRcqYbr/X32k
-         VKsS4ZKjzi7KhNdb3+Ox0J5Uk8PqdDbzjCpc9srFjG6coI9jArqLKqWcTgSYkPbc5a
-         he2RXHy0IsF8j2c0M62lBmRfyDxbvXJMtMUHVR1WrXjEenJvrYwFPeTX7SQqFbBQ5Y
-         i3o6DFns8xLTA==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     dmitry.torokhov@gmail.com
-Cc:     matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
-        mkorpershoek@baylibre.com, linux-input@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/5] Input: mtk-pmic-keys - Transfer per-key bit in mtk_pmic_keys_regs
-Date:   Fri, 20 May 2022 14:51:30 +0200
-Message-Id: <20220520125132.229191-4-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220520125132.229191-1-angelogioacchino.delregno@collabora.com>
-References: <20220520125132.229191-1-angelogioacchino.delregno@collabora.com>
+        Fri, 20 May 2022 08:53:07 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8310D65D09
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:53:06 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id n8so7295498plh.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:53:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=K48joKWWADzr7Z35QkCVv+Jn/yutrM6gsvgQnkpKmgg=;
+        b=nunV+LdbUf7j720DSbCSghOqk0h+xc/4NNS65gbBL3kzNHxP4rcBJuOI0Fm6k93XMR
+         Zt/SOAvlU791zjrXyYI7u5SRT5mvnnkwwfqwVPPPUehWRgVdGfNucC5jOeT1OyWeWv75
+         Hs7IPHPKhtUj8ewpZgV8cvgu8L9nXEev/IyjhCYGjBhkUbTLJRO+Q1tYGFfOmiLM+Hft
+         YRT/YgmLj6weisreBPK5SkasAVgDI7vMXvwFDrCxSRsdksTGgU+sQj6lH0ShrHVNxO6q
+         n4zICyhRJZYdtbs4eN6ek8bIPIjZu9FqGfodRtxmqOjiJJhxCGS2L+gFVIJ/c1VGeEbV
+         x3VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=K48joKWWADzr7Z35QkCVv+Jn/yutrM6gsvgQnkpKmgg=;
+        b=in4B0ydyZ0L9RJr09DzgOI8C/PbgeeK3r9MAJml7b/onvyWUd3aF7EVxqM99rxAUMB
+         ptO8h0h7vbYDfpuJNkzfpbvrhJPuo8VeNhT1xERGAZ4ZIaHWIO6VKXIcqK8HPfC9aHP6
+         VlN9nk/qCqotiSGYe4OpHK4223LnnziZpROJqq5Xv1G7z4zQk1UsUSsdzg571ypVdt3f
+         jof+UEQEh/pIHy3vl+MZiu9eI7YO1qrU1zgcIfZwRg8MNBFkXZzD/43RwVNQG7y/nrCP
+         BjtT57NuoPpR1Dj2AK5K+ffDgrkTQq0H9mrtrYPClEhLXBUtZ1ckmSRX5f04Zqz2c0CG
+         OVCQ==
+X-Gm-Message-State: AOAM533gWPLrgq7wiAn5L1GkuotiMP9h2BhztjCIGStrMlHjz56nFF4v
+        Ts9FEv6rp+3EE6UCt99K12/wPQ==
+X-Google-Smtp-Source: ABdhPJyQUNHYw3StmP6ROMA2KN4boEIOCXmFcfjjUEFxR1dMLAzShchPWcCuIDfUGlArqKDrHBVuVQ==
+X-Received: by 2002:a17:90b:1d0c:b0:1dd:220b:bac9 with SMTP id on12-20020a17090b1d0c00b001dd220bbac9mr11603896pjb.36.1653051186006;
+        Fri, 20 May 2022 05:53:06 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id w22-20020a1709026f1600b0016189ed82c4sm5543374plk.79.2022.05.20.05.53.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 05:53:05 -0700 (PDT)
+Message-ID: <eded9b07-24b4-8060-7e84-8f44ad2e379a@kernel.dk>
+Date:   Fri, 20 May 2022 06:53:03 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [syzbot] general protection fault in __io_arm_poll_handler
+Content-Language: en-US
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+ba74b85fa15fd7a96437@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        syzkaller <syzkaller@googlegroups.com>
+References: <000000000000f0da6305cb1feacb@google.com>
+ <15a67989-9ad7-11ef-9472-8e16ca6ec11a@kernel.dk>
+ <CACT4Y+bNGPfF-z-9fxCXQO7huMJ=yCknWm_-H=7CJNvKOne3qA@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <CACT4Y+bNGPfF-z-9fxCXQO7huMJ=yCknWm_-H=7CJNvKOne3qA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Place the key bit in struct mtk_pmic_keys_regs to enhance this
-driver's flexibility, in preparation for adding support for more
-PMICs.
+On 5/20/22 2:41 AM, Dmitry Vyukov wrote:
+> On Sat, 4 Sept 2021 at 02:49, Jens Axboe <axboe@kernel.dk> wrote:
+>>
+>> On 9/3/21 5:47 PM, syzbot wrote:
+>>> Hello,
+>>>
+>>> syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+>>>
+>>> Reported-and-tested-by: syzbot+ba74b85fa15fd7a96437@syzkaller.appspotmail.com
+>>>
+>>> Tested on:
+>>>
+>>> commit:         31efe48e io_uring: fix possible poll event lost in mul..
+>>> git tree:       git://git.kernel.dk/linux-block for-5.15/io_uring
+>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=914bb805fa8e8da9
+>>> dashboard link: https://syzkaller.appspot.com/bug?extid=ba74b85fa15fd7a96437
+>>> compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
+>>>
+>>> Note: testing is done by a robot and is best-effort only.
+>>
+>> Dmitry, I wonder if there's a way to have syzbot know about what it's
+>> testing and be able to run the pending patches for that tree? I think
+>> we're up to 4 reports now that are all just fallout from the same bug,
+>> and where a patch has been queued up for a few days. Since they all look
+>> different, I can't fault syzbot for thinking they are different, even if
+>> they have the same root cause.
+>>
+>> Any way we can make this situation better? I can't keep replying that we
+>> should test the current branch, and it'd be a shame to have a ton of
+>> dupes.
+> 
+> Hi Jens,
+> 
+> This somehow fell through the cracks, but better late than never.
+> 
+> We could set up a syzbot instance for the io-uring tree.
+> It won't solve the problem directly, but if the branch contains both
+> new development ("for-next") and fixes, it will have good chances of
+> discovering issues before they reach mainline and spread to other
+> trees.
+> Do you think it's a good idea? Is there a branch that contains new
+> development and fixes?
 
-While at it, also remove the *_MASK and *_SHIFT definitions, as
-these can be simply expressed as BIT(x), and "slightly rename"
-the MTK_PMIC_{HOME,PWR}KEY_RST macro to better reflect the real
-name for these bits.
+My for-next stuff is always in linux-next, so I think as long as that is
+tested, that should be quite fine. It's _usually_ not a problem, it just
+sometimes happens that a broken patch ends up triggering a bunch of
+different things. And then we don't get them all attributed in a fix, or
+perhaps the patch itself is fixed up (or removed) and pushed out, then
+leaving the syzbot reports in limbo.
 
-This commit brings no functional changes.
+In short, I don't think we need to do anything special here for now.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/input/keyboard/mtk-pmic-keys.c | 46 ++++++++++++++------------
- 1 file changed, 25 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/input/keyboard/mtk-pmic-keys.c b/drivers/input/keyboard/mtk-pmic-keys.c
-index 83d0b90cc8cb..d8285612265f 100644
---- a/drivers/input/keyboard/mtk-pmic-keys.c
-+++ b/drivers/input/keyboard/mtk-pmic-keys.c
-@@ -18,17 +18,11 @@
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
- 
--#define MTK_PMIC_PWRKEY_RST_EN_MASK	0x1
--#define MTK_PMIC_PWRKEY_RST_EN_SHIFT	6
--#define MTK_PMIC_HOMEKEY_RST_EN_MASK	0x1
--#define MTK_PMIC_HOMEKEY_RST_EN_SHIFT	5
- #define MTK_PMIC_RST_DU_MASK		0x3
- #define MTK_PMIC_RST_DU_SHIFT		8
- 
--#define MTK_PMIC_PWRKEY_RST		\
--	(MTK_PMIC_PWRKEY_RST_EN_MASK << MTK_PMIC_PWRKEY_RST_EN_SHIFT)
--#define MTK_PMIC_HOMEKEY_RST		\
--	(MTK_PMIC_HOMEKEY_RST_EN_MASK << MTK_PMIC_HOMEKEY_RST_EN_SHIFT)
-+#define MTK_PMIC_MT6397_HOMEKEY_RST_EN	BIT(5)
-+#define MTK_PMIC_MT6397_PWRKEY_RST_EN	BIT(6)
- 
- #define MTK_PMIC_PWRKEY_INDEX	0
- #define MTK_PMIC_HOMEKEY_INDEX	1
-@@ -40,21 +34,24 @@
-  * @deb_mask:            Bitmask of this key in status register
-  * @intsel_reg:          Interrupt selector register
-  * @intsel_mask:         Bitmask of this key in interrupt selector
-+ * @rst_en_mask:         Bitmask of this key in PMIC keys reset register
-  */
- struct mtk_pmic_keys_regs {
- 	u32 deb_reg;
- 	u32 deb_mask;
- 	u32 intsel_reg;
- 	u32 intsel_mask;
-+	u32 rst_en_mask;
- };
- 
- #define MTK_PMIC_KEYS_REGS(_deb_reg, _deb_mask,		\
--	_intsel_reg, _intsel_mask)			\
-+	_intsel_reg, _intsel_mask, _rst_mask)		\
- {							\
- 	.deb_reg		= _deb_reg,		\
- 	.deb_mask		= _deb_mask,		\
- 	.intsel_reg		= _intsel_reg,		\
- 	.intsel_mask		= _intsel_mask,		\
-+	.rst_en_mask		= _rst_mask,		\
- }
- 
- /**
-@@ -70,30 +67,32 @@ struct mtk_pmic_regs {
- static const struct mtk_pmic_regs mt6397_regs = {
- 	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
- 		MTK_PMIC_KEYS_REGS(MT6397_CHRSTATUS,
--		0x8, MT6397_INT_RSV, 0x10),
-+		0x8, MT6397_INT_RSV, 0x10, MTK_PMIC_MT6397_PWRKEY_RST_EN),
- 	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
- 		MTK_PMIC_KEYS_REGS(MT6397_OCSTATUS2,
--		0x10, MT6397_INT_RSV, 0x8),
-+		0x10, MT6397_INT_RSV, 0x8, MTK_PMIC_MT6397_HOMEKEY_RST_EN),
- 	.pmic_rst_reg = MT6397_TOP_RST_MISC,
- };
- 
- static const struct mtk_pmic_regs mt6323_regs = {
- 	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
- 		MTK_PMIC_KEYS_REGS(MT6323_CHRSTATUS,
--		0x2, MT6323_INT_MISC_CON, 0x10),
-+		0x2, MT6323_INT_MISC_CON, 0x10, MTK_PMIC_MT6397_PWRKEY_RST_EN),
- 	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
- 		MTK_PMIC_KEYS_REGS(MT6323_CHRSTATUS,
--		0x4, MT6323_INT_MISC_CON, 0x8),
-+		0x4, MT6323_INT_MISC_CON, 0x8, MTK_PMIC_MT6397_HOMEKEY_RST_EN),
- 	.pmic_rst_reg = MT6323_TOP_RST_MISC,
- };
- 
- static const struct mtk_pmic_regs mt6358_regs = {
- 	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
- 		MTK_PMIC_KEYS_REGS(MT6358_TOPSTATUS,
--				   0x2, MT6358_PSC_TOP_INT_CON0, 0x5),
-+				   0x2, MT6358_PSC_TOP_INT_CON0, 0x5,
-+				   MTK_PMIC_MT6397_PWRKEY_RST_EN),
- 	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
- 		MTK_PMIC_KEYS_REGS(MT6358_TOPSTATUS,
--				   0x8, MT6358_PSC_TOP_INT_CON0, 0xa),
-+				   0x8, MT6358_PSC_TOP_INT_CON0, 0xa,
-+				   MTK_PMIC_MT6397_HOMEKEY_RST_EN),
- 	.pmic_rst_reg = MT6358_TOP_RST_MISC,
- };
- 
-@@ -140,6 +139,11 @@ static void mtk_pmic_keys_lp_reset_setup(struct mtk_pmic_keys *keys,
- {
- 	int ret;
- 	u32 long_press_mode, long_press_debounce;
-+	const struct mtk_pmic_keys_regs *kregs_pwr;
-+	const struct mtk_pmic_keys_regs *kregs_home;
-+
-+	kregs_pwr = keys->keys[MTK_PMIC_PWRKEY_INDEX].regs;
-+	kregs_home = keys->keys[MTK_PMIC_HOMEKEY_INDEX].regs;
- 
- 	ret = of_property_read_u32(keys->dev->of_node,
- 		"power-off-time-sec", &long_press_debounce);
-@@ -157,16 +161,16 @@ static void mtk_pmic_keys_lp_reset_setup(struct mtk_pmic_keys *keys,
- 
- 	switch (long_press_mode) {
- 	case LP_ONEKEY:
--		regmap_set_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_PWRKEY_RST);
--		regmap_clear_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_HOMEKEY_RST);
-+		regmap_set_bits(keys->regmap, pmic_rst_reg, kregs_pwr->rst_en_mask);
-+		regmap_clear_bits(keys->regmap, pmic_rst_reg, kregs_home->rst_en_mask);
- 		break;
- 	case LP_TWOKEY:
--		regmap_set_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_PWRKEY_RST);
--		regmap_set_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_HOMEKEY_RST);
-+		regmap_set_bits(keys->regmap, pmic_rst_reg, kregs_pwr->rst_en_mask);
-+		regmap_set_bits(keys->regmap, pmic_rst_reg, kregs_home->rst_en_mask);
- 		break;
- 	case LP_DISABLE:
--		regmap_clear_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_PWRKEY_RST);
--		regmap_clear_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_HOMEKEY_RST);
-+		regmap_clear_bits(keys->regmap, pmic_rst_reg, kregs_pwr->rst_en_mask);
-+		regmap_clear_bits(keys->regmap, pmic_rst_reg, kregs_home->rst_en_mask);
- 		break;
- 	default:
- 		break;
 -- 
-2.35.1
+Jens Axboe
 
