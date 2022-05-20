@@ -2,102 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26DB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FE4C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231274AbiETH7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
+        id S1346758AbiETH7a (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 03:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346737AbiETH7B (ORCPT
+        with ESMTP id S1346751AbiETH7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:59:01 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9376415AB30;
-        Fri, 20 May 2022 00:59:00 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24K7wZEs9003479, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24K7wZEs9003479
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 20 May 2022 15:58:35 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Fri, 20 May 2022 15:58:35 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 20 May 2022 15:58:35 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Fri, 20 May 2022 15:58:35 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "neojou@gmail.com" <neojou@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
-Thread-Topic: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
-Thread-Index: AQHYapDkSUSPgT6yp0uu/6R2ZMJcV60m44iA
-Date:   Fri, 20 May 2022 07:58:35 +0000
-Message-ID: <69be9d5fd2c173ee45d011f40a07fe31c53d0928.camel@realtek.com>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-         <20220518082318.3898514-10-s.hauer@pengutronix.de>
-In-Reply-To: <20220518082318.3898514-10-s.hauer@pengutronix.de>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [172.16.17.21]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjAg5LiK5Y2IIDA2OjAwOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B72DB886C9375545B07F6DC8941B7B57@realtek.com>
-Content-Transfer-Encoding: base64
+        Fri, 20 May 2022 03:59:25 -0400
+Received: from relay3.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E527315D303
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:59:22 -0700 (PDT)
+Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay11.hostedemail.com (Postfix) with ESMTP id A07E7814D3;
+        Fri, 20 May 2022 07:59:21 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 5987220012;
+        Fri, 20 May 2022 07:59:15 +0000 (UTC)
+Message-ID: <ab048a2a99b7ff26da98ad01b575b036df7ddec9.camel@perches.com>
+Subject: Re: [PATCH v3] nvmem: brcm_nvram: check for allocation failure
+From:   Joe Perches <joe@perches.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Date:   Fri, 20 May 2022 00:59:12 -0700
+In-Reply-To: <20220520064516.GX4009@kadam>
+References: <20220520064516.GX4009@kadam>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 5987220012
+X-Stat-Signature: uszn4rq8yguwbgz4noujdmrr6hoayhn8
+X-Rspamd-Server: rspamout05
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19k4XSOnPuhcFCvKet5IpLxGxgUIDlzBFA=
+X-HE-Tag: 1653033555-188531
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gV2VkLCAyMDIyLTA1LTE4IGF0IDEwOjIzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
-IEFkZCBzdXBwb3J0IGZvciB0aGUgcnR3ODgyMmJ1IGNoaXBzZXQgYmFzZWQgb24NCj4gaHR0cHM6
-Ly9naXRodWIuY29tL3VsbGkta3JvbGwvcnR3ODgtdXNiLmdpdA0KPiANCj4gU2lnbmVkLW9mZi1i
-eTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiAtLS0NCj4gIGRyaXZl
-cnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvS2NvbmZpZyAgICB8IDExICsrKysNCj4gIGRy
-aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvTWFrZWZpbGUgICB8ICAzICsNCj4gIGRy
-aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmIuYyB8IDE5ICsrKysrKw0K
-PiAgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJidS5jICAgIHwgNjIgKysr
-KysrKysrKysrKysrKysrKw0KPiAgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4
-MjJidS5oICAgIHwgMTUgKysrKysNCj4gIDUgZmlsZXMgY2hhbmdlZCwgMTEwIGluc2VydGlvbnMo
-KykNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0
-dzg4L3J0dzg4MjJidS5jDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9uZXQvd2lyZWxl
-c3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiANCj4gDQoNClsuLl0NCg0KPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiBi
-L2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmJ1LmgNCj4gbmV3IGZp
-bGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAwMDAwMDAwMDAwMC4uMjBmMDFlY2Q3NDQxNQ0KPiAt
-LS0gL2Rldi9udWxsDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgv
-cnR3ODgyMmJ1LmgNCj4gQEAgLTAsMCArMSwxNSBAQA0KPiArLyogU1BEWC1MaWNlbnNlLUlkZW50
-aWZpZXI6IEdQTC0yLjAgT1IgQlNELTMtQ2xhdXNlICovDQo+ICsvKiBDb3B5cmlnaHQoYykgMjAx
-OC0yMDE5ICBSZWFsdGVrIENvcnBvcmF0aW9uDQo+ICsgKi8NCj4gKw0KPiArI2lmbmRlZiBfX1JU
-V184ODIyQlVfSF8NCj4gKyNkZWZpbmUgX19SVFdfODgyMkJVX0hfDQo+ICsNCj4gKy8qIFVTQiBW
-ZW5kb3IvUHJvZHVjdCBJRHMgKi8NCj4gKyNkZWZpbmUgUlRXX1VTQl9WRU5ET1JfSURfUkVBTFRF
-SwkJMHgwQkRBDQoNCmxpa2Ugb3RoZXJzLCBtb3ZlIHRoaXMgdG8gdXNiLmgNCg0KDQotLQ0KUGlu
-Zy1LZQ0KDQoNCg==
+On Fri, 2022-05-20 at 09:45 +0300, Dan Carpenter wrote:
+> Check for if the kcalloc() fails.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 6e977eaa8280 ("nvmem: brcm_nvram: parse NVRAM content into NVMEM cells")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Acked-by: Rafał Miłecki <rafal@milecki.pl>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+> v3: Update fixes tag
+> v2: I don't think anything changed in v2?  Added tags?
+[]
+> diff --git a/drivers/nvmem/brcm_nvram.c b/drivers/nvmem/brcm_nvram.c
+[]
+> @@ -97,6 +97,8 @@ static int brcm_nvram_parse(struct brcm_nvram *priv)
+>  	len = le32_to_cpu(header.len);
+>  
+>  	data = kcalloc(1, len, GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+
+trivia:
+
+Not sure the kcalloc(1. ..) is useful.
+
+It might be simpler using kzalloc, though given the memcpy_fromio
+below a kcalloc/kzalloc seems dubious and kmalloc could be used.
+
+>  	memcpy_fromio(data, priv->base, len);
+>  	data[len - 1] = '\0';
+>  
+
+
