@@ -2,133 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C63C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346098AbiETMmh (ORCPT
+        id S1349643AbiETMmw convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41434 "EHLO
+        Fri, 20 May 2022 08:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349600AbiETMm2 (ORCPT
+        with ESMTP id S1349498AbiETMmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:42:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B4A16647D
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:41:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47BA760F84
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 12:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1601DC385A9;
-        Fri, 20 May 2022 12:41:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653050516;
-        bh=YTSPkgizOL4W7LCBZDtItpCzMG0NI7atPraoBzO31lE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Bs9TH57JxrUxnFTqhxwoioJG4z9M8pwS8Oe3EmUEQerc2sYvLs1JNdvDtYJJ5+IDz
-         qV0QYbgsN/VLqxq9JPwed6ss1Zk4D3hM/G1BxaHK7IS3BhGYbi4GCGcr3C3QriAzUF
-         vG0Qvkx7aB5Pfnrw491KrbxiS3+IA0NLy07QRjz2vZUcwvVVJZUWydIPo5CdQ/WiCd
-         FqPrUCOJ5G5F42fqq+7hB2coKDXB4PpVbJIZzYUD8XkluuPmIUtOVu65Zr2429LzSY
-         7NWuMW/VLaekuh6CGLiuERrvR+JrD5I1948xhUm+N7z50AG5fBLY+yjlkj0V1i8OpS
-         eW+f8GIomXBkA==
-Date:   Fri, 20 May 2022 13:41:49 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
-Cc:     alsa-devel@alsa-project.org, Vijendar.Mukunda@amd.com,
-        Basavaraj.Hiregoudar@amd.com, Sunil-kumar.Dommati@amd.com,
-        ajitkumar.pandey@amd.com, Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Akihiko Odaki <akihiko.odaki@gmail.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Bard Liao <bard.liao@intel.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] ASoC: amd: acp: Add support for nau8825 and
- max98360 card
-Message-ID: <YoeMjUJjOzDTOtbM@sirena.org.uk>
-References: <20220519055522.1613813-1-Vsujithkumar.Reddy@amd.com>
- <20220519055522.1613813-2-Vsujithkumar.Reddy@amd.com>
+        Fri, 20 May 2022 08:42:37 -0400
+X-Greylist: delayed 390 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 05:42:21 PDT
+Received: from unicorn.mansr.com (unicorn.mansr.com [81.2.72.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402B61901A;
+        Fri, 20 May 2022 05:42:20 -0700 (PDT)
+Received: from raven.mansr.com (raven.mansr.com [IPv6:2001:8b0:ca0d:1::3])
+        by unicorn.mansr.com (Postfix) with ESMTPS id 6406615361;
+        Fri, 20 May 2022 13:35:48 +0100 (BST)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+        id 4D31721A3D6; Fri, 20 May 2022 13:35:48 +0100 (BST)
+From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vitaly Bordug <vbordug@ru.mvista.com>,
+        Dan Malek <dan@embeddededge.com>,
+        Joakim Tjernlund <joakim.tjernlund@lumentis.se>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: fs_enet: sync rx dma buffer before reading
+References: <20220519192443.28681-1-mans@mansr.com>
+        <03f24864-9d4d-b4f9-354a-f3b271c0ae66@csgroup.eu>
+Date:   Fri, 20 May 2022 13:35:48 +0100
+In-Reply-To: <03f24864-9d4d-b4f9-354a-f3b271c0ae66@csgroup.eu> (Christophe
+        Leroy's message of "Fri, 20 May 2022 05:39:38 +0000")
+Message-ID: <yw1xmtfc9yaj.fsf@mansr.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="T2P481YcpmerEUHv"
-Content-Disposition: inline
-In-Reply-To: <20220519055522.1613813-2-Vsujithkumar.Reddy@amd.com>
-X-Cookie: Driver does not carry cash.
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Christophe Leroy <christophe.leroy@csgroup.eu> writes:
 
---T2P481YcpmerEUHv
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Le 19/05/2022 à 21:24, Mans Rullgard a écrit :
+>> The dma_sync_single_for_cpu() call must precede reading the received
+>> data. Fix this.
+>
+> See original commit 070e1f01827c. It explicitely says that the cache 
+> must be invalidate _AFTER_ the copy.
+>
+> The cache is initialy invalidated by dma_map_single(), so before the 
+> copy the cache is already clean.
+>
+> After the copy, data is in the cache. In order to allow re-use of the 
+> skb, it must be put back in the same condition as before, in extenso the 
+> cache must be invalidated in order to be in the same situation as after 
+> dma_map_single().
+>
+> So I think your change is wrong.
 
-On Thu, May 19, 2022 at 11:25:21AM +0530, V sujith kumar Reddy wrote:
-> We have new platform with nau8825 as a primary codec and max98360 as an
-> amp codec. Add machine struct to register sof audio based sound card
-> on such Chrome machine.
+OK, looking at it more closely, the change is at least unnecessary since
+there will be a cache invalidation between each use of the buffer either
+way.  Please disregard the patch.  Sorry for the noise.
 
-This breaks an x86 allmodconfig build:
+>> 
+>> Fixes: 070e1f01827c ("net: fs_enet: don't unmap DMA when packet len is below copybreak")
+>> Signed-off-by: Mans Rullgard <mans@mansr.com>
+>> ---
+>>   drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c | 8 ++++----
+>>   1 file changed, 4 insertions(+), 4 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
+>> index b3dae17e067e..432ce10cbfd0 100644
+>> --- a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
+>> +++ b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
+>> @@ -240,14 +240,14 @@ static int fs_enet_napi(struct napi_struct *napi, int budget)
+>>                                  /* +2 to make IP header L1 cache aligned */
+>>                                  skbn = netdev_alloc_skb(dev, pkt_len + 2);
+>>                                  if (skbn != NULL) {
+>> +                                       dma_sync_single_for_cpu(fep->dev,
+>> +                                               CBDR_BUFADDR(bdp),
+>> +                                               L1_CACHE_ALIGN(pkt_len),
+>> +                                               DMA_FROM_DEVICE);
+>>                                          skb_reserve(skbn, 2);   /* align IP header */
+>>                                          skb_copy_from_linear_data(skb,
+>>                                                        skbn->data, pkt_len);
+>>                                          swap(skb, skbn);
+>> -                                       dma_sync_single_for_cpu(fep->dev,
+>> -                                               CBDR_BUFADDR(bdp),
+>> -                                               L1_CACHE_ALIGN(pkt_len),
+>> -                                               DMA_FROM_DEVICE);
+>>                                  }
+>>                          } else {
+>>                                  skbn = netdev_alloc_skb(dev, ENET_RX_FRSIZE);
+>> --
+>> 2.35.1
+>> 
 
-/build/stage/linux/sound/soc/amd/acp/acp-mach-common.c: In function =E2=80=
-=98acp_card_nau8825_init=E2=80=99:
-/build/stage/linux/sound/soc/amd/acp/acp-mach-common.c:479:15: error: too m=
-any arguments to function =E2=80=98snd_soc_card_jack_new=E2=80=99
-  479 |         ret =3D snd_soc_card_jack_new(card, "Headset Jack",
-      |               ^~~~~~~~~~~~~~~~~~~~~
-In file included from /build/stage/linux/include/sound/soc.h:1362,
-                 from /build/stage/linux/sound/soc/amd/acp/acp-mach-common.=
-c:20:
-/build/stage/linux/include/sound/soc-card.h:18:5: note: declared here
-   18 | int snd_soc_card_jack_new(struct snd_soc_card *card, const char *id=
-, int type,
-      |     ^~~~~~~~~~~~~~~~~~~~~
-make[5]: *** [/build/stage/linux/scripts/Makefile.build:288: sound/soc/amd/=
-acp/acp-mach-common.o] Error 1
-make[5]: Target '__build' not remade because of errors.
-make[4]: *** [/build/stage/linux/scripts/Makefile.build:550: sound/soc/amd/=
-acp] Error 2
-make[4]: Target '__build' not remade because of errors.
-make[3]: *** [/build/stage/linux/scripts/Makefile.build:550: sound/soc/amd]=
- Error 2
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [/build/stage/linux/scripts/Makefile.build:550: sound/soc] Err=
-or 2
-make[2]: Target '__build' not remade because of errors.
-make[1]: *** [/build/stage/linux/Makefile:1834: sound] Error 2
-make[1]: Target '__all' not remade because of errors.
-make: *** [Makefile:219: __sub-make] Error 2
-make: Target '__all' not remade because of errors.
-make --silent --keep-going --jobs=3D14 O=3D/tmp/build-work INSTALL_MOD_STRI=
-P=3D1 INSTALL_MOD_PATH=3D/tmp/build-work/modinstall ARCH=3Dx86_64 CROSS_COM=
-PILE=3Dx86_64-linux-gnu- modules_install
-sed: can't read modules.order: No such file or directory
-make[1]: *** [/build/stage/linux/Makefile:1467: __modinst_pre] Error 2
-make[1]: Target 'modules_install' not remade because of errors.
-make: *** [Makefile:219: __sub-make] Error 2
-make: Target 'modules_install' not remade because of errors.
-
---T2P481YcpmerEUHv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKHjIwACgkQJNaLcl1U
-h9DS7Af+NaA0kEk6Pz/LFvpVhZ8s9UWwsne4neS/3i1TgAbX+/D/grVXyXB+bgl6
-b2ETIdiJSDR/eYGPfYKOZSooH6O1luCEuNMnH3uTUS5eFX37PaWXGTw7/cOIsLIy
-TV1L0jMYwVeKx1yfqbevmq04KE82PAgVSmo1BAUcmwt+sQpsLI34PQBmEEj1zzLd
-nYY1wMWkQnRV7LUqfwCR+XgAC40OMoPB4sO7rPfuUDQdrG3mc3/3bllkkWJ0Nala
-VkfKxZVkU+WapPyE9JB2tc/u4FVlzJJtX/k23KypZT9WDKb4BQd8qWOxIYVr9sNI
-JsIeFJUA0I9kN81ATYMfqowtTyOSjQ==
-=jmOi
------END PGP SIGNATURE-----
-
---T2P481YcpmerEUHv--
+-- 
+Måns Rullgård
