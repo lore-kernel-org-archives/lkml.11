@@ -2,96 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF710C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AA8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347513AbiETI7v (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39160 "EHLO
+        id S244739AbiETJCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 05:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347507AbiETI7r (ORCPT
+        with ESMTP id S237101AbiETJCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:59:47 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0DAEBA9F;
-        Fri, 20 May 2022 01:59:42 -0700 (PDT)
-X-UUID: fa7cf42dcd3848d5873ad30c94f6eb8e-20220520
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:1dc7eb93-6f53-4d82-918b-2d609cc4c2be,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:2a19b09,CLOUDID:42d6fe79-5ef6-470b-96c9-bdb8ced32786,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: fa7cf42dcd3848d5873ad30c94f6eb8e-20220520
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 472486731; Fri, 20 May 2022 16:59:35 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 20 May 2022 16:59:33 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 20 May 2022 16:59:32 +0800
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
-        <maoguang.meng@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>,
-        <srv_heupstream@mediatek.com>
-Subject: [RESEND V1,2/2] media: media: jpegenc: set bit mask for jpegenc
-Date:   Fri, 20 May 2022 16:59:10 +0800
-Message-ID: <20220520085910.28839-3-irui.wang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220520085910.28839-1-irui.wang@mediatek.com>
-References: <20220520085910.28839-1-irui.wang@mediatek.com>
+        Fri, 20 May 2022 05:02:37 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662BFA5012
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 02:02:35 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id wh22so14248179ejb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 02:02:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QKmUJF1anHWjOfPQl6wU+ROhTyxsa1Rv/nGtZdce0GY=;
+        b=YUHoJjWZPLdgkjzdP8yFhlkh/fh/W2URfrIKZyDrXfA1Bbwfb3Vkeydu7AHkve/yZM
+         K2TPKdjupVnpwoirGeGJtiabsY6Jrq3mcqM3sngTxRG62LujWuPRdYQACiNgcg6YuTK0
+         eZ29ANkx/HQ/SyIt0dGah38NRE5SQbWbaD6Wg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QKmUJF1anHWjOfPQl6wU+ROhTyxsa1Rv/nGtZdce0GY=;
+        b=w5DDHj+ZZfbXUTDOPIuPFS9bNKv+lB9gIY14GmV3m2BtLzWfgWmbyOux9ANMEQ+rhe
+         LreL/qXYnxqxKDAbvGbij5oVPSgTR6Wc0hgEf0aMnsaPYHdHDEmvdJOgrYe6PgUdlfun
+         nGV0vHN5/iYVSomKowN4pZfVRmpJq1mL+MxIYXQ4i6W/X10w8/GO8bzeNI0eIHB5/pfd
+         yHTfGRkX6PIIIiVekmli/uowEZKdbAd5DTOTNvROyRdv6cwWEQz5Z1Ed+Bp73VzYg8Vl
+         nDZpwEdzJmFGAqHmtlPvdo4d0rkhk4YKcOWvlt7mPY1bGjcfw408GBiePrJHVyDXZE21
+         Qgow==
+X-Gm-Message-State: AOAM531ShP22E941w6zK2OXk6xgcPQoayh5yEX7oxp/dhe63B+FnZcpX
+        zSAtgb5Etngozeu/LgZt1RwNM7oFbsxAkbEymhCeYg==
+X-Google-Smtp-Source: ABdhPJy95aZ+LA7wg0UbIA4EUwveKTOJRq5Oon3TiS6zl/rD/L/kL0uHtmwU2QuvyiPu4lRoZ8ho7gdJeThP+nOnQz8=
+X-Received: by 2002:a17:906:a10e:b0:6f3:e70b:b572 with SMTP id
+ t14-20020a170906a10e00b006f3e70bb572mr7549904ejy.546.1653037353979; Fri, 20
+ May 2022 02:02:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+References: <20220519134728.456643-1-y.oudjana@protonmail.com>
+ <20220519134728.456643-4-y.oudjana@protonmail.com> <5b5f6656-8694-dc78-ef42-7ce301849aa4@collabora.com>
+In-Reply-To: <5b5f6656-8694-dc78-ef42-7ce301849aa4@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Fri, 20 May 2022 17:02:22 +0800
+Message-ID: <CAGXv+5HDA1QACKrzgWFFboCtK1pz7UeaE7XK4o_tMofy68EyVQ@mail.gmail.com>
+Subject: Re: [PATCH 3/6] clk: mediatek: reset: Return reset data pointer on register
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Yassine Oudjana <yassine.oudjana@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kyrie wu <kyrie.wu@mediatek.com>
+On Fri, May 20, 2022 at 4:42 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>
+> Il 19/05/22 15:47, Yassine Oudjana ha scritto:
+> > From: Yassine Oudjana <y.oudjana@protonmail.com>
+> >
+> > Return a struct mtk_clk_rst_data * when registering a reset
+> > controller in preparation for adding an unregister helper
+> > that will take it as an argument. Make the necessary changes
+> > in drivers that do not currently discard the return value
+> > of register functions.
+> >
+> > Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+>
+> Hello Yassine,
+>
+> Thanks for your efforts on helping to make the MediaTek clocks better - I agree
+> (and I'm not the only one..) that there's a lot of work to do on this side.
+>
+> Though... I don't think that this is the right direction: you're right about
+> properly unregistering (in patch 4/6) the reset controllers on rmmod/failure
+> but I'm not sure that this kind of noise brings any benefit.
 
-set jpeg encode DMA bit mask to support 34bits
-iova space(16GB) that the mt8186 iommu HW support.
-Whole the iova range separate to 0~4G/4G~8G/8G~12G/12G~16G,
-regarding which iova range jpgenc actually locate, it
-depends on the dma-ranges property of vdec dtsi node.
+Since Rex is working on cleaning up the reset bits, maybe also coordinate
+with him?
 
-Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
----
- drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+> Explaining:
+> You definitely saw that there's a new register _with_dev, which uses devm ops
+> and that's going to automatically cleanup in case of removal/failure.
 
-diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-index bc5b0a0168ec..87685a62a5c2 100644
---- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-+++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-@@ -1369,6 +1369,9 @@ static int mtk_jpeg_probe(struct platform_device *pdev)
- 	jpeg->vdev->device_caps = V4L2_CAP_STREAMING |
- 				  V4L2_CAP_VIDEO_M2M_MPLANE;
- 
-+	if (of_get_property(pdev->dev.of_node, "dma-ranges", NULL))
-+		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
-+
- 	ret = video_register_device(jpeg->vdev, VFL_TYPE_VIDEO, -1);
- 	if (ret) {
- 		v4l2_err(&jpeg->v4l2_dev, "Failed to register video device\n");
--- 
-2.18.0
+I don't think they use devres at the moment. They should, but I haven't
+gotten that far with my improvements. *wink*
 
+> This is what we should do.
+>
+> Hence, my proposal is to drop patch 3/6, 4/6, 5/6 and (slowly, steadily) migrate
+> all of the MediaTek clocks from CLK_OF_DECLARE() to platform drivers (which also
+> means that we can eventually change them to tristate!), so that we slowly remove
+> all users of all functions that are not "_with_dev", and that we finally remove
+> all of these then-unused functions as well.
+
+I agree with moving all the drivers off of CLK_OF_DECLARE() if possible.
+There are definitely going to be a few ARM32 ones that can't be converted,
+likely because they don't have the ARM arch timer, and need a clock
+registered before the timers. Been there.
+
+And there's a whole lot of work to be done for all the old drivers so that
+they clean up after themselves.
+
+My desire is to clean up the API (the naming and the parameters) so that
+they more closely match up with the underlying CCF APIs they call. We can
+then add devres variants (and of_ ones for the unfortunate platforms that
+need them).
+
+> Making sure that I don't get misunderstood:
+>       I'm not implying that this huge migration work is on your shoulders!
+
+Yeah. I'll likely take up quite a bit of it after all my currently planned
+cleanup work is done. Unless of course someone beats me to it.
+
+> P.S.: Chen-Yu, Miles: do you also agree? :-)
+
+Yes.
+
+
+Regards
+ChenYu
