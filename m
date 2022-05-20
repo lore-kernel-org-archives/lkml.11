@@ -2,86 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F00B2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:59:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346770AbiETH7h (ORCPT
+        id S1346785AbiETH7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+        Fri, 20 May 2022 03:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346738AbiETH71 (ORCPT
+        with ESMTP id S1346764AbiETH7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:59:27 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD8615D325;
-        Fri, 20 May 2022 00:59:24 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F1E85100017;
-        Fri, 20 May 2022 07:59:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653033563;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jUrOb7gzDfqcjgGGnV3qddsGrV2m84KgsE5E1hxmOQo=;
-        b=GGtq16fx0ICa1YTJHlP+y+ItSHWaMLcKTJ4U3FvZ2cV/IiKmp1XgxBlQuZyCeQh5he0fZj
-        cgwSCI8AYLvrICnV8Jd1LCsycV7nycaX2t1cD0j2q6IBy4i7QhZmcIwWy/PKLzmR0K+gOE
-        6u5SnJAPG9RcK3P6pnYWJlkhmlEX8NJfUQPgvGvH04Xt32g5krPn13Yzzfl+McDVYXaRhE
-        5n6wPT8KxAHmO4pBJLnjhrXGo29jxxtgodgWrcZ51rEaCCzG55iqTTtbm1grCyeOLnZs1j
-        WpNAIQrvcH/Iqli0EnQ9zTbfNCOEGAlclT1iKTsUxdYHMaGxWZQfneluY/YOcA==
-Date:   Fri, 20 May 2022 09:58:10 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next v5 07/13] net: dsa: rzn1-a5psw: add Renesas
- RZ/N1 advanced 5 port switch driver
-Message-ID: <20220520095810.0b0c29ef@fixe.home>
-In-Reply-To: <20220519180851.chpqhou7ykt45oty@skbuf>
-References: <20220519153107.696864-1-clement.leger@bootlin.com>
-        <20220519153107.696864-8-clement.leger@bootlin.com>
-        <20220519180851.chpqhou7ykt45oty@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        Fri, 20 May 2022 03:59:31 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4144615D312
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:59:30 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id i82-20020a1c3b55000000b00397391910d5so369528wma.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:59:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ea7uCWmZvVi7x8pZXNpq32JNdBnZG/d3z6FlMpmBFbQ=;
+        b=aEdYT6oI+uAOu9UjBKXVmQR4Vqb7G4k23KZ5L2K3v79YnkqWwIWGGGpsdip/no9LKF
+         OX6p+BYYQM+OElnkM9nMH0jOpS1lznXRg3lJ6uwuxhXtFofh4fsrAfY8PoByvVgIOv14
+         TnBJGNIAxOy63rP8B+4+4uWMpcRLRAsdAJDUbp+llYUTUriz6jRPAyL4AWOccmuIKhOI
+         69qZZCmel4W+VjPG+18N18R/0StDr7wRnLfT06tb+/NpzgX2jn1EsTpE4Ls55bXco/k/
+         wIf7IpYqEmW72htmBiltvUNLA/eOWjZyVZAxP36v1WUwj5Mh1B+IcLpkSxewV90tvTLs
+         HEGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ea7uCWmZvVi7x8pZXNpq32JNdBnZG/d3z6FlMpmBFbQ=;
+        b=BJ2o7umGXES1JKdUqHqknv+sQYt8FPYTnpTmV/f+J2aQD/NOou/UOGb9T3bN7pNmUX
+         bN5L055v4fs+QG2JeB8KjpCSW7V3e7Si2Xb+Kid0sPEg3s9xLKkF+cG0UDM3t5nzMrkR
+         diX+ZGfWDAAsQDjIEp83SwTha4XX098CpWXQyCHzQUnAARrDuERsV1Rjuk/AOy2poTEC
+         nkvN30IjaBnWY9ziB+6RBJ/2b4+29Tuz9EpmUZMbUpS70nl87v38Y5zkX/YAcpuLpVGB
+         1ThfWqjCuyjJEaoA2TRWXmPg/2htjSeFKSaSj6N4GNm79xyuyRAEtu1bKiVTGpcWhjXQ
+         RjGA==
+X-Gm-Message-State: AOAM531K49X/X1z/7bQXCDmwiZGEYu7sruvsFHM9zwf/TI0ImGy1llnj
+        66ynabaNeFAuPADSaqCx5V1bfwuGYQLBvCR3nsRIMw==
+X-Google-Smtp-Source: ABdhPJzkbcWaIOOyEvvxjJVCin6gWKz/UgskGdAE5PNQ9w+UErfnjSVu3h7gWMQNdUWckLnyYGW2D4/mAvuI+pGBiow=
+X-Received: by 2002:a05:600c:1908:b0:394:867d:66c4 with SMTP id
+ j8-20020a05600c190800b00394867d66c4mr7447568wmq.152.1653033568515; Fri, 20
+ May 2022 00:59:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220520012133.1217211-1-yosryahmed@google.com>
+ <20220520012133.1217211-4-yosryahmed@google.com> <YodGI73xq8aIBrNM@slm.duckdns.org>
+In-Reply-To: <YodGI73xq8aIBrNM@slm.duckdns.org>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Fri, 20 May 2022 00:58:52 -0700
+Message-ID: <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Thu, 19 May 2022 21:08:51 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
+On Fri, May 20, 2022 at 12:41 AM Tejun Heo <tj@kernel.org> wrote:
+>
+> On Fri, May 20, 2022 at 01:21:31AM +0000, Yosry Ahmed wrote:
+> > From: Hao Luo <haoluo@google.com>
+> >
+> > Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
+> > iter doesn't iterate a set of kernel objects. Instead, it is supposed to
+> > be parameterized by a cgroup id and prints only that cgroup. So one
+> > needs to specify a target cgroup id when attaching this iter. The target
+> > cgroup's state can be read out via a link of this iter.
+> >
+> > Signed-off-by: Hao Luo <haoluo@google.com>
+> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+>
+> This could be me not understanding why it's structured this way but it keeps
+> bothering me that this is adding a cgroup iterator which doesn't iterate
+> cgroups. If all that's needed is extracting information from a specific
+> cgroup, why does this need to be an iterator? e.g. why can't I use
+> BPF_PROG_TEST_RUN which looks up the cgroup with the provided ID, flushes
+> rstat, retrieves whatever information necessary and returns that as the
+> result?
 
-> I think when you exit the for_each_available_child_of_node() loop you
-> need to manually call of_node_put(port).
+I will let Hao and Yonghong reply here as they have a lot more
+context, and they had previous discussions about cgroup_iter. I just
+want to say that exposing the stats in a file is extremely convenient
+for userspace apps. It becomes very similar to reading stats from
+cgroupfs. It also makes migrating cgroup stats that we have
+implemented in the kernel to BPF a lot easier.
 
-Yes you are right on that point. I'll fix that.
+AFAIK there are also discussions about using overlayfs to have links
+to the bpffs files in cgroupfs, which makes it even better. So I would
+really prefer keeping the approach we have here of reading stats
+through a file from userspace. As for how we go about this (and why a
+cgroup iterator doesn't iterate cgroups) I will leave this for Hao and
+Yonghong to explain the rationale behind it. Ideally we can keep the
+same functionality under a more descriptive name/type.
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+>
+> Thanks.
+>
+> --
+> tejun
