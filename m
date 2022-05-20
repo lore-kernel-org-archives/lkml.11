@@ -2,115 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:36:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345171AbiETDdq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 23:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
+        id S232835AbiETDf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 23:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232835AbiETDdp (ORCPT
+        with ESMTP id S1345112AbiETDfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 23:33:45 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BA012FECB
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:33:43 -0700 (PDT)
-Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L4C2p1CNGz1JC7d;
-        Fri, 20 May 2022 11:32:18 +0800 (CST)
-Received: from [10.174.176.254] (10.174.176.254) by
- kwepemi500023.china.huawei.com (7.221.188.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 20 May 2022 11:33:41 +0800
-Subject: Re: [PATCH] mtd: rawnand: fix drivers probe/remove methods
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-CC:     <richard@nod.at>, <vigneshr@ti.com>,
-        <christophe.jaillet@wanadoo.fr>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <liwei391@huawei.com>
-References: <20220517060753.26710-1-wupeng58@huawei.com>
- <20220519172507.4d9872c3@xps-13>
-From:   "wupeng (D)" <wupeng58@huawei.com>
-Message-ID: <4baeaf4f-0db6-a1cf-23e3-ed7ce521249b@huawei.com>
-Date:   Fri, 20 May 2022 11:33:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0
+        Thu, 19 May 2022 23:35:53 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9DEBCAF
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:35:50 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id j25so9703266wrc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:35:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Iz8E9Wqores9d4slLEwkkQTwfUp3b5sNzXx3GlKoN9k=;
+        b=EoiX9X4PjQip6/zwk77Ut0DguWoasyzn5/OBwNAW3I9FzmI1K1Ji6NrthZRSi9y1Tm
+         76OZlBbw67XKaNWnz3MkXHg9IuDWHrq06WXp4UJ7aQGXuwdDv3Oxv6VoG2zmW1Snox6n
+         qPYxyq2Y/Rv8Fs9dfUoaai8/ElIphdTQbKTz8LW8E9Zf+gh+cgurelf2hG2tGzjoXPXN
+         yZmc5nFgW0QX78GiATsewfOsEs5xzh/V29aprpfe1VfDDTe5EWoYNkioi11o5Wm/xkq3
+         wEs2Ftd8pKjqo2QQZADKoltdFDtdnzoa7eQ+chCxu3RMCn7ENNwqZ/A8uYJcSj/I+/Jx
+         mSyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Iz8E9Wqores9d4slLEwkkQTwfUp3b5sNzXx3GlKoN9k=;
+        b=BH+Jeb+jGbx0obSFNvlXqwvNyykhy4dxAA906WGSb8E3EsOjREtUkKNuCfpKLhTe6r
+         qxNFG4l8VJzaYvJJDRA25KDVQLh7+0nMBK7QZ/Hrjka1jqDRU/+6sc1uTKcwVOeXlZMJ
+         9tzH/lyeJoV83K4YyeBQajArgz/QxMtAW5HDuBoVYeyK5mOvZn4y8D6YJ8IZYkUJab5t
+         A8kBRdj1h7EDAPqC9DFEp6fKvAw73qCVr9sXK4GWuSuP7oKgGNcAOGEdtSl97H9v0DaJ
+         2R+/6gbDskGARgOalI9v85MkFCAP3IlhF39ax/4L9LpISzPf48fHt++L+N/VE1Q9klVS
+         azfQ==
+X-Gm-Message-State: AOAM531flSL3dogZTfdn0pq0WH9AOz146NASR9PU1Vbjxch8jj1QkMo7
+        WCn/TcZoMVXjrqeTM3Mg85942b4N7ai4GF4fZpQNNQ==
+X-Google-Smtp-Source: ABdhPJzhhw/Q0jnXkep8oUbRoAi2MJltN0zmw2yBi9f0WP+hU3Xv1uItHJl9OBgXBdOC/a5JfDnvxXRwcMjJAW/4cIk=
+X-Received: by 2002:a5d:6489:0:b0:20e:549b:4414 with SMTP id
+ o9-20020a5d6489000000b0020e549b4414mr6391740wri.86.1653017748963; Thu, 19 May
+ 2022 20:35:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220519172507.4d9872c3@xps-13>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.254]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500023.china.huawei.com (7.221.188.76)
-X-CFilter-Loop: Reflected
+References: <20220509060634.134068-1-anup@brainfault.org>
+In-Reply-To: <20220509060634.134068-1-anup@brainfault.org>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Fri, 20 May 2022 09:05:37 +0530
+Message-ID: <CAAhSdy0MQ+Wq-r7Po-OOpVDdPP7xbucz+j4V-zrWGKCt76V9Ug@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: Update KVM RISC-V entry to cover selftests support
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        KVM General <kvm@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
+        <kvm-riscv@lists.infradead.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/19 23:25, Miquel Raynal wrote:
-> Hi,
-> 
-> wupeng58@huawei.com wrote on Tue, 17 May 2022 06:07:53 +0000:
-> 
->> Driver should call pci_disable_device() if it returns from
->> cafe_nand_probe() with error.
->>
->> Meanwhile, the driver calls pci_enable_device() in
->> cafe_nand_probe(), but never calls pci_disable_device()
->> during removal.
-> 
-> Please fix the subject prefix, it should be "mtd: ranwnand: cafe:"
-> 
-> Also Fixes/Cc: stable tags might be useful.
-> 
->> Signed-off-by: Peng Wu <wupeng58@huawei.com>
->> ---
->>   drivers/mtd/nand/raw/cafe_nand.c | 9 +++++++--
->>   1 file changed, 7 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/mtd/nand/raw/cafe_nand.c b/drivers/mtd/nand/raw/cafe_nand.c
->> index 9dbf031716a6..af119e376352 100644
->> --- a/drivers/mtd/nand/raw/cafe_nand.c
->> +++ b/drivers/mtd/nand/raw/cafe_nand.c
->> @@ -679,8 +679,10 @@ static int cafe_nand_probe(struct pci_dev *pdev,
->>   	pci_set_master(pdev);
->>   
->>   	cafe = kzalloc(sizeof(*cafe), GFP_KERNEL);
->> -	if (!cafe)
->> -		return  -ENOMEM;
->> +	if (!cafe) {
->> +		err = -ENOMEM;
->> +		goto out_disable_device;
->> +	}
->>   
->>   	mtd = nand_to_mtd(&cafe->nand);
->>   	mtd->dev.parent = &pdev->dev;
->> @@ -801,6 +803,8 @@ static int cafe_nand_probe(struct pci_dev *pdev,
->>   	pci_iounmap(pdev, cafe->mmio);
->>    out_free_mtd:
->>   	kfree(cafe);
->> + out_disable_device:
->> +	pci_disable_device(pdev);
->>    out:
->>   	return err;
->>   }
->> @@ -822,6 +826,7 @@ static void cafe_nand_remove(struct pci_dev *pdev)
->>   	pci_iounmap(pdev, cafe->mmio);
->>   	dma_free_coherent(&cafe->pdev->dev, 2112, cafe->dmabuf, cafe->dmaaddr);
->>   	kfree(cafe);
->> +	pci_disable_device(pdev);
->>   }
->>   
->>   static const struct pci_device_id cafe_nand_tbl[] = {
-> 
-> 
-> Thanks,
-> Miquèl
-> .
-> 
-Hi，
-    Thank you very much for correcting the problem and I will fix the unqualified subject name.
+On Mon, May 9, 2022 at 11:37 AM Anup Patel <anup@brainfault.org> wrote:
+>
+> We update KVM RISC-V maintainers entry to include appropriate KVM
+> selftests directories so that RISC-V related KVM selftests patches
+> are CC'ed to KVM RISC-V mailing list.
+>
+> Signed-off-by: Anup Patel <anup@brainfault.org>
+
+Queued this patch for 5.19
 
 Thanks,
-Peng Wu
+Anup
+
+> ---
+>  MAINTAINERS | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e8c52d0192a6..ee73a71c1500 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -10767,6 +10767,8 @@ T:      git git://github.com/kvm-riscv/linux.git
+>  F:     arch/riscv/include/asm/kvm*
+>  F:     arch/riscv/include/uapi/asm/kvm*
+>  F:     arch/riscv/kvm/
+> +F:     tools/testing/selftests/kvm/*/riscv/
+> +F:     tools/testing/selftests/kvm/riscv/
+>
+>  KERNEL VIRTUAL MACHINE for s390 (KVM/s390)
+>  M:     Christian Borntraeger <borntraeger@linux.ibm.com>
+> --
+> 2.34.1
+>
