@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 047C5C4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83440C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348053AbiETKK2 (ORCPT
+        id S1348063AbiETKKb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 06:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
+        Fri, 20 May 2022 06:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234933AbiETKKW (ORCPT
+        with ESMTP id S242192AbiETKKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 06:10:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8100DFF6A;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A806BDE30B;
         Fri, 20 May 2022 03:10:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44B2861CFE;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F6A661CFD;
         Fri, 20 May 2022 10:10:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92626C36AE3;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EEEEC34113;
         Fri, 20 May 2022 10:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1653041420;
-        bh=b5B3dWn6n9Wxng7nBg4KPCY57stZm2SUMOlxnd/cJt8=;
+        bh=GTkcfKFZihRoPL88FJ6O6bK52tDtWhzjFXKqXM8uLMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DDeht8FOFq8hO8w1PZZUlFAGMZjBPOubMjKDjmKbHJu6IkiTaaRuPx98Tg+mqAMUP
-         szPmag55Qof2XpivZOcAujXs0Inu/jN7h3+BwGEU7VKHxNSVcrpK9QEOWGNzQiu94H
-         Vj25DWKdDUHKc9s+DjdGPCqsabrvPZZ4z7fJzmOg8qV+Od0DxH79gTzPnYsEWleupI
-         etyJ+AxawS3VPkAry7uclzUndFIDeHV+fixCkLSaPRKcmFTFbw9jDZ3j/NKfGPkzYU
-         YJpO/GG5H1PlxNjRjed0vJiMqQRUiRPqcauJ25p3fkaq3fnfvf8p43nOI1qgoDr3B2
-         XxfR34OqYcVYQ==
+        b=k5vFWXgJwENjVzROfnACwPaIx7dBioOe+Xeh/4wV4mOvVaw5MXeMY0WFDYsxNlnZZ
+         hWGFB2RBQcsVvOLQo6QpTycHHLMwRIJw/v/6krufCoNzFtSI/P66B720GJzsHliwFA
+         Av3HrXU2Gl9RaLx8FUimeJA8IH1t8SoW52nfyIdyO70jPYpETVzS8AlVcyBentnJeh
+         unSe2OrJufUicrXff5GnpYhXz37huQHsVDY9Xa9PHHdmSkRMmJJx5TN3FUy/JJAe4Z
+         8nsbGgYwLAK480T3rrraLEzz9aikRe6c9a/5WTRv9TxNGzeT+0o4c6/vN5N+L6GL83
+         gYMNci5dr4+IA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1nrzaO-00056w-Bg; Fri, 20 May 2022 12:10:20 +0200
+        id 1nrzaO-000572-IC; Fri, 20 May 2022 12:10:20 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Andy Gross <agross@kernel.org>,
@@ -43,9 +43,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
         linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 1/3] clk: qcom: gdsc: add collapse-bit helper
-Date:   Fri, 20 May 2022 12:09:46 +0200
-Message-Id: <20220520100948.19622-2-johan+linaro@kernel.org>
+Subject: [PATCH 3/3] clk: qcom: gcc-sc8280xp: use collapse-voting for PCIe GDSCs
+Date:   Fri, 20 May 2022 12:09:48 +0200
+Message-Id: <20220520100948.19622-4-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220520100948.19622-1-johan+linaro@kernel.org>
 References: <20220520100948.19622-1-johan+linaro@kernel.org>
@@ -55,69 +55,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper for updating the SW_COLLAPSE bit during initialisation and
-state updates.
+The PCIe GDSCs can be shared with other masters and should use the APCS
+collapse-vote register when updating the power state.
 
-Note that the update during initialisation was relying on the
-SW_COLLAPSE bit not having been set earlier rather than passing in zero
-explicitly to clear the collapse vote.
+This is specifically also needed to be able to disable power domains
+that have been enabled by boot firmware using the vote register.
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/clk/qcom/gdsc.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/gcc-sc8280xp.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/clk/qcom/gdsc.c b/drivers/clk/qcom/gdsc.c
-index 44520efc6c72..c676416e685f 100644
---- a/drivers/clk/qcom/gdsc.c
-+++ b/drivers/clk/qcom/gdsc.c
-@@ -132,10 +132,24 @@ static int gdsc_poll_status(struct gdsc *sc, enum gdsc_status status)
- 	return -ETIMEDOUT;
- }
+diff --git a/drivers/clk/qcom/gcc-sc8280xp.c b/drivers/clk/qcom/gcc-sc8280xp.c
+index 887db5324ab8..4d7db13ed708 100644
+--- a/drivers/clk/qcom/gcc-sc8280xp.c
++++ b/drivers/clk/qcom/gcc-sc8280xp.c
+@@ -6778,58 +6778,79 @@ static struct clk_branch gcc_video_vcodec_throttle_clk = {
  
-+static int gdsc_update_collapse_bit(struct gdsc *sc, bool val)
-+{
-+	u32 reg, mask;
-+	int ret;
-+
-+	reg = sc->gdscr;
-+	mask = SW_COLLAPSE_MASK;
-+
-+	ret = regmap_update_bits(sc->regmap, reg, mask, val ? mask : 0);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int gdsc_toggle_logic(struct gdsc *sc, enum gdsc_status status)
- {
- 	int ret;
--	u32 val = (status == GDSC_ON) ? 0 : SW_COLLAPSE_MASK;
+ static struct gdsc pcie_0_tunnel_gdsc = {
+ 	.gdscr = 0xa4004,
++	.collapse_ctrl = 0x52128,
++	.collapse_mask = BIT(0),
+ 	.pd = {
+ 		.name = "pcie_0_tunnel_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
++	.flags = VOTABLE,
+ };
  
- 	if (status == GDSC_ON && sc->rsupply) {
- 		ret = regulator_enable(sc->rsupply);
-@@ -143,9 +157,7 @@ static int gdsc_toggle_logic(struct gdsc *sc, enum gdsc_status status)
- 			return ret;
- 	}
+ static struct gdsc pcie_1_tunnel_gdsc = {
+ 	.gdscr = 0x8d004,
++	.collapse_ctrl = 0x52128,
++	.collapse_mask = BIT(1),
+ 	.pd = {
+ 		.name = "pcie_1_tunnel_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
++	.flags = VOTABLE,
+ };
  
--	ret = regmap_update_bits(sc->regmap, sc->gdscr, SW_COLLAPSE_MASK, val);
--	if (ret)
--		return ret;
-+	ret = gdsc_update_collapse_bit(sc, status == GDSC_OFF);
+ static struct gdsc pcie_2a_gdsc = {
+ 	.gdscr = 0x9d004,
++	.collapse_ctrl = 0x52128,
++	.collapse_mask = BIT(2),
+ 	.pd = {
+ 		.name = "pcie_2a_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
++	.flags = VOTABLE,
+ };
  
- 	/* If disabling votable gdscs, don't poll on status */
- 	if ((sc->flags & VOTABLE) && status == GDSC_OFF) {
-@@ -425,8 +437,7 @@ static int gdsc_init(struct gdsc *sc)
- 		 * If a Votable GDSC is ON, make sure we have a Vote.
- 		 */
- 		if (sc->flags & VOTABLE) {
--			ret = regmap_update_bits(sc->regmap, sc->gdscr,
--						 SW_COLLAPSE_MASK, val);
-+			ret = gdsc_update_collapse_bit(sc, false);
- 			if (ret)
- 				return ret;
- 		}
+ static struct gdsc pcie_2b_gdsc = {
+ 	.gdscr = 0x9e004,
++	.collapse_ctrl = 0x52128,
++	.collapse_mask = BIT(3),
+ 	.pd = {
+ 		.name = "pcie_2b_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
++	.flags = VOTABLE,
+ };
+ 
+ static struct gdsc pcie_3a_gdsc = {
+ 	.gdscr = 0xa0004,
++	.collapse_ctrl = 0x52128,
++	.collapse_mask = BIT(4),
+ 	.pd = {
+ 		.name = "pcie_3a_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
++	.flags = VOTABLE,
+ };
+ 
+ static struct gdsc pcie_3b_gdsc = {
+ 	.gdscr = 0xa2004,
++	.collapse_ctrl = 0x52128,
++	.collapse_mask = BIT(5),
+ 	.pd = {
+ 		.name = "pcie_3b_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
++	.flags = VOTABLE,
+ };
+ 
+ static struct gdsc pcie_4_gdsc = {
+ 	.gdscr = 0x6b004,
++	.collapse_ctrl = 0x52128,
++	.collapse_mask = BIT(6),
+ 	.pd = {
+ 		.name = "pcie_4_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
++	.flags = VOTABLE,
+ };
+ 
+ static struct gdsc ufs_card_gdsc = {
 -- 
 2.35.1
 
