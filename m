@@ -2,130 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 766DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346816AbiETIKr (ORCPT
+        id S1346829AbiETILi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
+        Fri, 20 May 2022 04:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243293AbiETIKm (ORCPT
+        with ESMTP id S235949AbiETILa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:10:42 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7CC8E19C
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:10:38 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id r3so1952108ljd.7
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:10:38 -0700 (PDT)
+        Fri, 20 May 2022 04:11:30 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4385252E49;
+        Fri, 20 May 2022 01:11:29 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id n8so6786361plh.1;
+        Fri, 20 May 2022 01:11:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/Q2zXV+8LUjkYKDjIzBXp7BrDdbuagm69yyU6TmRueE=;
-        b=PnTRMGFE7BbPHDZAQyZ4YMlza6eW9Ev20ZOHkE79gI1JpTWLE4xJThgm/r5s9t239+
-         fHDAmNvNu0RfGPf9w+ld+P26yWOMR/vjnmPPjeMFv2cqoJhw2SVV9FcPacDaz7H8YUN1
-         0RVqysnTGJwd9fgie+/CoH1MMMRPjf0cVI+BIZoavWtshnVwunP2qywHHpkbzL3lmqfP
-         uUAnoytcdoPfEpWsQzE/u1MOLUmEpU/Wh0lq/7QsS8VZJzfEcth67c7QVTervg3EWohw
-         IPtNpV92Mgp1p954XRHrH6O+QoljU9RGkJEXuJABPnyt3aJ3Jt/RP3bcrPzxSUaONMv5
-         9D0w==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XsDbXLkM/SD1gIqolJSdHpOWgyWe8lXWJA+Qz0s6McE=;
+        b=eg8vz0xPF3x92KYNdkg2qpQTecRdTZDTj8Ub+NAl8OeO1ep1lDeLuB5jO2uc44xHth
+         xpwlne//yPNs9kG4mTLlIEPZJmrhO/MS0PuUrLv7y6aPdrWiymowlgpfaiOaFW3+hc5n
+         3Lgy4Sza/h7jiHNbKvwxlSkJ5ooWCHBYeqfqJwSO9n6kPjKtXTjF4jvUN9d+dom2vbw0
+         0mcz7iJK85ZnCQUCNimQ6pRDzmRb1zZHbgZ7+B3tpFRHgg+ttjx0FayzwJHeNUCmMcZt
+         LWwWfyDllBEwk0ddMgg7PJkSbV62gDDLHYEqIrLEHPSU2/F2u8QGvFEYxcwCv7WtQH6M
+         dPYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/Q2zXV+8LUjkYKDjIzBXp7BrDdbuagm69yyU6TmRueE=;
-        b=qvlfiu/AWR6X7Ox/W9sRoxmR8H08aDWykkpVxek14tq4GKKfh0fj/n32dnhqqqxeLl
-         EKlgpffIED3cq8/X3hy+XyWPVkhOoDIpMCIjAjY/Rw/gQx5FtkUV0cx7OWQYv76cWegs
-         c/YY5j3o5Dc1kaVAb+m3oZsf2X2k2TaTktY/coElPIqQ9qBK/aSvU1/PEVTlWHcbr+mx
-         N0nXH/lW44dDxC5DsiT1vTYBVThU0TgIL0czx17rrhhae0VSBjZulbFgm6mlTeR1BFln
-         uQpI3pNbJnJyMy5FqqkCc/z7j/3bRZ/OsrMreFavkRfZJkxXjyaZDUlqpmcQ9/X6cLMK
-         7Qew==
-X-Gm-Message-State: AOAM532ntow2Oggqc1yKi+I0fdQFtFfepyvNa2LSYCTWoK2q1Nh+iyYf
-        BMIXFDpRMStwUHlMQhuCaZ5oMg==
-X-Google-Smtp-Source: ABdhPJzOxCXf5B4f0uotUCSQeT7IL0G63fQ0rGQ3FRjBwXyQY1KqTrYwI6Xi3xuur/4LN/BEusNRvw==
-X-Received: by 2002:a2e:391c:0:b0:253:c3e8:8e79 with SMTP id g28-20020a2e391c000000b00253c3e88e79mr4694809lja.304.1653034237150;
-        Fri, 20 May 2022 01:10:37 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id d25-20020ac24c99000000b00477b624c0a8sm565749lfl.180.2022.05.20.01.10.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 01:10:36 -0700 (PDT)
-Message-ID: <40562324-8d15-6dd6-46db-053f65b030b6@linaro.org>
-Date:   Fri, 20 May 2022 10:10:35 +0200
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=XsDbXLkM/SD1gIqolJSdHpOWgyWe8lXWJA+Qz0s6McE=;
+        b=WrXdP7jl5Gram+BbnD0LdKKAWbfp7ausynKZni/Aj6bRWmxIP+pN/Y2KYdyj3ZTtrB
+         jYcCe3rIeuyXx9QiNbRgJOwGmG7g/E23zWJC6ufxHIwsjSuv5JXuQV26l8Bf9gNU92+t
+         XyQsgPUPNCE4ZDky0EHEqZIv6S/uFHJzpR7VbTmPMZT8oqoGo7CLK7FJhmEyV0LTIhTe
+         0DK6g2Vj1Nw9NSbHDkNlkvfr7ygbasKuWvXx96ePPgntSiaH/PqO6Lh2gra43mw9tZh6
+         uUzZN1TNEZL3ACxC/oUzU+Nzy8mkEpDNHeZyxTDWhk4l3RUL39NblPGiBmahVgp3224p
+         ql3g==
+X-Gm-Message-State: AOAM530/WcCpNUa/Fy3mtrkgcluQQjUi/Gvx6B8lHCkaGtEfJ/icXbUI
+        EJeXbJBTVrAou5b+6OXnPnE=
+X-Google-Smtp-Source: ABdhPJypatUyV/ufYREcR4VO4QOd+pO6wNuURAzg0PEZLZdQILYK8o5WgCQ/hpzFvG4VIwbJRIURtQ==
+X-Received: by 2002:a17:902:a502:b0:151:8289:b19 with SMTP id s2-20020a170902a50200b0015182890b19mr8683368plq.149.1653034288294;
+        Fri, 20 May 2022 01:11:28 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:1761])
+        by smtp.gmail.com with ESMTPSA id p6-20020a170902780600b0015e8d4eb299sm5038111pll.227.2022.05.20.01.11.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 01:11:27 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 19 May 2022 22:11:26 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
+Message-ID: <YodNLpxut+Zddnre@slm.duckdns.org>
+References: <20220520012133.1217211-1-yosryahmed@google.com>
+ <20220520012133.1217211-4-yosryahmed@google.com>
+ <YodGI73xq8aIBrNM@slm.duckdns.org>
+ <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] dt-bindings: serial: mtk-uart: Convert txt to
- json-schema
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        gregkh@linuxfoundation.org
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        matthias.bgg@gmail.com, linux-serial@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220519152329.55028-1-angelogioacchino.delregno@collabora.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220519152329.55028-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/05/2022 17:23, AngeloGioacchino Del Regno wrote:
-> Convert the mtk-uart documentation from freeform text to a json-schema.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
-> 
-> v2: Changed to also accept just "mediatek,mt6577-uart" as compatible.
-> 
-> 
->  .../bindings/serial/mediatek,uart.yaml        | 121 ++++++++++++++++++
->  .../devicetree/bindings/serial/mtk-uart.txt   |  59 ---------
->  2 files changed, 121 insertions(+), 59 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/mediatek,uart.yaml
->  delete mode 100644 Documentation/devicetree/bindings/serial/mtk-uart.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> new file mode 100644
-> index 000000000000..7929aa123487
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
-> @@ -0,0 +1,121 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/mediatek,uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MediaTek Universal Asynchronous Receiver/Transmitter (UART)
-> +
-> +maintainers:
-> +  - Matthias Brugger <matthias.bgg@gmail.com>
-> +
-> +allOf:
-> +  - $ref: serial.yaml#
-> +
-> +description: |+
+Hello,
 
-No need for |+
+On Fri, May 20, 2022 at 12:58:52AM -0700, Yosry Ahmed wrote:
+> On Fri, May 20, 2022 at 12:41 AM Tejun Heo <tj@kernel.org> wrote:
+> >
+> > On Fri, May 20, 2022 at 01:21:31AM +0000, Yosry Ahmed wrote:
+> > > From: Hao Luo <haoluo@google.com>
+> > >
+> > > Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
+> > > iter doesn't iterate a set of kernel objects. Instead, it is supposed to
+> > > be parameterized by a cgroup id and prints only that cgroup. So one
+> > > needs to specify a target cgroup id when attaching this iter. The target
+> > > cgroup's state can be read out via a link of this iter.
+> > >
+> > > Signed-off-by: Hao Luo <haoluo@google.com>
+> > > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> >
+> > This could be me not understanding why it's structured this way but it keeps
+> > bothering me that this is adding a cgroup iterator which doesn't iterate
+> > cgroups. If all that's needed is extracting information from a specific
+> > cgroup, why does this need to be an iterator? e.g. why can't I use
+> > BPF_PROG_TEST_RUN which looks up the cgroup with the provided ID, flushes
+> > rstat, retrieves whatever information necessary and returns that as the
+> > result?
+> 
+> I will let Hao and Yonghong reply here as they have a lot more
+> context, and they had previous discussions about cgroup_iter. I just
+> want to say that exposing the stats in a file is extremely convenient
+> for userspace apps. It becomes very similar to reading stats from
+> cgroupfs. It also makes migrating cgroup stats that we have
+> implemented in the kernel to BPF a lot easier.
 
-> +  The MediaTek UART is based on the basic 8250 UART and compatible
-> +  with 16550A, with enhancements for high speed baud rates and
-> +  support for DMA.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
+So, if it were upto me, I'd rather direct energy towards making retrieving
+information through TEST_RUN_PROG easier rather than clinging to making
+kernel output text. I get that text interface is familiar but it kinda
+sucks in many ways.
 
-This is just single item, so no items.
+> AFAIK there are also discussions about using overlayfs to have links
+> to the bpffs files in cgroupfs, which makes it even better. So I would
+> really prefer keeping the approach we have here of reading stats
+> through a file from userspace. As for how we go about this (and why a
+> cgroup iterator doesn't iterate cgroups) I will leave this for Hao and
+> Yonghong to explain the rationale behind it. Ideally we can keep the
+> same functionality under a more descriptive name/type.
 
-> +          - const: mediatek,mt6577-uart
+My answer would be the same here. You guys seem dead set on making the
+kernel emulate cgroup1. I'm not gonna explicitly block that but would
+strongly suggest having a longer term view.
 
-Best regards,
-Krzysztof
+If you *must* do the iterator, can you at least make it a proper iterator
+which supports seeking? AFAICS there's nothing fundamentally preventing bpf
+iterators from supporting seeking. Or is it that you need something which is
+pinned to a cgroup so that you can emulate the directory structure?
+
+Thanks.
+
+-- 
+tejun
