@@ -2,122 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10124C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F156CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351278AbiETP4o (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S237486AbiETP5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 11:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351276AbiETP43 (ORCPT
+        with ESMTP id S1351212AbiETP4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:56:29 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D91F53A7C
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:56:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653062171; x=1684598171;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=QKc/EhjtozyiIqZXJMmyuE7NaobnHY6+1jw25/G7tsY=;
-  b=ewvsxq3j1N5xGGG7niEJgFD8QGUv6ejhAtESExWKOcesdonzBuiuAP6L
-   fL1l01W4COPICOsbO22ZjrYGv2EhHwK1vDI0FebwU6t/I04zITY2C+13b
-   PUnkL7LkIiIaGl2GoO/MExZwO5/KP0IMGRe5Cr0k/3CkQ2YAwSJ1/3Jzq
-   h+zTzzVtWL3I8DknyVKj4PxX0yc41GGeEzW0WOA42MjOazJFC5D5xHKd4
-   M/Dr+1lUGqkGj+HkILqhCV3/Y+C0DnUmJ5S9OXBXemnLQezOaIRqybK3x
-   5ScJy6m6U2LEoxE3gxrS7Y6VsVNIZXmPsOTdBoDKbYgndaJRSaHR48py9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="335700246"
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="335700246"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 08:56:10 -0700
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="599284945"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.38.124])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 08:56:09 -0700
-Message-ID: <ab8918a4-7ac8-a37e-2e2c-28438c422d87@intel.com>
-Date:   Fri, 20 May 2022 18:56:04 +0300
+        Fri, 20 May 2022 11:56:53 -0400
+X-Greylist: delayed 1389 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 08:56:51 PDT
+Received: from vern.gendns.com (vern.gendns.com [98.142.107.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70856B7CF
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:56:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3hmYwiverMb1N0J61Fi+8bzNM2DByfoLQaNKfPSLJ9k=; b=Ql9Sep6+YZYzeNT4c/2jhSUvgk
+        pu0cmPSjxKPfjL6DXri1z6i9804pTe+syIlCTXqR/QGA7ydZOV0hX1S/ExFEsalEIuAHjRZkjXyoR
+        l4brXxjojKL01gM75PAybV2oeWIcfcdpnsu1zbEAdiYJ9npo/V+Zq47sn7Wp4XvbIL9TuWmpxc3qz
+        38U6YAwnEWq5NKnTqAObF0dVKw2stIQQ/7vuC5Ix6qlVEDl5YukGLOzfrhmww72MeUmb/HoGlH72Y
+        iZFsZ1IiFTZkmyaJlAYX0eZsylJvWO6hfUevE1LEK+B2UD0l+vXYoiV8YCe9CbU03g64AM8q4ml5C
+        eU28VhJw==;
+Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:45970 helo=[192.168.0.134])
+        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.95)
+        (envelope-from <david@lechnology.com>)
+        id 1ns4d4-0003zy-OF;
+        Fri, 20 May 2022 11:33:40 -0400
+Message-ID: <cb4aadab-0724-35d6-0a97-dc4425f31bb9@lechnology.com>
+Date:   Fri, 20 May 2022 10:33:37 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.8.1
-Subject: [PATCH V2 2/5] libperf: Add preadn()
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] drm/st7735r: Fix module autoloading for Okaya RH128128T
 Content-Language: en-US
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
+To:     Javier Martinez Canillas <javierm@redhat.com>,
         linux-kernel@vger.kernel.org
-References: <20220520132404.25853-1-adrian.hunter@intel.com>
- <20220520132404.25853-3-adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <20220520132404.25853-3-adrian.hunter@intel.com>
-Content-Type: text/plain; charset=UTF-8
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        dri-devel@lists.freedesktop.org
+References: <20220520091602.179078-1-javierm@redhat.com>
+From:   David Lechner <david@lechnology.com>
+In-Reply-To: <20220520091602.179078-1-javierm@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vern.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add preadn() to provide pread() and readn() semantics.
+On 5/20/22 4:16 AM, Javier Martinez Canillas wrote:
+> The SPI core always reports a "MODALIAS=spi:<foo>", even if the device was
+> registered via OF. This means that the st7735r.ko module won't autoload if
+> a DT has a node with a compatible "okaya,rh128128t" string.
+> 
+> In that case, kmod expects a "MODALIAS=of:N*T*Cokaya,rh128128t" uevent but
+> instead will get a "MODALIAS=spi:rh128128t", which is not present in the
+> list of aliases:
+> 
+>    $ modinfo drivers/gpu/drm/tiny/st7735r.ko | grep alias
+>    alias:          of:N*T*Cokaya,rh128128tC*
+>    alias:          of:N*T*Cokaya,rh128128t
+>    alias:          of:N*T*Cjianda,jd-t18003-t01C*
+>    alias:          of:N*T*Cjianda,jd-t18003-t01
+>    alias:          spi:jd-t18003-t01
+> 
+> To workaround this issue, add in the SPI table an entry for that device.
+> 
+> Fixes: d1d511d516f7 ("drm: tiny: st7735r: Add support for Okaya RH128128T")
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> ---
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
-
-
-Changes in V2:
-
-	Make preadn() thread-safe in case someone infers
-	from the name that it is.
-
-
- tools/lib/perf/include/internal/lib.h |  2 ++
- tools/lib/perf/lib.c                  | 20 ++++++++++++++++++++
- 2 files changed, 22 insertions(+)
-
-diff --git a/tools/lib/perf/include/internal/lib.h b/tools/lib/perf/include/internal/lib.h
-index 5175d491b2d49..85471a4b900f7 100644
---- a/tools/lib/perf/include/internal/lib.h
-+++ b/tools/lib/perf/include/internal/lib.h
-@@ -9,4 +9,6 @@ extern unsigned int page_size;
- ssize_t readn(int fd, void *buf, size_t n);
- ssize_t writen(int fd, const void *buf, size_t n);
- 
-+ssize_t preadn(int fd, void *buf, size_t n, off_t offs);
-+
- #endif /* __LIBPERF_INTERNAL_CPUMAP_H */
-diff --git a/tools/lib/perf/lib.c b/tools/lib/perf/lib.c
-index 18658931fc714..696fb0ea67c6e 100644
---- a/tools/lib/perf/lib.c
-+++ b/tools/lib/perf/lib.c
-@@ -38,6 +38,26 @@ ssize_t readn(int fd, void *buf, size_t n)
- 	return ion(true, fd, buf, n);
- }
- 
-+ssize_t preadn(int fd, void *buf, size_t n, off_t offs)
-+{
-+	size_t left = n;
-+
-+	while (left) {
-+		ssize_t ret = pread(fd, buf, left, offs);
-+
-+		if (ret < 0 && errno == EINTR)
-+			continue;
-+		if (ret <= 0)
-+			return ret;
-+
-+		left -= ret;
-+		buf  += ret;
-+		offs += ret;
-+	}
-+
-+	return n;
-+}
-+
- /*
-  * Write exactly 'n' bytes or return an error.
-  */
--- 
-2.34.1
+Acked-by: David Lechner <david@lechnology.com>
 
