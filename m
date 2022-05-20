@@ -2,84 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C15C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348945AbiETMCe (ORCPT
+        id S1348933AbiETMCj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55894 "EHLO
+        Fri, 20 May 2022 08:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348914AbiETMCX (ORCPT
+        with ESMTP id S1348947AbiETMCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:02:23 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D8E14917E
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:02:19 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id n6so4438836wms.0
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:02:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=FCIoMgX4YMt3LzpjNytfLzy8l6OAc+D1LAtrTBfwlHA=;
-        b=gPfHequ7ktAF+p4/2qSPmF3+CpU9sowqy5eligOSuJ8+TMxCRSUjzWR07ViV0E7mWp
-         6YJPnzE1nr0sAdvAGBAv73Jo+98V7C8/wZObFYidXuMu6lcpKz8be+MHLl5RXUSgtIfY
-         fG7D+rrS9UIqjx6NUi6DkE3f+O8wD8o5FNt0htL66MfjvmyDijxWVCT23I8b7TLzHuCh
-         PFr2SKzGoghn9aH1paIHRmwNHxN5Db2jhq+PdlRNW8p9ONJq2nWuWq5+fbWbJssYuz1v
-         yeVwtz6TeaojB3KDrc3or7vRq0jO6b9OHrThVc3TQAxWyFZFDyt1K3jrCKdRUMkvjj+I
-         IUpg==
+        Fri, 20 May 2022 08:02:35 -0400
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A11149156;
+        Fri, 20 May 2022 05:02:26 -0700 (PDT)
+Received: by mail-qv1-f52.google.com with SMTP id eq14so6519377qvb.4;
+        Fri, 20 May 2022 05:02:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=FCIoMgX4YMt3LzpjNytfLzy8l6OAc+D1LAtrTBfwlHA=;
-        b=aZDTrD4AEw70Pu3WmD0dmizrVRVoIwrmC97NQBtw8LHdXxSFJhLy5fYygD34NrrAC0
-         nbjmevFOh6G8CwF/FzgpFUjRYUOxuJDAomDTa4ToebJTEs60T9kntXSnv7vxpujuJoDI
-         gkQGXa2nGZ/OSQQ7kjffcPj8Laa/h5PxIF445RRzB0sMIIG/VWMFl+/0w2E/+iMrbmDU
-         v6faDlO3QNHxVemtlU98b7LA6AcEjtT7G4/jz1tt3v1aOQtnqASHrpnK/LAs2rj2QUIx
-         y4ufukeuWgTaHbAT2LkyyRSAHQUB+K2TT7hrR7mMkgaj2bKSR3iytSP9HTOu2pppyFWy
-         I3kw==
-X-Gm-Message-State: AOAM531WZgeUBUc45WDLqn5MB7LJJ4Ee+Sb/CkHRlgkn4CZ6Dtk2aV78
-        sKcrUUvVvXD5twtOW6823HvC8Q==
-X-Google-Smtp-Source: ABdhPJxQ1mqYBP4sa6WQFYVkHdfutMFUAfSjHOnkIjnL1kOhAO3q7CtWIIWy8Knupb4yiAIwCKxf4Q==
-X-Received: by 2002:a7b:c445:0:b0:397:28d3:d9cf with SMTP id l5-20020a7bc445000000b0039728d3d9cfmr8356674wmi.116.1653048138223;
-        Fri, 20 May 2022 05:02:18 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:e96e:bd3d:75ff:2c21? ([2a01:e0a:b41:c160:e96e:bd3d:75ff:2c21])
-        by smtp.gmail.com with ESMTPSA id ay13-20020a05600c1e0d00b003944821105esm1861457wmb.2.2022.05.20.05.02.17
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=65WlQ7s8g42M5C+5yY3Awf+CpXZTfjugQxcprooIu8U=;
+        b=H4H5LtAxlH368rGbeiAUynQDnrh/BXQmBONueTt/4LyjcN0gRD5Imh2Eb1wviOUidU
+         ZaUNCljmMzVu97ucZAG88dMS1MttqTcGDsQg/Rb9zRXxOIaCK4FpqBsOOe5VSv2HoqYc
+         Vx0WW/UDHb0QINToSOROo7wHOHxDBuqASpjNZFd7K2gObbkr8/fnsjW4eRin9K9KDgOV
+         gyxvmRiOwG423nqWVrpdKsGvq11JuIGYl8MwC2xCyIhHWZ/mH+Cs9XJGGAP8zlPclR5P
+         oJWG5EpI//w3ll3p3pi3fskRX3aLUEkm4BytvupZnexgrlQaJ9qf6FJb9hqoLY4RiTQs
+         FOWw==
+X-Gm-Message-State: AOAM533pCWAUb2WxgWalUoN0CfNCLXzZ91kz5YqhhFQEsX/XgtJlT/bk
+        LZmaI5VWbgGA95xXxOnYDWb7VQbtBurznw==
+X-Google-Smtp-Source: ABdhPJzxbJUSuKDtFmliNY60ckeR9FwT0HpsWozJ6nrAa6f+qH4bHHCc+oxtXwpVW4zfaDztnxiYAg==
+X-Received: by 2002:a05:6214:500c:b0:435:6b7d:5bc3 with SMTP id jo12-20020a056214500c00b004356b7d5bc3mr7641794qvb.92.1653048144744;
+        Fri, 20 May 2022 05:02:24 -0700 (PDT)
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
+        by smtp.gmail.com with ESMTPSA id he17-20020a05622a601100b002f39b99f6c3sm2850201qtb.93.2022.05.20.05.02.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 05:02:17 -0700 (PDT)
-Message-ID: <797315cf-ee0d-f272-7421-d493a6b29b9b@6wind.com>
-Date:   Fri, 20 May 2022 14:02:16 +0200
+        Fri, 20 May 2022 05:02:24 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id t26so13825047ybt.3;
+        Fri, 20 May 2022 05:02:23 -0700 (PDT)
+X-Received: by 2002:a25:4289:0:b0:64d:746f:5311 with SMTP id
+ p131-20020a254289000000b0064d746f5311mr8586423yba.89.1653048143666; Fri, 20
+ May 2022 05:02:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH ipsec-next] xfrm: no need to set DST_NOPOLICY in IPv4
-Content-Language: en-US
-To:     Eyal Birger <eyal.birger@gmail.com>, dsahern@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org,
-        steffen.klassert@secunet.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shmulik.ladkani@gmail.com
-References: <20220520104845.2644470-1-eyal.birger@gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220520104845.2644470-1-eyal.birger@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220520091602.179078-1-javierm@redhat.com>
+In-Reply-To: <20220520091602.179078-1-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 20 May 2022 14:02:11 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVmFGjGbHz1yo7tOzqtUbMTDkUxaMo2fVSp1HMU=_1emA@mail.gmail.com>
+Message-ID: <CAMuHMdVmFGjGbHz1yo7tOzqtUbMTDkUxaMo2fVSp1HMU=_1emA@mail.gmail.com>
+Subject: Re: [PATCH] drm/st7735r: Fix module autoloading for Okaya RH128128T
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        David Lechner <david@lechnology.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Mark Brown <broonie@kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Javier,
 
-Le 20/05/2022 à 12:48, Eyal Birger a écrit :
-> This is a cleanup patch following commit e6175a2ed1f1
-> ("xfrm: fix "disable_policy" flag use when arriving from different devices")
-> which made DST_NOPOLICY no longer be used for inbound policy checks.
-Thanks for the follow-up.
+CC spi
 
-Nicolas
+On Fri, May 20, 2022 at 11:16 AM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> The SPI core always reports a "MODALIAS=spi:<foo>", even if the device was
+> registered via OF. This means that the st7735r.ko module won't autoload if
+> a DT has a node with a compatible "okaya,rh128128t" string.
+>
+> In that case, kmod expects a "MODALIAS=of:N*T*Cokaya,rh128128t" uevent but
+> instead will get a "MODALIAS=spi:rh128128t", which is not present in the
+> list of aliases:
+>
+>   $ modinfo drivers/gpu/drm/tiny/st7735r.ko | grep alias
+>   alias:          of:N*T*Cokaya,rh128128tC*
+>   alias:          of:N*T*Cokaya,rh128128t
+>   alias:          of:N*T*Cjianda,jd-t18003-t01C*
+>   alias:          of:N*T*Cjianda,jd-t18003-t01
+>   alias:          spi:jd-t18003-t01
+>
+> To workaround this issue, add in the SPI table an entry for that device.
+>
+> Fixes: d1d511d516f7 ("drm: tiny: st7735r: Add support for Okaya RH128128T")
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+
+Thanks for your patch!
+We really need to fix this at the subsystem level.
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+
+> --- a/drivers/gpu/drm/tiny/st7735r.c
+> +++ b/drivers/gpu/drm/tiny/st7735r.c
+> @@ -174,6 +174,7 @@ MODULE_DEVICE_TABLE(of, st7735r_of_match);
+>
+>  static const struct spi_device_id st7735r_id[] = {
+>         { "jd-t18003-t01", (uintptr_t)&jd_t18003_t01_cfg },
+> +       { "rh128128t", (uintptr_t)&rh128128t_cfg },
+>         { },
+>  };
+>  MODULE_DEVICE_TABLE(spi, st7735r_id);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
