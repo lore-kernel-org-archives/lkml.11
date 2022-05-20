@@ -2,184 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 307AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348327AbiETKvT (ORCPT
+        id S1343713AbiETKxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 06:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        Fri, 20 May 2022 06:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348324AbiETKu0 (ORCPT
+        with ESMTP id S237515AbiETKxi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 06:50:26 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AE7153536;
-        Fri, 20 May 2022 03:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653043820; x=1684579820;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=EsJYbHjuriODrzgTx81PuDwuj0AZNA3DM9OT3SL1aJM=;
-  b=pFC7N91H83M/7eqnYA7Bms6vopdMWpyixQ9ErIB0DJihM2Ik2vBRBogu
-   tNb25VGKTXHvlKF+RPHIDCzA2HGcumUAU9HDJqYtg3TXxIEzJ1+yF3T+L
-   8RdhvpmCIORkcRx1DXU9/VImWQo3e70dqlMIWJcMhqlupn0o6Jk23Ibyy
-   0=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 20 May 2022 03:50:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 03:50:19 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 03:50:19 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 03:50:15 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V13 5/9] mfd: pm8008: Remove the regmap member from pm8008_data struct
-Date:   Fri, 20 May 2022 16:19:33 +0530
-Message-ID: <1653043777-24003-6-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1653043777-24003-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1653043777-24003-1-git-send-email-quic_c_skakit@quicinc.com>
+        Fri, 20 May 2022 06:53:38 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4349A7220E;
+        Fri, 20 May 2022 03:53:36 -0700 (PDT)
+Date:   Fri, 20 May 2022 10:53:33 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1653044014;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OtSIFPB0YVt45I6/uLYDyp1TV30jOPmQoHnLwn/78wk=;
+        b=r3/bKPz8y0DVRXN6jijN+SEFOsWsVvMFlT2Vlh8t7VL9c7AtHmtmeAd9XfIUzrWZOaLTpp
+        plhLvsYLmGrwJKfEMr23tzOqy/3KkaPWym/0Ntps8hQ/Hb5VjemDHRxLH4aUniXFWmp+1m
+        I1ztvsSEPgvWnzunVTvtDv8/U4i7++XsnkWpme5vJpAtkwd9sdAr+yHNH2Dtx6ZOPCRZmz
+        YDsR0oc9ZSksy+ifbfn4YGTN84lbi7Sj5VbpBkgtbYtSsEeCcD4BH3Sp6tbUWmMkJOxVRN
+        nGy39fgrUtuGgdm0F02BqIIFXrcyleLaxkOIh5V0zr/PRbQ4Qh63LKDz3m+nwQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1653044014;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OtSIFPB0YVt45I6/uLYDyp1TV30jOPmQoHnLwn/78wk=;
+        b=DerLFG95QxMrCdOIFueUetI+LQ7w/LPtSdeUiFKkhSiRp3+F7jbjhtVUgYsnRLrGmn4AFh
+        Mpq3qajp/6dw9EAw==
+From:   "tip-bot2 for Mikulas Patocka" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: objtool/core] objtool: Fix objtool regression on x32 systems
+Cc:     Mikulas Patocka <mpatocka@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>, <stable@vger.kernel.org>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: =?utf-8?q?=3Calpine=2ELRH=2E2=2E02=2E2205161041260=2E1155?=
+ =?utf-8?q?6=40file01=2Eintranet=2Eprod=2Eint=2Erdu2=2Eredhat=2Ecom=3E?=
+References: =?utf-8?q?=3Calpine=2ELRH=2E2=2E02=2E2205161041260=2E11556?=
+ =?utf-8?q?=40file01=2Eintranet=2Eprod=2Eint=2Erdu2=2Eredhat=2Ecom=3E?=
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Message-ID: <165304401319.4207.18392602354110557584.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the regmap member from pm8008_data struct as it is
-not used outside of probe. Add a local variable for regmap
-and pass it to the pm8008_probe_irq_peripherals()
-API in pm8008_probe.
+The following commit has been merged into the objtool/core branch of tip:
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Commit-ID:     22682a07acc308ef78681572e19502ce8893c4d4
+Gitweb:        https://git.kernel.org/tip/22682a07acc308ef78681572e19502ce8893c4d4
+Author:        Mikulas Patocka <mpatocka@redhat.com>
+AuthorDate:    Mon, 16 May 2022 11:06:36 -04:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Fri, 20 May 2022 12:45:30 +02:00
+
+objtool: Fix objtool regression on x32 systems
+
+Commit c087c6e7b551 ("objtool: Fix type of reloc::addend") failed to
+appreciate cross building from ILP32 hosts, where 'int' == 'long' and
+the issue persists.
+
+As such, use s64/int64_t/Elf64_Sxword for this field and suffer the
+pain that is ISO C99 printf formats for it.
+
+Fixes: c087c6e7b551 ("objtool: Fix type of reloc::addend")
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+[peterz: reword changelog, s/long long/s64/]
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com
 ---
-Changes in V13:
- - None.
+ tools/objtool/check.c               |  9 +++++----
+ tools/objtool/elf.c                 |  2 +-
+ tools/objtool/include/objtool/elf.h |  4 ++--
+ 3 files changed, 8 insertions(+), 7 deletions(-)
 
-Changes in V12:
- - None.
-
-Changes in V11:
- - New patch added from V11.
-
- drivers/mfd/qcom-pm8008.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-index 5a670b0..569ffd50 100644
---- a/drivers/mfd/qcom-pm8008.c
-+++ b/drivers/mfd/qcom-pm8008.c
-@@ -57,7 +57,6 @@ enum {
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 2063f9f..190b2f6 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -5,6 +5,7 @@
  
- struct pm8008_data {
- 	struct device *dev;
--	struct regmap *regmap;
- 	int irq;
- 	struct regmap_irq_chip_data *irq_data;
- };
-@@ -151,7 +150,7 @@ static struct regmap_config qcom_mfd_regmap_cfg = {
- 	.max_register	= 0xFFFF,
- };
+ #include <string.h>
+ #include <stdlib.h>
++#include <inttypes.h>
+ #include <sys/mman.h>
  
--static int pm8008_init(struct pm8008_data *chip)
-+static int pm8008_init(struct regmap *regmap)
+ #include <arch/elf.h>
+@@ -561,12 +562,12 @@ static int add_dead_ends(struct objtool_file *file)
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find unreachable insn at %s+0x%lx",
++				WARN("can't find unreachable insn at %s+0x%" PRIx64,
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find unreachable insn at %s+0x%lx",
++			WARN("can't find unreachable insn at %s+0x%" PRIx64,
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+@@ -596,12 +597,12 @@ reachable:
+ 		else if (reloc->addend == reloc->sym->sec->sh.sh_size) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find reachable insn at %s+0x%lx",
++				WARN("can't find reachable insn at %s+0x%" PRIx64,
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find reachable insn at %s+0x%lx",
++			WARN("can't find reachable insn at %s+0x%" PRIx64,
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index 7fb6720..c25e957 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -550,7 +550,7 @@ static struct section *elf_create_reloc_section(struct elf *elf,
+ 						int reltype);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, long addend)
++		  unsigned int type, struct symbol *sym, s64 addend)
  {
- 	int rc;
+ 	struct reloc *reloc;
  
-@@ -161,32 +160,32 @@ static int pm8008_init(struct pm8008_data *chip)
- 	 * This is required to enable the writing of TYPE registers in
- 	 * regmap_irq_sync_unlock().
- 	 */
--	rc = regmap_write(chip->regmap,
-+	rc = regmap_write(regmap,
- 			 (PM8008_TEMP_ALARM_ADDR | INT_SET_TYPE_OFFSET),
- 			 BIT(0));
- 	if (rc)
- 		return rc;
+diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
+index de0cb2f..adebfbc 100644
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -73,7 +73,7 @@ struct reloc {
+ 	struct symbol *sym;
+ 	unsigned long offset;
+ 	unsigned int type;
+-	long addend;
++	s64 addend;
+ 	int idx;
+ 	bool jump_table_start;
+ };
+@@ -145,7 +145,7 @@ struct elf *elf_open_read(const char *name, int flags);
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
  
- 	/* Do the same for GPIO1 and GPIO2 peripherals */
--	rc = regmap_write(chip->regmap,
-+	rc = regmap_write(regmap,
- 			 (PM8008_GPIO1_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
- 	if (rc)
- 		return rc;
- 
--	rc = regmap_write(chip->regmap,
-+	rc = regmap_write(regmap,
- 			 (PM8008_GPIO2_ADDR | INT_SET_TYPE_OFFSET), BIT(0));
- 
- 	return rc;
- }
- 
- static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
--					int client_irq)
-+					struct regmap *regmap, int client_irq)
- {
- 	int rc, i;
- 	struct regmap_irq_type *type;
- 	struct regmap_irq_chip_data *irq_data;
- 
--	rc = pm8008_init(chip);
-+	rc = pm8008_init(regmap);
- 	if (rc) {
- 		dev_err(chip->dev, "Init failed: %d\n", rc);
- 		return rc;
-@@ -208,7 +207,7 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
- 				IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW);
- 	}
- 
--	rc = devm_regmap_add_irq_chip(chip->dev, chip->regmap, client_irq,
-+	rc = devm_regmap_add_irq_chip(chip->dev, regmap, client_irq,
- 			IRQF_SHARED, 0, &pm8008_irq_chip, &irq_data);
- 	if (rc) {
- 		dev_err(chip->dev, "Failed to add IRQ chip: %d\n", rc);
-@@ -223,14 +222,15 @@ static int pm8008_probe(struct i2c_client *client)
- 	int rc;
- 	struct pm8008_data *chip;
- 	struct gpio_desc *reset_gpio;
-+	struct regmap *regmap;
- 
- 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
- 	if (!chip)
- 		return -ENOMEM;
- 
- 	chip->dev = &client->dev;
--	chip->regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
--	if (!chip->regmap)
-+	regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
-+	if (!regmap)
- 		return -ENODEV;
- 
- 	i2c_set_clientdata(client, chip);
-@@ -240,7 +240,7 @@ static int pm8008_probe(struct i2c_client *client)
- 		return PTR_ERR(reset_gpio);
- 
- 	if (of_property_read_bool(chip->dev->of_node, "interrupt-controller")) {
--		rc = pm8008_probe_irq_peripherals(chip, client->irq);
-+		rc = pm8008_probe_irq_peripherals(chip, regmap, client->irq);
- 		if (rc)
- 			dev_err(chip->dev, "Failed to probe irq periphs: %d\n", rc);
- 	}
--- 
-2.7.4
-
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, long addend);
++		  unsigned int type, struct symbol *sym, s64 addend);
+ int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+ 			  unsigned long offset, unsigned int type,
+ 			  struct section *insn_sec, unsigned long insn_off);
