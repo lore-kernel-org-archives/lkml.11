@@ -2,64 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 04:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 04:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240897AbiETEKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 00:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55110 "EHLO
+        id S234571AbiETETf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 00:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237884AbiETEKd (ORCPT
+        with ESMTP id S231559AbiETET2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 00:10:33 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF0414AA4A
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 21:10:32 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VDozTSs_1653019828;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VDozTSs_1653019828)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 20 May 2022 12:10:30 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     hch@infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH 2/2] freevxfs: fix kernel-doc warnings in vxfs_subr.c
-Date:   Fri, 20 May 2022 12:10:16 +0800
-Message-Id: <20220520041016.80354-2-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-In-Reply-To: <20220520041016.80354-1-jiapeng.chong@linux.alibaba.com>
-References: <20220520041016.80354-1-jiapeng.chong@linux.alibaba.com>
+        Fri, 20 May 2022 00:19:28 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C449EBAA0
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 21:19:27 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 24K4JFAk005135;
+        Fri, 20 May 2022 06:19:15 +0200
+Date:   Fri, 20 May 2022 06:19:15 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Facebook Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v1 1/2] tools/nolibc/stdlib: Support overflow checking
+ for older compiler versions
+Message-ID: <20220520041915.GC5001@1wt.eu>
+References: <20220519172116.283687-1-ammarfaizi2@gnuweeb.org>
+ <20220519172116.283687-2-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519172116.283687-2-ammarfaizi2@gnuweeb.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following W=1 kernel warnings:
+Hi Ammar,
 
-fs/freevxfs/vxfs_subr.c:107: warning: expecting prototype for
-vxfs_get_block(). Prototype was for vxfs_getblk() instead.
+On Fri, May 20, 2022 at 12:21:15AM +0700, Ammar Faizi wrote:
+> diff --git a/tools/include/nolibc/stdlib.h b/tools/include/nolibc/stdlib.h
+> index 8fd32eaf8037..92378c4b9660 100644
+> --- a/tools/include/nolibc/stdlib.h
+> +++ b/tools/include/nolibc/stdlib.h
+> @@ -128,10 +128,9 @@ void *malloc(size_t len)
+>  static __attribute__((unused))
+>  void *calloc(size_t size, size_t nmemb)
+>  {
+> -	void *orig;
+> -	size_t res = 0;
+> +	size_t x = size * nmemb;
+>  
+> -	if (__builtin_expect(__builtin_mul_overflow(nmemb, size, &res), 0)) {
+> +	if (__builtin_expect(size && ((x / size) != nmemb), 0)) {
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- fs/freevxfs/vxfs_subr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Ah, that approach is even better than mine, I'm seeing that on x86 the
+compiler simply checks the overflow flag after the multiply, that's
+perfect!
 
-diff --git a/fs/freevxfs/vxfs_subr.c b/fs/freevxfs/vxfs_subr.c
-index 0e633d2bfc7d..11ab5c97b082 100644
---- a/fs/freevxfs/vxfs_subr.c
-+++ b/fs/freevxfs/vxfs_subr.c
-@@ -87,7 +87,7 @@ vxfs_bread(struct inode *ip, int block)
- }
- 
- /**
-- * vxfs_get_block - locate buffer for given inode,block tuple 
-+ * vxfs_getblk - locate buffer for given inode,block tuple
-  * @ip:		inode
-  * @iblock:	logical block
-  * @bp:		buffer skeleton
--- 
-2.20.1.7.g153144c
+Acked-by: Willy Tarreau <w@1wt.eu>
 
+Willy
