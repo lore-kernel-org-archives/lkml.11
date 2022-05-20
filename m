@@ -2,115 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 360ECC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347297AbiETIeE (ORCPT
+        id S1347127AbiETIe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:34:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
+        Fri, 20 May 2022 04:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347160AbiETIdd (ORCPT
+        with ESMTP id S1347463AbiETIdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:33:33 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA5F15F6C8;
-        Fri, 20 May 2022 01:32:34 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24K3tLjB028145;
-        Fri, 20 May 2022 10:32:26 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=c/Lq0oy39Sxj5Cf7Ma+CafFIl6MIsyg+0GLBTzXk1No=;
- b=zRkUXEdtfH8syzUhy3lFopRF1TbdtxZIywyejyCWnUNX26LEVEDLybDrMkuoTAYKQ8/T
- 653omNVZBb68VWCRg6tGVim8HxtRfYW+cfDoRuVn2Sqo8OaMnlj2cPgA3AKvcIZSiXBC
- 6/AE7bTSMalsCjyAOEfpcwpgzRTC/XkHo5GGGlPl4XbktN3MYbSGCj/a8KW522zhqPuQ
- Z1W3/YkC2Si2Ggign9MmSNMJFqNypEXhp4qIQKQfeXOIAijYbuOfpcHDfIVuLUTevTeL
- X4o+jwGgm252pY5zmExI9C7gL6jCye1DWsZ5i0ovj1h4qPGGYH6ho8dFue9JgrTRLLG9 sQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g23s22u1e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 10:32:26 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D9A8010002A;
-        Fri, 20 May 2022 10:32:23 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D11EB215124;
-        Fri, 20 May 2022 10:32:23 +0200 (CEST)
-Received: from localhost (10.75.127.46) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 20 May
- 2022 10:32:22 +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Deepak Kumar Singh <quic_deesin@quicinc.com>,
-        Chris Lew <quic_clew@quicinc.com>,
-        <arnaud.pouliquen@foss.st.com>
-Subject: [RFC PATCH 10/10] rpmsg: virtio: Set default dst address on flow control
-Date:   Fri, 20 May 2022 10:29:40 +0200
-Message-ID: <20220520082940.2984914-11-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220520082940.2984914-1-arnaud.pouliquen@foss.st.com>
-References: <20220520082940.2984914-1-arnaud.pouliquen@foss.st.com>
+        Fri, 20 May 2022 04:33:45 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A83A158948;
+        Fri, 20 May 2022 01:33:08 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A58A124001C;
+        Fri, 20 May 2022 08:33:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653035587;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8uycxO5fJimk0zTNVtpGUm4BdARppNdHxB7/Xtb6ANM=;
+        b=gPStD7GoQ1fffRcB8mNyIeGO4ElBHqlR+svkzdvU8QApZyJqS1PVnyFh7PeqBwiNpTMn7d
+        ouuZxIXXLukQpNS3trpXZDxz6MQ501jIhKFYwZo0rTAn5UOvzx4Q5v3EVmZEJ4uNF0s8ny
+        y2Cqj5hCfUaR8PeKkFvkLiXfXw2WYRb3OZW2Ce0gsEfHAQljuQC+1tdNhrWYhkWq/EvkGf
+        3BAFdvPdRW+rvd0Koff9tM6D9NW16Xt59P4VFnjBltmgINsAdWDqq9fyjB1sCD6RLOX6tp
+        v5jAShkIh6yeXsnvBHrQ5aphV3gIMPONSezL3gjvsSw3mf+mLTXJFpzN13yPDQ==
+Date:   Fri, 20 May 2022 10:31:52 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v5 11/13] ARM: dts: r9a06g032: describe GMAC2
+Message-ID: <20220520103152.48f7b178@fixe.home>
+In-Reply-To: <CAMuHMdXTrZnGVt44hg5QUvuS5cZABmRncgNYtatkmk8VcH7gew@mail.gmail.com>
+References: <20220519153107.696864-1-clement.leger@bootlin.com>
+        <20220519153107.696864-12-clement.leger@bootlin.com>
+        <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
+        <20220520101332.0905739f@fixe.home>
+        <CAMuHMdXTrZnGVt44hg5QUvuS5cZABmRncgNYtatkmk8VcH7gew@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-20_03,2022-05-19_03,2022-02-23_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a rpmsg channel has been created locally with a destination address
-set to RPMSG_ADDR_ANY, a name service announcement message is sent to
-the remote side. Then the destination address is never updated, making it
-impossible to send messages to the remote.
+Le Fri, 20 May 2022 10:25:37 +0200,
+Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
 
-An example of kernel trace observed:
-rpmsg_tty virtio0.rpmsg-tty.29.-1: invalid addr (src 0x1d, dst 0xffffffff)
+> Hi Cl=C3=A9ment,
+>=20
+> On Fri, May 20, 2022 at 10:14 AM Cl=C3=A9ment L=C3=A9ger
+> <clement.leger@bootlin.com> wrote:
+> > Le Fri, 20 May 2022 09:18:58 +0200,
+> > Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit : =20
+> > > On Thu, May 19, 2022 at 5:32 PM Cl=C3=A9ment L=C3=A9ger <clement.lege=
+r@bootlin.com> wrote: =20
+> > > > RZ/N1 SoC includes two MAC named GMACx that are compatible with the
+> > > > "snps,dwmac" driver. GMAC1 is connected directly to the MII convert=
+er
+> > > > port 1. GMAC2 however can be used as the MAC for the switch CPU
+> > > > management port or can be muxed to be connected directly to the MII
+> > > > converter port 2. This commit add description for the GMAC2 which w=
+ill
+> > > > be used by the switch description.
+> > > >
+> > > > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> =
+=20
+>=20
+> > > > --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> > > > +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> > > > @@ -200,6 +200,23 @@ nand_controller: nand-controller@40102000 {
+> > > >                         status =3D "disabled";
+> > > >                 };
+> > > >
+> > > > +               gmac2: ethernet@44002000 {
+> > > > +                       compatible =3D "snps,dwmac"; =20
+> > >
+> > > Does this need an SoC-specific compatible value? =20
+> >
+> > Indeed, it might be useful to introduce a specific SoC compatible since
+> > in a near future, there might be some specific support for that gmac.
+> > Here is an overview of the gmac connection on the SoC:
+> >
+> >                                           =E2=94=8C=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90   =
+=E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=90
+> >                                           =E2=94=82         =E2=94=82  =
+ =E2=94=82          =E2=94=82
+> >                                           =E2=94=82  GMAC2  =E2=94=82  =
+ =E2=94=82  GMAC1   =E2=94=82
+> >                                           =E2=94=82         =E2=94=82  =
+ =E2=94=82          =E2=94=82
+> >                                           =E2=94=94=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98   =
+=E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=98
+> >                                               =E2=94=82               =
+=E2=94=82
+> >                                               =E2=94=82               =
+=E2=94=82
+> >                                               =E2=94=82               =
+=E2=94=82
+> >                                          =E2=94=8C=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=90        =E2=94=82
+> >                                          =E2=94=82           =E2=94=82 =
+       =E2=94=82
+> >             =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=A4  SWITCH   =
+=E2=94=82        =E2=94=82
+> >             =E2=94=82                            =E2=94=82           =
+=E2=94=82        =E2=94=82
+> >             =E2=94=82          =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=B4=E2=94=80=E2=94=AC=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=98        =E2=94=82
+> >             =E2=94=82          =E2=94=82            =E2=94=8C=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98    =E2=94=82        =
+     =E2=94=82
+> >             =E2=94=82          =E2=94=82            =E2=94=82          =
+ =E2=94=82             =E2=94=82
+> >        =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BC=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BC=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BC=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=90
+> >        =E2=94=82                      MII Converter                    =
+    =E2=94=82
+> >        =E2=94=82                                                       =
+    =E2=94=82
+> >        =E2=94=82                                                       =
+    =E2=94=82
+> >        =E2=94=82 port 1      port 2       port 3      port 4       port=
+ 5  =E2=94=82
+> >        =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=98
+> >
+> > As you can see, the GMAC1 is directly connected to MIIC converter and
+> > thus will need a "pcs-handle" property to point on the MII converter
+> > port whereas the GMAC2 is directly connected to the switch in GMII.
+> >
+> > Is "renesas,r9a06g032-gmac2", "renesas,rzn1-switch-gmac2" looks ok
+> > for you for this one ? =20
+>=20
+> Why "switch" in the family-specific value, but not in the SoC-specific
+> value?
 
-The flow control can be used to set the rpmsg device address.
-If the destination address is RPMSG_ADDR_ANY, then set it to
-address of the remote endpoint that send the message.
+That's a typo, switch should be removed.
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
----
-This patch is an alternative of the fix proposed in patch [1]
+>=20
+> Are GMAC1 and GMAC2 really different, or are they identical, and is
+> the only difference in the wiring, which can be detected at run-time
+> using this "pcs-handle" property? If they're identical, they should
+> use the same compatible value.
 
-[1] https://lore.kernel.org/lkml/20220316153001.662422-1-arnaud.pouliquen@foss.st.com/
----
- drivers/rpmsg/virtio_rpmsg_bus.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+They are actually identical except the requirement for a "pcs-handle"
+for gmac1. I thought about using different compatible to enforce this by
+making it "required" with the "renesas,r9a06g032-gmac1" compatible but
+not the "renesas,r9a06g032-gmac2" one. If it's ok for you to let it
+optional and use a single compatible, I'm ok with that !
 
-diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
-index a8e60ca4cd08..0337a07e278c 100644
---- a/drivers/rpmsg/virtio_rpmsg_bus.c
-+++ b/drivers/rpmsg/virtio_rpmsg_bus.c
-@@ -393,6 +393,16 @@ static int virtio_rpmsg_remote_flowctrl(struct rpmsg_device *rpdev,
- 	if (!ept)
- 		return -EINVAL;
- 
-+	/*
-+	 * If the endpoint is the rpmsg device default one, then it can not be yet associated
-+	 * to the remote endpoint. This can occur if a ns announcement message has been
-+	 * previously sent to the remote side.
-+	 * Update the rpmsg device destination address in such case to store the remote
-+	 * address as default remote endpoint.
-+	 */
-+	if (rpdev->ept == ept && rpdev->dst == RPMSG_ADDR_ANY)
-+		rpdev->dst = __rpmsg32_to_cpu(virtio_is_little_endian(vrp->vdev), chinfo->src);
-+
- 	/* Make sure ept->sig_cb doesn't go away while we use it */
- 	mutex_lock(&ept->cb_lock);
- 
--- 
-2.25.1
 
+Thanks !
+
+>=20
+> Thanks!
+>=20
+> Gr{oetje,eeting}s,
+>=20
+>                         Geert
+>=20
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
+8k.org
+>=20
+> In personal conversations with technical people, I call myself a hacker. =
+But
+> when I'm talking to journalists I just say "programmer" or something like=
+ that.
+>                                 -- Linus Torvalds
+
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
