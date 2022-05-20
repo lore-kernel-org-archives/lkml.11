@@ -2,114 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 429F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347360AbiETIu2 (ORCPT
+        id S1347400AbiETIwE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
+        Fri, 20 May 2022 04:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347168AbiETIuY (ORCPT
+        with ESMTP id S1344968AbiETIwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:50:24 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A761C6E77;
-        Fri, 20 May 2022 01:50:23 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id w4so10505462wrg.12;
-        Fri, 20 May 2022 01:50:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kKSrGrQ3KFhSHnYm0sBJhqBxqjSZZxv4rXZISo5LB2U=;
-        b=HP/5VoY5DZ2nGZbwOPj5r9hJmyzEGFqfhl8h3H+XUc9mCrEGZkNh/M/MclZ37IlCHr
-         QcY0prxvR3n/brwjgq9DSvqEN+bObsL5D6I4VpDTCNVRPWhvhHON13ckdSsEpeuzi5ox
-         gCJgBxE9J9fH5hzeb49GDlSA6H6k8AtRhag7qxlvraPfcUCWJdsN+v/50GSE9a5jGIfn
-         nP+R1dMx+PtsYZBqwk0/RzdUQ2ID3zem4B0K3Muamsx58HCFfFMzjtzJoIAn6aZSqnFg
-         Vq199yxLkUYiBHXXzYTKWepW8QgMc5s3sbhyxKeQVKLzqrzTcT3nqzZquggaEFh3HrpU
-         ybCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kKSrGrQ3KFhSHnYm0sBJhqBxqjSZZxv4rXZISo5LB2U=;
-        b=P4AxXe8b6vR7UUkaoh3PN3gCFxSCOL5CXQFlEyTubjadUeeCaKOnl8ImgVRYBaurQb
-         pTRom75D+EHZrhc0xUU4Be/l4twn5dJQab76z3unyJwMCPLlRU+5MlJCCIbmPm3uiA0e
-         ZWo/Ql3QAlSP5WmDcUeYeibwcM+MmUxV0p8eWVgC20b81Pth3wbNwuwdSkp4CjtbOxll
-         Aaac6FFIHMecjW/4F0TbU3cT7GUXBespu+uePD1g4PvcK/eFRrgZBO/stWxvLAn6Tkgc
-         TvDftYcw2kZFkzDQqf2P6RklPobrZ/eS13DSmco0gIymSbQKWq003V0C/vyh2gO8pRCD
-         U4Pg==
-X-Gm-Message-State: AOAM531aHSPv53blCVfoZ6E3TmxXAkQN02A4ElU4lGyiWG1yTBJk3+P4
-        pg/1keqAID8FNpG5kdI0Qhc=
-X-Google-Smtp-Source: ABdhPJwGLeTHNPcglw6xcRgPlledKiZeb4vBth7DW6CwJ05UvdHdvw91ywCHLVVsaoCgM46M7LdjsA==
-X-Received: by 2002:a05:6000:1a88:b0:20e:6ee9:c78e with SMTP id f8-20020a0560001a8800b0020e6ee9c78emr5406783wry.622.1653036621886;
-        Fri, 20 May 2022 01:50:21 -0700 (PDT)
-Received: from localhost.localdomain ([195.55.223.2])
-        by smtp.googlemail.com with ESMTPSA id x6-20020a7bc206000000b003942a244f53sm1378944wmi.44.2022.05.20.01.50.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 01:50:21 -0700 (PDT)
-From:   Javier Abrego <javier.abrego.lorente@gmail.com>
-To:     trond.myklebust@hammerspace.com, anna@kernel.org
-Cc:     linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        javier.abrego.lorente@gmail.com
-Subject: [PATCH] FS: nfs: removed goto statement
-Date:   Fri, 20 May 2022 10:50:19 +0200
-Message-Id: <20220520085019.44138-1-javier.abrego.lorente@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 20 May 2022 04:52:01 -0400
+Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C335DD00
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:52:00 -0700 (PDT)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id BC47C1E9; Fri, 20 May 2022 10:51:58 +0200 (CEST)
+Date:   Fri, 20 May 2022 10:51:57 +0200
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        John Garry <john.garry@huawei.com>, will@kernel.org,
+        m.szyprowski@samsung.com, chenxiang66@hisilicon.com,
+        thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, liyihang6@hisilicon.com
+Subject: Re: [RFC PATCH] dma-iommu: Add iommu_dma_max_mapping_size()
+Message-ID: <YodWrRFircbmh1bN@8bytes.org>
+References: <1652706361-92557-1-git-send-email-john.garry@huawei.com>
+ <f5b78c9c-312e-70ab-ecbb-f14623a4b6e3@arm.com>
+ <9160031b-50be-6993-5a8e-f238391962c5@huawei.com>
+ <8f193bdd-3a0a-f9ed-0726-e6081f374320@arm.com>
+ <20220518131353.GB26019@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518131353.GB26019@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In this function goto can be replaced. Avoiding goto will improve the
-readability
+On Wed, May 18, 2022 at 03:13:53PM +0200, Christoph Hellwig wrote:
+> On Tue, May 17, 2022 at 01:02:00PM +0100, Robin Murphy wrote:
+> >> So how to inform the SCSI driver of this caching limit then so that it may 
+> >> limit the SGL length?
+> >
+> > Driver-specific mechanism; block-layer-specific mechanism; redefine this 
+> > whole API to something like dma_opt_mapping_size(), as a limit above which 
+> > mappings might become less efficient or start to fail (callback to my 
+> > thoughts on [1] as well, I suppose); many options. Just not imposing a 
+> > ridiculously low *maximum* on everyone wherein mapping calls "should not be 
+> > larger than the returned value" when that's clearly bollocks.
+> 
+> Well, for swiotlb it is a hard limit.  So if we want to go down that
+> route we need two APIs, one for the optimal size and one for the
+> hard limit.
 
-Signed-off-by: Javier Abrego<javier.abrego.lorente@gmail.com>
----
- fs/nfs/nfs42xattr.c | 28 +++++++++++++---------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
+I agree with Robin, and if it really helps some drivers I am all for
+doing a dma_opt_mapping_size() instead. Limiting DMA mapping sizes to
+make drivers perform better gets a clear NAK from my side.
 
-diff --git a/fs/nfs/nfs42xattr.c b/fs/nfs/nfs42xattr.c
-index e7b34f7e0..9bf3a88fd 100644
---- a/fs/nfs/nfs42xattr.c
-+++ b/fs/nfs/nfs42xattr.c
-@@ -747,21 +747,19 @@ void nfs4_xattr_cache_set_list(struct inode *inode, const char *buf,
- 		return;
- 
- 	entry = nfs4_xattr_alloc_entry(NULL, buf, NULL, buflen);
--	if (entry == NULL)
--		goto out;
--
--	/*
--	 * This is just there to be able to get to bucket->cache,
--	 * which is obviously the same for all buckets, so just
--	 * use bucket 0.
--	 */
--	entry->bucket = &cache->buckets[0];
--
--	if (!nfs4_xattr_set_listcache(cache, entry))
--		kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
--
--out:
--	kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
-+	if (entry == NULL) {
-+		kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
-+	} else {
-+	       /*
-+		* This is just there to be able to get to bucket->cache,
-+		* which is obviously the same for all buckets, so just
-+		* use bucket 0.
-+		*/
-+		entry->bucket = &cache->buckets[0];
-+
-+		if (!nfs4_xattr_set_listcache(cache, entry))
-+			kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
-+	}
- }
- 
- /*
--- 
-2.25.1
+Regards,
 
+	Joerg
