@@ -2,96 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8309FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F72FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346857AbiETILx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
+        id S243407AbiETIMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 04:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346833AbiETILk (ORCPT
+        with ESMTP id S241875AbiETIMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:11:40 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462DC57B03;
-        Fri, 20 May 2022 01:11:39 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id v11so7153525pff.6;
-        Fri, 20 May 2022 01:11:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0D6j8CG4wAttV/yAKAZ15WeKE5ykR2+FoJ/c9XSjWvY=;
-        b=UwoIWhyCGRR+ITUai34luAHOCkbCRrMxfoq5DZWqZPVv77ojBE9pno6+Wv/vMEA7eF
-         v69KyubsrRnMswOrJ4eAX+PjjarNipZwL19uQrifqqz6L2a+lI/xk7W2/fYKdWCEZEGA
-         g1tUy+PRquT3oDWe4fxYJAr/HJmapzDun7DeZRp0UVGwMspZr7YPYlijvQRxK4MaWukl
-         Yc23DLAcSMf8zTupRi0txPyTmAbC+KwOlFwsjWdFyYzsAJzaJkMQJN/QdKoY1lne+cHQ
-         pTAgrgJTwaVyufWsIpX3akaB5H1/Yrvrwl2a0fiEuHeJM8hUrP7LCw3lUPkxa5a8Isb5
-         8mNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0D6j8CG4wAttV/yAKAZ15WeKE5ykR2+FoJ/c9XSjWvY=;
-        b=sdbuvOoMPxdwseyyFsc4D3fuigZfBiBrx6lPVNcVTDRtiN5OSwqguMhN0slXvhsuD4
-         8NgyjHS/KZdGebxESibEszfwBcXJVABS2uuVxADsrossADxrjTmw2PVv+Hdg/ZwvhkDX
-         NpjLSZbfvY1HHTCM8s/AhdngNiik3VIxwkyGfj3CZbvZ1WBCqljZZXKIIhYQLvVDyulg
-         i5/tQBYOx/fSEt6/SE2A+Z+NJ9e9cU1AkRtAg+O8Bg5Pad16ZyyFoe/pDNpNsiPPmLdG
-         66E6aqkNZIJSVsNGZwEhZvx9POmwKmVpUVEzGjuzN1CPirq/ujbK1BJnIsawfQauMOah
-         C/mw==
-X-Gm-Message-State: AOAM532q/BRSfOwFF4NWSbtELe+4fIap+XghaQOjbOMLxrMu7mAt/4Cw
-        18pj0czcj8+qGf8oEAHIEtw=
-X-Google-Smtp-Source: ABdhPJz8tD9PSGaThd46JCD3oJZtBhfEh6uYSkECowQnsl/6K8z6H4dnzDmBtgDQiI2O5ZzdGSUw7Q==
-X-Received: by 2002:a62:8206:0:b0:518:3c6a:21ba with SMTP id w6-20020a628206000000b005183c6a21bamr8203596pfd.63.1653034298762;
-        Fri, 20 May 2022 01:11:38 -0700 (PDT)
-Received: from arch-pc.genesyslogic.com.tw (60-251-58-169.hinet-ip.hinet.net. [60.251.58.169])
-        by smtp.gmail.com with ESMTPSA id t9-20020a17090a3e4900b001d960eaed66sm1161908pjm.42.2022.05.20.01.11.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 01:11:38 -0700 (PDT)
-From:   Ben Chuang <benchuanggli@gmail.com>
-To:     andrian.hunter@intel.com, ulf.hansson@linaro.org
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ben.chuang@genesyslogic.com.tw, greg.tu@genesyslogic.com.tw,
-        SeanHY.Chen@genesyslogic.com.tw, jason.lai@genesyslogic.com.tw,
-        victor.shih@genesyslogic.com.tw,
-        kana.chen@intel.corp-partner.google.com,
-        Ben Chuang <benchuanggli@gmail.com>
-Subject: [PATCH] mmc: sdhci-pci-gli: Fix GL9763E runtime PM when the system resumes from suspend
-Date:   Fri, 20 May 2022 16:11:20 +0800
-Message-Id: <20220520081120.143927-1-benchuanggli@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        Fri, 20 May 2022 04:12:15 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5824ED790;
+        Fri, 20 May 2022 01:12:13 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24K4QUeh000310;
+        Fri, 20 May 2022 08:12:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pp1;
+ bh=FhTqy8GufFhhuU9nuGr3TIMYf8rq3SU3NZu8orqFmEU=;
+ b=QBxqVfbmp6IRb1DS0m13NyL6UJef6GMfBgqD5RfxoDpYed361o4D3NdAvoTSMhsDLr/j
+ XGRQHtkQbZxlW1cUBBzh2GxriPrdnSEEfoARAMcFPTA317l9zi55/D/CA7Di3ddXhOWb
+ NOVm5PjIGtx+a7WZGrQ4He0XxADpWMkFnQJ7l2LxlvKXPAdMRn5CFRTfMS43M8h2cRHp
+ kYbw7hz1W0JOvLLXusfJlgUpFSMMqaaDIH5mw1PNsaa6kPMpFRcbPeRVcmiJAmKajzAU
+ y3wUicuny+wPkJ/ZE97SxQz54gzI/YfNCqO4TndCWQFgEWoFm1ccg2kx5AjeGef33/O/ Dw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5ye4qwnk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 08:12:10 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24K89nwW012174;
+        Fri, 20 May 2022 08:12:10 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g5ye4qwn0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 08:12:09 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24K88wgs003119;
+        Fri, 20 May 2022 08:12:08 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04fra.de.ibm.com with ESMTP id 3g2428xve3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 08:12:08 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24K8C4qJ38994194
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 20 May 2022 08:12:04 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D643B11C052;
+        Fri, 20 May 2022 08:12:04 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8A72A11C04C;
+        Fri, 20 May 2022 08:12:04 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 20 May 2022 08:12:04 +0000 (GMT)
+From:   Thomas Richter <tmricht@linux.ibm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com,
+        hca@linux.ibm.com, Namhyung Kim <namhyung@gmail.com>,
+        Thomas Richter <tmricht@linux.ibm.com>
+Subject: [PATCH v2] perf/s390: Compiler error on s390 for bench/numa.c
+Date:   Fri, 20 May 2022 10:11:58 +0200
+Message-Id: <20220520081158.2990006-1-tmricht@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: G-hqh_xU9Av7_Y095NhEWLP5iMfeXb1N
+X-Proofpoint-ORIG-GUID: sn581ht0DmnfQNOnJq-vQ7BicDUkSqlq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-20_02,2022-05-19_03,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ impostorscore=0 mlxlogscore=999 spamscore=0 phishscore=0 suspectscore=0
+ bulkscore=0 priorityscore=1501 lowpriorityscore=0 mlxscore=0 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205200058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the system resumes from suspend (S3 or S4), the power mode is
-MMC_POWER_OFF. In this status, gl9763e_runtime_resume() should not enable
-PLL. Add a condition to this function to enable PLL only when the power
-mode is MMC_POWER_ON.
+The compilation on s390 results in this error:
 
-Fixes: d607667bb8fa (mmc: sdhci-pci-gli: Add runtime PM for GL9763E)
-Signed-off-by: Ben Chuang <benchuanggli@gmail.com>
+ # make DEBUG=y bench/numa.o
+ ...
+ bench/numa.c: In function ‘__bench_numa’:
+ bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
+             writing between 1 and 11 bytes into a region of size between
+             10 and 20 [-Werror=format-truncation=]
+ 1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
+                                                               ^~
+ ...
+ bench/numa.c:1749:64: note: directive argument in the range
+                [-2147483647, 2147483646]
+ ...
+ #
+
+The maximum length of the %d replacement is 11 characters because
+of the negative sign.  Therefore extend the array by two more
+characters.
+
+Output after:
+ # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
+ -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
+ #
+
+Fixes: 3aff8ba0a4c9c ("perf bench numa: Avoid possible truncation when using snprintf()")
+Suggested-by: Namhyung Kim <namhyung@gmail.com>
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
 ---
- drivers/mmc/host/sdhci-pci-gli.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/perf/bench/numa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
-index d09728c37d03..d81e5dc90e15 100644
---- a/drivers/mmc/host/sdhci-pci-gli.c
-+++ b/drivers/mmc/host/sdhci-pci-gli.c
-@@ -972,6 +972,9 @@ static int gl9763e_runtime_resume(struct sdhci_pci_chip *chip)
- 	struct sdhci_host *host = slot->host;
- 	u16 clock;
+diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
+index d5289fa58a4f..20eed1e53f80 100644
+--- a/tools/perf/bench/numa.c
++++ b/tools/perf/bench/numa.c
+@@ -1740,7 +1740,7 @@ static int __bench_numa(const char *name)
+ 		"GB/sec,", "total-speed",	"GB/sec total speed");
  
-+	if (host->mmc->ios.power_mode != MMC_POWER_ON)
-+		return 0;
-+
- 	clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
- 
- 	clock |= SDHCI_CLOCK_PLL_EN;
+ 	if (g->p.show_details >= 2) {
+-		char tname[14 + 2 * 10 + 1];
++		char tname[14 + 2 * 11 + 1];
+ 		struct thread_data *td;
+ 		for (p = 0; p < g->p.nr_proc; p++) {
+ 			for (t = 0; t < g->p.nr_threads; t++) {
 -- 
-2.36.0
+2.36.1
 
