@@ -2,113 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED4A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA13AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344009AbiETA11 (ORCPT
+        id S1344017AbiETAcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 20:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
+        Thu, 19 May 2022 20:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232460AbiETA10 (ORCPT
+        with ESMTP id S232460AbiETAcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 20:27:26 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B66D9CF5F
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:27:25 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id p26so8886141eds.5
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:27:25 -0700 (PDT)
+        Thu, 19 May 2022 20:32:07 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0B6E27A0
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:32:06 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id n10so6650283pjh.5
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:32:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q2SsP49FcCChtmjGtwbSaTMmlIgf4FKqMdxkNXcLZxo=;
-        b=HXRvwBSe1kdLw+E5XZQUg1aqD+Xzx1EPDD38vER8o23tEByEWKBd7UsuCsmlQjS2IA
-         UrFRDsWb1JfLL64GhKqULVkddtRl8NXbTC9LPYW7SISZVG8H9KSTco/tZyI1GcTczIEC
-         gnDMhQk9vYaGXJfrN3vT+O6EmsVeRrRGlccwc=
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2kyTK1Xzp0uleyHZa8Lbz5PJ7tb6T3DY9r1gkIE8nXo=;
+        b=6Kjxdk2J2ZXQdrjJTe7zxtt8o6HbHEmbfdBfaF4TAir1GUIcjuKvGvzr3WpmLeVfD8
+         1BApvbbdrHkkz1y3h+P9IGMMq5h6q4Ao1mfH/70DnfqmG7d5cz87m3G+5oN6SNHyiqNo
+         wna9rIeOMHFyXGwJZfu7Z9b/yetdzr8lrs2j+//ufoLIp6c1Xmey5ywJW5ZbHuU1iy1O
+         +8UuarOwcVdZdUqZjk09SaYeISCbex6R0UbNc38t8NH5QNIRuHE5MXa1AST3QO6Wiypp
+         c7VYiupg5pwUFjd+7QYC4fd9Umg1pJ2bxw1wCWvaV+yZThjGdHZbLNwvSC1kF45SeC2R
+         ZiFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q2SsP49FcCChtmjGtwbSaTMmlIgf4FKqMdxkNXcLZxo=;
-        b=ejsFcik0687A5cq2aRXxz8Gacd/018SzxBVPqLcGh49hDgzXn79N+8RJRf/iBMHi9+
-         OOiypYldNsshsIoP205bPhSgvPevKfNE4fZOYzUAUTHx+NSVfzc9aHveX3n0k6tW8tBm
-         IH2wLwTRh2rJBJwp5HFLAsE4szCsVRdjORCB2lX5ltKEVQvCt3ch6mAUzjCcO799762u
-         vdZGeXnrbJQtfbn6O9kzEYg6xltzRge9zJldeDLS7RMsB96n3t3J6YYWDI6lHhcGboC3
-         CamJYaliZPfnD2+Tn6JROmnj54wW3jjiBbhx+VkUKQtlqkzjzIr7udnC9u4F85z9UnXE
-         tmOg==
-X-Gm-Message-State: AOAM530fq+aUlI38EjZEQEEo8FJQgmtUhm3YCdUOVWu0oxyvGYp/zz0C
-        K45VTu/QpdJVwNClXMB8HOy7ReHpe/3mBufMepI=
-X-Google-Smtp-Source: ABdhPJySMFlBKlUfqcgfVmI+2JYrGOObc2RfBCw/jlPhLcL9ohZOdwdXM06Wyij5DUP95tNkpwLjFg==
-X-Received: by 2002:aa7:c25a:0:b0:42a:a4f6:4f84 with SMTP id y26-20020aa7c25a000000b0042aa4f64f84mr8370541edo.420.1653006443606;
-        Thu, 19 May 2022 17:27:23 -0700 (PDT)
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com. [209.85.218.54])
-        by smtp.gmail.com with ESMTPSA id el9-20020a170907284900b006f3ef214e55sm2567940ejc.187.2022.05.19.17.27.23
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2kyTK1Xzp0uleyHZa8Lbz5PJ7tb6T3DY9r1gkIE8nXo=;
+        b=HSUoH+o6DRKlVl//MQ3YWYOcOPDTNU4vKqbVGHLbCbtn/stSj4aD/ScgOvc6/0BD3j
+         ruoA9XqQOpEcmXeS5aDguJ/xWhGn4HAevUBAPVvxejfmkUFkcrPiUT5nxqqqb8+D43Qb
+         LKFogeGALwk3yk4gWS42+lFotfvS9CsN/4qSbL4SgKSbXm+Pzm2mkY+OHt+VT0wN9Zyg
+         Y/GZBCvSCJuDvXQMvVvd+cZTUYpSZpsrOYYP/+ySLNOTJ4T+LJ4Wm0lMUpA7g3AUrJ8N
+         qa7lI5z1RYPRxhexiu3F9Qqhvr5UIp+mu2gcd9cc/V+L6Zu7aEzwpa7ysJSY+iLGAYrd
+         RUGQ==
+X-Gm-Message-State: AOAM531OYNsI71/4hvTTi8BvJaseQiuAqrzVyF3nNhrALryX9zGTfcsL
+        klPAAtBXTX66/+2Cfp+cRKoWI0PPx+ATQg==
+X-Google-Smtp-Source: ABdhPJw4ycYNCt6JH3yOif0cW3FO0a77sTiht7INw0UnFdwmKNukiK/bK4eCxAs8RATyIzxgeXNSWA==
+X-Received: by 2002:a17:90b:4c8f:b0:1de:b3b5:ea23 with SMTP id my15-20020a17090b4c8f00b001deb3b5ea23mr8497634pjb.133.1653006725595;
+        Thu, 19 May 2022 17:32:05 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id v4-20020a17090a6b0400b001df17c83bbdsm393483pjj.45.2022.05.19.17.32.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 17:27:23 -0700 (PDT)
-Received: by mail-ej1-f54.google.com with SMTP id kq17so12826823ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:27:23 -0700 (PDT)
-X-Received: by 2002:a5d:6d09:0:b0:20c:53a9:cc30 with SMTP id
- e9-20020a5d6d09000000b0020c53a9cc30mr5985688wrq.513.1653006043655; Thu, 19
- May 2022 17:20:43 -0700 (PDT)
+        Thu, 19 May 2022 17:32:04 -0700 (PDT)
+Message-ID: <607e3d8f-0216-127c-8f4f-6034b0d17c15@kernel.dk>
+Date:   Thu, 19 May 2022 18:32:03 -0600
 MIME-Version: 1.0
-References: <20220511155749.v3.1.I2dd93486c6952bd52f2020904de0133970d11b29@changeid>
-In-Reply-To: <20220511155749.v3.1.I2dd93486c6952bd52f2020904de0133970d11b29@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 19 May 2022 17:20:31 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Und7oTNBf8+=d9_RMQyv1v0vzh6OSGpvvPTYWtGF07MA@mail.gmail.com>
-Message-ID: <CAD=FV=Und7oTNBf8+=d9_RMQyv1v0vzh6OSGpvvPTYWtGF07MA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] drm/probe-helper: Add helper for drm_helper_probe_single_connector_modes()
-To:     dri-devel <dri-devel@lists.freedesktop.org>
-Cc:     freedreno <freedreno@lists.freedesktop.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@gmail.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] random: convert to using fops->write_iter()
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+References: <f871a510-d262-bc98-757e-204976e1b82c@kernel.dk>
+ <Yobb79PvIqRRNguV@zx2c4.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <Yobb79PvIqRRNguV@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 5/19/22 6:08 PM, Jason A. Donenfeld wrote:
+> Hi Jens,
+> 
+> On Thu, May 19, 2022 at 05:43:15PM -0600, Jens Axboe wrote:
+>> -static int write_pool(const char __user *ubuf, size_t len)
+>> +static size_t write_pool(struct iov_iter *iter)
+>>  {
+>>  	size_t block_len;
+>>  	int ret = 0;
+> 
+> Changing the return value to size_t isn't quite right, as this can
+> return -EFAULT. So at the very minimum, it should return a ssize_t.
 
-On Wed, May 11, 2022 at 3:58 PM Douglas Anderson <dianders@chromium.org> wrote:
->
-> The drm_helper_probe_single_connector_modes() is a bit long. Let's
-> break a chunk off to update and validate modes. This helps avoid one
-> goto and also will allow us to more easily call the helper a second
-> time in a future patch without adding looping or another goto.
->
-> This change is intended to be a no-op change--just code movement.
->
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-> ---
->
-> Changes in v3:
-> - Removed WARN_ON
->
-> Changes in v2:
-> - Two underscores for __drm_helper_update_and_validate().
-> - Return err and use WARN_ON instead of returning a bool.
->
->  drivers/gpu/drm/drm_probe_helper.c | 106 ++++++++++++++++-------------
->  1 file changed, 60 insertions(+), 46 deletions(-)
+Good catch, yes let's make that a ssize_t instead. Can you do that while
+testing/applying?
 
-Pushed to drm-misc-next:
+-- 
+Jens Axboe
 
-4a2a13a57b60 drm/probe-helper: Add helper for
-drm_helper_probe_single_connector_modes()
