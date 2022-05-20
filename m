@@ -2,103 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0668EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C37C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:46:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351798AbiETQpb (ORCPT
+        id S1351794AbiETQp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
+        Fri, 20 May 2022 12:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351792AbiETQpQ (ORCPT
+        with ESMTP id S1351801AbiETQpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:45:16 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91734178567
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:45:15 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id l82so2593661qke.3
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:45:15 -0700 (PDT)
+        Fri, 20 May 2022 12:45:54 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73BEDF7D
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:45:52 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id s23-20020a9d7597000000b0060ae566f9a1so3227007otk.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=a8xIXPdHqKY/S928N5n4lpCrih7fBjePFCe31Nm3HEU=;
-        b=cmvcEGmOVBjFBzLUYaEoVPYa92JOWcLZT3qRym44KayCXwLx04F/hGWoRYq1fVPgWb
-         kk+veu9Clf2Pyaf1Sualbrjs0o5wb0jBTUi8V6HVNLuIlyQqwBVgTnw0axO1k2FFk7uQ
-         X/80AU7Lx2CF4AgaVK+O1TFCih8iAo8Xoaiwd61pFQfUQH7UjYenW87j8ScDLjAn1RH/
-         c9V1ZImHn8kP/4KarRbzdR2vJr1x+nkui06a8fminuD3r4SnkDmRI/otkV1FzyPeQ+V4
-         ZOarhhNpCNPoDXaxUnq2AR68aQIplxZETm1Hz7bT7aU4Y/PiMjarNWA5keH7cmMldiD2
-         SeQQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PlINhk7EGOTlZ4qmuhnHPweUlYCEUBqXJztmztIUBZw=;
+        b=ddxIeI9sJFsnX/Vz2xOvpXlnwwYauLTZBX+ayq0TJDXeIOXa+k3eEu6rXI9WC2Gv1K
+         vfrc3f3+84jZlyAtt6x3DdoU8Wj0jVoR6d0z/O/wRvYH/HQcfPrcyMuv6J3l6cKx54af
+         ZZgYW8qlS1qxp7hGHUcsLAg4kXT0CFXTwjVglvPyuxpW9+E92/byqnEm3s8XSKwgG1f7
+         usttOrn8JWmRCiBoD7Kwl8Jh1qoMskvkmrg7JPUJc+9E4dbobBSapJMrXxiyUL8dZN89
+         RabifZoCHLOgnin5RI3sXSVav/MwefPj7FPPhX7YJdbjfFQoAeqx/QC6gDS9RILsYlMj
+         GeDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a8xIXPdHqKY/S928N5n4lpCrih7fBjePFCe31Nm3HEU=;
-        b=maHou4BA6JdQqK1x+5lG62eYTNg6M0GPN2JRbGzmOab3Q/HB1bunILoiLzQclDx+yd
-         0CvMcc+5IUiwbNjYbnHRNXAOcv//W2Yg83GGd1c4AcNKU6NWClhFHdNJZC8Ofwi2+5eh
-         HooUfb+uyVEqCrP8VCj2Cb/ty1zHmw3u+o22QiiB16LPFlhKcmZehUeUKAfi5uyaLoBE
-         nZUufEBp6P3unrxapLLfGlYxLhNIKErOJ3Weo6w+OvP/IioVTK5RgyxgOxplATqwG+wS
-         t+4GX+mNf6dbnPK2Mc/846TLXE8NhHwrOgEbhvkJ9+CfWce+Hm/pLCYBgjZ9RPmoU1fI
-         SrPg==
-X-Gm-Message-State: AOAM533YqcyPNeoLFfxTIPzBqhj0VGyV+pKDZp7iFttccOqi5w9ZOMrH
-        hw/ru07MiKz3tlgddSK8EQ==
-X-Google-Smtp-Source: ABdhPJyKLOM4Ryqhmi5CW9j0Bz6v9+5ljLoMoiDX4xitkxq7asAc2Y5lcbyIGJGXCejQlR6E/nj4FQ==
-X-Received: by 2002:a37:5805:0:b0:69f:c640:f5e8 with SMTP id m5-20020a375805000000b0069fc640f5e8mr6794806qkb.586.1653065114732;
-        Fri, 20 May 2022 09:45:14 -0700 (PDT)
-Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id h198-20020a379ecf000000b006a33f89bb00sm2470514qke.81.2022.05.20.09.45.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PlINhk7EGOTlZ4qmuhnHPweUlYCEUBqXJztmztIUBZw=;
+        b=0jjPx0uzZpdaWBGDemKW4XR2/BKpFFT9DOC+qr0jopZ2OtYVMCyTl0tWOXma/wvdFC
+         xVCehjv0WcsiO63jKStN3z527ohxXcyqWRyQHNl/QN/c8n4yqcLEOH09Q7fcNXBDIe8c
+         y42vHvxvGzMu628u5wk3kVPoibpu7VpSRKmieoUGq4W6Lb9Goa/UcZ03hyp9NuSSaOJE
+         1bcr18bPdyWwMq3Tqs3H6EY0/gE2jNtzgVLsa26ihbv6q0CJigUEIS66qGMTwHzAGlVv
+         J3zdZk6yHATObzuVaIUjUVyLAABFBurTsfvpCq5qXOugtR3VHYzhSR7bulIC4DJYVk9e
+         Ik0w==
+X-Gm-Message-State: AOAM5335hjyQieeZunRFrwpJHUXd9zg9DuXhtNYOh0m23GF9Ys8bETbD
+        yMjLhF6Y4eFmjPRgQZTA+aZz/g==
+X-Google-Smtp-Source: ABdhPJyf+/2DFR6FGO/xyM3r5LsVtiMZ7hfwh5hXIy/FNY7AX0/rChz110sR3Cprn6btbbDTdt436w==
+X-Received: by 2002:a05:6830:d7:b0:606:ac62:ed22 with SMTP id x23-20020a05683000d700b00606ac62ed22mr4462496oto.379.1653065152083;
+        Fri, 20 May 2022 09:45:52 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id s184-20020acac2c1000000b0032aed1d25efsm1205014oif.7.2022.05.20.09.45.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 09:45:14 -0700 (PDT)
-Date:   Fri, 20 May 2022 12:45:12 -0400
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org, Hillf Danton <hdanton@sina.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v3 2/6] mm: shrinkers: introduce debugfs interface for
- memory shrinkers
-Message-ID: <20220520164512.dqqbb5gkmfm6f4g6@moria.home.lan>
-References: <20220509183820.573666-1-roman.gushchin@linux.dev>
- <20220509183820.573666-3-roman.gushchin@linux.dev>
+        Fri, 20 May 2022 09:45:51 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kyle Tso <kyletso@google.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, dianders@chromium.org,
+        swboyd@chromium.org, quic_subbaram@quicinc.com,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>
+Subject: [PATCH/RFC] dt-bindings: connector: Add port for OOB notifications
+Date:   Fri, 20 May 2022 09:48:10 -0700
+Message-Id: <20220520164810.141400-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509183820.573666-3-roman.gushchin@linux.dev>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 11:38:16AM -0700, Roman Gushchin wrote:
-> This commit introduces the /sys/kernel/debug/shrinker debugfs
-> interface which provides an ability to observe the state of
-> individual kernel memory shrinkers.
-> 
-> Because the feature adds some memory overhead (which shouldn't be
-> large unless there is a huge amount of registered shrinkers), it's
-> guarded by a config option (enabled by default).
-> 
-> This commit introduces the "count" interface for each shrinker
-> registered in the system.
-> 
-> The output is in the following format:
-> <cgroup inode id> <nr of objects on node 0> <nr of objects on node 1>...
-> <cgroup inode id> <nr of objects on node 0> <nr of objects on node 1>...
-> ...
-> 
-> To reduce the size of output on machines with many thousands cgroups,
-> if the total number of objects on all nodes is 0, the line is omitted.
-> 
-> If the shrinker is not memcg-aware or CONFIG_MEMCG is off, 0 is
-> printed as cgroup inode id. If the shrinker is not numa-aware, 0's are
-> printed for all nodes except the first one.
-> 
-> This commit gives debugfs entries simple numeric names, which are not
-> very convenient. The following commit in the series will provide
-> shrinkers with more meaningful names.
-> 
-> Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+In USB Type-C altmode hot plug interrupts are transferred using sideband
+channels. Introduce an additional port in the usb-c-connector to allow
+referencing the recipient of these notifications.
 
-I think this looks reasonable
+A typical node to be referred is a DisplayPort controller.
 
-Reviewed-by: Kent Overstreet <kent.overstreet@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+
+I have a USB Type-C port manager with two usb-c-connector child nodes and I
+have two display-port controller nodes. I need a way to link each port with
+it's related displayport controller, for the purpose of passing hot-plug events
+from USB PD to the dp driver.
+
+The displayport binding [1] specifies port@1 as "Output endpoint of the
+controller" and in case of being connected to an eDP panel or a dp-controller
+this links the node with whatever the output is.
+
+It has been suggested by some to describe the link from the usb-c-connector add
+a displayport = <&phandle> to each usb-c-connector node, but the proposed
+solution here would make the usb-c-connector case follow the same scheme as
+these other cases.
+
+Also, using the graph would allow an implementation of either the tcpm just
+notifying the referenced displayport-controller, or following the dp-controller
+implementation in Linux implement a drm_bridge and use the reference in the
+other direction.
+
+To clarify the end result would look something like:
+
+tcpm {
+	connector@0 {
+		compatible = "usb-c-connector";
+		reg = <0>;
+
+		ports {
+			port@0 {
+				reg = <0>;
+				endpoint {
+					remote-endpoint = <&usb0_hs_mux>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				endpoint {
+					remote-endpoint = <&usb0_ss_mux>;
+				};
+			};
+
+			port@2 {
+				reg = <2>;
+				endpoint {
+					remote-endpoint = <&usb0_sbu_switch>;
+				};
+			};
+
+			connector0_dp0: port@3 {
+				reg = <1>;
+				endpoint {
+					remote-endpoint = <&dp0_connector0>;
+				};
+			};
+		};
+	};
+
+	connector@1 {
+		compatible = "usb-c-connector";
+		reg = <1>;
+
+		ports {
+			port@0 {
+				reg = <0>;
+				endpoint {
+					remote-endpoint = <&usb1_hs_mux>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				endpoint {
+					remote-endpoint = <&usb1_ss_mux>;
+				};
+			};
+
+			port@2 {
+				reg = <2>;
+				endpoint {
+					remote-endpoint = <&usb1_sbu_switch>;
+				};
+			};
+
+			connector1_dp1: port@3 {
+				reg = <1>;
+				endpoint {
+					remote-endpoint = <&dp1_connector1>;
+				};
+			};
+		};
+	};
+}
+
+displayport-controller@0 {
+	reg = <0x0>;
+	ports {
+		port@1 {
+			reg = <1>;
+			dp0_connector0: endpoint {
+				remote-endpoint = <&connector0_dp0>;
+			};
+		};
+	};
+};
+
+displayport-controller@1 {
+	reg = <0x1>;
+	ports {
+		port@1 {
+			reg = <1>;
+			dp1_connector1: endpoint {
+				remote-endpoint = <&connector1_dp1>;
+			};
+		};
+	};
+};
+
+[1] https://www.kernel.org/doc/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+
+ .../devicetree/bindings/connector/usb-connector.yaml        | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/connector/usb-connector.yaml b/Documentation/devicetree/bindings/connector/usb-connector.yaml
+index 0420fa563532..99d4aeb233e5 100644
+--- a/Documentation/devicetree/bindings/connector/usb-connector.yaml
++++ b/Documentation/devicetree/bindings/connector/usb-connector.yaml
+@@ -189,6 +189,12 @@ properties:
+         description: Sideband Use (SBU), present in USB-C. This describes the
+           alternate mode connection of which SBU is a part.
+ 
++      port@3:
++        $ref: /schemas/graph.yaml#/properties/port
++        description: Out-of-band notifications. This describes the logical
++          connection to e.g. a DisplayPort controller that should be notified
++          about hot plug events.
++
+     required:
+       - port@0
+ 
+-- 
+2.35.1
+
