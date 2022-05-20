@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3332C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE5C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353755AbiETVo0 (ORCPT
+        id S1353763AbiETVo3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 17:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
+        Fri, 20 May 2022 17:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352791AbiETVoU (ORCPT
+        with ESMTP id S1353714AbiETVoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 17:44:20 -0400
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F7114917A;
-        Fri, 20 May 2022 14:44:19 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so2948909otk.6;
-        Fri, 20 May 2022 14:44:19 -0700 (PDT)
+        Fri, 20 May 2022 17:44:22 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE70F17B856;
+        Fri, 20 May 2022 14:44:21 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-f16a3e0529so11772070fac.2;
+        Fri, 20 May 2022 14:44:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fqCq63IwA4TlKby8zuM0F7kyTR627fN+TysBkufnrAM=;
-        b=RU9dsVvl7/cqQuJj146XfuHzrPQ9CfoqNzGAXTA2Tj8Fc8ym/ItaChQxfiVPwmald+
-         hKHolQIGxjO/QB0xcTMPQlXzjP7uc1FUz4xKqWHVBu+aJNerFd0AFuv0kF6QUutTUbjn
-         AT/0ePJRvnbhMcB5S43QUi0Q1LrzlGzcYCAbT1Xfo7oO5O0lNgfnyiO316CO9WUrVIjn
-         571YlDcEJxj3tAr73fSd4WZLDriJ65FLgM5Y3gPFrLcWla4IojMYyRVph8zNnsi5Iqcz
-         rbpuWGaTOvkSpPTK4GteUMnJjmgm6qJ6sncVW3X9WjkEtLn55dPjpjF0PpIvU6M4cAb0
-         uB/Q==
-X-Gm-Message-State: AOAM533+JgHf1pMq0bEurueTcec6B8EqSmTv7+XfR/wkBUtYWS7aOUi6
-        ubxAcdoH31ijjhPsPpTwSvvuHxfg1Q==
-X-Google-Smtp-Source: ABdhPJxAuidk/2k3GD+v1EYnbrQ8jJlx5x6tbik2qxaqegEmFd1AsQaeuzGEcHBdfINn8s/u78AHVw==
-X-Received: by 2002:a05:6830:304e:b0:5af:f66a:56ee with SMTP id p14-20020a056830304e00b005aff66a56eemr4957420otr.226.1653083058195;
-        Fri, 20 May 2022 14:44:18 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xuAFxBe+Oh7r20VJCSRON1DgAE3jyT4SHtR5VWLH/zo=;
+        b=kzXmS6nC20v++UZ6fcRGldCByqP2sHf/AW9Msb8lKkIzCt/u2gSx79pnLnwkjYrLzY
+         E53jWKVqAB2EUmtUZPWJTHVNf/r+hZ7Hk5b+KwrlEYySsOnUphB0/6iaDL7BVLHyaypN
+         EcYlEKskmD5nWd2X7s0jzlztpkgg2j7Qxul3a45mBa0mE7lOodvUxMfX2wJY8l+71zG8
+         s/5gACxjYTp0TPhRcsUGP0qitJnWzhUsuR3aPUYk1bVO+oamfZrmRMm2kDf0FIyPCBsU
+         3l68wOXmE8SnnLtEgg4dJ/uIxLgD2rzcpLBqAXo3bq7KX+T0bcfi+6F8ZTXxqmYoPNq6
+         FW7A==
+X-Gm-Message-State: AOAM533vKwX8S3+7iPAW+SGxgefwhNN/3RisXzqq/GWHclvPICXoC4lb
+        bZLg8Dfu3D9L6cz2hF9kWxzy5+EBYg==
+X-Google-Smtp-Source: ABdhPJzORFGD0rbS+Q0lOcvCQedu3y3g3eorPA5fBEYyT++cB929na6HaNNNhnoQ5HQ//MeIXp9vjw==
+X-Received: by 2002:a05:6870:3292:b0:f1:2333:83c6 with SMTP id q18-20020a056870329200b000f1233383c6mr6723924oac.129.1653083060803;
+        Fri, 20 May 2022 14:44:20 -0700 (PDT)
 Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id e12-20020a056820060c00b0035eb4e5a6d8sm1615018oow.46.2022.05.20.14.44.17
+        by smtp.googlemail.com with ESMTPSA id e12-20020a056820060c00b0035eb4e5a6d8sm1615018oow.46.2022.05.20.14.44.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 14:44:17 -0700 (PDT)
+        Fri, 20 May 2022 14:44:20 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
 To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
         Mike Leach <mike.leach@linaro.org>,
@@ -46,61 +46,170 @@ To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 0/2] dt-bindings: Arm CoreSight binding schema conversions
-Date:   Fri, 20 May 2022 16:44:14 -0500
-Message-Id: <20220520214416.302127-1-robh@kernel.org>
+Subject: [PATCH 2/2] dt-bindings: arm: Convert CoreSight CPU debug to DT schema
+Date:   Fri, 20 May 2022 16:44:16 -0500
+Message-Id: <20220520214416.302127-3-robh@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220520214416.302127-1-robh@kernel.org>
+References: <20220520214416.302127-1-robh@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series converts all the CoreSight debug bindings to DT schema
-format. These bindings are at the top of the list of occurrences of
-bindings without a schema. For arm64 dts files:
+Convert the CoreSight CPU debug binding to DT schema format.
 
-    702 ['arm,coresight-etm4x', 'arm,primecell']
-    536 ['arm,coresight-cpu-debug', 'arm,primecell']
-    509 ['arm,coresight-dynamic-funnel', 'arm,primecell']
-    213 ['arm,coresight-tmc', 'arm,primecell']
-    143 ['arm,coresight-dynamic-replicator', 'arm,primecell']
-     97 ['arm,coresight-stm', 'arm,primecell']
-
-I'll send a reply to these with the errors in dts files that this
-causes. I've reviewed them and they all look legit. Xilinx Zynq though
-has 3 clocks instead of 2.
-
-Rob
-
-
-Rob Herring (2):
-  dt-bindings: arm: Convert CoreSight bindings to DT schema
-  dt-bindings: arm: Convert CoreSight CPU debug to DT schema
-
- .../bindings/arm/arm,coresight-catu.yaml      | 101 +++++
- .../bindings/arm/arm,coresight-cpu-debug.yaml |  81 ++++
- .../arm/arm,coresight-dynamic-funnel.yaml     | 126 ++++++
- .../bindings/arm/arm,coresight-etb10.yaml     |  92 ++++
- .../bindings/arm/arm,coresight-etm.yaml       | 156 +++++++
- .../arm/arm,coresight-static-replicator.yaml  |  90 ++++
- .../bindings/arm/arm,coresight-stm.yaml       | 101 +++++
- .../bindings/arm/arm,coresight-tmc.yaml       | 132 ++++++
- .../bindings/arm/arm,coresight-tpiu.yaml      |  91 ++++
- .../bindings/arm/coresight-cpu-debug.txt      |  49 ---
- .../devicetree/bindings/arm/coresight.txt     | 402 ------------------
- 11 files changed, 970 insertions(+), 451 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-catu.yaml
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/arm/arm,coresight-cpu-debug.yaml | 81 +++++++++++++++++++
+ .../bindings/arm/coresight-cpu-debug.txt      | 49 -----------
+ 2 files changed, 81 insertions(+), 49 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-dynamic-funnel.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etb10.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etm.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-static-replicator.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-stm.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tmc.yaml
- create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tpiu.yaml
  delete mode 100644 Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
- delete mode 100644 Documentation/devicetree/bindings/arm/coresight.txt
 
---
+diff --git a/Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml b/Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml
+new file mode 100644
+index 000000000000..0a6bc03ebe00
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml
+@@ -0,0 +1,81 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/arm,coresight-cpu-debug.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: CoreSight CPU Debug Component
++
++maintainers:
++  - Mathieu Poirier <mathieu.poirier@linaro.org>
++  - Mike Leach <mike.leach@linaro.org>
++  - Leo Yan <leo.yan@linaro.org>
++  - Suzuki K Poulose <suzuki.poulose@arm.com>
++
++description: |
++  CoreSight CPU debug component are compliant with the ARMv8 architecture
++  reference manual (ARM DDI 0487A.k) Chapter 'Part H: External debug'. The
++  external debug module is mainly used for two modes: self-hosted debug and
++  external debug, and it can be accessed from mmio region from Coresight and
++  eventually the debug module connects with CPU for debugging. And the debug
++  module provides sample-based profiling extension, which can be used to sample
++  CPU program counter, secure state and exception level, etc; usually every CPU
++  has one dedicated debug module to be connected.
++
++select:
++  properties:
++    compatible:
++      contains:
++        const: arm,coresight-cpu-debug
++  required:
++    - compatible
++
++allOf:
++  - $ref: /schemas/arm/primecell.yaml#
++
++properties:
++  compatible:
++    items:
++      - const: arm,coresight-cpu-debug
++      - const: arm,primecell
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    maxItems: 1
++
++  cpu:
++    description:
++      A phandle to the cpu this debug component is bound to.
++    $ref: /schemas/types.yaml#/definitions/phandle
++
++  power-domains:
++    maxItems: 1
++    description:
++      A phandle to the debug power domain if the debug logic has its own
++      dedicated power domain. CPU idle states may also need to be separately
++      constrained to keep CPU cores powered.
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - cpu
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    debug@f6590000 {
++        compatible = "arm,coresight-cpu-debug", "arm,primecell";
++        reg = <0xf6590000 0x1000>;
++        clocks = <&sys_ctrl 1>;
++        clock-names = "apb_pclk";
++        cpu = <&cpu0>;
++    };
++...
+diff --git a/Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt b/Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
+deleted file mode 100644
+index f1de3247c1b7..000000000000
+--- a/Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
++++ /dev/null
+@@ -1,49 +0,0 @@
+-* CoreSight CPU Debug Component:
+-
+-CoreSight CPU debug component are compliant with the ARMv8 architecture
+-reference manual (ARM DDI 0487A.k) Chapter 'Part H: External debug'. The
+-external debug module is mainly used for two modes: self-hosted debug and
+-external debug, and it can be accessed from mmio region from Coresight
+-and eventually the debug module connects with CPU for debugging. And the
+-debug module provides sample-based profiling extension, which can be used
+-to sample CPU program counter, secure state and exception level, etc;
+-usually every CPU has one dedicated debug module to be connected.
+-
+-Required properties:
+-
+-- compatible : should be "arm,coresight-cpu-debug"; supplemented with
+-               "arm,primecell" since this driver is using the AMBA bus
+-	       interface.
+-
+-- reg : physical base address and length of the register set.
+-
+-- clocks : the clock associated to this component.
+-
+-- clock-names : the name of the clock referenced by the code. Since we are
+-                using the AMBA framework, the name of the clock providing
+-		the interconnect should be "apb_pclk" and the clock is
+-		mandatory. The interface between the debug logic and the
+-		processor core is clocked by the internal CPU clock, so it
+-		is enabled with CPU clock by default.
+-
+-- cpu : the CPU phandle the debug module is affined to. Do not assume it
+-        to default to CPU0 if omitted.
+-
+-Optional properties:
+-
+-- power-domains: a phandle to the debug power domain. We use "power-domains"
+-                 binding to turn on the debug logic if it has own dedicated
+-		 power domain and if necessary to use "cpuidle.off=1" or
+-		 "nohlt" in the kernel command line or sysfs node to
+-		 constrain idle states to ensure registers in the CPU power
+-		 domain are accessible.
+-
+-Example:
+-
+-	debug@f6590000 {
+-		compatible = "arm,coresight-cpu-debug","arm,primecell";
+-		reg = <0 0xf6590000 0 0x1000>;
+-		clocks = <&sys_ctrl HI6220_DAPB_CLK>;
+-		clock-names = "apb_pclk";
+-		cpu = <&cpu0>;
+-	};
+-- 
 2.34.1
+
