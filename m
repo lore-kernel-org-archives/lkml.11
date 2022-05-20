@@ -2,206 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A72A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350144AbiETOK1 (ORCPT
+        id S1350145AbiETOKe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 10:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
+        Fri, 20 May 2022 10:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350135AbiETOKU (ORCPT
+        with ESMTP id S233069AbiETOKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 10:10:20 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120FB1666AB;
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813C91668A6;
         Fri, 20 May 2022 07:10:18 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24KCg1X1017179;
-        Fri, 20 May 2022 14:10:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=AaXFxRLlAXh0OJXd3i0v0sEmXFeIDLohR3KbBMTlZm0=;
- b=NhorpV3OmoLlNW+izxF0RO/zd3yZ4vwMmEra+MA4i9avikgpMw2Kdr10bu8l0LeduiKY
- 4prlVIrQnBpqD/CgDkth7vBQvKBgazYc2aOveQykw+q7Z+ifxjkoCJxqR//csDKALDWj
- lXExzsCzkpjAyDj3rNSf9ZGGDIBstmHDlm52ONpSCeCyENvgtfMrFt7hKl/XfXJeuBaH
- +CP7W4dyqjiM+sher/PsLlSSlApqBxJ+RI5sQwT+BtzGPGGgxMtFqZ+gc6s9Nw/subd7
- uup7EkKFFO+WO8WLCQ12w223GWn4a76XHjR2pMaKrCIx/E+a1OWrvT7ijlvEyMgEMpfM gw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g6b7ea0ns-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 14:10:04 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24KCoR7i019873;
-        Fri, 20 May 2022 14:10:03 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g6b7ea0n2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 14:10:03 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24KDqZmC022319;
-        Fri, 20 May 2022 14:10:02 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma03dal.us.ibm.com with ESMTP id 3g242b5vnc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 14:10:02 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24KEA0JT26214900
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 May 2022 14:10:00 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A0E4E6E059;
-        Fri, 20 May 2022 14:10:00 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 218616E054;
-        Fri, 20 May 2022 14:09:59 +0000 (GMT)
-Received: from [9.211.37.97] (unknown [9.211.37.97])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 20 May 2022 14:09:59 +0000 (GMT)
-Message-ID: <b85ee6e2-9388-34b4-e1cd-e7e8578a4edf@linux.ibm.com>
-Date:   Fri, 20 May 2022 10:09:58 -0400
+Received: by mail-vs1-xe35.google.com with SMTP id c26so8477058vsl.6;
+        Fri, 20 May 2022 07:10:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7xlJ0095zgB0c2Vb8evf5eblS7KNjFsBRz7hA5cc4xk=;
+        b=F2adFm0dsksybi2rC6k+PIt076DVcea/Bd3N45htU6EsZqv1MmC95+sCQDslUJqtp+
+         1UTtP8FAs/s2Hr4RRaiXr/CW6VuR07LJ5aNDn1kTlxpIISVvJbQvigLbPcpb+/VsKuw7
+         t8lw4FfVrlH7WwYXRSwvgX32weXdKkRLbCvGFHD7rBDXVr1Q5WSvC8Otj8IZ5Fvelxuk
+         bhYnmp3KEixDXCDc9b+YK+wXR8uC+7yGs4dJiokFQ+Om0+GlC1YFr6dq3qj/4wTsZ5J+
+         mlJ8w0+XTB7cP4DnskE2lLCFPEc4Gumwy9vN4cxHh25yhvzu/xDmcYcZ/fFixXNC4BkC
+         XW4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7xlJ0095zgB0c2Vb8evf5eblS7KNjFsBRz7hA5cc4xk=;
+        b=JhFd6mc7OKAa27vkqeAgVJCVtyvASf5iCQqgVG4WRUn8vMYuMs6ARYX2CPglMAoJHf
+         J+yXkorhp/6cB3JKEh8t3C9cOUzzvVEKhQ6/RwKtf/uTdjd7C5jBuRc/PqrtoJ/C6pdh
+         V85MKimDBiFjOpakatRfqP0fXPJsblcx9gjR0nLUxive9eEgnkkecUPHaaW+OH9Dytzi
+         fspASuqiA418aTq2aWCXMvA118RRye8nwI+iJvmWS73hxHsdxffxV7FNm8qhHcSlnQ+v
+         /02rpmDFPja2HsMxCy4OyK5dF1vOa3lEx4Q1rHoUxArerPhiwXq+9NBSVaTTU9crxzgY
+         QBNw==
+X-Gm-Message-State: AOAM530HyJlY7xSRmMVoKjs5rqMQrE3NP+4xFYKbQalXB0/csJK/ztd1
+        8HfItTSnNNLj95BEPLkXljoH5yh0qMQLOjRyRuJb5EUkNVOak1ot
+X-Google-Smtp-Source: ABdhPJwMOpVVngVB9TKYcsUkabtpLsRVzOSIqPkMg89E3lfuVoGU22wXBvVzfFrEzkIrrUjt/KLQjQYOViE2Oykxv6s=
+X-Received: by 2002:a67:e1c4:0:b0:335:cdc4:395f with SMTP id
+ p4-20020a67e1c4000000b00335cdc4395fmr4220006vsl.71.1653055817568; Fri, 20 May
+ 2022 07:10:17 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 1/1] vfio: remove VFIO_GROUP_NOTIFY_SET_KVM
-Content-Language: en-US
-To:     Tony Krowiak <akrowiak@linux.ibm.com>, jgg@nvidia.com,
-        alex.williamson@redhat.com
-Cc:     cohuck@redhat.com, borntraeger@linux.ibm.com,
-        jjherne@linux.ibm.com, pasic@linux.ibm.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com, hch@infradead.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kevin Tian <kevin.tian@intel.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <20220519183311.582380-1-mjrosato@linux.ibm.com>
- <20220519183311.582380-2-mjrosato@linux.ibm.com>
- <8b6db781-9d4e-4d64-04fa-94e45dbf8b22@linux.ibm.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <8b6db781-9d4e-4d64-04fa-94e45dbf8b22@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: JbVWXzBI665Zek4q7WxxaxIvx3Rxgpnn
-X-Proofpoint-ORIG-GUID: lQLv-jWQXKTjsC9RX60nlxiG1SKzDspj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-20_04,2022-05-20_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- suspectscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
- priorityscore=1501 impostorscore=0 bulkscore=0 adultscore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205200099
+References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
+ <20220518092619.1269111-10-chenhuacai@loongson.cn> <CAMj1kXEBVWi2ZdR5Le5-G0DA43u-AMxmSO=pVt39qwN=PkzQfw@mail.gmail.com>
+ <0bae0df1-48ae-d02f-bce4-d1f69acf269e@redhat.com>
+In-Reply-To: <0bae0df1-48ae-d02f-bce4-d1f69acf269e@redhat.com>
+From:   Huacai Chen <chenhuacai@gmail.com>
+Date:   Fri, 20 May 2022 22:09:18 +0800
+Message-ID: <CAAhV-H5dqNiecER3fChkBjQUGGszj6gwcpOFM1b4Kaax5vz27g@mail.gmail.com>
+Subject: Re: [PATCH V11 09/22] LoongArch: Add boot and setup routines
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-efi <linux-efi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/20/22 9:56 AM, Tony Krowiak wrote:
-> 
-> 
-> On 5/19/22 2:33 PM, Matthew Rosato wrote:
->> Rather than relying on a notifier for associating the KVM with
->> the group, let's assume that the association has already been
->> made prior to device_open.  The first time a device is opened
->> associate the group KVM with the device.
->>
->> This fixes a user-triggerable oops in GVT.
->>
->> Reviewed-by: Tony Krowiak <akrowiak@linux.ibm.com>
->> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
->> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>   drivers/gpu/drm/i915/gvt/gtt.c        |  4 +-
->>   drivers/gpu/drm/i915/gvt/gvt.h        |  3 -
->>   drivers/gpu/drm/i915/gvt/kvmgt.c      | 82 ++++++--------------------
->>   drivers/s390/crypto/vfio_ap_ops.c     | 35 ++---------
->>   drivers/s390/crypto/vfio_ap_private.h |  3 -
->>   drivers/vfio/vfio.c                   | 83 ++++++++++-----------------
->>   include/linux/vfio.h                  |  6 +-
->>   7 files changed, 57 insertions(+), 159 deletions(-)
->>
->>
->> diff --git a/drivers/s390/crypto/vfio_ap_ops.c 
->> b/drivers/s390/crypto/vfio_ap_ops.c
->> index e8914024f5b1..a7d2a95796d3 100644
->> --- a/drivers/s390/crypto/vfio_ap_ops.c
->> +++ b/drivers/s390/crypto/vfio_ap_ops.c
->> @@ -1284,25 +1284,6 @@ static void vfio_ap_mdev_unset_kvm(struct 
->> ap_matrix_mdev *matrix_mdev)
->>       }
->>   }
->> -static int vfio_ap_mdev_group_notifier(struct notifier_block *nb,
->> -                       unsigned long action, void *data)
->> -{
->> -    int notify_rc = NOTIFY_OK;
->> -    struct ap_matrix_mdev *matrix_mdev;
->> -
->> -    if (action != VFIO_GROUP_NOTIFY_SET_KVM)
->> -        return NOTIFY_OK;
->> -
->> -    matrix_mdev = container_of(nb, struct ap_matrix_mdev, 
->> group_notifier);
->> -
->> -    if (!data)
->> -        vfio_ap_mdev_unset_kvm(matrix_mdev);
->> -    else if (vfio_ap_mdev_set_kvm(matrix_mdev, data))
->> -        notify_rc = NOTIFY_DONE;
->> -
->> -    return notify_rc;
->> -}
->> -
->>   static struct vfio_ap_queue *vfio_ap_find_queue(int apqn)
->>   {
->>       struct device *dev;
->> @@ -1402,11 +1383,10 @@ static int vfio_ap_mdev_open_device(struct 
->> vfio_device *vdev)
->>       unsigned long events;
->>       int ret;
->> -    matrix_mdev->group_notifier.notifier_call = 
->> vfio_ap_mdev_group_notifier;
->> -    events = VFIO_GROUP_NOTIFY_SET_KVM;
->> +    if (!vdev->kvm)
->> +        return -EINVAL;
->> -    ret = vfio_register_notifier(vdev, VFIO_GROUP_NOTIFY, &events,
->> -                     &matrix_mdev->group_notifier);
->> +    ret = vfio_ap_mdev_set_kvm(matrix_mdev, vdev->kvm);
->>       if (ret)
->>           return ret;
-> 
-> I'm sorry I didn't see this with my last review, but maybe move the call
-> to vfio_ap_mdev_set_kvm(matrix_mdev, vdev->kvm) after the successful
-> registration of the IOMMU notifier? This way you won't be plugging AP 
-> queues
-> into the guest only to remove them if the registration fails.
+Hi, Javier,
 
-This is a pretty edge error case, and the 
-vfio_ap_mdev_unset_kvm(matrix_mdev) call at err_kvm should do the proper 
-cleanup, right?  I guess I'm wondering if it's really any different than 
-the prior code which would have registered the VFIO_GROUP_NOTIFY_SET_KVM 
-first, which would have immediately triggered the notifier since the KVM 
-was already registered to the group, meaning it would haved called 
-vfio_ap_mdev_group_notifier->vfio_ap_mdev_set_kvm anyway (see 
-vfio_register_group_notifier, the "The attaching of kvm and vfio_group 
-might already happen..." comment)
+On Fri, May 20, 2022 at 5:41 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+>
+> Hello Ard and Huacai,
+>
+> On 5/20/22 11:17, Ard Biesheuvel wrote:
+>
+> [snip]
+>
+> >> +
+> >> +static int __init register_gop_device(void)
+> >> +{
+> >> +       void *pd;
+> >> +
+> >> +       if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI)
+> >> +               return 0;
+> >> +       pd = platform_device_register_data(NULL, "efi-framebuffer", 0,
+> >> +                       &screen_info, sizeof(screen_info));
+> >> +       return PTR_ERR_OR_ZERO(pd);
+> >> +}
+> >> +subsys_initcall(register_gop_device);
+> >
+> > Not sure this is now the correct way to do this - cc'ing Javier.
+> >
+>
+> Is not the correct way to do it indeed, that can just be dropped.
+>
+> We have unified now all the system framebuffer platform device
+> registration under drivers/firmware/sysfb.c (and the EFI quirks
+> if needed under drivers/firmware/efi/sysfb_efi.c).
+>
+> So the only thing that a platform should do, is to enable the
+> the CONFIG_SYSFB config option. The screen_info should be set
+> correctly from the EFI GOP, but it seems that's already working
+> since you were already using it in register_gop_device().
+>
+> But also, the "efi-framebuffer" platform device matches against
+> the legacy efifb fbdev driver. And now there's a simpledrm driver
+> that is also able to use the firmware-provided framebuffer.
+>
+> You can enable that driver with CONFIG_DRM_SIMPLEDRM.
+>
+> That driver though doesn't match against "efi-framebuffer" but with
+> a "simple-framebuffer", to make sysfb register that instead of the
+> "efi-framebuffer" device, you need to set CONFIG_SYSFB_SIMPLEFB too.
+>
+> If for some reasons you need to provide a fbdev interface to the
+> user-space, you can enable CONFIG_DRM_FBDEV_EMULATION to have that.
+>
+> In summary, just enable the following to use the firmware framebuffer:
+>
+> CONFIG_DRM_SIMPLEDRM=y
+> CONFIG_DRM_FBDEV_EMULATION=y
+> CONFIG_SYSFB=y
+> CONFIG_SYSFB_SIMPLEFB=y
+Thank you very much, since 5.15 sysfb_init() do all things of
+register_gop_device(), so register_gop_device() here can be removed.
+But there is another small problem: if simpledrm or efifb driver is
+built-in, there is no display. The reason is both sysfb_init() and
+display driver are in the same initcall level (device_initcall()).
+From the comments I know that sysfb_init() should after PCI
+enumeration which is in subsys_initcall(), so, could we make
+sysfb_init() to be a subsys_initcall_sync()?
 
-> 
->> @@ -1415,12 +1395,11 @@ static int vfio_ap_mdev_open_device(struct 
->> vfio_device *vdev)
->>       ret = vfio_register_notifier(vdev, VFIO_IOMMU_NOTIFY, &events,
->>                        &matrix_mdev->iommu_notifier);
->>       if (ret)
->> -        goto out_unregister_group;
->> +        goto err_kvm;
->>       return 0;
->> -out_unregister_group:
->> -    vfio_unregister_notifier(vdev, VFIO_GROUP_NOTIFY,
->> -                 &matrix_mdev->group_notifier);
->> +err_kvm:
->> +    vfio_ap_mdev_unset_kvm(matrix_mdev);
->>       return ret;
->>   }
-
+Huacai
+>
+> --
+> Best regards,
+>
+> Javier Martinez Canillas
+> Linux Engineering
+> Red Hat
+>
