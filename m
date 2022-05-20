@@ -2,199 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF94C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 01:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 01:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344184AbiETBZk (ORCPT
+        id S1344281AbiETB2l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 21:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        Thu, 19 May 2022 21:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240603AbiETBZf (ORCPT
+        with ESMTP id S1344086AbiETB2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 21:25:35 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2062.outbound.protection.outlook.com [40.107.20.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009822AC7B;
-        Thu, 19 May 2022 18:25:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=htTgJe9mj8OUof9HUlzzMZws3a87IS+rEf5jiGSY4hKrzoD8SYtKd6DONqZAkFQwg3tsjIYr+8wLtx/PJmjvY6+KFl7UQU8/JaQmzU0jn+Z4MA4TC3GvbJsKQ87RpNY1c8xflGph0bLVb7ReWQstGcUHP98DWaMb7IBpHtWj80v+FRcYcm2Lc4RWFZzC0nufBjUtCxTBXLzkRQR9EH41ehgJUMfHBRdprImVvhhk7hGKRUwQ/VWOLolKmbE9SbMhC9AJE6IPAHrclXeQ39dW0bs/+0cyXv1pRNXVysNi1FxBuBIi99tG0gXeUv6tRiJbhE3yL9mbg0+0R0J1GfcH1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WZy3GfrwaJj+v1XfsFyX0E8wbC6GPdPC7HIizEQMRpU=;
- b=cMx71nbeI8Zgyl19q5qm2JAy7Dlh6MpQt+fmjPHaddlW680oicW1F4gJm5vwZW32BiusZ4pCN00YutxgImieR+7I9Anp8o7zAVP/kmnvXTCYTxOJvQJq6437ptPtCqN8jUdOrrLyKBnDRHrK90JuFRF2BJKtaPHeDsEbUZfki007k1VNONbzsWnbLU8CqxKUjUsm12n34K3m48mjjnan3w5YJ25hsDTFW9dsTd6atvYr9/JBAFsS0P1mSQbDqIcxHNMPSe6V4pSMNXUVfcrjB6ZYWn4K0a6BPZ2FEcS1/y0VGekcFV50FLpVuGG0H2mEodLR5VIkq400+eHYD2Ko/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WZy3GfrwaJj+v1XfsFyX0E8wbC6GPdPC7HIizEQMRpU=;
- b=m+ed2FUZlDIBLr7tTRJ5GimKzU4nj/fO9eJa4YxERpoGgADc2M1HczQfyW1uvvzAseRuox2QcYD8QnTGO0GseXoAvr1I0BI3v6a+1ywUBSKpGOUHJFrsCuo0wvfjBYEPd2xX4SAKSQ0DVhOT8bbtMIUSQtP7S/LrVYpDs6HjZjk=
-Received: from DB8PR04MB6346.eurprd04.prod.outlook.com (2603:10a6:10:10c::14)
- by VI1PR04MB6798.eurprd04.prod.outlook.com (2603:10a6:803:131::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17; Fri, 20 May
- 2022 01:25:31 +0000
-Received: from DB8PR04MB6346.eurprd04.prod.outlook.com
- ([fe80::55:de91:1970:385e]) by DB8PR04MB6346.eurprd04.prod.outlook.com
- ([fe80::55:de91:1970:385e%6]) with mapi id 15.20.5273.017; Fri, 20 May 2022
- 01:25:31 +0000
-From:   Ming Qian <ming.qian@nxp.com>
-To:     Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "hverkuil-cisco@xs4all.nl" <hverkuil-cisco@xs4all.nl>
-CC:     "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [EXT] Re: [PATCH] media: amphion: return error if format is
- unsupported by vpu
-Thread-Topic: [EXT] Re: [PATCH] media: amphion: return error if format is
- unsupported by vpu
-Thread-Index: AQHYa1IjNpIg22tPvUuo55ULLbP5Xq0mgWIAgAB2L0A=
-Date:   Fri, 20 May 2022 01:25:31 +0000
-Message-ID: <DB8PR04MB634682E34667F804608E3018E7D39@DB8PR04MB6346.eurprd04.prod.outlook.com>
-References: <20220519072844.31792-1-ming.qian@nxp.com>
- <e03669333c20c07d40d0b1ce05eb771f5dbd4139.camel@ndufresne.ca>
-In-Reply-To: <e03669333c20c07d40d0b1ce05eb771f5dbd4139.camel@ndufresne.ca>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a9b3010e-0d03-4512-6075-08da39ffa187
-x-ms-traffictypediagnostic: VI1PR04MB6798:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB679824CD8045A2F75F002705E7D39@VI1PR04MB6798.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Ci+zvqv0y3j9SnebdKsy5pm1aTb3SOtxhmHpyLCU9BLC9TX08QQB0+qquyxFBHyCYsfGxiCoHNjUubAJWQNosPz14qw9pHCac5kfEIBBNWZvCBGPHmi1YRHLHzJEt+LLB/uf40nyW3Qy/Vx3fwiRrawLdcEi3irLa2cdxYi2/IkR0yKHgelG6nUerGLzaGYxP/IKD/bHOnusFX0ZNLosPjF89INmLptEPKdtZYvfUxinHBWH/nVL7ShdjGhWyE2DyCSunSxXfK8PmE92Rz0+FpB8UAD3Lgde8Hqgialnt/tJ1wrepx3+1+9BG/pmsITcWQ4L7QiF1MpfrZjvGkw29lC/ozChW3eXo0eIWpma7o/C+zk3LoxJvz6RCkcXRW8bjalyIZUhBsl/pUw/amS7sj8ipOTyzxdepcNsqAKAa0/MhMvelwp/5kIxpmQ34GTUhmNnNw07Zo1/gLCHb6oyrr16lzb4dQ2vikHJJXbaNbTOYb5Z3bmDhZTw2IpMH+qy9czC7kPGJZqG2E8trSFcaCALMpmtitBGV0wqlN8GajnJ5JSB5/J/QwF/yAZXw4fHqvz9MWFmfgb5GgmwR9BmHDaY3f4Q9Q2nmB7zNCYWSOmMilwott4dxO/cUM2bnIc+qJQ4SZrFhq86v0Qrt8RvVQr7zPQ+vNkIqpVEKCunvrUtakrz8mk9ot1Lw5sppBaKvouq3aXKzfIzhw81txOK/g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6346.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(54906003)(2906002)(33656002)(316002)(508600001)(71200400001)(38100700002)(86362001)(55016003)(83380400001)(64756008)(186003)(38070700005)(9686003)(26005)(7696005)(6506007)(53546011)(122000001)(66946007)(66556008)(66476007)(66446008)(76116006)(8936002)(8676002)(4326008)(7416002)(44832011)(5660300002)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UTBMdzZZRjh5M240RUtmRjRvR0RNSkZrOXdQWXlFSmpsaU9NTjYrNlI2Zkt3?=
- =?utf-8?B?VWt2YjhWZVA1MGY5NlcwdDl3OWs2VXRFWFhzYVBoZUpFQ05oVDl5SExFNnZR?=
- =?utf-8?B?ZERCRis3cllkTzh0RlFwSDdPVzJXUW52YTB6d1MybUZSN3NPRHhQc3VOOTFT?=
- =?utf-8?B?cnFMUU15TDFNc1VLOVpRSUlHaFNyZWx5VHlrN0tpVTFQdC90VGNBanR5V0tx?=
- =?utf-8?B?c3pGZitORytHNUlEMXlnc2U1anF1NEJ5alZSeEpZZkdvV0VuRzBXL05kOWIv?=
- =?utf-8?B?SnR6cGRpbDQwTlhZRFV3VHVmcGdlSnV0dS9YQWdLNzYyejRYb0lyMDN4Tnh4?=
- =?utf-8?B?NkJKUDB4c0lYU2VjbEVJWTNZd1ZYSWk1NW1oRGoyb1VtZnVxbm0rSXRJUXJ5?=
- =?utf-8?B?bEM0WVZiN1VHK3BZNGVuNmcrK3VEMXFTVlZENGY4UCsvZXJDbmdVZTVYcEJF?=
- =?utf-8?B?c0ZyaWZka2g1aklKcXlnWlNMUkFPRC8wbkg0NlEyTWtGNzZTRDJoNmdCbVlw?=
- =?utf-8?B?WEFVRHpCT3hDS2dwZFpidE1ybTBKUGpubVplYzhsTm9iWnppUEI0dzhtaGha?=
- =?utf-8?B?Z0Y5dzY5dDBYcDdZTlJqVDBrSE4rNDlJMGNXOUk4bEovNjJGYXVzODBWRG1h?=
- =?utf-8?B?L1dtb1Y0MzdaSGpINFZHTjhJcCtuRElIWHk0SUhPTXV1b2xXVmxHeERMMFlC?=
- =?utf-8?B?bzVtZDNTaUl6ZTVpUXJ6TnlENERzc0tsNDc0Z0c5OFl3ZGhMMDFNR3A3blZp?=
- =?utf-8?B?bHpCektIYW1jS1Rqc1JURi84L2J1eDdMS3ZhOEtHVWRCLzB2ZnZQUThyRlo2?=
- =?utf-8?B?T3JPRXhOQXgxcEV3QjVSaTNQb3BHeFlNWXh4QjZXRW9yUDZ2bkJaMGFDa3FW?=
- =?utf-8?B?UnQ2eVBhcjZDSHE4aEI0VitCdXVkV2Vhcm5GYkZ3UUNORmRGNG04djlkdFdt?=
- =?utf-8?B?SEl5Z2xaQVl1VE4zMW94VDFUVWlwNmlOMS9HNzIwcWE4WGZVbUxEYzBZQzVC?=
- =?utf-8?B?YTY3Sk91ZFA4ejJhU2FDVUcxdVcybUEwWVJ5QStkRExYQnYzTTJrWWgzbVp4?=
- =?utf-8?B?V2lUbUFpUlRqRXNlOXVORTdTaTdhaUg0ZEl4QThYZGpuQ0dTMDVjZlJEdEZB?=
- =?utf-8?B?clpaRnNCS29ISHhBZjJUNWRiVkpUMnc2bUtsR0lCWklYT211dVlDOUhNbFZY?=
- =?utf-8?B?MmZQSXdmMS9MSnhjdXcyL1Zhd3pCeGJlbTkyWWo1alY3UEVtblVrOFdta29F?=
- =?utf-8?B?QlVBQ0pvTEVNSDB5MjFncDNpaUJSbDE2dHF5SmpiellkL0RlaTFGeFhRdUdn?=
- =?utf-8?B?QldFSWxMT1E5cmZaRHVsYVJERDFkVU4zYTFyZ1VNQnk2VWE1b25EZDNyZ094?=
- =?utf-8?B?dzRYRDhTUjM4QmRQcTJJVVV4QUtNSStNTFI5cEJZV2hFRnp4a0tHaVlzdnhB?=
- =?utf-8?B?MHE0Y2txcXNMZTlacGZhR2NSMzduNFhHVHpDc3MyNFFQNCsrQUEvV3dTRUdh?=
- =?utf-8?B?Y1NGQWcwY3d2TGVuSmdqcGZHam5PY3dyY3IxaklqZG5WS052RmRUREpyS0Rh?=
- =?utf-8?B?dEZOREtQZm5ZVjAyaWhZQUZSNE1JVkdUbjh2bjhaYU4zRm5uaUY0M0V4a3JL?=
- =?utf-8?B?R2ZiY0R0cFJnVFJZVmVGb21UMGxzb2hYKy9oQkhmcHRiVEZhMnhUNVZMckdJ?=
- =?utf-8?B?R00rMkVIVDViZksvTEx2WmJwOVZQNXE1aFdHL2N3c1JPY3I4dElyZmpzbW9R?=
- =?utf-8?B?enFOdzR3NzltT0JpbkVEdlBHLzhCcVpjOEs1dXd6a3ZjNm5VMitrMnJRMjRr?=
- =?utf-8?B?UnN5bkxmU3ZJR1UyWklvNFZQQWN4cXBnWmhVcUdkNjljMGprRFZXczFwa3lt?=
- =?utf-8?B?VVJsMUZWdkl3dU9XbTRoOE1YTDJDNTk2SWR6cDBmcDRlakM1ZmU2cUFva2RD?=
- =?utf-8?B?K0RLR21rNWt6UjJFMHpnOFVhdXNQNEI2UElVcjJTRDdmN09Kei9RZngyUUE4?=
- =?utf-8?B?akFzRHVDRW1VK0NaQ3pSV0FtQkIrNlZVMXNHRWRvODNaQWdQTFZOcEdLMWEv?=
- =?utf-8?B?bVpGdmtkeCtCL1c0eWtWQWFoV2F5YVNYY2owaEtINnprOWdYcnU2QmJXS29y?=
- =?utf-8?B?VzUxMUx4YU4zbnNEYXUvRXJLM1V4ZHlUVUgvVGFJMXdETXI2L2svM0YzZHhp?=
- =?utf-8?B?UDFVREJvWlNZa1prdzErMlBZdm9qekdiVXRDSjhKbUFzaWxxSkxrMWxsN1RS?=
- =?utf-8?B?bUhyT3JsSlNnSkVEZnI5bmROR1pNRlBHQUplYU5LMTgxLzhsQTlwdGo4ZmFt?=
- =?utf-8?B?ZEgwNWNEcWJaZ043L3p6V0Y4VXl3am9zMUJFczN3UGs0R2oyMER5Zz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Thu, 19 May 2022 21:28:38 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E680F5B3E5
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 18:28:34 -0700 (PDT)
+Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220520012832epoutp014e9a12944e9719e64ad589584f816af1~wq-CAxyc21219712197epoutp01u
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:28:32 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220520012832epoutp014e9a12944e9719e64ad589584f816af1~wq-CAxyc21219712197epoutp01u
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1653010112;
+        bh=twiM4nG0XN/IUozHsDktNZyZ2toUSdhZtbW2WtXJVBc=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=qiPvgqtBfZ4TLcHEJiO27tGhxsQpdt91F8up45SHy4sqEf+x+Jsoi7r/1u2+3RltH
+         RB/4XBSSZZo6rxZtvSNvjn36sqbaeb9/yNLveF6HpaHwpmiSFxIuUFY3Z1w5vbAosJ
+         9dOo7E+UGBGPiaNswu5VkZSPHQg7PZywLnQBdKBQ=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas1p3.samsung.com (KnoxPortal) with ESMTP id
+        20220520012832epcas1p3e8f58526d0971fc256847bb7086f09e0~wq-BYR-Yo3128131281epcas1p3M;
+        Fri, 20 May 2022 01:28:32 +0000 (GMT)
+Received: from epsmges1p3.samsung.com (unknown [182.195.38.235]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4L48Hy4C8sz4x9QB; Fri, 20 May
+        2022 01:28:30 +0000 (GMT)
+Received: from epcas1p3.samsung.com ( [182.195.41.47]) by
+        epsmges1p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        24.1A.10038.EBEE6826; Fri, 20 May 2022 10:28:30 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220520012830epcas1p11bffd5f9b19f4267232f005a867c176f~wq_-ouLDq1281212812epcas1p11;
+        Fri, 20 May 2022 01:28:30 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220520012830epsmtrp24f2ab9b7b0e738784b2b64ff7b023cc4~wq_-naWSn1570315703epsmtrp2j;
+        Fri, 20 May 2022 01:28:30 +0000 (GMT)
+X-AuditID: b6c32a37-111ff70000002736-4d-6286eebe6e68
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        55.F1.11276.DBEE6826; Fri, 20 May 2022 10:28:29 +0900 (KST)
+Received: from [10.113.221.102] (unknown [10.113.221.102]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220520012829epsmtip29a57e9b7706d44b3d50c22d2bf3ef24b~wq_-LA16Q0122901229epsmtip2F;
+        Fri, 20 May 2022 01:28:29 +0000 (GMT)
+Subject: Re: [PATCH v25 0/7] soc: mediatek: SVS: introduce MTK SVS
+To:     Kevin Hilman <khilman@kernel.org>,
+        Chen-Yu Tsai <wenst@chromium.org>
+Cc:     Roger Lu <roger.lu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Boichat <drinkcat@google.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Fan Chen <fan.chen@mediatek.com>,
+        Charles Yang <Charles.Yang@mediatek.com>,
+        Angus Lin <Angus.Lin@mediatek.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nishanth Menon <nm@ti.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jia-wei Chang <jia-wei.chang@mediatek.com>,
+        =?UTF-8?B?UmV4LUJDIENoZW4gKOmZs+afj+i+sCk=?= 
+        <rex-bc.chen@mediatek.com>
+From:   Chanwoo Choi <cw00.choi@samsung.com>
+Organization: Samsung Electronics
+Message-ID: <5a1767dc-ba2d-4de5-d8fe-2f308d3318a9@samsung.com>
+Date:   Fri, 20 May 2022 10:54:48 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101
+        Thunderbird/59.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6346.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9b3010e-0d03-4512-6075-08da39ffa187
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2022 01:25:31.5481
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7Tc9c47vni7TAsl8cIsu47YfCfEtA+YMIPOp8sBxcZAhyhyKUUN5mVTj/1uDcTY33H9N19jQzzZFAGNyaoUihw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6798
+In-Reply-To: <7hmtfdbcsc.fsf@baylibre.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Te0xTZxTPd++lLW7YS3l9QmDQbYkwHi1Q+HjGObJcnW4kBLcZtRR6B0hp
+        ax97RUMd5SHxAZswqAoYYAbCY7YOgQklCAOiLpAONDzUpSjgBJmEgmEza3vdxn+/c87vd875
+        nS8fB+fp2L6cXLmGVsklMj5rG9F5MzgirG+5OFNQe8YfrZ9sYKO1ah2B6gZ/dUGWqTUcjW02
+        s5BtZhNDw+ZGNnpksmLIaJ20V3suspClcByg1TODAM1dvo2hprvjGPpGH4WebtzB0Oz9EQI9
+        by8lUN+t73FU1DvIRhbrVRZ6OXmVQNXFFpddPlRrbSugLujGCarbMMum6o1aythyikWZGgso
+        /aiZoM79LaC613VsavjedYxaNQakvnYwLzGHlkhpVSAtz1JIc+XZSfwP0sTviUUxAmGYMA7F
+        8gPlknw6iZ+yLzXs/VyZ3TA/8HOJTGtPpUrUan5EcqJKodXQgTkKtSaJTyulMqVIGa6W5Ku1
+        8uxwOa2JFwoEkSI7MSMv54HtuLJr55c/97RgOrAZVAY4HEhGQ/2LT8rANg6P7AKwzPaIzQTP
+        AZyYXHIpA672wAagcfmIAzsEbb//hTH5XgD1lw4xgmcA3p2uB46CB7kbTpvnWQ7sSVLwl85v
+        WQ4STvax4JWGAcJRYJEh0Lxwz0nikkFwYsPqFLuRydBmnsQdmCDfhu0nm5xbeJEH4Gin/hXH
+        HY7WzDn7uNr7WCuHnX1w0gdOzdVhDH4DXl+6iDNbm1xhiS6dwSlwybCBMdgDPhm+xmawL1xd
+        7nUuCslCAHUL04AJTgM49PgswbCioLnpO8xxPJwMhh09EUw6CHZvXgLM4O1wee20C3NfN1ha
+        zGMob0LLw9lXc3fAhpJTrHLAN2yxY9hiwbDFguH/YfWAaAHetFKdn02rhcqo/946S5FvBM6v
+        EBLbBaqWVsIHAMYBAwBycL6nG8jXZ/LcpJKvvqZVCrFKK6PVA0BkP3AF7uuVpbD/JblGLIyO
+        E0THREZFI2GMkO/j1lJ1S8IjsyUaOo+mlbTqXx3GcfXVYUfSTNKaO/uPH1gI/yiAfKetz/dc
+        0Zjp2U/vijruH/yjNaG6Y+gQkeYDrLz9i9RDRe9Kumj+Zt8Nv7UHzSfG3SsON2fvS/izP/Nj
+        /0SYES6dj+tcLMA7X48Pruw1Vxd5B/pljPTsFrt/8WJnHVfUNlVQKxbqo/SFOyrSSjXcHyTx
+        9XnjK8nlCi4ILS+tarxSPKf38cbJwsKUyMbYmdkLU3v7Zz4s+/Gltb2b6z4Rf7l/TOXnZT7/
+        ZE+LjVW5R8N9izdU8lTmUZGAHR0JXWSf2CXvsPRfSw9N3msyHfs0afthz/OZWGiNxw35Z6bf
+        Qvybuv084hJutx87uu6/0vo4QLucxyfUORJhCK5SS/4BDb/h95MEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SWUwTURhGuTPDdChWh4LhoglIXVgSK1Wj16jEqNFJNG4PosaFApOWSJd0
+        qAtxqVJEcENFxUrABSNWJdIqa0oNiwiIUtGKCxgtCA9gcGtREKVtTHg7yXfOf18uhQsHiClU
+        sjKV1SilKSKST5TVicJmW74cS4gprlmCXEdu8NDPPB2BCuuf+aL2tz9x1DZ8m0TO98MYarQW
+        8VCP2YEhk8M+tlblk6g93QbQ91P1AHVfe4qhm69tGDqqn4f6h1ox1Nn1hEDfSo4TqKblEo4y
+        LPU81O4oJdGovZRAecfafZcFM3cL7gLmis5GMJWGTh5z1aRlTMYskjEXHWb0TVaCOfMnhql0
+        6XhMY0c5xnw3hW7w38ZfksSmJO9hNXNi4/nyD84D6orIfdVVRkwHhsOzgR8F6fnw3scRLBvw
+        KSFdDWBXYwvpHULgRVsDng2oMQ6EdXWc1xkAMH3Y6Ot2Aunl8J211+MH0Qx8XHaOdEs4XUvC
+        S1UdhLf4jcEfj62Y2yLpaGjt6/AUk+hw+GrIAdwsoGOh02rH3UzQM2HJkZueFybTm2FlkQPz
+        OgGw6XI34Wa/sTuOC42eOzgdAUcKXuBeDoZvuwsxL4fB8oF8PAcEGsblhnGJYVxiGJdcBYQR
+        hLBqTiFTcBK1RMnuFXNSBadVysSJKoUJeH5EdFQFKDcOimsBRoFaAClcFCQACn2CUJAk3Z/G
+        alS7NNoUlqsFUylCFCxoy27aJaRl0lR2N8uqWc3/FaP8puiwVFmOKy8xtHnhJuEas+F+7L6V
+        yfszX+RG1Mi1vfZD+R/KsxKuT5tUqnoZd+F8fVqDZR3/uHaLM6zoXfqDdLDC9TzJf6N5QxvY
+        2r36a0DE3D9Ppf3FPotDU6iX/SbV4DX74cidR3NGrQ/OxGl4t5cu1K+aJVnTrMc+hS+KEWzt
+        /NwiWXDiSQ/cFLT6x2m5qHj0xJ4dorUNvaqT9ISsnlvxJRmgWRwZr1wakzYxYXprnNisQibn
+        hL5cSp35iDb7c/K+v9W2zKG8VtGj5pE2l561fK1cnz+oi+qifTLuFKSenaEttMiYeEXdXuHp
+        5V0rNecORs8I+fWm6WEa32d7kiqgU0RwcqkkGtdw0n+123gWgAMAAA==
+X-CMS-MailID: 20220520012830epcas1p11bffd5f9b19f4267232f005a867c176f
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220519182512epcas1p3020bd4713580c9244f759971b8bd2c3a
+References: <20220516004311.18358-1-roger.lu@mediatek.com>
+        <CAGXv+5GSdWPZe3fNpBJ_WW0zCL8Skg6fHx9ATxaKU1hyMEt2Ww@mail.gmail.com>
+        <7h4k1ndaui.fsf@baylibre.com> <7hy1yzbtb7.fsf@baylibre.com>
+        <CAGXv+5GT=3m=pVPwUOWR42BR=emCpBXvvoAiRV7YKt2kEKWdAQ@mail.gmail.com>
+        <CGME20220519182512epcas1p3020bd4713580c9244f759971b8bd2c3a@epcas1p3.samsung.com>
+        <7hmtfdbcsc.fsf@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBGcm9tOiBOaWNvbGFzIER1ZnJlc25lIFttYWlsdG86bmljb2xhc0BuZHVmcmVzbmUuY2FdDQo+
-IFNlbnQ6IEZyaWRheSwgTWF5IDIwLCAyMDIyIDI6MTMgQU0NCj4gVG86IE1pbmcgUWlhbiA8bWlu
-Zy5xaWFuQG54cC5jb20+OyBtY2hlaGFiQGtlcm5lbC5vcmc7DQo+IGh2ZXJrdWlsLWNpc2NvQHhz
-NGFsbC5ubA0KPiBDYzogc2hhd25ndW9Aa2VybmVsLm9yZzsgcm9iaCtkdEBrZXJuZWwub3JnOyBz
-LmhhdWVyQHBlbmd1dHJvbml4LmRlOw0KPiBrZXJuZWxAcGVuZ3V0cm9uaXguZGU7IGZlc3RldmFt
-QGdtYWlsLmNvbTsgZGwtbGludXgtaW14DQo+IDxsaW51eC1pbXhAbnhwLmNvbT47IGxpbnV4LW1l
-ZGlhQHZnZXIua2VybmVsLm9yZzsNCj4gbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGlu
-dXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnDQo+IFN1YmplY3Q6IFtFWFRdIFJlOiBb
-UEFUQ0hdIG1lZGlhOiBhbXBoaW9uOiByZXR1cm4gZXJyb3IgaWYgZm9ybWF0IGlzDQo+IHVuc3Vw
-cG9ydGVkIGJ5IHZwdQ0KPiANCj4gQ2F1dGlvbjogRVhUIEVtYWlsDQo+IA0KPiBIaSBNaW5nIFFp
-YW4sDQo+IA0KPiBMZSBqZXVkaSAxOSBtYWkgMjAyMiDDoCAxNToyOCArMDgwMCwgTWluZyBRaWFu
-IGEgw6ljcml0IDoNCj4gPiByZXR1cm4gZXJyb3IgaWYgZm9ybWF0IGlzIHVuc3VwcG9ydGVkIGJ5
-IHZwdSwgb3RoZXJ3aXNlIHRoZSB2cHUgd2lsbA0KPiA+IGJlIHN0YWxsZWQgYXQgZGVjb2RpbmcN
-Cj4gDQo+IEkgaGF2ZSBhIHJlYXNvbmFibGUgZG91YnQgYWJvdXQgdGhpcyBwYXRjaC4gSSBkb24n
-dCB0aGluayBzdWNoIGEgY2FzZSBzaG91bGQgYmUNCj4gcmVhY2hhYmxlIGJ5IHVzZXJzLiBOb3Jt
-YWxseSwgY2FsbHMgdG8gU19GTVQgc2hvdWxkIGVuc3VyZSB0aGUgZHJpdmVyIGZvcm1hdA0KPiBz
-dGF0ZSBpcyB2YWxpZCBvbiBib3RoIGVuZHMgYnV0IG1vZGlmeWluZyB0aGUgcmVsZXZhbnQgc3Ry
-dWN0dXJlcy4gQXMgYW4NCj4gZXhhbXBsZSwgZm9yIGRlY29kZXJzLCBzZXR0aW5nIHRoZSBDT0RF
-QyAoT1VUUFVUIHF1ZXVlKSBmb3JtYXQsIG1heQ0KPiBjaGFuZ2UgdGhlIHJhdyBmb3JtYXQgKENB
-UFRVUkUgcXVldWUpIGltcGxpY2l0bHkgdG8gcHJldmVudCB0aGlzIHNpdHVhdGlvbi4NCj4gQXJl
-IHdlIGNlcnRhaW4gdGhpcyBjaGFuZ2UgaXNuJ3QgcGFwZXJpbmcgYXJvdW5kIHNvbWUgbWlzc2lu
-ZyBmb3JtYXQNCj4gcHJvcGFnYXRpb24gPw0KPiANCj4gcmVnYXJkcywNCj4gTmljb2xhcw0KPiAN
-Cg0KSGkgTmljb2xhcywNCiAgICBZb3UncmUgcmlnaHQsIGl0J3Mgbm90IHJlYWNoYWJsZSBjdXJy
-ZW50bHkuDQogICAgQW5kIHRoZXJlIGFyZSBzb21lIGZvcm1hdHMgc3VwcG9ydGVkIGJ5IFZQVSwg
-YnV0IEkgZGlkbid0IGFkZCBzdXBwb3J0IGluIGRyaXZlciwgYXMgdGhleSBhcmUgbm90IGRlZmlu
-ZWQgaW4ga2VybmVsIHlldC4NClNvIGlmIHNvbWVvbmUgd2FudHMgdG8gZW5hYmxlIHRoZW0gaW4g
-ZnV0dXJlLCBhbmQgaWYgaGUgb25seSBhZGRzIGEgZm9ybWF0IGludG8gdmRlY19mb3JtYXRzW10g
-d2l0aG91dCBtb2RpZnlpbmcgdGhlIHZwdV9tYWxvbmUgcGFydCAsIHRoZW4gaGUgY2FuIGVudW1f
-Zm10IGFuZCBzZXRfZm10IHN1Y2Nlc3NmdWxseSwgYnV0IG1lZXQgdnB1IGhhbmcgd2l0aG91dCBh
-bnkgZXJyb3IgbWVzc2FnZS4NCglJIHRoaW5rIGRyaXZlciBzaG91bGQgcmVwb3J0IGFuIGVycm9y
-IGluIGNhc2Ugb2YgdGhlIG5ldyBmb3JtYXQgaXMgbm90IGltcGxlbWVudGVkIGZ1bGx5Lg0KDQpN
-aW5nDQoNCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IE1pbmcgUWlhbiA8bWluZy5xaWFuQG54cC5j
-b20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbWVkaWEvcGxhdGZvcm0vYW1waGlvbi92cHVfbWFs
-b25lLmMgfCAyICsrDQo+ID4gIGRyaXZlcnMvbWVkaWEvcGxhdGZvcm0vYW1waGlvbi92cHVfdjRs
-Mi5jICAgfCA0ICsrLS0NCj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDIg
-ZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9tZWRpYS9wbGF0Zm9y
-bS9hbXBoaW9uL3ZwdV9tYWxvbmUuYw0KPiA+IGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9hbXBo
-aW9uL3ZwdV9tYWxvbmUuYw0KPiA+IGluZGV4IGYyOWMyMjNlZWZjZS4uMDkzMGI2YmE4YzQyIDEw
-MDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbWVkaWEvcGxhdGZvcm0vYW1waGlvbi92cHVfbWFsb25l
-LmMNCj4gPiArKysgYi9kcml2ZXJzL21lZGlhL3BsYXRmb3JtL2FtcGhpb24vdnB1X21hbG9uZS5j
-DQo+ID4gQEAgLTYxMCw2ICs2MTAsOCBAQCBzdGF0aWMgaW50IHZwdV9tYWxvbmVfc2V0X3BhcmFt
-cyhzdHJ1Y3QNCj4gdnB1X3NoYXJlZF9hZGRyICpzaGFyZWQsDQo+ID4gICAgICAgZW51bSB2cHVf
-bWFsb25lX2Zvcm1hdCBtYWxvbmVfZm9ybWF0Ow0KPiA+DQo+ID4gICAgICAgbWFsb25lX2Zvcm1h
-dCA9DQo+IHZwdV9tYWxvbmVfZm9ybWF0X3JlbWFwKHBhcmFtcy0+Y29kZWNfZm9ybWF0KTsNCj4g
-PiArICAgICBpZiAobWFsb25lX2Zvcm1hdCA9PSBNQUxPTkVfRk1UX05VTEwpDQo+ID4gKyAgICAg
-ICAgICAgICByZXR1cm4gLUVJTlZBTDsNCj4gPiAgICAgICBpZmFjZS0+dWRhdGFfYnVmZmVyW2lu
-c3RhbmNlXS5iYXNlID0gcGFyYW1zLT51ZGF0YS5iYXNlOw0KPiA+ICAgICAgIGlmYWNlLT51ZGF0
-YV9idWZmZXJbaW5zdGFuY2VdLnNsb3Rfc2l6ZSA9IHBhcmFtcy0+dWRhdGEuc2l6ZTsNCj4gPg0K
-PiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL21lZGlhL3BsYXRmb3JtL2FtcGhpb24vdnB1X3Y0bDIu
-Yw0KPiA+IGIvZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9hbXBoaW9uL3ZwdV92NGwyLmMNCj4gPiBp
-bmRleCA0NDZmMDdkMDlkMGIuLjg5Yjg4ZTA2M2U0NSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJz
-L21lZGlhL3BsYXRmb3JtL2FtcGhpb24vdnB1X3Y0bDIuYw0KPiA+ICsrKyBiL2RyaXZlcnMvbWVk
-aWEvcGxhdGZvcm0vYW1waGlvbi92cHVfdjRsMi5jDQo+ID4gQEAgLTUwMCwxMCArNTAwLDEwIEBA
-IHN0YXRpYyBpbnQgdnB1X3ZiMl9zdGFydF9zdHJlYW1pbmcoc3RydWN0DQo+IHZiMl9xdWV1ZSAq
-cSwgdW5zaWduZWQgaW50IGNvdW50KQ0KPiA+ICAgICAgICAgICAgICAgICBmbXQtPnNpemVpbWFn
-ZVsxXSwgZm10LT5ieXRlc3BlcmxpbmVbMV0sDQo+ID4gICAgICAgICAgICAgICAgIGZtdC0+c2l6
-ZWltYWdlWzJdLCBmbXQtPmJ5dGVzcGVybGluZVsyXSwNCj4gPiAgICAgICAgICAgICAgICAgcS0+
-bnVtX2J1ZmZlcnMpOw0KPiA+IC0gICAgIGNhbGxfdm9pZF92b3AoaW5zdCwgc3RhcnQsIHEtPnR5
-cGUpOw0KPiA+ICsgICAgIHJldCA9IGNhbGxfdm9wKGluc3QsIHN0YXJ0LCBxLT50eXBlKTsNCj4g
-PiAgICAgICB2YjJfY2xlYXJfbGFzdF9idWZmZXJfZGVxdWV1ZWQocSk7DQo+ID4NCj4gPiAtICAg
-ICByZXR1cm4gMDsNCj4gPiArICAgICByZXR1cm4gcmV0Ow0KPiA+ICB9DQo+ID4NCj4gPiAgc3Rh
-dGljIHZvaWQgdnB1X3ZiMl9zdG9wX3N0cmVhbWluZyhzdHJ1Y3QgdmIyX3F1ZXVlICpxKQ0KDQo=
+Hi Kevin, Chen-Yu,
+
+On 5/20/22 3:25 AM, Kevin Hilman wrote:
+> Chen-Yu Tsai <wenst@chromium.org> writes:
+> 
+>> n Wed, May 18, 2022 at 8:03 AM Kevin Hilman <khilman@kernel.org> wrote:
+>>>
+>>> Kevin Hilman <khilman@kernel.org> writes:
+>>>
+>>>> Chen-Yu Tsai <wenst@chromium.org> writes:
+>>>>
+>>>>> On Mon, May 16, 2022 at 8:43 AM Roger Lu <roger.lu@mediatek.com> wrote:
+>>>>>>
+>>>>>> The Smart Voltage Scaling(SVS) engine is a piece of hardware
+>>>>>> which calculates suitable SVS bank voltages to OPP voltage table.
+>>>>>> Then, DVFS driver could apply those SVS bank voltages to PMIC/Buck
+>>>>>> when receiving OPP_EVENT_ADJUST_VOLTAGE.
+>>>>>>
+>>>>>> 1. SVS driver uses OPP adjust event in [1] to update OPP table voltage part.
+>>>>>> 2. SVS driver gets thermal/GPU device by node [2][3] and CPU device by get_cpu_device().
+>>>>>> After retrieving subsys device, SVS driver calls device_link_add() to make sure probe/suspend callback priority.
+>>>>>>
+>>>>>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?h=opp/linux-next&id=25cb20a212a1f989385dfe23230817e69c62bee5
+>>>>>> [2] https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?h=opp/linux-next&id=b325ce39785b1408040d90365a6ab1aa36e94f87
+>>>>>> [3] https://git.kernel.org/pub/scm/linux/kernel/git/matthias.bgg/linux.git/commit/?h=v5.16-next/dts64&id=a8168cebf1bca1b5269e8a7eb2626fb76814d6e2
+>>>>>>
+>>>>>> Change since v24:
+>>>>>> - Rebase to Linux 5.18-rc6
+>>>>>> - Show specific fail log in svs_platform_probe() to help catch which step fails quickly
+>>>>>> - Remove struct svs_bank member "pd_dev" because all subsys device's power domain has been merged into one node like above [3]
+>>>>>>
+>>>>>> Test in below environment:
+>>>>>> SW: Integration Tree [4] + Thermal patch [5] + SVS v25 (this patchset)
+>>>>>> HW: mt8183-Krane
+>>>>>>
+>>>>>> [4] https://protect2.fireeye.com/v1/url?k=847bae75-e5f0bb43-847a253a-000babff9b5d-0b6f42041b9dea1d&q=1&e=37a26c43-8564-4808-9701-dc76d1ebbb27&u=https%3A%2F%2Fgithub.com%2Fwens%2Flinux%2Fcommits%2Fmt8183-cpufreq-cci-svs-test
+>>>>>
+>>>>> I've updated my branch to include all the latest versions of the relevant
+>>>>> patch series:
+>>>>>
+>>>>> - anx7625 DPI bus type series v2 (so the display works)
+>>>>> - MT8183 thermal series v9 (this seems to have been overlooked by the
+>>>>> maintainer)
+>>>>> - MTK SVS driver series v25
+>>>>> - devfreq: cpu based scaling support to passive governor series v5
+>>>>> - MTK CCI devfreq series v4
+>>>>> - MT8183 cpufreq series v7
+>>>>> - Additional WIP patches for panfrost MTK devfreq
+>>>>
+>>>> Thanks for preparing an integration branch Chen-Yu.
+>>>>
+>>>> I'm testing this on mt8183-pumpkin with one patch to add the CCI
+>>>> regulator[1], and the defconfig you posted in a previous rev of this
+>>>> series, but the CCI driver still causes a fault on boot[2] on my
+>>>> platform.
+>>>>
+>>>> I mentioned in earlier reviews that I think there's potentially a race
+>>>> between CCI and SVS loading since they are co-dependent.  My hunch is
+>>>> that this is still not being handled properly.
+>>>
+>>> Ah, actually it's crashing when I try to boot the platform with
+>>> `maxcpus=4` on the cmdline (which I have to do because mt8183-pumpkin is
+>>> unstable upstream with the 2nd cluster enabled.)
+
+This warning message is printed by 'WARN_ON(cpufreq_passive_unregister_notifier(devfreq))'
+on devfreq passive governor. 
+
+If the cpufreq drivers are not probed before of probing cci devfreq driver
+with passive governor, passive governor shows this warning message.
+Because passive governor with CPUFREQ_PARENT_DEV depends on the cpufreq driver
+in order to get 'struct cpufreq_policy'[2].
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/tree/drivers/devfreq/governor_passive.c?h=devfreq-testing#n339
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/tree/drivers/devfreq/governor_passive.c?h=devfreq-testing#n282
+
+But, as I knew, this message might not stop the kernel. Just show the warning
+message and then return -EPROBE_DEFER error. It means that maybe try to
+probe the cci devfreq driver on late time of kernel booting
+and then will be working. But, I need the full kernel booting log
+and the booting sequence of between cpufreq and cci devfreq driver.
+
+In order to fix your issue, could you share the full booting log?
+And if possible, please explain the more detailed something about this.
+
+>>>
+>>> The CCI driver should be a bit more robust about detecting
+>>> available/online CPUs
+>>
+>> This all seems to be handled in the devfreq passive governor.
+> 
+> Well, that's the initial crash.  But the SVS driver will also go through
+> its svs_mt8183_banks[] array (including both big & little clusters) and
+> try to init SVS, so presumably that will have some problems also if only
+> one cluster is enabled.
+> 
+>> And presumably we'd like to have CCI devfreq running even if just one
+>> core was booted.
+> 
+> Yes, I assume so also.
+> 
+>> Added Chanwoo for more ideas.
+> 
+> OK, thanks.
+> 
+> Kevin
+
+
+-- 
+Best Regards,
+Chanwoo Choi
+Samsung Electronics
