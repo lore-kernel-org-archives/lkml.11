@@ -2,169 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C43DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349846AbiETNYu (ORCPT
+        id S1344996AbiETNZk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 09:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
+        Fri, 20 May 2022 09:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349809AbiETNYf (ORCPT
+        with ESMTP id S233476AbiETNZi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 09:24:35 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75A216A259
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:24:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653053067; x=1684589067;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SMnp/mUn9icKbmgubdGL7zBlHw8RhPKRnVLhR4Xj7z0=;
-  b=heKWjdnw8xkNC4ErvX6YCMbVBTo7CRwpTkkJyJJrORcw9j6cHGS5ynAt
-   j18ZagxwE31cxW6P7771rWhF5Kpy3/ZmcO989VaVqxHT9ndg0b/t+2ESy
-   xB2F8P34JINDdLB4wFkxiYySZOTyXg6gCK4r+iXZKiM2zpdSjXmBWElbg
-   niDh1BQ61s8CQnt/z5vb6fdwcsfQtIOeid9Im8UmivfGrZ26zkck0HmpG
-   YxVEWmrZSWEWirrOJjtYmYgcxQTByxu0/QQI7r8lSEg9BRHY09nqZZW3Z
-   z9IFyih9oh5EaFdsXH91ylYI42/gXXDWxbi2Fgvp6RJWvAyT+5NSW0qPq
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="335661033"
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="335661033"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 06:24:27 -0700
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="715530824"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO ahunter-VirtualBox.home\044ger.corp.intel.com) ([10.252.38.124])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 06:24:25 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] perf inject: Keep a copy of kcore_dir
-Date:   Fri, 20 May 2022 16:24:04 +0300
-Message-Id: <20220520132404.25853-6-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220520132404.25853-1-adrian.hunter@intel.com>
-References: <20220520132404.25853-1-adrian.hunter@intel.com>
+        Fri, 20 May 2022 09:25:38 -0400
+Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C76149D87;
+        Fri, 20 May 2022 06:25:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1653053136; x=1684589136;
+  h=message-id:date:mime-version:reply-to:subject:to:cc:
+   references:from:in-reply-to:content-transfer-encoding;
+  bh=ueeMunmKCP4jhgg4Syz+6Dr4CSdM4dVyt+HIIQmajf0=;
+  b=S8qVyzZb/73BfxTMjRyBc7CpPnxZnTses1oQ+3OQL5RYzmwxCxDQSpmt
+   pA4CgnwUeN1y5R934KPSSgZ6d87lQum3VEG/EzjoSGw2qkFF9GJIQQDtb
+   bdH9wsS9a1r+aX62IqHplhdUqt2+2HD0LeRPoIBAxuEyRLqStxOWK6oWE
+   Q=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="179009252"
+X-IronPort-AV: E=Sophos;i="5.91,239,1647298800"; 
+   d="scan'208";a="179009252"
+Received: from unknown (HELO mucxv001.muc.infineon.com) ([172.23.11.16])
+  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 15:25:34 +0200
+Received: from MUCSE805.infineon.com (MUCSE805.infineon.com [172.23.29.31])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv001.muc.infineon.com (Postfix) with ESMTPS;
+        Fri, 20 May 2022 15:25:34 +0200 (CEST)
+Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE805.infineon.com
+ (172.23.29.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 20 May
+ 2022 15:25:34 +0200
+Received: from [10.165.68.46] (10.165.68.46) by MUCSE818.infineon.com
+ (172.23.29.44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 20 May
+ 2022 15:25:33 +0200
+Message-ID: <51a14f28-ce94-ade9-6512-a265f7b32dfb@infineon.com>
+Date:   Fri, 20 May 2022 15:28:42 +0200
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Reply-To: <stefan.mahnke-hartmann@infineon.com>
+Subject: Re: [PATCH] tpm: increase timeout for kselftests
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Johannes Holland <johannes.holland@infineon.com>
+CC:     <linux-integrity@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
+        <stefan.mahnke-hartmann@infineon.com>
+References: <20220510111607.22984-1-johannes.holland@infineon.com>
+ <YnvSwJxOg+IZxrxz@kernel.org>
+From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+Organization: Infineon Technologies AG
+In-Reply-To: <YnvSwJxOg+IZxrxz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.165.68.46]
+X-ClientProxiedBy: MUCSE820.infineon.com (172.23.29.46) To
+ MUCSE818.infineon.com (172.23.29.44)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the input perf.data has a kcore_dir, copy it into the output, since
-at least the kallsyms in the kcore_dir will be useful to the output.
 
-Example:
 
- Before:
+On 11.05.22 17:14, Jarkko Sakkinen wrote:
+> On Tue, May 10, 2022 at 01:16:08PM +0200, Johannes Holland wrote:
+>> Due to CreatePrimary commands which need to create RSA keys of
+>> increasing size, the timeout value need to be raised, as well.
+>> Default is 300s.
+>>
+>> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+>> ---
+>> A timeout of anything below 600s still lead to occasional timeouts for
+>> me. Therefore, I propose 600s as a new value. 
+>>
+>>  tools/testing/selftests/tpm2/settings | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>  create mode 100644 tools/testing/selftests/tpm2/settings
+>>
+>> diff --git a/tools/testing/selftests/tpm2/settings b/tools/testing/selftests/tpm2/settings
+>> new file mode 100644
+>> index 000000000000..919bc3803f03
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/tpm2/settings
+>> @@ -0,0 +1,2 @@
+>> +timeout=600
+>> +
+>> -- 
+>> 2.34.1
+>>
+> Could cope but I did not get why it needs to be raised.
 
-  $ ls -lR perf.data-from-desktop
-  perf.data-from-desktop:
-  total 916
-  -rw------- 1 user user 931756 May 19 09:55 data
-  drwx------ 2 user user   4096 May 19 09:55 kcore_dir
+The TPM2 SpaceTest testsuite currently creates 8 primary RSA 2k keys + 1 for
+setup. Generating a RSA2k key can take up to ~1-2 minutes on some of our TPMs.
+=> 2x9 = 18 minutes. In the kernel we even define a duration timeout for rsa2k
+keygen of 5 min per key! (TPM2_DURATION_LONG_LONG = 300000) => up to 45 minutes
+would be "acceptable".
 
-  perf.data-from-desktop/kcore_dir:
-  total 42952
-  -r-------- 1 user user  7582467 May 19 09:55 kallsyms
-  -r-------- 1 user user 36388864 May 19 09:55 kcore
-  -r-------- 1 user user     4828 May 19 09:55 modules
+However since the average key generation time is much faster, a value of ~10
+minutes should be fine enough.
 
-  $ perf inject -i perf.data-from-desktop -o injected-perf.data
+The reason why you did not experience this yet on your test system is either
+because PTT TPMs are faster in that respect and/or some TPMs implement pre-gen
+mechanisms for key generation, (or just plain luck)
 
-  $ ls -lR injected-perf.data
-  -rw------- 1 user user 931320 May 20 15:08 injected-perf.data
+BR, Stefan
 
- After:
-
-  $ perf inject -i perf.data-from-desktop -o injected-perf.data
-
-  $ ls -lR injected-perf.data
-  injected-perf.data:
-  total 916
-  -rw------- 1 user user 931320 May 20 15:21 data
-  drwx------ 2 user user   4096 May 20 15:21 kcore_dir
-
-  injected-perf.data/kcore_dir:
-  total 42952
-  -r-------- 1 user user  7582467 May 20 15:21 kallsyms
-  -r-------- 1 user user 36388864 May 20 15:21 kcore
-  -r-------- 1 user user     4828 May 20 15:21 modules
-
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/builtin-inject.c | 33 ++++++++++++++++++++++++++++++---
- 1 file changed, 30 insertions(+), 3 deletions(-)
-
-diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
-index 71b6eafe4c19..a75bf11585b5 100644
---- a/tools/perf/builtin-inject.c
-+++ b/tools/perf/builtin-inject.c
-@@ -50,6 +50,7 @@ struct perf_inject {
- 	bool			in_place_update;
- 	bool			in_place_update_dry_run;
- 	bool			is_pipe;
-+	bool			copy_kcore_dir;
- 	const char		*input_name;
- 	struct perf_data	output;
- 	u64			bytes_written;
-@@ -880,6 +881,19 @@ static int feat_copy_cb(struct feat_copier *fc, int feat, struct feat_writer *fw
- 	return 1; /* Feature section copied */
- }
- 
-+static int copy_kcore_dir(struct perf_inject *inject)
-+{
-+	char *cmd;
-+	int ret;
-+
-+	ret = asprintf(&cmd, "cp -r -n %s/kcore_dir* %s >/dev/null 2>&1",
-+		       inject->input_name, inject->output.path);
-+	if (ret < 0)
-+		return ret;
-+	pr_debug("%s\n", cmd);
-+	return system(cmd);
-+}
-+
- static int output_fd(struct perf_inject *inject)
- {
- 	return inject->in_place_update ? -1 : perf_data__fd(&inject->output);
-@@ -995,6 +1009,12 @@ static int __cmd_inject(struct perf_inject *inject)
- 		session->header.data_offset = output_data_offset;
- 		session->header.data_size = inject->bytes_written;
- 		perf_session__inject_header(session, session->evlist, fd, &inj_fc.fc);
-+
-+		if (inject->copy_kcore_dir) {
-+			ret = copy_kcore_dir(inject);
-+			if (ret)
-+				return ret;
-+		}
- 	}
- 
- 	return ret;
-@@ -1131,9 +1151,16 @@ int cmd_inject(int argc, const char **argv)
- 		}
- 		if (!inject.in_place_update_dry_run)
- 			data.in_place_update = true;
--	} else if (perf_data__open(&inject.output)) {
--		perror("failed to create output file");
--		return -1;
-+	} else {
-+		if (strcmp(inject.output.path, "-") && !inject.strip &&
-+		    has_kcore_dir(inject.input_name)) {
-+			inject.output.is_dir = true;
-+			inject.copy_kcore_dir = true;
-+		}
-+		if (perf_data__open(&inject.output)) {
-+			perror("failed to create output file");
-+			return -1;
-+		}
- 	}
- 
- 	data.path = inject.input_name;
--- 
-2.25.1
+> BR, Jarkko
 
