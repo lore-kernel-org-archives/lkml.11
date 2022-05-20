@@ -2,372 +2,503 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A323FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344100AbiETAnD (ORCPT
+        id S1344076AbiETApK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 20:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
+        Thu, 19 May 2022 20:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243558AbiETAm4 (ORCPT
+        with ESMTP id S239876AbiETApG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 20:42:56 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25CF3EF07;
-        Thu, 19 May 2022 17:42:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653007374; x=1684543374;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BajxnFhDjeYK6OJdvg1bDjwAI7zO7CVIHlt3kCTR+TE=;
-  b=PPEG40atiujKCRKozYbQOqOhrSj+1HMfjebFc32DeN4cRM+CR2nwQLkE
-   HgbMSrbhOWVPB0+cCzroSqNLALPY5Y6ZzgcWLbEQ+6VFqF22bkdknaOqT
-   eHmkXZG0iaMSp9SrlUJuBokTa2Xt9a8OIyoaLHkmde/3LRViXe0r9KWmk
-   V5xC9RSt9viJFdMtEAYfJE1IJ1qC6rQU6NXcvnnVKXKfXbdQdtO9Low1p
-   GFtpf/1Vwior8vLdR0g49mTA9pRcC7pPpVXLlDz4RCEo5bFFzHoMFSCUV
-   88V58VTws7YYqp+AEaHBN69CQy0elpnlibAUQu+atuFUzh7LiLddd+2AX
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="358840108"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="358840108"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 17:42:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="598905012"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 19 May 2022 17:42:50 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrqjB-00045d-VE;
-        Fri, 20 May 2022 00:42:49 +0000
-Date:   Fri, 20 May 2022 08:41:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Uri Arev <me@wantyapps.xyz>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Uri Arev <me@wantyapps.xyz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Len Baker <len.baker@gmx.com>, Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Srivathsa Dara <srivathsa729.8@gmail.com>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: fbtft: fix checkpatch.pl struct should normally
- be const
-Message-ID: <202205200821.nJQ0IfFt-lkp@intel.com>
-References: <20220519172503.10821-1-me@wantyapps.xyz>
+        Thu, 19 May 2022 20:45:06 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE451312B5
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:45:04 -0700 (PDT)
+Received: from epcas1p4.samsung.com (unknown [182.195.41.48])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220520004500epoutp03bd1b78d947343249955c2bf48fa1e1dc~wqZAxi5v41540415404epoutp03f
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:45:00 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220520004500epoutp03bd1b78d947343249955c2bf48fa1e1dc~wqZAxi5v41540415404epoutp03f
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1653007500;
+        bh=H+x9whNKKDyPMWBsb72tWC82bJcv/wbdUdOuWAik8ps=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=UPU8VKDU/ariXBwXSXSBljdSF35AHEXybmPgHUnKOqFPwgyYl7edL5i+8/Ti3ji1G
+         Cc6IwsBNEThUAXL2Go5UlkkOOSzktaN2+30XYOK+VGhRkUhu+wYSRFjaFfq1uMwsVg
+         TfntTt3ay9KFOCfxV6XhSg+RTPCtzROrcl9HcmWs=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas1p3.samsung.com (KnoxPortal) with ESMTP id
+        20220520004459epcas1p3e45169ab386611018776b054d6588cd5~wqZAHBRvB2114221142epcas1p31;
+        Fri, 20 May 2022 00:44:59 +0000 (GMT)
+Received: from epsmges1p1.samsung.com (unknown [182.195.36.133]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4L47Kk1lsTz4x9Q7; Fri, 20 May
+        2022 00:44:58 +0000 (GMT)
+Received: from epcas1p2.samsung.com ( [182.195.41.46]) by
+        epsmges1p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A8.1C.10063.A84E6826; Fri, 20 May 2022 09:44:58 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220520004457epcas1p19606a414121e8b7ed880d83d2f41caa2~wqY_gUed-1036810368epcas1p1m;
+        Fri, 20 May 2022 00:44:57 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220520004457epsmtrp1f19fa1669821a8b466dc4031ef8155b2~wqY_fR48G1295112951epsmtrp1R;
+        Fri, 20 May 2022 00:44:57 +0000 (GMT)
+X-AuditID: b6c32a35-1f1ff7000000274f-52-6286e48ad3f1
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        EA.89.11276.984E6826; Fri, 20 May 2022 09:44:57 +0900 (KST)
+Received: from [10.113.221.102] (unknown [10.113.221.102]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220520004457epsmtip271f1ec1de18c4fec2308090729f2a955~wqY_MAwOl3262732627epsmtip2Y;
+        Fri, 20 May 2022 00:44:57 +0000 (GMT)
+Subject: Re: [PATCH v2 1/2] devfreq: qcom: Add L2 Krait Cache devfreq
+ scaling driver
+To:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+From:   Chanwoo Choi <cw00.choi@samsung.com>
+Organization: Samsung Electronics
+Message-ID: <53bcf684-54e7-13e2-2b41-26b6791f7469@samsung.com>
+Date:   Fri, 20 May 2022 10:11:16 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101
+        Thunderbird/59.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519172503.10821-1-me@wantyapps.xyz>
+In-Reply-To: <20200929162926.139-1-ansuelsmth@gmail.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrBJsWRmVeSWpSXmKPExsWy7bCmnm7Xk7Ykg/1rOS3OPf7NYjH15DcW
+        i9P737FYzD9yjtXibNMbdouJ+8+yW1zeNYfN4nPvEUaL240r2Cxa9x5hd+Dy2DnrLrvHplWd
+        bB53ru1h8+jbsorR4/MmuQDWqGybjNTElNQihdS85PyUzLx0WyXv4HjneFMzA0NdQ0sLcyWF
+        vMTcVFslF58AXbfMHKCrlBTKEnNKgUIBicXFSvp2NkX5pSWpChn5xSW2SqkFKTkFpgV6xYm5
+        xaV56Xp5qSVWhgYGRqZAhQnZGa0HLQt2RVW8PtzD1MA4xaOLkZNDQsBE4knzfeYuRi4OIYEd
+        jBJflj5mh3A+MUr8uHOBFcL5xigxdeJ8FpiW/31rGSESexklrr2exwbhvGeUWLZwNytIlbBA
+        mMTvN2fAbBEBT4mWpr1MIDazwHwmiea5ISA2m4CWxP4XN9hAbH4BRYmrPx4zgti8AnYSFy8/
+        AYuzCKhKdD19wQ5iiwLNPLmtBapGUOLkzCdgF3EKWEj8mbKDBWK+uMStJ/OhdslLbH87B+w5
+        CYG1HBLT709jhXjBRWLOqU5GCFtY4tXxLewQtpTEy/42doiGZkaJhhe3GSGcHkaJo8/6oAFg
+        LLF/6WSgFRxAKzQl1u/ShwgrSuz8PZcRYjOfxLuvPawgJRICvBIdbUIQJcoSlx/cZYKwJSUW
+        t3eyTWBUmoXkn1lIfpiF5IdZCMsWMLKsYhRLLSjOTU8tNiwwhEd3cn7uJkZwktUy3cE48e0H
+        vUOMTByMhxglOJiVRHgZc1uShHhTEiurUovy44tKc1KLDzGaAkN4IrOUaHI+MM3nlcQbmlga
+        mJgZGZtYGJoZKonzrpp2OlFIID2xJDU7NbUgtQimj4mDU6qBKbrDh6ml7eaCPRnNX3NY92sX
+        z9hbva/ecHXiyQkVcduu+DeF+Ha/PDa1nus1f9OJg1MkXvPdFFlkMWOH9uQzQfbBKqpp8VfU
+        zJmyqn9ptWx7cN9qvUde06IlNneaG/bb+ekG5G76c/bsfNMDjRcNPv6d33Hx99M/16emVH0K
+        U1z+vYvPvsKQZ87WgvVPf0x7FLNoo3qRkWLx9VKzM9/KpwsvtF4n8CNGpPgzo7zD3skfjt2W
+        bLtUpPrqx9/+G483adZdOb9F2SDaRMRyvX3L7b5Lht2ZZxY8CXnmOqGF9ca0jnUdN22WrvNI
+        NeDddVVqr8e93P85L+UX251Y+d9iq9Cbb5evHtutOi9AtfPFq2tKLMUZiYZazEXFiQDMzqkp
+        OwQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprIIsWRmVeSWpSXmKPExsWy7bCSvG7nk7Ykg7vtMhbnHv9msZh68huL
+        xen971gs5h85x2pxtukNu8XE/WfZLS7vmsNm8bn3CKPF7cYVbBate4+wO3B57Jx1l91j06pO
+        No871/awefRtWcXo8XmTXABrFJdNSmpOZllqkb5dAldG60HLgl1RFa8P9zA1ME7x6GLk5JAQ
+        MJH437eWEcQWEtjNKHHrTBVEXFJi2sWjzF2MHEC2sMThw8VdjFxAJW8ZJU48WcMKUiMsECbx
+        +uFHMFtEwFOipWkvE0gRs8BCJolX6++yQXR0M0qser2ZHaSKTUBLYv+LG2wgNr+AosTVH4/B
+        NvMK2ElcvPwELM4ioCrR9fQFWL0o0IadSx4zQdQISpyc+YQFxOYUsJD4M2UHmM0soC7xZ94l
+        ZghbXOLWk/lMELa8xPa3c5gnMArPQtI+C0nLLCQts5C0LGBkWcUomVpQnJueW2xYYJiXWq5X
+        nJhbXJqXrpecn7uJERxrWpo7GLev+qB3iJGJg/EQowQHs5IIL2NuS5IQb0piZVVqUX58UWlO
+        avEhRmkOFiVx3gtdJ+OFBNITS1KzU1MLUotgskwcnFINTBOjXY/fOKTlt8XlrMqk3fq1N3Mt
+        9UO/8gd83KpZe+/Wg2CDHGe/oKzos+/Cni+PCpvap8zeUZnGLL/ycpa3sYVyW/GngLwNjgEt
+        DHLKN73ajJyUTPtMfKTXBtYpZE//vi/hyl89zRmLndKiatPf5WZM8jMK3iO0fO6/DxorSt5c
+        POvLMGf6smU5vr/lNz3lOq556R3Xj8b3MSLbTCNEVmgUGfYnMv/aPN++kHFho8Y67bMHDc/l
+        XXx2jOPm1EdzHPu0rmxfx88jErn42psOhh8bFznEVf7qlN/bs930Qu769lYrziMhf2yeK0TX
+        cnILi69Y2Zhdc9wkbcMCt+xHBT4cf7bfEC6JuVESv/CMEktxRqKhFnNRcSIAfJklySQDAAA=
+X-CMS-MailID: 20220520004457epcas1p19606a414121e8b7ed880d83d2f41caa2
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20200929162941epcas1p4a6f524f2406785934918c2a9f556ae4b
+References: <CGME20200929162941epcas1p4a6f524f2406785934918c2a9f556ae4b@epcas1p4.samsung.com>
+        <20200929162926.139-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Uri,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on staging/staging-testing]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Uri-Arev/staging-fbtft-fix-checkpatch-pl-struct-should-normally-be-const/20220520-012948
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git 4d0cc9e0e53e9946d7b8dc58279c62dfa7a2191b
-config: arm64-randconfig-r011-20220519 (https://download.01.org/0day-ci/archive/20220520/202205200821.nJQ0IfFt-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e00cbbec06c08dc616a0d52a20f678b8fbd4e304)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/d26e139bfc29011b0a147df71f0b91485189c66e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Uri-Arev/staging-fbtft-fix-checkpatch-pl-struct-should-normally-be-const/20220520-012948
-        git checkout d26e139bfc29011b0a147df71f0b91485189c66e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/staging/fbtft/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
-   drivers/staging/fbtft/fbtft-core.c:332:6: warning: variable 'count' set but not used [-Wunused-but-set-variable]
-           int count = 0;
-               ^
->> drivers/staging/fbtft/fbtft-core.c:617:8: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
-           const fbops = devm_kzalloc(dev, sizeof(struct fb_ops), GFP_KERNEL);
-           ~~~~~ ^
-           int
->> drivers/staging/fbtft/fbtft-core.c:617:8: error: redefinition of 'fbops' with a different type: 'const int' vs 'const struct fb_ops *'
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: previous definition is here
-           const struct fb_ops *fbops = NULL;
-                                ^
->> drivers/staging/fbtft/fbtft-core.c:647:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->owner        =      dev->driver->owner;
-           ~~~~~~~~~~~~        ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   drivers/staging/fbtft/fbtft-core.c:648:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->fb_read      =      fb_sys_read;
-           ~~~~~~~~~~~~~~      ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   drivers/staging/fbtft/fbtft-core.c:649:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->fb_write     =      fbtft_fb_write;
-           ~~~~~~~~~~~~~~~     ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   drivers/staging/fbtft/fbtft-core.c:650:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->fb_fillrect  =      fbtft_fb_fillrect;
-           ~~~~~~~~~~~~~~~~~~  ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   drivers/staging/fbtft/fbtft-core.c:651:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->fb_copyarea  =      fbtft_fb_copyarea;
-           ~~~~~~~~~~~~~~~~~~  ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   drivers/staging/fbtft/fbtft-core.c:652:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->fb_imageblit =      fbtft_fb_imageblit;
-           ~~~~~~~~~~~~~~~~~~~ ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   drivers/staging/fbtft/fbtft-core.c:653:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->fb_setcolreg =      fbtft_fb_setcolreg;
-           ~~~~~~~~~~~~~~~~~~~ ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
-   drivers/staging/fbtft/fbtft-core.c:654:22: error: cannot assign to variable 'fbops' with const-qualified type 'const struct fb_ops *'
-           fbops->fb_blank     =      fbtft_fb_blank;
-           ~~~~~~~~~~~~~~~     ^
-   drivers/staging/fbtft/fbtft-core.c:542:23: note: variable 'fbops' declared const here
-           const struct fb_ops *fbops = NULL;
-           ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
->> drivers/staging/fbtft/fbtft-core.c:617:8: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
-           const fbops = devm_kzalloc(dev, sizeof(struct fb_ops), GFP_KERNEL);
-                 ^
-   2 warnings and 10 errors generated.
+Hi Ansuel,
 
 
-vim +/int +617 drivers/staging/fbtft/fbtft-core.c
+The 5.19-rc1 will support the cpu based scaling support[2]
+as your needed. So that if you use passive governor with CPUFREQ_PARENT_DEV,
+you can scale the cache frequency according to cpu frequency change.
 
-   516	
-   517	/**
-   518	 * fbtft_framebuffer_alloc - creates a new frame buffer info structure
-   519	 *
-   520	 * @display: pointer to structure describing the display
-   521	 * @dev: pointer to the device for this fb, this can be NULL
-   522	 * @pdata: platform data for the display in use
-   523	 *
-   524	 * Creates a new frame buffer info structure.
-   525	 *
-   526	 * Also creates and populates the following structures:
-   527	 *   info->fbops
-   528	 *   info->fbdefio
-   529	 *   info->pseudo_palette
-   530	 *   par->fbtftops
-   531	 *   par->txbuf
-   532	 *
-   533	 * Returns the new structure, or NULL if an error occurred.
-   534	 *
-   535	 */
-   536	struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
-   537						struct device *dev,
-   538						struct fbtft_platform_data *pdata)
-   539	{
-   540		struct fb_info *info;
-   541		struct fbtft_par *par;
-   542		const struct fb_ops *fbops = NULL;
-   543		struct fb_deferred_io *fbdefio = NULL;
-   544		u8 *vmem = NULL;
-   545		void *txbuf = NULL;
-   546		void *buf = NULL;
-   547		unsigned int width;
-   548		unsigned int height;
-   549		int txbuflen = display->txbuflen;
-   550		unsigned int bpp = display->bpp;
-   551		unsigned int fps = display->fps;
-   552		int vmem_size;
-   553		const s16 *init_sequence = display->init_sequence;
-   554		char *gamma = display->gamma;
-   555		u32 *gamma_curves = NULL;
-   556	
-   557		/* sanity check */
-   558		if (display->gamma_num * display->gamma_len >
-   559				FBTFT_GAMMA_MAX_VALUES_TOTAL) {
-   560			dev_err(dev, "FBTFT_GAMMA_MAX_VALUES_TOTAL=%d is exceeded\n",
-   561				FBTFT_GAMMA_MAX_VALUES_TOTAL);
-   562			return NULL;
-   563		}
-   564	
-   565		/* defaults */
-   566		if (!fps)
-   567			fps = 20;
-   568		if (!bpp)
-   569			bpp = 16;
-   570	
-   571		if (!pdata) {
-   572			dev_err(dev, "platform data is missing\n");
-   573			return NULL;
-   574		}
-   575	
-   576		/* override driver values? */
-   577		if (pdata->fps)
-   578			fps = pdata->fps;
-   579		if (pdata->txbuflen)
-   580			txbuflen = pdata->txbuflen;
-   581		if (pdata->display.init_sequence)
-   582			init_sequence = pdata->display.init_sequence;
-   583		if (pdata->gamma)
-   584			gamma = pdata->gamma;
-   585		if (pdata->display.debug)
-   586			display->debug = pdata->display.debug;
-   587		if (pdata->display.backlight)
-   588			display->backlight = pdata->display.backlight;
-   589		if (pdata->display.width)
-   590			display->width = pdata->display.width;
-   591		if (pdata->display.height)
-   592			display->height = pdata->display.height;
-   593		if (pdata->display.buswidth)
-   594			display->buswidth = pdata->display.buswidth;
-   595		if (pdata->display.regwidth)
-   596			display->regwidth = pdata->display.regwidth;
-   597	
-   598		display->debug |= debug;
-   599		fbtft_expand_debug_value(&display->debug);
-   600	
-   601		switch (pdata->rotate) {
-   602		case 90:
-   603		case 270:
-   604			width =  display->height;
-   605			height = display->width;
-   606			break;
-   607		default:
-   608			width =  display->width;
-   609			height = display->height;
-   610		}
-   611	
-   612		vmem_size = display->width * display->height * bpp / 8;
-   613		vmem = vzalloc(vmem_size);
-   614		if (!vmem)
-   615			goto alloc_fail;
-   616	
- > 617		const fbops = devm_kzalloc(dev, sizeof(struct fb_ops), GFP_KERNEL);
-   618		if (!fbops)
-   619			goto alloc_fail;
-   620	
-   621		fbdefio = devm_kzalloc(dev, sizeof(struct fb_deferred_io), GFP_KERNEL);
-   622		if (!fbdefio)
-   623			goto alloc_fail;
-   624	
-   625		buf = devm_kzalloc(dev, 128, GFP_KERNEL);
-   626		if (!buf)
-   627			goto alloc_fail;
-   628	
-   629		if (display->gamma_num && display->gamma_len) {
-   630			gamma_curves = devm_kcalloc(dev,
-   631						    display->gamma_num *
-   632						    display->gamma_len,
-   633						    sizeof(gamma_curves[0]),
-   634						    GFP_KERNEL);
-   635			if (!gamma_curves)
-   636				goto alloc_fail;
-   637		}
-   638	
-   639		info = framebuffer_alloc(sizeof(struct fbtft_par), dev);
-   640		if (!info)
-   641			goto alloc_fail;
-   642	
-   643		info->screen_buffer = vmem;
-   644		info->fbops = fbops;
-   645		info->fbdefio = fbdefio;
-   646	
- > 647		fbops->owner        =      dev->driver->owner;
-   648		fbops->fb_read      =      fb_sys_read;
-   649		fbops->fb_write     =      fbtft_fb_write;
-   650		fbops->fb_fillrect  =      fbtft_fb_fillrect;
-   651		fbops->fb_copyarea  =      fbtft_fb_copyarea;
-   652		fbops->fb_imageblit =      fbtft_fb_imageblit;
-   653		fbops->fb_setcolreg =      fbtft_fb_setcolreg;
-   654		fbops->fb_blank     =      fbtft_fb_blank;
-   655	
-   656		fbdefio->delay =           HZ / fps;
-   657		fbdefio->sort_pagelist =   true;
-   658		fbdefio->deferred_io =     fbtft_deferred_io;
-   659		fb_deferred_io_init(info);
-   660	
-   661		snprintf(info->fix.id, sizeof(info->fix.id), "%s", dev->driver->name);
-   662		info->fix.type =           FB_TYPE_PACKED_PIXELS;
-   663		info->fix.visual =         FB_VISUAL_TRUECOLOR;
-   664		info->fix.xpanstep =	   0;
-   665		info->fix.ypanstep =	   0;
-   666		info->fix.ywrapstep =	   0;
-   667		info->fix.line_length =    width * bpp / 8;
-   668		info->fix.accel =          FB_ACCEL_NONE;
-   669		info->fix.smem_len =       vmem_size;
-   670	
-   671		info->var.rotate =         pdata->rotate;
-   672		info->var.xres =           width;
-   673		info->var.yres =           height;
-   674		info->var.xres_virtual =   info->var.xres;
-   675		info->var.yres_virtual =   info->var.yres;
-   676		info->var.bits_per_pixel = bpp;
-   677		info->var.nonstd =         1;
-   678	
-   679		/* RGB565 */
-   680		info->var.red.offset =     11;
-   681		info->var.red.length =     5;
-   682		info->var.green.offset =   5;
-   683		info->var.green.length =   6;
-   684		info->var.blue.offset =    0;
-   685		info->var.blue.length =    5;
-   686		info->var.transp.offset =  0;
-   687		info->var.transp.length =  0;
-   688	
-   689		info->flags =              FBINFO_FLAG_DEFAULT | FBINFO_VIRTFB;
-   690	
-   691		par = info->par;
-   692		par->info = info;
-   693		par->pdata = pdata;
-   694		par->debug = display->debug;
-   695		par->buf = buf;
-   696		spin_lock_init(&par->dirty_lock);
-   697		par->bgr = pdata->bgr;
-   698		par->startbyte = pdata->startbyte;
-   699		par->init_sequence = init_sequence;
-   700		par->gamma.curves = gamma_curves;
-   701		par->gamma.num_curves = display->gamma_num;
-   702		par->gamma.num_values = display->gamma_len;
-   703		mutex_init(&par->gamma.lock);
-   704		info->pseudo_palette = par->pseudo_palette;
-   705	
-   706		if (par->gamma.curves && gamma) {
-   707			if (fbtft_gamma_parse_str(par, par->gamma.curves, gamma,
-   708						  strlen(gamma)))
-   709				goto release_framebuf;
-   710		}
-   711	
-   712		/* Transmit buffer */
-   713		if (txbuflen == -1)
-   714			txbuflen = vmem_size + 2; /* add in case startbyte is used */
-   715		if (txbuflen >= vmem_size + 2)
-   716			txbuflen = 0;
-   717	
+[1] https://patchwork.kernel.org/project/linux-pm/patch/3acd6c32-6e78-dfc2-3e45-84f69a7d5f36@samsung.com/
+[2] PM / devfreq: Add cpu based scaling support to passive governor
+
+
+Best Regards,
+Chanwoo Choi
+
+On 9/30/20 1:29 AM, Ansuel Smith wrote:
+> Qcom L2 Krait CPUs use the generic cpufreq-dt driver and doesn't actually
+> scale the Cache frequency when the CPU frequency is changed. This
+> devfreq driver register with the cpu notifier and scale the Cache
+> based on the max Freq across all core as the CPU cache is shared across
+> all of them. If provided this also scale the voltage of the regulator
+> attached to the CPU cache. The scaling logic is based on the CPU freq
+> and the 3 scaling interval are set by the device dts.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+> v2:
+> * Change cpu-freq to qcom,cpu-freq
+> * Skip freq change if prev is the same target freq
+> 
+>  drivers/devfreq/Kconfig               |  10 +
+>  drivers/devfreq/Makefile              |   1 +
+>  drivers/devfreq/krait-cache-devfreq.c | 301 ++++++++++++++++++++++++++
+>  3 files changed, 312 insertions(+)
+>  create mode 100644 drivers/devfreq/krait-cache-devfreq.c
+> 
+> diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
+> index 37dc40d1fcfb..99051aaf9c5e 100644
+> --- a/drivers/devfreq/Kconfig
+> +++ b/drivers/devfreq/Kconfig
+> @@ -143,6 +143,16 @@ config ARM_RK3399_DMC_DEVFREQ
+>  	  It sets the frequency for the memory controller and reads the usage counts
+>  	  from hardware.
+>  
+> +config ARM_KRAIT_CACHE_DEVFREQ
+> +	tristate "Scaling support for Krait CPU Cache Devfreq"
+> +	depends on ARCH_QCOM || COMPILE_TEST
+> +	help
+> +	  This adds the DEVFREQ driver for the Krait CPU L2 Cache shared by all cores.
+> +
+> +	  The driver register with the cpufreq notifier and find the right frequency
+> +	  based on the max frequency across all core and the range set in the device
+> +	  dts. If provided this scale also the regulator attached to the l2 cache.
+> +
+>  source "drivers/devfreq/event/Kconfig"
+>  
+>  endif # PM_DEVFREQ
+> diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
+> index 3ca1ad0ecb97..bb87925a6a2d 100644
+> --- a/drivers/devfreq/Makefile
+> +++ b/drivers/devfreq/Makefile
+> @@ -14,6 +14,7 @@ obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
+>  obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
+>  obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
+>  obj-$(CONFIG_ARM_TEGRA20_DEVFREQ)	+= tegra20-devfreq.o
+> +obj-$(CONFIG_ARM_KRAIT_CACHE_DEVFREQ)	+= krait-cache-devfreq.o
+>  
+>  # DEVFREQ Event Drivers
+>  obj-$(CONFIG_PM_DEVFREQ_EVENT)		+= event/
+> diff --git a/drivers/devfreq/krait-cache-devfreq.c b/drivers/devfreq/krait-cache-devfreq.c
+> new file mode 100644
+> index 000000000000..101a13b6927a
+> --- /dev/null
+> +++ b/drivers/devfreq/krait-cache-devfreq.c
+> @@ -0,0 +1,301 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/cpufreq.h>
+> +#include <linux/devfreq.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/clk.h>
+> +#include <linux/slab.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/pm_opp.h>
+> +
+> +#include "governor.h"
+> +
+> +struct krait_data {
+> +	struct device *dev;
+> +	struct devfreq *devfreq;
+> +
+> +	struct clk *l2_clk;
+> +
+> +	unsigned long *freq_table; /* L2 bus clock rate */
+> +	unsigned int *l2_cpufreq; /* L2 target CPU frequency */
+> +
+> +	struct notifier_block nb;
+> +};
+> +
+> +static int krait_cache_set_opp(struct dev_pm_set_opp_data *data)
+> +{
+> +	unsigned long old_freq = data->old_opp.rate, freq = data->new_opp.rate;
+> +	struct dev_pm_opp_supply *supply = &data->new_opp.supplies[0];
+> +	struct regulator *reg = data->regulators[0];
+> +	struct clk *clk = data->clk;
+> +	struct krait_data *kdata;
+> +	unsigned long idle_freq;
+> +	int ret;
+> +
+> +	kdata = (struct krait_data *)dev_get_drvdata(data->dev);
+> +
+> +	idle_freq = kdata->freq_table[0];
+> +
+> +	if (reg) {
+> +		ret = regulator_set_voltage_triplet(reg, supply->u_volt_min,
+> +						    supply->u_volt,
+> +						    supply->u_volt_max);
+> +		if (ret)
+> +			goto exit;
+> +	}
+> +
+> +	/*
+> +	 * Set to idle bin if switching from normal to high bin
+> +	 * or vice versa. It has been notice that a bug is triggered
+> +	 * in cache scaling when more than one bin is scaled, to fix
+> +	 * this we first need to transition to the base rate and then
+> +	 * to target rate
+> +	 */
+> +	if (likely(freq != idle_freq && old_freq != idle_freq)) {
+> +		ret = clk_set_rate(clk, idle_freq);
+> +		if (ret)
+> +			goto exit;
+> +	}
+> +
+> +	ret = clk_set_rate(clk, freq);
+> +	if (ret)
+> +		goto exit;
+> +
+> +exit:
+> +	return ret;
+> +};
+> +
+> +static int krait_cache_target(struct device *dev, unsigned long *freq,
+> +			      u32 flags)
+> +{
+> +	return dev_pm_opp_set_rate(dev, *freq);
+> +};
+> +
+> +static int krait_cache_get_dev_status(struct device *dev,
+> +				      struct devfreq_dev_status *stat)
+> +{
+> +	struct krait_data *data = dev_get_drvdata(dev);
+> +
+> +	stat->busy_time = 0;
+> +	stat->total_time = 0;
+> +	stat->current_frequency = clk_get_rate(data->l2_clk);
+> +
+> +	return 0;
+> +};
+> +
+> +static int krait_cache_get_cur_freq(struct device *dev, unsigned long *freq)
+> +{
+> +	struct krait_data *data = dev_get_drvdata(dev);
+> +
+> +	*freq = clk_get_rate(data->l2_clk);
+> +
+> +	return 0;
+> +};
+> +
+> +static struct devfreq_dev_profile tegra_devfreq_profile = {
+> +	.target = krait_cache_target,
+> +	.get_dev_status = krait_cache_get_dev_status,
+> +	.get_cur_freq = krait_cache_get_cur_freq
+> +};
+> +
+> +static int krait_cache_notifier(struct notifier_block *nb, unsigned long action,
+> +				void *v)
+> +{
+> +	struct cpufreq_freqs *freqs;
+> +	unsigned int cpu, cur_cpu;
+> +	struct krait_data *data;
+> +	struct devfreq *devfreq;
+> +	unsigned long freq;
+> +	int ret = 0;
+> +
+> +	if (action != CPUFREQ_POSTCHANGE)
+> +		return NOTIFY_OK;
+> +
+> +	data = container_of(nb, struct krait_data, nb);
+> +	devfreq = data->devfreq;
+> +
+> +	mutex_lock_nested(&devfreq->lock, SINGLE_DEPTH_NESTING);
+> +
+> +	freqs = (struct cpufreq_freqs *)v;
+> +	freq = freqs->new;
+> +	cur_cpu = freqs->policy->cpu;
+> +
+> +	/* find the max freq across all core */
+> +	for_each_present_cpu(cpu)
+> +		if (cpu != cur_cpu)
+> +			freq = max(freq, (unsigned long)cpufreq_quick_get(cpu));
+> +
+> +	devfreq->governor->get_target_freq(devfreq, &freq);
+> +
+> +	if (devfreq->previous_freq == freq)
+> +		goto out;
+> +
+> +	ret = devfreq->profile->target(data->dev, &freq, 0);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	if (devfreq->profile->freq_table &&
+> +	    (devfreq_update_status(devfreq, freq)))
+> +		dev_err(data->dev,
+> +			"Couldn't update frequency transition information.\n");
+> +
+> +	devfreq->previous_freq = freq;
+> +
+> +out:
+> +	mutex_unlock(&devfreq->lock);
+> +	return notifier_from_errno(ret);
+> +};
+> +
+> +static int krait_cache_governor_get_target(struct devfreq *devfreq,
+> +					   unsigned long *freq)
+> +{
+> +	unsigned int *l2_cpufreq;
+> +	unsigned long *freq_table;
+> +	unsigned long target_freq = *freq;
+> +	struct krait_data *data = dev_get_drvdata(devfreq->dev.parent);
+> +
+> +	l2_cpufreq = data->l2_cpufreq;
+> +	freq_table = data->freq_table;
+> +
+> +	/*
+> +	 * Find the highest l2 freq interval based on the max cpufreq
+> +	 * across all core
+> +	 */
+> +	while (*(l2_cpufreq = l2_cpufreq + 1) && target_freq >= *l2_cpufreq)
+> +		freq_table = freq_table + 1;
+> +
+> +	*freq = *freq_table;
+> +
+> +	return 0;
+> +};
+> +
+> +static int krait_cache_governor_event_handler(struct devfreq *devfreq,
+> +					      unsigned int event, void *data)
+> +{
+> +	struct krait_data *kdata = dev_get_drvdata(devfreq->dev.parent);
+> +	int ret = 0;
+> +
+> +	switch (event) {
+> +	case DEVFREQ_GOV_START:
+> +		kdata->nb.notifier_call = krait_cache_notifier;
+> +		ret = cpufreq_register_notifier(&kdata->nb,
+> +						CPUFREQ_TRANSITION_NOTIFIER);
+> +		break;
+> +
+> +	case DEVFREQ_GOV_STOP:
+> +		cpufreq_unregister_notifier(&kdata->nb,
+> +					    CPUFREQ_TRANSITION_NOTIFIER);
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +};
+> +
+> +static struct devfreq_governor krait_devfreq_governor = {
+> +	.name = "krait_governor",
+> +	.get_target_freq = krait_cache_governor_get_target,
+> +	.event_handler = krait_cache_governor_event_handler,
+> +	.immutable = true,
+> +};
+> +
+> +static int krait_cache_probe(struct platform_device *pdev)
+> +{
+> +	int ret, count;
+> +	struct opp_table *table;
+> +	struct krait_data *data;
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = dev->of_node;
+> +
+> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->dev = dev;
+> +
+> +	data->l2_clk = devm_clk_get(dev, "l2");
+> +	if (IS_ERR(data->l2_clk))
+> +		return PTR_ERR(data->l2_clk);
+> +
+> +	table = dev_pm_opp_set_regulators(dev, (const char *[]){ "l2" }, 1);
+> +	if (IS_ERR(table)) {
+> +		ret = PTR_ERR(table);
+> +		dev_err(dev, "failed to set regulators %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = PTR_ERR_OR_ZERO(
+> +		dev_pm_opp_register_set_opp_helper(dev, krait_cache_set_opp));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = dev_pm_opp_of_add_table(dev);
+> +	if (ret) {
+> +		dev_err(dev, "failed to parse L2 freq thresholds\n");
+> +		return ret;
+> +	}
+> +
+> +	count = dev_pm_opp_get_opp_count(dev);
+> +
+> +	data->l2_cpufreq =
+> +		devm_kzalloc(dev, sizeof(unsigned int) * count, GFP_KERNEL);
+> +	if (!data->l2_cpufreq)
+> +		return -ENOMEM;
+> +
+> +	ret = of_property_read_u32_array(node, "qcom,l2-cpufreq", data->l2_cpufreq,
+> +					 count);
+> +	if (ret) {
+> +		dev_err(dev, "failed to parse L2 cpufreq thresholds\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = devfreq_add_governor(&krait_devfreq_governor);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to add governor: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, data);
+> +
+> +	data->devfreq = devfreq_add_device(&pdev->dev, &tegra_devfreq_profile,
+> +					   "krait_governor", NULL);
+> +
+> +	/* Cache freq_table to quickly get it when needed */
+> +	data->freq_table = data->devfreq->profile->freq_table;
+> +
+> +	if (IS_ERR(data->devfreq))
+> +		return PTR_ERR(data->devfreq);
+> +
+> +	return 0;
+> +};
+> +
+> +static int krait_cache_remove(struct platform_device *pdev)
+> +{
+> +	struct krait_data *data = platform_get_drvdata(pdev);
+> +
+> +	dev_pm_opp_remove_table(data->dev);
+> +
+> +	return 0;
+> +};
+> +
+> +static const struct of_device_id krait_cache_match_table[] = {
+> +	{ .compatible = "qcom,krait-cache" },
+> +	{}
+> +};
+> +
+> +static struct platform_driver krait_cache_driver = {
+> +	.probe		= krait_cache_probe,
+> +	.remove		= krait_cache_remove,
+> +	.driver		= {
+> +		.name   = "krait-cache-scaling",
+> +		.of_match_table = krait_cache_match_table,
+> +	},
+> +};
+> +module_platform_driver(krait_cache_driver);
+> +
+> +MODULE_DESCRIPTION("Krait CPU Cache Scaling driver");
+> +MODULE_AUTHOR("Ansuel Smith <ansuelsmth@gmail.com>");
+> +MODULE_LICENSE("GPL v2");
+> 
+
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best Regards,
+Chanwoo Choi
+Samsung Electronics
