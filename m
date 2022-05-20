@@ -2,67 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC67C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB16C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353256AbiETTcD (ORCPT
+        id S1353261AbiETTcL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 15:32:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
+        Fri, 20 May 2022 15:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353226AbiETTb6 (ORCPT
+        with ESMTP id S1353229AbiETTcF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 15:31:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6F8195792;
-        Fri, 20 May 2022 12:31:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEB4361B59;
-        Fri, 20 May 2022 19:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88021C34115;
-        Fri, 20 May 2022 19:31:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653075116;
-        bh=IJkerf8h8Ew+6kR4B+Gpq30axpkVygwfR6OjpOLtUAw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ax1IvEJdBZ3q0i+3E70Haxnp5ABfRVUpVcEC1wXervF1Macm2x1TVtD16cODZoGrX
-         NZKlfoaq8RvQzNeDgjPmG60Ua4w4vmMMWySL0SOWSQtSjtr2D0xATtuwT/18mQ/cAE
-         H4l0iqWFRv8d0Cz9oDmR+UD0smxvyVA+utbMcbfQ=
-Date:   Fri, 20 May 2022 21:19:31 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     monish.kumar.r@intel.com
-Cc:     oneukum@suse.com, olebowle@gmx.com, davem@davemloft.net,
-        wangjm221@gmail.com, chris.chiu@canonical.com,
-        vpalatin@chromium.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, abhijeet.rao@intel.com
-Subject: Re: [PATCH] Add USB_QUIRK_NO_LPM USB_QUIRK_RESET_RESUME quirks for
- Dell usb gen 2 device to not fail during enumeration.
-Message-ID: <Yofpwy1/oe8FaKUb@kroah.com>
-References: <20220520130044.17303-1-monish.kumar.r@intel.com>
+        Fri, 20 May 2022 15:32:05 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54267193239;
+        Fri, 20 May 2022 12:32:04 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id AD8845C0164;
+        Fri, 20 May 2022 15:32:03 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Fri, 20 May 2022 15:32:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1653075123; x=1653161523; bh=cqQSed8XRQ
+        7quGXTmZG7RLWpQtZBLF7WVLzBsujlnyM=; b=gRZUUSOFsuPiBr24KzABbt2bcj
+        CFXq/Ek6joLhQzxI0jX4tk8uw3937rE5OmyEXfcPC/4Ox7VtHlnGOh/gq2jFjSQ0
+        4J8q6RKDKONPUa3zBGxvpWU0id8ou1xIf/RUonbkWajgfCLaGjRPBgNQKls+9j2o
+        +dt5CtOldICJLbGQIElirOraW2y2DaPIRKpTi8EfKHSizyvMERjCHW8bWeB4xnIC
+        mj11CHF2RKeRHrgSWMynxAodt7pFWD9Jo8yeEXCnS9VfGR18vrVGF2Zv2Zy9HSeP
+        J0iilV5II6QMZlDnCL7OLarZjTFaoNFkGVyhQ6l9nanMpRsEkgzQjO66E6Hw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1653075123; x=1653161523; bh=cqQSed8XRQ7quGXTmZG7RLWpQtZB
+        LF7WVLzBsujlnyM=; b=hLE0wHjbuUQxnvrQCE/+XMrXaX91/+u9f+vM7HW3uUHk
+        ewHDM1xFoG2aKlJmrf9CWZlQ8q7VwB3cT+Kf09mYrVpqs7QFrfglvapzXmXuHh59
+        KDVezepwQlK7ZtBt9vnQ2awNreI4lvVq7lD8jSoJsno46b5fZaWy1sUVV+yaY6my
+        g2UaVbwhy8eqZxdZW6ce6qzxzd7WwKEPQTmSNfb9LK22nA1AlsWfwUaPWyw9YZLb
+        GGN6yEgvNmVJs5+gJ6DEVjH/KyZB5gW7tLD8BGa8SjHngaCiKE0ihVtFFEhxp2hW
+        1iNbjWvBMRgk3P01SMyBObqRrq0ctPhaGGUiJ2EI1A==
+X-ME-Sender: <xms:s-yHYr8sbt_ahioDM-gteqI-lLSXBeBZCGxmRlankpuIEgRv_O2dvw>
+    <xme:s-yHYnvDJkgfWvUl1w2GEz_IyABmpWN2oDIsaClq5lI0TYw7ubfM-Oc8r3qYhx_PI
+    hP5kV_iFgKsdA>
+X-ME-Received: <xmr:s-yHYpAV5mKyAyk6RqN8nzzu4d3oEfJQMB5rkYLuliL8h5P6iuvvwy8kCA4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrieefgddufeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepheegvd
+    evvdeljeeugfdtudduhfekledtiefhveejkeejuefhtdeufefhgfehkeetnecuvehluhhs
+    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
+    hhrdgtohhm
+X-ME-Proxy: <xmx:s-yHYnf6-djJmDCIYHVyBWqL9OIapmAZUu4VtSf2IqVqZ2H7C95fSg>
+    <xmx:s-yHYgNTbk2wWbyxEpb1NP9HbBOoI61lCBS3ZgCCdLHuU7ULYTfB7A>
+    <xmx:s-yHYpmmOLid0Ywfqw8q58a1aQef-Y8DdxdUj6iVlg2pyynD49Vmcg>
+    <xmx:s-yHYhiCheU7ddNTgOwYBiLekJkYuabep5fGSuMlhjtaNPgkS2Ldrw>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 20 May 2022 15:32:02 -0400 (EDT)
+Date:   Fri, 20 May 2022 21:21:29 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Kate Stewart <kstewart@linuxfoundation.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-spdx@vger.kernel.org
+Subject: Re: [PATCH] siphash: add SPDX tags as sole licensing authority
+Message-ID: <YofqOfHNKKRoTds5@kroah.com>
+References: <20220518132345.40615-1-Jason@zx2c4.com>
+ <87v8u0i0vq.ffs@tglx>
+ <CAG_66ZSHrHpXu7mJ_-67QgdL2Ubrxg2BAtn3n3YECdHYDHtSDg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220520130044.17303-1-monish.kumar.r@intel.com>
+In-Reply-To: <CAG_66ZSHrHpXu7mJ_-67QgdL2Ubrxg2BAtn3n3YECdHYDHtSDg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 06:30:44PM +0530, monish.kumar.r@intel.com wrote:
-> From: Monish Kumar R <monish.kumar.r@intel.com>
+On Fri, May 20, 2022 at 12:53:50PM -0500, Kate Stewart wrote:
+> Thanks for this bit of cleanup Jason!   Much appreciated.
 > 
-> Found this bug on own testing
+> On Fri, May 20, 2022 at 12:12 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> >
+> > On Wed, May 18 2022 at 15:23, Jason A. Donenfeld wrote:
+> > > The text "dual BSD/GPLv2 license" is somewhat ambiguous, and moving this
+> > > over to SPDX is overdue. This commit adds SPDX tags to the relevant
+> > > files and clarifies that it's GPLv2 only and 3-clause BSD. It also
+> > > removes the old text, so that the SPDX tags are the only source of the
+> > > information.
+> > >
+> > > Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+> > > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> >
+> > Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 > 
-> Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
-> ---
->  drivers/usb/core/quirks.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> Reviewed-by: Kate Stewart <kstewart@linuxfoundation.org>
 
-I have fixed this up by hand, but next time please run this through the
-Intel open source review process first before sending it out so that I
-will not have to fix up further patches.
-
-thanks,
+Thanks all, I queued this up before the additional review comments, next
+time I'll be slower :)
 
 greg k-h
