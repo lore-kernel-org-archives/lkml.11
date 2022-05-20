@@ -2,105 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB16C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 749A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353261AbiETTcL (ORCPT
+        id S1353272AbiETTcu convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 15:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
+        Fri, 20 May 2022 15:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353229AbiETTcF (ORCPT
+        with ESMTP id S1353236AbiETTcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 15:32:05 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54267193239;
-        Fri, 20 May 2022 12:32:04 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id AD8845C0164;
-        Fri, 20 May 2022 15:32:03 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Fri, 20 May 2022 15:32:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1653075123; x=1653161523; bh=cqQSed8XRQ
-        7quGXTmZG7RLWpQtZBLF7WVLzBsujlnyM=; b=gRZUUSOFsuPiBr24KzABbt2bcj
-        CFXq/Ek6joLhQzxI0jX4tk8uw3937rE5OmyEXfcPC/4Ox7VtHlnGOh/gq2jFjSQ0
-        4J8q6RKDKONPUa3zBGxvpWU0id8ou1xIf/RUonbkWajgfCLaGjRPBgNQKls+9j2o
-        +dt5CtOldICJLbGQIElirOraW2y2DaPIRKpTi8EfKHSizyvMERjCHW8bWeB4xnIC
-        mj11CHF2RKeRHrgSWMynxAodt7pFWD9Jo8yeEXCnS9VfGR18vrVGF2Zv2Zy9HSeP
-        J0iilV5II6QMZlDnCL7OLarZjTFaoNFkGVyhQ6l9nanMpRsEkgzQjO66E6Hw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1653075123; x=1653161523; bh=cqQSed8XRQ7quGXTmZG7RLWpQtZB
-        LF7WVLzBsujlnyM=; b=hLE0wHjbuUQxnvrQCE/+XMrXaX91/+u9f+vM7HW3uUHk
-        ewHDM1xFoG2aKlJmrf9CWZlQ8q7VwB3cT+Kf09mYrVpqs7QFrfglvapzXmXuHh59
-        KDVezepwQlK7ZtBt9vnQ2awNreI4lvVq7lD8jSoJsno46b5fZaWy1sUVV+yaY6my
-        g2UaVbwhy8eqZxdZW6ce6qzxzd7WwKEPQTmSNfb9LK22nA1AlsWfwUaPWyw9YZLb
-        GGN6yEgvNmVJs5+gJ6DEVjH/KyZB5gW7tLD8BGa8SjHngaCiKE0ihVtFFEhxp2hW
-        1iNbjWvBMRgk3P01SMyBObqRrq0ctPhaGGUiJ2EI1A==
-X-ME-Sender: <xms:s-yHYr8sbt_ahioDM-gteqI-lLSXBeBZCGxmRlankpuIEgRv_O2dvw>
-    <xme:s-yHYnvDJkgfWvUl1w2GEz_IyABmpWN2oDIsaClq5lI0TYw7ubfM-Oc8r3qYhx_PI
-    hP5kV_iFgKsdA>
-X-ME-Received: <xmr:s-yHYpAV5mKyAyk6RqN8nzzu4d3oEfJQMB5rkYLuliL8h5P6iuvvwy8kCA4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrieefgddufeehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepheegvd
-    evvdeljeeugfdtudduhfekledtiefhveejkeejuefhtdeufefhgfehkeetnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
-    hhrdgtohhm
-X-ME-Proxy: <xmx:s-yHYnf6-djJmDCIYHVyBWqL9OIapmAZUu4VtSf2IqVqZ2H7C95fSg>
-    <xmx:s-yHYgNTbk2wWbyxEpb1NP9HbBOoI61lCBS3ZgCCdLHuU7ULYTfB7A>
-    <xmx:s-yHYpmmOLid0Ywfqw8q58a1aQef-Y8DdxdUj6iVlg2pyynD49Vmcg>
-    <xmx:s-yHYhiCheU7ddNTgOwYBiLekJkYuabep5fGSuMlhjtaNPgkS2Ldrw>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 20 May 2022 15:32:02 -0400 (EDT)
-Date:   Fri, 20 May 2022 21:21:29 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Kate Stewart <kstewart@linuxfoundation.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-spdx@vger.kernel.org
-Subject: Re: [PATCH] siphash: add SPDX tags as sole licensing authority
-Message-ID: <YofqOfHNKKRoTds5@kroah.com>
-References: <20220518132345.40615-1-Jason@zx2c4.com>
- <87v8u0i0vq.ffs@tglx>
- <CAG_66ZSHrHpXu7mJ_-67QgdL2Ubrxg2BAtn3n3YECdHYDHtSDg@mail.gmail.com>
+        Fri, 20 May 2022 15:32:47 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBE719579A;
+        Fri, 20 May 2022 12:32:46 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:37830)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1ns8MT-007S8z-KA; Fri, 20 May 2022 13:32:33 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38910 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1ns8MS-00BQ97-Jb; Fri, 20 May 2022 13:32:33 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, oleg@redhat.com,
+        mingo@kernel.org, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org,
+        Robert O'Callahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+References: <20220421150248.667412396@infradead.org>
+        <20220421150654.817117821@infradead.org>
+        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        <871qwq5ucx.fsf_-_@email.froward.int.ebiederm.org>
+        <YodEWlfo4kFd8+mt@linutronix.de>
+Date:   Fri, 20 May 2022 14:32:24 -0500
+In-Reply-To: <YodEWlfo4kFd8+mt@linutronix.de> (Sebastian Andrzej Siewior's
+        message of "Fri, 20 May 2022 09:33:46 +0200")
+Message-ID: <87wnegyp87.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG_66ZSHrHpXu7mJ_-67QgdL2Ubrxg2BAtn3n3YECdHYDHtSDg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-XM-SPF: eid=1ns8MS-00BQ97-Jb;;;mid=<87wnegyp87.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18cQrXh+UQWoHE6LCH3Iga9qNv05JRvfdM=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 00/16] ptrace: cleanups and calling do_cldstop with only
+ siglock
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 12:53:50PM -0500, Kate Stewart wrote:
-> Thanks for this bit of cleanup Jason!   Much appreciated.
-> 
-> On Fri, May 20, 2022 at 12:12 PM Thomas Gleixner <tglx@linutronix.de> wrote:
-> >
-> > On Wed, May 18 2022 at 15:23, Jason A. Donenfeld wrote:
-> > > The text "dual BSD/GPLv2 license" is somewhat ambiguous, and moving this
-> > > over to SPDX is overdue. This commit adds SPDX tags to the relevant
-> > > files and clarifies that it's GPLv2 only and 3-clause BSD. It also
-> > > removes the old text, so that the SPDX tags are the only source of the
-> > > information.
-> > >
-> > > Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> > > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> >
-> > Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Reviewed-by: Kate Stewart <kstewart@linuxfoundation.org>
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
 
-Thanks all, I queued this up before the additional review comments, next
-time I'll be slower :)
+> On 2022-05-18 17:49:50 [-0500], Eric W. Biederman wrote:
+>> 
+>> For ptrace_stop to work on PREEMT_RT no spinlocks can be taken once
+>> ptrace_freeze_traced has completed successfully.  Which fundamentally
+>> means the lock dance of dropping siglock and grabbing tasklist_lock does
+>> not work on PREEMPT_RT.  So I have worked through what is necessary so
+>> that tasklist_lock does not need to be grabbed in ptrace_stop after
+>> siglock is dropped.
+> …
+> It took me a while to realise that this is a follow-up I somehow assumed
+> that you added a few patches on top. Might have been the yesterday's
+> heat. b4 also refused to download this series because the v4 in this
+> thread looked newer… Anyway. Both series applied:
+>
+> | =============================
+> | WARNING: suspicious RCU usage
+> | 5.18.0-rc7+ #16 Not tainted
+> | -----------------------------
+> | include/linux/ptrace.h:120 suspicious rcu_dereference_check() usage!
+> |
+> | other info that might help us debug this:
+> |
+> | rcu_scheduler_active = 2, debug_locks = 1
+> | 2 locks held by ssdd/1734:
+> |  #0: ffff88800eaa6918 (&sighand->siglock){....}-{2:2}, at: lock_parents_siglocks+0xf0/0x3b0
+> |  #1: ffff88800eaa71d8 (&sighand->siglock/2){....}-{2:2}, at: lock_parents_siglocks+0x115/0x3b0
+> |
+> | stack backtrace:
+> | CPU: 2 PID: 1734 Comm: ssdd Not tainted 5.18.0-rc7+ #16
+> | Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+> | Call Trace:
+> |  <TASK>
+> |  dump_stack_lvl+0x45/0x5a
+> |  unlock_parents_siglocks+0xb6/0xc0
+> |  ptrace_stop+0xb9/0x390
+> |  get_signal+0x51c/0x8d0
+> |  arch_do_signal_or_restart+0x31/0x750
+> |  exit_to_user_mode_prepare+0x157/0x220
+> |  irqentry_exit_to_user_mode+0x5/0x50
+> |  asm_sysvec_apic_timer_interrupt+0x12/0x20
+>
+> That is ptrace_parent() in unlock_parents_siglocks().
 
-greg k-h
+How odd.  I thought I had the appropriate lockdep config options enabled
+in my test build to catch things like this.  I guess not.
+
+Now I am trying to think how to tell it that holding the appropriate
+iglock makes this ok.
+
+Eric
