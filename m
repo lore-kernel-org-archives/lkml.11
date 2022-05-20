@@ -2,160 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 419E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2216C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:45:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351030AbiETPpY (ORCPT
+        id S1351044AbiETPp1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
+        Fri, 20 May 2022 11:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351027AbiETPpT (ORCPT
+        with ESMTP id S1351034AbiETPpW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:45:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3F21796FA;
-        Fri, 20 May 2022 08:45:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 739BCB82A5D;
-        Fri, 20 May 2022 15:45:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38ECBC385A9;
-        Fri, 20 May 2022 15:45:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653061513;
-        bh=Vc86LN9Kl/kZdHiyBqJ9vnK7hHKZmKIn6mH8vCk639M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tjn1x/XwdFtK55Z368/s6bzfN+nq7NRkd3rJvNKtBtxLNYNbKE5tSt9x+Y4dOJJIZ
-         FGY8qJTLiBVfhYgQmHSPErYznIt3/8QR12w1GRrO5NCkxoygKksR+epBR8vy4QEiJ1
-         OcdAeC6jaoV90v8zjOBXfswvgpeM9yJXVRQrkg15HYFMikXffAymyH2CjD5mHeVqQh
-         g1bK9+9seL8tsriVPWJk6W4D9BtkaviorXZ9ADOxU7z5b7J3wf/mb2jXc3LAdbi8fh
-         S9rwkVk/NbS6ds0XK9+PUCrQxxl3L5iId4GqzlpGu4ddohJjdLYUNDwJILbmxAoHRl
-         I+9qZB248p1cw==
-Date:   Fri, 20 May 2022 08:45:12 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH v2] xfs: Remove dead code
-Message-ID: <Yoe3iG5E9KK4l/pO@magnolia>
-References: <20220520064416.5092-1-jiapeng.chong@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220520064416.5092-1-jiapeng.chong@linux.alibaba.com>
+        Fri, 20 May 2022 11:45:22 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75CC179949
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:45:20 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id x12so8039565pgj.7
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:45:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B+/7LZGrMlNtwgdHe90R2m8v3jGzIyKXW/TmqjH0p8o=;
+        b=6VxjFURLsZvEfrO6ok+Lx9lmFcRJBm12JUllBnZVZD76AqbcSMzLhebLruJAq+jN5G
+         8s4EFWw6zFTrCQ/X4Mlcfy4gDd5wf90NmwBV7+f45njOcQgTFrKjZ6UvbSNRqwx+X5PL
+         8PSJKIYIuqIyLumun1RXxMZHPB8FgC7kxRwCFMuBpvklIhUhWEculHnw/0WgfeaaidF4
+         pkhzJydJHEex70VhkFqveBSKucVLdoXH4NU6pn1L0M9LhNAPDdmr3Uhi7ceRuUNZApWK
+         cHFX58KerxBXZcDFTokh+4W7sOJaJK5sDHnmzd/oi8EipjF301ooHmHDy2s/RQNnYOft
+         hnNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=B+/7LZGrMlNtwgdHe90R2m8v3jGzIyKXW/TmqjH0p8o=;
+        b=q/naTHsu761kQJkgayLgh1E/01Sz9qUHIslElnpSArMI8mtBjgXz3Xy9YoUp3Q3G76
+         oYtvJfKilrqNX9l+cVShxtSwmlmecQgXhKto4OlGBYU4cDAPA5G2szM0Uaa7dp58NeJy
+         SUitPeHcUv2mJF4rbK5J3nxAeFJ9EOx8ib6arNechfYacHDx92hA7BJ/347VPdNTqf+i
+         t9W1jLuUpgaELUWUjFxiOnYtRrW9cN8KLA6iH1931YhCaKZuxp1IB0DXon0Q+tonNPlC
+         /XVNZvJ9xgjFscGVeDR/VyOWnPOlrRDsiAyqw4Ikaf7UuhVfaspxRSgay1fOzuazawBd
+         dE7A==
+X-Gm-Message-State: AOAM531i53/GYlLN2wXVWRlaFyHnb8ViklQ/FgfxKe+DfcG2rcY03m5F
+        ZSOqaFKOpF3y3gOlvApNccOPIg==
+X-Google-Smtp-Source: ABdhPJx60xj4QICH8XoCnnzUISnMEjHTEBuDbRp2Z4SG2Z01pp7QsrJBL/FLnxnzL/aMMI6a2O+bcQ==
+X-Received: by 2002:a05:6a00:2403:b0:4fd:e84a:4563 with SMTP id z3-20020a056a00240300b004fde84a4563mr10696130pfh.60.1653061520081;
+        Fri, 20 May 2022 08:45:20 -0700 (PDT)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id je4-20020a170903264400b0015ebb3bf277sm5792454plb.238.2022.05.20.08.45.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 08:45:19 -0700 (PDT)
+Date:   Fri, 20 May 2022 08:45:19 -0700 (PDT)
+X-Google-Original-Date: Thu, 19 May 2022 13:24:56 PDT (-0700)
+Subject:     Re: [PATCH v3 -next 1/6] kexec_file: Fix kexec_file.c build error for riscv platform
+In-Reply-To: <20220408100914.150110-2-lizhengyu3@huawei.com>
+CC:     liaochang1@huawei.com, alex@ghiti.fr, aou@eecs.berkeley.edu,
+        Bjorn Topel <bjorn.topel@gmail.com>, ebiederm@xmission.com,
+        guoren@linux.alibaba.com, jszhang@kernel.org,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, mick@ics.forth.gr,
+        Paul Walmsley <paul.walmsley@sifive.com>, penberg@kernel.org,
+        sunnanyong@huawei.com, wangkefeng.wang@huawei.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     lizhengyu3@huawei.com
+Message-ID: <mhng-33c63a92-49e5-48a0-8f54-797c797ee373@palmer-mbp2014>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 02:44:16PM +0800, Jiapeng Chong wrote:
-> Remove tht entire xlog_recover_check_summary() function, this entire
-> function is dead code and has been for 12 years.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-
-LGTM,
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-
---D
-
+On Fri, 08 Apr 2022 03:09:09 PDT (-0700), lizhengyu3@huawei.com wrote:
+> From: Liao Chang <liaochang1@huawei.com>
+>
+> When CONFIG_KEXEC_FILE is set for riscv platform, the compilation of
+> kernel/kexec_file.c generate build error:
+>
+> kernel/kexec_file.c: In function 'crash_prepare_elf64_headers':
+> ./arch/riscv/include/asm/page.h:110:71: error: request for member 'virt_addr' in something not a structure or union
+>   110 |  ((x) >= PAGE_OFFSET && (!IS_ENABLED(CONFIG_64BIT) || (x) < kernel_map.virt_addr))
+>       |                                                                       ^
+> ./arch/riscv/include/asm/page.h:131:2: note: in expansion of macro 'is_linear_mapping'
+>   131 |  is_linear_mapping(_x) ?       \
+>       |  ^~~~~~~~~~~~~~~~~
+> ./arch/riscv/include/asm/page.h:140:31: note: in expansion of macro '__va_to_pa_nodebug'
+>   140 | #define __phys_addr_symbol(x) __va_to_pa_nodebug(x)
+>       |                               ^~~~~~~~~~~~~~~~~~
+> ./arch/riscv/include/asm/page.h:143:24: note: in expansion of macro '__phys_addr_symbol'
+>   143 | #define __pa_symbol(x) __phys_addr_symbol(RELOC_HIDE((unsigned long)(x), 0))
+>       |                        ^~~~~~~~~~~~~~~~~~
+> kernel/kexec_file.c:1327:36: note: in expansion of macro '__pa_symbol'
+>  1327 |   phdr->p_offset = phdr->p_paddr = __pa_symbol(_text);
+>
+> This occurs is because the "kernel_map" referenced in macro
+> is_linear_mapping()  is suppose to be the one of struct kernel_mapping
+> defined in arch/riscv/mm/init.c, but the 2nd argument of
+> crash_prepare_elf64_header() has same symbol name, in expansion of macro
+> is_linear_mapping in function crash_prepare_elf64_header(), "kernel_map"
+> actually is the local variable.
+>
+> Signed-off-by: Liao Chang <liaochang1@huawei.com>
 > ---
-> Changes in v2:
->   -Remove dead code.
-> 
->  fs/xfs/xfs_log_recover.c | 59 ----------------------------------------
->  1 file changed, 59 deletions(-)
-> 
-> diff --git a/fs/xfs/xfs_log_recover.c b/fs/xfs/xfs_log_recover.c
-> index 97b941c07957..b1980d7cbbee 100644
-> --- a/fs/xfs/xfs_log_recover.c
-> +++ b/fs/xfs/xfs_log_recover.c
-> @@ -39,13 +39,6 @@ STATIC int
->  xlog_clear_stale_blocks(
->  	struct xlog	*,
->  	xfs_lsn_t);
-> -#if defined(DEBUG)
-> -STATIC void
-> -xlog_recover_check_summary(
-> -	struct xlog *);
-> -#else
-> -#define	xlog_recover_check_summary(log)
-> -#endif
->  STATIC int
->  xlog_do_recovery_pass(
->          struct xlog *, xfs_daddr_t, xfs_daddr_t, int, xfs_daddr_t *);
-> @@ -3339,8 +3332,6 @@ xlog_do_recover(
->  	}
->  	mp->m_alloc_set_aside = xfs_alloc_set_aside(mp);
->  
-> -	xlog_recover_check_summary(log);
-> -
->  	/* Normal transactions can now occur */
->  	clear_bit(XLOG_ACTIVE_RECOVERY, &log->l_opstate);
+>  include/linux/kexec.h | 2 +-
+>  kernel/kexec_file.c   | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+> index 58d1b58a971e..ebb1bffbf068 100644
+> --- a/include/linux/kexec.h
+> +++ b/include/linux/kexec.h
+> @@ -227,7 +227,7 @@ struct crash_mem {
+>  extern int crash_exclude_mem_range(struct crash_mem *mem,
+>  				   unsigned long long mstart,
+>  				   unsigned long long mend);
+> -extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+> +extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
+>  				       void **addr, unsigned long *sz);
+>  #endif /* CONFIG_KEXEC_FILE */
+>
+> diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+> index 8347fc158d2b..331a4f0f10f5 100644
+> --- a/kernel/kexec_file.c
+> +++ b/kernel/kexec_file.c
+> @@ -1260,7 +1260,7 @@ int crash_exclude_mem_range(struct crash_mem *mem,
 >  	return 0;
-> @@ -3483,7 +3474,6 @@ xlog_recover_finish(
->  	}
->  
->  	xlog_recover_process_iunlinks(log);
-> -	xlog_recover_check_summary(log);
->  
->  	/*
->  	 * Recover any CoW staging blocks that are still referenced by the
-> @@ -3517,52 +3507,3 @@ xlog_recover_cancel(
->  		xlog_recover_cancel_intents(log);
 >  }
->  
-> -#if defined(DEBUG)
-> -/*
-> - * Read all of the agf and agi counters and check that they
-> - * are consistent with the superblock counters.
-> - */
-> -STATIC void
-> -xlog_recover_check_summary(
-> -	struct xlog		*log)
-> -{
-> -	struct xfs_mount	*mp = log->l_mp;
-> -	struct xfs_perag	*pag;
-> -	struct xfs_buf		*agfbp;
-> -	struct xfs_buf		*agibp;
-> -	xfs_agnumber_t		agno;
-> -	uint64_t		freeblks;
-> -	uint64_t		itotal;
-> -	uint64_t		ifree;
-> -	int			error;
-> -
-> -	freeblks = 0LL;
-> -	itotal = 0LL;
-> -	ifree = 0LL;
-> -	for_each_perag(mp, agno, pag) {
-> -		error = xfs_read_agf(mp, NULL, pag->pag_agno, 0, &agfbp);
-> -		if (error) {
-> -			xfs_alert(mp, "%s agf read failed agno %d error %d",
-> -						__func__, pag->pag_agno, error);
-> -		} else {
-> -			struct xfs_agf	*agfp = agfbp->b_addr;
-> -
-> -			freeblks += be32_to_cpu(agfp->agf_freeblks) +
-> -				    be32_to_cpu(agfp->agf_flcount);
-> -			xfs_buf_relse(agfbp);
-> -		}
-> -
-> -		error = xfs_read_agi(mp, NULL, pag->pag_agno, &agibp);
-> -		if (error) {
-> -			xfs_alert(mp, "%s agi read failed agno %d error %d",
-> -						__func__, pag->pag_agno, error);
-> -		} else {
-> -			struct xfs_agi	*agi = agibp->b_addr;
-> -
-> -			itotal += be32_to_cpu(agi->agi_count);
-> -			ifree += be32_to_cpu(agi->agi_freecount);
-> -			xfs_buf_relse(agibp);
-> -		}
-> -	}
-> -}
-> -#endif /* DEBUG */
-> -- 
-> 2.20.1.7.g153144c
-> 
+>
+> -int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+> +int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
+>  			  void **addr, unsigned long *sz)
+>  {
+>  	Elf64_Ehdr *ehdr;
+> @@ -1324,7 +1324,7 @@ int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+>  	phdr++;
+>
+>  	/* Prepare PT_LOAD type program header for kernel text region */
+> -	if (kernel_map) {
+> +	if (need_kernel_map) {
+>  		phdr->p_type = PT_LOAD;
+>  		phdr->p_flags = PF_R|PF_W|PF_X;
+>  		phdr->p_vaddr = (unsigned long) _text;
+
+IMO this is fine: we could rename all the kernel_map stuff in 
+arch/riscv, but this is much more self-contained.  It's not been ack'd 
+by anyone else, but get_maintainers just suggests the kexec@ list so I'm 
+going to take it via the RISC-V tree along with the rest of these.
+
+Thanks!
