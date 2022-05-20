@@ -2,134 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DABC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF26C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 00:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343797AbiETAjE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 20:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
+        id S232832AbiETAk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 20:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234162AbiETAjB (ORCPT
+        with ESMTP id S233982AbiETAkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 20:39:01 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E92A131281
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 17:38:59 -0700 (PDT)
-Received: from epcas1p3.samsung.com (unknown [182.195.41.47])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220520003853epoutp013c8130544a1817e4159d6605a261f39e~wqTrhjDlV3267032670epoutp01M
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:38:53 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220520003853epoutp013c8130544a1817e4159d6605a261f39e~wqTrhjDlV3267032670epoutp01M
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1653007133;
-        bh=5NMI7MorGMmG97q1ul08ajIeM0aOU20dl08vI5qrh8c=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=vHthYb1ieIuPByo+SXQNyBi52iYEYEOW1QWRlENqUTrN9E+CicDhFMx3FjPS39c2A
-         63MQuFFrncZXjW3fueY/LeDGIiQySzoVu9ZZRtPRnI4u3m9WHnq/yp2e69knyxpm7+
-         t9iAA1P8CNAWkMmeZkMxm9vJCEBhuUnD+cexoXt8=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220520003853epcas1p20b3ffcd617e3439610fd588b7a935e91~wqTrSZzyU2348723487epcas1p20;
-        Fri, 20 May 2022 00:38:53 +0000 (GMT)
-Received: from epsmges1p2.samsung.com (unknown [182.195.38.235]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4L47Bg6r2xz4x9Pr; Fri, 20 May
-        2022 00:38:51 +0000 (GMT)
-Received: from epcas1p4.samsung.com ( [182.195.41.48]) by
-        epsmges1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B3.F6.09785.B13E6826; Fri, 20 May 2022 09:38:51 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220520003851epcas1p1542dc1328f88ee1ac13e8bb8d49ef364~wqTplGxWv0695006950epcas1p1D;
-        Fri, 20 May 2022 00:38:51 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220520003851epsmtrp10e1fcb2aa8ae1425c6aa5e24e849aa5f~wqTpkOGq-1074010740epsmtrp1U;
-        Fri, 20 May 2022 00:38:51 +0000 (GMT)
-X-AuditID: b6c32a36-c87ff70000002639-ac-6286e31ba827
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        88.35.08924.B13E6826; Fri, 20 May 2022 09:38:51 +0900 (KST)
-Received: from [10.113.221.102] (unknown [10.113.221.102]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220520003851epsmtip17c812aed18a84625a19d49a63cff0db5~wqTpXlHVb2793627936epsmtip1f;
-        Fri, 20 May 2022 00:38:51 +0000 (GMT)
-Subject: Re: [GIT PULL] extcon next for 5.19
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chanwoo Choi <cwchoi00@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Chanwoo Choi <chanwoo@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>
-From:   Chanwoo Choi <cw00.choi@samsung.com>
-Organization: Samsung Electronics
-Message-ID: <316a4c19-b164-a8a5-3643-ec8f5930db68@samsung.com>
-Date:   Fri, 20 May 2022 10:05:10 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101
-        Thunderbird/59.0
+        Thu, 19 May 2022 20:40:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A48015A30;
+        Thu, 19 May 2022 17:40:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB82CB82956;
+        Fri, 20 May 2022 00:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40895C385B8;
+        Fri, 20 May 2022 00:40:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653007248;
+        bh=cxthwK70BLgcvJmYVgrDQMUShetThpHHGPNJUP+QVEI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=HdsRrfd7DRhxeJPiEv1cZJ98kpB58kNrsh/vadXYkOALZUXRq3VndzPaDNF1zm3V8
+         CCG979mKXcAq+fFhwW6ijz0o5Ttz/vbG4rezkkXxf0PJDqCIkHul+yhusQrztOULp5
+         DDPe3F/U+SVNasjScSAA8cm84vrJeZABTg9GdZgTthRAaVzjuBH0yWM/8qL1iw6dei
+         SM1Go7Thb7am0Flubsiy8IFPbsLJ9sj0JAw6NvBbIoWNSdqOiSf4Ww13390BVzm1Ju
+         73JOxsedNhYAxXzmSARQXrhIGx5LUxfW4C8wcU6yexicNGtQk4DvRRn7BU1b6ICfZM
+         wBm54s+bed7fw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id BF14E400B1; Thu, 19 May 2022 21:40:44 -0300 (-03)
+Date:   Thu, 19 May 2022 21:40:44 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Avi Kivity <avi@scylladb.com>
+Cc:     linux-perf-users@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/1] perf build: Fix check for btf__load_from_kernel_by_id()
+ in libbpf
+Message-ID: <YobjjFOblY4Xvwo7@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <YoZagTAVe1WQb6n+@kroah.com>
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnk+LIzCtJLcpLzFFi42LZdljTQFf6cVuSwZMec4uJN66wWDw7qm3R
-        vHg9m8XlXXPYLG43rmBzYPXYOesuu8emVZ1sHvvnrmH36NuyitHj8ya5ANaobJuM1MSU1CKF
-        1Lzk/JTMvHRbJe/geOd4UzMDQ11DSwtzJYW8xNxUWyUXnwBdt8wcoN1KCmWJOaVAoYDE4mIl
-        fTubovzSklSFjPziElul1IKUnALTAr3ixNzi0rx0vbzUEitDAwMjU6DChOyMiy332Qt+M1U8
-        vnuHsYFxOVMXIyeHhICJROv7hyxdjFwcQgI7GCUevf3MBOF8YpQ4dG8nVOYzo0Tf6VOsMC0L
-        3+9hhkjsYpQ486EJquo9o8SlhkcsIFXCAjoSPR332EFsEYEIidvHzoHNZRboYpRoXrILbBSb
-        gJbE/hc32EBsfgFFias/HjOC2LwCdhKvlswAG8QioCox88xWsEGiAmESJ7e1QNUISpyc+QSs
-        hlNAU+LTlG1gNcwC4hK3nsxngrDlJba/nQN2qoRAL4fE6jN3gBZzADkuErcO50O8Iyzx6vgW
-        dghbSuJlfxs7RH0zo0TDi9uMEE4Po8TRZ30sEFXGEvuXTmYCGcQMtHn9Ln2IsKLEzt9zGSEW
-        80m8+9oDtYtXoqNNCKJEWeLyg7vQkJeUWNzeyTaBUWkWkndmIXlhFpIXZiEsW8DIsopRLLWg
-        ODc9tdiwwAge38n5uZsYwSlTy2wH46S3H/QOMTJxMB5ilOBgVhLhZcxtSRLiTUmsrEotyo8v
-        Ks1JLT7EaAoM4InMUqLJ+cCknVcSb2hiaWBiZmRsYmFoZqgkzrtq2ulEIYH0xJLU7NTUgtQi
-        mD4mDk6pBqbKxwe7JcUMjVwuvwg4v+jmxw7fHzt3XRXfU9j2cQnbPTWdi623X+U/ZK8reLjo
-        WJoPm/NCnyUM2Z6hdlOXOrL7zb0seNX7xT8e0x/9X97/OsJePJ3D41ruTfdVbw5tvBn1pIZp
-        q4vSbMusd3v8d6QtLstrqxWxjNEVdNCffNb5Ux2bf8RLRt+Lbx0TexecOWWa2v5MPHRb+xuL
-        OHNzz1lR+/9l1u7hv6x+xfK8UtuUyd/Dub2/Vv5uSwuKiauceXdxS5Xix61JOhe2n33aM2dH
-        bWq992nujV4Sc4NYDmw/fi098nLq9e0rVrY3/z6m0zb/nbzLuZL7OwpufZgur5SwYdmVSf1N
-        UzzlfsmsP/NFiaU4I9FQi7moOBEAkwvIMSIEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrJLMWRmVeSWpSXmKPExsWy7bCSnK7047Ykg5tHJS0m3rjCYvHsqLZF
-        8+L1bBaXd81hs7jduILNgdVj56y77B6bVnWyeeyfu4bdo2/LKkaPz5vkAlijuGxSUnMyy1KL
-        9O0SuDIuttxnL/jNVPH47h3GBsblTF2MnBwSAiYSC9/vYe5i5OIQEtjBKLH4z3x2iISkxLSL
-        R4ESHEC2sMThw8UQNW8ZJf6vOM4IUiMsoCPR03EPrF5EIELi1ro5TCBFzAJdjBL3bjxnheh4
-        xCix/mEzWBWbgJbE/hc32EBsfgFFias/HoNN4hWwk3i1ZAYLiM0ioCox88xWsHpRgTCJnUse
-        M0HUCEqcnPkErIZTQFPi05RtYDXMAuoSf+ZdYoawxSVuPZnPBGHLS2x/O4d5AqPwLCTts5C0
-        zELSMgtJywJGllWMkqkFxbnpucWGBUZ5qeV6xYm5xaV56XrJ+bmbGMGxo6W1g3HPqg96hxiZ
-        OBgPMUpwMCuJ8DLmtiQJ8aYkVlalFuXHF5XmpBYfYpTmYFES573QdTJeSCA9sSQ1OzW1ILUI
-        JsvEwSnVwOQffPjGK+npOw9+7HpT7pQlNjfnYiVHvnAZm1ZvXLHqzOCKiZY/1weaT13ycv4z
-        wXidlu4ph1R2GT844Kc6be0cFkbm2zvLXnNz7Yh6HKUceblhqcqrYvefLq1blE7cOBbtZvDN
-        +tPrCQv4V+75kKMoL7p+yaXwrY/md/2ZJHHDsTC/QvTAbmbuybd7meTvPF2UKcjwW+n6turD
-        HwxYP+p1v/3Suf/lgSBv7weW7OER3j06sxaYrIvIrN/8LTSD55gZt7y6rLDVjETTP019atY6
-        90LtvGb7dqRvOKGdkPX/g5nin0s5m7cePt3VUxpfcyLg5IK7aV9Cu6aeuVYn9PAOW590U8Dc
-        0PMPfq09LqbEUpyRaKjFXFScCAAUg/e6DAMAAA==
-X-CMS-MailID: 20220520003851epcas1p1542dc1328f88ee1ac13e8bb8d49ef364
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220519150019epcas1p28ef56fb480ecbc553544543a2ea29c5b
-References: <eaab9f4d-06d4-3ddc-3756-69f762bd86e1@gmail.com>
-        <3aa73483-19d6-fc25-a3c6-03343582b542@gmail.com>
-        <CGME20220519150019epcas1p28ef56fb480ecbc553544543a2ea29c5b@epcas1p2.samsung.com>
-        <YoZagTAVe1WQb6n+@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/22 11:56 PM, Greg Kroah-Hartman wrote:
-> On Wed, May 18, 2022 at 03:03:48AM +0900, Chanwoo Choi wrote:
->> Dear Greg,
->>
->> Gently ping. Could you please pull this request?
-> 
-> Sorry, was behind in patches, catching up now...
-> 
+Avi, can you please try with this patch applied?
 
-You're welcome. I'll send the pull request more early on next.
-Thank you
+Thanks,
 
+- Arnaldo
+
+---
+
+Avi Kivity reported a problem where the __weak
+btf__load_from_kernel_by_id() in tools/perf/util/bpf-event.c was being
+used and it called btf__get_from_id() in tools/lib/bpf/btf.c that in
+turn called back to btf__load_from_kernel_by_id(), resulting in an
+endless loop.
+
+Fix this by adding a feature test to check if
+btf__load_from_kernel_by_id() is available when building perf with
+LIBBPF_DYNAMIC=1, and if not then provide the fallback to the old
+btf__get_from_id(), that doesn't call back to btf__load_from_kernel_by_id()
+since at that time it didn't exist at all.
+
+Tested on Fedora 35 where we have libbpf-devel 0.4.0 with LIBBPF_DYNAMIC
+where we don't have btf__load_from_kernel_by_id() and thus its feature
+test fail, not defining HAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID:
+
+  $ cat /tmp/build/perf-urgent/feature/test-libbpf-btf__load_from_kernel_by_id.make.output
+  test-libbpf-btf__load_from_kernel_by_id.c: In function ‘main’:
+  test-libbpf-btf__load_from_kernel_by_id.c:6:16: error: implicit declaration of function ‘btf__load_from_kernel_by_id’ [-Werror=implicit-function-declaration]
+      6 |         return btf__load_from_kernel_by_id(20151128, NULL);
+        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+  cc1: all warnings being treated as errors
+  $
+
+  $ nm /tmp/build/perf-urgent/perf | grep btf__load_from_kernel_by_id
+  00000000005ba180 T btf__load_from_kernel_by_id
+  $
+
+  $ objdump --disassemble=btf__load_from_kernel_by_id -S /tmp/build/perf-urgent/perf
+
+  /tmp/build/perf-urgent/perf:     file format elf64-x86-64
+  <SNIP>
+  00000000005ba180 <btf__load_from_kernel_by_id>:
+  #include "record.h"
+  #include "util/synthetic-events.h"
+
+  #ifndef HAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
+  struct btf *btf__load_from_kernel_by_id(__u32 id)
+  {
+    5ba180:	55                   	push   %rbp
+    5ba181:	48 89 e5             	mov    %rsp,%rbp
+    5ba184:	48 83 ec 10          	sub    $0x10,%rsp
+    5ba188:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    5ba18f:	00 00
+    5ba191:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+    5ba195:	31 c0                	xor    %eax,%eax
+         struct btf *btf;
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+         int err = btf__get_from_id(id, &btf);
+    5ba197:	48 8d 75 f0          	lea    -0x10(%rbp),%rsi
+    5ba19b:	e8 a0 57 e5 ff       	call   40f940 <btf__get_from_id@plt>
+    5ba1a0:	89 c2                	mov    %eax,%edx
+  #pragma GCC diagnostic pop
+
+         return err ? ERR_PTR(err) : btf;
+    5ba1a2:	48 98                	cltq
+    5ba1a4:	85 d2                	test   %edx,%edx
+    5ba1a6:	48 0f 44 45 f0       	cmove  -0x10(%rbp),%rax
+  }
+  <SNIP>
+
+Fixes: 218e7b775d368f38 ("perf bpf: Provide a weak btf__load_from_kernel_by_id() for older libbpf versions")
+Link: https://lore.kernel.org/linux-perf-users/f0add43b-3de5-20c5-22c4-70aff4af959f@scylladb.com
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/build/Makefile.feature                               | 1 +
+ tools/build/feature/Makefile                               | 4 ++++
+ .../feature/test-libbpf-btf__load_from_kernel_by_id.c      | 7 +++++++
+ tools/perf/Makefile.config                                 | 7 +++++++
+ tools/perf/util/bpf-event.c                                | 4 +++-
+ 5 files changed, 22 insertions(+), 1 deletion(-)
+ create mode 100644 tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
+
+diff --git a/tools/build/Makefile.feature b/tools/build/Makefile.feature
+index ae61f464043a11fb..c6a48d0ef9ff0648 100644
+--- a/tools/build/Makefile.feature
++++ b/tools/build/Makefile.feature
+@@ -98,6 +98,7 @@ FEATURE_TESTS_EXTRA :=                  \
+          llvm-version                   \
+          clang                          \
+          libbpf                         \
++         libbpf-btf__load_from_kernel_by_id \
+          libpfm4                        \
+          libdebuginfod			\
+          clang-bpf-co-re
+diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+index de66e1cc073481c5..cb4a2a4fa2e48ebf 100644
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -57,6 +57,7 @@ FILES=                                          \
+          test-lzma.bin                          \
+          test-bpf.bin                           \
+          test-libbpf.bin                        \
++         test-libbpf-btf__load_from_kernel_by_id.bin	\
+          test-get_cpuid.bin                     \
+          test-sdt.bin                           \
+          test-cxx.bin                           \
+@@ -287,6 +288,9 @@ $(OUTPUT)test-bpf.bin:
+ $(OUTPUT)test-libbpf.bin:
+ 	$(BUILD) -lbpf
+ 
++$(OUTPUT)test-libbpf-btf__load_from_kernel_by_id.bin:
++	$(BUILD) -lbpf
++
+ $(OUTPUT)test-sdt.bin:
+ 	$(BUILD)
+ 
+diff --git a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
+new file mode 100644
+index 0000000000000000..f7c084428735a73d
+--- /dev/null
++++ b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <bpf/libbpf.h>
++
++int main(void)
++{
++	return btf__load_from_kernel_by_id(20151128, NULL);
++}
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index f3bf9297bcc03c5e..1bd64e7404b9fbd4 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -553,9 +553,16 @@ ifndef NO_LIBELF
+         ifeq ($(feature-libbpf), 1)
+           EXTLIBS += -lbpf
+           $(call detected,CONFIG_LIBBPF_DYNAMIC)
++
++          $(call feature_check,libbpf-btf__load_from_kernel_by_id)
++          ifeq ($(feature-libbpf-btf__load_from_kernel_by_id), 1)
++            CFLAGS += -DHAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
++          endif
+         else
+           dummy := $(error Error: No libbpf devel library found, please install libbpf-devel);
+         endif
++      else
++	CFLAGS += -DHAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
+       endif
+     endif
+ 
+diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
+index 94624733af7e225a..8271ab764eb56c7b 100644
+--- a/tools/perf/util/bpf-event.c
++++ b/tools/perf/util/bpf-event.c
+@@ -22,7 +22,8 @@
+ #include "record.h"
+ #include "util/synthetic-events.h"
+ 
+-struct btf * __weak btf__load_from_kernel_by_id(__u32 id)
++#ifndef HAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
++struct btf *btf__load_from_kernel_by_id(__u32 id)
+ {
+        struct btf *btf;
+ #pragma GCC diagnostic push
+@@ -32,6 +33,7 @@ struct btf * __weak btf__load_from_kernel_by_id(__u32 id)
+ 
+        return err ? ERR_PTR(err) : btf;
+ }
++#endif
+ 
+ int __weak bpf_prog_load(enum bpf_prog_type prog_type,
+ 			 const char *prog_name __maybe_unused,
 -- 
-Best Regards,
-Chanwoo Choi
-Samsung Electronics
+2.35.1
+
