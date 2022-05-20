@@ -2,63 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F41C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18660C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349722AbiETN23 (ORCPT
+        id S1349790AbiETNco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 09:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
+        Fri, 20 May 2022 09:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236825AbiETN22 (ORCPT
+        with ESMTP id S236825AbiETNck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 09:28:28 -0400
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1D914674B
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:28:25 -0700 (PDT)
-Received: (qmail 15196 invoked from network); 20 May 2022 13:28:23 -0000
-Received: from p200300cf07141a0076d435fffeb7be92.dip0.t-ipconnect.de ([2003:cf:714:1a00:76d4:35ff:feb7:be92]:49916 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <kuba@kernel.org>; Fri, 20 May 2022 15:28:23 +0200
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        davem@davemloft.net, edumazet@google.com
-Subject: [PATCH] net: tulip: fix build with CONFIG_GSC
-Date:   Fri, 20 May 2022 15:28:21 +0200
-Message-ID: <4719560.GXAFRqVoOG@eto.sf-tec.de>
+        Fri, 20 May 2022 09:32:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 858E57A830
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653053558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W9lUTIUy4WtCyayKKPomN8o880KWoRZmSGFT9az1YwM=;
+        b=iacYB/+OGiLyPB5AQiUSudOtl6BUI1o2aDpIL+lRWLPGWo/z/Q51sJzj1Mj2ofT1NdES5t
+        ukDZ2rj3WoXrfERLxzWCSoMVA/QOrcIbiVqtBHTllWe12wO7/+utwgEv2YqKxmjJieA3F6
+        RYjxZtLNToR+IyYaZht49AZs0VC6/cI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-253-roDXAEShN9KS248HMVjVJA-1; Fri, 20 May 2022 09:32:35 -0400
+X-MC-Unique: roDXAEShN9KS248HMVjVJA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CCCE81C04B54;
+        Fri, 20 May 2022 13:32:34 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 546C341136E1;
+        Fri, 20 May 2022 13:32:33 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>
+Subject: Re: [PATCH 0/2]  KVM: x86/mmu: nEPT X-only unsync bug fix
+Date:   Fri, 20 May 2022 09:31:16 -0400
+Message-Id: <20220520133115.3319985-1-pbonzini@redhat.com>
+In-Reply-To: <20220513195000.99371-1-seanjc@google.com>
+References: 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes: 3daebfbeb455 ("net: tulip: convert to devres")
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
----
- drivers/net/ethernet/dec/tulip/eeprom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Queued, thanks.  Here is the new message for patch 1:
 
-diff --git a/drivers/net/ethernet/dec/tulip/eeprom.c b/drivers/net/ethernet/dec/tulip/eeprom.c
-index 67a67cb78dbb..d5657ff15e3c 100644
---- a/drivers/net/ethernet/dec/tulip/eeprom.c
-+++ b/drivers/net/ethernet/dec/tulip/eeprom.c
-@@ -117,7 +117,7 @@ static void tulip_build_fake_mediatable(struct tulip_private *tp)
- 			  0x00, 0x06  /* ttm bit map */
- 			};
- 
--		tp->mtable = devm_kmalloc(&tp->pdev->pdev, sizeof(struct mediatable) +
-+		tp->mtable = devm_kmalloc(&tp->pdev->dev, sizeof(struct mediatable) +
- 					  sizeof(struct medialeaf), GFP_KERNEL);
- 
- 		if (tp->mtable == NULL)
--- 
-2.35.3
+    All of sync_page()'s existing checks filter out only !PRESENT gPTE,
+    because without execute-only, all upper levels are guaranteed to be at
+    least READABLE.  However, if EPT with execute-only support is in use by
+    L1, KVM can create an SPTE that is shadow-present but guest-inaccessible
+    (RWX=0) if the upper level combined permissions are R (or RW) and
+    the leaf EPTE is changed from R (or RW) to X.  Because the EPTE is
+    considered present when viewed in isolation, and no reserved bits are set,
+    FNAME(prefetch_invalid_gpte) will consider the GPTE valid, and cause a
+    not-present SPTE to be created.
 
+    The SPTE is "correct": the guest translation is inaccessible because
+    the combined protections of all levels yield RWX=0, and KVM will just
+    redirect any vmexits to the guest.  If EPT A/D bits are disabled, KVM
+    can mistake the SPTE for an access-tracked SPTE, but again such confusion
+    isn't fatal, as the "saved" protections are also RWX=0.  However,
+    creating a useless SPTE in general means that KVM messed up something,
+    even if this particular goof didn't manifest as a functional bug.
+    So, drop SPTEs whose new protections will yield a RWX=0 SPTE, and
+    add a WARN in make_spte() to detect creation of SPTEs that will
+    result in RWX=0 protections.
 
+Paolo
 
 
