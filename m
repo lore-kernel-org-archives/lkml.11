@@ -2,94 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D986BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D753EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352235AbiETRYz (ORCPT
+        id S1352244AbiETRY6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 13:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
+        Fri, 20 May 2022 13:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352198AbiETRYv (ORCPT
+        with ESMTP id S1352176AbiETRYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 13:24:51 -0400
-Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BEA187DA3;
-        Fri, 20 May 2022 10:24:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1653067489; x=1684603489;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BILEFO7OFJnSGLDg0SNK5vxBLhA8zQLyjIg6JwTmdXo=;
-  b=BvvtvLV5RozgNr7Pftn81AIOS3leKR+bLut+9BhWoKQWzEZWHYP72glR
-   FglSrZON9bsegM4xuDbdyAXLDJX3Ab0NV9YsaOT0vvTOClpgYkWFxzdad
-   YS4zV2Cc0l68EtCP4zY+PiGK5/ox2PPPbt2MzLW8sEdPP9UqCAvf9N0dT
-   8=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="296154464"
-X-IronPort-AV: E=Sophos;i="5.91,240,1647298800"; 
-   d="scan'208";a="296154464"
-Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
-  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 19:24:47 +0200
-Received: from MUCSE819.infineon.com (MUCSE819.infineon.com [172.23.29.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
-        Fri, 20 May 2022 19:24:46 +0200 (CEST)
-Received: from MUCSE817.infineon.com (172.23.29.43) by MUCSE819.infineon.com
- (172.23.29.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 20 May
- 2022 19:24:46 +0200
-Received: from ISCNPC0VBFBX.infineon.com (172.23.8.247) by
- MUCSE817.infineon.com (172.23.29.43) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 19:24:45 +0200
-From:   Alexander Steffen <Alexander.Steffen@infineon.com>
-To:     <jarkko@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-integrity@vger.kernel.org>
-CC:     Alexander Steffen <Alexander.Steffen@infineon.com>,
-        <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        Johannes Holland <johannes.holland@infineon.com>,
-        Amir Mizinski <amirmizi6@gmail.com>
-Subject: [PATCH v3 0/2] tpm_tis_i2c
-Date:   Fri, 20 May 2022 19:24:20 +0200
-Message-ID: <20220520172422.4309-1-Alexander.Steffen@infineon.com>
-X-Mailer: git-send-email 2.28.0.windows.1
+        Fri, 20 May 2022 13:24:49 -0400
+Received: from relay3.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C22187DA4
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:24:48 -0700 (PDT)
+Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay11.hostedemail.com (Postfix) with ESMTP id 1047A819FC;
+        Fri, 20 May 2022 17:24:44 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 90A222F;
+        Fri, 20 May 2022 17:24:41 +0000 (UTC)
+Message-ID: <5be32ddf7688db38408466315a80e03e9af7ac40.camel@perches.com>
+Subject: Re: [PATCH v2 4/5] clang-format: Fix empty curly braces
+From:   Joe Perches <joe@perches.com>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        =?ISO-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Andy Whitcroft <apw@canonical.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Kees Cook <keescook@chromium.org>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paul Moore <paul@paul-moore.com>, Tom Rix <trix@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+Date:   Fri, 20 May 2022 10:24:40 -0700
+In-Reply-To: <CANiq72kbp3xTpj-L2BfLQ1Ecx-2Ki0W3e5YLERx8-T9bjb96=g@mail.gmail.com>
+References: <20220506160106.522341-1-mic@digikod.net>
+         <20220506160106.522341-5-mic@digikod.net>
+         <CANiq72kbp3xTpj-L2BfLQ1Ecx-2Ki0W3e5YLERx8-T9bjb96=g@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE824.infineon.com (172.23.29.55) To
- MUCSE817.infineon.com (172.23.29.43)
+X-Rspamd-Queue-Id: 90A222F
+X-Stat-Signature: egq551txxc3afjxpmwups4w9xq1sq7cr
+X-Rspamd-Server: rspamout05
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+q3qK2ENX7TEoV39UpiiLOyeJIHyMH308=
+X-HE-Tag: 1653067481-758101
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Johannes asked me to take over this series. I've decided to split off the
-later patches from this series, since it was suggested to split those changes
-into multiple patches and I don't want to blow up this series with too many
-changes that are not strictly necessary for the I2C driver to work correctly.
-So let's first concentrate on getting the basic functionality right, then we
-can work on additional improvements.
+On Fri, 2022-05-20 at 19:15 +0200, Miguel Ojeda wrote:
+> On Fri, May 6, 2022 at 6:00 PM Mickaël Salaün <mic@digikod.net> wrote:
+> > 
+> > SplitEmptyFunction [1] should be false to not add a new line in an empty
+> > function body.  This follows the current kernel coding style.
+> 
+> I don't think this is correct. Checking headers in `include/linux/`, I
+> see ~70 using {} (when not in the same line as the signature), and
+> ~700 in different lines. In `kernel/`, it is even more pronounced: 4
+> vs. ~200.
+> 
+> Am I missing something?
 
-I've addressed all review comments for patch 1/2.
+historic vs recent uses ?
 
-Patch 2/2 is unmodified.
+I think it's mostly a 'don't care' style.
+It's not like there's a significant line count advantage.
 
-Johannes Holland (2):
-  tpm: Add tpm_tis_i2c backend for tpm_tis_core
-  tpm: Add tpm_tis_verify_crc to the tpm_tis_phy_ops protocol layer
+Sometimes there is though for blocks like
 
- drivers/char/tpm/Kconfig        |  12 +
- drivers/char/tpm/Makefile       |   1 +
- drivers/char/tpm/tpm_tis_core.c |  14 ++
- drivers/char/tpm/tpm_tis_core.h |  10 +
- drivers/char/tpm/tpm_tis_i2c.c  | 405 ++++++++++++++++++++++++++++++++
- 5 files changed, 442 insertions(+)
- create mode 100644 drivers/char/tpm/tpm_tis_i2c.c
+#if CONFIG_FOO
 
--- 
-2.25.1
+void foo1(...);
+void foo2(...);
+...
+void fooN(...);
+
+#else
+
+static inline void foo1(...) {}
+static inline void foo2(...) {}
+...
+static inline void fooN(...) {}
+
+#endif
+
+
 
