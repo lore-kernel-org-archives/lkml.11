@@ -2,119 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352007AbiETRCT (ORCPT
+        id S1352000AbiETRIK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 13:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        Fri, 20 May 2022 13:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351999AbiETRCQ (ORCPT
+        with ESMTP id S240425AbiETRII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 13:02:16 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2928417EC0A;
-        Fri, 20 May 2022 10:02:15 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id a23-20020a17090acb9700b001df4e9f4870so8375012pju.1;
-        Fri, 20 May 2022 10:02:15 -0700 (PDT)
+        Fri, 20 May 2022 13:08:08 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32757179093
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:08:04 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id e194so9320695iof.11
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=o1byCpdVQiUFM7RT5J0ZZS8QAIMgCRWQMbEspomVBfk=;
-        b=nWUHNztiOOoUrsK+bcjZbH1T/aOSc5WBrgXM3LFXHuiNEWY/GAAuPkB8kcHQihNJZp
-         o342F+m3+6/+5yGNwbS/DDkAQZ1Owt/aUdH4RGMbMgVR4uW2VrLv8X/+zeltewpsD1YS
-         Y96YZEMWY7nqrZ/HCSenS/ploHDKuDPUIL9L9M0B3FCRe643CGAk2bc1bGRMZ+mWJ97U
-         +amIFLkc/XaEbb/O9DHmfsKe5wJeV3yyG2ZrjffZKbo8P/yxIhzpH0OxsGQFuVrqE50K
-         VdjHqHijuIonv7Fy0C/rKErW42y2hE3ul7mzN7qEcfIHRgInZVg/gRQ2IAiH88yUcjYQ
-         fj/g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=i9RUNA8HR+3LMt6aSWi5aaLx+ys609H8mKFKAqfMPg0=;
+        b=fi8Mi0svNJsbGMxAZlv113yYTnugqYauhfAsCUjx6xSentLsfoGMTD6TThGnvsRwTo
+         5V85jyeVzRrM2JRDguntsgHeUP2UvmuQarXoztfrsWUfLf0fu/+Yut87wQdMj0CyN/7G
+         HXNmvNoRXKz8IzDmIU92PtZsvMCvhczDbMzl/QLZReCMgfhD7hM8t0es/DethhdUDKvR
+         NBPyDA4bGLJmiV7+8vuF2ELVeeUhiFgiPYYWhUbW66GBc78jExJkY1RBZF3tmlaCfXVY
+         eKw73WLuhZaNHsFn+5E/EY+FQH0fLLcu3F9aovWsHm5DWAUdvto/9V1Vhv0r86IEy4Kg
+         RrGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=o1byCpdVQiUFM7RT5J0ZZS8QAIMgCRWQMbEspomVBfk=;
-        b=W5iiYExxO1rcEw/UasGAxSyqdz1ryABXOmovv630n2mOPLkglS1e2Vn8R5dUDkIepT
-         YCkOwlYnmdmJZPD08SPywjnfOC9hILYuEgDhC8y5a72smjZyocggKBrJBBwAjKQVGOo/
-         frASMGXaHQ9fFWZ4ikX6TnmuTT/vjo2Lr71mKgNzb45JxyK0JMeiGQSmO/Z7NNQ/mrNo
-         kqRPgwhRVqIZQQJTcmiZ0zG5wRTh4aMOeOLWJDV7uoFeLeGlU/JPOdEMvkQFjhocJDVE
-         ev2bAGu8AKgPCAGTf1FVgv3rzGOlgs94V5foGmadAGfNPWh2613TxZLaFDnsUjlTU35S
-         NaMg==
-X-Gm-Message-State: AOAM532fefKYKspD8PhyTNepTnR0tPBScKEEDn/LX9Mgl17+RKBZhAdy
-        WZeL8xQ2uR8lGPac0GoM1Po=
-X-Google-Smtp-Source: ABdhPJy0orbrRVTqOzOn8DmBLqe4oIu9EYfHI5f4fkIcgsA4o07Z4zYLdo2EdzMnPSMCyeY2En8XOw==
-X-Received: by 2002:a17:90b:180f:b0:1df:cc0c:bbfd with SMTP id lw15-20020a17090b180f00b001dfcc0cbbfdmr11738327pjb.84.1653066134015;
-        Fri, 20 May 2022 10:02:14 -0700 (PDT)
-Received: from ssy-OptiPlex-7050.mioffice.cn ([43.224.245.236])
-        by smtp.gmail.com with ESMTPSA id v62-20020a622f41000000b0051835ccc008sm2013870pfv.115.2022.05.20.10.02.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 20 May 2022 10:02:13 -0700 (PDT)
-From:   shisiyuan <shisiyuan19870131@gmail.com>
-X-Google-Original-From: shisiyuan <shisiyuan@xiaomi.com>
-Cc:     shisiyuan <shisiyuan@xiaomi.com>, Tejun Heo <tj@kernel.org>,
-        Li Zefan <lizefan@huawei.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] cgroup: Return if dst_cgrp equals to src_cgrp
-Date:   Sat, 21 May 2022 01:02:00 +0800
-Message-Id: <1653066120-21262-1-git-send-email-shisiyuan@xiaomi.com>
-X-Mailer: git-send-email 2.7.4
-To:     unlisted-recipients:; (no To-header on input)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=i9RUNA8HR+3LMt6aSWi5aaLx+ys609H8mKFKAqfMPg0=;
+        b=UhL6QWV914LbTjMHCDBKcMistyG2CHwwhtCjmEIMQTsD6lVNFVYYGFU4INOcGJRicz
+         9RDTwEOEM4bE03h4aR55Kag09sznhf+TP/W/cGrtrQtxPC+NAAX+UVV88aErRz/Q55jK
+         MFQsJj/dG1b1t2VqJ6qAfV53I+XcP9NzVz9oNp8ccJGMH5M/nPyxQdsxCZW4wzDaxb/m
+         xLlk/a7X1ahF/SFRW7W3uZlHuRSQvcu8mgJA37U6Ve/iR0zYh7CfsfOGEMcOBCHf7oSC
+         I6rwKiUfqYLWJGEZq99CS+iW3TyJmYHXHkE2S/L2tmMJfirYqj09BcXO8AY4rt8VeQ+g
+         LV3g==
+X-Gm-Message-State: AOAM531bdJIKFUgzE9sRT7+mGCe20iYZt2qZzKc5GvxNh9sCVCbxiqII
+        KdpdXrPt6bjZ3JgB0gL5SrLg+fYfYeSqWLEjIIY=
+X-Google-Smtp-Source: ABdhPJx0Wxbb+MrHMlPDahkSrsVbBco0rEU7ibhFy6N5zjeUlbIkyQBb+iddFyu3mMBkraqNHFu1vga1jEp2stAeLiw=
+X-Received: by 2002:a05:6638:f89:b0:32e:89f4:e150 with SMTP id
+ h9-20020a0566380f8900b0032e89f4e150mr4780556jal.308.1653066483631; Fri, 20
+ May 2022 10:08:03 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220506160106.522341-1-mic@digikod.net> <20220506160106.522341-4-mic@digikod.net>
+In-Reply-To: <20220506160106.522341-4-mic@digikod.net>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Fri, 20 May 2022 19:07:52 +0200
+Message-ID: <CANiq72=75oefMG_GFO5scHZQ1Swk+oBLST83VWM6pvUuf-R-4g@mail.gmail.com>
+Subject: Re: [PATCH v2 3/5] clang-format: Fix goto labels indentation
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Andy Whitcroft <apw@canonical.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Joe Perches <joe@perches.com>,
+        Kees Cook <keescook@chromium.org>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paul Moore <paul@paul-moore.com>, Tom Rix <trix@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In function cgroup_migrate_add_src(), if dst_cgrp
-equals to src_cgroup which the tasks link, dont
-go on migrating tasks to another css_set.
-This can save the cost of unnecessary migration.
+On Fri, May 6, 2022 at 6:00 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> w=
+rote:
+>
+> Thanks to IndentGotoLabels introduced with clang-format-10 [1], we can
+> avoid goto labels identation.  This follows the current coding style and
+> it is then in line with the checkpatch.pl rules [2].
 
-Signed-off-by: shisiyuan <shisiyuan@xiaomi.com>
----
- kernel/cgroup/cgroup.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+To be consistent, this should increase the minimum to clang-format-10
+-- I will fix it on my side.
 
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 6139460..97d7f68 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -2634,6 +2634,9 @@ void cgroup_migrate_add_src(struct css_set *src_cset,
- 
- 	src_cgrp = cset_cgroup_from_root(src_cset, dst_cgrp->root);
- 
-+	if (src_cgrp == dst_cgrp)
-+		return;
-+
- 	if (!list_empty(&src_cset->mg_preload_node))
- 		return;
- 
-@@ -2780,6 +2783,9 @@ int cgroup_attach_task(struct cgroup *dst_cgrp, struct task_struct *leader,
- 	rcu_read_unlock();
- 	spin_unlock_irq(&css_set_lock);
- 
-+	if (list_empty(&mgctx.preloaded_src_csets))
-+		return ret;
-+
- 	/* prepare dst csets and commit */
- 	ret = cgroup_migrate_prepare_dst(&mgctx);
- 	if (!ret)
-@@ -2927,7 +2933,7 @@ static int cgroup_update_dfl_csses(struct cgroup *cgrp)
- 	struct cgroup_subsys_state *d_css;
- 	struct cgroup *dsct;
- 	struct css_set *src_cset;
--	int ret;
-+	int ret = 0;
- 
- 	lockdep_assert_held(&cgroup_mutex);
- 
-@@ -2943,6 +2949,9 @@ static int cgroup_update_dfl_csses(struct cgroup *cgrp)
- 	}
- 	spin_unlock_irq(&css_set_lock);
- 
-+	if (list_empty(&mgctx.preloaded_src_csets))
-+		goto out_finish;
-+
- 	/* NULL dst indicates self on default hierarchy */
- 	ret = cgroup_migrate_prepare_dst(&mgctx);
- 	if (ret)
--- 
-2.7.4
-
+Cheers,
+Miguel
