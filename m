@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD331C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 906BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351854AbiETQq5 (ORCPT
+        id S1351908AbiETQrA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
+        Fri, 20 May 2022 12:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351927AbiETQqd (ORCPT
+        with ESMTP id S1351824AbiETQqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:46:33 -0400
+        Fri, 20 May 2022 12:46:50 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 605EC6EB0F
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:46:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 392494B87F
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:46:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653065185;
+        s=mimecast20190719; t=1653065206;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JFGupm1C+ZWOkUQAo24Pibe+Ygnjs7S0HztvSqUR5qM=;
-        b=R5FshEPqRmJjyWO9fUf1clmd8/iIqNkd+YMX8Jfgb9EDVLtTP7V0rWCkFK25w23gsBm4z+
-        fN7uCp3H3UKUprS4aoQMLDyx4L+bxkt7RvW6IrH57aDCW1YnjH+5U8X+nE6cylzO3DZ1GP
-        43o0PlBVE+8UM7sKk8pS/w0AcPvSRYI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=DA7O6pbC6Izg24fMA0Z1M6bRg/AzBMzyB/mvXSj7xlU=;
+        b=Bjz39QAc51WO3DnSuVRNB8bagJ/bcTQUvYu03P/UyMCB5FmK4xrMdQRXjnoPJnqMGo366k
+        31eVKiyW84sk9nPiwGzmWBJWU6PNsC4/mCp5P7KZ7NUYd94WfuxqXZBkW23e7IoYSxxTUt
+        pXZsQVDW9QG42L699J8EyTrzOW/hJBk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-0l4LkTGKMqWqvbjSDWkG4g-1; Fri, 20 May 2022 12:46:22 -0400
-X-MC-Unique: 0l4LkTGKMqWqvbjSDWkG4g-1
+ us-mta-551-WxEePOZfMj2r7ktl59xwfA-1; Fri, 20 May 2022 12:46:35 -0400
+X-MC-Unique: WxEePOZfMj2r7ktl59xwfA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DFE9482A682;
-        Fri, 20 May 2022 16:46:21 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D698F38041D3;
+        Fri, 20 May 2022 16:46:34 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 35BD740CFD00;
-        Fri, 20 May 2022 16:46:21 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C91D40CFD00;
+        Fri, 20 May 2022 16:46:34 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 4/7] rxrpc: Automatically generate trace tag enums
+Subject: [PATCH net-next 6/7] rxrpc, afs: Fix selection of abort codes
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Fri, 20 May 2022 17:46:20 +0100
-Message-ID: <165306518051.34989.10037511270953734392.stgit@warthog.procyon.org.uk>
+Date:   Fri, 20 May 2022 17:46:33 +0100
+Message-ID: <165306519350.34989.5122705705434053803.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
 References: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
@@ -61,315 +61,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Automatically generate trace tag enums from the symbol -> string mapping
-tables rather than having the enums as well, thereby reducing duplicated
-data.
+The RX_USER_ABORT code should really only be used to indicate that the user
+of the rxrpc service (ie. userspace) implicitly caused a call to be aborted
+- for instance if the AF_RXRPC socket is closed whilst the call was in
+progress.  (The user may also explicitly abort a call and specify the abort
+code to use).
 
+Change some of the points of generation to use other abort codes instead:
+
+ (1) Abort the call with RXGEN_SS_UNMARSHAL or RXGEN_CC_UNMARSHAL if we see
+     ENOMEM and EFAULT during received data delivery and abort with
+     RX_CALL_DEAD in the default case.
+
+ (2) Abort with RXGEN_SS_MARSHAL if we get ENOMEM whilst trying to send a
+     reply.
+
+ (3) Abort with RX_CALL_DEAD if we stop hearing from the peer if we had
+     heard from the peer and abort with RX_CALL_TIMEOUT if we hadn't.
+
+ (4) Abort with RX_CALL_DEAD if we try to disconnect a call that's not
+     completed successfully or been aborted.
+
+Reported-by: Jeffrey Altman <jaltman@auristor.com>
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- include/trace/events/rxrpc.h |  261 +++++++-----------------------------------
- 1 file changed, 42 insertions(+), 219 deletions(-)
+ fs/afs/rxrpc.c          |    8 +++++---
+ net/rxrpc/call_event.c  |    4 ++--
+ net/rxrpc/conn_object.c |    2 +-
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index cdb28976641b..66915b872a44 100644
---- a/include/trace/events/rxrpc.h
-+++ b/include/trace/events/rxrpc.h
-@@ -13,215 +13,6 @@
- #include <linux/tracepoint.h>
- #include <linux/errqueue.h>
- 
--/*
-- * Define enums for tracing information.
-- *
-- * These should all be kept sorted, making it easier to match the string
-- * mapping tables further on.
-- */
--#ifndef __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY
--#define __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY
--
--enum rxrpc_skb_trace {
--	rxrpc_skb_cleaned,
--	rxrpc_skb_freed,
--	rxrpc_skb_got,
--	rxrpc_skb_lost,
--	rxrpc_skb_new,
--	rxrpc_skb_purged,
--	rxrpc_skb_received,
--	rxrpc_skb_rotated,
--	rxrpc_skb_seen,
--	rxrpc_skb_unshared,
--	rxrpc_skb_unshared_nomem,
--};
--
--enum rxrpc_local_trace {
--	rxrpc_local_got,
--	rxrpc_local_new,
--	rxrpc_local_processing,
--	rxrpc_local_put,
--	rxrpc_local_queued,
--};
--
--enum rxrpc_peer_trace {
--	rxrpc_peer_got,
--	rxrpc_peer_new,
--	rxrpc_peer_processing,
--	rxrpc_peer_put,
--};
--
--enum rxrpc_conn_trace {
--	rxrpc_conn_got,
--	rxrpc_conn_new_client,
--	rxrpc_conn_new_service,
--	rxrpc_conn_put_client,
--	rxrpc_conn_put_service,
--	rxrpc_conn_queued,
--	rxrpc_conn_reap_service,
--	rxrpc_conn_seen,
--};
--
--enum rxrpc_client_trace {
--	rxrpc_client_activate_chans,
--	rxrpc_client_alloc,
--	rxrpc_client_chan_activate,
--	rxrpc_client_chan_disconnect,
--	rxrpc_client_chan_pass,
--	rxrpc_client_chan_wait_failed,
--	rxrpc_client_cleanup,
--	rxrpc_client_discard,
--	rxrpc_client_duplicate,
--	rxrpc_client_exposed,
--	rxrpc_client_replace,
--	rxrpc_client_to_active,
--	rxrpc_client_to_idle,
--};
--
--enum rxrpc_call_trace {
--	rxrpc_call_connected,
--	rxrpc_call_error,
--	rxrpc_call_got,
--	rxrpc_call_got_kernel,
--	rxrpc_call_got_timer,
--	rxrpc_call_got_userid,
--	rxrpc_call_new_client,
--	rxrpc_call_new_service,
--	rxrpc_call_put,
--	rxrpc_call_put_kernel,
--	rxrpc_call_put_noqueue,
--	rxrpc_call_put_notimer,
--	rxrpc_call_put_timer,
--	rxrpc_call_put_userid,
--	rxrpc_call_queued,
--	rxrpc_call_queued_ref,
--	rxrpc_call_release,
--	rxrpc_call_seen,
--};
--
--enum rxrpc_transmit_trace {
--	rxrpc_transmit_await_reply,
--	rxrpc_transmit_end,
--	rxrpc_transmit_queue,
--	rxrpc_transmit_queue_last,
--	rxrpc_transmit_rotate,
--	rxrpc_transmit_rotate_last,
--	rxrpc_transmit_wait,
--};
--
--enum rxrpc_receive_trace {
--	rxrpc_receive_end,
--	rxrpc_receive_front,
--	rxrpc_receive_incoming,
--	rxrpc_receive_queue,
--	rxrpc_receive_queue_last,
--	rxrpc_receive_rotate,
--};
--
--enum rxrpc_recvmsg_trace {
--	rxrpc_recvmsg_cont,
--	rxrpc_recvmsg_data_return,
--	rxrpc_recvmsg_dequeue,
--	rxrpc_recvmsg_enter,
--	rxrpc_recvmsg_full,
--	rxrpc_recvmsg_hole,
--	rxrpc_recvmsg_next,
--	rxrpc_recvmsg_requeue,
--	rxrpc_recvmsg_return,
--	rxrpc_recvmsg_terminal,
--	rxrpc_recvmsg_to_be_accepted,
--	rxrpc_recvmsg_wait,
--};
--
--enum rxrpc_rtt_tx_trace {
--	rxrpc_rtt_tx_cancel,
--	rxrpc_rtt_tx_data,
--	rxrpc_rtt_tx_no_slot,
--	rxrpc_rtt_tx_ping,
--};
--
--enum rxrpc_rtt_rx_trace {
--	rxrpc_rtt_rx_cancel,
--	rxrpc_rtt_rx_lost,
--	rxrpc_rtt_rx_obsolete,
--	rxrpc_rtt_rx_ping_response,
--	rxrpc_rtt_rx_requested_ack,
--};
--
--enum rxrpc_timer_trace {
--	rxrpc_timer_begin,
--	rxrpc_timer_exp_ack,
--	rxrpc_timer_exp_hard,
--	rxrpc_timer_exp_idle,
--	rxrpc_timer_exp_keepalive,
--	rxrpc_timer_exp_lost_ack,
--	rxrpc_timer_exp_normal,
--	rxrpc_timer_exp_ping,
--	rxrpc_timer_exp_resend,
--	rxrpc_timer_expired,
--	rxrpc_timer_init_for_reply,
--	rxrpc_timer_init_for_send_reply,
--	rxrpc_timer_restart,
--	rxrpc_timer_set_for_ack,
--	rxrpc_timer_set_for_hard,
--	rxrpc_timer_set_for_idle,
--	rxrpc_timer_set_for_keepalive,
--	rxrpc_timer_set_for_lost_ack,
--	rxrpc_timer_set_for_normal,
--	rxrpc_timer_set_for_ping,
--	rxrpc_timer_set_for_resend,
--	rxrpc_timer_set_for_send,
--};
--
--enum rxrpc_propose_ack_trace {
--	rxrpc_propose_ack_client_tx_end,
--	rxrpc_propose_ack_input_data,
--	rxrpc_propose_ack_ping_for_check_life,
--	rxrpc_propose_ack_ping_for_keepalive,
--	rxrpc_propose_ack_ping_for_lost_ack,
--	rxrpc_propose_ack_ping_for_lost_reply,
--	rxrpc_propose_ack_ping_for_params,
--	rxrpc_propose_ack_processing_op,
--	rxrpc_propose_ack_respond_to_ack,
--	rxrpc_propose_ack_respond_to_ping,
--	rxrpc_propose_ack_retry_tx,
--	rxrpc_propose_ack_rotate_rx,
--	rxrpc_propose_ack_terminal_ack,
--};
--
--enum rxrpc_propose_ack_outcome {
--	rxrpc_propose_ack_subsume,
--	rxrpc_propose_ack_update,
--	rxrpc_propose_ack_use,
--};
--
--enum rxrpc_congest_change {
--	rxrpc_cong_begin_retransmission,
--	rxrpc_cong_cleared_nacks,
--	rxrpc_cong_new_low_nack,
--	rxrpc_cong_no_change,
--	rxrpc_cong_progress,
--	rxrpc_cong_retransmit_again,
--	rxrpc_cong_rtt_window_end,
--	rxrpc_cong_saw_nack,
--};
--
--enum rxrpc_tx_point {
--	rxrpc_tx_point_call_abort,
--	rxrpc_tx_point_call_ack,
--	rxrpc_tx_point_call_data_frag,
--	rxrpc_tx_point_call_data_nofrag,
--	rxrpc_tx_point_call_final_resend,
--	rxrpc_tx_point_conn_abort,
--	rxrpc_tx_point_rxkad_challenge,
--	rxrpc_tx_point_rxkad_response,
--	rxrpc_tx_point_reject,
--	rxrpc_tx_point_version_keepalive,
--	rxrpc_tx_point_version_reply,
--};
--
--#endif /* end __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY */
--
- /*
-  * Declare tracing information enums and their string mappings for display.
-  */
-@@ -451,6 +242,36 @@ enum rxrpc_tx_point {
- 	EM(rxrpc_tx_point_version_keepalive,	"VerKeepalive") \
- 	E_(rxrpc_tx_point_version_reply,	"VerReply")
- 
-+/*
-+ * Generate enums for tracing information.
-+ */
-+#ifndef __NETFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
-+#define __NETFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
-+
-+#undef EM
-+#undef E_
-+#define EM(a, b) a,
-+#define E_(a, b) a
-+
-+enum rxrpc_call_trace		{ rxrpc_call_traces } __mode(byte);
-+enum rxrpc_client_trace		{ rxrpc_client_traces } __mode(byte);
-+enum rxrpc_congest_change	{ rxrpc_congest_changes } __mode(byte);
-+enum rxrpc_conn_trace		{ rxrpc_conn_traces } __mode(byte);
-+enum rxrpc_local_trace		{ rxrpc_local_traces } __mode(byte);
-+enum rxrpc_peer_trace		{ rxrpc_peer_traces } __mode(byte);
-+enum rxrpc_propose_ack_outcome	{ rxrpc_propose_ack_outcomes } __mode(byte);
-+enum rxrpc_propose_ack_trace	{ rxrpc_propose_ack_traces } __mode(byte);
-+enum rxrpc_receive_trace	{ rxrpc_receive_traces } __mode(byte);
-+enum rxrpc_recvmsg_trace	{ rxrpc_recvmsg_traces } __mode(byte);
-+enum rxrpc_rtt_rx_trace		{ rxrpc_rtt_rx_traces } __mode(byte);
-+enum rxrpc_rtt_tx_trace		{ rxrpc_rtt_tx_traces } __mode(byte);
-+enum rxrpc_skb_trace		{ rxrpc_skb_traces } __mode(byte);
-+enum rxrpc_timer_trace		{ rxrpc_timer_traces } __mode(byte);
-+enum rxrpc_transmit_trace	{ rxrpc_transmit_traces } __mode(byte);
-+enum rxrpc_tx_point		{ rxrpc_tx_points } __mode(byte);
-+
-+#endif /* end __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY */
-+
- /*
-  * Export enum symbols via userspace.
-  */
-@@ -459,21 +280,21 @@ enum rxrpc_tx_point {
- #define EM(a, b) TRACE_DEFINE_ENUM(a);
- #define E_(a, b) TRACE_DEFINE_ENUM(a);
- 
--rxrpc_skb_traces;
--rxrpc_local_traces;
--rxrpc_conn_traces;
--rxrpc_client_traces;
- rxrpc_call_traces;
--rxrpc_transmit_traces;
-+rxrpc_client_traces;
-+rxrpc_congest_changes;
-+rxrpc_congest_modes;
-+rxrpc_conn_traces;
-+rxrpc_local_traces;
-+rxrpc_propose_ack_outcomes;
-+rxrpc_propose_ack_traces;
- rxrpc_receive_traces;
- rxrpc_recvmsg_traces;
--rxrpc_rtt_tx_traces;
- rxrpc_rtt_rx_traces;
-+rxrpc_rtt_tx_traces;
-+rxrpc_skb_traces;
- rxrpc_timer_traces;
--rxrpc_propose_ack_traces;
--rxrpc_propose_ack_outcomes;
--rxrpc_congest_modes;
--rxrpc_congest_changes;
-+rxrpc_transmit_traces;
- rxrpc_tx_points;
- 
- /*
-@@ -1574,6 +1395,8 @@ TRACE_EVENT(rxrpc_rx_discard_ack,
- 		      __entry->call_ackr_prev)
- 	    );
- 
-+#undef EM
-+#undef E_
- #endif /* _TRACE_RXRPC_H */
- 
- /* This part must be outside protection */
+diff --git a/fs/afs/rxrpc.c b/fs/afs/rxrpc.c
+index 23a1a92d64bb..a5434f3e57c6 100644
+--- a/fs/afs/rxrpc.c
++++ b/fs/afs/rxrpc.c
+@@ -537,6 +537,8 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 		case -ENODATA:
+ 		case -EBADMSG:
+ 		case -EMSGSIZE:
++		case -ENOMEM:
++		case -EFAULT:
+ 			abort_code = RXGEN_CC_UNMARSHAL;
+ 			if (state != AFS_CALL_CL_AWAIT_REPLY)
+ 				abort_code = RXGEN_SS_UNMARSHAL;
+@@ -544,7 +546,7 @@ static void afs_deliver_to_call(struct afs_call *call)
+ 						abort_code, ret, "KUM");
+ 			goto local_abort;
+ 		default:
+-			abort_code = RX_USER_ABORT;
++			abort_code = RX_CALL_DEAD;
+ 			rxrpc_kernel_abort_call(call->net->socket, call->rxcall,
+ 						abort_code, ret, "KER");
+ 			goto local_abort;
+@@ -836,7 +838,7 @@ void afs_send_empty_reply(struct afs_call *call)
+ 	case -ENOMEM:
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 		fallthrough;
+ 	default:
+ 		_leave(" [error]");
+@@ -878,7 +880,7 @@ void afs_send_simple_reply(struct afs_call *call, const void *buf, size_t len)
+ 	if (n == -ENOMEM) {
+ 		_debug("oom");
+ 		rxrpc_kernel_abort_call(net->socket, call->rxcall,
+-					RX_USER_ABORT, -ENOMEM, "KOO");
++					RXGEN_SS_MARSHAL, -ENOMEM, "KOO");
+ 	}
+ 	_leave(" [error]");
+ }
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 22e05de5d1ca..e426f6831aab 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -377,9 +377,9 @@ void rxrpc_process_call(struct work_struct *work)
+ 		if (test_bit(RXRPC_CALL_RX_HEARD, &call->flags) &&
+ 		    (int)call->conn->hi_serial - (int)call->rx_serial > 0) {
+ 			trace_rxrpc_call_reset(call);
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ECONNRESET);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_DEAD, -ECONNRESET);
+ 		} else {
+-			rxrpc_abort_call("EXP", call, 0, RX_USER_ABORT, -ETIME);
++			rxrpc_abort_call("EXP", call, 0, RX_CALL_TIMEOUT, -ETIME);
+ 		}
+ 		set_bit(RXRPC_CALL_EV_ABORT, &call->events);
+ 		goto recheck_state;
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index 03c7f2269151..22089e37e97f 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -183,7 +183,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		default:
+-			chan->last_abort = RX_USER_ABORT;
++			chan->last_abort = RX_CALL_DEAD;
+ 			chan->last_type = RXRPC_PACKET_TYPE_ABORT;
+ 			break;
+ 		}
 
 
