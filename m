@@ -2,180 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0329CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 06:51:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FE2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 06:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346052AbiETGux (ORCPT
+        id S1346061AbiETGvr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 02:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
+        Fri, 20 May 2022 02:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346029AbiETGum (ORCPT
+        with ESMTP id S239485AbiETGvf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 02:50:42 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9F814D78A;
-        Thu, 19 May 2022 23:50:41 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24K5TCu8002442;
-        Fri, 20 May 2022 06:50:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=8QSlgsHmDK+0JkhJeaqXQ8bizJy3MI+HOBO07GkfNVY=;
- b=AVEjl//R0blkkvsu9e3gGp8ZS8vrThyt4ZDvPA+QUryV/rZNBYSPszt1MZ//Nf5HgdZ8
- J812seaxyWTCDN1L7MiihqeAvVIifff2oR454KfOWpYNu6g2uvX4a9G+Ucs7WnclYeNX
- ZHAtMoUDZll2SugOTxDrvstr7IuOjXxDPhdMReIUS9ZJry0+LM8WhFdMSgqqZjyvvVB/
- ReGuTF/wIX/EnCaHYLXr+AvdxQG4MvcjqKxivrYQxka4iKyE/VnV5t5gZBl9s104lY9Q
- YZHsobPPwSkd7ppeDdEXloMZF9O4jY18DJGjx3YZp347zY9/1/cfF8Uu1s+a9o4x/iLd zQ== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g241se6n2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 May 2022 06:50:37 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24K6nrlv007310;
-        Fri, 20 May 2022 06:50:36 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2176.outbound.protection.outlook.com [104.47.57.176])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g22v66ss1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 May 2022 06:50:36 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hn4Y4bQYMuXjGfbB7LkGE13dgTB8tdMthZ0atUkrJ/1/tTzdwGoY8Mjown8uvepN0oFyQGEUeJHMeNPzxWIXo1WvHrAWI9ppofRJGHN/fR/S/GJMezmWpoYQfM/bReg1AoqyFTMXNzhvbde5qXKvENnuFGpvuvrPLOsuj0SmLhr6kAlcPXIftZAEqEW9wm+b8fg/1zhgEF0wnhjkN+Sx0FgqStSVkww5hkfLOJUw5xM/3PM5+6gxVA7dd58otSQcZF339p2gmh6AhY3EbOY7PxKUgjxPFXW8RR8LwTNLQxgeqrktLCNKC40EtwMQaqurb4JRd0xpI8u1UB6Y6DEgAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8QSlgsHmDK+0JkhJeaqXQ8bizJy3MI+HOBO07GkfNVY=;
- b=F3zaUGMlLPCSt2uPv7WW5vmAGJw2WT94f4aU7wHTvjoPAJZlmcKHLGlgpdV+BnFm+VavM3HIMU2QO5AMy3TTuoqXxo7XRN9pj7ghLVl8YqRnriDTDkQx3kD8UcBq0tX0OmyfhVME2YWxHRiq49ybIiXKMKjcRZtUmB172mq6XCPbc8OVPySg6U6vtYjguPMHnZtpyC3fQnl/3fLD9R2EEwDl/M1CZ6IAWtKbvnA+UJw42U6W9a9+krigSJdGbMgZdf04ecFaWdajUX7VsHoBwtzKHmGTdRb/F40XWBAQ3iDtOgRckuCfRbRALWbVv7fGzG5Z3wrwMqizOBeZ+cTonQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Fri, 20 May 2022 02:51:35 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD3313F9C
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 23:51:34 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id u30so12707168lfm.9
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 23:51:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8QSlgsHmDK+0JkhJeaqXQ8bizJy3MI+HOBO07GkfNVY=;
- b=u8vRFRQ1VeNJSngNb7SFpgC3jsZQPl2eTCCoxZZ4+bqK3v/uBHCu6FaDDDA5qg8mq/sPgLRFCBNV9d9m2Meq93CTXawhtYppfl3RirhR6lalDhohRZOK2vEyhcTRsFfDX3cDFAinb+YYuGgKtlArYEccULfH8PROc884I3kHRGk=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by DM5PR1001MB2107.namprd10.prod.outlook.com
- (2603:10b6:4:2c::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Fri, 20 May
- 2022 06:50:34 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5273.014; Fri, 20 May 2022
- 06:50:34 +0000
-Date:   Fri, 20 May 2022 09:50:24 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH v2] nvmem: brcm_nvram: check for allocation failure
-Message-ID: <20220520065023.GB23160@kadam>
-References: <20220510093540.23259-1-srinivas.kandagatla@linaro.org>
- <YoZ2ozeju8bXzUyX@kroah.com>
- <5b219857-4fe9-2406-2c6f-0511e8c33765@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5b219857-4fe9-2406-2c6f-0511e8c33765@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR1P264CA0116.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:50::34) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2sD0n6yJXGuDhEewc3lorHaqBnUR099vPCJ5WEpCDzU=;
+        b=mOoGc9M7MZgxeaun4PGlBRo4C1JXBlLpYBpB0L6MScXAzAz4CQjEupqeEEiqIWVtoS
+         yzsod5WBURL9tjzxFjdaKzclp79TQIts7pzJufezPjonrPmOg2kLST6Yz5yk0poAdEkv
+         1FokQMf2YtyUEt6qDRhGfKp0jAmlbIhEPE0Y9yp1BlWPZddAsy6avCDFyvojQByppw3U
+         YZdF+69jR6WSNT6qja7BKlhcm6UOQBYfk6GgCQMdG/v+I34ZPzvjSe2msGn5TGD8lKrK
+         CkEzOdKtdYsHqPbRhaDRxiJDH5hUlWVIVsUbCi9Mslb5JOHLhOU32ArxKxPNHc/7iUZR
+         xWpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2sD0n6yJXGuDhEewc3lorHaqBnUR099vPCJ5WEpCDzU=;
+        b=7knAv4VqKZcOpCgiyCIHsveerHwiiSiJdLhjcm+fK2pVhFORkwv0vv8Rh4uJlkLBD+
+         7yMKV9EZiGYMSS8mGt/U/p7q2RhjK3KZ8ZFJR8wq52br6MKwO70bde2LwYNqDlqKjD1U
+         YUd+RSuyN8kUKTQjeUxgKEyWer4WL1RsVjyB9PsPS4RXc2PLfMNte2gSWiMZccCwCMfy
+         QyByNbkRJz7bYJPmZNk8FDZ6b/auRQ0AzdTfl/uu7htDxMjJgRwoPPUxjjDABHjKx2HD
+         kUvi5e8Deg4blljNZhH1JKnOQP0Tqs5VgIK0+MF1blJ/fjwROZEy5bD7tvXh1rgB+hPP
+         KApA==
+X-Gm-Message-State: AOAM531qEPGnAI5V/cq0PPVWSDLhvEAbKeOiMdnyGHZy40rFhTfWZFFj
+        XgeK0iQQul/TAY6nm9TamJWc2g==
+X-Google-Smtp-Source: ABdhPJzaGbv04buuDHGp4NLG8WTmLEncJfxtJuLSgfyJWSMt4wxUrF1jnVPHvL9DO/40kuanoOGM6w==
+X-Received: by 2002:a05:6512:398c:b0:473:ab45:1f7c with SMTP id j12-20020a056512398c00b00473ab451f7cmr5937130lfu.341.1653029492370;
+        Thu, 19 May 2022 23:51:32 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id g23-20020a2e9e57000000b0024f3d1daebbsm192250ljk.67.2022.05.19.23.51.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 23:51:31 -0700 (PDT)
+Message-ID: <a0eed04a-1380-d96a-a406-217f053354b9@linaro.org>
+Date:   Fri, 20 May 2022 08:51:30 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7ebbc77e-54cd-40ef-f029-08da3a2d09db
-X-MS-TrafficTypeDiagnostic: DM5PR1001MB2107:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1001MB2107C614A5D1F6D9E55D05C48ED39@DM5PR1001MB2107.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mI8xltjwE7+EQzAsvWKVIs5nsiOk+BryZyKGlXmr8qG0O/ztb0zM92O2JMGqFqUOogwaz4cOXhSZdzqT7jhOISMkbULDJS2w+RYgZN/xeXzqQrcg/C5UwVpjyKkrxarIoRx2WDfkACduZcU6srnyKE8fXxofo4ez/AYouohQajsZ6NK5hvqGHz390XcEqrAMT/TeQ5QZVxTBapdGOZXzYg1FvYZEjLAVUWgHNuqcbbtwNKg2jLZJg5OH5mHqg8LSvMbSuuPiq1FK+fmGsleKdD2G4suo7Fujx+QXBkUGw87lwxNNBuWS2rB7Dmuw83ZDuJAxLFA/+nvEYLyMyWHLjHs9hRtMUaJ4b3vWQeI+wuWPPinhI3r2HssO30yHcSYGQrzWm1ph+Xt4JimUh5uYLkf6ujUt1ezoW7p4f/bJV7dCd1jolCznV0asT7MbhvuBVQ3iNQABP3yF2HX966igumHbTuDjyWBA0ra4BiTjjgjvEAacvnbYDsw+cd98KZ/aWVxr7drpnj2tRWyBCq2GAnNWvINWH9DMKAz2i4gSN6JIHxy/APGN9wm4Jq8xCbRHYx742h9KeMKplT+vxKIk+lepG2o2yxYtK+hNWVMpBKZIS0rnRJTAFfWBAh1HXbRRT8imLvI314F8FSVzau/Bj8mLH8W9DCpXAflSriFtmnSEeFEPmVfssC48eyZwf09NbDfyD59hUuCAPI65SAdGtw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(8936002)(6666004)(44832011)(38100700002)(6506007)(66946007)(4326008)(33656002)(33716001)(4744005)(186003)(66556008)(316002)(5660300002)(1076003)(6486002)(8676002)(86362001)(38350700002)(9686003)(26005)(2906002)(508600001)(66476007)(54906003)(52116002)(6916009)(53546011)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Uji6UQknE6X3usSyJKi8w419IDuogGG2J/K2IuOhfOc3jZc59MzFXajSodQ/?=
- =?us-ascii?Q?8YQfgC3V2EyXe+XASbfz3Yv/IL0t2DtocwOhGnpJI84YIT4uRj6iFvniGJ7Z?=
- =?us-ascii?Q?t2a9OXOiNYU6+OR+YVNrTaP4iAzICffyuMXjZJA6V6gsc6QV7BJrZExVI7bT?=
- =?us-ascii?Q?x2iEiU/Gd7k7unFYYC9nn5aUbAUbiTgFEBiSzoBpIduLGfO1Z55xZHYR9zbP?=
- =?us-ascii?Q?GfpWPbwfL4LiKTk1W6rBbrGcEQwT+nCB61oC87qPTeEMF3IzIOzd0Vck5bgN?=
- =?us-ascii?Q?r7toDkv0v7lw9RAFOFqL+wQH1DCv8GIZO6l4fTcwaA50O1MMDky/VPBsXKLE?=
- =?us-ascii?Q?3LroedkhriOkvLAOh/1ib8KGbdAkQ/d5f9Ngso5FOpBrM/gcMRMKNjGbT8SW?=
- =?us-ascii?Q?haczTNPkRnL6wKDhau/ugJWJ5HPzSBp0qhGyu0SLtE0KiLnsHb5IxrzskYif?=
- =?us-ascii?Q?eLw0d3jKBLtfeCImA0OYyVma7RAvWHpuApXW0iTbXUsv4SN/eKulQ2N4hovZ?=
- =?us-ascii?Q?7Sd4RYwBPS6Zt7GDwzi6dieDzzkJM2gAmcLn/9C07xP7PYsCe3Oy6QiwNJmX?=
- =?us-ascii?Q?ws0jVcYjbVYNCicfyCwFADNLNpAK1KPOjznMHtAA1f8uRzK+Kr1DUfOzn5X7?=
- =?us-ascii?Q?J6DpZi3UbLBkjE4gG/mARxJjlyi9df354FlDwD2ohPWU11APrQk62u9O0uUf?=
- =?us-ascii?Q?Qpcv7HjPhBbzm9XABvJ0NVY/qZziUJ5TDELODFd8Uzxnd6fCZd6p8ZCRLduG?=
- =?us-ascii?Q?CmShCveWbhinN65E128ZF5GqslYBkLA+4SD8s5hOVAug+nA5O6CyTkA1cnmd?=
- =?us-ascii?Q?qUilP3KMZjrhWq8NYimDaWGj6O5YaZk3skffrKirTdZ51fOviTZkC7EbCqi2?=
- =?us-ascii?Q?/e8p83KjxhyQZrRGwvtHHw+NhkbJQPgP7eJ6gRn6g8Zrixz/67/wiG9okTUQ?=
- =?us-ascii?Q?RF60ku0eVHUFpeYqnYM3LKKUde6hO56vebS68Sc9eaLafYobMQpjQCsXFYGJ?=
- =?us-ascii?Q?8tdHKU8qm6Ncup+kDGV+2fSHe/QQNYGygbaWk4vtyI2CjcgEGNEosKyS1V8e?=
- =?us-ascii?Q?2YrldL+sYtdVc9wqaryaWbNw8cC2CBf8MFHding8XQvW6RIne8rgF3Hg8Guv?=
- =?us-ascii?Q?DCF0sKFVuU/m4C2LOelDXUXGP8sDNFuBIcsp9Fo29j7XvWeaoR1U13VxEmdG?=
- =?us-ascii?Q?dHwo2ZBD7moHltIDRL8v0TabnUKP8EvpaJ6qYIqkh+ZOUGJL78gHPasylu4c?=
- =?us-ascii?Q?rKUmWriI7bDsUIyKpnI4FUfZYbz0iBxm/KtZQE9CUocVIp99QlVuk229T0s3?=
- =?us-ascii?Q?zvuKCyCgfZ1jUsQCThxc1tXTKZH8atWJ5GQBZCqKnSEluy8AV8uzFkH1RHY1?=
- =?us-ascii?Q?aPKYi8o6pHxmZk78s/DhFtf/zodAcjNMZFG5gb/PdAC4pvMlne5M49TIWrkh?=
- =?us-ascii?Q?SjD7N2TMUijgskXWYxwQDeqRFCQn2WXEn4KzwgSm2n5nOzcVOanjPPphEr3E?=
- =?us-ascii?Q?srHyGMHjqEBS2k4jZ/wylAtUTIlit9Khmse9z58dN+5TjKiimXxmL8bEvFIm?=
- =?us-ascii?Q?Gl8e4hoxgoa4/cvB9DrR7jiL3w8fN43UKP25a/VvxIq82sRJ8IGOdB8mxe/2?=
- =?us-ascii?Q?+6QnSm6AWxoM7mJGw3x623qRDd0gl4nkRl+AeYjy1bYfh20dog+fgDQOU2lb?=
- =?us-ascii?Q?dgD158zrljdM1v++h+c76m5SVWAEoB1ZYQztuLGLMLK4u/eaPszPbK0Wgy06?=
- =?us-ascii?Q?lCvEX3zj2pwUczoNAXmvg97vFeJzKJA=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ebbc77e-54cd-40ef-f029-08da3a2d09db
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2022 06:50:34.3444
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: P/K5DG2V0E+EDHt9jKOPZBNyscQ+XGFePYaAHH+SKnHY//Mn4oE4ubIpWCtvwMwAmkEmEWsX7RcOQAgK9P/Kf5Fmiz+cSajnIQdBFvvIt3I=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1001MB2107
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
- definitions=2022-05-20_02:2022-05-19,2022-05-20 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- mlxlogscore=999 spamscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205200050
-X-Proofpoint-GUID: o8YA8MOj_jjgq5p6TxEumobuDX8XxVTm
-X-Proofpoint-ORIG-GUID: o8YA8MOj_jjgq5p6TxEumobuDX8XxVTm
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/6] ASoC: tegra: Add binding doc for OPE module
+Content-Language: en-US
+To:     Sameer Pujar <spujar@nvidia.com>, broonie@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        thierry.reding@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        perex@perex.cz, tiwai@suse.com
+Cc:     jonathanh@nvidia.com, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <1652895372-29885-1-git-send-email-spujar@nvidia.com>
+ <1652895372-29885-2-git-send-email-spujar@nvidia.com>
+ <049173a1-0fa6-510b-9169-ebe869b8a3b3@linaro.org>
+ <90680cfb-c611-63cd-ab5f-5afb86c91cec@nvidia.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <90680cfb-c611-63cd-ab5f-5afb86c91cec@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 06:03:56PM +0100, Srinivas Kandagatla wrote:
+On 20/05/2022 06:19, Sameer Pujar wrote:
+> Thanks Krzysztof for review.
 > 
 > 
-> On 19/05/2022 17:56, Greg KH wrote:
-> > On Tue, May 10, 2022 at 10:35:40AM +0100, Srinivas Kandagatla wrote:
-> > > From: Dan Carpenter <dan.carpenter@oracle.com>
-> > > 
-> > > Check for if the kcalloc() fails.
-> > > 
-> > > Cc: stable@vger.kernel.org
-> > > Fixes: 299dc152721f ("nvmem: brcm_nvram: parse NVRAM content into NVMEM cells")
-> > 
-> > This isn't a commit in any tree that I can see, are you sure it is
-> > correct?
-> Looks like the commit is not correct,
-> It should be
+> On 19-05-2022 17:10, Krzysztof Kozlowski wrote:
+>> On 18/05/2022 19:36, Sameer Pujar wrote:
+>>> +description: |
+>>> +  The Multi Band Dynamic Range Compressor (MBDRC) is part of Output
+>>> +  Processing Engine (OPE) which interfaces with Audio Hub (AHUB) via
+>>> +  Audio Client Interface (ACIF). MBDRC can be used as a traditional
+>>> +  single full band or a dual band or a multi band dynamic processor.
+>>> +
+>>> +maintainers:
+>>> +  - Jon Hunter <jonathanh@nvidia.com>
+>>> +  - Mohan Kumar <mkumard@nvidia.com>
+>>> +  - Sameer Pujar <spujar@nvidia.com>
+>>> +
+>>> +properties:
+>>> +  $nodename:
+>>> +    pattern: "^mbdrc@[0-9a-f]*$"
+>> Why? We enforce only generic names in shared schemas and this is neither
+>> shared schema nor is it generic name.
 > 
-> Fixes: 6e977eaa8280 ("nvmem: brcm_nvram: parse NVRAM content into NVMEM
-> cells")
-> 
-> 
-> Dan, can you send this with fix to Fixes tag?
+> Idea was to keep these node names consistent across DT files and parent 
+> node can allow a given list of child nodes with strict checks. Does name 
+> like "dynamic-range-compressor@xxx"
 
-No problem.  Done.
+The checks are not coming from device node name, but from matching
+schema to compatible. Why do you need consistent names across DTS files?
+They should be anyway generic but what happens if they differ?
 
-The problem is that Fixes tags will change if you use email instead of
-git pulls.  Or maybe someone used git and did a rebase?  The point is if
-you just use git everywhere and don't rebase then the hashes are
-immutable.
+Additionally, the parent schema enforces nodes of children, so if this
+is included in other schema, then the change is pointless.
 
-No stress though, we figured it out.
+I propose to drop it, unless it is a shared schema for many different
+vendors.
 
-regards,
-dan carpenter
+>>
+>>> +
+>>> +  compatible:
+>>> +    oneOf:
+>>> +      - const: nvidia,tegra210-mbdrc
+>>> +      - items:
+>>> +          - enum:
+>>> +              - nvidia,tegra234-mbdrc
+>>> +              - nvidia,tegra194-mbdrc
+>>> +              - nvidia,tegra186-mbdrc
+>>> +          - const: nvidia,tegra210-mbdrc
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - reg
+>>> +
+>>> +additionalProperties: false
+>>> +
+>>> +examples:
+>>> +  - |
+>>> +
+>> No need for space
+> 
+> will remove
+> 
+> 
+>>> +
+>>> +  compatible:
+>>> +    oneOf:
+>>> +      - const: nvidia,tegra210-ope
+>>> +      - items:
+>>> +          - enum:
+>>> +              - nvidia,tegra234-ope
+>>> +              - nvidia,tegra194-ope
+>>> +              - nvidia,tegra186-ope
+>>> +          - const: nvidia,tegra210-ope
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +
+>>> +  "#address-cells":
+>>> +    const: 1
+>>> +
+>>> +  "#size-cells":
+>>> +    const: 1
+>>> +
+>>> +  ranges: true
+>>> +
+>>> +  sound-name-prefix:
+>>> +    pattern: "^OPE[1-9]$"
+>>> +
+>>> +  ports:
+>>> +    $ref: /schemas/graph.yaml#/properties/ports
+>>> +    properties:
+>>> +      port@0:
+>>> +        $ref: audio-graph-port.yaml#
+>>> +        unevaluatedProperties: false
+>>> +        description: |
+>> No need for |
+> 
+> will remove.
+> 
+> 
+>>
+>>> +    ope@702d8000 {
+>> I would suggest generic node name, if it is possible.
+> 
+> May be "processing-engine@xxx" ?
+
+Sure.
+
+
+Best regards,
+Krzysztof
