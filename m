@@ -2,100 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7719DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CC6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351132AbiETPw5 (ORCPT
+        id S1351141AbiETPxo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
+        Fri, 20 May 2022 11:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244791AbiETPwt (ORCPT
+        with ESMTP id S1351136AbiETPxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:52:49 -0400
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEFF915FE0F
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:52:48 -0700 (PDT)
-Received: by mail-vk1-xa29.google.com with SMTP id b81so4317211vkf.1
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:52:48 -0700 (PDT)
+        Fri, 20 May 2022 11:53:33 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B952166D7E
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:53:32 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id n18so7707968plg.5
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:53:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=tpdW7ecTraKhRbFvsmKOuE6oFJXwO3YExgfPm1rem6k=;
-        b=iwOJDaYD3rkoWkWTQttkxXrc7bmfCiBueluPS4MvM/SUBPn/XmWiUP4nfjxIyirEyy
-         r40MMADjDftUxIlayYfIh11OWDcRYd18Kq2bj3FOAGjHxrLKBhtCz0a2hehKSPHs6+In
-         G8/0QMpR9YchPdTTDcAxLCqL5/wpRXKv8FJrplu7Gn4hVlpy6ULxDxQja191vcQfz/9r
-         z2Z2WKug9WpP4QL1E1spbNRTcu/HE/VIKnXJCTA76y73Z3vjsrpel6bEm6T0cidcBtY9
-         UgZTs9GoHMKRvSG+wcxwinB0aaJ3vUjdgHv+0G6E9FpiPS/aeMhIUPb4RJjE8Iy7Ausr
-         i/Yw==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1ap+LN9xt8LVjDA6xeK3vWW8HvYkM4PsGmSQ2e/Kij0=;
+        b=MugzJCkNjEQi0l6ih/P87UjZTcQUC/C1joaA+SjZDTpH/pYJB0Zh7vIU+k/9xb/7ZJ
+         +9KT4tZgkLdq6OWRm92jC7M6jfNHeZTzZokLLM/saqP2xU5RODpljfuYNbH1YeVZexhH
+         HsX+zFlPKvMnwzazJzc3DZ59x5rhgCU5SzTE56YZfqiaUnKv9LEy/P8ouHNFibhJpuLz
+         LAAGbAT9TJiVSHSVOznyaC9ZvbcvhY/TXt7qje1eizJUM/K9qAZ7Zrv4L8V/EDzfwo13
+         as+4Q6zL8zqplnfZG7E/+HXoM2PeR4e23wWUpDCZ1BraX3lRsjeO+ZORZzcy43qoRkfA
+         e2ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=tpdW7ecTraKhRbFvsmKOuE6oFJXwO3YExgfPm1rem6k=;
-        b=PVNIwTT91YsgBZpJygTDp00Vcc6hsdmk6CQvtO+DrOZoLCssNdPWsjem4N3YxCV90K
-         rFRgZswf11pUwMZRtJC+IkKWSaQI4P4bua1c78jeCO7bA8RT2D6X9ALuogI7PENKH9wb
-         isQcANjzlVV44IzNUjyIo4YksWYmgdB3twUZOL4PxNCpaXz5OxRkXZsLmV5iOYK5Cjf+
-         LQAJqiBCOIzz2VHW3+m4jy6BgaqVzw6daRKne+0X2q41tE9Im7/PLSaZIkdWyFpOR53W
-         +vl3NgVpeXl7Tv42N3qZKGWr7uKrOA3gSVblr7VX/DO5lRXDpT16BV+JGw+ydrtn6A99
-         kDWA==
-X-Gm-Message-State: AOAM531lE2t5F+skOKAxcmSI8DjjwwlJK54wvqP4y4lh0lVTDKPGlaMS
-        SlJ81TSp67903M+K1lKkDq1Vb2mEvDfjmWO1vig=
-X-Google-Smtp-Source: ABdhPJzkmCYAR3lHsKWTR4WJw3EHqbOIe/Gee4gEL4BAfCHI1FQm8jmDahubi6kfWk7b2fsJlMHMycZJU/sHEFJaZww=
-X-Received: by 2002:a05:6122:1184:b0:356:f6f5:da0c with SMTP id
- x4-20020a056122118400b00356f6f5da0cmr4344329vkn.36.1653061968101; Fri, 20 May
- 2022 08:52:48 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1ap+LN9xt8LVjDA6xeK3vWW8HvYkM4PsGmSQ2e/Kij0=;
+        b=bHmwiCQPZk9MSXbukDyY3GTt8v8y8pO2spdKGCe0igiclelyC0lpr1qe0XqnNEzYfq
+         DHt+H53tADUhzfu3xtIpGOcOgEHDaqgbSgW21SO7x4K6xS42VYFP7ecNqxDAAy/lRnuS
+         jBDcOsdaLv2Iw3NXod132Ori5WtaCgU+r93UdsDO2njaJfxTfVf9K3Ss/JFeTYt7oMYe
+         UZfIugMv3LQai6R2rT7R/QRU9a70a1Nped1zXG8c47YoCE1zFD7X8+hY4e4K6etDK+Gy
+         sSeL2iAsm5pqlcTSoVTQiUv+cfHtxuY+KrUDZIsirpZHGsvcXjpHl+v7dPGIIdnQdijv
+         4Usg==
+X-Gm-Message-State: AOAM532KcfTgTdQJE4GZxUOz9DhAye32hblQ0l7dBi5YLnqMyr72bIm7
+        w84/qTlT6QV+G9rhtMJNVBhVVA==
+X-Google-Smtp-Source: ABdhPJwabxwPi8iNQy6HWxOrXPm+3cPn1tnBFJXUzMLocq2K/pMJt+MjbmSnwbVh2NIDFH7knNIp8w==
+X-Received: by 2002:a17:902:7048:b0:15f:34c1:bae0 with SMTP id h8-20020a170902704800b0015f34c1bae0mr10242169plt.71.1653062012098;
+        Fri, 20 May 2022 08:53:32 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id v62-20020a622f41000000b0051835ccc008sm1940166pfv.115.2022.05.20.08.53.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 08:53:31 -0700 (PDT)
+Message-ID: <7e78d6a7-1cc3-2408-fe91-0329f5020e77@kernel.dk>
+Date:   Fri, 20 May 2022 09:53:30 -0600
 MIME-Version: 1.0
-References: <20220516125405.1675-1-matenajakub@gmail.com> <20220516125405.1675-2-matenajakub@gmail.com>
- <20220520132800.hijytnlyjqeesjfj@box.shutemov.name>
-In-Reply-To: <20220520132800.hijytnlyjqeesjfj@box.shutemov.name>
-From:   =?UTF-8?Q?Jakub_Mat=C4=9Bna?= <matenajakub@gmail.com>
-Date:   Fri, 20 May 2022 17:52:56 +0200
-Message-ID: <CABsDya+_Q=JLF2igQ1ZghrCqSUcGokaPbN+VHsA=13Vd0N4igA@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 1/6] [PATCH 1/6] mm: refactor of vma_merge()
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        mhocko@kernel.org, mgorman@techsingularity.net,
-        willy@infradead.org, Liam Howlett <liam.howlett@oracle.com>,
-        Hugh Dickins <hughd@google.com>, riel@surriel.com,
-        rostedt@goodmis.org, peterz@infradead.org, david@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 0/3] random: convert to using iters, for Al Viro
+Content-Language: en-US
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220520094459.116240-1-Jason@zx2c4.com>
+ <Yoey+FOYO69lS5qP@zx2c4.com> <bbdeeca7-9c99-e661-6596-f04ea783a30b@kernel.dk>
+ <Yoe4HP9iTA6l/For@zeniv-ca.linux.org.uk>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <Yoe4HP9iTA6l/For@zeniv-ca.linux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 3:26 PM Kirill A. Shutemov <kirill@shutemov.name> w=
-rote:
->
-> On Mon, May 16, 2022 at 02:54:00PM +0200, Jakub Mat=C4=9Bna wrote:
-> > Refactor vma_merge() to make it shorter, more understandable and
-> > suitable for tracing of successful merges that are made possible by
-> > following patches in the series. Main change is the elimination of code
-> > duplicity in the case of merge next check. This is done by first doing
-> > checks and caching the results before executing the merge itself. Exit
-> > paths are also unified.
-> >
-> > Signed-off-by: Jakub Mat=C4=9Bna <matenajakub@gmail.com>
->
-> Okay, this looks good:
->
-> Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
->
-> I would also consider renaming 'area' to 'vma'. 'area' feels wrong to me,
-> but maybe it is only me.
+On 5/20/22 9:47 AM, Al Viro wrote:
+> On Fri, May 20, 2022 at 09:34:46AM -0600, Jens Axboe wrote:
+> 
+>> I'm very sure, otherwise we're just accepting that we're breaking real
+>> world applications.
+> 
+> "Breaking" as in "it used to work with earlier kernels, doesn't work with
+> recent ones"?  Details, please...
 
-Well, the 'area' is taken from the original code and the name is not
-the only thing wrong about it. It is actually used for two purposes,
-which is definitely wrong. First purpose is to store the middle VMA
-between prev and next for the use of case 8. And the second purpose is
-to store the resulting VMA which is passed to
-khugepaged_enter_vma_merge() and also the return value of vma_merge().
-So, to me it seems that the best approach is to split it into two
-variables 'mid' for the first purpose and 'res' for the second one.
+Yes, as in exactly that. This is what drove this addition of
+->read_iter() for urandom. See commit:
 
->
-> --
->  Kirill A. Shutemov
+ommit 36e2c7421f02a22f71c9283e55fdb672a9eb58e7
+Author: Christoph Hellwig <hch@lst.de>
+Date:   Thu Sep 3 16:22:34 2020 +0200
+
+    fs: don't allow splice read/write without explicit ops
+
+related to the set_fs() changes, and now go look for any commit that
+has:
+
+Fixes: 36e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
+
+in it and see that this isn't an isolated incident at all.
+
+tldr - splice from /dev/urandom used to work, and I recently got a
+report internally on an application that broke on upgrade from 5.6 to
+5.12 exactly because it now just just -EINVAL's instead.
+
+-- 
+Jens Axboe
+
