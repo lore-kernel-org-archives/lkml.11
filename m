@@ -2,111 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34432C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349083AbiETMMb convert rfc822-to-8bit (ORCPT
+        id S1349073AbiETMRE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
+        Fri, 20 May 2022 08:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349060AbiETMMZ (ORCPT
+        with ESMTP id S1348999AbiETMRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:12:25 -0400
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96066153526;
-        Fri, 20 May 2022 05:12:24 -0700 (PDT)
-Received: by mail-qv1-f41.google.com with SMTP id s5so6505508qvo.12;
-        Fri, 20 May 2022 05:12:24 -0700 (PDT)
+        Fri, 20 May 2022 08:17:01 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819EC5EDCA
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:16:56 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id j6so7598230pfe.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:16:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=BD7PI/jSYLDDXhR8nM6+izXH7+9ICId6CXZTsKRbqNE=;
+        b=ckq9CxBSEWsFbquFDtkNT1eWtvYCYvCxcaFNjatqqV4RF+vx0272kuGbS+NsUjv2Qz
+         HmS3156aoONf1ZkMGEFFNqE7bvFzPMjb2EhhrPMxpYlPkekDW8RjVNmkZC6vxHewcr4v
+         2LaCYZUIEQ8fzBtlLezaRtpw4MBoRr/uTifNjxuWdh2ouA+z2BpGk/e2GFLqICYnEv+o
+         SqLqMhy2RA3JwbBzF/3T+N7dhdl4D3bT1mKCiqrESB7U/fS0qX9oMqExEUS/9jcpTxtT
+         FwCCc7r/2yvpl41dV8nl+zqfyOqTW7zPL6O3spJrB0dHuMt/0fASo0GCRjrrMfmX705y
+         nVJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=txKFbhPEueIo/aj6c1+wzIrPvMm+5Ur9CFzaUN2DGCU=;
-        b=wGmR9+ZDYNEGn2IPBM2LXDNkJeBt0iOS9b3DlbTogKHuauzOoO9sBRexDhFZgX9P6e
-         3JTCIbZH22hOW5vJ/oaAG39iLUvj+RYGhp0qOdhaPg6vkPBvuf58CbY2OhmlD/wWQl9c
-         IgRL3Tlid5Dnwf8MdK4OTIGFBPcyz/hBiCPtu96NSOOE+b3UhNu/wqv/ZgyqQsAkJ1O1
-         VJY/LylhTPYfw49yi5OYcHASMWoFjr/vhV0VKfN5BGTVGWhtYF7O0v+2HennZlNiM0ML
-         NXDH3x2LY7vMv2XDy+E6ILLctK/asUoLGu17Hx6lhem7FCGqOKcEZ1kTuUkNqMWwwJT4
-         q2xw==
-X-Gm-Message-State: AOAM532CxsCPvD0L01CfaqE2552CgjDTnMXtX/HEfywmEEO/oPoE7SAM
-        0tMotVS6QJrpF19/LKNQSvDp9+R6GrRV8Q==
-X-Google-Smtp-Source: ABdhPJwAOlNx2QwqG6tMwk4V+tBjpJ/rAke1ZNihGpNxbdutNmhrUejVWY5cguWX0t5YuglTSVdB/Q==
-X-Received: by 2002:ad4:574f:0:b0:461:df46:af7b with SMTP id q15-20020ad4574f000000b00461df46af7bmr7548074qvx.53.1653048743205;
-        Fri, 20 May 2022 05:12:23 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id d23-20020ac84e37000000b002f3ce9c0601sm3077053qtw.3.2022.05.20.05.12.22
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=BD7PI/jSYLDDXhR8nM6+izXH7+9ICId6CXZTsKRbqNE=;
+        b=h5lHBjdfQrwcHvYSLv1hhCHBS9OF44S4v3KAL0JfqseiQR4tEKBrphOYvWPItZxLsb
+         QKLw/9Ny7vkBkv4YnyywF3YhOIbxJSZOlHrqBcwNdR6VjDFnlFm5pQtMsZ1KnON2frEQ
+         HBO3jANCDyfDMj7lyz0V1XPcmAOxFFZn5cL9R9MONDs+JJXp6WbCM+VvbwzU2kwA8rLM
+         iHELJbZ2lSgPq7HmCO/ry4EaReMWuMVzKPTZxCTtzGHnWlZYrPXdySWbgSXn2yNaINUK
+         JPc5J5ZFq6eYPaoqXihCPVy6aDPsas+8/PLeapxDFpFP4lenuqKohGYpleKFPzDM+I6h
+         VsOA==
+X-Gm-Message-State: AOAM531nR0bhPYFr1PQE8aE22PSO7Hm2TiTg04ExHm+xGHaJo5eE4eIT
+        O34Z5g9TiPQou015TuW30fcN9g==
+X-Google-Smtp-Source: ABdhPJxmTpQ+umrmkBJ4xaC92Tx6GlFsh8O4+/89KUZSN141r2svsJGTg67LZdrG0P40kcHqHOxH7g==
+X-Received: by 2002:aa7:86cb:0:b0:518:3e92:f78b with SMTP id h11-20020aa786cb000000b005183e92f78bmr8607795pfo.61.1653049015893;
+        Fri, 20 May 2022 05:16:55 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id h188-20020a6283c5000000b005183fc7c6dasm1645851pfe.5.2022.05.20.05.16.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 05:12:22 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id a3so13865583ybg.5;
-        Fri, 20 May 2022 05:12:22 -0700 (PDT)
-X-Received: by 2002:a05:6902:389:b0:633:31c1:d0f7 with SMTP id
- f9-20020a056902038900b0063331c1d0f7mr8926767ybs.543.1653048742167; Fri, 20
- May 2022 05:12:22 -0700 (PDT)
+        Fri, 20 May 2022 05:16:55 -0700 (PDT)
+Message-ID: <f3b9131c-6561-8b31-4581-fd8ca5184d4e@kernel.dk>
+Date:   Fri, 20 May 2022 06:16:54 -0600
 MIME-Version: 1.0
-References: <20220520094155.313784-1-herve.codina@bootlin.com>
-In-Reply-To: <20220520094155.313784-1-herve.codina@bootlin.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 May 2022 14:12:10 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWc2W1YY=EP49bQ07bO4-WqQh-MbAPr7s153VqSCxmk2w@mail.gmail.com>
-Message-ID: <CAMuHMdWc2W1YY=EP49bQ07bO4-WqQh-MbAPr7s153VqSCxmk2w@mail.gmail.com>
-Subject: Re: [PATCH v6 0/6] RZN1 USB Host support
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Rob Herring <robh@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 0/3] random: convert to using iters, for Al Viro
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+References: <20220520094459.116240-1-Jason@zx2c4.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220520094459.116240-1-Jason@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hervé,
+On 5/20/22 3:44 AM, Jason A. Donenfeld wrote:
+> Hi Al,
+> 
+> I've incorporated your suggestions into Jens' patches and simplified a
+> lot of the control flow. Could you take a look at these and let me know
+> if it looks sane? In particular, I'm using the property you mentioned in
+> which copy_{to,from}_iter() can take a maximum and do less if the
+> remaining length is too small.
 
-On Fri, May 20, 2022 at 11:42 AM Herve Codina <herve.codina@bootlin.com> wrote:
-> This series add support for the USB Host controllers available on
-> RZN1 (r9a06g032) SOC.
->
-> These USB Host controllers are PCI OHCI/EHCI controllers located
-> behind a bridge.
+FWIW, ran my (small) tests and this series looks and tests fine to me.
 
-Thanks for your series!
+-- 
+Jens Axboe
 
-> Herve Codina (6):
->   dt-bindings: PCI: pci-rcar-gen2: Convert bindings to json-schema
->   dt-bindings: PCI: renesas,pci-rcar-gen2: Add device tree support for
->     r9a06g032
->   PCI: rcar-gen2: Add RZ/N1 SOCs family compatible string
->   ARM: dts: r9a06g032: Add internal PCI bridge node
->   ARM: dts: r9a06g032: Add USB PHY DT support
->   ARM: dts: r9a06g032: Link the PCI USB devices to the USB PHY
-
-As I had applied v5 of the last 3 patches to renesas-devel, and they
-are already present in soc/for-next, there is no need to resend them.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
