@@ -2,387 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F63CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244415AbiETHFo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
+        id S1343569AbiETHGc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 03:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346501AbiETHEr (ORCPT
+        with ESMTP id S244988AbiETHG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:04:47 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941CA1632AB
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:04:21 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id kq17so13918088ejb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:04:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jfNyVwUF1+P8dTurv6gNDME2b5kyZbxmMIy3awLSjto=;
-        b=a8WhdtG5vl1SACkxAONcGdxKvjQkWDYwR6VcAGPV4XbgnYmI2XFHqTblPEquy+TrRz
-         /FhsG4sXNVnpRFNeZmL48sBNGF2A6wnfdkof3agoMXS7kRBcV6ripQyLQ/rtYIL2gpMC
-         ymtde16M9/3B2UTN1+HWsVDqSvLpbXqp28cGweiP0+8sTtl+giinUQfFEX/tfLYVWQ8N
-         oHd9tO+bog69V9E9tbat678ACW3TOSYG5odGEFCbHiLg3nlfgCxv8ug+6foDVwWFOzK5
-         d+D/xfFGxD9DNsmBxZHC9lQ585PyVfCfDtz5PueGtSVf2O0OZBsWo0IaoOHvMkjUquOP
-         TkWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jfNyVwUF1+P8dTurv6gNDME2b5kyZbxmMIy3awLSjto=;
-        b=X2AO29+miKUg/a3p3u+1e8dlU2/teepaRIO5qeh9cJKrxijCEDzTEeNisgj1YOSXIm
-         N365lbV2zeB9o48XLyaRUW/+hV0nNln6sJ9pRsGofknxuhLZao1uSP9Bn5DIXCeL5W5c
-         +7CSc+d0UFghlIf45ydqSNsyU5/nn8vX5Ww+XmQewHQ22QbWRhjYJkf38n4slMEwqvif
-         ZBy6wJeDU/Ky/RBeobksAJq5YJbOSyi/8R28qTCN+ma8P716JfvhgcKq44j9ErPnuXS5
-         yk/Hcli+asozHYx1EV2Nr8EdSiFoxhMRe2BykM9UV/KdJoUxIh9g0CPDOIQaK7qSi2FX
-         Hd5A==
-X-Gm-Message-State: AOAM532TWnMTWSXJE+awDLUo9suMT/SkD63xQ5DtVab/vImF+zVDPXR6
-        7DYjOkYg7g99uDfCqeYF3trhhg==
-X-Google-Smtp-Source: ABdhPJxjimWMeCRLKNBVw/i4Pt/dk/qVTbzMPo3CrfLKShvrMrkjS5sM8s028ZthjSj93O5aMteoCA==
-X-Received: by 2002:a17:907:3f95:b0:6f4:f45a:9f66 with SMTP id hr21-20020a1709073f9500b006f4f45a9f66mr7302277ejc.544.1653030260094;
-        Fri, 20 May 2022 00:04:20 -0700 (PDT)
-Received: from otso.. (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id md17-20020a170906ae9100b006feaf472637sm336092ejb.53.2022.05.20.00.04.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 00:04:19 -0700 (PDT)
-From:   Luca Weiss <luca.weiss@fairphone.com>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Odelu Kukatla <okukatla@codeaurora.org>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/5] dt-bindings: interconnect: Add Qualcomm SM6350 NoC support
-Date:   Fri, 20 May 2022 09:03:14 +0200
-Message-Id: <20220520070318.48521-3-luca.weiss@fairphone.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220520070318.48521-1-luca.weiss@fairphone.com>
-References: <20220520070318.48521-1-luca.weiss@fairphone.com>
+        Fri, 20 May 2022 03:06:26 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A0C3FBCE
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:06:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=S6FAmHGYr5lfoBH3BRNeJlM4krPnia1Yy1bleN0MZmg=; b=IoqzbE3IUrPi/gt7tUUdrWVJBI
+        rLIBL25zehMVeBHSuMw7qBBvuRJgmGeZrYr+0S8F1GXyB5nVsFvoEaij/D30ThX/9yNqrJ3ES9l8s
+        r1YOlxtL8azf2SD04R+YrurE0KW8IK2J4NT5VShTpJRC/WiAAlJUpaJaHJDcqlBDhaGGNapPWroCC
+        WiJ8Xvz82/jZOu6ORrvpEO9c8ofKaSYT0kGm53uPiYUWHTkRpUdjSlIH8USJp1LDzJBfc/zUw8Vcr
+        FlxjjcgQyXQF8FCTQZ0JYcpNla/4NFHUFK2Zl5gKXMTZBd2k3AJlnUtF9V4ACYK2+rK+5hTZ8tKaQ
+        6Lfa3uWA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nrwiF-002Fmm-Hf; Fri, 20 May 2022 07:06:16 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 13E93981005; Fri, 20 May 2022 09:06:15 +0200 (CEST)
+Date:   Fri, 20 May 2022 09:06:14 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     frederic@kernel.org, paulmck@kernel.org, rjw@rjwysocki.net,
+        x86@kernel.org, linux-kernel@vger.kernel.org, jpoimboe@kernel.org
+Subject: Re: [RFC][PATCH 9/9] arch/idle: Change arch_cpu_idle() IRQ behaviour
+Message-ID: <20220520070614.GP2578@worktop.programming.kicks-ass.net>
+References: <20220519212750.656413111@infradead.org>
+ <20220519213422.119695559@infradead.org>
+ <20220519220349.GM2578@worktop.programming.kicks-ass.net>
+ <20220520022052.mkrc4v4evtp74bxe@black.fi.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220520022052.mkrc4v4evtp74bxe@black.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for Qualcomm SM6350 Network-On-Chip interconnect devices.
+On Fri, May 20, 2022 at 05:20:52AM +0300, Kirill A. Shutemov wrote:
+> On Fri, May 20, 2022 at 12:03:49AM +0200, Peter Zijlstra wrote:
+> > 
+> > On Thu, May 19, 2022 at 11:27:59PM +0200, Peter Zijlstra wrote:
+> > > --- a/arch/x86/coco/tdx/tdx.c
+> > > +++ b/arch/x86/coco/tdx/tdx.c
+> > > @@ -178,6 +178,9 @@ void __cpuidle tdx_safe_halt(void)
+> > >  	 */
+> > >  	if (__halt(irq_disabled, do_sti))
+> > >  		WARN_ONCE(1, "HLT instruction emulation failed\n");
+> > > +
+> > > +	/* XXX I can't make sense of what @do_sti actually does */
+> > > +	raw_local_irq_disable();
+> > >  }
+> > >  
+> > 
+> > Kirill, Dave says I should prod you :-)
+> 
+> It calls STI just before doing TDCALL that requests HLT.
+> See comment above $TDX_HCALL_ISSUE_STI usage in __tdx_hypercall()[1].
 
-As SM6350 has two pairs of NoCs sharing the same reg, allow this in the
-binding documentation, as was done for qcm2290.
+Yes, it says that, but it's useless information since it doesn't
+actually tell me the behaviour.
 
-Because the main qcom,rpmh.yaml file is getting too complicated for our
-use cases, create a new qcom,rpmh-common.yaml and a separate
-qcom,sm6350-rpmh.yaml that defines our new bindings.
+What I'm interested in is the behavour of the hypercall when:
+.irq_disabled=false, .do_sti=false
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
----
-Changes since v1:
-* Split sm6350 into separate yaml with new rpmh-common.yaml
+From what I can tell, irq_disabled=false should have the hypercall wake
+on interrupt, do_sti=false should have it not enable interrupts.
 
- .../interconnect/qcom,rpmh-common.yaml        |  41 +++++
- .../interconnect/qcom,sm6350-rpmh.yaml        |  82 ++++++++++
- .../dt-bindings/interconnect/qcom,sm6350.h    | 148 ++++++++++++++++++
- 3 files changed, 271 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml
- create mode 100644 Documentation/devicetree/bindings/interconnect/qcom,sm6350-rpmh.yaml
- create mode 100644 include/dt-bindings/interconnect/qcom,sm6350.h
+But what does it actually do ? Because HLT without STI is a dead
+machine, but this hypercall looks more like mwait with the irq_disabled
+argument...
 
-diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml
-new file mode 100644
-index 000000000000..6121eea3e87d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interconnect/qcom,rpmh-common.yaml
-@@ -0,0 +1,41 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interconnect/qcom,rpmh-common.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm RPMh Network-On-Chip Interconnect
-+
-+maintainers:
-+  - Georgi Djakov <georgi.djakov@linaro.org>
-+  - Odelu Kukatla <okukatla@codeaurora.org>
-+
-+description: |
-+   RPMh interconnect providers support system bandwidth requirements through
-+   RPMh hardware accelerators known as Bus Clock Manager (BCM). The provider is
-+   able to communicate with the BCM through the Resource State Coordinator (RSC)
-+   associated with each execution environment. Provider nodes must point to at
-+   least one RPMh device child node pertaining to their RSC and each provider
-+   can map to multiple RPMh resources.
-+
-+properties:
-+  '#interconnect-cells':
-+    enum: [ 1, 2 ]
-+
-+  qcom,bcm-voters:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      maxItems: 1
-+    description: |
-+      List of phandles to qcom,bcm-voter nodes that are required by
-+      this interconnect to send RPMh commands.
-+
-+  qcom,bcm-voter-names:
-+    description: |
-+      Names for each of the qcom,bcm-voters specified.
-+
-+required:
-+  - '#interconnect-cells'
-+  - qcom,bcm-voters
-+
-+additionalProperties: true
-diff --git a/Documentation/devicetree/bindings/interconnect/qcom,sm6350-rpmh.yaml b/Documentation/devicetree/bindings/interconnect/qcom,sm6350-rpmh.yaml
-new file mode 100644
-index 000000000000..89fe17c31b8f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interconnect/qcom,sm6350-rpmh.yaml
-@@ -0,0 +1,82 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interconnect/qcom,sm6350-rpmh.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm SM6350 RPMh Network-On-Chip Interconnect
-+
-+maintainers:
-+  - Luca Weiss <luca.weiss@fairphone.com>
-+
-+description: |
-+  Qualcomm RPMh-based interconnect provider on SM6350.
-+
-+allOf:
-+  - $ref: qcom,rpmh-common.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,sm6350-aggre1-noc
-+      - qcom,sm6350-aggre2-noc
-+      - qcom,sm6350-config-noc
-+      - qcom,sm6350-dc-noc
-+      - qcom,sm6350-gem-noc
-+      - qcom,sm6350-mmss-noc
-+      - qcom,sm6350-npu-noc
-+      - qcom,sm6350-system-noc
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#interconnect-cells': true
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+patternProperties:
-+  '^interconnect-[a-z0-9\-]+$':
-+    type: object
-+    description:
-+      The interconnect providers do not have a separate QoS register space,
-+      but share parent's space.
-+    $ref: qcom,rpmh-common.yaml#
-+
-+    properties:
-+      compatible:
-+        enum:
-+          - qcom,sm6350-clk-virt
-+          - qcom,sm6350-compute-noc
-+
-+      '#interconnect-cells': true
-+
-+    required:
-+      - compatible
-+
-+    unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    config_noc: interconnect@1500000 {
-+        compatible = "qcom,sm6350-config-noc";
-+        reg = <0x01500000 0x28000>;
-+        #interconnect-cells = <2>;
-+        qcom,bcm-voters = <&apps_bcm_voter>;
-+    };
-+
-+    system_noc: interconnect@1620000 {
-+        compatible = "qcom,sm6350-system-noc";
-+        reg = <0x01620000 0x17080>;
-+        #interconnect-cells = <2>;
-+        qcom,bcm-voters = <&apps_bcm_voter>;
-+
-+        clk_virt: interconnect-clk-virt {
-+            compatible = "qcom,sm6350-clk-virt";
-+            #interconnect-cells = <2>;
-+            qcom,bcm-voters = <&apps_bcm_voter>;
-+        };
-+    };
-diff --git a/include/dt-bindings/interconnect/qcom,sm6350.h b/include/dt-bindings/interconnect/qcom,sm6350.h
-new file mode 100644
-index 000000000000..e662cede9aaa
---- /dev/null
-+++ b/include/dt-bindings/interconnect/qcom,sm6350.h
-@@ -0,0 +1,148 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-+/*
-+ * Qualcomm SM6350 interconnect IDs
-+ *
-+ * Copyright (C) 2022 Luca Weiss <luca.weiss@fairphone.com>
-+ */
-+
-+#ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SM6350_H
-+#define __DT_BINDINGS_INTERCONNECT_QCOM_SM6350_H
-+
-+#define MASTER_A1NOC_CFG		0
-+#define MASTER_QUP_0			1
-+#define MASTER_EMMC			2
-+#define MASTER_UFS_MEM			3
-+#define A1NOC_SNOC_SLV			4
-+#define SLAVE_SERVICE_A1NOC		5
-+
-+#define MASTER_A2NOC_CFG		0
-+#define MASTER_QDSS_BAM			1
-+#define MASTER_QUP_1			2
-+#define MASTER_CRYPTO_CORE_0		3
-+#define MASTER_IPA			4
-+#define MASTER_QDSS_ETR			5
-+#define MASTER_SDCC_2			6
-+#define MASTER_USB3			7
-+#define A2NOC_SNOC_SLV			8
-+#define SLAVE_SERVICE_A2NOC		9
-+
-+#define MASTER_CAMNOC_HF0_UNCOMP	0
-+#define MASTER_CAMNOC_ICP_UNCOMP	1
-+#define MASTER_CAMNOC_SF_UNCOMP		2
-+#define MASTER_QUP_CORE_0		3
-+#define MASTER_QUP_CORE_1		4
-+#define MASTER_LLCC			5
-+#define SLAVE_CAMNOC_UNCOMP		6
-+#define SLAVE_QUP_CORE_0		7
-+#define SLAVE_QUP_CORE_1		8
-+#define SLAVE_EBI_CH0			9
-+
-+#define MASTER_NPU			0
-+#define MASTER_NPU_PROC			1
-+#define SLAVE_CDSP_GEM_NOC		2
-+
-+#define SNOC_CNOC_MAS			0
-+#define MASTER_QDSS_DAP			1
-+#define SLAVE_A1NOC_CFG			2
-+#define SLAVE_A2NOC_CFG			3
-+#define SLAVE_AHB2PHY			4
-+#define SLAVE_AHB2PHY_2			5
-+#define SLAVE_AOSS			6
-+#define SLAVE_BOOT_ROM			7
-+#define SLAVE_CAMERA_CFG		8
-+#define SLAVE_CAMERA_NRT_THROTTLE_CFG	9
-+#define SLAVE_CAMERA_RT_THROTTLE_CFG	10
-+#define SLAVE_CLK_CTL			11
-+#define SLAVE_RBCPR_CX_CFG		12
-+#define SLAVE_RBCPR_MX_CFG		13
-+#define SLAVE_CRYPTO_0_CFG		14
-+#define SLAVE_DCC_CFG			15
-+#define SLAVE_CNOC_DDRSS		16
-+#define SLAVE_DISPLAY_CFG		17
-+#define SLAVE_DISPLAY_THROTTLE_CFG	18
-+#define SLAVE_EMMC_CFG			19
-+#define SLAVE_GLM			20
-+#define SLAVE_GRAPHICS_3D_CFG		21
-+#define SLAVE_IMEM_CFG			22
-+#define SLAVE_IPA_CFG			23
-+#define SLAVE_CNOC_MNOC_CFG		24
-+#define SLAVE_CNOC_MSS			25
-+#define SLAVE_NPU_CFG			26
-+#define SLAVE_PDM			27
-+#define SLAVE_PIMEM_CFG			28
-+#define SLAVE_PRNG			29
-+#define SLAVE_QDSS_CFG			30
-+#define SLAVE_QM_CFG			31
-+#define SLAVE_QM_MPU_CFG		32
-+#define SLAVE_QUP_0			33
-+#define SLAVE_QUP_1			34
-+#define SLAVE_SDCC_2			35
-+#define SLAVE_SECURITY			36
-+#define SLAVE_SNOC_CFG			37
-+#define SLAVE_TCSR			38
-+#define SLAVE_UFS_MEM_CFG		39
-+#define SLAVE_USB3			40
-+#define SLAVE_VENUS_CFG			41
-+#define SLAVE_VENUS_THROTTLE_CFG	42
-+#define SLAVE_VSENSE_CTRL_CFG		43
-+#define SLAVE_SERVICE_CNOC		44
-+
-+#define MASTER_CNOC_DC_NOC		0
-+#define SLAVE_GEM_NOC_CFG		1
-+#define SLAVE_LLCC_CFG			2
-+
-+#define MASTER_AMPSS_M0			0
-+#define MASTER_SYS_TCU			1
-+#define MASTER_GEM_NOC_CFG		2
-+#define MASTER_COMPUTE_NOC		3
-+#define MASTER_MNOC_HF_MEM_NOC		4
-+#define MASTER_MNOC_SF_MEM_NOC		5
-+#define MASTER_SNOC_GC_MEM_NOC		6
-+#define MASTER_SNOC_SF_MEM_NOC		7
-+#define MASTER_GRAPHICS_3D		8
-+#define SLAVE_MCDMA_MS_MPU_CFG		9
-+#define SLAVE_MSS_PROC_MS_MPU_CFG	10
-+#define SLAVE_GEM_NOC_SNOC		11
-+#define SLAVE_LLCC			12
-+#define SLAVE_SERVICE_GEM_NOC		13
-+
-+#define MASTER_CNOC_MNOC_CFG		0
-+#define MASTER_VIDEO_P0			1
-+#define MASTER_VIDEO_PROC		2
-+#define MASTER_CAMNOC_HF		3
-+#define MASTER_CAMNOC_ICP		4
-+#define MASTER_CAMNOC_SF		5
-+#define MASTER_MDP_PORT0		6
-+#define SLAVE_MNOC_HF_MEM_NOC		7
-+#define SLAVE_MNOC_SF_MEM_NOC		8
-+#define SLAVE_SERVICE_MNOC		9
-+
-+#define MASTER_NPU_SYS			0
-+#define MASTER_NPU_NOC_CFG		1
-+#define SLAVE_NPU_CAL_DP0		2
-+#define SLAVE_NPU_CP			3
-+#define SLAVE_NPU_INT_DMA_BWMON_CFG	4
-+#define SLAVE_NPU_DPM			5
-+#define SLAVE_ISENSE_CFG		6
-+#define SLAVE_NPU_LLM_CFG		7
-+#define SLAVE_NPU_TCM			8
-+#define SLAVE_NPU_COMPUTE_NOC		9
-+#define SLAVE_SERVICE_NPU_NOC		10
-+
-+#define MASTER_SNOC_CFG			0
-+#define A1NOC_SNOC_MAS			1
-+#define A2NOC_SNOC_MAS			2
-+#define MASTER_GEM_NOC_SNOC		3
-+#define MASTER_PIMEM			4
-+#define MASTER_GIC			5
-+#define SLAVE_APPSS			6
-+#define SNOC_CNOC_SLV			7
-+#define SLAVE_SNOC_GEM_NOC_GC		8
-+#define SLAVE_SNOC_GEM_NOC_SF		9
-+#define SLAVE_OCIMEM			10
-+#define SLAVE_PIMEM			11
-+#define SLAVE_SERVICE_SNOC		12
-+#define SLAVE_QDSS_STM			13
-+#define SLAVE_TCU			14
-+
-+#endif
--- 
-2.36.1
+> 
+> __halt(do_sti == true) matches native_safe_halt() semantics (or suppose
+> to) and __halt(do_sti == false) corresponds to native_halt().
+> 
+> For context, see Section 3.8 in GHCI[2]
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/tree/arch/x86/coco/tdx/tdcall.S?h=x86/tdx#n151
+> [2] https://www.intel.com/content/dam/develop/external/us/en/documents/intel-tdx-guest-hypervisor-communication-interface-1.0-344426-002.pdf
 
+Yeah, that stuff is unreadable garbage. Not going to waste time trying
+to make sense of it again.
