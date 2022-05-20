@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 270E3C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8542FC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348317AbiETKup (ORCPT
+        id S1348402AbiETKvF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 06:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
+        Fri, 20 May 2022 06:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348354AbiETKu1 (ORCPT
+        with ESMTP id S1348330AbiETKue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 06:50:27 -0400
+        Fri, 20 May 2022 06:50:34 -0400
 Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E95158949;
-        Fri, 20 May 2022 03:50:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D30153536;
+        Fri, 20 May 2022 03:50:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653043824; x=1684579824;
+  t=1653043833; x=1684579833;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=Xo8IT/BemLWqRMTBtY6Q1TbS8auFjv6/abEFlV64wf8=;
-  b=ZeaCNYd3JpEA1gXkNPCCOC0HN3YmHPHEEQZN66ws3kcpdxfWlvwEuM4q
-   gHKQg2jlpPvnh/dwPdxhQIUtIUrSlqZMPFwzB57UFEEKg3+QA4Zsj5vbT
-   9vpcHaduWOh01gZlu+wTmhWlxSHYuAnWapIRHR+4uz7htOe8joalWKJF+
-   I=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 May 2022 03:50:24 -0700
+  bh=xr7nl5Yk+zcGrg9aCU8T0HxBUXVU0QmG0bk0A0BZMBE=;
+  b=tv0JWAYtN/KbTPr67dMOnyVRZnl4Tt5H2i675cQlLZS1A2IaSKM0XC8S
+   iJO1ALpxGDDL1I3MwWV8l2687gudWf+qOV0bHuNlPQB+OzYbBD5KQtFJZ
+   AjAdsK8fJgWx69LD9OBvOADyZx/7A1+29yUEdMX0nNjhaY9tLhtI5SOti
+   E=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 May 2022 03:50:33 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 03:50:23 -0700
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 03:50:32 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 03:50:23 -0700
+ 15.2.986.22; Fri, 20 May 2022 03:50:32 -0700
 Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 03:50:19 -0700
+ 15.2.986.22; Fri, 20 May 2022 03:50:28 -0700
 From:   Satya Priya <quic_c_skakit@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -50,9 +50,9 @@ CC:     Lee Jones <lee.jones@linaro.org>,
         <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
         <quic_jprakash@quicinc.com>,
         Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V13 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
-Date:   Fri, 20 May 2022 16:19:34 +0530
-Message-ID: <1653043777-24003-7-git-send-email-quic_c_skakit@quicinc.com>
+Subject: [PATCH V13 8/9] arm64: dts: qcom: pm8008: Add base dts file
+Date:   Fri, 20 May 2022 16:19:36 +0530
+Message-ID: <1653043777-24003-9-git-send-email-quic_c_skakit@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1653043777-24003-1-git-send-email-quic_c_skakit@quicinc.com>
 References: <1653043777-24003-1-git-send-email-quic_c_skakit@quicinc.com>
@@ -65,15 +65,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use i2c_new_dummy_device() to register pm8008-regulator
-client present at a different address space, instead of
-defining a separate DT node. This avoids calling the probe
-twice for the same chip, once for each client pm8008-infra
-and pm8008-regulator.
-
-As a part of this define pm8008_regmap_init() to do regmap
-init for both the clients and define pm8008_get_regmap() to
-pass the regmap to the regulator driver.
+Add base DTS file for pm8008.
 
 Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 Reviewed-by: Stephen Boyd <swboyd@chromium.org>
@@ -82,115 +74,79 @@ Changes in V13:
  - None.
 
 Changes in V12:
- - Make chip as const in pm8008_get_regmap() definition.
- - Use EXPORT_SYMBOL_GPL() for pm8008_get_regmap.
- - Add linux/mfd/qcom_pm8008.h to avoid error.
+ - None.
 
 Changes in V11:
- - Remove the for loop and register dummy directly as there are
-   only 2 clients.
- - Define pm8008_regmap_init() API to do the redundant init part.
+ - Remove intermediate regulators node and add the ldos under
+   pm8008@8 node.
+ - change the address cells as 2 for pm8008 parent mfd node.
+ - add compatible to register the ldos.
+ - add reg with i2c client offset and address.
 
- drivers/mfd/qcom-pm8008.c       | 34 ++++++++++++++++++++++++++++++++--
- include/linux/mfd/qcom_pm8008.h |  8 ++++++++
- 2 files changed, 40 insertions(+), 2 deletions(-)
- create mode 100644 include/linux/mfd/qcom_pm8008.h
+ arch/arm64/boot/dts/qcom/pm8008.dtsi | 54 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
 
-diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-index 569ffd50..55e2a8e 100644
---- a/drivers/mfd/qcom-pm8008.c
-+++ b/drivers/mfd/qcom-pm8008.c
-@@ -9,6 +9,7 @@
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/irqdomain.h>
-+#include <linux/mfd/qcom_pm8008.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of_platform.h>
-@@ -57,6 +58,7 @@ enum {
- 
- struct pm8008_data {
- 	struct device *dev;
-+	struct regmap *regulators_regmap;
- 	int irq;
- 	struct regmap_irq_chip_data *irq_data;
- };
-@@ -150,6 +152,12 @@ static struct regmap_config qcom_mfd_regmap_cfg = {
- 	.max_register	= 0xFFFF,
- };
- 
-+struct regmap *pm8008_get_regmap(const struct pm8008_data *chip)
-+{
-+	return chip->regulators_regmap;
-+}
-+EXPORT_SYMBOL_GPL(pm8008_get_regmap);
-+
- static int pm8008_init(struct regmap *regmap)
- {
- 	int rc;
-@@ -217,11 +225,25 @@ static int pm8008_probe_irq_peripherals(struct pm8008_data *chip,
- 	return 0;
- }
- 
-+static struct regmap *pm8008_regmap_init(struct i2c_client *client,
-+							struct pm8008_data *chip)
-+{
-+	struct regmap *regmap;
-+
-+	regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
-+	if (!regmap)
-+		return NULL;
-+
-+	i2c_set_clientdata(client, chip);
-+	return regmap;
-+}
-+
- static int pm8008_probe(struct i2c_client *client)
- {
- 	int rc;
- 	struct pm8008_data *chip;
- 	struct gpio_desc *reset_gpio;
-+	struct i2c_client *regulators_client;
- 	struct regmap *regmap;
- 
- 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
-@@ -229,11 +251,19 @@ static int pm8008_probe(struct i2c_client *client)
- 		return -ENOMEM;
- 
- 	chip->dev = &client->dev;
--	regmap = devm_regmap_init_i2c(client, &qcom_mfd_regmap_cfg);
-+	regmap = pm8008_regmap_init(client, chip);
- 	if (!regmap)
- 		return -ENODEV;
- 
--	i2c_set_clientdata(client, chip);
-+	regulators_client = i2c_new_dummy_device(client->adapter, client->addr + 1);
-+	if (IS_ERR(regulators_client)) {
-+		dev_err(&client->dev, "can't attach client\n");
-+		return PTR_ERR(regulators_client);
-+	}
-+
-+	chip->regulators_regmap = pm8008_regmap_init(regulators_client, chip);
-+	if (!chip->regulators_regmap)
-+		return -ENODEV;
- 
- 	reset_gpio = devm_gpiod_get(chip->dev, "reset", GPIOD_OUT_LOW);
- 	if (IS_ERR(reset_gpio))
-diff --git a/include/linux/mfd/qcom_pm8008.h b/include/linux/mfd/qcom_pm8008.h
+diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
 new file mode 100644
-index 0000000..d5db9a2
+index 0000000..5606344
 --- /dev/null
-+++ b/include/linux/mfd/qcom_pm8008.h
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __QCOM_PM8008_H__
-+#define __QCOM_PM8008_H__
++++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+@@ -0,0 +1,54 @@
++// SPDX-License-Identifier: BSD-3-Clause
++// Copyright (c) 2022, The Linux Foundation. All rights reserved.
 +
-+struct pm8008_data;
-+struct regmap *pm8008_get_regmap(const struct pm8008_data *chip);
++&pm8008_bus {
++	pm8008: pmic@8 {
++		compatible = "qcom,pm8008";
++		reg = <0x8>;
++		#address-cells = <2>;
++		#size-cells = <0>;
++		#interrupt-cells = <2>;
 +
-+#endif
++		pm8008_l1: ldo1@1,4000 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4000>;
++			regulator-name = "pm8008_ldo1";
++		};
++
++		pm8008_l2: ldo2@1,4100 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4100>;
++			regulator-name = "pm8008_ldo2";
++		};
++
++		pm8008_l3: ldo3@1,4200 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4200>;
++			regulator-name = "pm8008_ldo3";
++		};
++
++		pm8008_l4: ldo4@1,4300 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4300>;
++			regulator-name = "pm8008_ldo4";
++		};
++
++		pm8008_l5: ldo5@1,4400 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4400>;
++			regulator-name = "pm8008_ldo5";
++		};
++
++		pm8008_l6: ldo6@1,4500 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4500>;
++			regulator-name = "pm8008_ldo6";
++		};
++
++		pm8008_l7: ldo7@1,4600 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4600>;
++			regulator-name = "pm8008_ldo7";
++		};
++	};
++};
 -- 
 2.7.4
 
