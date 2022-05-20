@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E358EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F81C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352223AbiETRYL (ORCPT
+        id S1352212AbiETRY2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 13:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
+        Fri, 20 May 2022 13:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352132AbiETRYA (ORCPT
+        with ESMTP id S1352253AbiETRYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 13:24:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75A1C187DB4
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:23:49 -0700 (PDT)
+        Fri, 20 May 2022 13:24:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0A1318AA96
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:23:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653067428;
+        s=mimecast20190719; t=1653067436;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RwJhQswXs8DRWPiKRZyfAdOUa8pNFYiVHsGQwvzSwJs=;
-        b=WKUFLcroXLT23vgoFE1btWfOH7dB8fPCjfTio/oZOpCvABM2zQpu1wvReHIG/OUJfygvEg
-        5Yn5Qh+YL+jjTJpz3RsPHtglAT2m7Qjq8x3Ag6Y4RPku++FssT1/RWzru4A0WQ2kSCcQWh
-        8s2gHcRffs14ICzU8Abmo+7kx/Joa0o=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=gYH/NUhzkxrP57zXUu9Uxksnhmmb/sb8odVLZkBLfH4=;
+        b=gcniS5fVJCGVXQ3ca5mdAa68bZYSDX6sle8LLYgSxmqhFKVODec+jSpoegBS/yRB821PQo
+        TDvLuIWfZS54LVran4p3UY/rjMRp6xkXX7CqGFeY/M5/Rg3mlXmgltCEHkG+Lc+zSBAsEg
+        qyScBVYWx1dypaSPWqDqqLwBU9kKkMU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-hTE2Afj0PlaaSHtniuPgdA-1; Fri, 20 May 2022 13:23:44 -0400
-X-MC-Unique: hTE2Afj0PlaaSHtniuPgdA-1
+ us-mta-582-6Ra87wuJMh2PFoLJ_6M15A-1; Fri, 20 May 2022 13:23:53 -0400
+X-MC-Unique: 6Ra87wuJMh2PFoLJ_6M15A-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83F088015BA;
-        Fri, 20 May 2022 17:23:42 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 50F5C29A9CC9;
+        Fri, 20 May 2022 17:23:52 +0000 (UTC)
 Received: from eperezma.remote.csb (unknown [10.39.192.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CB6AF492C14;
-        Fri, 20 May 2022 17:23:37 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D17AB401E9D;
+        Fri, 20 May 2022 17:23:47 +0000 (UTC)
 From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
 To:     virtualization@lists.linux-foundation.org,
         Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc:     Stefano Garzarella <sgarzare@redhat.com>,
         Parav Pandit <parav@nvidia.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH 2/4] vhost-vdpa: introduce STOP backend feature bit
-Date:   Fri, 20 May 2022 19:23:23 +0200
-Message-Id: <20220520172325.980884-3-eperezma@redhat.com>
+Subject: [PATCH 4/4] vdpa_sim: Implement stop vdpa op
+Date:   Fri, 20 May 2022 19:23:25 +0200
+Message-Id: <20220520172325.980884-5-eperezma@redhat.com>
 In-Reply-To: <20220520172325.980884-1-eperezma@redhat.com>
 References: <20220520172325.980884-1-eperezma@redhat.com>
 MIME-Version: 1.0
@@ -71,69 +71,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Userland knows if it can stop the device or not by checking this feature
-bit.
+Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
+that backend feature and userspace can effectively stop the device.
 
-It's only offered if the vdpa driver backend implements the stop()
-operation callback, and try to set it if the backend does not offer that
-callback is an error.
+This is a must before get virtqueue indexes (base) for live migration,
+since the device could modify them after userland gets them. There are
+individual ways to perform that action for some devices
+(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
+way to perform it for any vhost device (and, in particular, vhost-vdpa).
 
 Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
 ---
- drivers/vhost/vdpa.c             | 13 +++++++++++++
- include/uapi/linux/vhost_types.h |  2 ++
- 2 files changed, 15 insertions(+)
+ drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++++++
+ drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
+ 3 files changed, 25 insertions(+)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 1f1d1c425573..a325bc259afb 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdpa *v,
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+index 50d721072beb..0515cf314bed 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+@@ -107,6 +107,7 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
+ 	for (i = 0; i < vdpasim->dev_attr.nas; i++)
+ 		vhost_iotlb_reset(&vdpasim->iommu[i]);
+ 
++	vdpasim->running = true;
+ 	spin_unlock(&vdpasim->iommu_lock);
+ 
+ 	vdpasim->features = 0;
+@@ -505,6 +506,24 @@ static int vdpasim_reset(struct vdpa_device *vdpa)
  	return 0;
  }
  
-+static bool vhost_vdpa_can_stop(const struct vhost_vdpa *v)
++static int vdpasim_stop(struct vdpa_device *vdpa, bool stop)
 +{
-+	struct vdpa_device *vdpa = v->vdpa;
-+	const struct vdpa_config_ops *ops = vdpa->config;
++	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
++	int i;
 +
-+	return ops->stop;
++	spin_lock(&vdpasim->lock);
++	vdpasim->running = !stop;
++	if (vdpasim->running) {
++		/* Check for missed buffers */
++		for (i = 0; i < vdpasim->dev_attr.nvqs; ++i)
++			vdpasim_kick_vq(vdpa, i);
++
++	}
++	spin_unlock(&vdpasim->lock);
++
++	return 0;
 +}
 +
- static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *featurep)
+ static size_t vdpasim_get_config_size(struct vdpa_device *vdpa)
  {
- 	struct vdpa_device *vdpa = v->vdpa;
-@@ -577,6 +585,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
- 			return -EFAULT;
- 		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
- 			return -EOPNOTSUPP;
-+		if ((features & VHOST_BACKEND_F_STOP) &&
-+		     !vhost_vdpa_can_stop(v))
-+			return -EOPNOTSUPP;
- 		vhost_set_backend_features(&v->vdev, features);
- 		return 0;
- 	}
-@@ -624,6 +635,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
- 		break;
- 	case VHOST_GET_BACKEND_FEATURES:
- 		features = VHOST_VDPA_BACKEND_FEATURES;
-+		if (vhost_vdpa_can_stop(v))
-+			features |= VHOST_BACKEND_F_STOP;
- 		if (copy_to_user(featurep, &features, sizeof(features)))
- 			r = -EFAULT;
- 		break;
-diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
-index 634cee485abb..2758e665791b 100644
---- a/include/uapi/linux/vhost_types.h
-+++ b/include/uapi/linux/vhost_types.h
-@@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
-  * message
-  */
- #define VHOST_BACKEND_F_IOTLB_ASID  0x3
-+/* Stop device from processing virtqueue buffers */
-+#define VHOST_BACKEND_F_STOP  0x4
+ 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+@@ -694,6 +713,7 @@ static const struct vdpa_config_ops vdpasim_config_ops = {
+ 	.get_status             = vdpasim_get_status,
+ 	.set_status             = vdpasim_set_status,
+ 	.reset			= vdpasim_reset,
++	.stop			= vdpasim_stop,
+ 	.get_config_size        = vdpasim_get_config_size,
+ 	.get_config             = vdpasim_get_config,
+ 	.set_config             = vdpasim_set_config,
+@@ -726,6 +746,7 @@ static const struct vdpa_config_ops vdpasim_batch_config_ops = {
+ 	.get_status             = vdpasim_get_status,
+ 	.set_status             = vdpasim_set_status,
+ 	.reset			= vdpasim_reset,
++	.stop			= vdpasim_stop,
+ 	.get_config_size        = vdpasim_get_config_size,
+ 	.get_config             = vdpasim_get_config,
+ 	.set_config             = vdpasim_set_config,
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+index 622782e92239..061986f30911 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+@@ -66,6 +66,7 @@ struct vdpasim {
+ 	u32 generation;
+ 	u64 features;
+ 	u32 groups;
++	bool running;
+ 	/* spinlock to synchronize iommu table */
+ 	spinlock_t iommu_lock;
+ };
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+index 5125976a4df8..886449e88502 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+@@ -154,6 +154,9 @@ static void vdpasim_net_work(struct work_struct *work)
  
- #endif
+ 	spin_lock(&vdpasim->lock);
+ 
++	if (!vdpasim->running)
++		goto out;
++
+ 	if (!(vdpasim->status & VIRTIO_CONFIG_S_DRIVER_OK))
+ 		goto out;
+ 
 -- 
 2.27.0
 
