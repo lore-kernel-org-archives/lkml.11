@@ -2,142 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A07F6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A52C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347493AbiETKNE (ORCPT
+        id S1347983AbiETKOs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 06:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
+        Fri, 20 May 2022 06:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236205AbiETKNC (ORCPT
+        with ESMTP id S236205AbiETKOo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 06:13:02 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F037F67D12;
-        Fri, 20 May 2022 03:13:01 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24K9t1f5015088;
-        Fri, 20 May 2022 10:12:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=03W+KVCf05ryBpIQznhubjGjNBUYpOjO41ZnD0L+yZY=;
- b=khAPDsHcfXx79sQeQGGf7zJirqbTPDlZM9P91zN9C81f5yokRd7+zqTQ6sooGALl7EF+
- ttCRLzUidUzYPckYx56Mwwb/ES+P99/tzw5WDkFVvfYmEdapuiK+ov5gx9WvppRDpa9g
- v9z0eV9Bk/l+QZnOQPUROnMqIZLKHU88mOFDgaDUls2mDOzib8YLXLzZCqXs+xl4Okyg
- c442eTLoeUX/ReoxVQivB04p2YXzICFZ3Op0IgIU/qPXp37dQa7p+zDzULKgkSjUfasZ
- XTzoaUA8kaL9en7NBWBgjtk8wblfMNP1eB8UijleJEnWuINopeQ0geqnXGFI/mXB43sT AA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g65m5m1x4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 10:12:49 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24K9e0pQ029598;
-        Fri, 20 May 2022 10:12:49 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g65m5m1wm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 10:12:49 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24KA7FcG022448;
-        Fri, 20 May 2022 10:12:47 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma05fra.de.ibm.com with ESMTP id 3g4j3gk86v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 10:12:47 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24K9wlGd40042866
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 May 2022 09:58:47 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 40D6A4C046;
-        Fri, 20 May 2022 10:12:44 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB10F4C040;
-        Fri, 20 May 2022 10:12:37 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.163.31.125])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 20 May 2022 10:12:37 +0000 (GMT)
-From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-To:     acme@kernel.org, jolsa@kernel.org, mpe@ellerman.id.au
-Cc:     linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, maddy@linux.vnet.ibm.com,
-        rnsastry@linux.ibm.com, kjain@linux.ibm.com,
-        disgoel@linux.vnet.ibm.com, irogers@google.com
-Subject: [PATCH V3] tools/perf/test: Fix perf all PMU test to skip hv_24x7/hv_gpci tests on powerpc
-Date:   Fri, 20 May 2022 15:42:36 +0530
-Message-Id: <20220520101236.17249-1-atrajeev@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 20 May 2022 06:14:44 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EFE6CA89
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 03:14:43 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id ay35so2687302wmb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 03:14:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YI47hgicQMxxxQU8hmpn8OChFvZfMABxIXxG9XMziXU=;
+        b=B6xXaCz/9Z8jPhpJ6mtVdO7hkOOPdVdMi4Br/t/hDUB+YC8X9ZDwbJcR3ju1QawwHc
+         EswtRNZ1IyK730pTuQhP3uAIu9sl/aCUWNw1WVi85nReMaIiw4D2JWW86ZUw0V5wYXOx
+         4Z0Y3Mt+ahHo87vwo5C0i9ZVJWisUBEfAa2QnaLah4lDH0c7EIGC7ZqysxMUe2qP6j3x
+         Uqsrvwd3l1d2x9uUZtKQDfyQeHKP/UxjXk1ZRU6ajJpnqm85U2GZVHLR0RXsa0KzS2ku
+         zH0OtdW1ZZHLanRQNX1zPCrWEeu5wIBsvVdYCinOA0tWAHV1et6tTYklCa9GNKvYdxCJ
+         ohjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YI47hgicQMxxxQU8hmpn8OChFvZfMABxIXxG9XMziXU=;
+        b=S71s2DA3EE06VySVZnwyYIlqUyWCE4cza1kPDujx7lluok/dnbIMf6sGoIJ92j7urM
+         D9wdw905gnKFfkr0DrJZukPGeH/vTx3hnEmlsxxKU1+kRQjMRhXJkvbhyZ/ON2zhhIAq
+         pm6bVgM9e/dNpR5ZsoSyObrLkwFv8QYhHZQATY7uQS2CeOBvzKc6dydLG7i/64r4gSIG
+         J8eo0nC8El/rDREI8SdQZnvdXtib9Fw8YJbIeaccgDSgK0ArDcjH43JJAugWgpAt+xDE
+         7AUi71Iqg+ala8B8IywgR17b9ba653wrCtyjgkF39Fbr9ZF8jAUuqUBrGdc4DCAg9S+H
+         ZhxA==
+X-Gm-Message-State: AOAM531Rw50QA+n13dij6do/3LpMn4hjdeajj/9ELuuJS0JcktNsuWTh
+        PSB4lPZ41+kAOwehmhGeEQ561A==
+X-Google-Smtp-Source: ABdhPJw/Nl2hbEXYtjhjRz+i2/tfpFrVP4oUqSoMpKliGp2zwr3AlxitGZj40hxVFsRnsfmruCJAeQ==
+X-Received: by 2002:a05:600c:a53:b0:394:7a51:cb71 with SMTP id c19-20020a05600c0a5300b003947a51cb71mr8314724wmq.148.1653041681893;
+        Fri, 20 May 2022 03:14:41 -0700 (PDT)
+Received: from elver.google.com ([2a00:79e0:15:13:bae2:f132:a26:fae2])
+        by smtp.gmail.com with ESMTPSA id c11-20020adfa30b000000b0020d0b2de858sm2167642wrb.33.2022.05.20.03.14.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 03:14:41 -0700 (PDT)
+Date:   Fri, 20 May 2022 12:14:35 +0200
+From:   Marco Elver <elver@google.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, paulmck@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v2 2/2] arm64: kcsan: Support detecting more missing
+ memory barriers
+Message-ID: <YodqC/HKVJLAjpQY@elver.google.com>
+References: <20220520031548.175582-1-wangkefeng.wang@huawei.com>
+ <20220520031548.175582-3-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: P3t1m_5cJo1TKPkjLQPk1RLXiH_V5YKx
-X-Proofpoint-ORIG-GUID: XZmE3eOwJARec2zzlTf2ubhndWCst_8O
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-20_03,2022-05-20_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- lowpriorityscore=0 mlxlogscore=999 mlxscore=0 adultscore=0 phishscore=0
- spamscore=0 bulkscore=0 priorityscore=1501 malwarescore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205200073
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220520031548.175582-3-wangkefeng.wang@huawei.com>
+User-Agent: Mutt/2.1.4 (2021-12-11)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"perf all PMU test" picks the input events from
-"perf list --raw-dump pmu" list and runs "perf stat -e"
-for each of the event in the list. In case of powerpc, the
-PowerVM environment supports events from hv_24x7 and hv_gpci
-PMU which is of example format like below:
-- hv_24x7/CPM_ADJUNCT_INST,domain=?,core=?/
-- hv_gpci/event,partition_id=?/
+On Fri, May 20, 2022 at 11:15AM +0800, Kefeng Wang wrote:
+> As "kcsan: Support detecting a subset of missing memory barriers"[1]
+> introduced KCSAN_STRICT/KCSAN_WEAK_MEMORY which make kcsan detects
+> more missing memory barrier, but arm64 don't have KCSAN instrumentation
+> for barriers, so the new selftest test_barrier() and test cases for
+> memory barrier instrumentation in kcsan_test module will fail, even
+> panic on selftest.
+> 
+> Let's prefix all barriers with __ on arm64, as asm-generic/barriers.h
+> defined the final instrumented version of these barriers, which will
+> fix the above issues.
+> 
+> Note, barrier instrumentation that can be disabled via __no_kcsan with
+> appropriate compiler-support (and not just with objtool help), see
+> commit bd3d5bd1a0ad ("kcsan: Support WEAK_MEMORY with Clang where no
+> objtool support exists"), it adds disable_sanitizer_instrumentation to
+> __no_kcsan attribute which will remove all sanitizer instrumentation fully
+> (with Clang 14.0). Meanwhile, GCC does the same thing with no_sanitize.
+> 
+> [1] https://lore.kernel.org/linux-mm/20211130114433.2580590-1-elver@google.com/
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  arch/arm64/include/asm/barrier.h | 12 ++++++------
+>  include/asm-generic/barrier.h    |  4 ++++
+>  2 files changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
+> index 9f3e2c3d2ca0..2cfc4245d2e2 100644
+> --- a/arch/arm64/include/asm/barrier.h
+> +++ b/arch/arm64/include/asm/barrier.h
+> @@ -50,13 +50,13 @@
+>  #define pmr_sync()	do {} while (0)
+>  #endif
+>  
+> -#define mb()		dsb(sy)
+> -#define rmb()		dsb(ld)
+> -#define wmb()		dsb(st)
+> +#define __mb()		dsb(sy)
+> +#define __rmb()		dsb(ld)
+> +#define __wmb()		dsb(st)
+>  
+> -#define dma_mb()	dmb(osh)
+> -#define dma_rmb()	dmb(oshld)
+> -#define dma_wmb()	dmb(oshst)
+> +#define __dma_mb()	dmb(osh)
+> +#define __dma_rmb()	dmb(oshld)
+> +#define __dma_wmb()	dmb(oshst)
+>  
+>  #define io_stop_wc()	dgh()
+>  
+> diff --git a/include/asm-generic/barrier.h b/include/asm-generic/barrier.h
+> index fd7e8fbaeef1..18863c50e9ce 100644
+> --- a/include/asm-generic/barrier.h
+> +++ b/include/asm-generic/barrier.h
+> @@ -38,6 +38,10 @@
+>  #define wmb()	do { kcsan_wmb(); __wmb(); } while (0)
+>  #endif
+>  
+> +#ifdef __dma_mb
+> +#define dma_mb()	do { kcsan_mb(); __dma_mb(); } while (0)
+> +#endif
 
-The value for "?" needs to be filled in depending on
-system and respective event. CPM_ADJUNCT_INST needs have
-core value and domain value. hv_gpci event needs partition_id.
-Similarly, there are other events for hv_24x7 and hv_gpci
-having "?" in event format. Hence skip these events on powerpc
-platform since values like partition_id, domain is specific
-to system and event.
+The asm-generic changes might want to go into a separate patch, along
+with the generic definition of dma_mb() if there's no __dma_mb, as
+mentioned in the other email.
 
-Fixes: 3d5ac9effcc6 ("perf test: Workload test of all PMUs")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
----
-Changelog:
- v2 -> v3:
- Fixed patition/partition/ as pointed out by Ian Rogers.
-
- v1 -> v2:
- Instead of checking for platform, used the pmu name
- ie, hv_24x7 and hv_gpci to skip the test since this
- pmu name is specific to powerpc as suggested by
- Michael Ellerman.
-
- tools/perf/tests/shell/stat_all_pmu.sh | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/tools/perf/tests/shell/stat_all_pmu.sh b/tools/perf/tests/shell/stat_all_pmu.sh
-index b30dba455f36..7d046bb8a7b9 100755
---- a/tools/perf/tests/shell/stat_all_pmu.sh
-+++ b/tools/perf/tests/shell/stat_all_pmu.sh
-@@ -5,6 +5,16 @@
- set -e
- 
- for p in $(perf list --raw-dump pmu); do
-+  # In powerpc, skip the events for hv_24x7 and hv_gpci.
-+  # These events needs input values to be filled in for
-+  # core, chip, partition id based on system.
-+  # Example: hv_24x7/CPM_ADJUNCT_INST,domain=?,core=?/
-+  # hv_gpci/event,partition_id=?/
-+  # Hence skip these events for ppc.
-+  if echo "$p" |grep -Eq 'hv_24x7|hv_gpci' ; then
-+    echo "Skipping: Event '$p' in powerpc"
-+    continue
-+  fi
-   echo "Testing $p"
-   result=$(perf stat -e "$p" true 2>&1)
-   if ! echo "$result" | grep -q "$p" && ! echo "$result" | grep -q "<not supported>" ; then
--- 
-2.35.1
-
+Thanks,
+-- Marco
