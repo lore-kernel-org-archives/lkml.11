@@ -2,107 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66600C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344895AbiETCyO (ORCPT
+        id S1344899AbiETC4d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 22:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40786 "EHLO
+        Thu, 19 May 2022 22:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343908AbiETCx6 (ORCPT
+        with ESMTP id S229847AbiETC4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 22:53:58 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AB6B82F8;
-        Thu, 19 May 2022 19:53:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653015237; x=1684551237;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3k+B1YhQtDjjzNzSzWyBbPTZcYPfDZ9P6ZK83umeHFU=;
-  b=P0Avw0cxVUh03g6Z0IfFGf6yrFt7TjYVi2Kp6v/7EJ18FQKxFuaTzHgb
-   80AXbmUE6j6LwbRQfBW1IzwAUte+Pw/jppDKd/sgJPNGpPJtcumC0oJfd
-   RSTphKMbcVLzUrKEQD9i/1Piqv2FKb0TH5dcyDUF2kAffMNA50DppO6I5
-   GdUDaxsK74k8+/NDd2pfL7zUoXIkCCpBlQ0YMLLAsjhR93gHNoMNnBgSW
-   3QE+3z/rjSPjuckYy/Otqc6jWDm5qWvqGfP2noMQelmOj2XTYHd/LVGUA
-   pcP9T4S+F+lg1HQZ7BFjzI/R7mJmPeEoBepqgd1goCHkOwtm6S9tmJnsy
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="333084921"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="333084921"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 19:53:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="674397628"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 19 May 2022 19:53:52 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrsm0-0004DS-9Y;
-        Fri, 20 May 2022 02:53:52 +0000
-Date:   Fri, 20 May 2022 10:53:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Judy Hsiao <judyhsiao@chromium.org>, Andy Gross <agross@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
-        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
-        judyhsiao@google.com, tzungbi@chromium.org, swboyd@chromium.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
-Subject: Re: [v1 1/3] arm64: dts: qcom: sc7280: Add drive strength property
- for secondary MI2S
-Message-ID: <202205201035.VNGXOfUp-lkp@intel.com>
-References: <20220519084119.675990-2-judyhsiao@chromium.org>
+        Thu, 19 May 2022 22:56:30 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7FC5F8D4
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:56:27 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id ev18so6867410pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:56:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=arFWL10Ch1n8yhdI9Mk3g6bNs91IYU+HlkP+JS3nOtc=;
+        b=wizXH2T4i0hpvyt1QyLKg8TJlFJ0pfc6am4wF+te/O3S9glO8olN0SHXNgf4XMOoeA
+         vV2Wnl58mBKeekoB6US+vMjbV3r6LPQEj/7d2af5doeUV7LO3RAnChsoB+paO63F+lE3
+         gIPtQB8Ee/hMqlf28gB6G0/OTsSEN7FhLi5vHK0GQNb2sbI+CJfs5nHoUTlVCtnj/TYK
+         Sk6i6HD1cC+PTtTSSAi94V29xLQ7WhlBol3au+V0pxZ3UHwyuy4gCQv6l6w5VW3jZVFl
+         E8eSg2aW86VGC044TmzYkarO+G2YkcYUswMF/Gshk+GKcHuvJgULhv9XTs+YgMxXR6w6
+         3fBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=arFWL10Ch1n8yhdI9Mk3g6bNs91IYU+HlkP+JS3nOtc=;
+        b=2LEPa815dyjj8KiXnEcMQP3MB6y3RYcvzPAoi/2QjMifQJHmpKAgnFqvV4paQofHN6
+         vpWJFMLqwQk4zrZiTs+1U/oEXo4nF9inyXO5URmWILfuk2lrteUKVrHs0/gGjDNox2P2
+         99AeE+SBVDlJxjTmMR5dnU1u4nGVqgjwaZhiaEkt/BBzZy6/n+TrMHcdHPqeFPR+6scl
+         Yss4kphmFYQvnmm9JHmTf6iKC9ONUCcDcaKLdzWD2387g7yJitZ8BA666tf02NitqFdw
+         WKoPDdnvygLuFhc/6e1WEhzHjApavw96SZTUAnafID7WwUbfnSmZtok4gq47cdW4AF+k
+         atig==
+X-Gm-Message-State: AOAM531w8u+YxY792CHoQNFs6V8k+f6IKVShY3EiREIo5/Vd2++G/rxy
+        5uzlLJ0qffoW6K+uQ9Vwe5RJsg==
+X-Google-Smtp-Source: ABdhPJzmfzbWN5y+2+2LQpGTfqGvPCPq3Ax+cTXuRcr74nqsBxj1mht756PZTm11HL7tsYT9gkMvYw==
+X-Received: by 2002:a17:90b:4d0c:b0:1df:c9a6:84d8 with SMTP id mw12-20020a17090b4d0c00b001dfc9a684d8mr8900143pjb.231.1653015386971;
+        Thu, 19 May 2022 19:56:26 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id o10-20020a62f90a000000b0050dc76281a5sm225675pfh.127.2022.05.19.19.56.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 19:56:26 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     corbet@lwn.net, akpm@linux-foundation.org, paulmck@kernel.org,
+        mike.kravetz@oracle.com, osalvador@suse.de, david@redhat.com
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v2 0/2] make hugetlb_optimize_vmemmap compatible with memmap_on_memory
+Date:   Fri, 20 May 2022 10:55:36 +0800
+Message-Id: <20220520025538.21144-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519084119.675990-2-judyhsiao@chromium.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Judy,
+This series makes hugetlb_optimize_vmemmap compatible with memmap_on_memory
+and is based on next-20220518.  The reason refers to the patch 2's commit log.
 
-Thank you for the patch! Yet something to improve:
+v2:
+ - Fix compile error when !CONFIG_ZONE_DEVICE reported by kernel test robot.
 
-[auto build test ERROR on soc/for-next]
-[also build test ERROR on v5.18-rc7]
-[cannot apply to robh/for-next arm/for-next arm64/for-next/core clk/clk-next kvmarm/next rockchip/for-next shawnguo/for-next keystone/next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Muchun Song (2):
+  mm: memory_hotplug: enumerate all supported section flags
+  mm: memory_hotplug: introduce SECTION_CANNOT_OPTIMIZE_VMEMMAP
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Judy-Hsiao/Add-dtsi-for-sc7280-boards-that-using-rt5682-codec/20220519-164227
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220520/202205201035.VNGXOfUp-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/b59ef0e3880c11efecbe61bebfe9352c76bf96f4
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Judy-Hsiao/Add-dtsi-for-sc7280-boards-that-using-rt5682-codec/20220519-164227
-        git checkout b59ef0e3880c11efecbe61bebfe9352c76bf96f4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> Error: arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi:615.1-13 Label or path mi2s1_data0 not found
->> Error: arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi:620.1-12 Label or path mi2s1_sclk not found
->> Error: arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi:625.1-10 Label or path mi2s1_ws not found
-   FATAL ERROR: Syntax error parsing input tree
+ Documentation/admin-guide/kernel-parameters.txt | 22 ++++----
+ Documentation/admin-guide/sysctl/vm.rst         |  5 +-
+ include/linux/kconfig.h                         |  1 +
+ include/linux/memory_hotplug.h                  |  9 ----
+ include/linux/mmzone.h                          | 71 ++++++++++++++++++++++---
+ mm/hugetlb_vmemmap.c                            | 28 +++++++---
+ mm/memory_hotplug.c                             | 28 +++++-----
+ mm/sparse.c                                     |  8 +++
+ 8 files changed, 119 insertions(+), 53 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.11.0
+
