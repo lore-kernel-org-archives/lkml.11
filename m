@@ -2,99 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349388AbiETMdr (ORCPT
+        id S1349441AbiETMd7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
+        Fri, 20 May 2022 08:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349336AbiETMdJ (ORCPT
+        with ESMTP id S1349362AbiETMde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:33:09 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1CA1649B4
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:33:05 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id f4so14019883lfu.12
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:33:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hRNYPngTV+U+MXi/lSp4vZpHzlUN8RyLOj3ZsKeL1G4=;
-        b=l6tzYjvUol1igMfcE1sAQeFoh0wrBh2vxblUVk8bco+xUl8Fm5Ow69Xopuqdsb5BAP
-         bc1hQX0D829cx+784vZX7jMmbPe/tqALc08p99X8j/PhbYTkxQyNIBqlpmjOw6TSpwtG
-         1U0Lw3dNXjdgTn4veFZmNW6o0+1223UBYOPqphOL1r09K5Y6DM8tU8LhbttgvcAud+C6
-         XdKesSy6TIQ1yyWuawyt8j3nvJW70aqrSrJAkCIBHOqxUygd48s4D0/lvu+5bRWsYUoZ
-         unZiOIC+5vvKkClXl0ki7VnA8R5WT/oExVw615UYzt1ppw4AMHrNyTcSiiyAPwcNI+MD
-         EOtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hRNYPngTV+U+MXi/lSp4vZpHzlUN8RyLOj3ZsKeL1G4=;
-        b=YzXOM9uwE2W4tsey8YhvCAQua2spuWMUUfWnYWnX9ETiqi+oFzLujE0R5LwyVofh2/
-         8NJTbZU9Fml9X5jrkDoQLYrfY8jLQNKNCziygO4BngwqsD4EQQlhq7jGXHQoE1NkANQr
-         s53nNCuEEq0HSU33v77Bjp0Gva5XZkSyIiXFjiHwkJxe0ZsqcFAzUwr/TDC4oHNlVxfT
-         RqyidaqvVgObCgrWyXM6ZwBVKh1JwLPtwFrVBzz77okonZ96Eb+YedJX+QhDI/LtFXEE
-         upLuZPAc2zkMyx6TbEdn6o9mvRUfi2UXnNwITjeS71YLQC9czFMrfsnFa39VqN8aWSxu
-         KjFw==
-X-Gm-Message-State: AOAM530sEK6U0TWvBft83q6iMj4SbDe2P/p8mWyACaiZlQultofy5lV2
-        QhfQSeq63lqhBgwrspfDU4Tt+Q==
-X-Google-Smtp-Source: ABdhPJwJ0WSDAtXXmEVPvzjb6YV3MaY/0VDb2R7sc/gkBysh+OexhqhKzoTU19ay/TnRVXDfLlYyGw==
-X-Received: by 2002:a05:6512:2806:b0:478:54db:fa23 with SMTP id cf6-20020a056512280600b0047854dbfa23mr1718508lfb.253.1653049983941;
-        Fri, 20 May 2022 05:33:03 -0700 (PDT)
-Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id a14-20020a056512374e00b0047255d211bfsm643973lfs.238.2022.05.20.05.33.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 05:33:03 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 7/9] dt-bindings: arm: qcom: add missing SM8150 board compatibles
-Date:   Fri, 20 May 2022 14:32:50 +0200
-Message-Id: <20220520123252.365762-7-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220520123252.365762-1-krzysztof.kozlowski@linaro.org>
-References: <20220520123252.365762-1-krzysztof.kozlowski@linaro.org>
+        Fri, 20 May 2022 08:33:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2D8E163F6C
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:33:31 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3916A1477;
+        Fri, 20 May 2022 05:33:31 -0700 (PDT)
+Received: from [172.29.1.145] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 629363F718;
+        Fri, 20 May 2022 05:33:28 -0700 (PDT)
+Message-ID: <26f39a9d-1a02-b77d-5c89-88a1fb0e4eac@arm.com>
+Date:   Fri, 20 May 2022 14:33:19 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 3/8] arch_topology: Set cluster identifier in each
+ core/thread from /cpu-map
+Content-Language: en-US
+To:     Ionela Voinescu <ionela.voinescu@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Atish Patra <atishp@atishpatra.org>, linux-kernel@vger.kernel.org,
+        Atish Patra <atishp@rivosinc.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Qing Wang <wangqing@vivo.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
+References: <20220518093325.2070336-1-sudeep.holla@arm.com>
+ <20220518093325.2070336-4-sudeep.holla@arm.com> <YoZ2gjjS3rbRaJZm@arm.com>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <YoZ2gjjS3rbRaJZm@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document several board compatibles already present in Linux kernel.
+On 19/05/2022 18:55, Ionela Voinescu wrote:
+> Hi,
+> 
+> As said before, this creates trouble for CONFIG_SCHED_CLUSTER=y.
+> The output below is obtained from Juno.
+> 
+> When cluster_id is populated, a new CLS level is created by the scheduler
+> topology code. In this case the clusters in DT determine that the cluster
+> siblings and llc siblings are the same so the MC scheduler domain will
+> be removed and, for Juno, only CLS and DIE will be kept.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/arm/qcom.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+[...]
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index a08f297c9d5d..7b6deb766c6c 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -301,7 +301,11 @@ properties:
- 
-       - items:
-           - enum:
-+              - microsoft,surface-duo
-+              - qcom,sm8150-hdk
-               - qcom,sm8150-mtp
-+              - sony,bahamut-generic
-+              - sony,griffin-generic
-           - const: qcom,sm8150
- 
-       - items:
--- 
-2.32.0
+> To be noted that we also get a new flag SD_PREFER_SIBLING for the CLS
+> level that is not appropriate. We usually remove it for the child of a
+> SD_ASYM_CPUCAPACITY domain, but we don't currently redo this after some
+> levels are degenerated. This is a fixable issue.
+> 
+> But looking at the bigger picture, a good question is what is the best
+> thing to do when cluster domains and llc domains span the same CPUs?
+> 
+> Possibly it would be best to restrict clusters (which are almost an
+> arbitrary concept) to always span a subset of CPUs of the llc domain,
+> if llc siblings can be obtained? If those clusters are not properly set
+> up in DT to respect this condition, cluster_siblings would need to be
+> cleared (or set to the current CPU) so the CLS domain is not created at
+> all.
+> 
+> Additionally, should we use cluster information from DT (cluster_id) to
+> create an MC level if we don't have llc information, even if
+> CONFIG_SCHED_CLUSTER=n?
+> 
+> I currently don't have a very clear picture of how cluster domains and
+> llc domains would "live" together in a variety of topologies. I'll try
+> other DT topologies to see if there are others that can lead to trouble.
 
+This would be an issue. Depending on CONFIG_SCHED_CLUSTER we would get
+two different systems from the viewpoint of the scheduler.
+
+To me `cluster_id/_sibling` don't describe a certain level of CPU
+grouping (e.g. one level above core or one level below package).
+
+They were introduced to describe one level below LLC (e.g. Kunpeng920 L3
+(24 CPUs LLC) -> L3 tag (4 CPUs) or x86 Jacobsville L3 -> L2), (Commit
+                 ^^^^^^                                   ^^
+c5e22feffdd7 ("topology: Represent clusters of CPUs within a die")).
+
+The Ampere Altra issue already gave us a taste of the possible issues of
+this definition, commit db1e59483dfd ("topology: make core_mask include
+at least cluster_siblings").
+
+If we link `cluster_id/_sibling` against (1. level) cpu-map cluster
+nodes plus using llc and `cluster_sibling >= llc_sibling` we will run
+into these issues.
