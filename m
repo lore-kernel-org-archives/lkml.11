@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C92AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6153EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349204AbiETMUN (ORCPT
+        id S1349179AbiETMUS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
+        Fri, 20 May 2022 08:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349253AbiETMTy (ORCPT
+        with ESMTP id S1349113AbiETMTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:19:54 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A5C16499D;
-        Fri, 20 May 2022 05:19:50 -0700 (PDT)
+        Fri, 20 May 2022 08:19:53 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFAC163F53;
+        Fri, 20 May 2022 05:19:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653049190; x=1684585190;
+  t=1653049186; x=1684585186;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=tB92zRPWED5OduLbKCFAuOWrtLKijRm9N98ksj+EFks=;
-  b=VJ4aVk+8M9A8C6Qi805HcJ51iN4S395D9XP7ooPY/dtTbpNIu003SzsR
-   5TTPliTP+1tRAsmHzDrlHegdhYs5lxY2B9au2M9YE2FnwEJ4T7F+eQdwW
-   cEIR8EBwFN0TvFaNNIMPg0fM28DcsK0Deq8s367RFdA1BjzM3ddObccvr
-   4=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 20 May 2022 05:19:50 -0700
+  bh=soAslaynwLWuk9ni7o/esKtvLbUcnx/OJF8cC/HrDSA=;
+  b=YJ5wk8zpF7cCGu8dtRnJnDV+u4hG5URYrH6HjdES9iC0Tkbm+8qBiVXH
+   tTniptRmTjJXn0a1bkI/fWRFzQusg2gthNRV1eMZ6yh2pL6Piy5izgC6U
+   M3UNSwH2tIonmKDw01IXoiEQ9Lu/3/kBKgHIwYtziTY/AdF/kDk5qnP2j
+   o=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 May 2022 05:19:45 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 05:19:50 -0700
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 05:19:45 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 05:19:49 -0700
+ 15.2.986.22; Fri, 20 May 2022 05:19:45 -0700
 Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 05:19:45 -0700
+ 15.2.986.22; Fri, 20 May 2022 05:19:41 -0700
 From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
@@ -48,9 +48,9 @@ To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <judyhsiao@chromium.org>
 CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v12 10/12] arm64: dts: qcom: sc7280: Enable lpass cpu node for CRD 3.0/3.1
-Date:   Fri, 20 May 2022 17:48:42 +0530
-Message-ID: <1653049124-24713-11-git-send-email-quic_srivasam@quicinc.com>
+Subject: [PATCH v12 09/12] arm64: dts: qcom: sc7280: Enable lpass cpu node for CRD 1.0/2.0 and IDP boards.
+Date:   Fri, 20 May 2022 17:48:41 +0530
+Message-ID: <1653049124-24713-10-git-send-email-quic_srivasam@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1653049124-24713-1-git-send-email-quic_srivasam@quicinc.com>
 References: <1653049124-24713-1-git-send-email-quic_srivasam@quicinc.com>
@@ -63,23 +63,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable lpass cpu node and add pin control and dai-links for audio on
-sc7280 based platforms of rev5+ (aka CRD 3.0/3.1) boards.
+Enable lpass cpu node and add pin control and dai-links for audio on sc7280
+based platforms of revision 3, 4 (aka CRD 1.0 and 2.0) and IDP boards.
 
 Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 28 +++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 28 ++++++++++++++++++++++++++++
  1 file changed, 28 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-index 602437f..e8a596c 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-@@ -102,6 +102,34 @@ ap_ts_pen_1v8: &i2c13 {
- 	};
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index ccdbad4a..10f646d 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -282,6 +282,34 @@
+ 	modem-init;
  };
  
 +&lpass_cpu {
