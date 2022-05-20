@@ -2,118 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1E8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3332C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:44:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353725AbiETVoX (ORCPT
+        id S1353755AbiETVo0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 17:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
+        Fri, 20 May 2022 17:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236457AbiETVoM (ORCPT
+        with ESMTP id S1352791AbiETVoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 17:44:12 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664E39D4EB
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:44:11 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so8867850pjq.2
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:44:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=po9hx/FFDA/6UFacoo9gPW8IQQNzUvQfbnbKwHyRNfM=;
-        b=DDxHO5JVhIiDbdzCxdfA0tUrkzF7fKrRar/uMUsL1M7HdWh3OTpsIJ4fFwMJf/TKIy
-         xGM5ZBcR/LSQnSGAXdweZtBtdAX9koFKgnM7X/4VUv+HqAfTch4uyhHnLrT4H2VfXxzd
-         wNxTMH+58XJHuVAxzjV479+UZqDapJNvOYDW/bQNUgfi7gFSbIuj16W7xoZMJnxXCWQE
-         XFDKVomXwOhErgEjEBbc199V+IgNXDMV0J5ZHfhtXOezugiMyMHfUdzVoMRek7wzECLO
-         CfOGSEQ9QNtvlMlUw8E36E34uoM7LVV8SHNIJWZiuDkJYCPuVULjLI5SwbIzVSMYzbzy
-         k+BA==
+        Fri, 20 May 2022 17:44:20 -0400
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F7114917A;
+        Fri, 20 May 2022 14:44:19 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so2948909otk.6;
+        Fri, 20 May 2022 14:44:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=po9hx/FFDA/6UFacoo9gPW8IQQNzUvQfbnbKwHyRNfM=;
-        b=wBYssEbGBKW504D72HE/egcfgZvM8+BPKS0+T78nd3RnakQVo55Zy47hXiTapI+KzQ
-         /MU5nH4EwpY/P4r+nIyQDCoO01tOZ168LeNZMFtvTqhco8ehLPytOmTuT8ILXk9qUPHE
-         iKo/geddV46Am9qjodJim1Ym68YOEriunUA9hl1VOso+YrIqdLXCSXHD8jgsPzlD619s
-         giNbX5913wn836o0aWsoCSIx0RorFuCzE5whgFmTIkTdmWcYZmIWGBX0kjc3a4TWtLDV
-         ENF/zJ04f5/NGuhkds+0RnK/wMU3fADLxifc0Nt1bqvVi/jj1ETdHCdAtY5TZOX42+E0
-         7exA==
-X-Gm-Message-State: AOAM532d1hUTxbK76FAlcYWUwM5gmCka/Ent1Yi/JVw6+6u8Sm0Dgx15
-        W1y71aUqcwu4zEaMRtgy+fY=
-X-Google-Smtp-Source: ABdhPJxqHG82SC/AOGlMVrEhzymuTl6S1INJ0XTrki35g6wNiT1n/spu0CIavILkAPi0IV+SxJwAtw==
-X-Received: by 2002:a17:902:7087:b0:161:88a4:db37 with SMTP id z7-20020a170902708700b0016188a4db37mr11492775plk.131.1653083050851;
-        Fri, 20 May 2022 14:44:10 -0700 (PDT)
-Received: from [10.1.1.24] (222-155-0-244-adsl.sparkbb.co.nz. [222.155.0.244])
-        by smtp.gmail.com with ESMTPSA id mn2-20020a17090b188200b001df983f9a3dsm2357714pjb.29.2022.05.20.14.44.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 20 May 2022 14:44:10 -0700 (PDT)
-Subject: Re: [PATCH] m68k: atari: Make Atari ROM port I/O write macros return
- void
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org
-References: <c15bedc83d90a14fffcd5b1b6bfb32b8a80282c5.1653057096.git.geert@linux-m68k.org>
- <286a1eef-e857-a31f-839b-00a4c835dfa9@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <c2e45d59-4e0a-bf8a-e4db-ce3336fc9b05@gmail.com>
-Date:   Sat, 21 May 2022 09:44:02 +1200
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
- Icedove/45.4.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fqCq63IwA4TlKby8zuM0F7kyTR627fN+TysBkufnrAM=;
+        b=RU9dsVvl7/cqQuJj146XfuHzrPQ9CfoqNzGAXTA2Tj8Fc8ym/ItaChQxfiVPwmald+
+         hKHolQIGxjO/QB0xcTMPQlXzjP7uc1FUz4xKqWHVBu+aJNerFd0AFuv0kF6QUutTUbjn
+         AT/0ePJRvnbhMcB5S43QUi0Q1LrzlGzcYCAbT1Xfo7oO5O0lNgfnyiO316CO9WUrVIjn
+         571YlDcEJxj3tAr73fSd4WZLDriJ65FLgM5Y3gPFrLcWla4IojMYyRVph8zNnsi5Iqcz
+         rbpuWGaTOvkSpPTK4GteUMnJjmgm6qJ6sncVW3X9WjkEtLn55dPjpjF0PpIvU6M4cAb0
+         uB/Q==
+X-Gm-Message-State: AOAM533+JgHf1pMq0bEurueTcec6B8EqSmTv7+XfR/wkBUtYWS7aOUi6
+        ubxAcdoH31ijjhPsPpTwSvvuHxfg1Q==
+X-Google-Smtp-Source: ABdhPJxAuidk/2k3GD+v1EYnbrQ8jJlx5x6tbik2qxaqegEmFd1AsQaeuzGEcHBdfINn8s/u78AHVw==
+X-Received: by 2002:a05:6830:304e:b0:5af:f66a:56ee with SMTP id p14-20020a056830304e00b005aff66a56eemr4957420otr.226.1653083058195;
+        Fri, 20 May 2022 14:44:18 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id e12-20020a056820060c00b0035eb4e5a6d8sm1615018oow.46.2022.05.20.14.44.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 14:44:17 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 0/2] dt-bindings: Arm CoreSight binding schema conversions
+Date:   Fri, 20 May 2022 16:44:14 -0500
+Message-Id: <20220520214416.302127-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <286a1eef-e857-a31f-839b-00a4c835dfa9@roeck-us.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guenter,
+This series converts all the CoreSight debug bindings to DT schema
+format. These bindings are at the top of the list of occurrences of
+bindings without a schema. For arm64 dts files:
 
-I wish I knew of a way to fix this mess for good... suggestions would be 
-welcome.
+    702 ['arm,coresight-etm4x', 'arm,primecell']
+    536 ['arm,coresight-cpu-debug', 'arm,primecell']
+    509 ['arm,coresight-dynamic-funnel', 'arm,primecell']
+    213 ['arm,coresight-tmc', 'arm,primecell']
+    143 ['arm,coresight-dynamic-replicator', 'arm,primecell']
+     97 ['arm,coresight-stm', 'arm,primecell']
 
-Looks like you spotted the last remaining macros without a void cast 
-here, thanks.
+I'll send a reply to these with the errors in dts files that this
+causes. I've reviewed them and they all look legit. Xilinx Zynq though
+has 3 clocks instead of 2.
 
-FWIW:
-Reviewed-by: Michael Schmitz <schmitzmic@gmail.com>
+Rob
 
 
-Am 21.05.2022 um 02:52 schrieb Guenter Roeck:
-> On 5/20/22 07:32, Geert Uytterhoeven wrote:
->> The macros implementing Atari ROM port I/O writes do not cast away their
->> output, unlike similar implementations for other I/O buses.
->> When they are combined using conditional expressions in the
->> definitions of
->> outb() and friends, this triggers sparse warnings like:
->>
->>      drivers/net/appletalk/cops.c:382:17: error: incompatible types in
->> conditional expression (different base types):
->>      drivers/net/appletalk/cops.c:382:17:    unsigned char
->>      drivers/net/appletalk/cops.c:382:17:    void
->>
->> Fix this by adding casts to "void".
->>
->> Reported-by: kernel test robot <lkp@intel.com>
->> Reported-by: Guenter Roeck <linux@roeck-us.net>
->> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
->
-> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
->
->> ---
->> Survived m68k/allmodconfig.
->> To be queued in the m68k tree for v5.19.
->>
->> Removing the casts instead causes issues with functions propagating void
->> return values (return expression in void function), which BTW sparse
->> complains about, too.
->
-> We live and learn. I didn't even know that this was valid syntax.
-> I thought it might be easier to just fix that code, but coccinelle
-> reports that there are hundreds of places in the kernel where this
-> is done. Outch.
->
-> Guenter
+Rob Herring (2):
+  dt-bindings: arm: Convert CoreSight bindings to DT schema
+  dt-bindings: arm: Convert CoreSight CPU debug to DT schema
+
+ .../bindings/arm/arm,coresight-catu.yaml      | 101 +++++
+ .../bindings/arm/arm,coresight-cpu-debug.yaml |  81 ++++
+ .../arm/arm,coresight-dynamic-funnel.yaml     | 126 ++++++
+ .../bindings/arm/arm,coresight-etb10.yaml     |  92 ++++
+ .../bindings/arm/arm,coresight-etm.yaml       | 156 +++++++
+ .../arm/arm,coresight-static-replicator.yaml  |  90 ++++
+ .../bindings/arm/arm,coresight-stm.yaml       | 101 +++++
+ .../bindings/arm/arm,coresight-tmc.yaml       | 132 ++++++
+ .../bindings/arm/arm,coresight-tpiu.yaml      |  91 ++++
+ .../bindings/arm/coresight-cpu-debug.txt      |  49 ---
+ .../devicetree/bindings/arm/coresight.txt     | 402 ------------------
+ 11 files changed, 970 insertions(+), 451 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-catu.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-dynamic-funnel.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etb10.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-etm.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-static-replicator.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-stm.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tmc.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/arm,coresight-tpiu.yaml
+ delete mode 100644 Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
+ delete mode 100644 Documentation/devicetree/bindings/arm/coresight.txt
+
+--
+2.34.1
