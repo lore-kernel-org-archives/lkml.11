@@ -2,86 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 01:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F25C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 01:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344609AbiETBuV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 21:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45464 "EHLO
+        id S230333AbiETB5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 21:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236600AbiETBuP (ORCPT
+        with ESMTP id S230474AbiETB5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 21:50:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D8BDFF5B;
-        Thu, 19 May 2022 18:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14D7461BCB;
-        Fri, 20 May 2022 01:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E8E2C34119;
-        Fri, 20 May 2022 01:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653011413;
-        bh=UgQsreDLSY7xypK5YeRjfLDhZyP1S/w1RAFeT8UNwrM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lxcZ18HGdRuzdUKkuFcivSyrpKzPt9vD3Q4KrP5/qC6rzGq3jFIl/VDg+b9lALDyB
-         QO95cj5Gjiz4G5atpONKcrOiWsjtqI/I01C9PO/fQ3zi+/5a1+LY7fsNgaQZGcJcAJ
-         U45MJUhv1BK7Fp5PcYYQYDoZjW2QkSAK74UkpR1g5/213sI33Vsb23idtywwl5Eeh5
-         gq/0dYZmCAJUbIcK/5hDehQYNLXljYnE0FOk7zsL77HqokQr6iZeXyACSLIMljnlDW
-         T3ecKXl3ZuXBdtzBal8sOGF3e20N83okuZhmGp/8ixE4RF0OLnuupunsBtPfXMIsPg
-         JEOS/oEeSn8KQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 53149F03937;
-        Fri, 20 May 2022 01:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 19 May 2022 21:57:36 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4A1EBE88
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 18:57:32 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id s28so9428849wrb.7
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 18:57:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h/NS3+bOivmdn/Z8oAqTayRG5MjC4lANEwiPrpSX5IA=;
+        b=lC1A71c86K3b210P5MINYKI+0nEPTtRGK3LeWj2Npew4lX9mJGgrpWWegiuNtMwlJO
+         P1IlUwgqu95jwD3J+mnRGelGqXz+HoaJ7VCJk9hhvvF66jPz+hrvF0dmKSe2LLL2Vgq/
+         rwXqca2l71+mfz5tl8pRhTv4LCsg9QGocKsxdwCfWXbGVabJpfgNFG9+rBVSpj/uhude
+         6hLQ+JpxChsTxgZBARTq2zFr80q+S2jttKKsRPO0P7o9moE/Iyx8K/oNzwHCGA7J5UxE
+         CJjZ0hW/O6s0vTeoubWTNpA5gAfGug3OjBmx35+8T9dkzXFSpzM7/kEn0mCCEAR9GuP4
+         zRlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h/NS3+bOivmdn/Z8oAqTayRG5MjC4lANEwiPrpSX5IA=;
+        b=M/nMMtY6SFgcUxkY4QGVE+/CQeWWzMj2LULuD9oJqlnM+b2/Sgvg0LFtcDt4vFExR4
+         Q1iaAimU30RuugbzI9+buAHelDlFDj9JokEo4bmVh5QqbaXzeNUT73j+XA1Fy34WkL7i
+         oZDa7UwhS3Ny0sCvjdGtmFr+8ejyr8tsVebmx2ymozoKsvnIaGdub8pnxZhyhQ/Gs93F
+         Vx3DfA+bL+XXigrk6LvI9iKdU3ytBCAgxi14jPcZMNsz+NrvQMc381FNWkk4bbml0VCF
+         1jw7G7A+9pans70+F93Wy2oo+sKkc0CY83RUg/ru+ecN5lDSu97GMVftmz/aWr88EVno
+         Ul7g==
+X-Gm-Message-State: AOAM5332uuCCyh+7y5hsOIb6/dzGbOWL1UitHxmV9bdIaf9Ej9psEVhB
+        eH39LToM6mq4RA+bzviG4F8l6TBs6DivxhkxklkEkw==
+X-Google-Smtp-Source: ABdhPJwkT9Ky/oISspASS8FjtELCGMc/VI5WvnHs18qGYZT5kAwspcv3o3fkcjB+NGakAekQntgOyy/dXNI6HrW1Wu8=
+X-Received: by 2002:adf:f042:0:b0:20e:5be7:f473 with SMTP id
+ t2-20020adff042000000b0020e5be7f473mr6249346wro.80.1653011850753; Thu, 19 May
+ 2022 18:57:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2] lantiq_gswip: Two small fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165301141333.6731.4185077110831875405.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 May 2022 01:50:13 +0000
-References: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
+References: <20220429201131.3397875-1-yosryahmed@google.com>
+ <20220429201131.3397875-2-yosryahmed@google.com> <87ilqoi77b.wl-maz@kernel.org>
+ <CAJD7tkY7JF25XXUFq2mGroetMkfo-2zGOaQC94pjZE3D42+oaw@mail.gmail.com>
+ <Yn2TGJ4vZ/fst+CY@cmpxchg.org> <Yn2YYl98Vhh/UL0w@google.com>
+ <Yn5+OtZSSUZZgTQj@cmpxchg.org> <Yn6DeEGLyR4Q0cDp@google.com> <CALvZod6nERq4j=L0V+pc-rd5+QKi4yb_23tWV-1MF53xL5KE6Q@mail.gmail.com>
+In-Reply-To: <CALvZod6nERq4j=L0V+pc-rd5+QKi4yb_23tWV-1MF53xL5KE6Q@mail.gmail.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Thu, 19 May 2022 18:56:54 -0700
+Message-ID: <CAJD7tka-5+XRkthNV4qCg8woPCpjcwynQoRBame-3GP1L8y+WQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
+ page table uses.
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Marc Zyngier <maz@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Oliver Upton <oupton@google.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 19 May 2022 00:00:49 +0200 you wrote:
-> While updating the Lantiq target in OpenWrt to Linux 5.15 I came across
-> an FDB related error message. While that still needs to be solved I
-> found two other small issues on the way.
-> 
-> This series fixes the two minor issues found while revisiting the FDB
-> code in the lantiq_gswip driver:
-> - The first patch fixes the start index used in gswip_port_fdb() to
->   find the entry with the matching bridge. The updated logic is now
->   consistent with the rest of the driver.
-> - The second patch fixes a typo in a dev_err() message.
-> 
+On Fri, May 13, 2022 at 10:14 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Fri, May 13, 2022 at 9:12 AM Sean Christopherson <seanjc@google.com> wrote:
+> >
 > [...]
+> >
+> > It was mostly an honest question, I too am trying to understand what userspace
+> > wants to do with this information.  I was/am also trying to understand the benefits
+> > of doing the tracking through page_state and not a dedicated KVM stat.  E.g. KVM
+> > already has specific stats for the number of leaf pages mapped into a VM, why not
+> > do the same for non-leaf pages?
+>
+> Let me answer why a more general stat is useful and the potential
+> userspace reaction:
+>
+> For a memory type which is significant enough, it is useful to expose
+> it in the general interfaces, so that the general data/stat collection
+> infra can collect them instead of having workload dependent stat
+> collectors. In addition, not necessarily that stat has to have a
+> userspace reaction in an online fashion. We do collect stats for
+> offline analysis which greatly influence the priority order of
+> optimization workitems.
+>
+> Next the question is do we really need a separate stat item
+> (secondary_pagetable instead of just plain pagetable) exposed in the
+> stable API? To me secondary_pagetable is general (not kvm specific)
+> enough and can be significant, so having a separate dedicated stat
+> should be ok. Though I am ok with lump it with pagetable stat for now
+> but we do want it to be accounted somewhere.
 
-Here is the summary with links:
-  - [net-next,v2,1/2] net: dsa: lantiq_gswip: Fix start index in gswip_port_fdb()
-    https://git.kernel.org/netdev/net-next/c/7b4149bdee6a
-  - [net-next,v2,2/2] net: dsa: lantiq_gswip: Fix typo in gswip_port_fdb_dump() error print
-    https://git.kernel.org/netdev/net-next/c/4951995dbe9d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Any thoughts on this? Johannes?
