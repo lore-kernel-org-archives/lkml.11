@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 11:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C88C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 11:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348461AbiETLS7 (ORCPT
+        id S1348474AbiETLTD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 07:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58256 "EHLO
+        Fri, 20 May 2022 07:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346848AbiETLSq (ORCPT
+        with ESMTP id S1348465AbiETLSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 07:18:46 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9D914AA74
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:18:43 -0700 (PDT)
+        Fri, 20 May 2022 07:18:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2709A14CDCF
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:18:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0F43DCE2A09
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:18:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34D0CC34113;
-        Fri, 20 May 2022 11:18:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8D2761DB4
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:18:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2804EC385A9;
+        Fri, 20 May 2022 11:18:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653045520;
-        bh=DbozWUA8l+/nc8nWGrNyayfGeTWLYFZBoyJhygSVS90=;
+        s=k20201202; t=1653045532;
+        bh=hm92cqByreXas/bEgQfVySkccwSgtlqkEkhn8E2dpuM=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=BCumOtXXJjMUuU8HP8qlOiM/Zn10Qly7EvKIPAhMPl8Nftlg8/T0Noa3BRCsTr0bn
-         9zMVhTZONKIfQe7kWxEIasA5phVDb6eK0OQISR80TjzvLeyBX602fk6M/PcvdJd5xm
-         7J2ZQytKph1qQW5qNTJ0qPwohdcZnA9FHs7hTMSxUonfM9WLgAgVXhn9c6fZttrLGr
-         8YN86Y6WRG8Mf6ZYYYN0EmElK0uA5kf77B1wGojKA20AT6T6X5Wa2zVlqVTzQsfBAR
-         XKk7nHVJr/dtXLMJTPpuvbtg48fLohXCP698knh5q1TXYhyiKsXLt8B2PJGALfR9wZ
-         RSv4bSNlvJ1qw==
+        b=ZmBUhPxgtXVt+6ijlPIB99zHWNb0nh7K1KxOfUBgRbh97A0FhYDvhf+e43+2GiHf8
+         nHI4l/eaA2ZysNMKUIYndvy7w+9PPKRg/dMnBywjdq6FSzcfLsbOy4Vns6UZqX5F2f
+         cvSOmfanHnjS69MMP/PojwUIgNqd2pv566t6WKUivZJWhl+FgsfwyAjt0lV0meiNdX
+         FmSwK/gxjFbfZtctPC1AXDqIn0am6gCbHhsph9gl5jvgRXKn0EZeRJFmRiLIIZy78d
+         qyF6MOa0K/YPtiGTr8uWdmoph3wTvCloGK+7c4qe8tNIoroVeOBz+I75WG2+f2Luov
+         j4/JCu6zcVQLQ==
 From:   Mark Brown <broonie@kernel.org>
-To:     Vsujithkumar.Reddy@amd.com, alsa-devel@alsa-project.org
-Cc:     AjitKumar.Pandey@amd.com, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Basavaraj.Hiregoudar@amd.com,
-        ajitkumar.pandey@amd.com, Vijendar.Mukunda@amd.com,
-        open list <linux-kernel@vger.kernel.org>,
-        Sunil-kumar.Dommati@amd.com, Liam Girdwood <lgirdwood@gmail.com>
-In-Reply-To: <20220516160619.17832-1-Vsujithkumar.Reddy@amd.com>
-References: <20220516160619.17832-1-Vsujithkumar.Reddy@amd.com>
-Subject: Re: [PATCH v2 1/2] Revert "ASoC: amd: acp: Set gpio_spkr_en to None for max speaker amplifer in machine driver"
-Message-Id: <165304551793.45439.12289149064085038567.b4-ty@kernel.org>
-Date:   Fri, 20 May 2022 12:18:37 +0100
+To:     tiwai@suse.com, u0084500@gmail.com, perex@perex.cz
+Cc:     oder_chiou@realtek.com, cy_huang@richtek.com,
+        ritchie_hsieh@richtek.com, allen_lin@richtek.com,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        lgirdwood@gmail.com
+In-Reply-To: <1652926418-8519-1-git-send-email-u0084500@gmail.com>
+References: <1652926418-8519-1-git-send-email-u0084500@gmail.com>
+Subject: Re: [PATCH 0/2] ASoC: rt9120: Fix 3byte read logic and optimize 'PWDN' control
+Message-Id: <165304552987.45439.3493847954121004579.b4-ty@kernel.org>
+Date:   Fri, 20 May 2022 12:18:49 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -52,14 +51,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 21:36:09 +0530, V sujith kumar Reddy wrote:
-> ASoC: amd : acp : Set Speaker enable/disable pin through rt1019 codec driver.
+On Thu, 19 May 2022 10:13:36 +0800, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
 > 
-> RT1019 codec has two ways of controlling the en_spkr.
-> one way is controlling through gpio pin method the another way is through codec register update through driver.
+> Hi,
 > 
-> Now Speaker enable/disable is controlled  through codec register updated by codec driver.
-> This patch reverts gpio logic.
+> This patch series try to fix two things.
+> - 3byte read logic bug
+> - Use regcache and pm_runtime to optimize 'PWDN' control
 > 
 > [...]
 
@@ -69,10 +68,10 @@ Applied to
 
 Thanks!
 
-[1/2] Revert "ASoC: amd: acp: Set gpio_spkr_en to None for max speaker amplifer in machine driver"
-      commit: 6107fb660749507d5e02988151e45884b5423cdc
-[2/2] Revert "ASoC: amd: acp: Power on/off the speaker enable gpio pin based on DAPM callback."
-      commit: 17572892e3beefe68d0875ecfd015eef521c244d
+[1/2] ASoC: rt9120: Fix 3byte read, valule offset typo
+      commit: 57f68f2168988e574133fb5abcd73949bf1d1df2
+[2/2] ASoC: rt9120: Use pm_runtime and regcache to optimize 'pwdnn' logic
+      commit: 80b949f332e331b67c3ae4f323daf2cb91e743e5
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
