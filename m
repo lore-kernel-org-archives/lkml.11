@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 300D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78564C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353724AbiETVjA (ORCPT
+        id S1353719AbiETVjE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 17:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54542 "EHLO
+        Fri, 20 May 2022 17:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353696AbiETVi4 (ORCPT
+        with ESMTP id S1353700AbiETVi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 17:38:56 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2859817B848
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:38:54 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 31so8759444pgp.8
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:38:54 -0700 (PDT)
+        Fri, 20 May 2022 17:38:58 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1965185CB9
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:38:56 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id c14so8781643pfn.2
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:38:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JY2yFL0uwa0h1jwIIpYY9zlYj6tua2HV5MA+NWkzrlM=;
-        b=VKf459qgtfIN2nwURKwdzW9/x2MsK2XhWFkIQpwhoxQ8B5sQdZZgm7CeI51WyA1W8i
-         bjiZRrIlXQ35qjT+7Fa/pZWRw9ZTLZ6PtWfv9obMY1QnNlnruEZ141wZD3m34+6puxNG
-         uvZJ/F6VbPYrW+4mXStLdi94M3px/tar/ZhFE=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=MWtQy18NHiRxt6AViZq9XS9Ltp9ovI+UMyFyos+TlvM=;
+        b=AeMNMUPxDTpnponUI2VVPS+IBwMWOgFOqvanLUDanSyUwW9DSYtS2FdS1o8GE6yiXX
+         FE0e85Wed3AFMu6RJgphc+wun1FPjNiGzCCq2h7IUF/SEUPZc+2VxSe8jAgB/MLtNPNT
+         Mziws4nOQL/JFrbvkct6vg0WTtfELBHOeF/Es=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JY2yFL0uwa0h1jwIIpYY9zlYj6tua2HV5MA+NWkzrlM=;
-        b=S1kHdUyvQZbUzGnBpDkiPXFgYXyQvLIacm7JxmRwapnABmhMa/MWPPhUPkNej7Sxva
-         TCxdBGP6qviPtNxsz/T7JkHLY02VG4AgOfY/1k7SKqHYi7z+lIoNHfvSu2zVVGC+Pol9
-         7zfjvoY+tD6BiBuU7z3B5Y7+HHPvOPsaagKg7xUwlh4u4bphR2J4L/+ECSewnn192Cfd
-         XcpDZAkkvQVqUmzHYpDqQzbobT6/KGDGQM+A9Sk5a7NWTC2NEjcCswQAKqC+uY5dIj9N
-         5Crbas9Pf3Mo95L3NZ9exiLDHLJqJDF4SesG1La3nQJBiBWzvluWX76PKu+y62yD1UZS
-         kemg==
-X-Gm-Message-State: AOAM531O8yANBh6M8jUSjqiNPEgBPK8sPhoAD29PptuIC07Xk/vlKbhl
-        tWA6IVsXqoxSez+WT1Bbas7Afw==
-X-Google-Smtp-Source: ABdhPJyQ7sTZ4EOkBnkyPfFAtpjkbiEhqkikYoQc6iCiuVDywMgjCXw9CxDj9gsimAlD7Cxsu5AJnA==
-X-Received: by 2002:a63:2b11:0:b0:3f6:5f7f:9e67 with SMTP id r17-20020a632b11000000b003f65f7f9e67mr6384417pgr.492.1653082733609;
-        Fri, 20 May 2022 14:38:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MWtQy18NHiRxt6AViZq9XS9Ltp9ovI+UMyFyos+TlvM=;
+        b=ZYYHraOucyZPkpIjo+9p3f+xsKMUPIPpFSOLMBrTnWfmoAm7JHX8sgV2SGqwVQEvlT
+         ObKAn4j8Q+s42t+S3AXFs5dHGtuO1tWigAwENf61+Z21T+I6Hyhqk5dgVkomdWnvrdtf
+         yjXOJhqBBBPGJQry3XA9XnPY78MKDj8hOUUnrolCWQBrPdSVZ/EHvsDrpItxvYb2x19l
+         dtsXipJApYiARuRu8o/ZduyBmMsZiPu4SxiQ7HHXPx5SEwYohEyGqnVdooBLLfp98mKC
+         t1DgCBarPD55UFL7ORXkpXAoUNyuH1M5PaPjXGmtJhgKL2GQZJuKuZyKpeLX0oSXWQ0Z
+         QgDg==
+X-Gm-Message-State: AOAM533o48mMXtAKx6BdtWPwvkCHsRIye4yL116omfR/m5bFxmWF5RjC
+        8sgokkeKGx6+HayJyhnWxUwKQA==
+X-Google-Smtp-Source: ABdhPJwRN2ADkPxgOCgbxV2GyRfXZPFSY8hDPygQjsWZ7+m29s/Dlk2ByzUOzGfiyO96H7CStX/r2w==
+X-Received: by 2002:a63:220e:0:b0:3c6:d818:19ff with SMTP id i14-20020a63220e000000b003c6d81819ffmr9950684pgi.486.1653082735906;
+        Fri, 20 May 2022 14:38:55 -0700 (PDT)
 Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b090:3896:c312:c4df])
-        by smtp.gmail.com with ESMTPSA id u13-20020a17090a450d00b001df955c28f6sm2070864pjg.37.2022.05.20.14.38.52
+        by smtp.gmail.com with ESMTPSA id u13-20020a17090a450d00b001df955c28f6sm2070864pjg.37.2022.05.20.14.38.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 14:38:52 -0700 (PDT)
+        Fri, 20 May 2022 14:38:55 -0700 (PDT)
 From:   Douglas Anderson <dianders@chromium.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
@@ -60,121 +60,261 @@ Cc:     Matthias Kaehlcke <mka@chromium.org>,
         "Joseph S . Barrera III" <joebar@chromium.org>,
         devicetree@vger.kernel.org,
         Douglas Anderson <dianders@chromium.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Stephen Boyd <sboyd@codeaurora.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/5] dt-bindings: Document how Chromebooks with depthcharge boot
-Date:   Fri, 20 May 2022 14:38:41 -0700
-Message-Id: <20220520143502.v4.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+Subject: [PATCH v4 3/5] dt-bindings: arm: qcom: Add sc7180 Chromebook board bindings
+Date:   Fri, 20 May 2022 14:38:43 -0700
+Message-Id: <20220520143502.v4.3.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+In-Reply-To: <20220520143502.v4.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+References: <20220520143502.v4.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This documents how many Chromebooks pick the device tree that will be
-passed to the OS and can help understand the revisions / SKUs listed
-as the top-level "compatible" in many Chromebooks.
+This copy-pastes compatibles from sc7180-based boards from the device
+trees to the yaml file so that `make dtbs_check` will be happy.
+
+NOTES:
+- I make no attempt to try to share an "item" for all sc7180 based
+  Chromebooks. Because of the revision matching scheme used by the
+  Chromebook bootloader, at times we need a different number of
+  revisions listed.
+- Some of the odd entries in here (like google,homestar-rev23 or the
+  fact that "Google Lazor Limozeen without Touchscreen" changed from
+  sku5 to sku6) are not typos but simply reflect reality.
+- Many revisions of boards here never actually went to consumers, but
+  they are still in use within various companies that were involved in
+  Chromebook development. Since Chromebooks are developed with an
+  "upstream first" methodology, having these revisions supported with
+  upstream Linux is important. Making it easy for Chromebooks to be
+  developed with an "upstream first" methodology is valuable to the
+  upstream community because it improves the quality of upstream and
+  gets Chromebooks supported with vanilla upstream faster.
+
+One other note here is that, though the bootloader effectively treats
+the list of compatibles in a given device tree as unordered, some
+people would prefer future boards to list higher-numbered revisions
+first in the list. Chromebooks here are not changing and typically
+list lower revisions first just to avoid churn.
 
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
-In my opinion this could land through the Qualcomm dts64 tree, mostly
-because I want to land bindings patches in that tree that refer to
-it. Since it's a new file it seems like there ought to be few
-objections?
 
-Changes in v4:
-- Add reference to depthcharge and FIT Image.
-- A few rst syntax fixups found by using a different rst preview.
-- Updated wording as per Stephen.
+(no changes since v3)
 
 Changes in v3:
-- Fix up typos as per Matthias.
-- Move under Documentation/arm/google/ as per Krzysztof.
-- Add missing newline at end of file.
+- Split link to Chromebook boot doc into a separate patch.
+- Added a note to desc about revision ordering within a device tree.
 
 Changes in v2:
-- ("Document how Chromebooks with depthcharge boot") new for v2.
+- Add link to doc about how Chromebook devicetrees work.
+- Use a "description" instead of a comment for each item.
+- Use the marketing name instead of the code name where possible.
 
- .../arm/google/chromebook-boot-flow.rst       | 69 +++++++++++++++++++
- 1 file changed, 69 insertions(+)
- create mode 100644 Documentation/arm/google/chromebook-boot-flow.rst
+ .../devicetree/bindings/arm/qcom.yaml         | 182 +++++++++++++++++-
+ 1 file changed, 181 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/arm/google/chromebook-boot-flow.rst b/Documentation/arm/google/chromebook-boot-flow.rst
-new file mode 100644
-index 000000000000..36da77684bba
---- /dev/null
-+++ b/Documentation/arm/google/chromebook-boot-flow.rst
-@@ -0,0 +1,69 @@
-+.. SPDX-License-Identifier: GPL-2.0
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 5ac28e11ea7b..01e40ea40724 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -219,11 +219,191 @@ properties:
+               - qcom,ipq8074-hk10-c2
+           - const: qcom,ipq8074
+ 
+-      - items:
++      - description: Qualcomm Technologies, Inc. SC7180 IDP
++        items:
+           - enum:
+               - qcom,sc7180-idp
+           - const: qcom,sc7180
+ 
++      - description: HP Chromebook x2 11c (rev1 - 2)
++        items:
++          - const: google,coachz-rev1
++          - const: google,coachz-rev2
++          - const: qcom,sc7180
 +
-+======================================
-+Chromebook Boot Flow
-+======================================
++      - description: HP Chromebook x2 11c (newest rev)
++        items:
++          - const: google,coachz
++          - const: qcom,sc7180
 +
-+Most recent Chromebooks that use device tree are using the opensource
-+depthcharge_ bootloader. Depthcharge_ expects the OS to be packaged as a `FIT
-+Image`_ which contains an OS image as well as a collection of device trees. It
-+is up to depthcharge_ to pick the right device tree from the `FIT Image`_ and
-+provide it to the OS.
++      - description: HP Chromebook x2 11c with LTE (rev1 - 2)
++        items:
++          - const: google,coachz-rev1-sku0
++          - const: google,coachz-rev2-sku0
++          - const: qcom,sc7180
 +
-+The scheme that depthcharge_ uses to pick the device tree takes into account
-+three variables:
++      - description: HP Chromebook x2 11c with LTE (newest rev)
++        items:
++          - const: google,coachz-sku0
++          - const: qcom,sc7180
 +
-+- Board name, specified at depthcharge_ compile time. This is $(BOARD) below.
-+- Board revision number, determined at runtime (perhaps by reading GPIO
-+  strappings, perhaps via some other method). This is $(REV) below.
-+- SKU number, read from GPIO strappings at boot time. This is $(SKU) below.
++      - description: Lenovo Chromebook Duet 5 13 (rev2)
++        items:
++          - const: google,homestar-rev2
++          - const: google,homestar-rev23
++          - const: qcom,sc7180
 +
-+For recent Chromebooks, depthcharge_ creates a match list that looks like this:
++      - description: Lenovo Chromebook Duet 5 13 (rev3)
++        items:
++          - const: google,homestar-rev3
++          - const: qcom,sc7180
 +
-+- google,$(BOARD)-rev$(REV)-sku$(SKU)
-+- google,$(BOARD)-rev$(REV)
-+- google,$(BOARD)-sku$(SKU)
-+- google,$(BOARD)
++      - description: Lenovo Chromebook Duet 5 13 (newest rev)
++        items:
++          - const: google,homestar
++          - const: qcom,sc7180
 +
-+Note that some older Chromebooks use a slightly different list that may
-+not include SKU matching or may prioritize SKU/rev differently.
++      - description: Acer Chromebook Spin 513 (rev0)
++        items:
++          - const: google,lazor-rev0
++          - const: qcom,sc7180
 +
-+Note that for some boards there may be extra board-specific logic to inject
-+extra compatibles into the list, but this is uncommon.
++      - description: Acer Chromebook Spin 513 (rev1 - 2)
++        items:
++          - const: google,lazor-rev1
++          - const: google,lazor-rev2
++          - const: qcom,sc7180
 +
-+Depthcharge_ will look through all device trees in the `FIT Image`_ trying to
-+find one that matches the most specific compatible. It will then look
-+through all device trees in the `FIT Image`_ trying to find the one that
-+matches the *second most* specific compatible, etc.
++      - description: Acer Chromebook Spin 513 (rev3 - 8)
++        items:
++          - const: google,lazor-rev3
++          - const: google,lazor-rev4
++          - const: google,lazor-rev5
++          - const: google,lazor-rev6
++          - const: google,lazor-rev7
++          - const: google,lazor-rev8
++          - const: qcom,sc7180
 +
-+When searching for a device tree, depthcharge_ doesn't care where the
-+compatible string falls within a device tree's root compatible string array.
-+As an example, if we're on board "lazor", rev 4, SKU 0 and we have two device
-+trees:
++      - description: Acer Chromebook Spin 513 (newest rev)
++        items:
++          - const: google,lazor
++          - const: qcom,sc7180
 +
-+- "google,lazor-rev5-sku0", "google,lazor-rev4-sku0", "qcom,sc7180"
-+- "google,lazor", "qcom,sc7180"
++      - description: Acer Chromebook Spin 513 with KB Backlight (rev1 - 2)
++        items:
++          - const: google,lazor-rev1-sku2
++          - const: google,lazor-rev2-sku2
++          - const: qcom,sc7180
 +
-+Then depthcharge_ will pick the first device tree even though
-+"google,lazor-rev4-sku0" was the second compatible listed in that device tree.
-+This is because it is a more specific compatible than "google,lazor".
++      - description: Acer Chromebook Spin 513 with KB Backlight (rev3 - 8)
++        items:
++          - const: google,lazor-rev3-sku2
++          - const: google,lazor-rev4-sku2
++          - const: google,lazor-rev5-sku2
++          - const: google,lazor-rev6-sku2
++          - const: google,lazor-rev7-sku2
++          - const: google,lazor-rev8-sku2
++          - const: qcom,sc7180
 +
-+It should be noted that depthcharge_ does not have any smarts to try to
-+match board or SKU revisions that are "close by". That is to say that
-+if depthcharge_ knows it's on "rev4" of a board but there is no "rev4"
-+device tree then depthcharge_ *won't* look for a "rev3" device tree.
++      - description: Acer Chromebook Spin 513 with KB Backlight (newest rev)
++        items:
++          - const: google,lazor-sku2
++          - const: qcom,sc7180
 +
-+In general when any significant changes are made to a board the board
-+revision number is increased even if none of those changes need to
-+be reflected in the device tree. Thus it's fairly common to see device
-+trees with multiple revisions.
++      - description: Acer Chromebook Spin 513 with LTE (rev1 - 2)
++        items:
++          - const: google,lazor-rev1-sku0
++          - const: google,lazor-rev2-sku0
++          - const: qcom,sc7180
 +
-+It should be noted that, taking into account the above system that
-+depthcharge_ has, the most flexibility is achieved if the device tree
-+supporting the newest revision(s) of a board omits the "-rev{REV}"
-+compatible strings. When this is done then if you get a new board
-+revision and try to run old software on it then we'll at pick the
-+newest device tree we know about.
++      - description: Acer Chromebook Spin 513 with LTE (rev3 - 8)
++        items:
++          - const: google,lazor-rev3-sku0
++          - const: google,lazor-rev4-sku0
++          - const: google,lazor-rev5-sku0
++          - const: google,lazor-rev6-sku0
++          - const: google,lazor-rev7-sku0
++          - const: google,lazor-rev8-sku0
++          - const: qcom,sc7180
 +
-+.. _depthcharge: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/depthcharge/
-+.. _`FIT Image`: https://doc.coreboot.org/lib/payloads/fit.html
++      - description: Acer Chromebook Spin 513 with LTE (newest rev)
++        items:
++          - const: google,lazor-sku0
++          - const: qcom,sc7180
++
++      - description: Acer Chromebook 511 (rev4 - rev8)
++        items:
++          - const: google,lazor-rev4-sku4
++          - const: google,lazor-rev5-sku4
++          - const: google,lazor-rev6-sku4
++          - const: google,lazor-rev7-sku4
++          - const: google,lazor-rev8-sku4
++          - const: qcom,sc7180
++
++      - description: Acer Chromebook 511 (newest rev)
++        items:
++          - const: google,lazor-sku4
++          - const: qcom,sc7180
++
++      - description: Acer Chromebook 511 without Touchscreen (rev4)
++        items:
++          - const: google,lazor-rev4-sku5
++          - const: qcom,sc7180
++
++      - description: Acer Chromebook 511 without Touchscreen (rev5 - rev8)
++        items:
++          - const: google,lazor-rev5-sku5
++          - const: google,lazor-rev5-sku6
++          - const: google,lazor-rev6-sku6
++          - const: google,lazor-rev7-sku6
++          - const: google,lazor-rev8-sku6
++          - const: qcom,sc7180
++
++      - description: Acer Chromebook 511 without Touchscreen (newest rev)
++        items:
++          - const: google,lazor-sku6
++          - const: qcom,sc7180
++
++      - description: Sharp Dynabook Chromebook C1 (rev1)
++        items:
++          - const: google,pompom-rev1
++          - const: qcom,sc7180
++
++      - description: Sharp Dynabook Chromebook C1 (rev2)
++        items:
++          - const: google,pompom-rev2
++          - const: qcom,sc7180
++
++      - description: Sharp Dynabook Chromebook C1 (newest rev)
++        items:
++          - const: google,pompom
++          - const: qcom,sc7180
++
++      - description: Sharp Dynabook Chromebook C1 with LTE (rev1)
++        items:
++          - const: google,pompom-rev1-sku0
++          - const: qcom,sc7180
++
++      - description: Sharp Dynabook Chromebook C1 with LTE (rev2)
++        items:
++          - const: google,pompom-rev2-sku0
++          - const: qcom,sc7180
++
++      - description: Sharp Dynabook Chromebook C1 with LTE (newest rev)
++        items:
++          - const: google,pompom-sku0
++          - const: qcom,sc7180
++
++      - description: Google Trogdor (newest rev)
++        items:
++          - const: google,trogdor
++          - const: qcom,sc7180
++
++      - description: Google Trogdor with LTE (newest rev)
++        items:
++          - const: google,trogdor-sku0
++          - const: qcom,sc7180
++
+       - items:
+           - enum:
+               - qcom,sc7280-crd
 -- 
 2.36.1.124.g0e6072fb45-goog
 
