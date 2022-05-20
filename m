@@ -2,89 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C101DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234517AbiETOdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 10:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48904 "EHLO
+        id S1344850AbiETOee (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 10:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350338AbiETOdS (ORCPT
+        with ESMTP id S233904AbiETOe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 10:33:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB318169E0B
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:33:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D21D3B82BBF
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:33:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF9A3C34114;
-        Fri, 20 May 2022 14:33:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653057194;
-        bh=k3pKXR4/zhO8SZIhn7eYes9mPjp6RoTyUX/0TMAgj7E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KLMOOFKKhgyLdnbQm6NVo+ha8J1CWmvsG8M2YRdLVOxAK4jlaZzqEV75CZwcax3DJ
-         qldCcFx5U/BNwAwJGk+K0/3FOlHGSyVGSNcFfNZZCdI9DyTPxB2pHQjf8eB6SHw8WX
-         q4lz3Bo2IJtU+EFAILFZDd+3pN7rmoA818Huipq1dR80HtvEEfkjZoD0vwghAWGvdI
-         DlnBHWuoqxTBgSMDICz++g/xARsHYfF+7+O9vSGu8vDuVVUO5grkB93uW1ekubif3w
-         FM8IHLjXaJ8N41OQl7iEO2KUowvjoVdHM1OFVWH2JtFoQLQt/c6lIrawjXMen7zlJT
-         9moqiI+VYQpHA==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Yuri Nudelman <ynudelman@habana.ai>
-Subject: [PATCH 4/5] habanalabs: fix missing handle shift during mmap
-Date:   Fri, 20 May 2022 17:33:03 +0300
-Message-Id: <20220520143304.1906895-4-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220520143304.1906895-1-ogabbay@kernel.org>
-References: <20220520143304.1906895-1-ogabbay@kernel.org>
+        Fri, 20 May 2022 10:34:29 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E475DA36
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:34:28 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id n8so7535036plh.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 07:34:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gNY/3AVbHNu09hERUfx0oPdssKWIVZqHzBoDv8banCY=;
+        b=qHOzlvJ+z/BVRREh7Ra71FFppaeMOeQzKsb18Qv3l11S2rTZei13xD57YHJvdVLWpF
+         7XkeaJ6A/ZtFwEhbO3JFSNyIsN/cG5GjDPuor7osKNQwv4wtXOk7XZerpQI09EwKDbJk
+         9snLMnuWL1wYNMwduurukpHTbsS15BhOnEeuXAbjo1i8w/n7gJV0Cez2JUkSjwRKIZAq
+         43aCPgDPJii9AnPvs0Ikw/8xwAV6RTK/RJour7vD34faKKVJrXGbdbHh/Io/hZ0axYrx
+         sIZVHQsxdj5m2gxmnNjZx1D6k1jPbFk+W6e2sczW6iK0fpyvYoHFHvtGNFy82uup0vjF
+         qb1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gNY/3AVbHNu09hERUfx0oPdssKWIVZqHzBoDv8banCY=;
+        b=ZS7II04J6fcJYWLSRuw5eNSHcwsDaYwHNgIxd6Y1Mi1z8Zbw7zrW7E3Hw3Pxj8dyIw
+         4pI7RzmT/yoxiyMUp1yUYpva8fFFif7rvo1UmzaqjBakImJIxcsUNlVlj9eCtOKpcYOJ
+         kA0VPWC8Efy+m9xsKMSI1QheyImEhc90pNombYL7kbnUCM4E4aAt5y7qhrfsBwOdfUx7
+         ilNRNx939elk95PfgxjNf9wZ8EL+05yqofSlOh1Vcfr2442HHmH2X1G+lbl3mexgRf+J
+         OHwAGsUPxcOUf63pfxfiWoL6AFMEET9byMzDC003dzhbzIBjMVvxEpyCqTx3M3xg+01d
+         WKaw==
+X-Gm-Message-State: AOAM532EwTza4ZXNF9KqlvJIOUh2eq7CABXHK17l+8d2lY/psLr/IFTE
+        otdtMV028qbKHQvCTZJUmCDGYg==
+X-Google-Smtp-Source: ABdhPJzwluIjV6EurcBVvKlETIs9IsuXQhq0Wdlfkue8UtyQ+jr1/6tDPXhZ/7GJIBRXyUL7cK3gdA==
+X-Received: by 2002:a17:902:bd01:b0:161:ef0f:9da8 with SMTP id p1-20020a170902bd0100b00161ef0f9da8mr4738809pls.147.1653057267335;
+        Fri, 20 May 2022 07:34:27 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id x137-20020a62868f000000b0050dc76281b0sm1882011pfd.138.2022.05.20.07.34.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 07:34:26 -0700 (PDT)
+Message-ID: <938111ca-d3c7-9888-24f8-0017a989002b@kernel.dk>
+Date:   Fri, 20 May 2022 08:34:25 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] splice: allow direct splicing with chardevs
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk
+Cc:     Jens Axboe <axboe@suse.de>
+References: <20220520095747.123748-1-Jason@zx2c4.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220520095747.123748-1-Jason@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuri Nudelman <ynudelman@habana.ai>
+On 5/20/22 3:57 AM, Jason A. Donenfeld wrote:
+> The original direct splicing mechanism from Jens required the input to
+> be a regular file because it was avoiding the special socket case. It
+> also recognized blkdevs as being close enough to a regular file. But it
+> forgot about chardevs, which behave the same way and work fine here.
+> 
+> This commit adds the missing S_ISCHR condition so that chardevs such as
+> /dev/urandom can be directly spliced without strangely returning
+> -EINVAL.
 
-During mmap operation on the unified memory manager buffer, the vma
-page offset is shifted to extract the handle value. Due to a typo, it
-was not shifted back at the end. That could cause the offset to be
-modified after mmap operation, that may affect subsequent operations.
-In addition, in allocation flow, in case of out of memory error, idr
-would not be correctly destroyed, again because of a missing shift.
+Should be fine to turn this on for char devices:
 
-Signed-off-by: Yuri Nudelman <ynudelman@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
----
- drivers/misc/habanalabs/common/memory_mgr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Jens Axboe <axboe@kernel.dk>
 
-diff --git a/drivers/misc/habanalabs/common/memory_mgr.c b/drivers/misc/habanalabs/common/memory_mgr.c
-index 3dbe388d592d..ea5f2bd31b0a 100644
---- a/drivers/misc/habanalabs/common/memory_mgr.c
-+++ b/drivers/misc/habanalabs/common/memory_mgr.c
-@@ -183,7 +183,7 @@ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
- 
- remove_idr:
- 	spin_lock(&mmg->lock);
--	idr_remove(&mmg->handles, buf->handle);
-+	idr_remove(&mmg->handles, lower_32_bits(buf->handle >> PAGE_SHIFT));
- 	spin_unlock(&mmg->lock);
- free_buf:
- 	kfree(buf);
-@@ -295,7 +295,7 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
- 	}
- 
- 	buf->real_mapped_size = buf->mappable_size;
--	vma->vm_pgoff = handle;
-+	vma->vm_pgoff = handle >> PAGE_SHIFT;
- 
- 	return 0;
- 
 -- 
-2.25.1
+Jens Axboe
 
