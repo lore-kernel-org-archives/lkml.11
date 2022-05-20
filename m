@@ -2,220 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C37C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D56E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351794AbiETQp4 (ORCPT
+        id S1351827AbiETQqI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        Fri, 20 May 2022 12:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351801AbiETQpy (ORCPT
+        with ESMTP id S1351830AbiETQqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:45:54 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73BEDF7D
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:45:52 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id s23-20020a9d7597000000b0060ae566f9a1so3227007otk.1
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:45:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PlINhk7EGOTlZ4qmuhnHPweUlYCEUBqXJztmztIUBZw=;
-        b=ddxIeI9sJFsnX/Vz2xOvpXlnwwYauLTZBX+ayq0TJDXeIOXa+k3eEu6rXI9WC2Gv1K
-         vfrc3f3+84jZlyAtt6x3DdoU8Wj0jVoR6d0z/O/wRvYH/HQcfPrcyMuv6J3l6cKx54af
-         ZZgYW8qlS1qxp7hGHUcsLAg4kXT0CFXTwjVglvPyuxpW9+E92/byqnEm3s8XSKwgG1f7
-         usttOrn8JWmRCiBoD7Kwl8Jh1qoMskvkmrg7JPUJc+9E4dbobBSapJMrXxiyUL8dZN89
-         RabifZoCHLOgnin5RI3sXSVav/MwefPj7FPPhX7YJdbjfFQoAeqx/QC6gDS9RILsYlMj
-         GeDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PlINhk7EGOTlZ4qmuhnHPweUlYCEUBqXJztmztIUBZw=;
-        b=0jjPx0uzZpdaWBGDemKW4XR2/BKpFFT9DOC+qr0jopZ2OtYVMCyTl0tWOXma/wvdFC
-         xVCehjv0WcsiO63jKStN3z527ohxXcyqWRyQHNl/QN/c8n4yqcLEOH09Q7fcNXBDIe8c
-         y42vHvxvGzMu628u5wk3kVPoibpu7VpSRKmieoUGq4W6Lb9Goa/UcZ03hyp9NuSSaOJE
-         1bcr18bPdyWwMq3Tqs3H6EY0/gE2jNtzgVLsa26ihbv6q0CJigUEIS66qGMTwHzAGlVv
-         J3zdZk6yHATObzuVaIUjUVyLAABFBurTsfvpCq5qXOugtR3VHYzhSR7bulIC4DJYVk9e
-         Ik0w==
-X-Gm-Message-State: AOAM5335hjyQieeZunRFrwpJHUXd9zg9DuXhtNYOh0m23GF9Ys8bETbD
-        yMjLhF6Y4eFmjPRgQZTA+aZz/g==
-X-Google-Smtp-Source: ABdhPJyf+/2DFR6FGO/xyM3r5LsVtiMZ7hfwh5hXIy/FNY7AX0/rChz110sR3Cprn6btbbDTdt436w==
-X-Received: by 2002:a05:6830:d7:b0:606:ac62:ed22 with SMTP id x23-20020a05683000d700b00606ac62ed22mr4462496oto.379.1653065152083;
-        Fri, 20 May 2022 09:45:52 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id s184-20020acac2c1000000b0032aed1d25efsm1205014oif.7.2022.05.20.09.45.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 09:45:51 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kyle Tso <kyletso@google.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, dianders@chromium.org,
-        swboyd@chromium.org, quic_subbaram@quicinc.com,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>
-Subject: [PATCH/RFC] dt-bindings: connector: Add port for OOB notifications
-Date:   Fri, 20 May 2022 09:48:10 -0700
-Message-Id: <20220520164810.141400-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        Fri, 20 May 2022 12:46:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CB672CE21
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:46:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653065159;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=37YTECylfYJKjIR6L09Y/2cjGQ9dGSPVwV6PJ3XmXKE=;
+        b=cXPyyO3lpBZs0gSzU6QWD/ZB13EvCH28oJbaRmu7Ljjt7I66KyUrNCZXZ1gzZCPB6rk7up
+        zk+GpOT+9r0ImWbfwKcoOUSLPtWLEE0tTNdr80n55EoCVPcJTEOScx6LsRfJMwE/gTAzxt
+        YgReOj5AR8YSxTvGxAwUdu2ifTda/PI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-673-CJ-uakelPyGYdQRg34zvCA-1; Fri, 20 May 2022 12:45:55 -0400
+X-MC-Unique: CJ-uakelPyGYdQRg34zvCA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DA9285A5AA;
+        Fri, 20 May 2022 16:45:55 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D272EC53360;
+        Fri, 20 May 2022 16:45:54 +0000 (UTC)
+Subject: [PATCH net-next 0/7] rxrpc: Miscellaneous changes
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 20 May 2022 17:45:54 +0100
+Message-ID: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In USB Type-C altmode hot plug interrupts are transferred using sideband
-channels. Introduce an additional port in the usb-c-connector to allow
-referencing the recipient of these notifications.
 
-A typical node to be referred is a DisplayPort controller.
+Here are some miscellaneous changes for AF_RXRPC:
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+ (1) Allow the list of local endpoints to be viewed through /proc.
+
+ (2) Switch to using refcount_t for refcounting.
+
+ (3) Fix a locking issue found by lockdep.
+
+ (4) Autogenerate tracing symbol enums from symbol->string maps to make it
+     easier to keep them in sync.
+
+ (5) Return an error to sendmsg() if a call it tried to set up failed.
+     Because it failed at this point, no notification will be generated for
+     recvmsg to pick up - but userspace still needs to know about the
+     failure.
+
+ (6) Fix the selection of abort codes generated by internal events.  In
+     particular, rxrpc and kafs shouldn't be generating RX_USER_ABORT
+     unless it's because userspace did something to cancel a call.
+
+ (7) Adjust the interpretation and handling of certain ACK types to try and
+     detect NAT changes causing a call to seem to start mid-flow from a
+     different peer.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-next-20220520
+
+and can also be found on the following branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
+
+Tested-by: kafs-testing+fedora34_64checkkafs-build-493@auristor.com
+
+David
 ---
+David Howells (7):
+      rxrpc: Allow list of in-use local UDP endpoints to be viewed in /proc
+      rxrpc: Use refcount_t rather than atomic_t
+      rxrpc: Fix locking issue
+      rxrpc: Automatically generate trace tag enums
+      rxrpc: Return an error to sendmsg if call failed
+      rxrpc, afs: Fix selection of abort codes
+      afs: Adjust ACK interpretation to try and cope with NAT
 
-I have a USB Type-C port manager with two usb-c-connector child nodes and I
-have two display-port controller nodes. I need a way to link each port with
-it's related displayport controller, for the purpose of passing hot-plug events
-from USB PD to the dp driver.
 
-The displayport binding [1] specifies port@1 as "Output endpoint of the
-controller" and in case of being connected to an eDP panel or a dp-controller
-this links the node with whatever the output is.
+ fs/afs/misc.c                |   5 +-
+ fs/afs/rotate.c              |   4 +
+ fs/afs/rxrpc.c               |   8 +-
+ fs/afs/write.c               |   1 +
+ fs/seq_file.c                |  32 +++++
+ include/linux/list.h         |  10 ++
+ include/linux/seq_file.h     |   4 +
+ include/trace/events/rxrpc.h | 263 ++++++-----------------------------
+ net/rxrpc/af_rxrpc.c         |   2 +-
+ net/rxrpc/ar-internal.h      |  25 ++--
+ net/rxrpc/call_accept.c      |  10 +-
+ net/rxrpc/call_event.c       |   4 +-
+ net/rxrpc/call_object.c      |  62 +++++----
+ net/rxrpc/conn_client.c      |  30 ++--
+ net/rxrpc/conn_object.c      |  51 +++----
+ net/rxrpc/conn_service.c     |   8 +-
+ net/rxrpc/input.c            |  31 ++++-
+ net/rxrpc/local_object.c     |  68 ++++-----
+ net/rxrpc/net_ns.c           |   7 +-
+ net/rxrpc/peer_object.c      |  40 +++---
+ net/rxrpc/proc.c             |  85 +++++++++--
+ net/rxrpc/sendmsg.c          |   6 +
+ net/rxrpc/skbuff.c           |   1 -
+ 23 files changed, 366 insertions(+), 391 deletions(-)
 
-It has been suggested by some to describe the link from the usb-c-connector add
-a displayport = <&phandle> to each usb-c-connector node, but the proposed
-solution here would make the usb-c-connector case follow the same scheme as
-these other cases.
-
-Also, using the graph would allow an implementation of either the tcpm just
-notifying the referenced displayport-controller, or following the dp-controller
-implementation in Linux implement a drm_bridge and use the reference in the
-other direction.
-
-To clarify the end result would look something like:
-
-tcpm {
-	connector@0 {
-		compatible = "usb-c-connector";
-		reg = <0>;
-
-		ports {
-			port@0 {
-				reg = <0>;
-				endpoint {
-					remote-endpoint = <&usb0_hs_mux>;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-				endpoint {
-					remote-endpoint = <&usb0_ss_mux>;
-				};
-			};
-
-			port@2 {
-				reg = <2>;
-				endpoint {
-					remote-endpoint = <&usb0_sbu_switch>;
-				};
-			};
-
-			connector0_dp0: port@3 {
-				reg = <1>;
-				endpoint {
-					remote-endpoint = <&dp0_connector0>;
-				};
-			};
-		};
-	};
-
-	connector@1 {
-		compatible = "usb-c-connector";
-		reg = <1>;
-
-		ports {
-			port@0 {
-				reg = <0>;
-				endpoint {
-					remote-endpoint = <&usb1_hs_mux>;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-				endpoint {
-					remote-endpoint = <&usb1_ss_mux>;
-				};
-			};
-
-			port@2 {
-				reg = <2>;
-				endpoint {
-					remote-endpoint = <&usb1_sbu_switch>;
-				};
-			};
-
-			connector1_dp1: port@3 {
-				reg = <1>;
-				endpoint {
-					remote-endpoint = <&dp1_connector1>;
-				};
-			};
-		};
-	};
-}
-
-displayport-controller@0 {
-	reg = <0x0>;
-	ports {
-		port@1 {
-			reg = <1>;
-			dp0_connector0: endpoint {
-				remote-endpoint = <&connector0_dp0>;
-			};
-		};
-	};
-};
-
-displayport-controller@1 {
-	reg = <0x1>;
-	ports {
-		port@1 {
-			reg = <1>;
-			dp1_connector1: endpoint {
-				remote-endpoint = <&connector1_dp1>;
-			};
-		};
-	};
-};
-
-[1] https://www.kernel.org/doc/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
-
- .../devicetree/bindings/connector/usb-connector.yaml        | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/connector/usb-connector.yaml b/Documentation/devicetree/bindings/connector/usb-connector.yaml
-index 0420fa563532..99d4aeb233e5 100644
---- a/Documentation/devicetree/bindings/connector/usb-connector.yaml
-+++ b/Documentation/devicetree/bindings/connector/usb-connector.yaml
-@@ -189,6 +189,12 @@ properties:
-         description: Sideband Use (SBU), present in USB-C. This describes the
-           alternate mode connection of which SBU is a part.
- 
-+      port@3:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Out-of-band notifications. This describes the logical
-+          connection to e.g. a DisplayPort controller that should be notified
-+          about hot plug events.
-+
-     required:
-       - port@0
- 
--- 
-2.35.1
 
