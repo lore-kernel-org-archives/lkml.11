@@ -2,130 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6249EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46ADDC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343848AbiETCs4 (ORCPT
+        id S1344864AbiETCx7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 22:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
+        Thu, 19 May 2022 22:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244118AbiETCsx (ORCPT
+        with ESMTP id S229847AbiETCx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 22:48:53 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE3B1498CF
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:48:44 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id l14so6870148pjk.2
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QVqkVgSPQg+paLMVFz7WpJ9XjeyoBHXntaGD9HA2EME=;
-        b=AU2sagCEbx4tlcmoW6+EvHY3Dd4dDCK34S52ir8THvbOcJgF3Q/ghTldOGhmjC/gfr
-         pWvNnTk9TQHlGpcf2w9ND8iqxlEF0vpPW3uRLUS320T34YQEs1IPmV1sJjgFOonhv6fN
-         Q63lwbM9JFYUUB+QO4vB67vIKJ7dSqyGtKnveuln70VF4piPAqXha1KJGZM7XjUBj8fc
-         GL0YsLKtLDW7OOtIVoY2N0K2EGivDdMcmiE2LqtWrgA1OAmQDMdE+BnwYuAw3V46i3bA
-         O3B91E0Drv/QmenAIOf7YjYLOvcp+EjZft9tzVoDr9z3chZyYYOrHCeCsRcBq3lpGMfJ
-         Zj/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QVqkVgSPQg+paLMVFz7WpJ9XjeyoBHXntaGD9HA2EME=;
-        b=cuv6fP41/x5HATu7KQi75WFeNw9zwLmfJX5Gm8gtyo/sSAM2YSaRqfojJzf18+Syfj
-         iiyQVt7rMCwpAs2QhQ5ib/FZmcSLqBAXuHgzqudS7LEWwb4zXuwUtGQ7qdeL+sCExtod
-         IKgplGr6TngGgzgjY/PoTsvouS5tZlKci6a321VOxq4MT2XjN73BXdmascLZN+ivspzI
-         nxtz7vPhvu7Z+j45dESeIfr4UYdSvuieo/GiqXbrp9uLjUCCrZIGOx7P2VCWy6MAVq5n
-         o70YgxBJlnAu/CISABOvjg92UcrDKtS6xOJu+zeC1f7VEJURUrCLZPOGTTHVwUnmsyLS
-         y7mQ==
-X-Gm-Message-State: AOAM532CK1j326+7ckVYe6I7EE7h3NQfrQyTMei1bHAtnzm9c69USTT4
-        shTl2nyljWroupcC/AxaAVFDX2Q82me7cA==
-X-Google-Smtp-Source: ABdhPJxr7ZZYTBnuZu6v3SZnNAQ3H2DM/QTg6/Wmkt7GwELl2EmWsxuEU/qfVleKgi6FZ3R7hnGliQ==
-X-Received: by 2002:a17:90a:a097:b0:1de:cddd:1970 with SMTP id r23-20020a17090aa09700b001decddd1970mr8566513pjp.65.1653014924175;
-        Thu, 19 May 2022 19:48:44 -0700 (PDT)
-Received: from [10.254.77.173] ([139.177.225.224])
-        by smtp.gmail.com with ESMTPSA id iz3-20020a170902ef8300b001615ca9ab2asm4381148plb.20.2022.05.19.19.48.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 19:48:43 -0700 (PDT)
-Message-ID: <c741142d-7e29-a721-ffa9-34e3d5806b60@bytedance.com>
-Date:   Fri, 20 May 2022 10:48:38 +0800
+        Thu, 19 May 2022 22:53:57 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFCCB41E2;
+        Thu, 19 May 2022 19:53:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653015236; x=1684551236;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=T+kF11TKdf/Yw7gXtARSc8OVLWJ0w+qZ62oJVBw1bK8=;
+  b=e5uc8AdSAtQ18MESRR214S75RviNsMBIocyL5Nex/IN45v+Eyb7DNL5J
+   Gy6+Nco6v9ivPqNqtKjCnYkBShTBp7bFxu5T/bcdefAG79NeBdW0KPCvj
+   TfFa2T1G1XXBHvpGy2EaHWhSOUOSoDc8fCngO55OwbJGbdfyfXFF0XkwS
+   Zz1BSe8gd9mnqZ5pU2MauAoobywyCEFoFMukfkYBr6TdtGW8+SytlBUID
+   k8X85w3qb7vBOvXVlqx0IPWUhoaOYexi4JGjuF1eWYVn+1faIJXSmYF8J
+   jqb0D9xpykMyeZHVZt2QXw+zb6FdiPtcq1PLNIEHYvwaHW+vJmvreM2ZU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="297771234"
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="297771234"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 19:53:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
+   d="scan'208";a="524426313"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 19 May 2022 19:53:52 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrsm0-0004DH-2n;
+        Fri, 20 May 2022 02:53:52 +0000
+Date:   Fri, 20 May 2022 10:53:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, linux-mm@kvack.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, ast@kernel.org,
+        daniel@iogearbox.net, mcgrof@kernel.org,
+        torvalds@linux-foundation.org, rick.p.edgecombe@intel.com,
+        kernel-team@fb.com, Song Liu <song@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 8/8] bpf: simplify select_bpf_prog_pack_size
+Message-ID: <202205201001.kKBulowq-lkp@intel.com>
+References: <20220519202037.2401584-9-song@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH v3] sched/fair: filter out overloaded cpus in SIS
-Content-Language: en-US
-To:     Tim Chen <tim.c.chen@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Josh Don <joshdon@google.com>
-Cc:     linux-kernel@vger.kernel.org
-References: <20220505122331.42696-1-wuyun.abel@bytedance.com>
- <ddf05d4f0f1ffb1a3ff3076e01cc9752a9fd33a8.camel@linux.intel.com>
-From:   Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <ddf05d4f0f1ffb1a3ff3076e01cc9752a9fd33a8.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519202037.2401584-9-song@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Song,
 
-On 5/20/22 6:16 AM, Tim Chen Wrote:
-> On Thu, 2022-05-05 at 20:23 +0800, Abel Wu wrote:
->>
->> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
->> ---
->>   include/linux/sched/topology.h | 12 ++++++++++
->>   kernel/sched/core.c            | 38 ++++++++++++++++++++++++++++++
->>   kernel/sched/fair.c            | 43 +++++++++++++++++++++++++++-------
->>   kernel/sched/idle.c            |  1 +
->>   kernel/sched/sched.h           |  4 ++++
->>   kernel/sched/topology.c        |  4 +++-
->>   6 files changed, 92 insertions(+), 10 deletions(-)
->>
->> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
->> index 56cffe42abbc..95c7ad1e05b5 100644
->> --- a/include/linux/sched/topology.h
->> +++ b/include/linux/sched/topology.h
->> @@ -81,8 +81,20 @@ struct sched_domain_shared {
->>   	atomic_t	ref;
->>   	atomic_t	nr_busy_cpus;
->>   	int		has_idle_cores;
->> +
->> +	/*
->> +	 * Tracking of the overloaded cpus can be heavy, so start
->> +	 * a new cacheline to avoid false sharing.
->> +	 */
->> +	atomic_t	nr_overloaded_cpus ____cacheline_aligned;
-> 
-> Abel,
-> 
-> This is nice work. I have one comment.
-> 
-> The update and reading of nr_overloaded_cpus will incur cache bouncing cost.
-> As far as I can tell, this counter is used to determine if we should bail out
-> from the search for an idle CPUs if the system is heavily loaded.  And I
-> hope we can avoid using atomic counter in these heavily used scheduler paths.
-> The logic to filter overloaded CPUs only need overloaded_cpus[]
-> mask and not the nr_overloaded_cpus counter.
-> 
-> So I recommend that you break out the logic of using nr_overloaded_cpus
-> atomic counter to detect LLC has heavy load as a second patch so that
-> it can be evaluated on its own merit.
-> 
-> That functionality overlaps with Chen Yu's patch to limit search depending
-> on load, so it will be easier to compare the two approaches if it is separated.
-> 
-> Otherwise, the logic in the patch to use overloaded_cpus[]
-> mask to filter out the overloaded cpus looks fine and complements
-> Chen Yu's patch.
+I love your patch! Perhaps something to improve:
 
-OK, will do. And ideally the nr_overloaded_cpus atomic can be replaced
-by Chen's patch.
+[auto build test WARNING on bpf-next/master]
 
-Thanks & BR
-Abel
+url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/bpf_prog_pack-followup/20220520-043417
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220520/202205201001.kKBulowq-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e00cbbec06c08dc616a0d52a20f678b8fbd4e304)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2d5d4beb45be09f3130b694f49ab1b1fd1aa4470
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Song-Liu/bpf_prog_pack-followup/20220520-043417
+        git checkout 2d5d4beb45be09f3130b694f49ab1b1fd1aa4470
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/bpf/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/bpf/core.c:857:8: warning: unused variable 'ptr' [-Wunused-variable]
+           void *ptr;
+                 ^
+   kernel/bpf/core.c:1656:12: warning: no previous prototype for function 'bpf_probe_read_kernel' [-Wmissing-prototypes]
+   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+              ^
+   kernel/bpf/core.c:1656:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+   ^
+   static 
+   kernel/bpf/core.c:2099:6: warning: no previous prototype for function 'bpf_patch_call_args' [-Wmissing-prototypes]
+   void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
+        ^
+   kernel/bpf/core.c:2099:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
+   ^
+   static 
+   3 warnings generated.
+
+
+vim +/ptr +857 kernel/bpf/core.c
+
+e581094167beb6 Song Liu 2022-03-21  853  
+ef078600eec20f Song Liu 2022-03-11  854  static size_t select_bpf_prog_pack_size(void)
+ef078600eec20f Song Liu 2022-03-11  855  {
+ef078600eec20f Song Liu 2022-03-11  856  	size_t size;
+ef078600eec20f Song Liu 2022-03-11 @857  	void *ptr;
+ef078600eec20f Song Liu 2022-03-11  858  
+2d5d4beb45be09 Song Liu 2022-05-19  859  	if (huge_vmalloc_supported()) {
+e581094167beb6 Song Liu 2022-03-21  860  		size = BPF_HPAGE_SIZE * num_online_nodes();
+2d5d4beb45be09 Song Liu 2022-05-19  861  		bpf_prog_pack_mask = BPF_HPAGE_MASK;
+2d5d4beb45be09 Song Liu 2022-05-19  862  	} else {
+ef078600eec20f Song Liu 2022-03-11  863  		size = PAGE_SIZE;
+96805674e5624b Song Liu 2022-03-21  864  		bpf_prog_pack_mask = PAGE_MASK;
+96805674e5624b Song Liu 2022-03-21  865  	}
+ef078600eec20f Song Liu 2022-03-11  866  
+ef078600eec20f Song Liu 2022-03-11  867  	return size;
+ef078600eec20f Song Liu 2022-03-11  868  }
+ef078600eec20f Song Liu 2022-03-11  869  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
