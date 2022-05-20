@@ -2,93 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C30C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 23:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED67C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 23:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237843AbiETXlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 19:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
+        id S244685AbiETXnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 19:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbiETXlI (ORCPT
+        with ESMTP id S230462AbiETXnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 19:41:08 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CAA1E3E2
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 16:41:05 -0700 (PDT)
+        Fri, 20 May 2022 19:43:21 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6D91A35A9
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 16:43:20 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id a23-20020a17090acb9700b001df4e9f4870so9038923pju.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 16:43:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653090066; x=1684626066;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RXc+ONkFyVVtEjPAyk2CpuG/lsV8gZbDITKeLwGX1u8=;
-  b=ywjlBwUgjd66YvzkxGiFX/9htrw9Bsw1mWNwiSHklpjzG3AAH+CDy8PV
-   ww1Y+mBtj+mlYZTRMPSjkRX3xYzixJRHNiKZ5XybI0KUNVgumawW+mKgs
-   v5cX8BtxEiMaRWhsXaoC88YVaUTaaZorTTuOe7LkUFSzPymT361NAP/zv
-   U=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 20 May 2022 16:41:05 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 16:41:05 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 16:41:04 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 20 May
- 2022 16:41:02 -0700
-Date:   Fri, 20 May 2022 19:41:00 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Zi Yan <ziy@nvidia.com>
-CC:     David Hildenbrand <david@redhat.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Oscar Salvador" <osalvador@suse.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v11 0/6] Use pageblock_order for cma and
- alloc_contig_range alignment.
-Message-ID: <YognDJT8C/o1Mt+y@qian>
-References: <A1956578-A851-4BF3-BD57-12571244DB5E@nvidia.com>
- <20220428123308.GA71@qian>
- <0E75B247-8150-48A3-83AE-56C586030006@nvidia.com>
- <YoavU/+NfQIzQiDF@qian>
- <F6598450-EFE0-4EA9-912B-A727DE1F8185@nvidia.com>
- <Yod71OhUa3VWWPCG@qian>
- <48D48FDC-B8DD-41C9-B56A-EBD7314883AB@nvidia.com>
- <A03D6267-5945-4A6A-9C55-5F3DDDB35CC2@nvidia.com>
- <Yofu5wUgov+2eVCE@qian>
- <C1636974-A315-4E0A-81C2-845878429920@nvidia.com>
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=9xGh+0nUKZTlYCnx1t+/gNqJD29FnGxAgofH8LwvP5E=;
+        b=npLfugbnU+k1hLqxC75p0GsmrLZ092hERF5MucocTBkDfml6rheihyvWkQ/fw+A0RO
+         lPkVMJDCe4oCt9Fugc2ieAxzLwyqq2H5YbeGEeJMYnzMUL+980ZxS0xrC5HVfWD65ZQc
+         4M8dJ22njs9P47xVFhSJbvm6zzt8v++vfzIlkwLK/pWdWigCtP69Tl1nct+8Fay+/tcu
+         bmwkZWCnawuysBMbhIqsJAelXDlOQVng4wgnGTZjcw1HvCfxF9VCKoai1ywDwDkcQtiG
+         DHQqCMD5+Yq42s9o/ed65iJjg3VDYwGw7Ha0oe9kZeeIfXqKtwKkKF/0o5PfQADIyTMj
+         t52Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=9xGh+0nUKZTlYCnx1t+/gNqJD29FnGxAgofH8LwvP5E=;
+        b=I86vb9VOp5UR2dUeNqSVIED2IhDzZRYm32RNQb9++xiZDwfGb+Gr+wgwPVZfr4+q5x
+         PFhtI+THxajdSattLVeEkDUD0GUcciboLpk8b9UrFy9//dMUjNSlNYxYR8n0WTQzBn7e
+         V0YIOBuC0CBb7CDGsR7vbVn5Fu8tuRv4kGK7R0hvpcpuWeOp8VtiN1yEndzYxo2InjNv
+         5TqiGfWRy8G771aJ23Jxa+uW1mrInDBvX/Si/na8eR6JtjLwn35ChocT3/hMqmup1FSx
+         qbYIOZQSSS52pVFQ5N0Z0ShGLH2IGkNzy3pzr9di2bFgKgrnXb+X3vwAzJWyii4LF9A2
+         IT4A==
+X-Gm-Message-State: AOAM533oyCYNkPepUyI6y9u0VThAgy/1DeiPV2aoCYxpmJCPg9ABTSau
+        wvt5gU7t8LEYJExZMql+75Q=
+X-Google-Smtp-Source: ABdhPJzasJ3EDlhCCx5LZuepE1qsJZ4EZ4EXif5ffl94joHQy59k71M13xwj23PKkkZlOQ2o+fmJ8A==
+X-Received: by 2002:a17:903:2cb:b0:14f:4fb6:2fb0 with SMTP id s11-20020a17090302cb00b0014f4fb62fb0mr11927028plk.172.1653090200058;
+        Fri, 20 May 2022 16:43:20 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:828d:ad52:eebc:6659])
+        by smtp.gmail.com with ESMTPSA id v1-20020a170902b7c100b0015e8d4eb1f8sm291074plz.66.2022.05.20.16.43.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 16:43:19 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Fri, 20 May 2022 16:43:17 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     John Hubbard <jhubbard@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        syzbot <syzbot+acf65ca584991f3cc447@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        llvm@lists.linux.dev, nathan@kernel.org, ndesaulniers@google.com,
+        syzkaller-bugs@googlegroups.com, trix@redhat.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [syzbot] WARNING in follow_hugetlb_page
+Message-ID: <YognlSdHAKgnkPPY@google.com>
+References: <a7fd0c3f-921e-19b3-2f67-a231dede28f9@oracle.com>
+ <20220513161910.d1b73583cdb2e33562aa86e5@linux-foundation.org>
+ <Yn7vnpXwX50J3K+7@google.com>
+ <4809b134-a37a-50b8-4c25-44548bc1048f@nvidia.com>
+ <Yn73Hz7LkSUv7ycw@google.com>
+ <d97d8a00-e9e0-278f-0c3f-71162afa48b1@nvidia.com>
+ <6d281052-485c-5e17-4f1c-ef5689831450@oracle.com>
+ <YogT9AwVclxAnyvs@google.com>
+ <0be9132d-a928-9ebe-a9cf-6d140b907d59@nvidia.com>
+ <a455c6b1-b9ef-39ab-879e-80e13fd13c10@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <C1636974-A315-4E0A-81C2-845878429920@nvidia.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a455c6b1-b9ef-39ab-879e-80e13fd13c10@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 05:56:52PM -0400, Zi Yan wrote:
-> Do you have the page information like refcount, map count, mapping, index, and
-> page flags? That would be more helpful. Thanks.
-
-page:fffffc200c7f8000 refcount:393 mapcount:1 mapping:0000000000000000 index:0xffffbb800 pfn:0x8039fe00
-head:fffffc200c7f8000 order:9 compound_mapcount:0 compound_pincount:0
-memcg:ffff40026005a000
-anon flags: 0xbfffc000009001c(uptodate|dirty|lru|head|swapbacked|node=0|zone=2|lastcpupid=0xffff)
-raw: 0bfffc000009001c fffffc2007b74048 fffffc2009c087c8 ffff08038dab9189
-raw: 0000000ffffbb800 0000000000000000 0000018900000000 ffff40026005a000
-
-> I cannot reproduce it locally after hundreds of iterations of flip_mem.py on my
-> x86_64 VM and bare metal.
+On Fri, May 20, 2022 at 04:31:31PM -0700, Mike Kravetz wrote:
+> On 5/20/22 15:56, John Hubbard wrote:
+> > On 5/20/22 15:19, Minchan Kim wrote:
+> >> The memory offline would be an issue so we shouldn't allow pinning of any
+> >> pages in *movable zone*.
+> >>
+> >> Isn't alloc_contig_range just best effort? Then, it wouldn't be a big
+> >> problem to allow pinning on those area. The matter is what target range
+> >> on alloc_contig_range is backed by CMA or movable zone and usecases.
+> >>
+> >> IOW, movable zone should be never allowed. But CMA case, if pages
+> >> are used by normal process memory instead of hugeTLB, we shouldn't
+> >> allow longterm pinning since someone can claim those memory suddenly.
+> >> However, we are fine to allow longterm pinning if the CMA memory
+> >> already claimed and mapped at userspace(hugeTLB case IIUC).
+> >>
+> > 
+> > From Mike's comments and yours, plus a rather quick reading of some
+> > CMA-related code in mm/hugetlb.c (free_gigantic_page(), alloc_gigantic_pages()), the following seems true:
+> > 
+> > a) hugetlbfs can allocate pages *from* CMA, via cma_alloc()
+> > 
+> > b) while hugetlbfs is using those CMA-allocated pages, it is debatable
+> > whether those pages should be allowed to be long term pinned. That's
+> > because there are two cases:
+> > 
+> >     Case 1: pages are longterm pinned, then released, all while
+> >             owned by hugetlbfs. No problem.
+> > 
+> >     Case 2: pages are longterm pinned, but then hugetlbfs releases the
+> >             pages entirely (via unmounting hugetlbfs, I presume). In
+> >             this case, we now have CMA page that are long-term pinned,
+> >             and that's the state we want to avoid.
 > 
-> What ARM machine are you using? I wonder if I am able to get one locally.
+> I do not think case 2 can happen.  A hugetlb page can only be changed back
+> to 'normal' (buddy) pages when ref count goes to zero.
+> 
+> It should also be noted that hugetlb code sets up the CMA area from which
+> hugetlb pages can be allocated.  This area is never unreserved/freed.
+> 
+> I do not think there is a reason to disallow long term pinning of hugetlb
+> pages allocated from THE hugetlb CMA area.
+> 
+> But, I wonder if it is possible for hugetlb pages to be allocated from
+> another (non-hugetlb) area.  For example if someone sets up a huge CMA area
+> and hugetlb allocations spill over into that area.  If this is possible
+> (still need to research), then we would not want to long term pin such
+> hugetlb pages.  We can check this in the hugetlb code to determine if
+> long term pinning is allowed.  
 
-Ampere Altra.
+I don't think it's possible because cma_alloc needs "struct cma" just
+like handle and VM doesn't maintain any fallback list of cma chains
+so unless someone could steal the handle somehow, there is no way to
+claim memory others reserved for the CMA purpose.
