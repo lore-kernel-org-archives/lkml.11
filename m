@@ -2,139 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C05E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350561AbiETPCK (ORCPT
+        id S1350572AbiETPEk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
+        Fri, 20 May 2022 11:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231347AbiETPCI (ORCPT
+        with ESMTP id S231347AbiETPEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:02:08 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184DA4F455
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:02:07 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso11711224pjj.4
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:02:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=qZz8FZUKECzNbnFY9lR47szCmiT+m34JVlG5HP+QTn0=;
-        b=DPzty7wOyFBPH7nBmaSCp1zF+Qu7AFgBU08fZ/J6ZV3I9UZOl9K3s2S6vt+V/oqBjY
-         sHUOsi3rrOntar7AKCoxb+FfbEpm/Q+wIRL2ycC7L8K3BRwBxtMd+Md8Qu6Pubhky3VY
-         LbUhHE5/gUHLm+RzAxoWBf//KHBuH5+MXjl225wZ3HiYBUXzuFJBZPZZJz4pRuAvPPUf
-         2nQoEss9uwYAA/4yNtIWVB4XDC1j/hQ/ovuk3sHMLwTIcH2EGnymMWY0RbNcXhpy44Wa
-         JUM61y34EIspVfWpJCVMC5oZrL9m7SJOGr97rM7irmcuG+X8pUb0R2sSpM6I/mur9cfS
-         CneQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=qZz8FZUKECzNbnFY9lR47szCmiT+m34JVlG5HP+QTn0=;
-        b=AAMt/a2BFYNw4dVy90MYFlPnFzammTQT3vGUUag7nnirCB6cnqaNnyc5ElNRZoSgGU
-         HgsDR5w6+kzMvO8PzyZNqfow/NkTJUS2PkSCc08FmAJ+tOYs8e72HNiix3CKL+2qyuGb
-         urXkzF0ayx+gdBGgzUW9APikyvQQ28rZfGg+5crZXQKuYr8pMZDLDAhzABedL/E+ljDP
-         HqaP9KrkPCFbJub7SKNiJe9gc5bK94FsnLVt/55EyvYUjqrdS2DOf9wB9DkZnq+t0Agy
-         iIb7xfS6g0+dgWZMkWe1RZwboKcenm8y7WNiEbSS9RKxCUO7Jh5ws3Jl4siivSVCtCK1
-         X6yg==
-X-Gm-Message-State: AOAM531jpBFsVS029sXEbAkGgOx3WLixj4HlWrfE6juNNyQ/EGgBr8YD
-        oUL1ETpLMVvkOf4cgzEBJtLdcw==
-X-Google-Smtp-Source: ABdhPJwGx7/ziDKYfEwbA7cv/TFh1iHd2mnAZbRvFEIzyRocHqSZvq6rVVrPIugR9QUgSsO/fi3hvw==
-X-Received: by 2002:a17:90a:4d49:b0:1df:78ca:ae49 with SMTP id l9-20020a17090a4d4900b001df78caae49mr11190224pjh.121.1653058926286;
-        Fri, 20 May 2022 08:02:06 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id p17-20020a170902c71100b0015e8d4eb28fsm5665018plp.217.2022.05.20.08.02.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 08:02:05 -0700 (PDT)
-Date:   Fri, 20 May 2022 15:02:02 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Woodhouse <dwmw@amazon.co.uk>,
-        Mingwei Zhang <mizhang@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: Re: [PATCH v2 6/8] KVM: Fix multiple races in gfn=>pfn cache refresh
-Message-ID: <YoetaoA7m4P5NQhy@google.com>
-References: <20220427014004.1992589-1-seanjc@google.com>
- <20220427014004.1992589-7-seanjc@google.com>
- <035a5300-27e1-e212-1ed7-0449e9d20615@redhat.com>
- <4c617e69-f80a-1ee1-635e-c198cf93187e@redhat.com>
+        Fri, 20 May 2022 11:04:35 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F8837A94
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:04:33 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7D28B5C01BB;
+        Fri, 20 May 2022 11:04:31 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Fri, 20 May 2022 11:04:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1653059071; x=
+        1653145471; bh=xGnkinpP7LZAS+mAouYrvyB+X3ZjosXKsE8yvlfvH6o=; b=c
+        S4WaPNFCWFBjEC0hwq5f1bdKuHS61dC0y6Jvt+dN0D6JxCeFfDTaTw9fFtqI/e08
+        4+5P0Dr+SJ0zbYQbpKo1SaSoSk7GkyseNCIIix1xlW+eSavXfTivl/H99mJ8fRBo
+        CLx0gbSSoMGQbVnsRKKOuLpy8BMPl6FxZrO8fzFyMQMEpNmT1IqeOULmnyxzshUL
+        aEHe8bCw20Fp8Fz/dwuFgVCEM9LneiOpkL7DmddjVqwEuC7qqKYwF6NJnR4clZvd
+        lWK8xK0a89TLT0wVTqPN8FkZCWEZXplCyJT5OaoLXd1BJ3zOpCpv1XmSxbNH4xUs
+        q/XT//hjfWjJa/ZkhbIPg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1653059071; x=
+        1653145471; bh=xGnkinpP7LZAS+mAouYrvyB+X3ZjosXKsE8yvlfvH6o=; b=t
+        rlgVVE8z/Ter5k1MqVbhXyQiJ04WHpOcScBAWGEBZpDhlRrPiPvY0puTlxBSUIhC
+        dNpkax6QSFFXIandEkb3DkV6CPhBNWvIPm4Wi+frbWeAFT+UyuLhy3ud2FtDpnb3
+        lrsC9zvZtXOZyhktbd7LDip75qaezUtDjO70MvSTluh2zmjQ7lx37vKOzEojLWRk
+        iWCWpnXWmJjPTbfJrzqeTohm9JNnqz2+ZQXn9yDeqp6ywZR7dfL3uq24PSv1FfHY
+        SKOWyr1HdqP7+pfLR3RuWejQIyhxJSfDzd2AmyVSKzW6xRbT7oq3FREkgZZCZy8X
+        XCqoHtWDVHGkAcEh+CfXA==
+X-ME-Sender: <xms:_q2HYkIkM_Wnkp6XJZykWiMmE-ZYykEY0gN4TJxYaZRC2GWmEjNqJA>
+    <xme:_q2HYkLYJ0o3nwM_pE7U1hNaZl2Lof155hryVMpRGu9s44V6AAUPGcglNYv-DF1Xn
+    WZFT0B6fezDatMe0u4>
+X-ME-Received: <xmr:_q2HYku4eu8f6sruqedjxPw50-n-WpxgMt-H3SC43WJ2U8es7_fEBj5PeL5sqDU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrieefgdekvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefkffggfgfuvfevfhfhjggtgfesthekredttdefjeenucfhrhhomheplfhirgig
+    uhhnucgjrghnghcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhmqeenuc
+    ggtffrrghtthgvrhhnpeduhfekvedvtdeukeeffefgteelgfeugeeuledttdeijeegieeh
+    vefghefgvdefgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
+X-ME-Proxy: <xmx:_q2HYhZG22wA36ONaRwFdHYpGOW6xX1Ple2skBzSBJMHcgmO32Rajw>
+    <xmx:_q2HYrZf4Eaigx8py9pEWzkbMoq3hSd-xxH4vkZk2YNit5BgWJEh0g>
+    <xmx:_q2HYtDgNFTodMDjpyEISKiZowGc8OYov5khjAYfT6pl9tIeboAhig>
+    <xmx:_62HYqWlpBxheDE6bu0dg5HPtCK3U5KzfMpp5OPjf4Dq5PhSbBFMDw>
+Feedback-ID: ifd894703:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 20 May 2022 11:04:29 -0400 (EDT)
+Message-ID: <f9bafd6c-0819-9046-e0dd-11e2dd98da38@flygoat.com>
+Date:   Fri, 20 May 2022 16:04:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH V11 00/10] irqchip: Add LoongArch-related irqchip drivers
+Content-Language: en-GB
+To:     Marc Zyngier <maz@kernel.org>, Huacai Chen <chenhuacai@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>
+References: <20220430085344.3127346-1-chenhuacai@loongson.cn>
+ <87v8uk6kfa.wl-maz@kernel.org>
+From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
+In-Reply-To: <87v8uk6kfa.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4c617e69-f80a-1ee1-635e-c198cf93187e@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022, Paolo Bonzini wrote:
-> On 5/20/22 16:49, Paolo Bonzini wrote:
-> > On 4/27/22 03:40, Sean Christopherson wrote:
-> > > +         * Wait for mn_active_invalidate_count, not mmu_notifier_count,
-> > > +         * to go away, as the invalidation in the mmu_notifier event
-> > > +         * occurs_before_  mmu_notifier_count is elevated.
-> > > +         *
-> > > +         * Note, mn_active_invalidate_count can change at any time as
-> > > +         * it's not protected by gpc->lock.  But, it is guaranteed to
-> > > +         * be elevated before the mmu_notifier acquires gpc->lock, and
-> > > +         * isn't dropped until after mmu_notifier_seq is updated.  So,
-> > > +         * this task may get a false positive of sorts, i.e. see an
-> > > +         * elevated count and wait even though it's technically safe to
-> > > +         * proceed (becase the mmu_notifier will invalidate the cache
-> > > +         *_after_  it's refreshed here), but the cache will never be
-> > > +         * refreshed with stale data, i.e. won't get false negatives.
-> > 
-> > I am all for lavish comments, but I think this is even too detailed.
-> > What about:
-> 
-> And in fact this should be moved to a separate function.
-> 
-> diff --git a/virt/kvm/pfncache.c b/virt/kvm/pfncache.c
-> index 50ce7b78b42f..321964ff42e1 100644
-> --- a/virt/kvm/pfncache.c
-> +++ b/virt/kvm/pfncache.c
-> @@ -112,6 +112,36 @@ static void gpc_release_pfn_and_khva(struct kvm *kvm, kvm_pfn_t pfn, void *khva)
->  	}
->  }
-> +
-> +static inline bool mmu_notifier_retry_cache(struct kvm *kvm, unsigned long mmu_seq)
-> +{
-> +	/*
-> +	 * mn_active_invalidate_count acts for all intents and purposes
-> +	 * like mmu_notifier_count here; but we cannot use the latter
-> +	 * because the invalidation in the mmu_notifier event occurs
-> +	 * _before_ mmu_notifier_count is elevated.
-> +	 *
-> +	 * Note, it does not matter that mn_active_invalidate_count
-> +	 * is not protected by gpc->lock.  It is guaranteed to
-> +	 * be elevated before the mmu_notifier acquires gpc->lock, and
-> +	 * isn't dropped until after mmu_notifier_seq is updated.
-> +	 */
-> +	if (kvm->mn_active_invalidate_count)
-> +		return true;
-> +
-> +	/*
-> +	 * Ensure mn_active_invalidate_count is read before
-> +	 * mmu_notifier_seq.  This pairs with the smp_wmb() in
-> +	 * mmu_notifier_invalidate_range_end() to guarantee either the
-> +	 * old (non-zero) value of mn_active_invalidate_count or the
-> +	 * new (incremented) value of mmu_notifier_seq is observed.
-> +	 */
-> +	smp_rmb();
-> +	if (kvm->mmu_notifier_seq != mmu_seq)
-> +		return true;
-> +	return false;
 
-This can be
 
-	return kvm->mmu_notifier_seq != mmu_seq;
+åœ¨ 2022/5/5 16:58, Marc Zyngier å†™é“:
+>> LoongArch use ACPI, but ACPI tables cannot describe the hierarchy of
+>> irqchips, so we initilize the irqchip subsystem in this way (from arch
+>> code):
+>>
+>>    cpu_domain = loongarch_cpu_irq_init();
+>>    liointc_domain = liointc_acpi_init(cpu_domain, acpi_liointc);
+>>    eiointc_domain = eiointc_acpi_init(cpu_domain, acpi_eiointc);
+>>    pch_pic_domain = pch_pic_acpi_init(eiointc_domain, acpi_pchpic);
+>>    pch_msi_domain = pch_msi_acpi_init(eiointc_domain, acpi_pchmsi);
+> I said no to this in the past, and I'm going to reiterate: this is
+> *not* acceptable. This obviously doesn't scale and isn't manageable in
+> the long run. Hardcoding the topology and the probing order in the
+> kernel code has repeatedly proved to be a disaster, and yet you refuse
+> to take any input from past experience. This is pretty worrying.
+Just my two cents here.
 
-Looks good otherwise.  It'll probably yield a smaller diff too.
+Those drivers have such a topology just because this was my design to
+handle irqchip differences between RS780E and LS7A for MIPS-era Loongson.
+
+TBH, for LoongArch-era Loongson, they should be handled by the same driver,
+cuz the topology behind them just looks like GIC PPI SPI and MSI for Arm 
+GIC.
+
+PCH PIC and eiointc in combination relays interrupts from peripherals 
+just like SPI.
+liointc is doing the PPI job. They are not separated modules in 
+hardware, they are
+interlocked.
+
+The system should be treated as a whole, pretty much like how we see 
+Arm's GIC. The
+topology will last forever for every ACPI enabled LoongArch PC.
+
+I see no reason they should be described separately. Adding complicities to
+ACPI bindings brings no benefit. Changing ACPI binding which is already in
+final draft stage can only leave us with chaos.
+
+Disclaimer: I don't have any connections with Loongson currently. I'm 
+standing
+at contributor's approach to make statement above.
+
+Thanks.
+- Jiaxun
