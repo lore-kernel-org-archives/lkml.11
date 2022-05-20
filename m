@@ -2,107 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:01:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 455C0C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345897AbiETHBe (ORCPT
+        id S1346146AbiETHBm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
+        Fri, 20 May 2022 03:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346146AbiETHAz (ORCPT
+        with ESMTP id S1346163AbiETHBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:00:55 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C16A63D6
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:00:46 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id bq30so12784973lfb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:00:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=kCCz1rMXqvASGt0+8nSWpqnr2BGj26XTAJy5dg5bcuc=;
-        b=T6vWMnF/d7an2NvWN8T9wfDbjZ0S/C1KGYj28m1VzCYgGY5f1HGix23JczGG13/aiG
-         +5OnaxodASZwGQqEMMDml+eBFiQfV67b56/1yihxw4/SvaPhhSk3ZuVAoAF1/7MBAeQD
-         vnZAGayeo8aihjII7Pk1MoHO8mKyiAQ5DDhR0S6vwhT/ndkWHW47i+/SO9pO3OQ3lIr3
-         5ZcWbfeTMvfa/thU7pP5mbYkJe38zdfOlWxXJX/IHvYwCdJH9eO9dhCl4IOIxIB4Jn7k
-         8KupnvWLulymBKOT26GEqd6tiLEVDxUcQi0JY/J/zSsx7jY2WbneJQ0mDzWHyWi1tGl1
-         erOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kCCz1rMXqvASGt0+8nSWpqnr2BGj26XTAJy5dg5bcuc=;
-        b=6P/81xTU7VBAcYpGqwiXTssbXuMdDpUtC/LCtkKPP1skkXgKnDxD0QfTNgfNpqI2PO
-         Rp2KLFsxSrrUxKuK6h2Wb8ww+tlDAGvnSzToCWdq3feETrWnvCCa+Aym9UhPKmHVttyp
-         1LneacjK+SLY6vfqFP3HnlXn3Yq8++EOSrhyj4XY05YPTdU2EKouCumeEUn7JnQWSu/5
-         afAADsn8jObOZEIsu7NU6vOm7GVouyP8iYlhbRNQR8KL4fVYIR8vo4i56G0T+ih6jZLM
-         BhPADDOKkI2z4ArtlRQuSZlfNzk+t6l31Z0Gu49JWnD46oi3Y0758DCG0q9gdA6gG/AH
-         sCtQ==
-X-Gm-Message-State: AOAM5318Z4m+AWfwmQ2shOobj4kC6gLQYRqivDCiejOM5RG970lDzaeg
-        gl55ptTXI+MQBpcbJz5xJ4BKGg==
-X-Google-Smtp-Source: ABdhPJy6wR430AFBjokcnyv0JB4k1K8iTX33VH2wlKS6T/wU4xDXju/W3bfISPkXtSsE9yku91Gz9w==
-X-Received: by 2002:a05:6512:12d6:b0:473:b308:ae0e with SMTP id p22-20020a05651212d600b00473b308ae0emr6285355lfg.664.1653030044824;
-        Fri, 20 May 2022 00:00:44 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id f22-20020ac25336000000b0047255d21190sm542661lfh.191.2022.05.20.00.00.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 00:00:44 -0700 (PDT)
-Message-ID: <dcc36d60-23fe-57d6-f85e-c51dc0da71a0@linaro.org>
-Date:   Fri, 20 May 2022 09:00:42 +0200
+        Fri, 20 May 2022 03:01:00 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4D726345
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:00:45 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(13837:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Fri, 20 May 2022 14:51:14 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     sboyd@kernel.org
+Cc:     krzysztof.kozlowski@linaro.org, robh+dt@kernel.org,
+        mturquette@baylibre.com, tglx@linutronix.de, maz@kernel.org,
+        p.zabel@pengutronix.de, linux@armlinux.org.uk, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>
+Subject: [PATCH v16 00/10] Add Sunplus SP7021 SoC Support
+Date:   Fri, 20 May 2022 14:50:34 +0800
+Message-Id: <cover.1653027644.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Removal of qcom,board-id and qcom,msm-id
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
- <35051bec-98ea-b4c5-f734-06b3f22f3562@linaro.org>
- <8a90ffbc-b376-9115-fb91-0b46d98873b7@linaro.org>
- <40f29157-52c0-001f-6c14-fb90b351756a@linaro.org>
- <20220519221227.B66D3C385AA@smtp.kernel.org>
- <CAA8EJpqjcAcoooaZ6iTSCy4B1x4=HTUgvJ4VqX_Fr_hSMEbfDA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAA8EJpqjcAcoooaZ6iTSCy4B1x4=HTUgvJ4VqX_Fr_hSMEbfDA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022 03:39, Dmitry Baryshkov wrote:
->> I vaguely recall that the properties had to be extracted during the
->> boot.img creation process to create a table of contents header. But
->> after some time the bootloader started scanning the DTBs directly for
->> the vendor properties and thus the header was deprecated/removed. If the
->> bootloader is doing the scanning then I'm not sure what is preventing
->> the properties from being documented and allowed. I think the main
->> rejection was that the properties were added purely to be extracted
->> during post processing and placed into the table of contents header,
->> i.e. they weren't actually used by the kernel or the bootloader. If they
->> are now used by the bootloader it sounds OK to me if they're kept
->> around.
-> 
-> Yes, as far as I understand, they are used by the bootloader directly.
+This patch series add Sunplus SP7021 SoC support.
 
-This solves only one part of concern form previous discussions - having
-entries not used by anything. Kernel still don't use them but some
-vendor bootloader (not U-boot) does.
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates many
+peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and etc.) into a
+single chip. It is designed for industrial control.
 
-The second problem with these is still not solved - these duplicate what
-is already described by compatible. Basically, they do not add any new
-hardware description, because board or SoC revision should be encoded
-into the compatible. Imagine now adding such "vendor,device-id"
-properties to every device node in DTS!
+SP7021 consists of two chips (dies) in a package. One is called C-chip
+(computing chip). It is a 4-core ARM Cortex A7 CPU. It adopts high-level
+process (22 nm) for high performance computing. The other is called P-
+chip (peripheral chip). It has many peripherals and an ARM A926 added
+especially for real-time control. P-chip is made for customers. It adopts
+low-level process (ex: 0.11 um) to reduce cost.
 
-Best regards,
-Krzysztof
+Refer to (for documentations):
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+
+Refer to (applications):
+https://tibbo.com/store/plus1.html
+
+Refer to (applications):
+http://www.sinovoip.com.cn/ecp_view.asp?id=586
+
+Changes in v16:
+- clk-sp7021.c: Fix the comments from Stephen Boyd
+- board dts: Fix the comments from Krzysztof
+
+Changes in v15:
+- Add Sunplus SP7021-demo-v3 board dts
+- Refine yaml title
+- Rename dt-binding header filename to match compatible string
+
+Changes in v14:
+- clock/sp-sp7021.h: Fix the comments from Krzysztof
+- sunplus,sp7021-clkc.yaml: Fix the comments from Rob
+
+Changes in v13:
+- reset/sp-sp7021.h: Move HW mapping from dt-binding header to driver
+- reset-sunplus.c: Move HW mapping from dt-binding header to driver
+- clock/sp-sp7021.h: Move HW mapping from dt-binding header to driver
+- clk-sp7021.c: Fix the comments from Arnd
+- irq-sp7021-intc.c: Remove empty set_affinity callback function
+- sp7021_defconfig: Fix the comments from Arnd
+
+Changes in v12:
+- sunplus,sp7021-clkc.yaml: Move 'reg' after 'compatible'
+- sunplus,sp7021-intc.yaml: Move 'reg' after 'compatible'
+- sunplus,reset.yaml: Move 'reg' after 'compatible'
+- Remove wrong reviewed-tags
+
+Changes in v11:
+- clk-sp7021.c: Remove the dead code
+
+Changes in v10:
+- arm/sunplus,sp7021.yaml: Add SoC compatible: "sunplus,sp7021"
+- clock/sunplus,sp7021-clkc.yaml: Remove the internal clock parent from DTS
+- clk-sp7021.c: Refine the macro DBG_CLK
+- clk-sp7021.c: Refine the clock_parent_data
+
+Changes in v9:
+- clk/Kconfig: fix the comments form Stephen Boyd
+- clk-sp7021.c: fix the comments form Stephen Boyd
+
+Changes in v8:
+- clk-sp7021.c: fix the comments form Stephen Boyd
+
+Changes in v7:
+- sunplus,sp7021-clkc.yaml: Add clocks & clock-names
+- clk-sp7021.c: fix the comments form Stephen Boyd
+- irq-sp7021-intc.c: fix the comments from Marc
+
+Changes in v6:
+- reset-sunplus.c: fix the comments from Philipp
+- irq-sp7021-intc.c: fix the comments from Marc
+- mach-sunplus: fix the comments from Arnd
+
+Changes in v5:
+- reset-sunplus.c: fix strict checks
+- clk/Kconfig: fix spell
+- clk-sp7021.c: using bitfield ops, fix strict checks
+- irqchip/Kconfig: fix spell
+- irq-sp7021-intc.c: cleanup error path in probe, fix strict checks
+- arm/Kconfig: fix spell & typo, remove CONFIG_SERIAL_SUNPLUS
+- mach-sunplus/Kconfig: fix typo
+- sp7021_defconfig: add CONFIG_SERIAL_SUNPLUS
+
+Changes in v4:
+- mach-sunplus: add initial support for SP7021
+- sp7021_defconfig: add generic SP7021 defconfig
+- reset-sunplus: remove Q645 support
+- reset-sunplus.c: refine code based on Philipp's review
+- clk-sp7021: clock defines add prefix, more clean up
+
+Changes in v3:
+- sp7021-intc: remove primary controller mode due to P-chip running Linux
+  not supported any more.
+- sp7021-intc.h: removed, not set ext through the DT but sp_intc_set_ext()
+- sunplus,sp7021-intc.yaml: update descriptions for above changes
+- irq-sp7021-intc.c: more cleanup based on Marc's review
+- all driver's Kconfig removed default, it's selected by platform config
+
+Changes in v2:
+- sunplus,sp7021-intc.yaml: add descrption for "#interrupt-cells", interrupts
+- sunplus,sp7021-intc.yaml: drop "ext0-mask"/"ext1-mask" from DT
+- sunplus,sp7021-intc.yaml: fix example.dt too long error
+- irq-sp7021-intc.c: major rewrite
+- all files with dual license
+
+Qin Jian (10):
+  dt-bindings: arm: sunplus: Add bindings for Sunplus SP7021 SoC boards
+  dt-bindings: reset: Add bindings for SP7021 reset driver
+  reset: Add Sunplus SP7021 reset driver
+  dt-bindings: clock: Add bindings for SP7021 clock driver
+  clk: Add Sunplus SP7021 clock driver
+  dt-bindings: interrupt-controller: Add bindings for SP7021 interrupt
+    controller
+  irqchip: Add Sunplus SP7021 interrupt controller driver
+  ARM: sunplus: Add initial support for Sunplus SP7021 SoC
+  ARM: sp7021_defconfig: Add Sunplus SP7021 defconfig
+  ARM: dts: Add Sunplus SP7021-Demo-V3 board device tree
+
+ .../bindings/arm/sunplus,sp7021.yaml          |  29 +
+ .../bindings/clock/sunplus,sp7021-clkc.yaml   |  52 ++
+ .../sunplus,sp7021-intc.yaml                  |  62 ++
+ .../bindings/reset/sunplus,reset.yaml         |  38 +
+ MAINTAINERS                                   |  18 +
+ arch/arm/Kconfig                              |   2 +
+ arch/arm/Makefile                             |   1 +
+ arch/arm/boot/dts/Makefile                    |   2 +
+ arch/arm/boot/dts/sunplus-sp7021-achip.dtsi   |  84 ++
+ arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts  |  26 +
+ arch/arm/boot/dts/sunplus-sp7021.dtsi         | 318 ++++++++
+ arch/arm/configs/multi_v7_defconfig           |   1 +
+ arch/arm/configs/sp7021_defconfig             |  59 ++
+ arch/arm/mach-sunplus/Kconfig                 |  27 +
+ arch/arm/mach-sunplus/Makefile                |   8 +
+ arch/arm/mach-sunplus/sp7021.c                |  16 +
+ drivers/clk/Kconfig                           |  10 +
+ drivers/clk/Makefile                          |   1 +
+ drivers/clk/clk-sp7021.c                      | 727 ++++++++++++++++++
+ drivers/irqchip/Kconfig                       |   9 +
+ drivers/irqchip/Makefile                      |   1 +
+ drivers/irqchip/irq-sp7021-intc.c             | 278 +++++++
+ drivers/reset/Kconfig                         |   9 +
+ drivers/reset/Makefile                        |   1 +
+ drivers/reset/reset-sunplus.c                 | 212 +++++
+ .../dt-bindings/clock/sunplus,sp7021-clkc.h   |  88 +++
+ .../dt-bindings/reset/sunplus,sp7021-reset.h  |  87 +++
+ 27 files changed, 2166 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ create mode 100644 Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ create mode 100644 Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ create mode 100644 arch/arm/boot/dts/sunplus-sp7021-achip.dtsi
+ create mode 100644 arch/arm/boot/dts/sunplus-sp7021-demo-v3.dts
+ create mode 100644 arch/arm/boot/dts/sunplus-sp7021.dtsi
+ create mode 100644 arch/arm/configs/sp7021_defconfig
+ create mode 100644 arch/arm/mach-sunplus/Kconfig
+ create mode 100644 arch/arm/mach-sunplus/Makefile
+ create mode 100644 arch/arm/mach-sunplus/sp7021.c
+ create mode 100644 drivers/clk/clk-sp7021.c
+ create mode 100644 drivers/irqchip/irq-sp7021-intc.c
+ create mode 100644 drivers/reset/reset-sunplus.c
+ create mode 100644 include/dt-bindings/clock/sunplus,sp7021-clkc.h
+ create mode 100644 include/dt-bindings/reset/sunplus,sp7021-reset.h
+
+-- 
+2.33.1
+
