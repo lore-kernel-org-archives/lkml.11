@@ -2,122 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D67FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiETIba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40916 "EHLO
+        id S1347084AbiETIbe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 04:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347164AbiETIaq (ORCPT
+        with ESMTP id S1347107AbiETIap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:30:46 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B5D15A744;
-        Fri, 20 May 2022 01:30:25 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24K3ZQ3p004615;
-        Fri, 20 May 2022 10:29:59 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=hneNV+UTX/MQsnnJ1NOLYhI1GUf8ZaFIZymZJDulI7Y=;
- b=bVSQ9bpLAesU4gdQU0NY7YC9ypuO98FoqvhNOA2l0Rhf5a3s228zScK5H/gq2trCQuc3
- oqSJPMYWZoRd4EEYCDCMV8rgHfCBZ4lhThMhnF61btFjxfFjBVczQEa726hgc0pmOy1M
- Y84p0AynckK6gqePolG0QuO9NW/TXm7WHmPhgnTFTwWj79PVZIbjbrjEvkz51tlj9CGX
- oDfoDXfZ8/edYsF0cRzfFBHV0C6ps7//j6tyXfCS92a6Ry/gqX8FrFUT93t81GKlhVPM
- LHXXO0JMDnsdgfhhRw/u2vSa5O5Od7/clCS1TbPkhBNkuv3zY8NulMdUilILWY3MvYyv kg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g23s22tjt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 10:29:59 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DF853100038;
-        Fri, 20 May 2022 10:29:56 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D8EE1214D2D;
-        Fri, 20 May 2022 10:29:56 +0200 (CEST)
-Received: from localhost (10.75.127.45) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 20 May
- 2022 10:29:54 +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Deepak Kumar Singh <quic_deesin@quicinc.com>,
-        Chris Lew <quic_clew@quicinc.com>,
-        <arnaud.pouliquen@foss.st.com>
-Subject: [RFC PATCH 00/10] Introduction of rpmsg flow control service
-Date:   Fri, 20 May 2022 10:29:30 +0200
-Message-ID: <20220520082940.2984914-1-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 20 May 2022 04:30:45 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A21215A3DD;
+        Fri, 20 May 2022 01:30:18 -0700 (PDT)
+X-UUID: e1cd260cccc5472d8e16ede77843c0af-20220520
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:9b543140-1712-4dcc-a731-8dcef1fec4cc,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:25
+X-CID-META: VersionHash:2a19b09,CLOUDID:9e78fd79-5ef6-470b-96c9-bdb8ced32786,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: e1cd260cccc5472d8e16ede77843c0af-20220520
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1470796225; Fri, 20 May 2022 16:30:10 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 20 May 2022 16:30:09 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 20 May 2022 16:30:08 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 20 May 2022 16:30:08 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
+        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
+        <river.cheng@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <cellopoint.kai@gmail.com>,
+        Moudy Ho <moudy.ho@mediatek.corp-partner.google.com>
+Subject: [PATCH v16 2/4] dt-binding: mediatek: add bindings for MediaTek CCORR and WDMA
+Date:   Fri, 20 May 2022 16:30:04 +0800
+Message-ID: <20220520083006.27789-3-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220520083006.27789-1-moudy.ho@mediatek.com>
+References: <20220520083006.27789-1-moudy.ho@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-20_03,2022-05-19_03,2022-02-23_01
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series proposes an implementation for the rpmsg virtio transport
-backend, of the signaling API proposed by Deepak Kumar Singh:
-"rpmsg and glink signaling API support" [1]
+From: Moudy Ho <moudy.ho@mediatek.corp-partner.google.com>
 
-The aim of the series is to offer the possibility for an endpoint to inform
-a remote endpoint about its state, based on a software flow control[2].
+This patch adds DT binding documentation for MediaTek's CCORR and
+WDMA components.
+These components exist in both MediaTek's Media Data Path 3(MDP3) and DRM,
+and the bindings are placed under the folder "./soc/mediatek" to prevent
+duplicate builds.
 
-For this a new rpmsg service( with a fixed address 64) is proposed.
-It is responsible for:
-- transmitting local endpoint flow control information to the remote side,
-- informing a local endpoint about a remote endpoint flow control.
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/soc/mediatek/mediatek,ccorr.yaml | 58 +++++++++++++++
+ .../bindings/soc/mediatek/mediatek,wdma.yaml  | 71 +++++++++++++++++++
+ 2 files changed, 129 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
 
-For the rpmsg virtio transport layer the service is negotiated thanks to the 
-virtio feature flag: VIRTIO_RPMSG_F_FC
-
-Notice that this pull request introduces new feature in the rpmsg protocol,
-So it has to be aligned with OpenAMP implementation.
-Pending OpenAMP pull request is available here:
-https://github.com/OpenAMP/open-amp/pull/394
-
-
-[1]https://lkml.org/lkml/2022/1/18/867
-[2]https://en.wikipedia.org/wiki/Software_flow_control
-
-Arnaud Pouliquen (8):
-  rpmsg: core: Add rpmsg device remote flow control announcement ops
-  rpmsg: virtio: Implement the announce_remote_fc ops
-  rpmsg: Introduce flow control channel driver
-  rpmsg: virtio: Add support of the VIRTIO_RPMSG_F_FC feature
-  rpmsg: virtio: Implement the set_flow_control ops
-  rpmsg: Add the destination address in rpmsg_set_flow_control
-  rpmsg: tty : Add the support of the flow control
-  rpmsg: virtio: Set default dst address on flow control
-
-Deepak Kumar Singh (2):
-  rpmsg: core: Add signal API support
-  rpmsg: char: Add TIOCMGET/TIOCMSET ioctl support
-
- drivers/rpmsg/Kconfig            |  11 +++
- drivers/rpmsg/Makefile           |   1 +
- drivers/rpmsg/rpmsg_char.c       |  56 +++++++++++++--
- drivers/rpmsg/rpmsg_core.c       |  47 +++++++++++++
- drivers/rpmsg/rpmsg_fc.c         | 113 +++++++++++++++++++++++++++++++
- drivers/rpmsg/rpmsg_internal.h   |   9 +++
- drivers/rpmsg/virtio_rpmsg_bus.c | 111 +++++++++++++++++++++++++++++-
- drivers/tty/rpmsg_tty.c          |  50 ++++++++++++++
- include/linux/rpmsg.h            |  15 ++++
- include/linux/rpmsg/fc.h         |  51 ++++++++++++++
- 10 files changed, 456 insertions(+), 8 deletions(-)
- create mode 100644 drivers/rpmsg/rpmsg_fc.c
- create mode 100644 include/linux/rpmsg/fc.h
-
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+new file mode 100644
+index 000000000000..20d02cb4ad0a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+@@ -0,0 +1,58 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,ccorr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek color correction
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  Mediatek color correction with 3X3 matrix.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-ccorr
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  clocks:
++    minItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++
++    mdp3_ccorr: mdp3-ccorr@1401c000 {
++      compatible = "mediatek,mt8183-mdp3-ccorr";
++      reg = <0x1401c000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
++      clocks = <&mmsys CLK_MM_MDP_CCORR>;
++    };
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+new file mode 100644
+index 000000000000..102d9e163139
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,wdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek Write Direct Memory Access
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  Mediatek Write Direct Memory Access(WDMA) component used to write
++  the data into DMA.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-wdma
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++
++  iommus:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - power-domains
++  - clocks
++  - iommus
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/memory/mt8183-larb-port.h>
++
++    mdp3_wdma: mdp3-wdma@14006000 {
++      compatible = "mediatek,mt8183-mdp3-wdma";
++      reg = <0x14006000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
++      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++      clocks = <&mmsys CLK_MM_MDP_WDMA0>;
++      iommus = <&iommu>;
++    };
 -- 
-2.25.1
+2.18.0
 
