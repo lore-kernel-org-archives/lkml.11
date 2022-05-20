@@ -2,103 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC0A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A926EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345121AbiETDRr (ORCPT
+        id S1345132AbiETDSq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 23:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52936 "EHLO
+        Thu, 19 May 2022 23:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345104AbiETDRo (ORCPT
+        with ESMTP id S1345126AbiETDSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 23:17:44 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1AF5A585;
-        Thu, 19 May 2022 20:17:43 -0700 (PDT)
-X-UUID: 4737285e739243b3bb600eb2e528098b-20220520
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:ffea6a91-f043-40ea-9b64-507b503b30d4,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:14,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:14
-X-CID-META: VersionHash:2a19b09,CLOUDID:07daf179-5ef6-470b-96c9-bdb8ced32786,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:3,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 4737285e739243b3bb600eb2e528098b-20220520
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1504191338; Fri, 20 May 2022 11:17:39 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 20 May 2022 11:17:37 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 20 May 2022 11:17:37 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 20 May 2022 11:17:37 +0800
-Message-ID: <319484715f582c210c275ef23d020e802579c738.camel@mediatek.com>
-Subject: Re: [PATCH v7,3/4] drm/mediatek: keep dsi as LP00 before dcs cmds
- transfer
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <jitao.shi@mediatek.com>,
-        "# 5 . 10 . x : b255d51e3967 : sched : Modify dsi funcs to atomic 
-        operations" <stable@vger.kernel.org>
-Date:   Fri, 20 May 2022 11:17:36 +0800
-In-Reply-To: <1653012007-11854-4-git-send-email-xinlei.lee@mediatek.com>
-References: <1653012007-11854-1-git-send-email-xinlei.lee@mediatek.com>
-         <1653012007-11854-4-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+        Thu, 19 May 2022 23:18:43 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9285DA3E
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:18:41 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 169FF201365;
+        Fri, 20 May 2022 05:18:40 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D0E79201362;
+        Fri, 20 May 2022 05:18:39 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id AB7CE180031F;
+        Fri, 20 May 2022 11:18:38 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_asrc_dma: enable dual fifo for ASRC P2P
+Date:   Fri, 20 May 2022 11:06:00 +0800
+Message-Id: <1653015960-15474-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-20 at 10:00 +0800, xinlei.lee@mediatek.com wrote:
-> From: Jitao Shi <jitao.shi@mediatek.com>
-> 
-> To comply with the panel sequence, hold the mipi signal to LP00
-> before the dcs cmds transmission,
-> and pull the mipi signal high from LP00 to LP11 until the start of
-> the dcs cmds transmission.
-> The normal panel timing is :
-> (1) pp1800 DC pull up
-> (2) avdd & avee AC pull high
-> (3) lcm_reset pull high -> pull low -> pull high
-> (4) Pull MIPI signal high (LP11) -> initial code -> send video
-> data(HS mode)
-> The power-off sequence is reversed.
-> If dsi is not in cmd mode, then dsi will pull the mipi signal high in
-> the mtk_output_dsi_enable function.
-> The delay in lane_ready func is the reaction time of dsi_rx after
-> pulling up the mipi signal.
-> 
-> Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge
-> API")
-> 
-> Cc: <stable@vger.kernel.org> # 5.10.x: b255d51e3967: sched: Modify
-> dsi funcs to atomic operations
-> Cc: <stable@vger.kernel.org> # 5.10.x: 72c69c977502: sched: Separate
-> poweron/poweroff from enable/disable and define new funcs
-> Cc: <stable@vger.kernel.org> # 5.10.x
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> ---
+The SSI and SPDIF has dual fifos, enhance P2P for these
+case with using the sdma_peripheral_config struct
 
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_asrc_dma.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/sound/soc/fsl/fsl_asrc_dma.c b/sound/soc/fsl/fsl_asrc_dma.c
+index 5038faf035cb..aaf7993935b7 100644
+--- a/sound/soc/fsl/fsl_asrc_dma.c
++++ b/sound/soc/fsl/fsl_asrc_dma.c
+@@ -129,6 +129,7 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
+ 				  struct snd_pcm_hw_params *params)
+ {
+ 	enum dma_slave_buswidth buswidth = DMA_SLAVE_BUSWIDTH_2_BYTES;
++	enum sdma_peripheral_type be_peripheral_type = IMX_DMATYPE_SSI;
+ 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+ 	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
+ 	struct snd_dmaengine_dai_dma_data *dma_params_fe = NULL;
+@@ -139,6 +140,7 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
+ 	struct snd_soc_component *component_be = NULL;
+ 	struct fsl_asrc *asrc = pair->asrc;
+ 	struct dma_slave_config config_fe, config_be;
++	struct sdma_peripheral_config audio_config;
+ 	enum asrc_pair_index index = pair->index;
+ 	struct device *dev = component->dev;
+ 	struct device_node *of_dma_node;
+@@ -221,6 +223,7 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
+ 		/* Get DMA request of Back-End */
+ 		tmp_data = tmp_chan->private;
+ 		pair->dma_data.dma_request = tmp_data->dma_request;
++		be_peripheral_type = tmp_data->peripheral_type;
+ 		if (!be_chan)
+ 			dma_release_channel(tmp_chan);
+ 
+@@ -268,6 +271,17 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
+ 	config_be.dst_addr_width = buswidth;
+ 	config_be.dst_maxburst = dma_params_be->maxburst;
+ 
++	memset(&audio_config, 0, sizeof(audio_config));
++	config_be.peripheral_config = &audio_config;
++	config_be.peripheral_size  = sizeof(audio_config);
++
++	if (tx && (be_peripheral_type == IMX_DMATYPE_SSI_DUAL ||
++		   be_peripheral_type == IMX_DMATYPE_SPDIF))
++		audio_config.n_fifos_dst = 2;
++	if (!tx && (be_peripheral_type == IMX_DMATYPE_SSI_DUAL ||
++		    be_peripheral_type == IMX_DMATYPE_SPDIF))
++		audio_config.n_fifos_src = 2;
++
+ 	if (tx) {
+ 		config_be.src_addr = asrc->paddr + asrc->get_fifo_addr(OUT, index);
+ 		config_be.dst_addr = dma_params_be->addr;
+-- 
+2.17.1
 
