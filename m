@@ -2,207 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA92CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351558AbiETQU5 (ORCPT
+        id S1351550AbiETQWW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        Fri, 20 May 2022 12:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351540AbiETQUu (ORCPT
+        with ESMTP id S231239AbiETQWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:20:50 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E85665C4
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:20:45 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id e2so531687wrc.1
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:20:45 -0700 (PDT)
+        Fri, 20 May 2022 12:22:20 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB36B8BFD;
+        Fri, 20 May 2022 09:22:19 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id a38so5272727pgl.9;
+        Fri, 20 May 2022 09:22:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GarL2Kn/zNIJwCptfjfJ4swfJzGY6bIsUnYiG/oxiuI=;
-        b=TtgVg9kR94FReHMcINrx3ZC/s6A7a4psy4/9RGzmCb8xCqRJZPWW8LNcgsK1sWrGU5
-         ho2BYDZmtkjRspH22M5aAr+RU9dkyIOmWM4MwgpfWKF/iGU0tz/r5P67ilQptFsP60xT
-         Q3gKb4yQ1eQudnLBQXSua2hijgHXcJ97MVbOBBeKTXZ3SHjyElxW0IrGEgvIles1NlSY
-         zYVejH5s8+UGST9GpZVVizOO2UpSavsx1LEFhvf99w/sp5+VrNr/M6yaapC2S09Vbn0u
-         YALTWwv9FeqDgRBHzzPava+DO/9LNGzsLNp0LCHcsRE5JDGH6JkMH01Az6bZ7IeMUK6f
-         0OUg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GRvxtBN/C9wxWz5+ZhYYKzs9qnKHSKKBLmyxPMHQAq8=;
+        b=EVJShjdj2n3x/Soo5TXuwql9BCI8yhOyZtEgC2M223tHJRBeyW3JfqJKD16yOS8w/y
+         KPNdLNFwTdFgpYAJEH3nv7V24ne5X9pD0Jf+vLGi/INcnW3qI9H+YJNeIMOeaJf2tfMh
+         hvcFSndNB5EHwzp+uUtL0gBXHvkmp4PzqEHygYmFwkBV7cdjZcuMIp4QYc0YR3cmxnQq
+         t8b4jpNaPunP88msk0YHEGupLlzwC4T0r+/e9/mzb310q3xh05Bb7/aMlUGraFcei+LT
+         OSfIxVsUvBuYoVjJ6kaks1JWeKxAbcS2WpIxRtPWoK29Ucg28nNhegty33QujELsEFPg
+         FjgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GarL2Kn/zNIJwCptfjfJ4swfJzGY6bIsUnYiG/oxiuI=;
-        b=RCeyL+A1+cH7WdYIQ8d1hiqn9cpSjXuLROaBxk3djiOyrv8xtUnLTh3Z4ckaFFxlct
-         HpEgH4sCREanAY7/6IV470kesUO+uT6yuleohvezhJ3m8W40reyl2ec4iloU3qRE7Rbo
-         xAJhdvOpoFJXJBYN72kbxBWr6sLOrOkfGXFkriscHuxGFskEYvwmvl4Z27elHP8vUATL
-         tqCDHNqCriZIiYp2XOXHkO/LkBRvzpbbdyRP0qwSqXZ70Ov2v67NTPfaWz319OK6EHJO
-         XURdx/o956jAOHyeqqntSX0n9cagn4CBaI6KQHOkHOzUcA9CvAIkG93iG+QjIMt4sYGW
-         1fMw==
-X-Gm-Message-State: AOAM532bM0/FtKnFGeHZDTjNiaaVvlVAxsH+LnSqdVVKyda6ojeMTBcT
-        KtfexFi4uHuIrsLNQH9MS+pXqfucVRfMAQBukGhd2w==
-X-Google-Smtp-Source: ABdhPJwXihn6Eo/eN5yZSzV0l8oNjnwxVa2GX1v/ldHoA3ps70mSdd2dNpogTkqoScf7BEeYJR9EV+TAX3/KMcgAu7o=
-X-Received: by 2002:adf:f042:0:b0:20e:5be7:f473 with SMTP id
- t2-20020adff042000000b0020e5be7f473mr8983437wro.80.1653063643790; Fri, 20 May
- 2022 09:20:43 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GRvxtBN/C9wxWz5+ZhYYKzs9qnKHSKKBLmyxPMHQAq8=;
+        b=zhg2ccfvTOOl7jHm+qaeQjyg4gHyczpNSWPPSn+NauKT1g46wybEbOjXZ2vqD7IFDq
+         BKiXJr0x+mv56C04iRpLrzdZowNHB1ADeInmlVtnsAahDAESOsNwi/21tQ6QMOCkXqei
+         pgpl76XNyv/Q0sXCNjYJn90asK85BwnJ8lZrkx6TcVRY2V5IVnO3mfuNxEpEk2R35AVb
+         Dy23imulf8xLDToX79CmS84I7pme09cBpI7bBKTg3yrlZp1R5iEmxMktXWj33oBfYRdl
+         +TCCe1FCfbIboGU+59KhtPgv+R4uEuImGW9qPMXOuPY0GFo0iccycglKq40Lo5lwu1Ho
+         eUFw==
+X-Gm-Message-State: AOAM530ENyl/ORISw3KNtTG6D/YkkAo1ea9BbGTnm0CsLRnlqU/XpUCV
+        m30xtE354xX85NHP0HiVDxw=
+X-Google-Smtp-Source: ABdhPJzFmTifJ7tfHIGxJCl5NOUo5AyBDgPrIqvsK0LvcAjT6ddjF9aC08Xm+T+kiHe/rfw04fQnDA==
+X-Received: by 2002:a05:6a00:114b:b0:4f7:915:3ec3 with SMTP id b11-20020a056a00114b00b004f709153ec3mr11099752pfm.8.1653063739326;
+        Fri, 20 May 2022 09:22:19 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id cp19-20020a170902e79300b0015e8d4eb285sm5787012plb.207.2022.05.20.09.22.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 09:22:18 -0700 (PDT)
+Message-ID: <912a5d2b-bc2d-677a-dd64-d66046fc734d@gmail.com>
+Date:   Fri, 20 May 2022 09:22:16 -0700
 MIME-Version: 1.0
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-3-yosryahmed@google.com> <fa3b35a6-5c3c-42a1-23f0-a8143b4eaa57@fb.com>
- <CAJD7tkanipJ7-9H_L6KMUjpD2qS29-YCrnMXw+8BAKfbOk5P9Q@mail.gmail.com> <eca39189-9258-b1cc-0a1d-a0d7e6027861@fb.com>
-In-Reply-To: <eca39189-9258-b1cc-0a1d-a0d7e6027861@fb.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Fri, 20 May 2022 09:20:07 -0700
-Message-ID: <CAJD7tkZq_GE-nR3UUwXJ+iE9WCDv9HN2MtT8as4bg2NKcNc3xQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 2/5] cgroup: bpf: add cgroup_rstat_updated()
- and cgroup_rstat_flush() kfuncs
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/1] perf vendors events arm64: Update Cortex A57/A72
+Content-Language: en-US
+To:     Nick Forrington <nick.forrington@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        Andrew Kilroy <andrew.kilroy@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+References: <20220517135805.313184-1-nick.forrington@arm.com>
+ <20220517135805.313184-2-nick.forrington@arm.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220517135805.313184-2-nick.forrington@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 9:16 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/20/22 9:08 AM, Yosry Ahmed wrote:
-> > On Fri, May 20, 2022 at 8:15 AM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >>
-> >>
-> >> On 5/19/22 6:21 PM, Yosry Ahmed wrote:
-> >>> Add cgroup_rstat_updated() and cgroup_rstat_flush() kfuncs to bpf
-> >>> tracing programs. bpf programs that make use of rstat can use these
-> >>> functions to inform rstat when they update stats for a cgroup, and wh=
-en
-> >>> they need to flush the stats.
-> >>>
-> >>> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> >>> ---
-> >>>    kernel/cgroup/rstat.c | 35 ++++++++++++++++++++++++++++++++++-
-> >>>    1 file changed, 34 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
-> >>> index e7a88d2600bd..a16a851bc0a1 100644
-> >>> --- a/kernel/cgroup/rstat.c
-> >>> +++ b/kernel/cgroup/rstat.c
-> >>> @@ -3,6 +3,11 @@
-> >>>
-> >>>    #include <linux/sched/cputime.h>
-> >>>
-> >>> +#include <linux/bpf.h>
-> >>> +#include <linux/btf.h>
-> >>> +#include <linux/btf_ids.h>
-> >>> +
-> >>> +
-> >>>    static DEFINE_SPINLOCK(cgroup_rstat_lock);
-> >>>    static DEFINE_PER_CPU(raw_spinlock_t, cgroup_rstat_cpu_lock);
-> >>>
-> >>> @@ -141,7 +146,12 @@ static struct cgroup *cgroup_rstat_cpu_pop_updat=
-ed(struct cgroup *pos,
-> >>>        return pos;
-> >>>    }
-> >>>
-> >>> -/* A hook for bpf stat collectors to attach to and flush their stats=
- */
-> >>> +/*
-> >>> + * A hook for bpf stat collectors to attach to and flush their stats=
-.
-> >>> + * Together with providing bpf kfuncs for cgroup_rstat_updated() and
-> >>> + * cgroup_rstat_flush(), this enables a complete workflow where bpf =
-progs that
-> >>> + * collect cgroup stats can integrate with rstat for efficient flush=
-ing.
-> >>> + */
-> >>>    __weak noinline void bpf_rstat_flush(struct cgroup *cgrp,
-> >>>                                     struct cgroup *parent, int cpu)
-> >>>    {
-> >>> @@ -476,3 +486,26 @@ void cgroup_base_stat_cputime_show(struct seq_fi=
-le *seq)
-> >>>                   "system_usec %llu\n",
-> >>>                   usage, utime, stime);
-> >>>    }
-> >>> +
-> >>> +/* Add bpf kfuncs for cgroup_rstat_updated() and cgroup_rstat_flush(=
-) */
-> >>> +BTF_SET_START(bpf_rstat_check_kfunc_ids)
-> >>> +BTF_ID(func, cgroup_rstat_updated)
-> >>> +BTF_ID(func, cgroup_rstat_flush)
-> >>> +BTF_SET_END(bpf_rstat_check_kfunc_ids)
-> >>> +
-> >>> +BTF_SET_START(bpf_rstat_sleepable_kfunc_ids)
-> >>> +BTF_ID(func, cgroup_rstat_flush)
-> >>> +BTF_SET_END(bpf_rstat_sleepable_kfunc_ids)
-> >>> +
-> >>> +static const struct btf_kfunc_id_set bpf_rstat_kfunc_set =3D {
-> >>> +     .owner          =3D THIS_MODULE,
-> >>> +     .check_set      =3D &bpf_rstat_check_kfunc_ids,
-> >>> +     .sleepable_set  =3D &bpf_rstat_sleepable_kfunc_ids,
-> >>
-> >> There is a compilation error here:
-> >>
-> >> kernel/cgroup/rstat.c:503:3: error: =E2=80=98const struct btf_kfunc_id=
-_set=E2=80=99 has
-> >> no member named =E2=80=98sleepable_set=E2=80=99; did you mean =E2=80=
-=98release_set=E2=80=99?
-> >>       503 |  .sleepable_set =3D &bpf_rstat_sleepable_kfunc_ids,
-> >>           |   ^~~~~~~~~~~~~
-> >>           |   release_set
-> >>     kernel/cgroup/rstat.c:503:19: warning: excess elements in struct
-> >> initializer
-> >>       503 |  .sleepable_set =3D &bpf_rstat_sleepable_kfunc_ids,
-> >>           |                   ^
-> >>     kernel/cgroup/rstat.c:503:19: note: (near initialization for
-> >> =E2=80=98bpf_rstat_kfunc_set=E2=80=99)
-> >>     make[3]: *** [scripts/Makefile.build:288: kernel/cgroup/rstat.o] E=
-rror 1
-> >>
-> >> Please fix.
-> >
-> > This patch series is rebased on top of 2 patches in the mailing list:
-> > - bpf/btf: also allow kfunc in tracing and syscall programs
-> > - btf: Add a new kfunc set which allows to mark a function to be
-> >    sleepable
-> >
-> > I specified this in the cover letter, do I need to do something else
-> > in this situation? Re-send the patches as part of my series?
->
-> At least put a link in the cover letter for the above two patches?
-> This way, people can easily find them to double check.
 
-Right. Will do this in the next version. Sorry for the inconvenience.
 
->
-> >
-> >
-> >
-> >>
-> >>> +};
-> >>> +
-> >>> +static int __init bpf_rstat_kfunc_init(void)
-> >>> +{
-> >>> +     return register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING,
-> >>> +                                      &bpf_rstat_kfunc_set);
-> >>> +}
-> >>> +late_initcall(bpf_rstat_kfunc_init);
+On 5/17/2022 6:58 AM, Nick Forrington wrote:
+> Categorise and add missing PMU events for Cortex-A57/A72, based on:
+> https://github.com/ARM-software/data/blob/master/pmu/cortex-a57.json
+> https://github.com/ARM-software/data/blob/master/pmu/cortex-a72.json
+> 
+> These contain the same events, and are based on the Arm Technical
+> Reference Manuals for Cortex-A57 and Cortex-A72.
+> 
+> Signed-off-by: Nick Forrington <nick.forrington@arm.com>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
