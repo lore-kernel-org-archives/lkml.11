@@ -2,594 +2,286 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2559BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351272AbiETQDI (ORCPT
+        id S1351292AbiETQDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
+        Fri, 20 May 2022 12:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351277AbiETQDD (ORCPT
+        with ESMTP id S1351276AbiETQDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:03:03 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C209817CC85
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:03:00 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id u3so12104739wrg.3
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:03:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8majVaaRFX8Wh5ZOC9VJxfCvtD4QSkQyH31Ee4iRhsI=;
-        b=Oe3ywFIqeVRmtO3/d4WWwP29CUpRc94g8g7K5iLFYXRJQuQiLxTwSbA6bcnyGRB3vj
-         Lu/CW4jrs7BesV6bPGRBzAxTZWDAOoRbWl26Ta6MFGDMF3E+QCQiHpaIWz0iA7tzAQ9H
-         ix3P1RZXnRgHuqLC1y83GUEWk8SQawubA/JSWd7MztNe18tovt3+wObY3W6H5wNDiwuG
-         TfuXU9rYPqNWJLlwCiFVN3AGbaVqIid1cduvxsYgO52TG50p2139G0NmHTGKdkE1Pkum
-         kuRC1m4za7SAxfIo0QWWU4pTrSQSxdAoQOPX1eCSCNVbZk0qmAuOd+A2qlaEZNMj/28D
-         JbTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8majVaaRFX8Wh5ZOC9VJxfCvtD4QSkQyH31Ee4iRhsI=;
-        b=KP6VLQvIO82ybQSd57M9c67Weupv92Q2TKbwFDex/xkvXDvlorBq7WUVQYkoZEWs4N
-         Krvstia4KUgP6/Az/TWq+TbnBZ5d88Hnd5/b+gOyzbjTjle2mrvwyij8AQfhgclXKSJW
-         7EAEfOKPiq3h37jV4FkTfob5dVg+f6C2qq0Q9jCYB0H0G/ztOCL68ND3VXCl8lN+RFzz
-         FTzVFRAwknnQ2jt4JwEZQRjE61IhTxLiD51d97S7YwHj4p0TFatmf6BF4pVJE7sRWu87
-         /x4eTZLmgDp1FWC87LmT2hz3t23Dcs6eS9s/eCTYihnTDDQTew2LxeIhgmSKUCqRLpMO
-         BsHw==
-X-Gm-Message-State: AOAM533Hk6ZoG7VDtbhXGvIinGCgcfkhZCTVeamSAxcHsAq8V+2SV+Vo
-        jZ8m13MI8bEdzK0HTsdV3qCtozpun3p74hzqSk10AQ==
-X-Google-Smtp-Source: ABdhPJzXPKyz1kXDpsWAoOsigJ3lhRkAjSvk79H+yXKkZ+RmLOzHHwH5j8uu+MzzDFnrJcho5c3eiQxecOkPV2SAqBA=
-X-Received: by 2002:adf:e70e:0:b0:20e:7523:f01d with SMTP id
- c14-20020adfe70e000000b0020e7523f01dmr4659346wrm.300.1653062579063; Fri, 20
- May 2022 09:02:59 -0700 (PDT)
+        Fri, 20 May 2022 12:03:10 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3128B54BEB;
+        Fri, 20 May 2022 09:03:08 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 894061F8A3;
+        Fri, 20 May 2022 16:03:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653062587; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uAf1zVyxsEim+aC0uGh6DC0+DkZsOLO/Mv/PJQnBsOo=;
+        b=CyoyPv4acyAxb1dpDlfCZa3oWOAa1fOU21fv6caVkCamVzR5qen08nVU65QQjVdP0P0vlE
+        e+2jyIPDJKm91auZqSsZslLnViYsuNJYzOmvpxeevQWR9D3qNcpgTnvba90V5yCAxUNuD/
+        sNoWSRDrsIjR0EEzSBCtXqdToGrN6mU=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4CD2C13A5F;
+        Fri, 20 May 2022 16:03:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GTvEEbu7h2KXJQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Fri, 20 May 2022 16:03:07 +0000
+Date:   Fri, 20 May 2022 18:03:05 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     "yukuai (C)" <yukuai3@huawei.com>
+Cc:     tj@kernel.org, axboe@kernel.dk, ming.lei@redhat.com,
+        geert@linux-m68k.org, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next v3 2/2] blk-throttle: fix io hung due to
+ configuration updates
+Message-ID: <20220520160305.GA17335@blackbody.suse.cz>
+References: <20220519085811.879097-1-yukuai3@huawei.com>
+ <20220519085811.879097-3-yukuai3@huawei.com>
+ <20220519095857.GE16096@blackbody.suse.cz>
+ <a8953189-af42-0225-3031-daf61347524a@huawei.com>
+ <20220519161026.GG16096@blackbody.suse.cz>
+ <73464ca6-9412-cc55-d9c0-f2e8a10f0607@huawei.com>
+ <fe3c03f7-9b52-7948-075d-cbdf431363e1@huawei.com>
 MIME-Version: 1.0
-References: <20220517135805.313184-1-nick.forrington@arm.com> <20220517135805.313184-2-nick.forrington@arm.com>
-In-Reply-To: <20220517135805.313184-2-nick.forrington@arm.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 20 May 2022 09:02:46 -0700
-Message-ID: <CAP-5=fWJpprvPaxoYE9YVq=eRjMKV0GOQky1AjWwdrAZqkh6rg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] perf vendors events arm64: Update Cortex A57/A72
-To:     Nick Forrington <nick.forrington@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        James Clark <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fe3c03f7-9b52-7948-075d-cbdf431363e1@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 6:59 AM Nick Forrington <nick.forrington@arm.com> wrote:
->
-> Categorise and add missing PMU events for Cortex-A57/A72, based on:
-> https://github.com/ARM-software/data/blob/master/pmu/cortex-a57.json
-> https://github.com/ARM-software/data/blob/master/pmu/cortex-a72.json
->
-> These contain the same events, and are based on the Arm Technical
-> Reference Manuals for Cortex-A57 and Cortex-A72.
->
-> Signed-off-by: Nick Forrington <nick.forrington@arm.com>
+On Fri, May 20, 2022 at 09:36:11AM +0800, "yukuai (C)" <yukuai3@huawei.com> wrote:
+> Just to simplify explanation (assum that throtl_slice is greater than
+> 0.5s):
+> Without this patch:
+> wait time is caculated based on issuing 9k from now(3s) without any
+> bytes aready dispatched.
 
-Acked-by: Ian Rogers <irogers@google.com>
+I acknowledge that pre-patch state is incorrect because it erases
+already passed wait-time from the previous slice.
+
+> With this patch:
+> wait time is caculated based on issuing 9k from 0s with 0.5 bytes
+> aready dispatched.
+
+Thanks for your further hint. Hopefully, I'm getting closer to real
+understanding. Now, I calculate the wait times as durations between
+current moment and timepoint when a bio can be dispatched.
+
+IIUC, after config change the ideal wait time of a bio is
+
+    wait_ideal := (disp + bio - Δt*l_old) / l_new
+
+where Δt is the elapsed time of the current slice.
+You maintain the slice but scale disp, so you get
+
+    wait_kuai := ((l_new/l_old)*disp + bio - Δt*l_lew) / l_new
+               = disp / l_old + bio / l_new - Δt
+
+Please confirm we're on the same page here.
+
+Then I look at
+
+    error := wait_kuai - wait_ideal
+          ...
+	  = (Δt * l_old - disp) * (1/l_new - 1/l_old)
+	  = (Δt * l_old - disp) * (1 - α) / (α * l_old)
+where
+    α = l_new / l_old
+
+The leftmost term is a unconsumed IO of the slice. Say it's positive,
+while the bigger bio is throttled at the moment of a config change.
+If the config change increases throttling (α < 1), the error grows very
+high (i.e. over-throttling similar to the existing behavior).
+If the config change relieves throttling (α > 1), the wait time's
+slightly shorter (under-throttling) wrt the ideal.
+
+If I was to propose a correction, it'd be like the patch at the bottom
+derived from your but not finished (the XXX part). It's for potential
+further discussion.
+
+
+I had myself carried a way with the formulas. If I go back to the
+beginning:
+
+> Then io hung can be triggered by always submmiting new configuration
+> before the throttled bio is dispatched.
+
+How big is this a problem actually? Is it only shooting oneself in the leg
+or can there be a user who's privileged enough to modify throttling
+configuration yet not privileged enough to justify the hung's
+consequences (like some global FS locks).
+
 
 Thanks,
-Ian
+Michal
 
-> ---
->  .../arch/arm64/arm/cortex-a57-a72/branch.json |  17 ++
->  .../arch/arm64/arm/cortex-a57-a72/bus.json    |  29 +++
->  .../arch/arm64/arm/cortex-a57-a72/cache.json  |  80 ++++++++
->  .../arm/cortex-a57-a72/core-imp-def.json      | 179 ------------------
->  .../arm64/arm/cortex-a57-a72/exception.json   |  47 +++++
->  .../arm64/arm/cortex-a57-a72/instruction.json |  68 +++++++
->  .../arch/arm64/arm/cortex-a57-a72/memory.json |  20 ++
->  7 files changed, 261 insertions(+), 179 deletions(-)
->  create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/branch.json
->  create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/bus.json
->  create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/cache.json
->  delete mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/core-imp-def.json
->  create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/exception.json
->  create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/instruction.json
->  create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/memory.json
->
-> diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/branch.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/branch.json
-> new file mode 100644
-> index 000000000000..2f2d137f5f55
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/branch.json
-> @@ -0,0 +1,17 @@
-> +[
-> +    {
-> +        "ArchStdEvent": "BR_MIS_PRED"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BR_PRED"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BR_IMMED_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BR_RETURN_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BR_INDIRECT_SPEC"
-> +    }
-> +]
-> diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/bus.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/bus.json
-> new file mode 100644
-> index 000000000000..31505994c06c
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/bus.json
-> @@ -0,0 +1,29 @@
-> +[
-> +    {
-> +        "ArchStdEvent": "CPU_CYCLES"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_ACCESS"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_CYCLES"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_ACCESS_RD"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_ACCESS_WR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_ACCESS_SHARED"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_ACCESS_NOT_SHARED"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_ACCESS_NORMAL"
-> +    },
-> +    {
-> +        "ArchStdEvent": "BUS_ACCESS_PERIPH"
-> +    }
-> +]
-> diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/cache.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/cache.json
-> new file mode 100644
-> index 000000000000..1bd59e7d982b
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/cache.json
-> @@ -0,0 +1,80 @@
-> +[
-> +    {
-> +        "ArchStdEvent": "L1I_CACHE_REFILL"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1I_TLB_REFILL"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_REFILL"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_TLB_REFILL"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1I_CACHE"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_WB"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_REFILL"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_WB"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_RD"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_WR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_REFILL_RD"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_REFILL_WR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_WB_VICTIM"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_WB_CLEAN"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_CACHE_INVAL"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_TLB_REFILL_RD"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L1D_TLB_REFILL_WR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_RD"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_WR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_REFILL_RD"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_REFILL_WR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_WB_VICTIM"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_WB_CLEAN"
-> +    },
-> +    {
-> +        "ArchStdEvent": "L2D_CACHE_INVAL"
-> +    }
-> +]
-> diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/core-imp-def.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/core-imp-def.json
-> deleted file mode 100644
-> index 543c7692677a..000000000000
-> --- a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/core-imp-def.json
-> +++ /dev/null
-> @@ -1,179 +0,0 @@
-> -[
-> -    {
-> -        "ArchStdEvent": "L1D_CACHE_RD"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_CACHE_WR"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_CACHE_REFILL_RD"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_CACHE_REFILL_WR"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_CACHE_WB_VICTIM"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_CACHE_WB_CLEAN"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_CACHE_INVAL"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_TLB_REFILL_RD"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L1D_TLB_REFILL_WR"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L2D_CACHE_RD"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L2D_CACHE_WR"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L2D_CACHE_REFILL_RD"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L2D_CACHE_REFILL_WR"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L2D_CACHE_WB_VICTIM"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L2D_CACHE_WB_CLEAN"
-> -    },
-> -    {
-> -        "ArchStdEvent": "L2D_CACHE_INVAL"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BUS_ACCESS_RD"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BUS_ACCESS_WR"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BUS_ACCESS_SHARED"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BUS_ACCESS_NOT_SHARED"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BUS_ACCESS_NORMAL"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BUS_ACCESS_PERIPH"
-> -    },
-> -    {
-> -        "ArchStdEvent": "MEM_ACCESS_RD"
-> -    },
-> -    {
-> -        "ArchStdEvent": "MEM_ACCESS_WR"
-> -    },
-> -    {
-> -        "ArchStdEvent": "UNALIGNED_LD_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "UNALIGNED_ST_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "UNALIGNED_LDST_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "LDREX_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "STREX_PASS_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "STREX_FAIL_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "LD_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "ST_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "LDST_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "DP_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "ASE_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "VFP_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "PC_WRITE_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "CRYPTO_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BR_IMMED_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BR_RETURN_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "BR_INDIRECT_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "ISB_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "DSB_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "DMB_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_UNDEF"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_SVC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_PABORT"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_DABORT"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_IRQ"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_FIQ"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_SMC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_HVC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_TRAP_PABORT"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_TRAP_DABORT"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_TRAP_OTHER"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_TRAP_IRQ"
-> -    },
-> -    {
-> -        "ArchStdEvent": "EXC_TRAP_FIQ"
-> -    },
-> -    {
-> -        "ArchStdEvent": "RC_LD_SPEC"
-> -    },
-> -    {
-> -        "ArchStdEvent": "RC_ST_SPEC"
-> -    }
-> -]
-> diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/exception.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/exception.json
-> new file mode 100644
-> index 000000000000..344a2d552ad5
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/exception.json
-> @@ -0,0 +1,47 @@
-> +[
-> +    {
-> +        "ArchStdEvent": "EXC_TAKEN"
-> +    },
-> +    {
-> +        "ArchStdEvent": "MEMORY_ERROR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_UNDEF"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_SVC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_PABORT"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_DABORT"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_IRQ"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_FIQ"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_SMC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_HVC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_TRAP_PABORT"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_TRAP_DABORT"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_TRAP_OTHER"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_TRAP_IRQ"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_TRAP_FIQ"
-> +    }
-> +]
-> diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/instruction.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/instruction.json
-> new file mode 100644
-> index 000000000000..e42486d406b3
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/instruction.json
-> @@ -0,0 +1,68 @@
-> +[
-> +    {
-> +        "ArchStdEvent": "SW_INCR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "INST_RETIRED"
-> +    },
-> +    {
-> +        "ArchStdEvent": "EXC_RETURN"
-> +    },
-> +    {
-> +        "ArchStdEvent": "CID_WRITE_RETIRED"
-> +    },
-> +    {
-> +        "ArchStdEvent": "INST_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "TTBR_WRITE_RETIRED"
-> +    },
-> +    {
-> +        "ArchStdEvent": "LDREX_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "STREX_PASS_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "STREX_FAIL_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "LD_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "ST_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "LDST_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "DP_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "ASE_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "VFP_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "PC_WRITE_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "CRYPTO_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "ISB_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "DSB_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "DMB_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "RC_LD_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "RC_ST_SPEC"
-> +    }
-> +]
-> diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/memory.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/memory.json
-> new file mode 100644
-> index 000000000000..e3d08f1f7c92
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/memory.json
-> @@ -0,0 +1,20 @@
-> +[
-> +    {
-> +        "ArchStdEvent": "MEM_ACCESS"
-> +    },
-> +    {
-> +        "ArchStdEvent": "MEM_ACCESS_RD"
-> +    },
-> +    {
-> +        "ArchStdEvent": "MEM_ACCESS_WR"
-> +    },
-> +    {
-> +        "ArchStdEvent": "UNALIGNED_LD_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "UNALIGNED_ST_SPEC"
-> +    },
-> +    {
-> +        "ArchStdEvent": "UNALIGNED_LDST_SPEC"
-> +    }
-> +]
-> --
-> 2.25.1
->
+--- 8< ---
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 469c483719be..3fd458d16f31 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -1274,7 +1274,62 @@ static int tg_print_conf_uint(struct seq_file *sf, void *v)
+ 	return 0;
+ }
+ 
+-static void tg_conf_updated(struct throtl_grp *tg, bool global)
++static u64 throtl_update_slice_scale(unsigned int slice_start, u64 new_limit,
++				     u64 old_limit)
++{
++	if (new_limit == old_limit)
++		return slice_start;
++
++	/* This shouldn't really matter but semantically we want to extend the
++	 * slice from the earliest possible point of time. */
++	if (WARN_ON(new_limit == 0))
++		return 0;
++
++	return jiffies - div64_u64((jiffies - slice_start) * old_limit, new_limit);
++}
++
++static void throtl_update_slice(struct throtl_grp *tg, u64 *old_limits)
++{
++	/*
++	 * How does this work? We're going to calculate new wait time in
++	 * tg_with_in_bps_limit(). Ideal wait time after config change is
++	 *
++	 *   wait_ideal := (disp + bio - Δt*l_old) / l_new
++	 *
++	 * where Δt = jiffies - tg->slice_start (elapsed time of slice).
++	 * In reality, the function has no idea about l_old so it calculates
++	 *
++	 *   wait_skewed := (disp + bio - Δt*l_new) / l_new
++	 *
++	 * So we modify slice_start to get correct number
++	 *
++	 *   wait_fixed := (disp + bio - Δt'*l_new) / l_new == wait_ideal
++	 *
++	 * from that
++	 *   Δt' = Δt * l_old / l_new
++	 * or
++	 *   jiffies - slice_start' = (jiffies - slice_start) * l_old / l_new
++	 * .
++	 */
++	tg->slice_start[READ]  = throtl_update_slice_scale(tg->slice_start[READ],
++							   tg_bps_limit(tg, READ),
++							   old_limits[0]);
++	tg->slice_start[WRITE] = throtl_update_slice_scale(tg->slice_start[WRITE],
++							   tg_bps_limit(tg, WRITE),
++							   old_limits[1]);
++
++	// XXX This looks like OK since we should not change BPS and IOPS limit
++	// at the same time but it is not actually OK because scaling
++	// slice_start for one limit breaks the other anyway.
++	tg->slice_start[READ]  = throtl_update_slice_scale(tg->slice_start[READ],
++							   tg_iops_limit(tg, READ),
++							   old_limits[2]);
++	tg->slice_start[WRITE] = throtl_update_slice_scale(tg->slice_start[WRITE],
++							   tg_iops_limit(tg, WRITE),
++							   old_limits[3]);
++}
++
++static void tg_conf_updated(struct throtl_grp *tg, u64 *old_limits, bool global)
+ {
+ 	struct throtl_service_queue *sq = &tg->service_queue;
+ 	struct cgroup_subsys_state *pos_css;
+@@ -1313,16 +1368,7 @@ static void tg_conf_updated(struct throtl_grp *tg, bool global)
+ 				parent_tg->latency_target);
+ 	}
+ 
+-	/*
+-	 * We're already holding queue_lock and know @tg is valid.  Let's
+-	 * apply the new config directly.
+-	 *
+-	 * Restart the slices for both READ and WRITES. It might happen
+-	 * that a group's limit are dropped suddenly and we don't want to
+-	 * account recently dispatched IO with new low rate.
+-	 */
+-	throtl_start_new_slice(tg, READ);
+-	throtl_start_new_slice(tg, WRITE);
++	throtl_update_slice(tg, old_limits);
+ 
+ 	if (tg->flags & THROTL_TG_PENDING) {
+ 		tg_update_disptime(tg);
+@@ -1330,6 +1376,14 @@ static void tg_conf_updated(struct throtl_grp *tg, bool global)
+ 	}
+ }
+ 
++static void tg_get_limits(struct throtl_grp *tg, u64 *limits)
++{
++	limits[0] = tg_bps_limit(tg, READ);
++	limits[1] = tg_bps_limit(tg, WRITE);
++	limits[2] = tg_iops_limit(tg, READ);
++	limits[3] = tg_iops_limit(tg, WRITE);
++}
++
+ static ssize_t tg_set_conf(struct kernfs_open_file *of,
+ 			   char *buf, size_t nbytes, loff_t off, bool is_u64)
+ {
+@@ -1338,6 +1392,7 @@ static ssize_t tg_set_conf(struct kernfs_open_file *of,
+ 	struct throtl_grp *tg;
+ 	int ret;
+ 	u64 v;
++	u64 old_limits[4];
+ 
+ 	ret = blkg_conf_prep(blkcg, &blkcg_policy_throtl, buf, &ctx);
+ 	if (ret)
+@@ -1350,13 +1405,14 @@ static ssize_t tg_set_conf(struct kernfs_open_file *of,
+ 		v = U64_MAX;
+ 
+ 	tg = blkg_to_tg(ctx.blkg);
++	tg_get_limits(tg, old_limits);
+ 
+ 	if (is_u64)
+ 		*(u64 *)((void *)tg + of_cft(of)->private) = v;
+ 	else
+ 		*(unsigned int *)((void *)tg + of_cft(of)->private) = v;
+ 
+-	tg_conf_updated(tg, false);
++	tg_conf_updated(tg, old_limits, false);
+ 	ret = 0;
+ out_finish:
+ 	blkg_conf_finish(&ctx);
+@@ -1526,6 +1582,7 @@ static ssize_t tg_set_limit(struct kernfs_open_file *of,
+ 	struct blkg_conf_ctx ctx;
+ 	struct throtl_grp *tg;
+ 	u64 v[4];
++	u64 old_limits[4];
+ 	unsigned long idle_time;
+ 	unsigned long latency_time;
+ 	int ret;
+@@ -1536,6 +1593,7 @@ static ssize_t tg_set_limit(struct kernfs_open_file *of,
+ 		return ret;
+ 
+ 	tg = blkg_to_tg(ctx.blkg);
++	tg_get_limits(tg, old_limits);
+ 
+ 	v[0] = tg->bps_conf[READ][index];
+ 	v[1] = tg->bps_conf[WRITE][index];
+@@ -1627,7 +1685,7 @@ static ssize_t tg_set_limit(struct kernfs_open_file *of,
+ 			tg->td->limit_index = LIMIT_LOW;
+ 	} else
+ 		tg->td->limit_index = LIMIT_MAX;
+-	tg_conf_updated(tg, index == LIMIT_LOW &&
++	tg_conf_updated(tg, old_limits, index == LIMIT_LOW &&
+ 		tg->td->limit_valid[LIMIT_LOW]);
+ 	ret = 0;
+ out_finish:
