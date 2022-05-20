@@ -2,339 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3680EC43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20059C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347231AbiETIbK (ORCPT
+        id S1346380AbiETIbS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40892 "EHLO
+        Fri, 20 May 2022 04:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347152AbiETIao (ORCPT
+        with ESMTP id S1347156AbiETIao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 04:30:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37DB3154B3C;
-        Fri, 20 May 2022 01:30:13 -0700 (PDT)
-X-UUID: 41405730c003445a81b485da79845711-20220520
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:ef7d4511-139d-404f-b567-0802b063af5f,OB:0,LO
-        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:25
-X-CID-META: VersionHash:2a19b09,CLOUDID:c177fd79-5ef6-470b-96c9-bdb8ced32786,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 41405730c003445a81b485da79845711-20220520
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <moudy.ho@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2006429441; Fri, 20 May 2022 16:30:09 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 20 May 2022 16:30:08 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 20 May 2022 16:30:08 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 20 May 2022 16:30:07 +0800
-From:   Moudy Ho <moudy.ho@mediatek.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <tfiga@chromium.org>, <drinkcat@chromium.org>,
-        <pihsun@chromium.org>, <hsinyi@google.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
-        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
-        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
-        <river.cheng@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <cellopoint.kai@gmail.com>,
-        Moudy Ho <moudy.ho@mediatek.corp-partner.google.com>
-Subject: [PATCH v16 1/4] dt-binding: mediatek: add bindings for MediaTek MDP3 components
-Date:   Fri, 20 May 2022 16:30:03 +0800
-Message-ID: <20220520083006.27789-2-moudy.ho@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220520083006.27789-1-moudy.ho@mediatek.com>
-References: <20220520083006.27789-1-moudy.ho@mediatek.com>
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBF2140840;
+        Fri, 20 May 2022 01:30:20 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24K4a0tN005786;
+        Fri, 20 May 2022 10:30:01 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=fIYcdPhrP+UAIOWW4991D3j8xdtottmzpGrRfJZWd1o=;
+ b=sCDduPYQDYLoRBEwoS+Uup3p4ey+PAWnDkWEfXYCSd5PQcwQIlMmPUzB3q49N4wrGZAk
+ 27QX0XcLO1WSDBtF7T4wMKwCm5fRIS2ku/8FmMocM4Qc83/Ze8yQfqxqIwNs4geMUlw1
+ OQwVadXI3afvi9HmPiMhd0wzPUMdD5QXLfmm9RU4Go2qtAc5SlVK3SwrLNqjq4rr7Yab
+ PjZZ+XK+UR9DSsYUant3Ew5bZuJZHdIiBus2ytqEQVivrJKgvmXQ2hY1fNMPU49YRMBk
+ 4Pmhw8bm2qsWaR7lMIq+fPe4rC8Aw0o63YSF5aACgfOrGzHCajfZuGeGFspInsuoG/71 LQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g21j9f79t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 10:30:01 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3D643100039;
+        Fri, 20 May 2022 10:29:59 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 37397215127;
+        Fri, 20 May 2022 10:29:59 +0200 (CEST)
+Received: from localhost (10.75.127.44) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 20 May
+ 2022 10:29:56 +0200
+From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Deepak Kumar Singh <quic_deesin@quicinc.com>,
+        Chris Lew <quic_clew@quicinc.com>,
+        <arnaud.pouliquen@foss.st.com>
+Subject: [RFC PATCH 02/10] rpmsg: char: Add TIOCMGET/TIOCMSET ioctl support
+Date:   Fri, 20 May 2022 10:29:32 +0200
+Message-ID: <20220520082940.2984914-3-arnaud.pouliquen@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220520082940.2984914-1-arnaud.pouliquen@foss.st.com>
+References: <20220520082940.2984914-1-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-MTK:  N
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-20_03,2022-05-19_03,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moudy Ho <moudy.ho@mediatek.corp-partner.google.com>
+From: Deepak Kumar Singh <quic_deesin@quicinc.com>
 
-This patch adds DT binding documents for Media Data Path 3 (MDP3)
-a unit in multimedia system combined with several components and
-used for scaling and color format convert.
+Add TICOMGET and TIOCMSET ioctl support for rpmsg char device nodes
+to get/set the low level transport signals.
 
-Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Chris Lew <quic_clew@quicinc.com>
+Signed-off-by: Deepak Kumar Singh <quic_deesin@quicinc.com>
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
 ---
- .../bindings/media/mediatek,mdp3-rdma.yaml    | 85 +++++++++++++++++++
- .../bindings/media/mediatek,mdp3-rsz.yaml     | 65 ++++++++++++++
- .../bindings/media/mediatek,mdp3-wrot.yaml    | 70 +++++++++++++++
- 3 files changed, 220 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
- create mode 100644 Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
- create mode 100644 Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
+ drivers/rpmsg/rpmsg_char.c | 56 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 49 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
-new file mode 100644
-index 000000000000..4fe704e476dc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
-@@ -0,0 +1,85 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/mediatek,mdp3-rdma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
+index b6183d4f62a2..904e7c67b356 100644
+--- a/drivers/rpmsg/rpmsg_char.c
++++ b/drivers/rpmsg/rpmsg_char.c
+@@ -23,6 +23,7 @@
+ #include <linux/rpmsg.h>
+ #include <linux/skbuff.h>
+ #include <linux/slab.h>
++#include <linux/termios.h>
+ #include <linux/uaccess.h>
+ #include <uapi/linux/rpmsg.h>
+ 
+@@ -52,6 +53,8 @@ static DEFINE_IDA(rpmsg_minor_ida);
+  * @readq:	wait object for incoming queue
+  * @default_ept: set to channel default endpoint if the default endpoint should be re-used
+  *              on device open to prevent endpoint address update.
++ * @rsigs: remote flow control state
++ * @sig_pending: inform that flow control information has been received from remote but not treated
+  */
+ struct rpmsg_eptdev {
+ 	struct device dev;
+@@ -68,6 +71,8 @@ struct rpmsg_eptdev {
+ 	struct sk_buff_head queue;
+ 	wait_queue_head_t readq;
+ 
++	u32 rsigs;
++	bool sig_pending;
+ };
+ 
+ int rpmsg_chrdev_eptdev_destroy(struct device *dev, void *data)
+@@ -107,7 +112,18 @@ static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
+ 	skb_queue_tail(&eptdev->queue, skb);
+ 	spin_unlock(&eptdev->queue_lock);
+ 
+-	/* wake up any blocking processes, waiting for new data */
++	wake_up_interruptible(&eptdev->readq);
 +
-+title: Mediatek Read Direct Memory Access
++	return 0;
++}
 +
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++static int rpmsg_sigs_cb(struct rpmsg_device *rpdev, void *priv, u32 sigs)
++{
++	struct rpmsg_eptdev *eptdev = priv;
 +
-+description: |
-+  Mediatek Read Direct Memory Access(RDMA) component used to do read DMA.
-+  It contains one line buffer to store the sufficient pixel data, and
-+  must be siblings to the central MMSYS_CONFIG node.
-+  For a description of the MMSYS_CONFIG binding, see
-+  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-+  for details.
++	eptdev->rsigs = sigs;
++	eptdev->sig_pending = true;
 +
-+properties:
-+  compatible:
-+    items:
-+      - const: mediatek,mt8183-mdp3-rdma
+ 	wake_up_interruptible(&eptdev->readq);
+ 
+ 	return 0;
+@@ -140,6 +156,7 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
+ 		return -EINVAL;
+ 	}
+ 
++	ept->sig_cb = rpmsg_sigs_cb;
+ 	eptdev->ept = ept;
+ 	filp->private_data = eptdev;
+ 
+@@ -159,6 +176,7 @@ static int rpmsg_eptdev_release(struct inode *inode, struct file *filp)
+ 		eptdev->ept = NULL;
+ 	}
+ 	mutex_unlock(&eptdev->ept_lock);
++	eptdev->sig_pending = false;
+ 
+ 	/* Discard all SKBs */
+ 	skb_queue_purge(&eptdev->queue);
+@@ -272,6 +290,9 @@ static __poll_t rpmsg_eptdev_poll(struct file *filp, poll_table *wait)
+ 	if (!skb_queue_empty(&eptdev->queue))
+ 		mask |= EPOLLIN | EPOLLRDNORM;
+ 
++	if (eptdev->sig_pending)
++		mask |= EPOLLPRI;
 +
-+  reg:
-+    maxItems: 1
-+
-+  mediatek,gce-client-reg:
-+    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-+    items:
-+      items:
-+        - description: phandle of GCE
-+        - description: GCE subsys id
-+        - description: register offset
-+        - description: register size
-+    description: The register of client driver can be configured by gce with
-+      4 arguments defined in this property. Each GCE subsys id is mapping to
-+      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: RDMA clock
-+      - description: RSZ clock
-+
-+  iommus:
-+    maxItems: 1
-+
-+  mboxes:
-+    items:
-+      - description: used for 1st data pipe from RDMA
-+      - description: used for 2nd data pipe from RDMA
-+
-+required:
-+  - compatible
-+  - reg
-+  - mediatek,gce-client-reg
-+  - power-domains
-+  - clocks
-+  - iommus
-+  - mboxes
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    #include <dt-bindings/gce/mt8183-gce.h>
-+    #include <dt-bindings/power/mt8183-power.h>
-+    #include <dt-bindings/memory/mt8183-larb-port.h>
-+
-+    mdp3_rdma0: mdp3-rdma0@14001000 {
-+      compatible = "mediatek,mt8183-mdp3-rdma";
-+      reg = <0x14001000 0x1000>;
-+      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>;
-+      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
-+      clocks = <&mmsys CLK_MM_MDP_RDMA0>,
-+               <&mmsys CLK_MM_MDP_RSZ1>;
-+      iommus = <&iommu>;
-+      mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST>,
-+               <&gce 21 CMDQ_THR_PRIO_LOWEST>;
-+    };
-diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
-new file mode 100644
-index 000000000000..7b566fbec3c0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
-@@ -0,0 +1,65 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/mediatek,mdp3-rsz.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek Resizer
-+
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
-+
-+description: |
-+  One of Media Data Path 3 (MDP3) components used to do frame resizing.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - mediatek,mt8183-mdp3-rsz
-+
-+  reg:
-+    maxItems: 1
-+
-+  mediatek,gce-client-reg:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      items:
-+        - description: phandle of GCE
-+        - description: GCE subsys id
-+        - description: register offset
-+        - description: register size
-+    description: The register of client driver can be configured by gce with
-+      4 arguments defined in this property. Each GCE subsys id is mapping to
-+      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
-+
-+  clocks:
-+    minItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - mediatek,gce-client-reg
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    #include <dt-bindings/gce/mt8183-gce.h>
-+
-+    mdp3_rsz0: mdp3-rsz0@14003000 {
-+      compatible = "mediatek,mt8183-mdp3-rsz";
-+      reg = <0x14003000 0x1000>;
-+      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
-+      clocks = <&mmsys CLK_MM_MDP_RSZ0>;
-+    };
-+
-+    mdp3_rsz1: mdp3-rsz1@14004000 {
-+      compatible = "mediatek,mt8183-mdp3-rsz";
-+      reg = <0x14004000 0x1000>;
-+      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
-+      clocks = <&mmsys CLK_MM_MDP_RSZ1>;
-+    };
-diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
-new file mode 100644
-index 000000000000..5481d4e43315
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
-@@ -0,0 +1,70 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/mediatek,mdp3-wrot.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek Write DMA with Rotation
-+
-+maintainers:
-+  - Matthias Brugger <matthias.bgg@gmail.com>
-+  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
-+
-+description: |
-+  One of Media Data Path 3 (MDP3) components used to write DMA with frame rotation.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - mediatek,mt8183-mdp3-wrot
-+
-+  reg:
-+    maxItems: 1
-+
-+  mediatek,gce-client-reg:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      items:
-+        - description: phandle of GCE
-+        - description: GCE subsys id
-+        - description: register offset
-+        - description: register size
-+    description: The register of client driver can be configured by gce with
-+      4 arguments defined in this property. Each GCE subsys id is mapping to
-+      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 1
-+
-+  iommus:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - mediatek,gce-client-reg
-+  - power-domains
-+  - clocks
-+  - iommus
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    #include <dt-bindings/gce/mt8183-gce.h>
-+    #include <dt-bindings/power/mt8183-power.h>
-+    #include <dt-bindings/memory/mt8183-larb-port.h>
-+
-+    mdp3_wrot0: mdp3-wrot0@14005000 {
-+      compatible = "mediatek,mt8183-mdp3-wrot";
-+      reg = <0x14005000 0x1000>;
-+      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
-+      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
-+      clocks = <&mmsys CLK_MM_MDP_WROT0>;
-+      iommus = <&iommu>;
-+    };
+ 	mask |= rpmsg_poll(eptdev->ept, filp, wait);
+ 
+ 	return mask;
+@@ -281,15 +302,36 @@ static long rpmsg_eptdev_ioctl(struct file *fp, unsigned int cmd,
+ 			       unsigned long arg)
+ {
+ 	struct rpmsg_eptdev *eptdev = fp->private_data;
++	bool set;
++	u32 val;
++	int ret;
+ 
+-	if (cmd != RPMSG_DESTROY_EPT_IOCTL)
+-		return -EINVAL;
++	switch (cmd) {
++	case TIOCMGET:
++		eptdev->sig_pending = false;
++		ret = put_user(eptdev->rsigs, (int __user *)arg);
++		break;
++	case TIOCMSET:
++		ret = get_user(val, (int __user *)arg);
++		if (ret)
++			break;
++		set = (val & TIOCM_DTR) ? true : false;
++		ret = rpmsg_set_flow_control(eptdev->ept, set);
++		break;
++	case RPMSG_DESTROY_EPT_IOCTL:
++		/* Don't allow to destroy a default endpoint. */
++		if (eptdev->default_ept) {
++			ret = -EINVAL;
++			break;
++		}
++		ret = rpmsg_chrdev_eptdev_destroy(&eptdev->dev, NULL);
++		break;
++	default:
++		ret = -EINVAL;
++	}
+ 
+-	/* Don't allow to destroy a default endpoint. */
+-	if (eptdev->default_ept)
+-		return -EINVAL;
+ 
+-	return rpmsg_chrdev_eptdev_destroy(&eptdev->dev, NULL);
++	return ret;
+ }
+ 
+ static const struct file_operations rpmsg_eptdev_fops = {
 -- 
-2.18.0
+2.25.1
 
