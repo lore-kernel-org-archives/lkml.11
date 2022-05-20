@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EFCC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48471C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349530AbiETMlR (ORCPT
+        id S1349486AbiETMlG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:41:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
+        Fri, 20 May 2022 08:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349355AbiETMkv (ORCPT
+        with ESMTP id S1349336AbiETMkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 08:40:51 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BB2D6B;
-        Fri, 20 May 2022 05:40:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85382F0;
+        Fri, 20 May 2022 05:40:45 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 58CB71F462B7
+        with ESMTPSA id E96BB1F462B0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653050445;
-        bh=BoofczPYFKPT45RV7EHOivl9vCwrE/P2hpyIXUnhdmU=;
+        s=mail; t=1653050444;
+        bh=x06V/XCPzZpmYAgHXtWkmjUfcFKK5jjJPN9DpP31Kf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DeFRLtsJyZn3Ad8KZX20pAjUsCmKh9vxSx2ZT/ZIL0jqhSGN30Z7dNAz3Wr1Nlj6l
-         JlFIo6U/0pZhbtC+/gaQ1hkHs/KQkrCH3fQp2iCo5VXrOUh9h+opdaIeYMyLsiPq6H
-         rP4LYXkkNMP69XvMOSQhb7mvCF7xK5d/DyEzMQuzAo7THEKfDtBUhef1iI0AJO9W+6
-         U2p6Pai+t0v7/ke89D3shTX/V2WYoa1bXS2ZwrNouYCcbp/+94CdmKA1wBkE1zLCWD
-         dUqesVHsqGEy+srs41/dVeRR3fG8ohTCfAs4vgglPU+wPryaOCaXBqIgMQullwnnkO
-         xkIK/pjn39g3Q==
+        b=fCgpRhpqMw/ZILDXfIXuNwSGMGuhlTYvHEygdNCG1eH2qI0jLyRRDUa7Aye9np1nV
+         KwZKc2Ot/lDUwGKswK5NfQ65IwflRg2Bpm63k3hUQYZhm3EbZdi/UtGJLeB9h/fgtX
+         Dddji/ANIrrp6oMbS6b3tI5dubjyWLHOVkZXpcdYDcrj6UrhCPyGbRe4LvEvCK981v
+         l6rSpENJmrUGVTZBbhoFqm3HJ3FCC8mk1yvvV6kT25IXgFxnDerQM2RrA/q6LOlSJ+
+         fQywzCUNb9VTAWVX5vDoLa9BvI3y7SFyLk4cwRIr86R8R3PeY2JF0UYJn4Q8DtZlYU
+         tAenNqqD0cTzg==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     lee.jones@linaro.org
@@ -38,9 +38,9 @@ Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         johnson.wang@mediatek.com, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/7] dt-bindings: mfd: Add compatible for MT6331 PMIC
-Date:   Fri, 20 May 2022 14:40:36 +0200
-Message-Id: <20220520124039.228314-5-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 2/7] soc: mediatek: pwrap: Add kerneldoc for struct pwrap_slv_type
+Date:   Fri, 20 May 2022 14:40:34 +0200
+Message-Id: <20220520124039.228314-3-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220520124039.228314-1-angelogioacchino.delregno@collabora.com>
 References: <20220520124039.228314-1-angelogioacchino.delregno@collabora.com>
@@ -50,25 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a compatible for the MT6331 PMIC MFD device.
+In preparation for adding new members with name abbreviations describe
+the struct pwrap_slv_type with kerneldoc to enhance human readability.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- Documentation/devicetree/bindings/mfd/mt6397.txt | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/mediatek/mtk-pmic-wrap.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/mfd/mt6397.txt b/Documentation/devicetree/bindings/mfd/mt6397.txt
-index 293db2a71ef2..d59063503b0d 100644
---- a/Documentation/devicetree/bindings/mfd/mt6397.txt
-+++ b/Documentation/devicetree/bindings/mfd/mt6397.txt
-@@ -20,6 +20,7 @@ This document describes the binding for MFD device and its sub module.
- Required properties:
- compatible:
- 	"mediatek,mt6323" for PMIC MT6323
-+	"mediatek,mt6331" for PMIC MT6331 and MT6332
- 	"mediatek,mt6358" for PMIC MT6358 and MT6366
- 	"mediatek,mt6359" for PMIC MT6359
- 	"mediatek,mt6397" for PMIC MT6397
+diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
+index d0c79ee4c56b..76b1f7bc8217 100644
+--- a/drivers/soc/mediatek/mtk-pmic-wrap.c
++++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
+@@ -1155,11 +1155,17 @@ struct pwrap_slv_regops {
+ 	int (*pwrap_write)(struct pmic_wrapper *wrp, u32 adr, u32 wdata);
+ };
+ 
++/**
++ * struct pwrap_slv_type - PMIC device wrapper definitions
++ * @dew_regs:      Device Wrapper (DeW) register offsets
++ * @type:          PMIC Type (model)
++ * @regops:        Register R/W ops
++ * @caps:          Capability flags for the target device
++ */
+ struct pwrap_slv_type {
+ 	const u32 *dew_regs;
+ 	enum pmic_type type;
+ 	const struct pwrap_slv_regops *regops;
+-	/* Flags indicating the capability for the target slave */
+ 	u32 caps;
+ };
+ 
 -- 
 2.35.1
 
