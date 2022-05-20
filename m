@@ -2,137 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 741F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE9BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 21:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353582AbiETVb2 (ORCPT
+        id S1353712AbiETVi6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 17:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
+        Fri, 20 May 2022 17:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232937AbiETVbY (ORCPT
+        with ESMTP id S1353697AbiETVi4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 17:31:24 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC116CA91;
-        Fri, 20 May 2022 14:31:23 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id v9so1717799lja.12;
-        Fri, 20 May 2022 14:31:23 -0700 (PDT)
+        Fri, 20 May 2022 17:38:56 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BE717B866
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:38:55 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id gg20so9101688pjb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 14:38:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9ArP+iLFbfbU7iI3ZFUMYd+mcaGbbogq4chB/Nd9xLc=;
-        b=cEtIFS0FehIai+vyJ381oLLGRThutuTc6qikAo7tD0sdf5FD+3ag072+8O46yotM7e
-         tBIpfvH+mS8pBIRUue3QX+sMkDudM7pUKmjzoM+DF/qCp9Xz3PDPPW4eW+I9+1o2SfP5
-         mZ0Ruxr6r+MCz6iLH86BH6qFDf7E4q4LF2FneFkV1nnGVU6gMb8jVqxOyZW01QYydefi
-         x9bmVt1rz4lwVlF23uBly+3cTcknNg4w5OD+jsZeEF6XEZxxQKeLe3GrI0eYsMJXcyAH
-         ZRA5ulp0sSGUvcxpOVGIpmaUgXUu07A+lj331o0hjAaORNavu5yX6GyVfNLtdeovAecj
-         et6A==
+        bh=Zulj73dBhoBwy8zgKmXSONhGGAK+6HOxdNu/R5R9Bp8=;
+        b=M1YxvgPhWzo82ALxG7oqCka5wlcen3k/fl6tR9PT3/BMAWMn1re5T+qYsLndDcfFtT
+         lBPTRohfnXzYpYN84q/9n1TtG1PjhJpsUP694KF89GMD/q9KBJtKQenHDX+p/ilMUBkx
+         TWwttEI1QLAF1/qrGtZTn4QKjyEotE01h/O4M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9ArP+iLFbfbU7iI3ZFUMYd+mcaGbbogq4chB/Nd9xLc=;
-        b=Lfi9VOJnFDIM0j0Mp0Qtr/6Il4SrZVGcZ35xRKdZ169eFCACqJOtvRL4p9Ef6WW1KM
-         dqmliyfPYAZ//KA7iYvci/RAMdytK5KmJDbMlFEJEoeVHa+1kk3rVl0QeBUNy/h3MswT
-         xxd9zVQ+9hHXptBlI00+T4Hxdlxu3krPcXIj+X5inAMCK+FUc6f/zrEwPf2E42I+Xrnq
-         Jj7c1MNemmumGZXsitYExxDFlYiUqd0Gs7Rs9juqVqQMWO0eVp75IY7u3UKBZZQNHlyQ
-         d6uTJLmuqSNRzbsBy2EO3xvmBthqR7caIKI6aqUocO6nPVIFOLQVHkS6XTu9sDTQj2DU
-         e0fg==
-X-Gm-Message-State: AOAM5316GuxgHya8X+SoYE/40+bpvdWVkvt9lAvnEz+GMzQlVlSrivgk
-        GQCicq9kcsLVk0OjfYNVpo4=
-X-Google-Smtp-Source: ABdhPJwC1buK1NeuZmzjXGf138VM+t9aUuv1h9c4NUzGtdYB0kUfhbJAWR7luB0FILwJ0MXxxELUuw==
-X-Received: by 2002:a2e:824b:0:b0:24d:c247:c928 with SMTP id j11-20020a2e824b000000b0024dc247c928mr6561582ljh.68.1653082281536;
-        Fri, 20 May 2022 14:31:21 -0700 (PDT)
-Received: from localhost.localdomain ([46.235.67.4])
-        by smtp.gmail.com with ESMTPSA id n22-20020a195516000000b0047255d21130sm793150lfe.95.2022.05.20.14.31.20
+        bh=Zulj73dBhoBwy8zgKmXSONhGGAK+6HOxdNu/R5R9Bp8=;
+        b=IprnPtsikahV4gBzMyZskpzeJ54NOdZ1XzyGi3TjYCKgWpKJmM6GRrHL4Xy1J/YLlS
+         6CKj69Dst615c4PpNLyCA28jxdVEhheJ9EC42F/DuBkxm30EFKaVkpPkrl7dMAaoRXyW
+         zmcQIjYTzcRmiKZKk1i4Z4re5Lo1miUtSVkNhptJCfQZ3qggl/BBwsPx+0RtgLiKPSns
+         zfie3OqQ4yYO5QCaP2Mbiu217vpjt9QhXsYBeWjRaUGwWwU00UDm3CbjQMq49hrXaU8O
+         qOaMwcdh+T8gt/ywvqz8A3WW8lhbcAqyuV4WbBFWE0ON+7zoQuYoeaAivQmpSUEzxaGO
+         4NQg==
+X-Gm-Message-State: AOAM530AR0vWxblbpQC7nRnkM79HUrltOuY9ZHHwnZy3lmOLECbPz0cO
+        QHtMG3TpBF2I4iAbYuQR3lwzwg==
+X-Google-Smtp-Source: ABdhPJwav1RDQ8a5mFUvn6XmzDrkhUb3q94qYu9K4vek0YEW0MyUzHTZlusMjakUEzDp4KEteRFyOw==
+X-Received: by 2002:a17:903:11c4:b0:15f:14df:a919 with SMTP id q4-20020a17090311c400b0015f14dfa919mr11668244plh.21.1653082734799;
+        Fri, 20 May 2022 14:38:54 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b090:3896:c312:c4df])
+        by smtp.gmail.com with ESMTPSA id u13-20020a17090a450d00b001df955c28f6sm2070864pjg.37.2022.05.20.14.38.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 14:31:21 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        kuba@kernel.org, clement.leger@bootlin.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v2] net: ocelot: fix wrong time_after usage
-Date:   Sat, 21 May 2022 00:31:15 +0300
-Message-Id: <20220520213115.7832-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <YoeMW+/KGk8VpbED@lunn.ch>
-References: <YoeMW+/KGk8VpbED@lunn.ch>
+        Fri, 20 May 2022 14:38:54 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        patches@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        Julius Werner <jwerner@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        devicetree@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 2/5] dt-bindings: arm: qcom: Mention that Chromebooks use a different scheme
+Date:   Fri, 20 May 2022 14:38:42 -0700
+Message-Id: <20220520143502.v4.2.I6418884d8bab6956c7016304f45adc7df808face@changeid>
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+In-Reply-To: <20220520143502.v4.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+References: <20220520143502.v4.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Accidentally noticed, that this driver is the only user of
-while (time_after(jiffies...)).
+The qcom.yaml bindings file has a whole description of what the
+top-level compatible should look like for Qualcomm devices. It doesn't
+match what Chromebooks do, so add a link to the Chromebook docs.
 
-It looks like typo, because likely this while loop will finish after 1st
-iteration, because time_after() returns true when 1st argument _is after_
-2nd one.
-
-There is one possible problem with this poll loop: the scheduler could put
-the thread to sleep, and it does not get woken up for
-OCELOT_FDMA_CH_SAFE_TIMEOUT_US. During that time, the hardware has done
-its thing, but you exit the while loop and return -ETIMEDOUT.
-
-Fix it by using sane poll API that avoids all problems described above
-
-Fixes: 753a026cfec1 ("net: ocelot: add FDMA support")
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reported-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
+The link added here will (obviously) not function until the
+documentation patch makes it to mainline. Presumably folks who want to
+read it in the meantime can find it pretty easily. If there's a better
+way to link this then please let me know.
 
-I can't say if 0 is a good choise for 5th readx_poll_timeout() argument,
-so this patch is build-tested only.
+Changes in v4:
+- Use docs.kernel.org link.
 
-Testing and suggestions are welcomed!
+Changes in v3:
+- ("Mention that Chromebooks use a different scheme") split out for v3.
 
-Changes since v1:
-	- Fixed typos in title and commit message
-	- Remove while loop and use readx_poll_timeout as suggested by
-	  Andrew
+ Documentation/devicetree/bindings/arm/qcom.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
----
- drivers/net/ethernet/mscc/ocelot_fdma.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_fdma.c b/drivers/net/ethernet/mscc/ocelot_fdma.c
-index dffa597bffe6..82abfa8394c8 100644
---- a/drivers/net/ethernet/mscc/ocelot_fdma.c
-+++ b/drivers/net/ethernet/mscc/ocelot_fdma.c
-@@ -94,19 +94,18 @@ static void ocelot_fdma_activate_chan(struct ocelot *ocelot, dma_addr_t dma,
- 	ocelot_fdma_writel(ocelot, MSCC_FDMA_CH_ACTIVATE, BIT(chan));
- }
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 5c06d1bfc046..5ac28e11ea7b 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -90,6 +90,11 @@ description: |
+   A dragonboard board v0.1 of subtype 1 with an apq8074 SoC version 2, made in
+   foundry 2.
  
-+static u32 ocelot_fdma_read_ch_safe(struct ocelot *ocelot)
-+{
-+	return ocelot_fdma_readl(ocelot, MSCC_FDMA_CH_SAFE);
-+}
++  There are many devices in the list below that run the standard ChromeOS
++  bootloader setup and use the open source depthcharge bootloader to boot the
++  OS. These devices do not use the scheme described above. For details, see:
++  https://docs.kernel.org/arm/google/chromebook-boot-flow.html
 +
- static int ocelot_fdma_wait_chan_safe(struct ocelot *ocelot, int chan)
- {
--	unsigned long timeout;
- 	u32 safe;
- 
--	timeout = jiffies + usecs_to_jiffies(OCELOT_FDMA_CH_SAFE_TIMEOUT_US);
--	do {
--		safe = ocelot_fdma_readl(ocelot, MSCC_FDMA_CH_SAFE);
--		if (safe & BIT(chan))
--			return 0;
--	} while (time_after(jiffies, timeout));
--
--	return -ETIMEDOUT;
-+	return readx_poll_timeout(ocelot_fdma_read_ch_safe, ocelot, safe,
-+				  safe & BIT(chan), 0,
-+				  OCELOT_FDMA_CH_SAFE_TIMEOUT_US);
- }
- 
- static void ocelot_fdma_dcb_set_data(struct ocelot_fdma_dcb *dcb,
+ properties:
+   $nodename:
+     const: "/"
 -- 
-2.36.1
+2.36.1.124.g0e6072fb45-goog
 
