@@ -2,81 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3438EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C66C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347604AbiETJVZ (ORCPT
+        id S1347694AbiETJXo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
+        Fri, 20 May 2022 05:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236358AbiETJVV (ORCPT
+        with ESMTP id S1347627AbiETJXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:21:21 -0400
-X-Greylist: delayed 1434 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 02:21:19 PDT
-Received: from mo-csw-fb.securemx.jp (mo-csw-fb1516.securemx.jp [210.130.202.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E542DAB6;
-        Fri, 20 May 2022 02:21:19 -0700 (PDT)
-Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1516) id 24K8vQSw029845; Fri, 20 May 2022 17:57:26 +0900
-Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 24K8uskm030850; Fri, 20 May 2022 17:56:54 +0900
-X-Iguazu-Qid: 34trvzMrv8epPT65NT
-X-Iguazu-QSIG: v=2; s=0; t=1653037014; q=34trvzMrv8epPT65NT; m=wCqfnp8vQEQyhU528pIyqI4BbH8Xu5y1VmAO4hRtlXU=
-Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
-        by relay.securemx.jp (mx-mr1510) id 24K8uqbh040873
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 20 May 2022 17:56:53 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     linux-pci@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH] dt-bindings: pci: toshiba,visconti-pcie: Update the common clock properties
-Date:   Fri, 20 May 2022 17:56:48 +0900
-X-TSB-HOP2: ON
-Message-Id: <20220520085648.620703-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-X-Mailer: git-send-email 2.36.0
+        Fri, 20 May 2022 05:23:42 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4669191573;
+        Fri, 20 May 2022 02:23:40 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24K9NB920026777, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24K9NB920026777
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 20 May 2022 17:23:11 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Fri, 20 May 2022 17:23:11 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 20 May 2022 17:23:11 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Fri, 20 May 2022 17:23:11 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "neo_jou@realtek.com" <neo_jou@realtek.com>
+Subject: Re: [PATCH 06/10] rtw88: Add common USB chip support
+Thread-Topic: [PATCH 06/10] rtw88: Add common USB chip support
+Thread-Index: AQHYapDiqxMx5uVh8U2fFMFwvLZZx60m3hOAgAAUZgCAAAixAA==
+Date:   Fri, 20 May 2022 09:23:11 +0000
+Message-ID: <a0c7fb57d0e9c1a36f328f4e523643ba6009630f.camel@realtek.com>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+         <20220518082318.3898514-7-s.hauer@pengutronix.de>
+         <e9ca08c6facb8916fb9e5cbad05447321d3d0f43.camel@realtek.com>
+         <20220520085156.GE25578@pengutronix.de>
+In-Reply-To: <20220520085156.GE25578@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.17.21]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjAg5LiK5Y2IIDA3OjI3OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <876FF89BFAA1BE468B922ECF02786C6C@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The clock for this driver switched to the common clock controller driver.
-Therefore, update common clock properties for PCIe controller in the binding
-document.
-
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Acked-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/pci/toshiba,visconti-pcie.yaml         | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/pci/toshiba,visconti-pcie.yaml b/Documentation/devicetree/bindings/pci/toshiba,visconti-pcie.yaml
-index 30b6396d83c8..b9d0484606cc 100644
---- a/Documentation/devicetree/bindings/pci/toshiba,visconti-pcie.yaml
-+++ b/Documentation/devicetree/bindings/pci/toshiba,visconti-pcie.yaml
-@@ -69,6 +69,7 @@ unevaluatedProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/clock/toshiba,tmpv770x.h>
-     #include <dt-bindings/interrupt-controller/irq.h>
-     #include <dt-bindings/interrupt-controller/arm-gic.h>
- 
-@@ -102,7 +103,7 @@ examples:
-                  0 0 0 2 &gic GIC_SPI 215 IRQ_TYPE_LEVEL_HIGH
-                  0 0 0 3 &gic GIC_SPI 215 IRQ_TYPE_LEVEL_HIGH
-                  0 0 0 4 &gic GIC_SPI 215 IRQ_TYPE_LEVEL_HIGH>;
--            clocks = <&extclk100mhz>, <&clk600mhz>, <&clk25mhz>;
-+            clocks = <&extclk100mhz>, <&pismu TMPV770X_CLK_PCIE_MSTR>, <&pismu TMPV770X_CLK_PCIE_AUX>;
-             clock-names = "ref", "core", "aux";
-             max-link-speed = <2>;
-         };
--- 
-2.36.0
-
-
+T24gRnJpLCAyMDIyLTA1LTIwIGF0IDEwOjUxICswMjAwLCBzLmhhdWVyQHBlbmd1dHJvbml4LmRl
+IHdyb3RlOg0KPiBPbiBGcmksIE1heSAyMCwgMjAyMiBhdCAwNzozOTowM0FNICswMDAwLCBQa3No
+aWggd3JvdGU6DQo+ID4gT24gV2VkLCAyMDIyLTA1LTE4IGF0IDEwOjIzICswMjAwLCBTYXNjaGEg
+SGF1ZXIgd3JvdGU6DQo+ID4gPiBBZGQgdGhlIGNvbW1vbiBiaXRzIGFuZCBwaWVjZXMgdG8gYWRk
+IFVTQiBzdXBwb3J0IHRvIHRoZSBSVFc4OCBkcml2ZXIuDQo+ID4gPiBUaGlzIGlzIGJhc2VkIG9u
+IGh0dHBzOi8vZ2l0aHViLmNvbS91bGxpLWtyb2xsL3J0dzg4LXVzYi5naXQgd2hpY2gNCj4gPiA+
+IGl0c2VsZiBpcyBmaXJzdCB3cml0dGVuIGJ5IE5lbyBKb3UuDQo+ID4gPiANCj4gPiA+IFNpZ25l
+ZC1vZmYtYnk6IG5lb19qb3UgPG5lb19qb3VAcmVhbHRlay5jb20+DQo+ID4gPiBTaWduZWQtb2Zm
+LWJ5OiBIYW5zIFVsbGkgS3JvbGwgPGxpbnV4QHVsbGkta3JvbGwuZGU+DQo+ID4gPiBTaWduZWQt
+b2ZmLWJ5OiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+DQo+ID4gPiAtLS0N
+Cj4gPiA+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L0tjb25maWcgIHwgICAg
+MyArDQo+ID4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9NYWtlZmlsZSB8
+ICAgIDIgKw0KPiA+ID4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvbWFjLmMg
+ICAgfCAgICAzICsNCj4gPiA+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L21h
+aW4uYyAgIHwgICAgNSArDQo+ID4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4
+OC9tYWluLmggICB8ICAgIDQgKw0KPiA+ID4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsv
+cnR3ODgvcmVnLmggICAgfCAgICAxICsNCj4gPiA+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFs
+dGVrL3J0dzg4L3R4LmggICAgIHwgICAzMSArDQo+ID4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3Mv
+cmVhbHRlay9ydHc4OC91c2IuYyAgICB8IDEwNTEgKysrKysrKysrKysrKysrKysrKw0KPiA+ID4g
+IGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvdXNiLmggICAgfCAgMTA5ICsrDQo+
+ID4gPiAgOSBmaWxlcyBjaGFuZ2VkLCAxMjA5IGluc2VydGlvbnMoKykNCj4gPiA+ICBjcmVhdGUg
+bW9kZSAxMDA2NDQgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC91c2IuYw0KPiA+
+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4
+L3VzYi5oDQo+ID4gPiANCj4gPiANCj4gPiA+ICt9DQo+ID4gPiArDQo+ID4gPiArc3RhdGljIHZv
+aWQgcnR3X3VzYl9jYW5jZWxfcnhfYnVmcyhzdHJ1Y3QgcnR3X3VzYiAqcnR3dXNiKQ0KPiA+ID4g
+K3sNCj4gPiA+ICsJc3RydWN0IHJ4X3VzYl9jdHJsX2Jsb2NrICpyeGNiOw0KPiA+ID4gKwl1bnNp
+Z25lZCBsb25nIGZsYWdzOw0KPiA+ID4gKw0KPiA+ID4gKwlzcGluX2xvY2tfaXJxc2F2ZSgmcnR3
+dXNiLT5yeF9kYXRhX2xpc3RfbG9jaywgZmxhZ3MpOw0KPiA+ID4gKw0KPiA+ID4gKwl3aGlsZSAo
+dHJ1ZSkgew0KPiA+ID4gKwkJcnhjYiA9IGxpc3RfZmlyc3RfZW50cnlfb3JfbnVsbCgmcnR3dXNi
+LT5yeF9kYXRhX3VzZWQsDQo+ID4gPiArCQkJCQkJc3RydWN0IHJ4X3VzYl9jdHJsX2Jsb2NrLCBs
+aXN0KTsNCj4gPiA+ICsNCj4gPiA+ICsJCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJnJ0d3VzYi0+
+cnhfZGF0YV9saXN0X2xvY2ssIGZsYWdzKTsNCj4gPiA+ICsNCj4gPiA+ICsJCWlmICghcnhjYikN
+Cj4gPiA+ICsJCQlicmVhazsNCj4gPiA+ICsNCj4gPiA+ICsJCXVzYl9raWxsX3VyYihyeGNiLT5y
+eF91cmIpOw0KPiA+ID4gKw0KPiA+ID4gKwkJc3Bpbl9sb2NrX2lycXNhdmUoJnJ0d3VzYi0+cnhf
+ZGF0YV9saXN0X2xvY2ssIGZsYWdzKTsNCj4gPiA+ICsJCWxpc3RfbW92ZSgmcnhjYi0+bGlzdCwg
+JnJ0d3VzYi0+cnhfZGF0YV9mcmVlKTsNCj4gPiA+ICsJfQ0KPiA+ID4gK30NCj4gPiANCj4gPiBU
+aGUgc3Bpbl9sb2NrIHBhaXJzIGFyZSBub3QgaW50dWl0aXZlLg0KPiA+IENhbiB3ZSBjaGFuZ2Ug
+dGhpcyBjaHVuayB0bw0KPiA+IA0KPiA+IHdoaWxlICh0cnVlKSB7DQo+ID4gICAgICBzcGluX2xv
+Y2soKTsNCj4gPiAgICAgIHJ4Y2IgPSBsaXN0X2ZpcnN0X2VudHJ5X29yX251bGwoKTsNCj4gPiAg
+ICAgIHNwaW5fdW5sb2NrKCkNCj4gPiANCj4gPiAgICAgIGlmICghcnhjYikNCj4gPiAgICAgICAg
+IHJldHVybjsNCj4gPiANCj4gPiAgICAgIHVzYl9mcmVlX3VyYigpOw0KPiA+IA0KPiA+ICAgICAg
+c3Bpbl9sb2NrKCk7DQo+ID4gICAgICBsaXN0X2RlbCgpOw0KPiA+ICAgICAgc3Bpbl91bmxvY2so
+KTsNCj4gPiB9DQo+ID4gDQo+ID4gVGhlIGRyYXdiYWNrIGlzIGxvY2svdW5sb2NrIHR3aWNlIGlu
+IHNpbmdsZSBsb29wLg0KPiANCj4gWWVzLCB0aGF0J3Mgd2h5IEkgZGlkIGl0IHRoZSB3YXkgSSBk
+aWQgOykNCj4gDQo+IEhvdyBhYm91dDoNCj4gDQo+IAl3aGlsZSAodHJ1ZSkgew0KPiAJCXVuc2ln
+bmVkIGxvbmcgZmxhZ3M7DQo+IA0KPiAJCXNwaW5fbG9ja19pcnFzYXZlKCZydHd1c2ItPnJ4X2Rh
+dGFfbGlzdF9sb2NrLCBmbGFncyk7DQo+IA0KPiAJCXJ4Y2IgPSBsaXN0X2ZpcnN0X2VudHJ5X29y
+X251bGwoJnJ0d3VzYi0+cnhfZGF0YV9mcmVlLA0KPiAJCQkJCQlzdHJ1Y3QgcnhfdXNiX2N0cmxf
+YmxvY2ssIGxpc3QpOw0KPiAJCWlmIChyeGNiKQ0KPiAJCQlsaXN0X2RlbCgmcnhjYi0+bGlzdCk7
+DQo+IA0KPiAJCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJnJ0d3VzYi0+cnhfZGF0YV9saXN0X2xv
+Y2ssIGZsYWdzKTsNCj4gDQo+IAkJaWYgKCFyeGNiKQ0KPiAJCQlicmVhazsNCj4gDQo+IAkJdXNi
+X2ZyZWVfdXJiKHJ4Y2ItPnJ4X3VyYik7DQo+IAl9DQo+IA0KDQpXaXRoIHRoZSBuZXcgb25lLCBJ
+IGNhbiBlYXNpbHkgY2hlY2sgc3Bpbl9sb2NrL191bmxvY2sgaXMgcGFpcmVkLCBzbw0KSSB2b3Rl
+IGl0Lg0KDQotLQ0KUGluZy1LZQ0KDQoNCg==
