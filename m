@@ -2,225 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F07D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E33C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347769AbiETJl1 (ORCPT
+        id S1347777AbiETJlq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57898 "EHLO
+        Fri, 20 May 2022 05:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347755AbiETJlR (ORCPT
+        with ESMTP id S1347786AbiETJln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:41:17 -0400
-Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3D648E78
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 02:41:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1653039672;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kq0o3HFsRHNjMdV32ZHN/hvfJaOGtyVOMLJu1ZLX0U4=;
-        b=Hxqt6ZtBe2+aVpPuiGgm0JoZh86isdrQIgkyh24FRivlkYVE+xIuQ33bPQKIZXZ6OB/dEw
-        wPzHTc+lZ5oD4i8jAjs0ERbMTEqNkrNk12z8bvvF85yVsDpbwPitoo8Fj4yhNfUvf6LBWH
-        xS452RadGLlFIKE708sTtK0t5lNot38=
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com
- (mail-he1eur04lp2058.outbound.protection.outlook.com [104.47.13.58]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-10-0v1tkyQ-PGG5Rlt6bw6XTw-2; Fri, 20 May 2022 11:41:08 +0200
-X-MC-Unique: 0v1tkyQ-PGG5Rlt6bw6XTw-2
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ETO5EDsnavCoMBJJSKrRh3d4N56tZijZCAQEXON75vvkPhl59ViO+Rk+nYOKR3rtmrDZPOYePvUOA4iy/w9pZIxKkqcjKXaZNNne8BoCUIosJCWqeVc0jhEW5qV4ZhEakJ//FLP103Woo+uTpOojvnw+x7MdIEmZ0W3M6XaCOs377F+NJJrP56EjbW5OPEWBKoRs8DC9mfwqPA89xND3Xt6mWLH3Xq7wCtwNtDwj26NXZhAc1OH+jAyrCaJIO6eBA9EWbiFSlyTLLOvTsq6i3Xpgc4fLcHxhvZAvLKnOK2IgD+wILXC9853dRTK5bQHSDwkv1uzMrE1Ms1tfIIkO1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kq0o3HFsRHNjMdV32ZHN/hvfJaOGtyVOMLJu1ZLX0U4=;
- b=ku2lmCC27HSgIrTgXB17OdvwZKt56Z8Gecm0bh6Em0oeKqhkzktewRMQtw0ccn/QCxa/sqEzEF4tx1n8Tx/YDqIAcOSoPpo8kYuxv+QtipUqtnVfYh6+gHCsGZpSDRBvuezf0dkVu15ramSplIbWphFZmcTdz+fvYOOcclkZTsgQfnAr2jpiz01DEvUiRHlvT2xz5Ri/KmdVZzKP4is1/2NWjEgIWMiaviAisI7xQHBhjTenc4vdoSTbX73nsdy3eQzF1Sl3z++DW9ym31vU2vSaBEBg+oywqcbMfNoF4D+kCJ6hJXF6VvrkXOQ2dWNmuzNGczZov/e+vcPc45ElFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
- by AM0PR04MB6515.eurprd04.prod.outlook.com (2603:10a6:208:16f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17; Fri, 20 May
- 2022 09:41:04 +0000
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::91b8:8f7f:61ac:cc9b]) by VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::91b8:8f7f:61ac:cc9b%7]) with mapi id 15.20.5273.017; Fri, 20 May 2022
- 09:41:04 +0000
-Message-ID: <3bff3562-bb1e-04e6-6eca-8d9bc355f2eb@suse.com>
-Date:   Fri, 20 May 2022 11:41:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/2] x86/pat: add functions to query specific cache mode
- availability
-Content-Language: en-US
-To:     Chuck Zmudzinski <brchuckz@netscape.net>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, Juergen Gross <jgross@suse.com>
-References: <20220503132207.17234-1-jgross@suse.com>
- <20220503132207.17234-3-jgross@suse.com>
- <1d86d8ff-6878-5488-e8c4-cbe8a5e8f624@suse.com>
- <0dcb05d0-108f-6252-e768-f75b393a7f5c@suse.com>
- <77255e5b-12bf-5390-6910-dafbaff18e96@netscape.net>
- <a2e95587-418b-879f-2468-8699a6df4a6a@suse.com>
- <8b1ebea5-7820-69c4-2e2b-9866d55bc180@netscape.net>
- <c5fa3c3f-e602-ed68-d670-d59b93c012a0@netscape.net>
-From:   Jan Beulich <jbeulich@suse.com>
-In-Reply-To: <c5fa3c3f-e602-ed68-d670-d59b93c012a0@netscape.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS9PR06CA0323.eurprd06.prod.outlook.com
- (2603:10a6:20b:45b::19) To VE1PR04MB6560.eurprd04.prod.outlook.com
- (2603:10a6:803:122::25)
+        Fri, 20 May 2022 05:41:43 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E7313F91C;
+        Fri, 20 May 2022 02:41:41 -0700 (PDT)
+X-UUID: 54fe12198bfc4baf9eefe19a8be5f5fd-20220520
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:09c94849-9717-4d73-aae2-b3dd68d15d28,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:2a19b09,CLOUDID:cf90f0e2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 54fe12198bfc4baf9eefe19a8be5f5fd-20220520
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <johnson.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 363951275; Fri, 20 May 2022 17:41:37 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 20 May 2022 17:41:36 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 20 May 2022 17:41:35 +0800
+Message-ID: <47da3ed20b7f3c082a6bf38de2ba291b7dd67ecc.camel@mediatek.com>
+Subject: Re: [RESEND v4 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
+ devfreq driver
+From:   Johnson Wang <johnson.wang@mediatek.com>
+To:     Chen-Yu Tsai <wenst@chromium.org>
+CC:     <cw00.choi@samsung.com>, <krzk+dt@kernel.org>,
+        <robh+dt@kernel.org>, <kyungmin.park@samsung.com>,
+        <djakov@kernel.org>, <khilman@kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <jia-wei.chang@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 20 May 2022 17:41:35 +0800
+In-Reply-To: <CAGXv+5G-88zWSnic-AY2ANF9BYWCsZk29CeLxp+VuFKE_LH5Ug@mail.gmail.com>
+References: <20220513032832.17645-1-johnson.wang@mediatek.com>
+         <20220513032832.17645-3-johnson.wang@mediatek.com>
+         <CAGXv+5Em2eq8g8phC7MVcEP-sCsSsKa9FQjOra2UN3pib_psLA@mail.gmail.com>
+         <7eec74e32bb482ba6984c6789f598ee9965f49b3.camel@mediatek.com>
+         <CAGXv+5G-88zWSnic-AY2ANF9BYWCsZk29CeLxp+VuFKE_LH5Ug@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b17af9dd-760c-4e04-7b8a-08da3a44db4e
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6515:EE_
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-Microsoft-Antispam-PRVS: <AM0PR04MB6515B4C94C38A53F34E13067B3D39@AM0PR04MB6515.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dAfJvDz03H6oRK0e8eDDJVj1nqiQGr59FkkJCCAWrEBnCJqwVEsTgnmpsHJ9s2R4M3XOTXwqB48tsZG0WPa60NCEqHaEFjLzqIYFB8XyYJCAonhBQf9c3eVv2xJ/fJ/852D8FRQCn64exKD3EiSfksavLk1E64nj+oUVqFB6k2aErzb7iuUznhRj4/EduoO4tbsSKCrHsnlVvlsAemfXrs0Ct3mXJEqjmHlPzgrqfbFdLkiiXTgXPB0SxGyA85cSp/3y5Nz3oLhU8lTdiqTbaR+/jk5pf0PRIcAHBi+a74RCysLkNjJBdQmJtm+fKhAgOLbCpyPV/jO1ULM3M/hb5pOSntTbZD53JFUOfUaqybE+0RSmHAR3eEpD1eVhiFuQ1Jtq9Ceucj58GjefZrqmJzg+DdwQDbWuFegaQhkIyh/x1WjhIXqskG1Mj//fuiChpLL3vCCHtdpv7QtvSs1OHVk8JTfxOJUo4GPUtCmdjSc/rCa0elm9wzPFNn/EfctYF5colGXBnVKVorGjg1CFU79w/dE2XqYjrNQUYGd97CvmUQwKtO8mfcvDr+6rG8Y3BmQCawWCOm16HEiSPIH5kOB8dydDlCxepwafVX7pnqTPK2iD7lz6apoPurTU9VNd3nOTcVs0katFWuqPJbJR3Lq6OXGY1G6Ps+HIObY2UwWLOjdBuynImeIVdzl+HN1mBmP/mD7+kPSRnaZSazYVgTV/H7/Z0xihojGUxly+csg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8936002)(5660300002)(66476007)(66556008)(66946007)(86362001)(7416002)(36756003)(8676002)(31686004)(4326008)(107886003)(2616005)(31696002)(186003)(38100700002)(6486002)(53546011)(508600001)(6916009)(26005)(6512007)(6666004)(54906003)(6506007)(316002)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dUFkMWx1NWpWZUVIMS9XcHhzbXk0UzgwWk92Z0tJbWNrSWNxSWFZYW80YTRT?=
- =?utf-8?B?dmIvQ2FhY0dSRGdqaUx5WXNKMXgvREllWFlsdWlTS1dmMVZYdlhwUzJkR29z?=
- =?utf-8?B?Y3lhZ3cvaW9KRVZ3SVRDdjVpeGVrUEdjakhpUXd4NWFhY1BOV1MxLzhEVEhK?=
- =?utf-8?B?MmdjcHM5aVRZdGdGWlFIQnNabTR5K2RYUkxhVWxrdElYRVp1Z3l2ZE90REVZ?=
- =?utf-8?B?Tm9hWm9BbkMxeUpBQmxlUmZya1ZrMG1EWjJjQk9sWDBQbjh2aHd4M3lpT08r?=
- =?utf-8?B?L3hLK3hCODFMWkxpMWFjdGVXNGpTcWY2aEE4Z3RScHFSZ0MzdzIwRTFQNkxG?=
- =?utf-8?B?UDVnbFdQdnZDd1l1YUNFQ0dJZWd2aXdBc2kzOWQ3R2I3YmhVQUtQZG5xUVhq?=
- =?utf-8?B?VzJaTjh3UStnclp4OWJCNjRVVHFpeTlDa3IyS1I3akxyRkM1OWZqaHdsZmMz?=
- =?utf-8?B?cnMzQlhYRWRJMDh3ZmVqMjdCWDV0Y0VsMDB6UVQ4R0dscnRndFEyaEFHZDVn?=
- =?utf-8?B?K1pJSFB1Rk1QOE5UaTRZTFZqTGR2eFdnTWkxRFJDejFDQVhFcXNXK2xQdVdK?=
- =?utf-8?B?YTgra3E0bFc2ODZmZEJFK2Ywd29MWGwxbk1qNEVKTklXM0ExVTFYbDNrUUhD?=
- =?utf-8?B?dGxrY3JLQlVaaGtKclRVNk93MjF0akhsVVJUVG5lSVA2VHR6SE96UnhVbWM2?=
- =?utf-8?B?QzQrUjROTnF5L2g1YlE4bDduU2FRb094OWZzMXVqS1dxRUpIT0lCRit3MmpO?=
- =?utf-8?B?ekhobmxPZkFSTDFPTHVMelFCZi9jSElFYm5oOURDeUNrV3QvbGYxYVFFYWtK?=
- =?utf-8?B?Y2Z0bGV0cDhLRitURHdRMnJ2dzRQaHI0ak1XM0xqRHA0YW00VXFsSXNmekt0?=
- =?utf-8?B?VDFPamEzOU9wWkRqVnM1OEl5SDlvL21VNDhjWXNLT255MHkzeGduaStHNXYr?=
- =?utf-8?B?bGlIbFROa3llK0NPdFNQUTRPOGN0VktsYWVBc01nbEZ2UkswcFBxTStUTThP?=
- =?utf-8?B?UmRBL01QT2RzbUdUaFIzQmpsZEhoQTlnaHhGWEs5WDNPZDVpVUdsTHhGb2Nl?=
- =?utf-8?B?bzAzOGk1dnBmK1VYUytJYkUxME9iWDRYVmE0L3pVNVI2bmVyRkFjVnlzVGoz?=
- =?utf-8?B?TUt6SU9nWFNXUU9UZUZJQWw3cnpmT0ZLWlp2NndxTWNYQ0ZWVlFwSGlwWmZs?=
- =?utf-8?B?RjBzNC95bW5qN2Y3STVBTEhoS0JqSjAvdzBqUVpYVWVJMi85dHNDL0pTVlhx?=
- =?utf-8?B?b1lBR0ZMWkRuOWtuNDFBdkw4ZWc0MjBLWW9FVmJHQmpmWG8wODIweHdjeVBL?=
- =?utf-8?B?V1FsR21mMC9yVXVwYm1mZUhlanNrYlFyMUlWWVIxdmM2S3ovY2hGOEpveTZo?=
- =?utf-8?B?enJOdFhFankzSit2MC8rMmRlYzZWUDlzZDVpMExGaG1UYnY4V2VLOHZWd1gx?=
- =?utf-8?B?WVRPY1FraFpmMHdNZzc0emZGMFY1SUYzblBaQUV4ODNCdk1Tcm54Ny9RVmFv?=
- =?utf-8?B?R2s5YlBDSnNRVzNaOGRta29lM0xBYUhuOWk1cU93OXM4anVKOTMxUVh4cjcw?=
- =?utf-8?B?UDh2ZGp3RWJlZXljSE5wU0ZRc0IvbVFDYlJCREkxV3hvcDREVXJ1bXFpMkpn?=
- =?utf-8?B?UVMxM1VmbVJwQk5mVnUrdzdQajBPU1lZK2dLNXhOUWZiWmdRWHhEanNFODlj?=
- =?utf-8?B?c0xjak53QVVWeU9xTExvSVExazNFd2pLK0pTTHpFTDg4b3ZjWHI2amF0TmlV?=
- =?utf-8?B?T3JSVWZibjZKSkMwMVdzcnRNWXJhK2p1eTRMT21ObVJkSEVLaE1ydTZPU3Jy?=
- =?utf-8?B?VHRFeWU0bmdNM0NXcHdKaTZzdzRVU3k1d1dOcytqbllrYXltVEZhVFpjZDBZ?=
- =?utf-8?B?ZGk4dmNsUlZHbmNhdWtmMHJzeWxBOE1hRDRxTU95YmxzNUNVWGt1TjBYeW5y?=
- =?utf-8?B?Qlh0QlR2RWxDYzhtUmM1TDc4aFI1NmlTcDN1bm9ybGJ3U0M5T3FmM0p6dzNY?=
- =?utf-8?B?amdKY0ZMeHMzS05kcUE3UEtka0FBR2xVd281ZFREVElWZXJjUCtiWFdxMDNZ?=
- =?utf-8?B?U3U1aXpvRTNGaUpESjRBZ2k4bytXc1dDS3VtOHFKaEdZS29RdnZMYVFEdHlr?=
- =?utf-8?B?bTNWdkRPU3o4c20zd0ZxZDNqMDViVnBOcGl6Zm1WcU1uL0pYTkhSR0p4S2d4?=
- =?utf-8?B?ak80V0o0QU9RVWZManc1UHNoQmliRW1PbkhubjFnWkdtWThreWNUQjdmN1ln?=
- =?utf-8?B?NDY1MHBSdzYxcEFyeFZpamxiblJNMWZiK0JPbkQ0N1cwMGI0K0doOFMrTWRR?=
- =?utf-8?B?QUVyWDg3cFdUVDVXcENrYXNBalN1ZHVTYTE2eTB5RXBUNUwxQXM4dz09?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b17af9dd-760c-4e04-7b8a-08da3a44db4e
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2022 09:41:03.9918
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +hZqBG0s884oEYaKbJKP13sSNGGksMSgW1bpyv7CllHHZ04VAkyo9mTR42HhrePsGCDrfmB4ai/Ek1JXVwYC0Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6515
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20.05.2022 10:30, Chuck Zmudzinski wrote:
-> On 5/20/2022 2:59 AM, Chuck Zmudzinski wrote:
->> On 5/20/2022 2:05 AM, Jan Beulich wrote:
->>> On 20.05.2022 06:43, Chuck Zmudzinski wrote:
->>>> On 5/4/22 5:14 AM, Juergen Gross wrote:
->>>>> On 04.05.22 10:31, Jan Beulich wrote:
->>>>>> On 03.05.2022 15:22, Juergen Gross wrote:
->>>>>>
->>>>>> ... these uses there are several more. You say nothing on why 
->>>>>> those want
->>>>>> leaving unaltered. When preparing my earlier patch I did inspect them
->>>>>> and came to the conclusion that these all would also better 
->>>>>> observe the
->>>>>> adjusted behavior (or else I couldn't have left pat_enabled() as the
->>>>>> only predicate). In fact, as said in the description of my earlier 
->>>>>> patch, in
->>>>>> my debugging I did find the use in i915_gem_object_pin_map() to be 
->>>>>> the
->>>>>> problematic one, which you leave alone.
->>>>> Oh, I missed that one, sorry.
->>>> That is why your patch would not fix my Haswell unless
->>>> it also touches i915_gem_object_pin_map() in
->>>> drivers/gpu/drm/i915/gem/i915_gem_pages.c
->>>>
->>>>> I wanted to be rather defensive in my changes, but I agree at least 
->>>>> the
->>>>> case in arch_phys_wc_add() might want to be changed, too.
->>>> I think your approach needs to be more aggressive so it will fix
->>>> all the known false negatives introduced by bdd8b6c98239
->>>> such as the one in i915_gem_object_pin_map().
->>>>
->>>> I looked at Jan's approach and I think it would fix the issue
->>>> with my Haswell as long as I don't use the nopat option. I
->>>> really don't have a strong opinion on that question, but I
->>>> think the nopat option as a Linux kernel option, as opposed
->>>> to a hypervisor option, should only affect the kernel, and
->>>> if the hypervisor provides the pat feature, then the kernel
->>>> should not override that,
->>> Hmm, why would the kernel not be allowed to override that? Such
->>> an override would affect only the single domain where the
->>> kernel runs; other domains could take their own decisions.
->>>
->>> Also, for the sake of completeness: "nopat" used when running on
->>> bare metal has the same bad effect on system boot, so there
->>> pretty clearly is an error cleanup issue in the i915 driver. But
->>> that's orthogonal, and I expect the maintainers may not even care
->>> (but tell us "don't do that then").
+On Thu, 2022-05-19 at 11:24 +0800, Chen-Yu Tsai wrote:
+> On Wed, May 18, 2022 at 8:19 PM Johnson Wang <
+> johnson.wang@mediatek.com> wrote:
+> > 
+> > Hi Chen-Yu,
+> > 
+> > On Fri, 2022-05-13 at 11:54 +0800, Chen-Yu Tsai wrote:
+> > > On Fri, May 13, 2022 at 11:31 AM Johnson Wang <
+> > > johnson.wang@mediatek.com> wrote:
+> > > > 
+> > > > We introduce a devfreq driver for the MediaTek Cache Coherent
+> > > > Interconnect
+> > > > (CCI) used by some MediaTek SoCs.
+> > > > 
+> > > > In this driver, we use the passive devfreq driver to get target
+> > > > frequencies
+> > > > and adjust voltages accordingly. In MT8183 and MT8186, the
+> > > > MediaTek
+> > > > CCI
+> > > > is supplied by the same regulators with the little core CPUs.
+> > > > 
+> > > > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > > > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> > > > Acked-by: Chanwoo Choi <cw00.choi@samsung.com>
+> > > > ---
+> > > > This patch depends on "devfreq-testing"[1].
+> > > > [1]
+> > > > 
+https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing__;!!CTRNKA9wMg0ARbw!zzOSoso9udvDV3h6kYlmizFtbn3ACA5aS2jCAjKyvtu4z0fobv1mD5uF9YbPSme8l_NnR05unTxkZfDdzohu8asWZQ$
+> > > > 
+> > > > ---
+> > > >  drivers/devfreq/Kconfig           |  10 +
+> > > >  drivers/devfreq/Makefile          |   1 +
+> > > >  drivers/devfreq/mtk-cci-devfreq.c | 474
+> > > > ++++++++++++++++++++++++++++++
+> > > >  3 files changed, 485 insertions(+)
+> > > >  create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
+> > > > 
+> > > > diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
+> > > > index 87eb2b837e68..9754d8b31621 100644
+> > > > --- a/drivers/devfreq/Kconfig
+> > > > +++ b/drivers/devfreq/Kconfig
+> > > > @@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
+> > > >           It reads ACTMON counters of memory controllers and
+> > > > adjusts the
+> > > >           operating frequencies and voltages with OPP support.
+> > > > 
+> > > > +config ARM_MEDIATEK_CCI_DEVFREQ
+> > > > +       tristate "MEDIATEK CCI DEVFREQ Driver"
+> > > > +       depends on ARM_MEDIATEK_CPUFREQ || COMPILE_TEST
+> > > > +       select DEVFREQ_GOV_PASSIVE
+> > > > +       help
+> > > > +         This adds a devfreq driver for MediaTek Cache
+> > > > Coherent
+> > > > Interconnect
+> > > > +         which is shared the same regulators with the cpu
+> > > > cluster.
+> > > > It can track
+> > > > +         buck voltages and update a proper CCI frequency. Use
+> > > > the
+> > > > notification
+> > > > +         to get the regulator status.
+> > > > +
+> > > >  config ARM_RK3399_DMC_DEVFREQ
+> > > >         tristate "ARM RK3399 DMC DEVFREQ Driver"
+> > > >         depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
+> > > > diff --git a/drivers/devfreq/Makefile
+> > > > b/drivers/devfreq/Makefile
+> > > > index 0b6be92a25d9..bf40d04928d0 100644
+> > > > --- a/drivers/devfreq/Makefile
+> > > > +++ b/drivers/devfreq/Makefile
+> > > > @@ -11,6 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)     +=
+> > > > governor_passive.o
+> > > >  obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)   += exynos-bus.o
+> > > >  obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)      += imx-bus.o
+> > > >  obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)   += imx8m-ddrc.o
+> > > > +obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ) += mtk-cci-devfreq.o
+> > > >  obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)   += rk3399_dmc.o
+> > > >  obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)       += sun8i-a33-
+> > > > mbus.o
+> > > >  obj-$(CONFIG_ARM_TEGRA_DEVFREQ)                += tegra30-
+> > > > devfreq.o
+> > > > diff --git a/drivers/devfreq/mtk-cci-devfreq.c
+> > > > b/drivers/devfreq/mtk-cci-devfreq.c
+> > > > new file mode 100644
+> > > > index 000000000000..aa8c37eb4a06
+> > > > --- /dev/null
+> > > > +++ b/drivers/devfreq/mtk-cci-devfreq.c
+> > > > @@ -0,0 +1,474 @@
 > 
-> Actually I just did a test with the last official Debian kernel
-> build of Linux 5.16, that is, a kernel before bdd8b6c98239 was
-> applied. In fact, the nopat option does *not* break the i915 driver
-> in 5.16. That is, with the nopat option, the i915 driver loads
-> normally on both the bare metal and on the Xen hypervisor.
-> That means your presumption (and the presumption of
-> the author of bdd8b6c98239) that the "nopat" option was
-> being observed by the i915 driver is incorrect. Setting "nopat"
-> had no effect on my system with Linux 5.16. So after doing these
-> tests, I am against the aggressive approach of breaking the i915
-> driver with the "nopat" option because prior to bdd8b6c98239,
-> nopat did not break the i915 driver. Why break it now?
+> [...]
+> 
+> > > > +       if (IS_ERR(drv->sram_reg))
+> > > > +               drv->sram_reg = NULL;
+> > > > +       else {
+> > > > +               ret = regulator_enable(drv->sram_reg);
+> > > > +               if (ret) {
+> > > > +                       dev_err(dev, "failed to enable sram
+> > > > regulator\n");
+> > > > +                       goto out_free_resources;
+> > > > +               }
+> > > > +       }
+> > > > +
+> > > > +       /*
+> > > > +        * We assume min voltage is 0 and tracking target
+> > > > voltage
+> > > > using
+> > > > +        * min_volt_shift for each iteration.
+> > > > +        * The retry_max is 3 times of expeted iteration count.
+> > > 
+> > > expected?
+> > > 
+> > 
+> > Maybe "the maximum" will be more appropriate?
+> 
+> 
+> I was merely pointing out a typo in "expeted".
+> 
+> Looking at it again, I'm not sure why retry attempts are tied to the
+> voltage.
+> 
+> 
+> ChenYu
 
-Because that's, in my understanding, is the purpose of "nopat"
-(not breaking the driver of course - that's a driver bug -, but
-having an effect on the driver).
+Hi Chen-Yu,
 
-Jan
+Thanks for you reminder.
+
+Whenever the voltages are scaled up/down one step,
+meaning that there is another iteration in the while loop.
+
+Thus, our thought is to use times of the voltages step up/down to set
+iteration limit.
+
+BRs,
+Johnson Wang 
 
