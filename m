@@ -2,81 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E987C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2808C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237918AbiETJ6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
+        id S1348019AbiETJ6a (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 05:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234276AbiETJ6A (ORCPT
+        with ESMTP id S1347728AbiETJ60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:58:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C855EDE2
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 02:57:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 20 May 2022 05:58:26 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47840EC3FD;
+        Fri, 20 May 2022 02:58:25 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id F001B1F88B;
+        Fri, 20 May 2022 09:58:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653040703; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=64ihC9Z8An8BVNW7TtS5ZeiD3v6obwU4Wb5TbN/d6lE=;
+        b=rtE5ey666MicJjXHbgWRKj4LKRbVjjbtZKGOlcEy0wYWsmtAxl0gOH3JIchkIUpk5/QrEx
+        S2eehmOuYALLl7ipS8ZcojV8wS61nbxkTA8SHF+8lGFopefr0S+lketbS5TnIW9F35kJeK
+        /jqQZ+v9kFHpDzNfHKmUMEFsPLGculw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653040703;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=64ihC9Z8An8BVNW7TtS5ZeiD3v6obwU4Wb5TbN/d6lE=;
+        b=4WIMZ8b0BHB7yygq7FdP0yMfnRLqf4/mr1Eup2XUb9bb3irniVoZkLmTCJWqKJ2Ji9V8sO
+        A4BhfRvi3GHbVMCg==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFB4761C4A
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:57:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1CAFC385AA;
-        Fri, 20 May 2022 09:57:57 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="N6SXTpij"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1653040675;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Za8jSp0yqPB+l+OyGKfHicMuSJ/twvFBa+n/uLcHdb8=;
-        b=N6SXTpiji65z9HWsno1ZTPxqeuf1IQrbzM3sKT2DjEyXJZameFL/L56jdkTPB+z/D6grZz
-        PJK3j+cScfK8PueDrz08W3RCidb+eFymY1YuWIVETXTledS2YEB+M6nyPAc1sBaB8appFh
-        JXB27KsQiyyVYCfuM/AWOpSv2RciQ+Y=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ccf116e5 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 20 May 2022 09:57:55 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, Jens Axboe <axboe@suse.de>
-Subject: [PATCH] splice: allow direct splicing with chardevs
-Date:   Fri, 20 May 2022 11:57:47 +0200
-Message-Id: <20220520095747.123748-1-Jason@zx2c4.com>
+        by relay2.suse.de (Postfix) with ESMTPS id C94CD2C141;
+        Fri, 20 May 2022 09:58:23 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 26F32A0634; Fri, 20 May 2022 11:50:28 +0200 (CEST)
+Date:   Fri, 20 May 2022 11:50:28 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     Jan Kara <jack@suse.cz>, linux-ext4@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: kernel BUG in ext4_writepages
+Message-ID: <20220520095028.rq4ef2o5nwetzog3@quack3>
+References: <49ac1697-5235-ca2e-2738-f0399c26d718@linaro.org>
+ <20220519122353.eqpnxiaybvobfszb@quack3.lan>
+ <e9ccb919-1616-f94f-c465-7024011ad8e5@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e9ccb919-1616-f94f-c465-7024011ad8e5@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The original direct splicing mechanism from Jens required the input to
-be a regular file because it was avoiding the special socket case. It
-also recognized blkdevs as being close enough to a regular file. But it
-forgot about chardevs, which behave the same way and work fine here.
+On Thu 19-05-22 16:14:17, Tadeusz Struk wrote:
+> On 5/19/22 05:23, Jan Kara wrote:
+> > Hi!
+> > 
+> > On Tue 10-05-22 15:28:38, Tadeusz Struk wrote:
+> > > Syzbot found another BUG in ext4_writepages [1].
+> > > This time it complains about inode with inline data.
+> > > C reproducer can be found here [2]
+> > > I was able to trigger it on 5.18.0-rc6
+> > > 
+> > > [1] https://syzkaller.appspot.com/bug?id=a1e89d09bbbcbd5c4cb45db230ee28c822953984
+> > > [2] https://syzkaller.appspot.com/text?tag=ReproC&x=129da6caf00000
+> > 
+> > Thanks for report. This should be fixed by:
+> > 
+> > https://lore.kernel.org/all/20220516012752.17241-1-yebin10@huawei.com/
+> 
+> 
+> In case of the syzbot bug there is something messed up with PAGE DIRTY flags
+> and the way syzbot sets up the write. This is what triggers the crash:
 
-This commit adds the missing S_ISCHR condition so that chardevs such as
-/dev/urandom can be directly spliced without strangely returning
--EINVAL.
+Can you tell me where exactly we hit the bug? I've now noticed that this is
+on 5.10 kernel and on vanilla 5.10 there's no BUG_ON on line 2753.
 
-Cc: Jens Axboe <axboe@suse.de>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: b92ce5589374 ("[PATCH] splice: add direct fd <-> fd splicing support")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- fs/splice.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> $ ftrace -f ./repro
+> ...
+> [pid  2395] open("./bus", O_RDWR|O_CREAT|O_SYNC|O_NOATIME, 000 <unfinished ...>
+> [pid  2395] <... open resumed> )        = 6
+> ...
+> [pid  2395] write(6, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 22 <unfinished ...>
+> ...
+> [pid  2395] <... write resumed> )       = 22
+> 
+> One way I could fix it was to clear the PAGECACHE_TAG_DIRTY on the mapping in
+> ext4_try_to_write_inline_data() after the page has been updated:
+> 
+> diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+> index 9c076262770d..e4bbb53fa26f 100644
+> --- a/fs/ext4/inline.c
+> +++ b/fs/ext4/inline.c
+> @@ -715,6 +715,7 @@ int ext4_try_to_write_inline_data(struct address_space *mapping,
+>  			put_page(page);
+>  			goto out_up_read;
+>  		}
+> +		__xa_clear_mark(&mapping->i_pages, 0, PAGECACHE_TAG_DIRTY);
+>  	}
+>  	ret = 1;
+> 
+> Please let me know it if makes sense any I will send a proper patch.
 
-diff --git a/fs/splice.c b/fs/splice.c
-index 047b79db8eb5..7e673b1786fb 100644
---- a/fs/splice.c
-+++ b/fs/splice.c
-@@ -824,7 +824,7 @@ ssize_t splice_direct_to_actor(struct file *in, struct splice_desc *sd,
- 	 * piped splicing for that!
- 	 */
- 	i_mode = file_inode(in)->i_mode;
--	if (unlikely(!S_ISREG(i_mode) && !S_ISBLK(i_mode)))
-+	if (unlikely(!S_ISREG(i_mode) && !S_ISBLK(i_mode) && !S_ISCHR(i_mode)))
- 		return -EINVAL;
- 
- 	/*
+No, this looks really wrong... We need to better understand what's going
+on.
+
+								Honza
 -- 
-2.35.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
