@@ -2,124 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF71C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353505AbiETUie (ORCPT
+        id S1353514AbiETUjC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 16:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
+        Fri, 20 May 2022 16:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348663AbiETUid (ORCPT
+        with ESMTP id S241610AbiETUi7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 16:38:33 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D04D18540E
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:38:32 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id jx22so4181840ejb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:38:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rbQPTM72ehryL5FYoSB2A2iBAshky0xebXkx4czYmNQ=;
-        b=IPxznzUvQHNK+9WYxlWPVLNwNj8TMm7NjtzE+16cNKZ7k1Cf1JV3GKzDx5ZrujI/QS
-         pR+FSDdXdcSJ/Xwso2HdPJSioY6htXGkjVUEHNZOzb6syjEJTudTxwgdBS4pCtkJ/1OJ
-         9KRXQpOW9LNh2cpV3Uk4IEODtoEFlosdmyXC0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rbQPTM72ehryL5FYoSB2A2iBAshky0xebXkx4czYmNQ=;
-        b=jWACJBhrfsB/sR+7XRYdAvIDgQfU0SUSEiM1RBtZuluDlpd8V9O/eX65NtSAFE7Kn2
-         CvBrdFx7KS2tpBhohgfflu+OGfe/4bJySppQrbgTF74sghmPGP806qZg4fQlItCJ3Lse
-         LkV5t8IDXbnKsNBRmaQPLbs2dxLVwJqWY9JoCNbfZt2pjkQv42Ombuvz4QBNwm+SFvP5
-         g/wKMFgn/SjNk4M68O09Jsw/eeQMosmJ6j+BQI7Ref7scujZuH2+I592Rk6BFaa2ncRG
-         29ggrEs0ylYLx6ZVMf9gkYNHoyEWvdIX4GCPj3skggO7qVBbMAdKaOwaGamm7b+KoJL8
-         Mrqg==
-X-Gm-Message-State: AOAM530pp6Tv78LZExrMbCZj+Y3xtwutq1MHc8U4Kf5fD9RcDp75ruYC
-        TCG750AEj4EsKkcv2VkKwyLsGs1y9irCsX3hkec=
-X-Google-Smtp-Source: ABdhPJyG6sFRP9c1IL7dmpEReVvPEmlG/JrJzsliTcoX+1LMc9oUUsB9bULI83Yf4qg/+ygelJZFfg==
-X-Received: by 2002:a17:907:7204:b0:6f4:2c26:5f7 with SMTP id dr4-20020a170907720400b006f42c2605f7mr10021921ejc.506.1653079110896;
-        Fri, 20 May 2022 13:38:30 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090677c500b006f3ef214e28sm3576209ejn.142.2022.05.20.13.38.28
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 13:38:29 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id e2so1320061wrc.1
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:38:28 -0700 (PDT)
-X-Received: by 2002:a5d:5009:0:b0:20d:846:f4da with SMTP id
- e9-20020a5d5009000000b0020d0846f4damr9841738wrt.301.1653079108326; Fri, 20
- May 2022 13:38:28 -0700 (PDT)
+        Fri, 20 May 2022 16:38:59 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6935F19FF45;
+        Fri, 20 May 2022 13:38:58 -0700 (PDT)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24KFjYX9028627;
+        Fri, 20 May 2022 20:38:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
+ bh=5EP4WWdQHl2GA9A4nkZcKwln/XTzNpHsE6OOEXMtWg4=;
+ b=cdxLViPCAOfi0bOw7sm7GiypYJ9YO1GmWP9ujXzYTeLUOzaqqfHu7cdHR/ubef1LF+Ph
+ 9uxaAGamAQtwMt795mlZYeDqnuvYvu3AAbhUijPmHv1ZxVyWID2bneg2V1goaOxSBXiP
+ z2awl1oqtv0wLR5cBJXMSaSVDKBZ0QtMbJb921GiRObxQiQ7DDfOrhw7/iwjwxDYEL42
+ y96D2OG0U6ti/83+08Ff/RYhcd9qs2+5S3qr5zOYh90gniR+M4cgHrWYo6xkCkKLqbfv
+ kWM/Usebx8Nr/nVDKCq0Xf5cmRFfhUuBqOEG5tj5Zcz7pmgZAvV/4Ank6m+DRQc6lJUU NA== 
+Received: from g2t2354.austin.hpe.com (g2t2354.austin.hpe.com [15.233.44.27])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3g6athkpuy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 May 2022 20:38:12 +0000
+Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
+        by g2t2354.austin.hpe.com (Postfix) with ESMTP id 6EFFA81;
+        Fri, 20 May 2022 20:38:11 +0000 (UTC)
+Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
+        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id C04CF37;
+        Fri, 20 May 2022 20:38:09 +0000 (UTC)
+From:   Mike Travis <mike.travis@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
+Cc:     Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
+        Andy Shevchenko <andy@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH] x86/platform/uv: Dont use smp_processor_id while preemptable
+Date:   Fri, 20 May 2022 15:37:55 -0500
+Message-Id: <20220520203755.266337-1-mike.travis@hpe.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20220520124834.1.I7c51c6255bb53086a82c5b3f4fafffcc5ccbc4ae@changeid>
- <CAD=FV=X4GBLoTuOcHetAFXWLQKFF0yn=E5yv0ExTg8Mwrw1iUw@mail.gmail.com> <Yof6MeM1Ohthe7Fq@google.com>
-In-Reply-To: <Yof6MeM1Ohthe7Fq@google.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 20 May 2022 13:38:15 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VKqnTWDP9vkxhsR_QVj5rXNXNNwjTaQX431J1JQBTSqA@mail.gmail.com>
-Message-ID: <CAD=FV=VKqnTWDP9vkxhsR_QVj5rXNXNNwjTaQX431J1JQBTSqA@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: sc7280: Enable keyboard backlight for villager
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: m21svjX_-GCqeTwK_FVQ7dSkUI5r4ybe
+X-Proofpoint-ORIG-GUID: m21svjX_-GCqeTwK_FVQ7dSkUI5r4ybe
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-20_06,2022-05-20_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 suspectscore=0 adultscore=0 mlxlogscore=915 spamscore=0
+ phishscore=0 lowpriorityscore=0 mlxscore=0 clxscore=1011 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205200126
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+To avoid a "BUG: using smp_processor_id() in preemptible" debug
+warning message, disable preemption around use of the processor id.
 
-On Fri, May 20, 2022 at 1:29 PM Matthias Kaehlcke <mka@chromium.org> wrote:
->
-> On Fri, May 20, 2022 at 12:57:50PM -0700, Doug Anderson wrote:
-> > Hi,
-> >
-> > On Fri, May 20, 2022 at 12:48 PM Matthias Kaehlcke <mka@chromium.org> wrote:
-> > >
-> > > Villager has a backlit keyboard, enable support for the backlight.
-> > >
-> > > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> > > ---
-> > >
-> > >  arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts | 8 ++++++++
-> > >  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi            | 2 +-
-> > >  2 files changed, 9 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-> > > index d3d6ffad4eff..b6a6a1454883 100644
-> > > --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-> > > +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
-> > > @@ -58,6 +58,10 @@ &ap_sar_sensor1 {
-> > >         status = "okay";
-> > >  };
-> > >
-> > > +&keyboard_backlight {
-> > > +       status = "okay";
-> > > +};
-> >
-> > Instead of doing this, can you just get rid of the status = "disabled"
-> > in herobrine.dtsi? I don't think there's any benefit to having two
-> > levels of "disabled" in the herobrine device tree.
->
-> Sure.
->
-> I guess the 'disabled' status was put as a micro-optimization to avoid
-> probing the 'pwm-leds' driver on boards that don't have any such LEDs. In
-> practical terms it shouldn't really make a difference in terms of memory
-> or CPU.
+Signed-off-by: Mike Travis <mike.travis@hpe.com>
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
+---
+ arch/x86/platform/uv/uv_time.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Just to be clear, I was suggesting leaving the "disabled" at the
-pwm-leds level but removing the one at the "keyboard_backlight" level.
-I don't expect us to have any pwm_leds on herobrine devices that
-aren't for the keyboard backlight. If/when we do we can always add the
-two-levels of disabled back in...
+diff --git a/arch/x86/platform/uv/uv_time.c b/arch/x86/platform/uv/uv_time.c
+index 54663f3e00cb..094190814a28 100644
+--- a/arch/x86/platform/uv/uv_time.c
++++ b/arch/x86/platform/uv/uv_time.c
+@@ -275,14 +275,17 @@ static int uv_rtc_unset_timer(int cpu, int force)
+  */
+ static u64 uv_read_rtc(struct clocksource *cs)
+ {
+-	unsigned long offset;
++	unsigned long offset, time;
++	unsigned int cpu = get_cpu();
+ 
+ 	if (uv_get_min_hub_revision_id() == 1)
+ 		offset = 0;
+ 	else
+-		offset = (uv_blade_processor_id() * L1_CACHE_BYTES) % PAGE_SIZE;
++		offset = (uv_cpu_blade_processor_id(cpu) * L1_CACHE_BYTES) % PAGE_SIZE;
+ 
+-	return (u64)uv_read_local_mmr(UVH_RTC | offset);
++	time = (u64)uv_read_local_mmr(UVH_RTC | offset);
++	put_cpu();
++	return time;
+ }
+ 
+ /*
+-- 
+2.26.2
 
--Doug
