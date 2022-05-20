@@ -2,119 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 641D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348933AbiETMCj (ORCPT
+        id S1348953AbiETMC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
+        Fri, 20 May 2022 08:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348947AbiETMCf (ORCPT
+        with ESMTP id S1348969AbiETMCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:02:35 -0400
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A11149156;
-        Fri, 20 May 2022 05:02:26 -0700 (PDT)
-Received: by mail-qv1-f52.google.com with SMTP id eq14so6519377qvb.4;
-        Fri, 20 May 2022 05:02:26 -0700 (PDT)
+        Fri, 20 May 2022 08:02:44 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2417B14A25B
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:02:42 -0700 (PDT)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 30EB23F1F9
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 12:02:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1653048160;
+        bh=SOKFND/5FeQvd5cQ7sqJ+/KtvRpaDx5IOMydsT+KqBo=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=bvLQzVA1IL0HWcqpMpagK4+5cQ+FdVUFjcWaUUB3jzrmsk6J3zV1M9pthYYM+URYD
+         dVjI5wPrZeSyZi4hSOTzd9T1m/RzqcIBdDMp0tpAoGjIfb2N1yVaO48m7O2eGp9RFl
+         NY+bFRogAwnERTffhPkgrNgSUKNK3rqbH2kiCDXI1abr6v3KNKPLiu5f5vjJgGeW2T
+         FwEbDIdgL1+SDL7fFQnQymWTprxwxMT65uqZTLFeruc8Ao5tTVO/YPPGOCdBakOw37
+         gZgcB9hkU6lPBoE46LrCGOAfjMfE0SK5wx3Rd4q4Od9lG4999WuEYeeNICvScgg8j9
+         YD6At0XJixWOw==
+Received: by mail-ed1-f69.google.com with SMTP id u1-20020aa7d981000000b0042acd1f2253so5530266eds.4
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:02:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=65WlQ7s8g42M5C+5yY3Awf+CpXZTfjugQxcprooIu8U=;
-        b=H4H5LtAxlH368rGbeiAUynQDnrh/BXQmBONueTt/4LyjcN0gRD5Imh2Eb1wviOUidU
-         ZaUNCljmMzVu97ucZAG88dMS1MttqTcGDsQg/Rb9zRXxOIaCK4FpqBsOOe5VSv2HoqYc
-         Vx0WW/UDHb0QINToSOROo7wHOHxDBuqASpjNZFd7K2gObbkr8/fnsjW4eRin9K9KDgOV
-         gyxvmRiOwG423nqWVrpdKsGvq11JuIGYl8MwC2xCyIhHWZ/mH+Cs9XJGGAP8zlPclR5P
-         oJWG5EpI//w3ll3p3pi3fskRX3aLUEkm4BytvupZnexgrlQaJ9qf6FJb9hqoLY4RiTQs
-         FOWw==
-X-Gm-Message-State: AOAM533pCWAUb2WxgWalUoN0CfNCLXzZ91kz5YqhhFQEsX/XgtJlT/bk
-        LZmaI5VWbgGA95xXxOnYDWb7VQbtBurznw==
-X-Google-Smtp-Source: ABdhPJzxbJUSuKDtFmliNY60ckeR9FwT0HpsWozJ6nrAa6f+qH4bHHCc+oxtXwpVW4zfaDztnxiYAg==
-X-Received: by 2002:a05:6214:500c:b0:435:6b7d:5bc3 with SMTP id jo12-20020a056214500c00b004356b7d5bc3mr7641794qvb.92.1653048144744;
-        Fri, 20 May 2022 05:02:24 -0700 (PDT)
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id he17-20020a05622a601100b002f39b99f6c3sm2850201qtb.93.2022.05.20.05.02.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 05:02:24 -0700 (PDT)
-Received: by mail-yb1-f178.google.com with SMTP id t26so13825047ybt.3;
-        Fri, 20 May 2022 05:02:23 -0700 (PDT)
-X-Received: by 2002:a25:4289:0:b0:64d:746f:5311 with SMTP id
- p131-20020a254289000000b0064d746f5311mr8586423yba.89.1653048143666; Fri, 20
- May 2022 05:02:23 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SOKFND/5FeQvd5cQ7sqJ+/KtvRpaDx5IOMydsT+KqBo=;
+        b=w8yjm0ggZ02VRyOyGJrNNu1OAPF51uRZ/xypyVjzsfOgX/AuuUzCZ+yiRtKhAlHUzV
+         SvtcrOjM0Ylu8KI5/i9KF1s04BNhquuMEtdWnVlSKI9wfmIi63dfC9+8sTNzid9DjNK7
+         pc+Ryb6Oa+5qn2q+TFjgumcL7yGvWMM/Dk2Ueg+xnt33K0B0pJfeiFZ1bNUp11wK815Y
+         x20OZiyFYxlI63SMI17ADIZwZkzl/gjLgah4kgcw+3azXCYnj5Av8xm7FeOMNvPYyM7X
+         osSoRe9GKk5xgvoi6R1Ys+xUC2CWYZqEQMB+aTPdnzmmlYt5kMOmX5AHVI7anfJG05mm
+         KR6A==
+X-Gm-Message-State: AOAM533URDArCCrS3++nuPGNEdK/OT3S8N8qAfkhJSJifssavXDte8Nh
+        Fukknp89XBDjcTCvcYS6HmR8wN5lzWAWkOhETPC2IaIg8lIYivgLtOG24bV1iPJ9u4DVNWHSzu/
+        M3kNL6i019iZN7DsbPUEhZbDe1LxX/zh2H0HnpVyjIA==
+X-Received: by 2002:a17:906:6a1b:b0:6f4:a9b8:e027 with SMTP id qw27-20020a1709066a1b00b006f4a9b8e027mr8470922ejc.222.1653048156597;
+        Fri, 20 May 2022 05:02:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxLBhZtS2l7rKcQpRTvVrgQN0WEu69u4UF18Vcfyzmc60qHzg6vYZFA3fGd9KrMJqNRMGXu3Q==
+X-Received: by 2002:a17:906:6a1b:b0:6f4:a9b8:e027 with SMTP id qw27-20020a1709066a1b00b006f4a9b8e027mr8470909ejc.222.1653048156437;
+        Fri, 20 May 2022 05:02:36 -0700 (PDT)
+Received: from gollum.fritz.box ([194.191.244.86])
+        by smtp.gmail.com with ESMTPSA id fg22-20020a1709069c5600b006feb002a620sm560042ejc.1.2022.05.20.05.02.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 05:02:35 -0700 (PDT)
+From:   Juerg Haefliger <juerg.haefliger@canonical.com>
+X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        Juerg Haefliger <juergh@canonical.com>
+Subject: [PATCH 0/3] riscv: Kconfig: Style cleanups
+Date:   Fri, 20 May 2022 14:02:29 +0200
+Message-Id: <20220520120232.148310-1-juergh@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220520091602.179078-1-javierm@redhat.com>
-In-Reply-To: <20220520091602.179078-1-javierm@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 May 2022 14:02:11 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVmFGjGbHz1yo7tOzqtUbMTDkUxaMo2fVSp1HMU=_1emA@mail.gmail.com>
-Message-ID: <CAMuHMdVmFGjGbHz1yo7tOzqtUbMTDkUxaMo2fVSp1HMU=_1emA@mail.gmail.com>
-Subject: Re: [PATCH] drm/st7735r: Fix module autoloading for Okaya RH128128T
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        David Lechner <david@lechnology.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Mark Brown <broonie@kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+The majority of the Kconfig files use a single tab for basic indentation
+and a single tab followed by two whitespaces for help text indentation.
+Fix the lines that don't follow this convention.
 
-CC spi
+While at it:
+  - Add trailing comments to endif/endmenu statements for better
+    readability.
 
-On Fri, May 20, 2022 at 11:16 AM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> The SPI core always reports a "MODALIAS=spi:<foo>", even if the device was
-> registered via OF. This means that the st7735r.ko module won't autoload if
-> a DT has a node with a compatible "okaya,rh128128t" string.
->
-> In that case, kmod expects a "MODALIAS=of:N*T*Cokaya,rh128128t" uevent but
-> instead will get a "MODALIAS=spi:rh128128t", which is not present in the
-> list of aliases:
->
->   $ modinfo drivers/gpu/drm/tiny/st7735r.ko | grep alias
->   alias:          of:N*T*Cokaya,rh128128tC*
->   alias:          of:N*T*Cokaya,rh128128t
->   alias:          of:N*T*Cjianda,jd-t18003-t01C*
->   alias:          of:N*T*Cjianda,jd-t18003-t01
->   alias:          spi:jd-t18003-t01
->
-> To workaround this issue, add in the SPI table an entry for that device.
->
-> Fixes: d1d511d516f7 ("drm: tiny: st7735r: Add support for Okaya RH128128T")
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Juerg Haefliger (3):
+  riscv: Kconfig: Fix indentation and add comments
+  riscv: Kconfig.erratas: Add comments
+  riscv: Kconfig.socs: Add comments
 
-Thanks for your patch!
-We really need to fix this at the subsystem level.
+ arch/riscv/Kconfig         | 19 +++++++++----------
+ arch/riscv/Kconfig.erratas |  2 +-
+ arch/riscv/Kconfig.socs    |  4 ++--
+ 3 files changed, 12 insertions(+), 13 deletions(-)
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+-- 
+2.32.0
 
-
-> --- a/drivers/gpu/drm/tiny/st7735r.c
-> +++ b/drivers/gpu/drm/tiny/st7735r.c
-> @@ -174,6 +174,7 @@ MODULE_DEVICE_TABLE(of, st7735r_of_match);
->
->  static const struct spi_device_id st7735r_id[] = {
->         { "jd-t18003-t01", (uintptr_t)&jd_t18003_t01_cfg },
-> +       { "rh128128t", (uintptr_t)&rh128128t_cfg },
->         { },
->  };
->  MODULE_DEVICE_TABLE(spi, st7735r_id);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
