@@ -2,137 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4871BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2ECEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345038AbiETDZl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 23:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
+        id S243266AbiETD0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 19 May 2022 23:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343795AbiETDZg (ORCPT
+        with ESMTP id S234470AbiETD0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 23:25:36 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53A611AFC0
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:25:34 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id bh5so6339847plb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:25:34 -0700 (PDT)
+        Thu, 19 May 2022 23:26:22 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0D73B037
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:26:19 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so10380271pjb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:26:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oIvOnBi1zfzgJcgYX6B3AAYIMu7O4TOTP0MAscTgQD4=;
-        b=ZAasFmyKC1bCtYFDeeM598RQyVmV1chlTdFSHPZjgX1QKOySQ9CePCDE/VKPQk8gTF
-         Efza7Z/0cFBEEqdPhkCvfIRqWFnYIKt65Jr732qAogW+KR20BZ3EFSptZQkl156JCGkD
-         lC1VCoxc3ojGRwhT5oSyckTLf+zB+NkJ1/WGJzs9THRub/3c4qHg5OkkUgvmUEjC3Pcu
-         T27vTPMtykTR4nCM2/LvjISM0YiZXg10h93pzH+Zvn9U6kYGJuETi75QlwKwbAsJx6sw
-         a3uc4/pFa0Rrn14LQ0De5MMa+jP9r1MIV3mHbKsOsVRk8WoFxcZedp4TgFIumZNLF2RU
-         eUvQ==
+        bh=H3VyJyYzyGl+bwWlPfM/C+xqUqwKodZh3oC5dIQJb8g=;
+        b=AwN/O3Asl0gcWZcdhE9NIJP5pfBujS6ucL4RWcmhC+IwX5t26SWqzrMSCOmu4x87CJ
+         EXAy/BekTbWA2UK4+5+NmfBrIrk0Hf3tkCc3MqWZW7GizzrbwVP42TbhlulYxrL5vrMA
+         h5roqw3oYy1jkZ3cQdbEmR2Yxjd6hYoDbpAQF58lcqgwDkyIYBQpsK0EzwpB6pS+WbFY
+         RjyMXbwFpJcbqy3CKdd1DN3yPEAD2FSrwDfL5s1oZSnBQfM/HSH3Lo2BhmoXa0I4eqVi
+         2vBQXn+OgKrzMwnnqORx5/kU4rwTXMWML+1zV7oat8jgP/RqFqb0+tTzXkLpELUkEjfg
+         3VJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=oIvOnBi1zfzgJcgYX6B3AAYIMu7O4TOTP0MAscTgQD4=;
-        b=uzV/aAN7LL/5bPv7ZXVdsvZJsCkSyXEnbE0dSoXGN2hOBeBLesvRFO9piO/tF/2cZ0
-         SM7dFH9V1tPSSJqw5iNXhIUzC7lN+L2en6X+yXShmFQQqC67x0AEqXJZ9H/CANzx8Fd4
-         5Gp5q82kR5NR2g2Xwlx2QiE3QCVVi72l88E9zeNXgUsl1inzvEmGIKgSzOkRJjdXMJXp
-         PtTD/nc0AtjUtHjyHzaqE6aLHZXmogPzFLfMn6/sFQtteq2ZgMf3Dw2bbDbGDBWVz1m7
-         FrOY8y6inad29Y7DKDz+4OeuWSOI+0pk/IQJEst2GOIqD7pQqLkuGJMeU5IYa3+1/m7g
-         3APg==
-X-Gm-Message-State: AOAM530ad6h4krwjIVZCXcHq7N3d5PCqsvLRKETH06NNXf3u05I6/9M7
-        jdHlQ5x8+cEMtOTRAJVN4kDc1vSSCfhWVw==
-X-Google-Smtp-Source: ABdhPJxGIaHJIehw0yYD2H3oiND/gRVQaYMV1bSf2rca78U6rOB7y3HypvNrkKyEMQNts49hBhWs9A==
-X-Received: by 2002:a17:902:74c5:b0:161:5061:9d93 with SMTP id f5-20020a17090274c500b0016150619d93mr7595309plt.171.1653017134123;
-        Thu, 19 May 2022 20:25:34 -0700 (PDT)
+        bh=H3VyJyYzyGl+bwWlPfM/C+xqUqwKodZh3oC5dIQJb8g=;
+        b=cDG2oTOyo36XC6q74AhW9tquTRWbGA33JNHPpJBYYOvQ6hh6DsJYV4OkpZ9m0wo5p7
+         jU3riSJ+F2KjIg4zTw2X14JGYeh3QJsBJfeTv0/I25GBaoiWkXGVNS4cMscSZ9R5WHHC
+         7wYQpS8LzxNPKbXamcP6VA3hyBhETNn4VaE9FRlOGGGM8QXCYSk796Je6+q3P1sPgoxs
+         k6nP4NOKmgdGGsdWL6phVO2tRTOAQp9lGxoDuAknqCVdp+Us75SxlSYu6YGPo5BzB0D3
+         jW/4TwshLzwZE0BasrfrIcDGQsGZjMKblZ2bYjqHQXMhk1k30+BHApeX0dIOmvcmre5l
+         HtUw==
+X-Gm-Message-State: AOAM531/X1PddsbuC/aJ1w5m9gEBuqfPDJLdLrLpWcp4cYYWJPsyGRIn
+        gUeyK+aMejtGngX7MHUf05rC2Lq+0yKzOg==
+X-Google-Smtp-Source: ABdhPJz5YLVpIXQZFKz5IvfX3ynX480UagoJcgM9QT+YK1tWoyRtQv7rNZ1srZURHMqBzImbbctoEA==
+X-Received: by 2002:a17:902:d2d2:b0:161:be0f:ccd7 with SMTP id n18-20020a170902d2d200b00161be0fccd7mr7697007plc.98.1653017178987;
+        Thu, 19 May 2022 20:26:18 -0700 (PDT)
 Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id w22-20020a1709026f1600b0016189ed82c4sm4470814plk.79.2022.05.19.20.25.32
+        by smtp.gmail.com with ESMTPSA id m9-20020a62a209000000b005185407eda5sm477650pff.44.2022.05.19.20.26.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 20:25:33 -0700 (PDT)
-Message-ID: <e70dfd3b-c2a6-d830-e3a0-6a25f0da9256@kernel.dk>
-Date:   Thu, 19 May 2022 21:25:30 -0600
+        Thu, 19 May 2022 20:26:18 -0700 (PDT)
+Message-ID: <25ec7b58-08bd-3732-2a2e-52b95cbffda0@kernel.dk>
+Date:   Thu, 19 May 2022 21:26:15 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH] random: convert to using fops->write_iter()
+Subject: Re: [PATCH 1/2] random: convert to using fops->read_iter()
 Content-Language: en-US
 To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <f871a510-d262-bc98-757e-204976e1b82c@kernel.dk>
- <YocEddeThi8VUcKb@zeniv-ca.linux.org.uk>
+Cc:     tytso@mit.edu, Jason@zx2c4.com, hch@lst.de,
+        linux-kernel@vger.kernel.org
+References: <20220519233137.20415-1-axboe@kernel.dk>
+ <20220519233137.20415-2-axboe@kernel.dk>
+ <YocGyl8mmG84tQD4@zeniv-ca.linux.org.uk>
 From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <YocEddeThi8VUcKb@zeniv-ca.linux.org.uk>
+In-Reply-To: <YocGyl8mmG84tQD4@zeniv-ca.linux.org.uk>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/22 9:01 PM, Al Viro wrote:
-> On Thu, May 19, 2022 at 05:43:15PM -0600, Jens Axboe wrote:
+On 5/19/22 9:11 PM, Al Viro wrote:
+> On Thu, May 19, 2022 at 05:31:36PM -0600, Jens Axboe wrote:
 > 
->> -static int write_pool(const char __user *ubuf, size_t len)
->> +static size_t write_pool(struct iov_iter *iter)
->>  {
->>  	size_t block_len;
->>  	int ret = 0;
+>> @@ -418,25 +419,23 @@ static ssize_t get_random_bytes_user(void __user *ubuf, size_t len)
+>>  	 * the user directly.
+>>  	 */
+>>  	if (len <= CHACHA_KEY_SIZE) {
+>> -		ret = len - copy_to_user(ubuf, &chacha_state[4], len);
+>> +		ret = copy_to_iter(&chacha_state[4], len, to);
+>>  		goto out_zero_chacha;
+>>  	}
 >>  
->> -	while (len) {
->> -		block_len = min(len, sizeof(block));
->> -		if (copy_from_user(block, ubuf, block_len)) {
->> -			ret = -EFAULT;
->> +	while (iov_iter_count(iter)) {
->> +		block_len = min(iov_iter_count(iter), sizeof(block));
->> +		if (!copy_from_iter(block, block_len, iter)) {
->> +			if (!ret)
->> +				ret = -EFAULT;
->>  			goto out;
->>  		}
+>>  	for (;;) {
+>> +		size_t copied;
+>> +
+>>  		chacha20_block(chacha_state, output);
+>>  		if (unlikely(chacha_state[12] == 0))
+>>  			++chacha_state[13];
+>>  
+>>  		block_len = min_t(size_t, len, CHACHA_BLOCK_SIZE);
+>> -		left = copy_to_user(ubuf, output, block_len);
+>> -		if (left) {
+>> -			ret += block_len - left;
+>> +		copied = copy_to_iter(output, block_len, to);
+>> +		ret += copied;
+>> +		if (copied != block_len)
+>>  			break;
+>> -		}
 > 
-> Feed it a buffer with only 1 byte mapped, watch it'll pass to mix_pool_bytes().
-> And see how much of 'block' has been used uninitialized...
-
-I don't follow? Buffer with 1 byte, iter setup with 1 byte. We copy 1 byte,
-and we pass 1 byte to mix_pool_bytes(). What am I missing?
-
-> And why bother with that min thing, anyway?
-> 
-> 	ssize_t ret = 0;
-> 
-> 	while (iov_iter_count(iter)) {
-> 	  	u8 block[BLAKE2S_BLOCK_SIZE];
-> 		size_t copied = copy_from_iter(block, sizeof(block), iter);
-> 		if (!copied) {
+> 		copied = copy_to_iter(output, CHACHA_BLOCK_SIZE, to);
+> 		ret += copied;
+> 		if (copied != CHACHA_BLOCK_SIZE) {
 > 			if (!ret)
 > 				ret = -EFAULT;
 > 			break;
 > 		}
-> 		mix_pool_bytes(block, copied);
-> 		ret += copied;
 > 	}
-> 	return ret;
 > 
-> and be done with that...
-
-Agree, that does look better, the min() part could've been killed with
-the conversion indeed.
-
->> @@ -1382,11 +1378,16 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
->>  			return -EINVAL;
->>  		if (get_user(size, p++))
->>  			return -EFAULT;
->> -		retval = write_pool((const char __user *)p, size);
->> +
->> +		iov.iov_base = p;
->> +		iov.iov_len = size;
->> +		iov_iter_init(&iter, WRITE, &iov, 1, size);
+>>  SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags)
+>>  {
+>> +	struct iovec iov = { .iov_base = ubuf };
+>> +	struct iov_iter iter;
 > 
-> That'd be
-> 		import_single_range(WRITE, p, size, &iov, &iter);
+> 	import_single_range(READ, ubuf, len, &iov, &iter)
+> 
+> (note, BTW, that this'll cap len)
 
-Yep that'd be a simpler equivalent.
+Yep both of these are good changes.
 
 -- 
 Jens Axboe
