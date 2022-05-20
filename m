@@ -2,212 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76281C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AADC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 02:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344752AbiETCmJ (ORCPT
+        id S1344786AbiETCnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 22:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
+        Thu, 19 May 2022 22:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233072AbiETCmE (ORCPT
+        with ESMTP id S234497AbiETCnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 22:42:04 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4822A985BF;
-        Thu, 19 May 2022 19:42:03 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L49sP0zvYzQkHZ;
-        Fri, 20 May 2022 10:39:05 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 20 May
- 2022 10:42:00 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next] ext4: Fix warning in ext4_da_release_space
-Date:   Fri, 20 May 2022 10:55:40 +0800
-Message-ID: <20220520025540.3189247-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 19 May 2022 22:43:05 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18500146758
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:43:04 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id i27so13137844ejd.9
+        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 19:43:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OYbCF/Wdor6S6x41C8GCrQXaDG3ubugkdmo1FgeSEVU=;
+        b=RmdKa2U81HRM0iQrq3OBjkWcvUG6fMCnjls+30u/pdsiAT5Mom6VsyxM+qv/OjrSpk
+         GhXiARK+rQFYOdirEGgnvvypGcc/GKpmZtTq6renokfSaO+SbRreP40yclJ/eVG9R19s
+         FoEtkQfLDioVHxU4VfWtB6M+In74/rCHAM9jg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OYbCF/Wdor6S6x41C8GCrQXaDG3ubugkdmo1FgeSEVU=;
+        b=mb3ILe2MSQLtVmOeoZxlTu4kHLfGlRtyRwALNinzAs87xs62ovwzbPJOCfW0wuBS7o
+         YAg8ksv6wvXyfnQvJbd41tFtdmeC5mffWoFuzJY0GFGpUwKruYuaVIOu7gA5SRLtBIf+
+         D910fZ8/0WCCMVZJ4LNi7JdH4T1XELiOqMStu7Aynalbu8ApxgyHvT6JmydjS11jwkvj
+         sRffpg0rW5xLn3NlT9CUkwvd4Z1td6MLYs/fEwXIX6RF+z7yJbvSj/FVhcLrNGVT9DJV
+         O9eEXRqMwUZbLORwHc/bF++rhvA/EW50N0LR7flsCJJXU4rl2YSbNXvC/vCkYnL9E2ap
+         t2gA==
+X-Gm-Message-State: AOAM531YYwHvVegDlX9VU8n/1TPVCAN959rXoY5/8nCqS87ac5c7CO+b
+        U3/QSWC4kD1YGHaEvhzp50Iu4Y7/MnZ4YIDiDDlbtw==
+X-Google-Smtp-Source: ABdhPJzoEGCHel7BnFmKNlZP1FIsVE7LXNjlmiSoPgHoB42RyeIWF0smVKYX8wZZ1X5Sxu1lXHnAxgI4EdouniCE8aA=
+X-Received: by 2002:a17:906:cf9c:b0:6f5:108c:a5a with SMTP id
+ um28-20020a170906cf9c00b006f5108c0a5amr6612732ejb.397.1653014582609; Thu, 19
+ May 2022 19:43:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+References: <20220516004311.18358-1-roger.lu@mediatek.com> <CAGXv+5GSdWPZe3fNpBJ_WW0zCL8Skg6fHx9ATxaKU1hyMEt2Ww@mail.gmail.com>
+ <7h4k1ndaui.fsf@baylibre.com> <7hy1yzbtb7.fsf@baylibre.com>
+ <CAGXv+5GT=3m=pVPwUOWR42BR=emCpBXvvoAiRV7YKt2kEKWdAQ@mail.gmail.com>
+ <CGME20220519182512epcas1p3020bd4713580c9244f759971b8bd2c3a@epcas1p3.samsung.com>
+ <7hmtfdbcsc.fsf@baylibre.com> <5a1767dc-ba2d-4de5-d8fe-2f308d3318a9@samsung.com>
+In-Reply-To: <5a1767dc-ba2d-4de5-d8fe-2f308d3318a9@samsung.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Fri, 20 May 2022 10:42:51 +0800
+Message-ID: <CAGXv+5EsgiXCpe-8H0cQ=qm_Nq+yfM_a4b1L=hOFP6mcwfZymw@mail.gmail.com>
+Subject: Re: [PATCH v25 0/7] soc: mediatek: SVS: introduce MTK SVS
+To:     Chanwoo Choi <cw00.choi@samsung.com>
+Cc:     Kevin Hilman <khilman@kernel.org>,
+        Roger Lu <roger.lu@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Boichat <drinkcat@google.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Fan Chen <fan.chen@mediatek.com>,
+        Charles Yang <Charles.Yang@mediatek.com>,
+        Angus Lin <Angus.Lin@mediatek.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nishanth Menon <nm@ti.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jia-wei Chang <jia-wei.chang@mediatek.com>,
+        =?UTF-8?B?UmV4LUJDIENoZW4gKOmZs+afj+i+sCk=?= 
+        <rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We got issue as follows:
-WARNING: CPU: 2 PID: 1936 at fs/ext4/inode.c:1511 ext4_da_release_space+0x1b9/0x266
-Modules linked in:
-CPU: 2 PID: 1936 Comm: dd Not tainted 5.10.0+ #344
-RIP: 0010:ext4_da_release_space+0x1b9/0x266
-RSP: 0018:ffff888127307848 EFLAGS: 00010292
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffffffff843f67cc
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffed1024e60ed9
-RBP: ffff888124dc8140 R08: 0000000000000083 R09: ffffed1075da6d23
-R10: ffff8883aed36917 R11: ffffed1075da6d22 R12: ffff888124dc83f0
-R13: ffff888124dc844c R14: ffff888124dc8168 R15: 000000000000000c
-FS:  00007f6b7247d740(0000) GS:ffff8883aed00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffc1a0b7dd8 CR3: 00000001065ce000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- ext4_es_remove_extent+0x187/0x230
- mpage_release_unused_pages+0x3af/0x470
- ext4_writepages+0xb9b/0x1160
- do_writepages+0xbb/0x1e0
- __filemap_fdatawrite_range+0x1b1/0x1f0
- file_write_and_wait_range+0x80/0xe0
- ext4_sync_file+0x13d/0x800
- vfs_fsync_range+0x75/0x140
- do_fsync+0x4d/0x90
- __x64_sys_fsync+0x1d/0x30
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+On Fri, May 20, 2022 at 9:28 AM Chanwoo Choi <cw00.choi@samsung.com> wrote:
+>
+> Hi Kevin, Chen-Yu,
+>
+> On 5/20/22 3:25 AM, Kevin Hilman wrote:
+> > Chen-Yu Tsai <wenst@chromium.org> writes:
+> >
+> >> n Wed, May 18, 2022 at 8:03 AM Kevin Hilman <khilman@kernel.org> wrote:
+> >>>
+> >>> Kevin Hilman <khilman@kernel.org> writes:
+> >>>
+> >>>> Chen-Yu Tsai <wenst@chromium.org> writes:
+> >>>>
+> >>>>> On Mon, May 16, 2022 at 8:43 AM Roger Lu <roger.lu@mediatek.com> wrote:
+> >>>>>>
+> >>>>>> The Smart Voltage Scaling(SVS) engine is a piece of hardware
+> >>>>>> which calculates suitable SVS bank voltages to OPP voltage table.
+> >>>>>> Then, DVFS driver could apply those SVS bank voltages to PMIC/Buck
+> >>>>>> when receiving OPP_EVENT_ADJUST_VOLTAGE.
+> >>>>>>
+> >>>>>> 1. SVS driver uses OPP adjust event in [1] to update OPP table voltage part.
+> >>>>>> 2. SVS driver gets thermal/GPU device by node [2][3] and CPU device by get_cpu_device().
+> >>>>>> After retrieving subsys device, SVS driver calls device_link_add() to make sure probe/suspend callback priority.
+> >>>>>>
+> >>>>>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?h=opp/linux-next&id=25cb20a212a1f989385dfe23230817e69c62bee5
+> >>>>>> [2] https://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git/commit/?h=opp/linux-next&id=b325ce39785b1408040d90365a6ab1aa36e94f87
+> >>>>>> [3] https://git.kernel.org/pub/scm/linux/kernel/git/matthias.bgg/linux.git/commit/?h=v5.16-next/dts64&id=a8168cebf1bca1b5269e8a7eb2626fb76814d6e2
+> >>>>>>
+> >>>>>> Change since v24:
+> >>>>>> - Rebase to Linux 5.18-rc6
+> >>>>>> - Show specific fail log in svs_platform_probe() to help catch which step fails quickly
+> >>>>>> - Remove struct svs_bank member "pd_dev" because all subsys device's power domain has been merged into one node like above [3]
+> >>>>>>
+> >>>>>> Test in below environment:
+> >>>>>> SW: Integration Tree [4] + Thermal patch [5] + SVS v25 (this patchset)
+> >>>>>> HW: mt8183-Krane
+> >>>>>>
+> >>>>>> [4] https://protect2.fireeye.com/v1/url?k=847bae75-e5f0bb43-847a253a-000babff9b5d-0b6f42041b9dea1d&q=1&e=37a26c43-8564-4808-9701-dc76d1ebbb27&u=https%3A%2F%2Fgithub.com%2Fwens%2Flinux%2Fcommits%2Fmt8183-cpufreq-cci-svs-test
+> >>>>>
+> >>>>> I've updated my branch to include all the latest versions of the relevant
+> >>>>> patch series:
+> >>>>>
+> >>>>> - anx7625 DPI bus type series v2 (so the display works)
+> >>>>> - MT8183 thermal series v9 (this seems to have been overlooked by the
+> >>>>> maintainer)
+> >>>>> - MTK SVS driver series v25
+> >>>>> - devfreq: cpu based scaling support to passive governor series v5
+> >>>>> - MTK CCI devfreq series v4
+> >>>>> - MT8183 cpufreq series v7
+> >>>>> - Additional WIP patches for panfrost MTK devfreq
+> >>>>
+> >>>> Thanks for preparing an integration branch Chen-Yu.
+> >>>>
+> >>>> I'm testing this on mt8183-pumpkin with one patch to add the CCI
+> >>>> regulator[1], and the defconfig you posted in a previous rev of this
+> >>>> series, but the CCI driver still causes a fault on boot[2] on my
+> >>>> platform.
+> >>>>
+> >>>> I mentioned in earlier reviews that I think there's potentially a race
+> >>>> between CCI and SVS loading since they are co-dependent.  My hunch is
+> >>>> that this is still not being handled properly.
+> >>>
+> >>> Ah, actually it's crashing when I try to boot the platform with
+> >>> `maxcpus=4` on the cmdline (which I have to do because mt8183-pumpkin is
+> >>> unstable upstream with the 2nd cluster enabled.)
+>
+> This warning message is printed by 'WARN_ON(cpufreq_passive_unregister_notifier(devfreq))'
+> on devfreq passive governor.
+>
+> If the cpufreq drivers are not probed before of probing cci devfreq driver
+> with passive governor, passive governor shows this warning message.
+> Because passive governor with CPUFREQ_PARENT_DEV depends on the cpufreq driver
+> in order to get 'struct cpufreq_policy'[2].
+>
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/tree/drivers/devfreq/governor_passive.c?h=devfreq-testing#n339
+> [2] https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/tree/drivers/devfreq/governor_passive.c?h=devfreq-testing#n282
+>
+> But, as I knew, this message might not stop the kernel. Just show the warning
+> message and then return -EPROBE_DEFER error. It means that maybe try to
+> probe the cci devfreq driver on late time of kernel booting
+> and then will be working. But, I need the full kernel booting log
+> and the booting sequence of between cpufreq and cci devfreq driver.
 
-Above issue may happens as follows:
-	process1                        process2
-ext4_da_write_begin
-  ext4_da_reserve_space
-    ext4_es_insert_delayed_block[1/1]
-                                    ext4_da_write_begin
-				      ext4_es_insert_delayed_block[0/1]
-ext4_writepages
-  ****Delayed block allocation failed****
-  mpage_release_unused_pages
-    ext4_es_remove_extent[1/1]
-      ext4_da_release_space [reserved 0]
+Maybe just use a standard dev_warn() instead? WARN_ON causes all sorts
+of panicking in developers' minds. :p
 
-ext4_da_write_begin
-  ext4_es_scan_clu(inode, &ext4_es_is_delonly, lblk)
-   ->As there exist [0, 1] extent, so will return true
-                                   ext4_writepages
-				   ****Delayed block allocation failed****
-                                     mpage_release_unused_pages
-				       ext4_es_remove_extent[0/1]
-				         ext4_da_release_space [reserved 1]
-					   ei->i_reserved_data_blocks [1->0]
+> In order to fix your issue, could you share the full booting log?
+> And if possible, please explain the more detailed something about this.
 
-  ext4_es_insert_delayed_block[1/1]
+The shortened version is that on an 8 core system, with maxcpus=4,
+only the first four cores are booted and have cpufreq associated.
+I've not actually used this mechanism, so I don't really know what
+happens if the other cores are brought up later with hotplug. Is
+cpufreq expected to attach to them?
 
-ext4_writepages
-  ****Delayed block allocation failed****
-  mpage_release_unused_pages
-  ext4_es_remove_extent[1/1]
-   ext4_da_release_space [reserved 1]
-    ei->i_reserved_data_blocks[0, -1]
-    ->As ei->i_reserved_data_blocks already is zero but to_free is 1,
-    will trigger warning.
+Maybe Kevin can add some more details.
 
-To solve above issue, introduce i_clu_lock to protect insert delayed
-block and remove block under cluster delay allocate mode.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/ext4.h           |  3 +++
- fs/ext4/extents_status.c |  5 +++++
- fs/ext4/inode.c          | 11 +++++++++--
- fs/ext4/super.c          |  1 +
- 4 files changed, 18 insertions(+), 2 deletions(-)
+ChenYu
 
-diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
-index bcd3b9bf8069..47c88ac4d4a8 100644
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -1169,6 +1169,9 @@ struct ext4_inode_info {
- 	__u32 i_csum_seed;
- 
- 	kprojid_t i_projid;
-+
-+	/* Protect concurrent add cluster delayed block and remove block */
-+	struct mutex i_clu_lock;
- };
- 
- /*
-diff --git a/fs/ext4/extents_status.c b/fs/ext4/extents_status.c
-index 9a3a8996aacf..dd679014db98 100644
---- a/fs/ext4/extents_status.c
-+++ b/fs/ext4/extents_status.c
-@@ -1433,6 +1433,7 @@ static int __es_remove_extent(struct inode *inode, ext4_lblk_t lblk,
- int ext4_es_remove_extent(struct inode *inode, ext4_lblk_t lblk,
- 			  ext4_lblk_t len)
- {
-+	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
- 	ext4_lblk_t end;
- 	int err = 0;
- 	int reserved = 0;
-@@ -1455,9 +1456,13 @@ int ext4_es_remove_extent(struct inode *inode, ext4_lblk_t lblk,
- 	 * so that we are sure __es_shrink() is done with the inode before it
- 	 * is reclaimed.
- 	 */
-+	if (sbi->s_cluster_ratio != 1)
-+		mutex_lock(&EXT4_I(inode)->i_clu_lock);
- 	write_lock(&EXT4_I(inode)->i_es_lock);
- 	err = __es_remove_extent(inode, lblk, end, &reserved);
- 	write_unlock(&EXT4_I(inode)->i_es_lock);
-+	if (sbi->s_cluster_ratio != 1)
-+		mutex_unlock(&EXT4_I(inode)->i_clu_lock);
- 	ext4_es_print_tree(inode);
- 	ext4_da_release_space(inode, reserved);
- 	return err;
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 01c9e4f743ba..1109d77ad60b 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -1649,17 +1649,22 @@ static int ext4_insert_delayed_block(struct inode *inode, ext4_lblk_t lblk)
- 			goto errout;
- 		reserved = true;
- 	} else {   /* bigalloc */
-+		mutex_lock(&EXT4_I(inode)->i_clu_lock);
- 		if (!ext4_es_scan_clu(inode, &ext4_es_is_delonly, lblk)) {
- 			if (!ext4_es_scan_clu(inode,
- 					      &ext4_es_is_mapped, lblk)) {
- 				ret = ext4_clu_mapped(inode,
- 						      EXT4_B2C(sbi, lblk));
--				if (ret < 0)
-+				if (ret < 0) {
-+					mutex_unlock(&EXT4_I(inode)->i_clu_lock);
- 					goto errout;
-+				}
- 				if (ret == 0) {
- 					ret = ext4_da_reserve_space(inode);
--					if (ret != 0)   /* ENOSPC */
-+					if (ret != 0) {   /* ENOSPC */
-+						mutex_unlock(&EXT4_I(inode)->i_clu_lock);
- 						goto errout;
-+					}
- 					reserved = true;
- 				} else {
- 					allocated = true;
-@@ -1671,6 +1676,8 @@ static int ext4_insert_delayed_block(struct inode *inode, ext4_lblk_t lblk)
- 	}
- 
- 	ret = ext4_es_insert_delayed_block(inode, lblk, allocated);
-+	if (sbi->s_cluster_ratio != 1)
-+		mutex_unlock(&EXT4_I(inode)->i_clu_lock);
- 	if (ret && reserved)
- 		ext4_da_release_space(inode, 1);
- 
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index c5021ca0a28a..aa6f2a68bf41 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -1347,6 +1347,7 @@ static struct inode *ext4_alloc_inode(struct super_block *sb)
- 	INIT_WORK(&ei->i_rsv_conversion_work, ext4_end_io_rsv_work);
- 	ext4_fc_init_inode(&ei->vfs_inode);
- 	mutex_init(&ei->i_fc_lock);
-+	mutex_init(&ei->i_clu_lock);
- 	return &ei->vfs_inode;
- }
- 
--- 
-2.31.1
 
+> >>>
+> >>> The CCI driver should be a bit more robust about detecting
+> >>> available/online CPUs
+> >>
+> >> This all seems to be handled in the devfreq passive governor.
+> >
+> > Well, that's the initial crash.  But the SVS driver will also go through
+> > its svs_mt8183_banks[] array (including both big & little clusters) and
+> > try to init SVS, so presumably that will have some problems also if only
+> > one cluster is enabled.
+> >
+> >> And presumably we'd like to have CCI devfreq running even if just one
+> >> core was booted.
+> >
+> > Yes, I assume so also.
+> >
+> >> Added Chanwoo for more ideas.
+> >
+> > OK, thanks.
+> >
+> > Kevin
+>
+>
+> --
+> Best Regards,
+> Chanwoo Choi
+> Samsung Electronics
