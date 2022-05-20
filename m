@@ -2,114 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD469C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF48C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348909AbiETMAw (ORCPT
+        id S1348882AbiETMBX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
+        Fri, 20 May 2022 08:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348879AbiETMAo (ORCPT
+        with ESMTP id S1348989AbiETMBM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:00:44 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA84240A38;
-        Fri, 20 May 2022 05:00:40 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id a3so13815767ybg.5;
-        Fri, 20 May 2022 05:00:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SsuQwYfm5G6xrNGiS/dHpJ/FwoJ31MhACc8+V8rTgs4=;
-        b=QNjKLehntMGX87wICh6YufpfX4yIxbslpam/PjvE0Xqsw4x/7SguqhkrUfBzEP1n4V
-         ilJureFeTvKEVR9uUcEw39VUnCUlNIjkgBYYXqcnQ9k3ZNmwiEWk2DKRg8flJc7/X3BA
-         ftK3v+kWAg8AUIL5dT+olwc39P/fHaXiMLSKPD6yIYG1qE2IJugelGfjj9pfZ8Y8BxGS
-         bpsYdLHIm0VRROCIRwSjkl2d0CI4xsPYwdFTcyvFw0TRx1YKZjO1H0q3jyH55CIa4Q9c
-         gYbSYOf5HfR8q7KGz8AieiBQvWUkjZpGEfRwB9NX0APmg68uXrQY70xnb1tBe4PFggJu
-         E8Yg==
+        Fri, 20 May 2022 08:01:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F98ACE29
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:01:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653048068;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T1/te+4Y4ho6udDKU3FETTF4lh1tRvJCKy5k3ZgQWfQ=;
+        b=AL4dmpBKKemWZ4CDuUF9HuSS+UgSq4kmW6Ts+qYtIO+WokdSMQF6twv40EhNXRr2jbiTd2
+        20kII64PW5R0PbyqFBhrBKSxhJDRID9jASoeBfPePp4G+c2OmkmoqnO750WeaWZgHeWM9S
+        8x8zr6bvoQ2KuD4lX5yJFI7tr7/j1ec=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-489-rhRALjMXPIy48QzO1eRCQg-1; Fri, 20 May 2022 08:01:07 -0400
+X-MC-Unique: rhRALjMXPIy48QzO1eRCQg-1
+Received: by mail-pl1-f199.google.com with SMTP id p16-20020a170902e75000b00161d96620c4so2739265plf.14
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:01:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SsuQwYfm5G6xrNGiS/dHpJ/FwoJ31MhACc8+V8rTgs4=;
-        b=qPMlhcxmZyYupxUiseBRQgH7p3eiEdfFJlcd77udUHDMoClYnFwze5TbJXSWtGPb6Z
-         2nvwPLIOtWrfnn8reVhjQzri4/Q7bfgbwQnQSr/syNhOPxLvoFTbrQf7Z+3PWAdVIxTH
-         6B+DC+cmQYHUeZUhSJLJSUHTa59BLFdqgUbZg2Ouh3bllyLp6ZyMuRE9FL0RAPvoqJmJ
-         6jIAtXj1bNjIBgtwpooGDm867Ki0+fcDfbIR5f58DN3a4yEg2Vn2PWS3Wz3ZDAQntJKm
-         CV29eYigOCzjB3Ce6VxZRMp95ieCKN8oBH08IhxpDrpat2FfWaYmIUDZAB9GiwT8Nt+U
-         OGhQ==
-X-Gm-Message-State: AOAM531QpCnEQVK1eq3vKik5vRFLBLvbn9jGjvH8jwaacus6OF9mlOse
-        ijVKiwkgxyEwOj/oGnlpWdFsuPVxhXXqywBhKZ4=
-X-Google-Smtp-Source: ABdhPJwujyCk/43sRIvp26J8wkO6JVNTSR+PioHs1VjDwLcTBQGwCdzMjlSPwT7BjDW2IjsCeP9z3sYt2L4qkTFGzX8=
-X-Received: by 2002:a25:a222:0:b0:64a:edb4:cf02 with SMTP id
- b31-20020a25a222000000b0064aedb4cf02mr8875692ybi.615.1653048038443; Fri, 20
- May 2022 05:00:38 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=T1/te+4Y4ho6udDKU3FETTF4lh1tRvJCKy5k3ZgQWfQ=;
+        b=SdDS7OLKX+PB2jt+q0THcJv7V0GKeDmgiqTFeuUML6yBY2eBPHeAzvn2FfIMboCeS7
+         KCi9hfF+crwEUirjuTGRqZzlrHXva5AWOtyswbuAdGSD2puZLne++cflgyQAmuTborlh
+         bN+VjIQWvokddjTk+EgjXDIKHANqzv6OxXAD2d/Kd+bUnnCi6jotuXmZXdQh1CA/xFMZ
+         PkCG2khcdVVCYAdIp+lxY1HYvIv0Wb0MKzYE4u5brGxh8a0DjtbFRiJ8mw+rPfeAKfK1
+         GMG1eUJGLfaV3alFDK1N9D6p0Ati3I1zT0gLYuUCcuEFx1mQo33khJuWJpqIted7TaHQ
+         46sw==
+X-Gm-Message-State: AOAM532S8zSEtTfuKOrUywpTbJbrQ8jG6qVEfSBFZR9kt49fdBomEGaC
+        7EKdfARCXlEcqwFq8wBx7i1BQB3yavcXWzqGZu8uDiKGmO9m32toqx1FXkh2WUjyWm+0OsBI4SO
+        IO/jpkwZh9NbFxVm65SoSfMAgZQ4sViffxqKjG1aW
+X-Received: by 2002:a05:6a00:174a:b0:4fd:ac35:6731 with SMTP id j10-20020a056a00174a00b004fdac356731mr9599124pfc.71.1653048066249;
+        Fri, 20 May 2022 05:01:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyw8odYerMJXPa7j+8qH+HKggUd27IfpqiiBb6TBD0oWyj+epTj2Yq+QIkthft/bauWj3S2LYpOoYBUKf2zvHM=
+X-Received: by 2002:a05:6a00:174a:b0:4fd:ac35:6731 with SMTP id
+ j10-20020a056a00174a00b004fdac356731mr9599093pfc.71.1653048065938; Fri, 20
+ May 2022 05:01:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220520115714.47321-1-javier.abrego.lorente@gmail.com>
-In-Reply-To: <20220520115714.47321-1-javier.abrego.lorente@gmail.com>
-From:   Javier Abrego Lorente <javier.abrego.lorente@gmail.com>
-Date:   Fri, 20 May 2022 14:00:02 +0200
-Message-ID: <CAPsi6X+M11NttnV80dYhA=0t=ZGH1YR1ZGssEZvz+kN8RYTcbw@mail.gmail.com>
-Subject: Re: [PATCH] FS: nfs: removed goto statement
-To:     Javier Abrego <javier.abrego.lorente@gmail.com>
-Cc:     trond.myklebust@hammerspace.com, anna@kernel.org,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220518170118.66263-1-likexu@tencent.com>
+In-Reply-To: <20220518170118.66263-1-likexu@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Date:   Fri, 20 May 2022 14:00:54 +0200
+Message-ID: <CABgObfaNZqE+z5WA8VRPco9c_Swa15qyom7ieHGFRWzw39kU=g@mail.gmail.com>
+Subject: Re: [PATCH 1/3] KVM: x86/pmu: Move the vmx_icl_pebs_cpu[] definition
+ out of the header file
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
+        "Kernel Mailing List, Linux" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-final version, I promise.
+Queued all three, thanks.
 
-On Fri, 20 May 2022 at 13:57, Javier Abrego
-<javier.abrego.lorente@gmail.com> wrote:
+Paolo
+
+On Wed, May 18, 2022 at 7:01 PM Like Xu <like.xu.linux@gmail.com> wrote:
 >
-> In this function goto can be replaced. Avoiding goto will improve the
-> readability
+> From: Like Xu <likexu@tencent.com>
 >
-> Signed-off-by: Javier Abrego<javier.abrego.lorente@gmail.com>
+> Defining a static const array in a header file would introduce redundant
+> definitions to the point of confusing semantics, and such a use case woul=
+d
+> only bring complaints from the compiler:
+>
+> arch/x86/kvm/pmu.h:20:32: warning: =E2=80=98vmx_icl_pebs_cpu=E2=80=99 def=
+ined but not used [-Wunused-const-variable=3D]
+>    20 | static const struct x86_cpu_id vmx_icl_pebs_cpu[] =3D {
+>       |                                ^~~~~~~~~~~~~~~~
+>
+> Fixes: a095df2c5f48 ("KVM: x86/pmu: Adjust precise_ip to emulate Ice Lake=
+ guest PDIR counter")
+> Signed-off-by: Like Xu <likexu@tencent.com>
 > ---
->  fs/nfs/nfs42xattr.c | 24 +++++++++++-------------
->  1 file changed, 11 insertions(+), 13 deletions(-)
+>  arch/x86/kvm/pmu.c | 7 +++++++
+>  arch/x86/kvm/pmu.h | 8 --------
+>  2 files changed, 7 insertions(+), 8 deletions(-)
 >
-> diff --git a/fs/nfs/nfs42xattr.c b/fs/nfs/nfs42xattr.c
-> index e7b34f7e0..78130462c 100644
-> --- a/fs/nfs/nfs42xattr.c
-> +++ b/fs/nfs/nfs42xattr.c
-> @@ -747,20 +747,18 @@ void nfs4_xattr_cache_set_list(struct inode *inode, const char *buf,
->                 return;
+> diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+> index b5d0c36b869b..a2eaae85d97b 100644
+> --- a/arch/x86/kvm/pmu.c
+> +++ b/arch/x86/kvm/pmu.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/bsearch.h>
+>  #include <linux/sort.h>
+>  #include <asm/perf_event.h>
+> +#include <asm/cpu_device_id.h>
+>  #include "x86.h"
+>  #include "cpuid.h"
+>  #include "lapic.h"
+> @@ -27,6 +28,12 @@
+>  struct x86_pmu_capability __read_mostly kvm_pmu_cap;
+>  EXPORT_SYMBOL_GPL(kvm_pmu_cap);
 >
->         entry = nfs4_xattr_alloc_entry(NULL, buf, NULL, buflen);
-> -       if (entry == NULL)
-> -               goto out;
-> -
-> -       /*
-> -        * This is just there to be able to get to bucket->cache,
-> -        * which is obviously the same for all buckets, so just
-> -        * use bucket 0.
-> -        */
-> -       entry->bucket = &cache->buckets[0];
-> -
-> -       if (!nfs4_xattr_set_listcache(cache, entry))
-> -               kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
-> +       if (entry != NULL) {
-> +              /*
-> +               * This is just there to be able to get to bucket->cache,
-> +               * which is obviously the same for all buckets, so just
-> +               * use bucket 0.
-> +               */
-> +               entry->bucket = &cache->buckets[0];
+> +static const struct x86_cpu_id vmx_icl_pebs_cpu[] =3D {
+> +       X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_D, NULL),
+> +       X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_X, NULL),
+> +       {}
+> +};
 > +
-> +               if (!nfs4_xattr_set_listcache(cache, entry))
-> +                       kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
-> +       }
+>  /* NOTE:
+>   * - Each perf counter is defined as "struct kvm_pmc";
+>   * - There are two types of perf counters: general purpose (gp) and fixe=
+d.
+> diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
+> index dbf4c83519a4..ecf2962510e4 100644
+> --- a/arch/x86/kvm/pmu.h
+> +++ b/arch/x86/kvm/pmu.h
+> @@ -4,8 +4,6 @@
 >
-> -out:
->         kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
->  }
+>  #include <linux/nospec.h>
 >
+> -#include <asm/cpu_device_id.h>
+> -
+>  #define vcpu_to_pmu(vcpu) (&(vcpu)->arch.pmu)
+>  #define pmu_to_vcpu(pmu)  (container_of((pmu), struct kvm_vcpu, arch.pmu=
+))
+>  #define pmc_to_pmu(pmc)   (&(pmc)->vcpu->arch.pmu)
+> @@ -17,12 +15,6 @@
+>  #define VMWARE_BACKDOOR_PMC_REAL_TIME          0x10001
+>  #define VMWARE_BACKDOOR_PMC_APPARENT_TIME      0x10002
+>
+> -static const struct x86_cpu_id vmx_icl_pebs_cpu[] =3D {
+> -       X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_D, NULL),
+> -       X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_X, NULL),
+> -       {}
+> -};
+> -
+>  struct kvm_event_hw_type_mapping {
+>         u8 eventsel;
+>         u8 unit_mask;
 > --
-> 2.25.1
+> 2.36.1
 >
+
