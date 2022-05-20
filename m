@@ -2,117 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8190C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD90C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346720AbiETH5k (ORCPT
+        id S1346724AbiETH56 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        Fri, 20 May 2022 03:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346714AbiETH5d (ORCPT
+        with ESMTP id S1346726AbiETH5z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:57:33 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6829314CDC7
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:57:30 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id v8so11030820lfd.8
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:57:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LDOJGy883Whj2KPtZJS2ToqHv52wGZqpYAqQT+XUcgE=;
-        b=isUGeH7YJ9hSFqU+LajDXfZhlKfVb7CX45XzIRyUTr6nxi+RtAGNgqGbnlsEQhvwYj
-         DtZarkhGFwdzhP4U7a50sc89MgvxBhO8zNUt5YEZLuwaQ0rbV7tuhw9C3OHVafO+ZDPE
-         ibZL6Q24dpZhKvcW2XmyFRDEbJHcahhp/Xga8jIN54sHD4+Vk7luFlD2au3HrMJQz8Z2
-         7s5UjC357gY4A1NloCW8kQDC3228Q254aC/poWeNagQEYcyaCCOIcDzHwut3LSow/2Cc
-         AEp2zS8qrGbxkv0vEqfQriAoUknEGaCL+Xvtqsje2IVe+y2wtuZ4TmLz4ETDf4swtJ5j
-         o0xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LDOJGy883Whj2KPtZJS2ToqHv52wGZqpYAqQT+XUcgE=;
-        b=FD+zwbGzyGFQytvQRSVIu0qqcn7xyHQZSwrL3J7kfm4h3sOcYFKFCbxnFhv5gdqCf0
-         Y2RFL4Xr18oWQSuTeGv+qD3QpLAPiWDgUm9wFTD4vv9J3oL+fxG+9cleaFIQbs06VR6e
-         y7Sy3lTv0RfjpB2PC25oyAp0VRbDU061Ul2QSD3mEQKmLiFzKXfHJsEBdT/wDlRbY2sK
-         eVqWugBxLuP0wTJnKPi5rh5R/FXvj+dkgEHGSd0J24jAGBP4+WjPCVYB1fq/nskiFa8N
-         RaovgwCbmuTuw6x20XXdtjuO6MYCAzm3fh4cpYETv9m5/VgOewvEEP+9aEgrIBfgDMeI
-         ljag==
-X-Gm-Message-State: AOAM532wc11vGO0XOts7U6c1HFRLf265OvvDWXWUoHHGZ2BzZ2/cSEbC
-        5ssjiwx5e83ULvtlTKz8917NiA==
-X-Google-Smtp-Source: ABdhPJxwdWspWTlCev1Y+CnP3ttUl/Y734MOSgWU+vOZrJzIFaH1ePOp5e8j6NN5qbVKN4ceOqCbGQ==
-X-Received: by 2002:a05:6512:1319:b0:44a:c200:61e5 with SMTP id x25-20020a056512131900b0044ac20061e5mr6159427lfu.550.1653033448712;
-        Fri, 20 May 2022 00:57:28 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id j5-20020ac25505000000b004778c285166sm559287lfk.216.2022.05.20.00.57.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 00:57:28 -0700 (PDT)
-Message-ID: <0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org>
-Date:   Fri, 20 May 2022 09:57:26 +0200
+        Fri, 20 May 2022 03:57:55 -0400
+X-Greylist: delayed 1170 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 00:57:47 PDT
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437BF15D30C;
+        Fri, 20 May 2022 00:57:46 -0700 (PDT)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 66298820; Fri, 20 May 2022 09:57:45 +0200 (CEST)
+Date:   Fri, 20 May 2022 09:57:44 +0200
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     jgg@nvidia.com, will@kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, borntraeger@linux.ibm.com,
+        schnelle@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        farman@linux.ibm.com, iommu@lists.linux-foundation.org,
+        linux-s390@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/s390: tolerate repeat attach_dev calls
+Message-ID: <YodJ+OwxsP5PPO3V@8bytes.org>
+References: <20220519182929.581898-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 4/5] dt-bindings: net: Add documentation for optional
- regulators
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Corentin Labbe <clabbe@baylibre.com>, calvin.johnson@oss.nxp.com,
-        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
-References: <20220518200939.689308-1-clabbe@baylibre.com>
- <20220518200939.689308-5-clabbe@baylibre.com>
- <95f3f0a4-17e6-ec5f-6f2f-23a5a4993a44@linaro.org>
- <YoYqmAB3P7fNOSVG@sirena.org.uk>
- <c74b0524-60c6-c3af-e35f-13521ba2b02e@linaro.org> <YoYw2lKbgCiDXP0A@lunn.ch>
- <YoZm9eabWy/FNKu1@sirena.org.uk>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YoZm9eabWy/FNKu1@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519182929.581898-1-mjrosato@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/05/2022 17:49, Mark Brown wrote:
-> On Thu, May 19, 2022 at 01:58:18PM +0200, Andrew Lunn wrote:
->> On Thu, May 19, 2022 at 01:33:21PM +0200, Krzysztof Kozlowski wrote:
->>> On 19/05/2022 13:31, Mark Brown wrote:
->>>> On Thu, May 19, 2022 at 11:55:28AM +0200, Krzysztof Kozlowski wrote:
->>>>> On 18/05/2022 22:09, Corentin Labbe wrote:
+On Thu, May 19, 2022 at 02:29:29PM -0400, Matthew Rosato wrote:
+> Since commit 0286300e6045 ("iommu: iommu_group_claim_dma_owner() must
+> always assign a domain") s390-iommu will get called to allocate multiple
+> unmanaged iommu domains for a vfio-pci device -- however the current
+> s390-iommu logic tolerates only one.  Recognize that multiple domains can
+> be allocated and handle switching between DMA or different iommu domain
+> tables during attach_dev.
 > 
->>>>>> +  regulators:
->>>>>> +    description:
->>>>>> +       List of phandle to regulators needed for the PHY
-> 
->>>>> I don't understand that... is your PHY defining the regulators or using
->>>>> supplies? If it needs a regulator (as a supply), you need to document
->>>>> supplies, using existing bindings.
-> 
->>>> They're trying to have a generic driver which works with any random PHY
->>>> so the binding has no idea what supplies it might need.
-> 
->>> OK, that makes sense, but then question is why not using existing
->>> naming, so "supplies" and "supply-names"?
-> 
->> I'm not saying it is not possible, but in general, the names are not
->> interesting. All that is needed is that they are all on, or
->> potentially all off to save power on shutdown. We don't care how many
->> there are, or what order they are enabled.
-> 
-> I think Krzysztof is referring to the name of the property rather than
-> the contents of the -names property there.
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  drivers/iommu/s390-iommu.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
 
-Yes, exactly. Existing pattern for single regulator supply is
-"xxx-supply", so why this uses a bit different pattern instead of
-something more consistent ("supplies" and "supply-names")?
+Applied to the vfio-notifier-fix topic branch, thanks.
 
-Best regards,
-Krzysztof
