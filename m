@@ -2,102 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED586C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 350BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349190AbiETMk3 (ORCPT
+        id S1349452AbiETMlA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
+        Fri, 20 May 2022 08:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348138AbiETMkZ (ORCPT
+        with ESMTP id S242225AbiETMkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:40:25 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B054158949
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:40:23 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id w14so14047719lfl.13
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ESS8z0gPMrp8HIeiYMl+g1p08r+rLx+Me8BHX8Ar2TU=;
-        b=aFc0u3o5KrmNm5Q6tXwxKrAXg5dEA4bfQwQE2ltIXx+JW6M9Q0GwJOn/02cj8eXzj+
-         kNvi/KjggsBopr/czDNjPMu4E50A0QLVVIjorC7iqca4De+bQPb20N5VRdE4hoPLDCoC
-         A+ZbcwvGECMcfTrYkHrvIEd3pNZWbnLbJvt3qeykIlTyADIx9C6I4pRGmOym1qaE1qIZ
-         hloo3JdzCMVbV5J6kmNv3BRNZRepxVpuyctMfbX3STPepg9lM8T/wMQcZioM5Gls7uKj
-         hWDO8frhbJqPett7F4+/uGf5FPsagWH4K1NQfVrWUtbPtBOh5ohZfPnUBBAD2zLlcMFV
-         YyLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ESS8z0gPMrp8HIeiYMl+g1p08r+rLx+Me8BHX8Ar2TU=;
-        b=y5scOGA7xeGyhtQgmO88FCiNPlFzU4pbcDaVpsk/yHhN3yQE6rx4iXf+1gRYUX0VZg
-         afNtZtG/CzOfQNRcG7po2ksYGi6eLBDcgbUaOGdEUkelc23/OfG+qbox4HwIBtYw4951
-         NQE3zKhXUZft6ZmNJa99DVkFEMv+p4pawwLtp+aO4/XDVRjYRWPocR3QHWgd5xM/rcr/
-         50T6SwNPNMaig4my9nW8KK+fFH3GyIJ8rsoRKCOacnZFvTA/g5vgfS3nMoGu4FBuALFh
-         mAXu7UnV2G7DElRY3Hd9jwxqgleAkQGntvCKfk4fqitSIiw8S3q9zx8Ah3G2xi+FQKZG
-         PXlA==
-X-Gm-Message-State: AOAM530oIm77iRJVzDMnnMWXIp3jgWiBjV+hv7H+N3MVWE2ZaIgKMhsU
-        9vG6ZRf4X38A/rt8fwPWe3tZ6g==
-X-Google-Smtp-Source: ABdhPJwql+NjrHt8F4k/y365IWTQb7IIoDgwwLF1vRtJTRvgiv6JlgM5b4hVo25CLdEg1Qh3hepZLg==
-X-Received: by 2002:a05:6512:1315:b0:474:40c9:41a7 with SMTP id x21-20020a056512131500b0047440c941a7mr7008676lfu.319.1653050421835;
-        Fri, 20 May 2022 05:40:21 -0700 (PDT)
-Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id v5-20020a056512348500b004744d5f8f26sm650039lfr.52.2022.05.20.05.40.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 05:40:21 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: arm: qcom: switch maintainer to Bjorn
-Date:   Fri, 20 May 2022 14:40:18 +0200
-Message-Id: <20220520124018.367004-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Fri, 20 May 2022 08:40:51 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B9EF2;
+        Fri, 20 May 2022 05:40:45 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 39C0C1F462AB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653050443;
+        bh=1cI7pJdMnTRIrjJ1RulEP49MI5dUM/5mesdNO1GWVz4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L0tAkU63Gsv6F35bpHi7VC2t0gJZXQNisR3r2SkQXYnbYmOLl8m1uBpD+9P8Rn8Cg
+         QCK0OPu9l6rX7bmbRnLWsDp+WAOjlUg+eaKbfMG9xS37+4uTNfn9nDXkosP5wiPhQj
+         SOMb+swpYgtORdI3xg6n32hrank1MYBliryTbwtr1UtmKdp4on/oCL2ApOoo6cFTtc
+         XexakscSvOEYUUsLtsucBJAFmkDhp0bGlCtKOn6MdpYuBq4q3AVxcnxhtEy1eEoQUh
+         38r3B3+12vgkLpEwEJUNK1avcv24xDWYmxvT7Rx2uq4enQJAU8sLWEmicST2fvbMtc
+         boLckHEBkraRw==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     lee.jones@linaro.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
+        zhiyong.tao@mediatek.com, henryc.chen@mediatek.com,
+        johnson.wang@mediatek.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/7] soc: mediatek: pwrap: Move PMIC read test sequence in function
+Date:   Fri, 20 May 2022 14:40:33 +0200
+Message-Id: <20220520124039.228314-2-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220520124039.228314-1-angelogioacchino.delregno@collabora.com>
+References: <20220520124039.228314-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Emails to Stephen bounce since long time ("Recipient address rejected:
-undeliverable address: No such user here."), so change maintainer to
-Qualcomm platform maintainer.
+The PMIC read test is performed in two places: pwrap_init_dual_io()
+and pwrap_init_sidly().
+In preparation for adding support for PMICs requiring a companion
+part, move this sequence to a new function pwrap_pmic_read_test().
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
+ drivers/soc/mediatek/mtk-pmic-wrap.c | 32 +++++++++++++++++-----------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
-Although Stephen uses his @kernel.org account but the address is still
-not updated, so I guess these files are abandoned. Otherwise if they are
-not abandoned, please update the email address.
-
-It would be nice if folks from CodeAurora updated their addresses,
-because these bounces happen since some time and are annoying.
----
- Documentation/devicetree/bindings/arm/qcom.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 25ae8a850be1..d137fe371935 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: QCOM device tree bindings
+diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
+index d8cb0f833645..d0c79ee4c56b 100644
+--- a/drivers/soc/mediatek/mtk-pmic-wrap.c
++++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
+@@ -1390,6 +1390,18 @@ static int pwrap_regmap_write(void *context, u32 adr, u32 wdata)
+ 	return pwrap_write(context, adr, wdata);
+ }
  
- maintainers:
--  - Stephen Boyd <sboyd@codeaurora.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
++static bool pwrap_pmic_read_test(struct pmic_wrapper *wrp, const u32 *dew_regs,
++				 u16 read_test_val)
++{
++	bool is_success;
++	u32 rdata;
++
++	pwrap_read(wrp, dew_regs[PWRAP_DEW_READ_TEST], &rdata);
++	is_success = ((rdata & U16_MAX) == read_test_val);
++
++	return is_success;
++}
++
+ static int pwrap_reset_spislave(struct pmic_wrapper *wrp)
+ {
+ 	bool tmp;
+@@ -1433,18 +1445,18 @@ static int pwrap_reset_spislave(struct pmic_wrapper *wrp)
+  */
+ static int pwrap_init_sidly(struct pmic_wrapper *wrp)
+ {
+-	u32 rdata;
+ 	u32 i;
+ 	u32 pass = 0;
++	bool read_ok;
+ 	signed char dly[16] = {
+ 		-1, 0, 1, 0, 2, -1, 1, 1, 3, -1, -1, -1, 3, -1, 2, 1
+ 	};
  
- description: |
-   Some qcom based bootloaders identify the dtb blob based on a set of
+ 	for (i = 0; i < 4; i++) {
+ 		pwrap_writel(wrp, i, PWRAP_SIDLY);
+-		pwrap_read(wrp, wrp->slave->dew_regs[PWRAP_DEW_READ_TEST],
+-			   &rdata);
+-		if (rdata == PWRAP_DEW_READ_TEST_VAL) {
++		read_ok = pwrap_pmic_read_test(wrp, wrp->slave->dew_regs,
++					       PWRAP_DEW_READ_TEST_VAL);
++		if (read_ok) {
+ 			dev_dbg(wrp->dev, "[Read Test] pass, SIDLY=%x\n", i);
+ 			pass |= 1 << i;
+ 		}
+@@ -1464,8 +1476,7 @@ static int pwrap_init_sidly(struct pmic_wrapper *wrp)
+ static int pwrap_init_dual_io(struct pmic_wrapper *wrp)
+ {
+ 	int ret;
+-	bool tmp;
+-	u32 rdata;
++	bool read_ok, tmp;
+ 
+ 	/* Enable dual IO mode */
+ 	pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_DIO_EN], 1);
+@@ -1481,12 +1492,9 @@ static int pwrap_init_dual_io(struct pmic_wrapper *wrp)
+ 	pwrap_writel(wrp, 1, PWRAP_DIO_EN);
+ 
+ 	/* Read Test */
+-	pwrap_read(wrp,
+-		   wrp->slave->dew_regs[PWRAP_DEW_READ_TEST], &rdata);
+-	if (rdata != PWRAP_DEW_READ_TEST_VAL) {
+-		dev_err(wrp->dev,
+-			"Read failed on DIO mode: 0x%04x!=0x%04x\n",
+-			PWRAP_DEW_READ_TEST_VAL, rdata);
++	read_ok = pwrap_pmic_read_test(wrp, wrp->slave->dew_regs, PWRAP_DEW_READ_TEST_VAL);
++	if (!read_ok) {
++		dev_err(wrp->dev, "Read failed on DIO mode.\n");
+ 		return -EFAULT;
+ 	}
+ 
 -- 
-2.32.0
+2.35.1
 
