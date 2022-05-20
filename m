@@ -2,153 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42EE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18057C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346403AbiETHXP (ORCPT
+        id S1346391AbiETHYR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
+        Fri, 20 May 2022 03:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346348AbiETHXE (ORCPT
+        with ESMTP id S237685AbiETHYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:23:04 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9213514ACB9;
-        Fri, 20 May 2022 00:23:02 -0700 (PDT)
-Received: from kwepemi100016.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L4J800KcXzhYR4;
-        Fri, 20 May 2022 15:22:08 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100016.china.huawei.com (7.221.188.123) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 20 May 2022 15:23:00 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 20 May 2022 15:22:58 +0800
-From:   Peng Liu <liupeng256@huawei.com>
-To:     <bhelgaas@google.com>, <tglx@linutronix.de>, <mingo@redhat.com>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, <lorenzo.pieralisi@arm.com>,
-        <guohanjun@huawei.com>, <sudeep.holla@arm.com>,
-        <rafael@kernel.org>, <lenb@kernel.org>,
-        <akpm@linux-foundation.org>, <logang@deltatee.com>,
-        <martin.oliveira@eideticom.com>, <thunder.leizhen@huawei.com>,
-        <axboe@kernel.dk>, <kch@nvidia.com>, <ming.lei@redhat.com>,
-        <shinichiro.kawasaki@wdc.com>, <mcgrof@kernel.org>,
-        <jiangguoqing@kylinos.cn>, <jpittman@redhat.com>,
-        <dave@stgolabs.net>, <liupeng256@huawei.com>,
-        <wangkefeng.wang@huawei.com>, <linux-block@vger.kernel.org>,
-        <linux-ia64@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-mm@kvack.org>
-Subject: [PATCH v2 2/2] null_blk: fix wrong use of nr_online_nodes
-Date:   Fri, 20 May 2022 07:37:47 +0000
-Message-ID: <20220520073747.1184091-3-liupeng256@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220520073747.1184091-1-liupeng256@huawei.com>
-References: <20220520073747.1184091-1-liupeng256@huawei.com>
+        Fri, 20 May 2022 03:24:11 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41DF14ACB9
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:24:09 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id m6so8731252ljb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:24:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qdKh+N5pd3RacKLxyxnq7jBphDna5YoiYMrg0p2wipA=;
+        b=5jgKeLMV735gNvNQvBxyWcKxrinA/LTQb+b782a1NT6dU8Hb8SwexSfGf3rr6Urfg/
+         A4ulspIJhZ3yOgPJZd+EKgl0kpahqXgFG9HCgN1Wc8GjBaWrXg58cC/HpNBxipLfUVmm
+         C4fRFmODcna91lSjcUnQol9cuES8Sfnijsv9sdrHJicrrtFayez6dTiUhjC7pthBoeHx
+         YzHcD5rk+a4JszXIOzAp2/GDY88BpXCM9JJQ5708wwNf3+X8K7fuOM1ykSdVtKAi/wEY
+         AAcr0ZK59rSxCEkQPd0o2XuJ8TO5oJrKJjaWcEdEDp+nfQDK0PNHPwv3MkelltsubHI0
+         Rj8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qdKh+N5pd3RacKLxyxnq7jBphDna5YoiYMrg0p2wipA=;
+        b=63fiKJDWXDo46xGJYusB0QuEZrNmeO1iaXYTTVKLz9j10afXrPUsJCKsQryfRF2iT8
+         XEKpa7vpGshsZ1yatjFGrG8oGXcAUrCZmWqL9EoPN2sI3uOLoF5zgJQfRoebRSD79dAR
+         BMrB2fHQOyfrpu04gY3pBbwXbc2tQE9oGRm+zqu859cRncXc7EQDY5H1Brraf9jvPNR1
+         ygX+F2to+VlKQiRJTEm0zfl01xb2AXAAdCQY1xba8DE9BGUpW8MtbYSfwFuH/qray0hs
+         /UM1zKpX8LTBrRQ3qpSIfbRjfKXwWsEx2mMZ4kkik6I25eXF+hI635XiiWzbvGNkhyNZ
+         Nfmw==
+X-Gm-Message-State: AOAM532s9s0TD1lyknPeEqAj44ZQl/SVG2bqFCO6Dj9n0aB1Zlq8NeO4
+        qhRSxx2tyXGyMMpF423D5cNpsA==
+X-Google-Smtp-Source: ABdhPJy3pZrIblijGkkmbsPnHlT6LOpwgAE+0dEz6mmF+y0dU0RP9kZq360DQ/TaMoF+DperxoWqgA==
+X-Received: by 2002:a2e:a88b:0:b0:24b:5714:213d with SMTP id m11-20020a2ea88b000000b0024b5714213dmr4795246ljq.412.1653031448051;
+        Fri, 20 May 2022 00:24:08 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.185])
+        by smtp.gmail.com with ESMTPSA id n3-20020ac242c3000000b0047255d211e8sm550736lfl.279.2022.05.20.00.24.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 00:24:07 -0700 (PDT)
+Message-ID: <740dfcb1-5c5f-6a40-0f71-65f277f976d6@openvz.org>
+Date:   Fri, 20 May 2022 10:24:06 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 3/4] memcg: enable accounting for struct cgroup
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org
+References: <Ynv7+VG+T2y9rpdk@carbon>
+ <a17be77f-dc3b-d69a-16e2-f7309959c525@openvz.org>
+ <20220519165325.GA2434@blackbody.suse.cz>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <20220519165325.GA2434@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Certain systems are designed to have sparse/discontiguous nodes,
-a valid node may be greater than nr_online_nodes. So, the use of
-"nid >= nr_online_nodes" to judge if a node is online is wrong.
+On 5/19/22 19:53, Michal Koutný wrote:
+> On Fri, May 13, 2022 at 06:52:12PM +0300, Vasily Averin <vvs@openvz.org> wrote:
+>> Creating each new cgroup allocates 4Kb for struct cgroup. This is the
+>> largest memory allocation in this scenario and is epecially important
+>> for small VMs with 1-2 CPUs.
+> 
+> What do you mean by this argument?
+> 
+> (On bigger irons, the percpu components becomes dominant, e.g. struct
+> cgroup_rstat_cpu.)
 
-Node id is a basic parameter of the system, a user-configured node
-must be checked as early as possible. Otherwise, it may cause panic
-when calling some vulnerable functions such as node_online which
-will cause panic if a very big node is received.
+Michal, Shakeel,
+thank you very much for your feedback, it helps me understand how to improve
+the methodology of my accounting analyze.
+I considered the general case and looked for places of maximum memory allocations.
+Now I think it would be better to split all called allocations into:
+- common part, called for any cgroup type (i.e. cgroup_mkdir and cgroup_create),
+- per-cgroup parts,
+and focus on 2 corner cases: for single CPU VMs and for "big irons".
+It helps to clarify which allocations are accounting-important and which ones
+can be safely ignored.
 
-Check g_home_node once users config it, and use node_available to
-make node-checking compatible with sparse/discontiguous nodes.
+So right now I'm going to redo the calculations and hope it doesn't take long.
 
-Fixes: 7ff684a683d7 ("null_blk: prevent crash from bad home_node value")
-Signed-off-by: Peng Liu <liupeng256@huawei.com>
-Suggested-by: Davidlohr Bueso <dave@stgolabs.net>
----
- drivers/block/null_blk/main.c | 45 ++++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/block/null_blk/main.c b/drivers/block/null_blk/main.c
-index c441a4972064..312903f3a09e 100644
---- a/drivers/block/null_blk/main.c
-+++ b/drivers/block/null_blk/main.c
-@@ -97,7 +97,33 @@ module_param_named(poll_queues, g_poll_queues, int, 0444);
- MODULE_PARM_DESC(poll_queues, "Number of IOPOLL submission queues");
- 
- static int g_home_node = NUMA_NO_NODE;
--module_param_named(home_node, g_home_node, int, 0444);
-+
-+static int null_param_store_val(const char *str, int *val, int min, int max)
-+{
-+	int ret, new_val;
-+
-+	ret = kstrtoint(str, 10, &new_val);
-+	if (ret)
-+		return -EINVAL;
-+
-+	if (new_val < min || new_val > max)
-+		return -EINVAL;
-+
-+	*val = new_val;
-+	return 0;
-+}
-+
-+static int null_set_home_node(const char *str, const struct kernel_param *kp)
-+{
-+	return null_param_store_val(str, &g_home_node, 0, MAX_NUMNODES - 1);
-+}
-+
-+static const struct kernel_param_ops null_home_node_param_ops = {
-+	.set	= null_set_home_node,
-+	.get	= param_get_int,
-+};
-+
-+device_param_cb(home_node, &null_home_node_param_ops, &g_home_node, 0444);
- MODULE_PARM_DESC(home_node, "Home node for the device");
- 
- #ifdef CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION
-@@ -120,21 +146,6 @@ MODULE_PARM_DESC(init_hctx, "Fault injection to fail hctx init. init_hctx=<inter
- 
- static int g_queue_mode = NULL_Q_MQ;
- 
--static int null_param_store_val(const char *str, int *val, int min, int max)
--{
--	int ret, new_val;
--
--	ret = kstrtoint(str, 10, &new_val);
--	if (ret)
--		return -EINVAL;
--
--	if (new_val < min || new_val > max)
--		return -EINVAL;
--
--	*val = new_val;
--	return 0;
--}
--
- static int null_set_queue_mode(const char *str, const struct kernel_param *kp)
- {
- 	return null_param_store_val(str, &g_queue_mode, NULL_Q_BIO, NULL_Q_MQ);
-@@ -2107,7 +2118,7 @@ static int __init null_init(void)
- 		g_max_sectors = BLK_DEF_MAX_SECTORS;
- 	}
- 
--	if (g_home_node != NUMA_NO_NODE && g_home_node >= nr_online_nodes) {
-+	if (!node_available(g_home_node)) {
- 		pr_err("invalid home_node value\n");
- 		g_home_node = NUMA_NO_NODE;
- 	}
--- 
-2.25.1
-
+Thank you,
+	Vasily Averin
