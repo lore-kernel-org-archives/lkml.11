@@ -2,237 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43801C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C729CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345065AbiETDLo (ORCPT
+        id S1345075AbiETDMM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 23:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
+        Thu, 19 May 2022 23:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345045AbiETDK6 (ORCPT
+        with ESMTP id S1345057AbiETDMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 23:10:58 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2050.outbound.protection.outlook.com [40.107.237.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30112AE16;
-        Thu, 19 May 2022 20:10:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cZxd3hjzavVvOmzyAsVNHjFoBKtTdkp/hz5glS872NCMjmS5VlW8RLygB/amwmtOJZ0c6B3rr3OZVu87kmPaLfjUeq0ZymhEohFQQ2lCf8fWl735ZeVftlAjIkGlDYXnXJ5X85h0qJRIKjLWs8/qBv+LXaMZB1eS0gXyKd0f5lWFY6kyDYTWe2gp2wrWNSznIe6l8PjaIxpzo01FXq5xOgNfauB0+a8o/WYimAl9n30K69Y9tKTWfYSvviiKibz9KkrEGKT4+KthS/Ko9mmgLJ0AbdN0YsJeJIvn6mWaWqK6aiQ1eVm6VAdlx8mnc5wRhioSNrFqmPsMv1BFzDSnMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xc58ztUwCnc1VC1kseQvYguAJCiZ49N+ypQU7gUzRyk=;
- b=jj3O/McZxxGSjqeAC6T63tOl6hjwqwqSX8HzGAniDbaofRN0OLyhFb9q6zjmmK4HB4R8hFAa0AS4RucS1onb5UJFDDdvkQzOCCoCSbbYkkK/mbEMGU7YuQL+MhCItMXyS42JYrRgWtO9EI0rF9sVji144x+IqTRBvemeR/wLb7bDKjvui1NcKiqxGP6JmShdweU4j7plFB/7nlWyGzRFV/GuNjfrLwuOhK6yoBobtqXz9sLUcPAYSeM02Hj5thZqrTuFKslMVUVpXfj4UPJkz3oNl3E8wu6QxruoRdyiRMSYxQJ0V6nqtdb5MMihYPMzjdwnAox778uZXdlUlq6AXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=linaro.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xc58ztUwCnc1VC1kseQvYguAJCiZ49N+ypQU7gUzRyk=;
- b=DR+Qxj1T+qDwnrczVbNLsePx0z2xPK7Kur67gRr8r07gtrAH38cunSVdVJblgo6GG9RbJdntEUGcu+FJWItYn++CL+dFm5FkYr8d/AACVHGcl9dJ7K7iV/q5sM26UzI2K9Krs9wAlOpakGqA7kVc7OiOkWI9iGyCjc4tE6XD124=
-Received: from SN7PR18CA0022.namprd18.prod.outlook.com (2603:10b6:806:f3::21)
- by PH7PR02MB8955.namprd02.prod.outlook.com (2603:10b6:510:1f9::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Fri, 20 May
- 2022 03:10:54 +0000
-Received: from SN1NAM02FT0010.eop-nam02.prod.protection.outlook.com
- (2603:10b6:806:f3:cafe::4d) by SN7PR18CA0022.outlook.office365.com
- (2603:10b6:806:f3::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17 via Frontend
- Transport; Fri, 20 May 2022 03:10:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0010.mail.protection.outlook.com (10.97.4.76) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5273.14 via Frontend Transport; Fri, 20 May 2022 03:10:54 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+        Thu, 19 May 2022 23:12:06 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBFA149DBC;
+        Thu, 19 May 2022 20:12:03 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L4BTh4nw1zCspc;
+        Fri, 20 May 2022 11:07:04 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500015.china.huawei.com (7.221.188.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 19 May 2022 20:10:46 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 19 May 2022 20:10:46 -0700
-Envelope-to: mathieu.poirier@linaro.org,
- bjorn.andersson@linaro.org,
- robh+dt@kernel.org,
- krzk+dt@kernel.org,
- linux-remoteproc@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-Received: from [10.23.120.20] (port=64934)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <tanmay.shah@xilinx.com>)
-        id 1nrt2L-0008zb-TB; Thu, 19 May 2022 20:10:46 -0700
-Message-ID: <b4bef7c4-7f12-1cdb-c2f0-a248c125b9b4@xilinx.com>
-Date:   Thu, 19 May 2022 20:10:44 -0700
+ 15.1.2375.24; Fri, 20 May 2022 11:12:01 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 20 May
+ 2022 11:12:00 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <ming.lei@redhat.com>, <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH -next v2] blk-mq: fix panic during blk_mq_run_work_fn()
+Date:   Fri, 20 May 2022 11:25:42 +0800
+Message-ID: <20220520032542.3331610-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-From:   <tanmay.shah@xilinx.com>
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>, <michal.simek@xilinx.com>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v5 0/6] Add Xilinx RPU subsystem support
-References: <20220518194426.3784095-1-tanmay.shah@xilinx.com>
- <CANLsYkw9HuLso9bGL4fM7C9qH+basgKA9yKFwms4WB4OUHqymQ@mail.gmail.com>
-In-Reply-To: <CANLsYkw9HuLso9bGL4fM7C9qH+basgKA9yKFwms4WB4OUHqymQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6ad0fb10-2d05-4821-e22e-08da3a0e5a3d
-X-MS-TrafficTypeDiagnostic: PH7PR02MB8955:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR02MB8955E8E576CEB5DAFB5FC252CAD39@PH7PR02MB8955.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: N2MvgR4B455eGkuzPFdFONBq+ml3qFy1tLG74J/qi5GIMuonxgGMZdX4a1P2pO99X3IX2CeoKfuYHWkOpasBqcuNXLERa20UogP3PWw0Pjz/QtJaOrBlTib6FqqqvC7Cx1S2HEle/3YK7Tg09JRTt5hz5Aeq2ktdMv5aY53v7utlfK3LI+A35EE/bzRpWYheHAWPbABiYrPxN+o6+nD1n34YGVX9GE3slBQ5sOpJxxHpZPdwkJwCiXpfRx2R6oJKsITJVxvOpwa68LSTQu/DiXodpQIg+nAy7j2Dh6ZZV4P3oSkUdvYRBPOMRQaeXy/Qoa/SpeL+g3Oi3S22xuC+gBW2MbGqWzsVnNHDEEkYXO9/3QPjnktgi3Z7Fgmz7+opshBBpa5Dl+hm2kEKORKthKBLdHLsBSW1ajcGnHca3ixkLnYeCFp7Ffm6hplSaBXJYQWX5XOcNSyhQXbQvUy9XlRrz4k3QS4QvkZ5ZaLCZJzInomO+nWW9CxBn260IOmmhc0BqZNmI9r788tW+oQJrN8yNhx9z6WKoIiCIR/ckFpJwDA++nSkQaor7gpO94NZ6qKyIsyWTQIm3hRjrblUoWrYQYjVOGbMkd0dD/PcdgP5IDmWT5osJpa+fwelhu1Nlx/hE2ydqUwA4rEFWr+VguiBkAhoSZrPi4uu73y7FGx/VI7h8II+eEbzB8S7xDxXJiAkHGD7xqkcKa2O6a7xpJtlwb0/ZmuMfe1wHicFBV6rgNuBRhmDg2uWXCh1QLXp
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(186003)(53546011)(336012)(82310400005)(356005)(110136005)(426003)(47076005)(36756003)(8936002)(9786002)(2876002)(31696002)(2616005)(8676002)(5660300002)(70586007)(83380400001)(26005)(2906002)(31686004)(316002)(508600001)(36860700001)(70206006)(40460700003)(7636003)(50156003)(43740500002)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2022 03:10:54.3523
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ad0fb10-2d05-4821-e22e-08da3a0e5a3d
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0010.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR02MB8955
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Our test report a following crash:
 
+BUG: kernel NULL pointer dereference, address: 0000000000000018
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP NOPTI
+CPU: 6 PID: 265 Comm: kworker/6:1H Kdump: loaded Tainted: G           O      5.10.0-60.17.0.h43.eulerosv2r11.x86_64 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58-20220320_160524-szxrtosci10000 04/01/2014
+Workqueue: kblockd blk_mq_run_work_fn
+RIP: 0010:blk_mq_delay_run_hw_queues+0xb6/0xe0
+RSP: 0018:ffffacc6803d3d88 EFLAGS: 00010246
+RAX: 0000000000000006 RBX: ffff99e2c3d25008 RCX: 00000000ffffffff
+RDX: 0000000000000000 RSI: 0000000000000003 RDI: ffff99e2c911ae18
+RBP: ffffacc6803d3dd8 R08: 0000000000000000 R09: ffff99e2c0901f6c
+R10: 0000000000000018 R11: 0000000000000018 R12: ffff99e2c911ae18
+R13: 0000000000000000 R14: 0000000000000003 R15: ffff99e2c911ae18
+FS:  0000000000000000(0000) GS:ffff99e6bbf00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000018 CR3: 000000007460a006 CR4: 00000000003706e0
+Call Trace:
+ __blk_mq_do_dispatch_sched+0x2a7/0x2c0
+ ? newidle_balance+0x23e/0x2f0
+ __blk_mq_sched_dispatch_requests+0x13f/0x190
+ blk_mq_sched_dispatch_requests+0x30/0x60
+ __blk_mq_run_hw_queue+0x47/0xd0
+ process_one_work+0x1b0/0x350
+ worker_thread+0x49/0x300
+ ? rescuer_thread+0x3a0/0x3a0
+ kthread+0xfe/0x140
+ ? kthread_park+0x90/0x90
+ ret_from_fork+0x22/0x30
 
-On 5/19/22 3:19 AM, Mathieu Poirier <mathieu.poirier@linaro.org> wrote:
-> Hi Tanmay,
-> 
-> I have replaced the previous version of this set with this one in my
-> queue.  That way you don't go back to the bottom.
-> 
+After digging from vmcore, I found that the queue is cleaned
+up(blk_cleanup_queue() is done) and tag set is
+freed(blk_mq_free_tag_set() is done).
 
-Thanks Mathieu. Sure it will help.
+There are two problems here:
 
-> Thanks,
-> Mathieu.
-> 
-> On Wed, 18 May 2022 at 20:46, Tanmay Shah <tanmay.shah@xilinx.com> wrote:
-> >
-> > This patch series adds bindings document for RPU subsystem found on Xilinx
-> > ZynqMP platforms. It also adds device nodes and driver to enable RPU
-> > subsystem in split mode and lockstep mode.
-> >
-> > Xilinx ZynqMP platform contains Remote Processing Unit(RPU). RPU subsystem
-> > contains two arm cortex r5f cores. RPU subsystem can be configured in
-> > split mode, lockstep mode and single-cpu mode.
-> >
-> > RPU subsystem also contains 4 Tightly Coupled Memory(TCM) banks.
-> > In lockstep mode, all 4 banks are combined and total of 256KB memory is
-> > made available to r5 core0. In split mode, both cores can access two
-> > TCM banks i.e. 128 KB.
-> >
-> > RPU can also fetch data and execute instructions from DDR memory along with
-> > TCM memory.
-> > ---
-> >
-> > Changes in v5:
-> >    - Add constraints of the possible values of xlnx,cluster-mode property
-> >    - fix description of power-domains property for r5 core
-> >    - Remove reg, address-cells and size-cells properties as it is not required
-> >    - Fix description of mboxes property
-> >    - Add description of each memory-region and remove old .txt binding link
-> >      reference in the description
-> >    - Remove optional reg property from r5fss node
-> >    - Move r5fss node out of axi node
-> >
-> > Changes in v4:
-> >    - Add memory-region, mboxes and mbox-names properties in dt-bindings example
-> >    - Add reserved memory region node and use it in Xilinx dt RPU subsystem node
-> >    - Remove redundant header files
-> >    - use dev_err_probe() to report errors during probe
-> >    - Fix missing check on error code returned by zynqmp_r5_add_rproc_core()
-> >    - Fix memory leaks all over the driver when resource allocation fails for any core
-> >    - make cluster mode check only at one place
-> >    - remove redundant initialization of variable
-> >    - remove redundant use of of_node_put()
-> >    - Fix Comment format problem
-> >    - Assign offset of zynqmp_tcm_banks instead of duplicating it
-> >    - Add tcm and memory regions rproc carveouts during prepare instead of parse_fw
-> >    - Remove rproc_mem_entry object from r5_core
-> >    - Use put_device() and rproc_del() APIs to fix memory leaks
-> >    - Replace pr_* with dev_*. This was missed in v3, fix now.
-> >    - Use "GPL" instead of "GPL v2" in MODULE_LICENSE macro. This was reported by checkpatch script.
-> >
-> > Changes in v3:
-> >    - Fix checkpatch script indentation warning
-> >    - Remove unused variable from xilinx remoteproc driver
-> >    - use C style comments, i.e /*...*/
-> >    - Remove redundant debug information which can be derived using /proc/device-tree
-> >    - Fix multiline comment format
-> >    - s/"final fot TCM"/"final for TCM"
-> >    - Function devm_kzalloc() does not return an code on error, just NULL.
-> >      Remove redundant error check for this function throughout the driver.
-> >    - Fix RPU mode configuration and add documentation accordingly
-> >    - Get rid of the indentations to match function documentation style with rest of the driver
-> >    - Fix memory leak by only using r5_rproc->priv and not replace it with new instance
-> >    - Use 'i' for the outer loop and 'j' for the inner one as per convention
-> >    - Remove redundant error and NULL checks throughout the driver
-> >    - Use devm_kcalloc() when more than one element is required
-> >    - Add memory-regions carveouts during driver probe instead of parse_fw call
-> >      This removes redundant copy of reserved_mem object in r5_core structure.
-> >    - Fix memory leak by using of_node_put()
-> >    - Fix indentation of tcm_mem_map function args
-> >    - Remove redundant init of variables
-> >    - Initialize tcm bank size variable for lockstep mode
-> >    - Replace u32 with phys_addr_t for variable stroing memory bank address
-> >    - Add documentation of TCM behavior in lockstep mode
-> >    - Use dev_get_drvdata instead of platform driver API
-> >    - Remove info level messages
-> >    - Fix checkpatch.pl warnings
-> >    - Add documentation for the Xilinx r5f platform to understand driver design
-> >
-> > Changes in v2:
-> >    - Remove proprietary copyright footer from cover letter
-> >
-> >
-> > Ben Levinsky (3):
-> >    firmware: xilinx: Add ZynqMP firmware ioctl enums for RPU
-> >      configuration.
-> >    firmware: xilinx: Add shutdown/wakeup APIs
-> >    firmware: xilinx: Add RPU configuration APIs
-> >
-> > Tanmay Shah (3):
-> >    dt-bindings: remoteproc: Add Xilinx RPU subsystem bindings
-> >    arm64: dts: xilinx: zynqmp: Add RPU subsystem device node
-> >    drivers: remoteproc: Add Xilinx r5 remoteproc driver
-> >
-> >   .../bindings/remoteproc/xlnx,r5f-rproc.yaml   |  128 ++
-> >   arch/arm64/boot/dts/xilinx/zynqmp.dtsi        |   33 +
-> >   drivers/firmware/xilinx/zynqmp.c              |   97 ++
-> >   drivers/remoteproc/Kconfig                    |   12 +
-> >   drivers/remoteproc/Makefile                   |    1 +
-> >   drivers/remoteproc/xlnx_r5_remoteproc.c       | 1045 +++++++++++++++++
-> >   include/dt-bindings/power/xlnx-zynqmp-power.h |    6 +
-> >   include/linux/firmware/xlnx-zynqmp.h          |   60 +
-> >   8 files changed, 1382 insertions(+)
-> >   create mode 100644 Documentation/devicetree/bindings/remoteproc/xlnx,r5f-rproc.yaml
-> >   create mode 100644 drivers/remoteproc/xlnx_r5_remoteproc.c
-> >
-> >
-> > base-commit: 01a1a0c8d456b11f2f6b9b822414481beaa44d6f
-> > --
-> > 2.25.1
-> >
-> 
+1) blk_mq_delay_run_hw_queues() will only be called from
+__blk_mq_do_dispatch_sched() if e->type->ops.has_work() return true.
+This seems impossible because blk_cleanup_queue() is done, and there
+should be no io. Commit ddc25c86b466 ("block, bfq: make bfq_has_work()
+more accurate") fix the problem in bfq. And currently ohter schedulers
+don't have such problem.
+
+2) 'hctx->run_work' still exists after blk_cleanup_queue().
+blk_mq_cancel_work_sync() is called from blk_cleanup_queue() to cancel
+all the 'run_work'. However, there is no guarantee that new 'run_work'
+won't be queued after that(and before blk_mq_exit_queue() is done).
+
+The first problem is not the root cause, it will only increase the
+probability of the second problem. this patch fix the second problem by
+checking the 'QUEUE_FLAG_DEAD' before queuing 'hctx->run_work', and
+using 'queue_lock' to synchronize queuing new work and cacelling the
+old work.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-core.c |  3 +++
+ block/blk-mq.c   | 10 ++++++++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/block/blk-core.c b/block/blk-core.c
+index 80fa73c419a9..f3e36d8143ec 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -314,7 +314,10 @@ void blk_cleanup_queue(struct request_queue *q)
+ 	 */
+ 	blk_freeze_queue(q);
+ 
++	/* New 'hctx->run_work' can't be queued after setting the dead flag */
++	spin_lock_irq(&q->queue_lock);
+ 	blk_queue_flag_set(QUEUE_FLAG_DEAD, q);
++	spin_unlock_irq(&q->queue_lock);
+ 
+ 	blk_sync_queue(q);
+ 	if (queue_is_mq(q)) {
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index ed1869a305c4..fb35d335d554 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2093,6 +2093,8 @@ static int blk_mq_hctx_next_cpu(struct blk_mq_hw_ctx *hctx)
+ static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
+ 					unsigned long msecs)
+ {
++	unsigned long flags;
++
+ 	if (unlikely(blk_mq_hctx_stopped(hctx)))
+ 		return;
+ 
+@@ -2107,8 +2109,12 @@ static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
+ 		put_cpu();
+ 	}
+ 
+-	kblockd_mod_delayed_work_on(blk_mq_hctx_next_cpu(hctx), &hctx->run_work,
+-				    msecs_to_jiffies(msecs));
++	spin_lock_irqsave(&hctx->queue->queue_lock, flags);
++	if (!blk_queue_dead(hctx->queue))
++		kblockd_mod_delayed_work_on(blk_mq_hctx_next_cpu(hctx),
++					    &hctx->run_work,
++					    msecs_to_jiffies(msecs));
++	spin_unlock_irqrestore(&hctx->queue->queue_lock, flags);
+ }
+ 
+ /**
+-- 
+2.31.1
+
