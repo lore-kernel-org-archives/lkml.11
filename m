@@ -2,207 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346909AbiETIRy (ORCPT
+        id S1346924AbiETISB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        Fri, 20 May 2022 04:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237421AbiETIRu (ORCPT
+        with ESMTP id S238394AbiETIRu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 04:17:50 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912D38A301
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:17:48 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L4KLZ5qj0zfbLy;
-        Fri, 20 May 2022 16:16:22 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 20 May 2022 16:17:46 +0800
-Subject: Re: [PATCH v4 4/5] mm/shmem: fix infinite loop when swap in shmem
- error at swapoff time
-To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "hughd@google.com" <hughd@google.com>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "neilb@suse.de" <neilb@suse.de>,
-        "apopple@nvidia.com" <apopple@nvidia.com>,
-        "david@redhat.com" <david@redhat.com>,
-        "surenb@google.com" <surenb@google.com>,
-        "peterx@redhat.com" <peterx@redhat.com>,
-        "rcampbell@nvidia.com" <rcampbell@nvidia.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220519125030.21486-1-linmiaohe@huawei.com>
- <20220519125030.21486-5-linmiaohe@huawei.com>
- <20220520063433.GA584983@hori.linux.bs1.fc.nec.co.jp>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <970aee34-c377-2b8c-c6bb-45e2a96e84b9@huawei.com>
-Date:   Fri, 20 May 2022 16:17:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6B113C1E1;
+        Fri, 20 May 2022 01:17:48 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id DDD3740006;
+        Fri, 20 May 2022 08:17:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653034667;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2vrvuviG9eObZm4oJ0eZXyDKSUu8WHnWWXiVDYqfXkw=;
+        b=cmstLgwJG/Vvl4BYUuqpqnKKzwfV3YwcplbHEiirKBbSQyMOy75oPMcMQYJbo4tDHVqWqu
+        jJsZj4MEO8fmoLOQ3fbAV8+7ExCSvvzXNGSgS3KPEW5yFvSB9TpqT91ej/v5PEoReTDocx
+        3/5CD5z1r3oFXR/SFf+BHHOfjW2+WdscMUh+px9vX1rnZfFO96GVrG+r7YGYNuf6ylWyD7
+        dbkz6yyW6j8l+B7l8mUVu/IICYsDfb8DW4xh2T18OygrPcppYenTOkitgzPpEd8KhICMwP
+        xhMQeTWdnn+QL5dF4jSbiMsCmOM16K8V/kgNomfl78HkqHf0Y84eF1svC9527g==
+Date:   Fri, 20 May 2022 10:16:34 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings
+ for Renesas RZ/N1 Advanced 5 port switch
+Message-ID: <20220520101634.201bdf92@fixe.home>
+In-Reply-To: <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
+References: <20220519153107.696864-1-clement.leger@bootlin.com>
+        <20220519153107.696864-7-clement.leger@bootlin.com>
+        <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
+        <20220520095730.512bbb8d@fixe.home>
+        <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20220520063433.GA584983@hori.linux.bs1.fc.nec.co.jp>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/20 14:34, HORIGUCHI NAOYA(堀口 直也) wrote:
-> On Thu, May 19, 2022 at 08:50:29PM +0800, Miaohe Lin wrote:
->> When swap in shmem error at swapoff time, there would be a infinite loop
->> in the while loop in shmem_unuse_inode(). It's because swapin error is
->> deliberately ignored now and thus info->swapped will never reach 0. So
->> we can't escape the loop in shmem_unuse().
->>
->> In order to fix the issue, swapin_error entry is stored in the mapping
->> when swapin error occurs. So the swapcache page can be freed and the
->> user won't end up with a permanently mounted swap because a sector is
->> bad. If the page is accessed later, the user process will be killed
->> so that corrupted data is never consumed. On the other hand, if the
->> page is never accessed, the user won't even notice it.
->>
->> Reported-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> 
-> Hi Miaohe,
-> 
-> Thank you for the update.  I might miss something, but I still see the same
-> problem (I checked it on mm-everything-2022-05-19-00-03 + this patchset).
+Le Fri, 20 May 2022 10:01:32 +0200,
+Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
 
-I was testing this patch on my 5.10 kernel. I reproduced the problem in my env and
-fixed it. It seems there might be some critical difference though I checked that by
-reviewing the code... Sorry. :(
+> Hi Cl=C3=A9ment,
+>=20
+> On Fri, May 20, 2022 at 9:58 AM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
+otlin.com> wrote:
+> > Le Fri, 20 May 2022 09:13:23 +0200,
+> > Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit : =20
+> > > On Thu, May 19, 2022 at 5:32 PM Cl=C3=A9ment L=C3=A9ger <clement.lege=
+r@bootlin.com> wrote: =20
+> > > > Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch =
+is
+> > > > present on Renesas RZ/N1 SoC and was probably provided by MoreThanI=
+P.
+> > > > This company does not exists anymore and has been bought by Synopsy=
+s.
+> > > > Since this IP can't be find anymore in the Synospsy portfolio, lets=
+ use
+> > > > Renesas as the vendor compatible for this IP.
+> > > >
+> > > > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+> > > > --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.=
+yaml =20
+>=20
+> > > Missing "power-domains" property. =20
+> >
+> > I do not use pm_runtime* in the switch driver. I should probably do that
+> > right ? =20
+>=20
+> For now you don't have to.  But I think it is a good idea, and it helps i=
+f the
+> IP block is ever reused in an SoC with real power areas.
 
-> 
-> This patch has the effect to change the return value of shmem_swapin_folio(),
-> -EIO (without this patch) to -EEXIST (with this patch).
+Ok, sounds good, I'll probably also set that as required to be
+compatible with these potentials modifications without breaking the
+bindings.
 
-In fact, I didn't change the return value from -EIO to -EEXIST:
+Thanks,
 
-@@ -1762,6 +1799,8 @@ static int shmem_swapin_folio(struct inode *inode, pgoff_t index,
- failed:
- 	if (!shmem_confirm_swap(mapping, index, swap))
- 		error = -EEXIST;
-+	if (error == -EIO)
-+		shmem_set_folio_swapin_error(inode, index, folio, swap)
+>=20
+> Gr{oetje,eeting}s,
+>=20
+>                         Geert
+>=20
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
+8k.org
+>=20
+> In personal conversations with technical people, I call myself a hacker. =
+But
+> when I'm talking to journalists I just say "programmer" or something like=
+ that.
+>                                 -- Linus Torvalds
 
-> But shmem_unuse_swap_entries() checks neither, so no change from caller's view point.
-> Maybe breaking in errors (rather than ENOMEM) in for loop in shmem_unuse_swap_entries()
-> solves the issue?  I briefly checked with the below change, then swapoff can return
-> with failure.
-> 
-> @@ -1222,7 +1222,7 @@ static int shmem_unuse_swap_entries(struct inode *inode,
->                         folio_put(folio);
->                         ret++;
->                 }
-> -               if (error == -ENOMEM)
-> +               if (error < 0)
->                         break;
->                 error = 0;
->         }
 
-Yes, this is the simplest and straightforward way to fix the issue. But it has the side effect
-that user will end up with a permanently mounted swap just because a sector is bad. That might
-be somewhat unacceptable?
-
-> 
->> ---
->>  mm/shmem.c | 39 +++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 39 insertions(+)
->>
->> diff --git a/mm/shmem.c b/mm/shmem.c
->> index d3c7970e0179..d55dd972023a 100644
->> --- a/mm/shmem.c
->> +++ b/mm/shmem.c
->> @@ -1175,6 +1175,10 @@ static int shmem_find_swap_entries(struct address_space *mapping,
->>  			continue;
->>  
->>  		entry = radix_to_swp_entry(folio);
->> +		/*
->> +		 * swapin error entries can be found in the mapping. But they're
->> +		 * deliberately ignored here as we've done everything we can do.
->> +		 */
->>  		if (swp_type(entry) != type)
->>  			continue;
->>  
->> @@ -1672,6 +1676,36 @@ static int shmem_replace_page(struct page **pagep, gfp_t gfp,
->>  	return error;
->>  }
->>  
->> +static void shmem_set_folio_swapin_error(struct inode *inode, pgoff_t index,
->> +					 struct folio *folio, swp_entry_t swap)
->> +{
->> +	struct address_space *mapping = inode->i_mapping;
->> +	struct shmem_inode_info *info = SHMEM_I(inode);
->> +	swp_entry_t swapin_error;
->> +	void *old;
->> +
->> +	swapin_error = make_swapin_error_entry(&folio->page);
->> +	old = xa_cmpxchg_irq(&mapping->i_pages, index,
->> +			     swp_to_radix_entry(swap),
->> +			     swp_to_radix_entry(swapin_error), 0);
->> +	if (old != swp_to_radix_entry(swap))
->> +		return;
->> +
->> +	folio_wait_writeback(folio);
->> +	delete_from_swap_cache(&folio->page);
->> +	spin_lock_irq(&info->lock);
->> +	/*
->> +	 * Don't treat swapin error folio as alloced. Otherwise inode->i_blocks won't
->> +	 * be 0 when inode is released and thus trigger WARN_ON(inode->i_blocks) in
->> +	 * shmem_evict_inode.
->> +	 */
->> +	info->alloced--;
->> +	info->swapped--;
->> +	shmem_recalc_inode(inode);
->> +	spin_unlock_irq(&info->lock);
->> +	swap_free(swap);
->> +}
->> +
->>  /*
->>   * Swap in the page pointed to by *pagep.
->>   * Caller has to make sure that *pagep contains a valid swapped page.
-> 
-> (off-topic a little) BTW, the comment on shmem_swapin_folio() still mentions
-> *pagep, but maybe it can be updated to *foliop.
-
-Will do it.
-
-> 
-> Thanks,
-> Naoya Horiguchi
-
-Many thanks for comment and test ! :)
-
-> 
->> @@ -1695,6 +1729,9 @@ static int shmem_swapin_folio(struct inode *inode, pgoff_t index,
->>  	swap = radix_to_swp_entry(*foliop);
->>  	*foliop = NULL;
->>  
->> +	if (is_swapin_error_entry(swap))
->> +		return -EIO;
->> +
->>  	/* Look it up and read it in.. */
->>  	page = lookup_swap_cache(swap, NULL, 0);
->>  	if (!page) {
->> @@ -1762,6 +1799,8 @@ static int shmem_swapin_folio(struct inode *inode, pgoff_t index,
->>  failed:
->>  	if (!shmem_confirm_swap(mapping, index, swap))
->>  		error = -EEXIST;
->> +	if (error == -EIO)
->> +		shmem_set_folio_swapin_error(inode, index, folio, swap);
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
