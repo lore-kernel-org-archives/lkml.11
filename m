@@ -2,129 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11758C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6021C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346662AbiETHwY (ORCPT
+        id S1346666AbiETHxb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:52:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
+        Fri, 20 May 2022 03:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346644AbiETHwQ (ORCPT
+        with ESMTP id S239607AbiETHx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:52:16 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDCC8D699;
-        Fri, 20 May 2022 00:52:13 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id k8so6198266qvm.9;
-        Fri, 20 May 2022 00:52:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VdY72I8mhybRFUOICLOWp/6ONouuzQkRYkpcV7tXB4w=;
-        b=mGtVG3cF/RRc+1WhMh3mRAJ2N1LM1iGv/ZXcsBkmGC1k8ojddIl/5C4HQYiwX6jAlH
-         nIXG29SF2V7iL1SWaBWxpE8tSZjZusqUdtINbRGhvVcyCH4mqNbZpXKHbXL9uYdagP/G
-         LJaK1rrD2r509upJCzPSuxzVmkIlLFgIuXRYeLg4lgZjn9UU2bKSukMn5F5tMjUHU4yQ
-         v2MfBeW3BKiFQGlFQ6KQ/KjgD/3+lo6iRZsXpBvXXKjH601G3gnMpMujalfx3K+Iqj9S
-         C9JuDOP1vshda5kwnn0hX4D9CBNiRNGh8LAOGMHmE/dsFsa1OtV9yObeSAgdDWi5UvNW
-         e2uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VdY72I8mhybRFUOICLOWp/6ONouuzQkRYkpcV7tXB4w=;
-        b=rdnpynLZzwiTzEySeDP9Q7EAHtCeZabJLBUEMmDrdV2WmZMwTDNzDM6oqTPVPmlozQ
-         In8l+Tc7IUsbKg9KXpjsCIs7XeIzNtxlqowyzickdp4nlgC4v7SP7hOmUmV4N4AGHeC2
-         bVMu7EMXlRzKNJoWXkqMyagR6f0NtTaE86meNu+Uli3GYESdrlh93bdsl71pIYghOLxC
-         0WFdeYnkWkhwhXeE+zOgx2X32hE+twhLrjA1+fMqlBM2LpuKyrl03dwHkvGCgBGi4aXJ
-         kBkpcXZhE4irl2tLHWkQezBzjjs6az7Bs8Eug2x0nxXzclZEVEJr5LqhlNsWgft7/FCx
-         000Q==
-X-Gm-Message-State: AOAM530Nkh5TxrqV/aVlAuL9tPZNdVyilayssmOmO6czk6gGDRJVBJoB
-        XP658qWk6WXc7X0/UNt8cMBTMwlzekW/pJfV+7k=
-X-Google-Smtp-Source: ABdhPJw8mc4Z1ZNfr3ozcCBCCHD10JZaV1gQehEHnBL/ac8vMhBFmG1SdEbCwkMNxndpXoDSo/5q9pIeCWviRb1yERU=
-X-Received: by 2002:a05:6214:5296:b0:461:d3bb:ba01 with SMTP id
- kj22-20020a056214529600b00461d3bbba01mr6872345qvb.12.1653033133008; Fri, 20
- May 2022 00:52:13 -0700 (PDT)
+        Fri, 20 May 2022 03:53:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50458EBA98
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:53:26 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L4JpS3ZrRz1JC4J;
+        Fri, 20 May 2022 15:52:00 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 20 May 2022 15:53:24 +0800
+Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 20 May
+ 2022 15:53:24 +0800
+Message-ID: <59b140a2-fd9d-f5a7-85e0-9ff712e468df@huawei.com>
+Date:   Fri, 20 May 2022 15:53:21 +0800
 MIME-Version: 1.0
-References: <20f17f64-88cb-4e80-07c1-85cb96c83619@windriver.com>
- <CAOQ4uxiQTwEh3ry8_8UMFuPPBjwA+pb8RLLuG=93c9hYtDqg8g@mail.gmail.com>
- <YocRWLtlbokO0jsi@zeniv-ca.linux.org.uk> <CAOQ4uxizvWk-=JW=s-WXw0OGR3Wjm2YYkpwQqXHc27U=iRtQDg@mail.gmail.com>
-In-Reply-To: <CAOQ4uxizvWk-=JW=s-WXw0OGR3Wjm2YYkpwQqXHc27U=iRtQDg@mail.gmail.com>
-From:   Amir Goldstein <amir73il@gmail.com>
-Date:   Fri, 20 May 2022 10:52:01 +0300
-Message-ID: <CAOQ4uxj+YSbywkKC8c6qRW55Ujcwxcjkf9sFg=e8m0xp8JLq9g@mail.gmail.com>
-Subject: Re: warning for EOPNOTSUPP vfs_copy_file_range
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     He Zhe <zhe.he@windriver.com>, Dave Chinner <dchinner@redhat.com>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Luis Henriques <lhenriques@suse.com>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4] ARM: module: Add all unwind tables when load module
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     <alexander.sverdlin@nokia.com>, <ardb@kernel.org>,
+        <linus.walleij@linaro.org>, <nico@fluxnic.net>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220401131534.241205-1-chenzhongjin@huawei.com>
+ <YoOu1Ng53Tv/ec0d@shell.armlinux.org.uk>
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <YoOu1Ng53Tv/ec0d@shell.armlinux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 7:39 AM Amir Goldstein <amir73il@gmail.com> wrote:
->
-> On Fri, May 20, 2022 at 6:56 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> >
-> > On Thu, May 19, 2022 at 04:53:15PM +0300, Amir Goldstein wrote:
-> >
-> > > Luis gave up on it, because no maintainer stepped up to take
-> > > the patch, but I think that is the right way to go.
-> > >
-> > > Maybe this bug report can raise awareness to that old patch.
-> > >
-> > > Al, could you have a look?
-> >
-> > IIRC, you had objections to that variant back then...
->
-> Right. But not about the "main" patch.
-> The patch had an "also" part:
->
-> The short-circuit code for the case where the copy length is zero has also
-> been dropped from the VFS code.  This is because a zero size copy between
-> two files shall provide a clear indication on whether or not the
-> filesystem supports non-zero copies.
->
-> -     if (len == 0)
-> -         return 0;
-> -
->
-> Which would have been a regression for nfs client, because
-> nfs protocol treats length 0 from ->copy_file_range() as "copy everything":
->
-> https://lore.kernel.org/linux-fsdevel/CAOQ4uxgwcNwWEqYKBg3fMHD3aXOsYUmPeexBe9EVP9Nb53b-Hw@mail.gmail.com/
->
-> This api impedance should be fixed in the nfs client, but I'm
-> not sure if that was already done.
->
-> I will test and re-post Luis' patch without removing the short-circuit
-> unless Luis gets to it first.
->
+On 2022/5/17 22:19, Russell King (Oracle) wrote:
+> Hi,
+> 
+> On Fri, Apr 01, 2022 at 09:15:34PM +0800, Chen Zhongjin wrote:
+>>  struct mod_arch_specific {
+>>  #ifdef CONFIG_ARM_UNWIND
+>> -	struct unwind_table *unwind[ARM_SEC_MAX];
+>> +	struct unwind_table unwind_list;
+> 
+> Why is this not a:
+> 
+> 	struct list_head unwind_list;
+> 
+> because, from what I can tell, the _only_ member that is used in this
+> struct unwind_table is the "mod_list" member - so everything else is
+> entirely unused and redundant.
+> 
+> Thanks.
+> 
+Thanks for review!
 
-Urgh! That old patch passes the fstests -g copy_range group
-on nfs, but fails almost all of them on xfs/btrfs.
+I have updated it to v5 with two other fixes. Also updated it on patch tracker.
 
-The reason is that when we allow to perform copy_range
-with remap_file_range() it fails for sizes smaller than block size
-and returning short read of 0 from copy_range is not an option.
+Best,
+Chen
 
-So what I am going to do is to keep the basic restriction in this patch of:
-"copy_range allowed for fs that implement either ->copy_file_range()
-or ->remap_file_range() (for same sb copy)"
-
-But will change the logic of:
-"try clone and then copy then fail"
-to:
-- try ->copy_file_range()
-- try ->remap_file_range()
-- fall back to kernel copy
-
-Patch coming shortly.
-
-Thanks,
-Amir.
