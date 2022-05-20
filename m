@@ -2,116 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6834C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3564C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346169AbiETJQT (ORCPT
+        id S1347651AbiETJR6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        Fri, 20 May 2022 05:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343770AbiETJQP (ORCPT
+        with ESMTP id S231423AbiETJRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:16:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0A5A34657
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 02:16:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653038172;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=37VtCkmeYBj19kPbM9wIPiRfK6JVm/8EYkASIsdU9tQ=;
-        b=aG7t6omxdqv0TVFF1y8uyt67L3R0WhwONls795NrjZG9DYMYES335IHwH7Z+9qNc3j8dcI
-        DZmtob7prAAP2vYxJk9TnpFhcau4ifn7ToX5JpXSpE8yNHAcf1AOd/4gZvFhAo/FTz2Knx
-        Z/CTe777Omz+yDUuHbJP+psnG1o9OK0=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-574-SiEdDXCcOquq4-FDuiw4bg-1; Fri, 20 May 2022 05:16:10 -0400
-X-MC-Unique: SiEdDXCcOquq4-FDuiw4bg-1
-Received: by mail-wm1-f70.google.com with SMTP id bg7-20020a05600c3c8700b0039468585269so2903201wmb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 02:16:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=37VtCkmeYBj19kPbM9wIPiRfK6JVm/8EYkASIsdU9tQ=;
-        b=JC2dhWMnPoiu63y2UGJB+CBWuN4Mg7TtmFw44Dvl1rVUzLeEUcsu5fZOSmcm0Ib76F
-         coEVDh5ux39p2u9ekhWOLSVGaWz7TtYS0O5jUR40PAAFww9i73EBAqBbN3ekmswUtfom
-         sDD3TbfYMvOB36oXWzXkm7KyACHM/eO0YHMzUZAhFwv48xBVVd7NeNrb3fIky6EX/GNf
-         7KyllpTIy5h2C9/8hPGkiip93aA3iQ0qH7eQydLMJru56zMvebJmReIUPpnDMMFNuHQM
-         lLTvLKjmfrCpPlncr920VWWKrUi3jygYudH6srglyp/apyMxOhxzhPhwl0RV1B7IwUg2
-         8h2w==
-X-Gm-Message-State: AOAM530POK5D7+iTpVbc1yVPgy9R0HO29d7J7dYp07DGCZGhEN3vdp3H
-        ozDXirDbGnxiQLenAJPNl9xPH8wJ1ex5DmCXokKfiXweD13sph3LVz4yv/O2cW67fMwxZvLBESw
-        r/XstvfxHl9pJ965IA/WYvr3VAFyvE+i1O1PQJt7+LCrm+fPR+6A2gowwWnoqpEL692NxEAx5zC
-        0=
-X-Received: by 2002:a1c:4443:0:b0:397:38a7:30 with SMTP id r64-20020a1c4443000000b0039738a70030mr1918612wma.14.1653038168242;
-        Fri, 20 May 2022 02:16:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxRnV/FLXilJCVFaq7XzkxHGACQ2befF60ot270hFjpctpC3oeb6FZd2yxb9EjKoqwk5Wqehg==
-X-Received: by 2002:a1c:4443:0:b0:397:38a7:30 with SMTP id r64-20020a1c4443000000b0039738a70030mr1918587wma.14.1653038167957;
-        Fri, 20 May 2022 02:16:07 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id ay28-20020a05600c1e1c00b003973c4bb19bsm495397wmb.16.2022.05.20.02.16.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 02:16:07 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        David Lechner <david@lechnology.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH] drm/st7735r: Fix module autoloading for Okaya RH128128T
-Date:   Fri, 20 May 2022 11:16:02 +0200
-Message-Id: <20220520091602.179078-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 20 May 2022 05:17:53 -0400
+X-Greylist: delayed 1005 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 02:17:51 PDT
+Received: from mo-csw-fb.securemx.jp (mo-csw-fb1514.securemx.jp [210.130.202.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACC68CB36;
+        Fri, 20 May 2022 02:17:50 -0700 (PDT)
+Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1514) id 24K917bT028914; Fri, 20 May 2022 18:01:07 +0900
+Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 24K90a3e020094; Fri, 20 May 2022 18:00:36 +0900
+X-Iguazu-Qid: 34trvzMrv8f6CEmUZq
+X-Iguazu-QSIG: v=2; s=0; t=1653037236; q=34trvzMrv8f6CEmUZq; m=oCtpcilmw9sapkrx804jsQH7wnrQENTBrdGAFPG45Cc=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1510) id 24K90Ymr009957
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 20 May 2022 18:00:34 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-watchdog@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2] dt-bindings: watchdog: toshiba,visconti-wdt: Update the common clock properties
+Date:   Fri, 20 May 2022 18:00:24 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220520090024.620928-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SPI core always reports a "MODALIAS=spi:<foo>", even if the device was
-registered via OF. This means that the st7735r.ko module won't autoload if
-a DT has a node with a compatible "okaya,rh128128t" string.
+The clock for this driver switched to the common clock controller driver.
+Therefore, update common clock properties for watchdog in the binding document.
+And this matched this example with the actual dts.
 
-In that case, kmod expects a "MODALIAS=of:N*T*Cokaya,rh128128t" uevent but
-instead will get a "MODALIAS=spi:rh128128t", which is not present in the
-list of aliases:
-
-  $ modinfo drivers/gpu/drm/tiny/st7735r.ko | grep alias
-  alias:          of:N*T*Cokaya,rh128128tC*
-  alias:          of:N*T*Cokaya,rh128128t
-  alias:          of:N*T*Cjianda,jd-t18003-t01C*
-  alias:          of:N*T*Cjianda,jd-t18003-t01
-  alias:          spi:jd-t18003-t01
-
-To workaround this issue, add in the SPI table an entry for that device.
-
-Fixes: d1d511d516f7 ("drm: tiny: st7735r: Add support for Okaya RH128128T")
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
+ .../bindings/watchdog/toshiba,visconti-wdt.yaml     | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
- drivers/gpu/drm/tiny/st7735r.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/gpu/drm/tiny/st7735r.c b/drivers/gpu/drm/tiny/st7735r.c
-index 29d618093e94..e0f02d367d88 100644
---- a/drivers/gpu/drm/tiny/st7735r.c
-+++ b/drivers/gpu/drm/tiny/st7735r.c
-@@ -174,6 +174,7 @@ MODULE_DEVICE_TABLE(of, st7735r_of_match);
+diff --git a/Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml b/Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml
+index 690e19ce4b87..52c0e0c022ea 100644
+--- a/Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml
++++ b/Documentation/devicetree/bindings/watchdog/toshiba,visconti-wdt.yaml
+@@ -35,20 +35,15 @@ additionalProperties: false
  
- static const struct spi_device_id st7735r_id[] = {
- 	{ "jd-t18003-t01", (uintptr_t)&jd_t18003_t01_cfg },
-+	{ "rh128128t", (uintptr_t)&rh128128t_cfg },
- 	{ },
- };
- MODULE_DEVICE_TABLE(spi, st7735r_id);
+ examples:
+   - |
++    #include <dt-bindings/clock/toshiba,tmpv770x.h>
++
+     soc {
+         #address-cells = <2>;
+         #size-cells = <2>;
+ 
+-        wdt_clk: wdt-clk {
+-            compatible = "fixed-clock";
+-            clock-frequency = <150000000>;
+-            #clock-cells = <0>;
+-        };
+-
+-        watchdog@28330000 {
++        wdt: watchdog@28330000 {
+             compatible = "toshiba,visconti-wdt";
+             reg = <0 0x28330000 0 0x1000>;
+-            clocks = <&wdt_clk>;
+-            timeout-sec = <20>;
++            clocks = <&pismu TMPV770X_CLK_WDTCLK>;
+         };
+     };
 -- 
-2.36.1
+2.36.0
+
 
