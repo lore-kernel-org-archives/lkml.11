@@ -2,135 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA02C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EF4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349880AbiETNir (ORCPT
+        id S1349893AbiETNji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 09:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34444 "EHLO
+        Fri, 20 May 2022 09:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349096AbiETNil (ORCPT
+        with ESMTP id S1349096AbiETNjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 09:38:41 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5298116A252
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:38:40 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id e4so9156593ljb.13
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:38:40 -0700 (PDT)
+        Fri, 20 May 2022 09:39:35 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39482169E3B
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:39:34 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id p22so14353316lfo.10
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:39:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BJ6cahNcHV64dckbcdagFZ3sXXRYfeYn07qe+/rH0Js=;
-        b=Swsr4EYUUhBGy78gK70OvbbFgbl+xy4A36NGHggg9MIrLAwzJ3L8g3yIQ9pJiZcHPg
-         5Z4AjQmI8LhFAkWKs1ms85fN0rwO2dGcB0PkM3c3Q4Mp5uIz+pxLR0FI+u/YiXj3PnjT
-         xEfvLERea7XgQ27+5UU7YDdcRvLRe7KZYXOw/kzR7YpmI+WPjHYHicrGkoIpCSwixvEF
-         qX2B9OqRIDzWJEChsL8RoJG7AkW0ohMp4f9j9uxYBDLdctrCwEbp4cg9bWR+ILHo2lj4
-         gELpWVXkRWAkzYZWD98W4c8v3VVw3H2s8R1CMwWGfB+7L6geo0EvtMEjMNVBE4VJukVy
-         +Yfg==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=3BeEGshpUebf40S3dI2nHaMHUGbrc9YgGRUe6v3NrQI=;
+        b=6qt22nK9IyDROp+1mPdWrxlvzi6NjO9eSG5Nen/b2A4439rifjlgxwQdu1H0oZvaEI
+         zsREZJlUH9Q59JA4/xx902iUi8jdSn8cRb9yxLBKOpTVgUEBc8mktfK/Gl0D93Izd/ul
+         Onz+P2Nvnbw9a32QqyeG9cgY4Z4J9mdF8qFpYKjfy+87PufYse2QuuIZCUVPPDlNvAKE
+         ik5nL2LZ9Bk16e0vHts9nXx0icITt1ybjlmSAmRoFKOj9CpUtY5Q+f5Jk/vtT2A2l3gX
+         tjGCSyXpFudAPCrNP09RJNhINqh3uz45V4pH4Lmn9DWgW4Uk7j2mupibV5+qfh9CEpti
+         MVrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BJ6cahNcHV64dckbcdagFZ3sXXRYfeYn07qe+/rH0Js=;
-        b=oWSqwZpoLnEpFeewBYLqYoI6HUQLptqwN931htcEukg3Sp8zl7SaNqv7cY71wN6Ais
-         9o9iZFyEBo6kNVh1rItJcayerKS1euzaJeCrw3CM7k5I+N+FuVQlq/kY8Dl42Nf7e1F4
-         idOubqZDTAasxLKr2mMkIDa1DLS1yPT3vnnpXUfEGnYTTWiVc/SWh9BYnQnMsXqYzqC8
-         3RwCoSZH4oBIkPpyoSVIrwWZIjIiLRG7RC0MDmO4OiNf8SzX9s5Y/He7b82lX+QVzDud
-         hbV+4h0iE41pPkZmYfizsHUa+A3VmjShG9tb11PTAQrkNHePJtMPQZIOsm3U5bd1myyp
-         Xx0g==
-X-Gm-Message-State: AOAM533IGuvKVsQ7sgAzlpwRzVrWgKS9uyVzPaimVILATuQQO2S/lIJU
-        BxN8HqOK042dKesLNHHzn4YUnw==
-X-Google-Smtp-Source: ABdhPJz7+4KDKaqz3IBBXBx/FkONS5BgchZ7fWWMZ6ZrP5bc3A9c1J212pfOKC8DCyjp/llbwrwJOA==
-X-Received: by 2002:a2e:b8d0:0:b0:253:ca3b:f0ad with SMTP id s16-20020a2eb8d0000000b00253ca3bf0admr5740825ljp.334.1653053918597;
-        Fri, 20 May 2022 06:38:38 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id o14-20020ac25e2e000000b0047255d210e3sm667857lfg.18.2022.05.20.06.38.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 06:38:37 -0700 (PDT)
-Message-ID: <d26c7ebd-fc1a-391e-39e4-5ec41bf4fbfa@linaro.org>
-Date:   Fri, 20 May 2022 15:38:36 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=3BeEGshpUebf40S3dI2nHaMHUGbrc9YgGRUe6v3NrQI=;
+        b=kEBE965qPYrinNpYl6gGR4uNfDfTU2/jsBMfJwLwsNt4L2RE6GcS4ox8OLQL/T7A5H
+         tGX1/O5Y1Nyn1PA4kklFgcdyDLDEZXa8fGxxOd/EzJPWCNDjJNsVClEbI3Rd/nns41vk
+         5FvBUBtzCxs21jm7gLh7CIjitBzzALgCjxVvj7mJ9QxvoYpAfyidu+DdtsoRzuTsydxU
+         A/ICjtDcTn0zfN8Vti9pkfULuH7i9Lmy0D1MCCL1ssPno2Uvn/aFiPfInopEVfMixcgC
+         /8XKsVaAAxWgXMhLXzybCAXQ4YM8p2Xu02sm/wJoC1uTaPvhaZmnUw5aE3HZCgzQbhNk
+         1rrA==
+X-Gm-Message-State: AOAM532d46XyKuxRSqD8w/+zO/7Ub/PfL97XybY+7LBwt3yiQ5SjHHJI
+        0+lwYpN0BevUgSDHF/1UJ5t/Kg==
+X-Google-Smtp-Source: ABdhPJyT1m9j6Hn8ES8585uw0TDj+nJSjxY8pFZYdW/m0XbSSumm094xJFwQQSPevh3hEaAT3pcheQ==
+X-Received: by 2002:a19:4f04:0:b0:477:b6c7:9771 with SMTP id d4-20020a194f04000000b00477b6c79771mr6778897lfb.182.1653053972054;
+        Fri, 20 May 2022 06:39:32 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id e7-20020a2e9847000000b0024f3d1daeacsm323659ljj.52.2022.05.20.06.39.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 06:39:31 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id C70E6104AAB; Fri, 20 May 2022 16:41:24 +0300 (+03)
+Date:   Fri, 20 May 2022 16:41:24 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Jakub =?utf-8?Q?Mat=C4=9Bna?= <matenajakub@gmail.com>
+Cc:     linux-mm@kvack.org, patches@lists.linux.dev,
+        linux-kernel@vger.kernel.org, vbabka@suse.cz, mhocko@kernel.org,
+        mgorman@techsingularity.net, willy@infradead.org,
+        liam.howlett@oracle.com, hughd@google.com, riel@surriel.com,
+        rostedt@goodmis.org, peterz@infradead.org, david@redhat.com
+Subject: Re: [RFC PATCH v3 2/6] [PATCH 2/6] mm: add merging after mremap
+ resize
+Message-ID: <20220520134124.6glbfzhrgzutfor6@box.shutemov.name>
+References: <20220516125405.1675-1-matenajakub@gmail.com>
+ <20220516125405.1675-3-matenajakub@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/3] dt-bindings: usb: atmel: Add Microchip LAN966x
- compatible string
-Content-Language: en-US
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20220513105850.310375-1-herve.codina@bootlin.com>
- <20220513105850.310375-3-herve.codina@bootlin.com>
- <8f0d4127-7e66-cf50-21c9-99680f737e30@linaro.org>
- <20220520133426.3b4728ae@bootlin.com>
- <b087c34f-0e2f-edd0-a738-3ffc2853a41b@linaro.org>
- <20220520142109.57b84da2@bootlin.com>
- <01b31a02-523e-10bf-3b46-5b830e456522@linaro.org>
- <20220520150243.625723fa@bootlin.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220520150243.625723fa@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220516125405.1675-3-matenajakub@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022 15:02, Herve Codina wrote:
-> On Fri, 20 May 2022 14:50:24 +0200
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+On Mon, May 16, 2022 at 02:54:01PM +0200, Jakub Matěna wrote:
+> When mremap call results in expansion, it might be possible to merge the
+> VMA with the next VMA which might become adjacent. This patch adds
+> vma_merge call after the expansion is done to try and merge.
 > 
->> On 20/05/2022 14:21, Herve Codina wrote:
->>>>> I think it makes sense to keep 'microchip,lan966x-udc' for the USB
->>>>> device controller (same controller on LAN9662 and LAN9668) and so
->>>>> keeping the same rules as for other common parts.    
->>>>
->>>> Having wildcard was rather a mistake and we already started correcting
->>>> it, so keeping the "mistake" neither gives you consistency, nor
->>>> correctness...
->>>>  
->>>
->>> I think that the "family" compatible should be present.
->>> This one allows to define the common parts in the common
->>> .dtsi file (lan966x.dtsi in our case).
->>>
->>> What do you think about:
->>> - microchip,lan9662-udc
->>> - microchip,lan9668-udc
->>> - microchip,lan966-udc  <-- Family
->>>
->>> lan966 is defined as the family compatible string since (1) in
->>> bindings/arm/atmel-at91.yaml and in Documentation/arm/microchip.rst
->>>   
->>
->> You can add some family compatible, if it makes sense. I don't get why
->> do you mention it - we did not discuss family names, but using
->> wildcards... Just please do not add wildcards.
+> Signed-off-by: Jakub Matěna <matenajakub@gmail.com>
+> ---
+>  mm/mremap.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
 > 
-> Well, I mentioned it as I will only use the family compatible string
-> and not the SOC (lan9662 or lan9668) compatible string in lan966x.dtsi.
-> In this case, the family compatible string can be seen as a kind of
-> "wildcard".
+> diff --git a/mm/mremap.c b/mm/mremap.c
+> index 303d3290b938..75cda854ec58 100644
+> --- a/mm/mremap.c
+> +++ b/mm/mremap.c
+> @@ -9,6 +9,7 @@
+>   */
+>  
+>  #include <linux/mm.h>
+> +#include <linux/mm_inline.h>
+>  #include <linux/hugetlb.h>
+>  #include <linux/shm.h>
+>  #include <linux/ksm.h>
+> @@ -1022,8 +1023,10 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+>  				}
+>  			}
+>  
+> -			if (vma_adjust(vma, vma->vm_start, addr + new_len,
+> -				       vma->vm_pgoff, NULL)) {
+> +			if (!vma_merge(mm, vma, addr + old_len, addr + new_len,
+> +					vma->vm_flags, vma->anon_vma, vma->vm_file,
+> +					vma->vm_pgoff + (old_len >> PAGE_SHIFT), vma_policy(vma),
+> +					vma->vm_userfaultfd_ctx, anon_vma_name(vma))) {
 
-I understood as "the "family" compatible should be present" as you want
-to add it as a fallback. It would be okay (assuming devices indeed share
-family design). If you want to use it as the only one, then it is again
-not a recommended approach. Please use specific compatibles.
+Hm. Don't you need to update 'vma' with result of vma_merge()?
 
-I mean, why do we have this discussion? What is the benefit for you to
-implement something not-recommended by Devicetree spec and style?
+'vma' is used below the point and IIUC it can be use-after-free.
 
-Best regards,
-Krzysztof
+-- 
+ Kirill A. Shutemov
