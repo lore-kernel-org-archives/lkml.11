@@ -2,161 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD49CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 11:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55949C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 11:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245205AbiETLi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 07:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32880 "EHLO
+        id S1348627AbiETLi7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 07:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348599AbiETLiC (ORCPT
+        with ESMTP id S1348620AbiETLiy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 07:38:02 -0400
-Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.109.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736F8A5013
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:38:01 -0700 (PDT)
+        Fri, 20 May 2022 07:38:54 -0400
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B67C15AB01
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 04:38:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1653046679;
+        t=1653046692;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pdKUfi4l4rSLwtlUmzGsGCFvVvE2oJIhV/wygh4mIpo=;
-        b=juqwbdpOGRM9tvX0jgsdfA/c5LzD4cdf6jYHKK0BoCxApRX7jkpH8G30RWUI9rzdbcx/Jv
-        LxG19APREE0GLTehASWhBVMBY4P5XResKmuGMVbtx4wlrDF08kpd2rQQ94ksT04J6n9jHt
-        7GBgyKtc5UFMuW+DmkSzC05ShPby4UU=
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com
- (mail-vi1eur05lp2176.outbound.protection.outlook.com [104.47.17.176]) by
+        bh=nUgKGJ3O0a2AcI0M7Li2xW8xlIFt0nekuPR5p7Jv008=;
+        b=T5sHWe03SID1kqcVhQtS8xdX/98iuepOAqYdW/2FaiqoIYJZ8Qp+qd/l4ynJJXvMM/UgTB
+        O+mD26GL/ITfCw9IJUPKLpgcpZaNNxah1wIgEmHymZ+g+EwJt2v1cVyMsGwxQyLKKpyRe8
+        XPj8BDUOdF4zN69rohbUg2LhPEwkt/c=
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+ (mail-vi1eur04lp2057.outbound.protection.outlook.com [104.47.14.57]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-15-c3eyB47XMUGOHX439qwigQ-2; Fri, 20 May 2022 13:37:58 +0200
-X-MC-Unique: c3eyB47XMUGOHX439qwigQ-2
+ de-mta-20-xSRJOZfWPQaJ_cWg9diAQw-1; Fri, 20 May 2022 13:38:09 +0200
+X-MC-Unique: xSRJOZfWPQaJ_cWg9diAQw-1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MS9zlRjL56gb1vEf/KA97ZAmY6A6D/Yrd4qOKN+ejr9mBk7Vix0RHd8tudCxwkZ4ubcmvse6uAOReRZ6LB/3Iflnt91L/sSLKzdXVvG1Ch9XgIAp9sITbx5XR4NuIgv+rGOlT2Kk7nD0MVFMVvgNZDumOhZHK4czdSQRfrS6NYmR3h94sNsoFJMnP7mzkbB6cBXNNIwKV/fF6x6xM+Y0LP+jGWpJd+N2bzvt7pKkY7dLv7uV6FrTYHKJ137c1SZPXjTjIpx+0HYzpKrOuAnBLXFD0EoNtnCXHWs6nH3shZCaQ8Zj1sxFQyYK9NYYXV42pEK7R3xkU2ggodT3u4h7xA==
+ b=VM5Xoy+UaQPnNlVGzIO4679rwjwD7qjZRqZH3LOCdyrSFvWOlC9A0cDEwc2ehm8SYccyyLFDNF2x6irS6JiYwCsC5O64/wYNMJk8ai32VA2GAC8Z0kDUdt0Gln/7jSpXeJRIrkt+U1E9EJJD9KN2c5pdp2pU66QJ7xLTYQs3wgDSIz78Us3eHy2alDoi+K6XrF/e6OychbwK1qIzuiUUfWPscTOwggonoXlZ8H8+lN9Mpua+YJLIvdcBYcXZ5YIsxbf/WHn4h4T3Vo5xhX8Af2KwiUTCGfc7RHfsdIJnQcxt5KHGiQc6DREJo0/dppeqbo8Oh1VdIqnWz+ag+8ML6Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lLPug2Nzp0WH84UFjUq7M3TokQjw/w9qo9KxZ/ei0hk=;
- b=e7XdN26A/R9705GTsxOC9CEpFJNbza275iLy+59bFKfwE51hSS84w+lYwPedl6QKbYP4RAm6prAmrYCkII7ple6oOJYgcT5urznCPs36r77V7xV7aYDj8UWQnzV8BBUFtXV8+SJ+qycNO70F2np9VJeY2cJkw23TzMzAdnvARQB43sQ23MSNVQuwsP1vihwqvl2umBIBSRQyIcrGT+89cuVTUF9qe8amK0NOKHi6eEZ3e6ZMpA/gIMJ2k0FlGcQW8KNrW2aUKlOzhwbSYmySUVyx+2JjRReSo/sFCk2qLXhu8kGjSCjn7mns7+QwT9FWRTz0LBmV+zH7FXsso76ezg==
+ bh=Xmzjpod21e6Cbz4kt7krDw3PSKbJIqoBQQasfgfdzH0=;
+ b=FLnsmrU3b/QBBbmHZ3FUouMr5nacQm7ZhrTFLo1L+8VsfrBpnmLVoAksdVrpZ/PPkIvlZpnGnBzxQbwnQDrOKGod2PipBuqTKOJR3aEIi3M8hDNZjj3LHsHkbmAX9xIo82L8TwhFVzAvq1YURknLETBu/UbLkCgrT7V2ll5GEMq6Ht4LKB+up8VNcFAvCrGWx4XR25S7rEI8Dknsg9uMLYl/wFBQTEISqpcaTd/t+sAvSVRTCBHD8B5FogbOvsCgvIglk/Osxln+cbpdyDlbSJ8fUbLXpmMMCDRUab7DhYAenA+8H/n88AePc5gLOH/QlZzl0+9U4yMZeSUFtUjdVA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
  dkim=pass header.d=suse.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=suse.com;
 Received: from DB9PR04MB8107.eurprd04.prod.outlook.com (2603:10a6:10:243::20)
- by DB6PR04MB3253.eurprd04.prod.outlook.com (2603:10a6:6:4::33) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5250.18; Fri, 20 May 2022 11:37:56 +0000
+ by VI1PR04MB6014.eurprd04.prod.outlook.com (2603:10a6:803:c9::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17; Fri, 20 May
+ 2022 11:38:06 +0000
 Received: from DB9PR04MB8107.eurprd04.prod.outlook.com
  ([fe80::40a2:1b77:8319:a7fa]) by DB9PR04MB8107.eurprd04.prod.outlook.com
  ([fe80::40a2:1b77:8319:a7fa%5]) with mapi id 15.20.5273.016; Fri, 20 May 2022
- 11:37:56 +0000
+ 11:38:06 +0000
 From:   Shung-Hsi Yu <shung-hsi.yu@suse.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-CC:     Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+To:     Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+CC:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [PATCH bpf-next 2/4] bpf: verifier: explain opcode check in check_ld_imm()
-Date:   Fri, 20 May 2022 19:37:26 +0800
-Message-ID: <20220520113728.12708-3-shung-hsi.yu@suse.com>
+Subject: [PATCH bpf-next 4/4] selftests/bpf: add reason of rejection in ld_imm64
+Date:   Fri, 20 May 2022 19:37:28 +0800
+Message-ID: <20220520113728.12708-5-shung-hsi.yu@suse.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220520113728.12708-1-shung-hsi.yu@suse.com>
 References: <20220520113728.12708-1-shung-hsi.yu@suse.com>
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-ClientProxiedBy: AS9PR04CA0080.eurprd04.prod.outlook.com
- (2603:10a6:20b:48b::28) To DB9PR04MB8107.eurprd04.prod.outlook.com
+X-ClientProxiedBy: AM5PR0502CA0010.eurprd05.prod.outlook.com
+ (2603:10a6:203:91::20) To DB9PR04MB8107.eurprd04.prod.outlook.com
  (2603:10a6:10:243::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d3d3a47b-e156-4503-f524-08da3a552ec9
-X-MS-TrafficTypeDiagnostic: DB6PR04MB3253:EE_
-X-Microsoft-Antispam-PRVS: <DB6PR04MB3253E1DE9A2179BF3D13134FBFD39@DB6PR04MB3253.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: f1f51714-7f93-4ca1-63d0-08da3a5534e1
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6014:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6014E63194B8ED142E1B5580BFD39@VI1PR04MB6014.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ffo7w+TXODKNiLvqrB7xXgddsoZLRIuIlJ1HEQf5IsILOYsHfU01UZERaTJk9adpFVBpTTvn3LHD5OAtoIO0udBQKBjhaCfmN4um+9+xhfKhEb+GkPMuJl4DvICZjNp7rngMA1CdbN68eWwiF2qY2mlbQTW/9CGH1APyIVQU6TsykvxHMPL8UYenm3pWczekPfF2q3lTv6tg0fqTxoIXs5XyvziAj3qRJGsKq/IUNE4m1S/JH2mJucQYFJKaH56eHF7WEuTEAl0ev13lR8ZvtPQnh2Vq6guuagcza8tUKD54C4oUwi74t/aYrcIq1A98ErEGDh8FTwWWhLaV5Yd+6INwHJNfao9uTeITIFfJxu6t9T8FLwT/N0XAfb32Za2qe/Sh0sslJf++OvnKkx1QBc8zsNTsi6tPUYXKWX7GBt4MUp7ZTjF2HLCTgUu5zcNDaVBObqXu9w33kVVsOKjQmP2F0/XeAOeiJILIyJKUCfrFPlmFv3oGyFxJHML6iwHdHa53jlUVjS/6tEj09koMLgauzD0YbVpdtXr92zOkhaPw4PqDC1Wy7efoaxdHlrTvcy/QCU84AKbL74yDBas29esqS8ITzvG2QPwfvDf++5HfVclNBLmrQMzb+lPw3yLzCGfVhPJ23oe4euRRlPuVVg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8107.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(7416002)(316002)(5660300002)(66946007)(66476007)(66556008)(6512007)(26005)(508600001)(86362001)(1076003)(2616005)(8676002)(6506007)(54906003)(36756003)(4326008)(186003)(6666004)(2906002)(6486002)(8936002)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 3HDc22kyX/23JRo+VeW6sX8hz01WC2XlEhzFUZ5+uTPAVUuR7b3l/hvrqTCAQLALlezN9/CDan9eh8qCvZh/CUMOqCwkxm3784vcvMl1aJgNAgdAfd6KmRBiOUXtqAePr+ZoG5ohLTuMlqOBgVW2yreGcLODa19paKMwC0Q20oawS8MwYd/COuGTIOSSDscMPnKzpApfqnPmg5RDBGZcfd0blCwvgi++vnzgXONiNnHsa9x7tbrC67Bhzm+YwCQLGHlvtqLZSvivsNiw5waXS96sLTKcoNvTlx1f5BTuL0JmU8vNoQpprD5h+CNgq1mACPQPCJC3E3ktBl4tnxM0pT4igjRfu11Fe/Fj/uCoeejrgq2aj1xEQ/M+0kOaPKv0uwweJSjGjl87uINc9jq7WeWchDannPXbJW5+N3BGlZ9n9tHAoZOtu0NbNUJAZJBywo9LSPQv2+q250OZKUjqW0Wj1E41qZ6GB3JxSYvxOAP3tIMjtiSkTtlNsInRpb/wzGX0r2RhzVaUu5fuRGsP7uEjDouu0zoY9RfcoYs5T5jIQoz+iQ5Svcrv8OKoz412Wl0jKFs6umHYJoF8/3HNTGF6Ozh0adXfIjuCos/1XMt5/yodOw87XlAYK1x9tJOG+4/YEPc9lilTXBoxkcYkbw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8107.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(5660300002)(38100700002)(36756003)(66476007)(8936002)(66556008)(66946007)(7416002)(8676002)(86362001)(4326008)(186003)(6486002)(83380400001)(1076003)(2616005)(26005)(2906002)(316002)(54906003)(6512007)(6666004)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2gJ05teQjU4KSUTff8mCtagtPpZgEbIjgl7I7MXD0LgaK8aSv7LdOfbyVP1U?=
- =?us-ascii?Q?VmBRX0DiZlBhuLiznPb6JPxMzW3Xijj4o0D4SmpCsZF4091cFUiE+lw8xe/u?=
- =?us-ascii?Q?gkiI78yyK68f1oxM+E19G5aI7idsxBL0s0PNMmHyxxMlRLXI6aGPGgRLRsTg?=
- =?us-ascii?Q?rf92pa8rgFhWACEQOu4NZEQ2Ehr1IUKY9Sy0a26kWv0sP1TeLiYef5rVJLlE?=
- =?us-ascii?Q?SO0u/a87gs0zGRCTP6ubzsouAyAX+XuWkjH6ck6vWx3JD06pKlP9e/XSuaJk?=
- =?us-ascii?Q?Sncc8C3dLslM8W9Pe0iq3H0ETFNtT92ZvDB4swzzC93EBNb01gSaplqGAcR5?=
- =?us-ascii?Q?l70YvaIxzOZkjBXKi0JxFsM9sWHVoItlYq5u8UyK0WmmyKI6mSmKax4NF39v?=
- =?us-ascii?Q?xYh+scn57QzD1gJIw43xmgduQ/9cESH5YA5VstoB9EiPOESej45CGaXG0apM?=
- =?us-ascii?Q?+LG0rSE0nuICFtnktAGdJnHBYyYajVjomzLtvMyxGxCXWEAJQsqeMAdsTAbg?=
- =?us-ascii?Q?mlg6njE2e18oE31OA5y7sj4ikGxz3ie7b0F/NUyvTw4BmLbxXYTdLULbFGBM?=
- =?us-ascii?Q?CRNjjiMRGzZan5SmQLTB6bZUUV3wjD75xJipFBWDrEsR4T8KED+oYelapxDx?=
- =?us-ascii?Q?1xiZUYhhfsgKlHE6gYH2Z6iR7F6DKQsKit5APvKb+1kG5dafS8rAKS4QlsA7?=
- =?us-ascii?Q?mCniiHFb0looMmIulkX9EYICCaYnUG7V0AZbx4mQ/YZMCesTh5xOtDL3mQf2?=
- =?us-ascii?Q?RKm32su000yOCW+N60xCL1/lbLFURVOx+WGJykTWi6Ppxo00RCrc/dPhuxD1?=
- =?us-ascii?Q?Nrv260oBclEgc5+nG6fMJkNw0tHJdQOcPbQCuhWfH3c3ftf+lIHP/lFIEag1?=
- =?us-ascii?Q?JXmgfyRgZZmZj73ljcfn+NVt2pjndxvg6+2IpoGwL5gj47yFD/tyHDgnnbtA?=
- =?us-ascii?Q?Wj9DaSAye20ESJmu0aIoeduqW7mo+pQ9s/8WLjVQcrTL10lBVfHkeYCYPTJl?=
- =?us-ascii?Q?Hf4tJMzug/01tSywF8zoQb7VtLMG/AUzXSEV8kyQfb44+DGUWMCbmMkv1pOt?=
- =?us-ascii?Q?isx/nGS99bAFcLnvHkSfFeR35U0YUrybeeQnUnjkdvBITAd/3HEVNrf0hi5D?=
- =?us-ascii?Q?+o4W+WV0706ycK1C8n4RVgGlBha8hhBzB1BR2luiTuQfJxHJ/0cqtIC6vjud?=
- =?us-ascii?Q?UAIwWuTqBrk7gAg+wI9BX9RVzBUDUKMCHJP32mXnjVcDk9+XX+IUcpm2Vrw1?=
- =?us-ascii?Q?WMqvMtFrnPW0Xqpu2vZa9agMQfFUAj2boY1wWykD14l0gMQwubAPbXiTlbbp?=
- =?us-ascii?Q?tdHPcfXN3jTgQPWFhdiFGcNMtQXla9fbFiclzMh+Z4S8pwUG04CnO3A4OOf3?=
- =?us-ascii?Q?RRONUnpGYLM3rz5++fLnL48YycxdHiftl1K6DUPuGJ7ujq6T22r3YpZ8syMx?=
- =?us-ascii?Q?2Z9+z/NPdlXYOdaf8ybfKNMUW4zM1RpHVVDiDcrLqHuUTXVdp8ey1ZPUnQg5?=
- =?us-ascii?Q?e9mAjEXizjkO6YI2BtnSjndUncbeTzqzMTelD2vpwhF1Bi6brLUyBkmPYmkf?=
- =?us-ascii?Q?RQF091kdQ9BG7UBHt6yqdPVKeH70l8NMEM73LKS1y+CWBvk/CKHLiCSejXVz?=
- =?us-ascii?Q?DIuXozteNH3yCWwET3d+I6GGUu8LrYHwHjb0zWd2LcsSW9G8D4aM9eLjER12?=
- =?us-ascii?Q?AD40KiT5NQAiNQPB7IL/X7SVIhg6dRgWW5hk7mLj3dpBm6gDWDe6tp+PAZPF?=
- =?us-ascii?Q?KJNALQqVJw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?13iNxCmyS4ttz4BJKKZxII+Y2qPXOjbPuJNuC90e5HK44O3sUPCnURwO+kkX?=
+ =?us-ascii?Q?dCj8dU3qLFoDOiiL62zpIfHrWHIKWsJqB3fzS2mEiJy37DRTVeKCwCYzobob?=
+ =?us-ascii?Q?pH4PnYNSITWXAq/hqqW3K/Mag8vw5RCZlHVlBdMgX/rPeY3W/qx/PWSnYspp?=
+ =?us-ascii?Q?qeQJiei6N5g4wejGvTdBTb3rasZ9f8k5+5OsgqnDaxFBhCmYZO/ldagTPWFE?=
+ =?us-ascii?Q?cqJzttld3EFFQJKXO/oLis/I/5zvoNM0tQK/G/n2E39gKXvJ9k0d0nJA4r32?=
+ =?us-ascii?Q?+EPvc16NaR05c/J1M8OxlC+KIgc9JYs0qxeLumExww8nz/LAWehjcF8bgczf?=
+ =?us-ascii?Q?/G7oAQ4VSNYhSZe2YK6nuIU3yf5BoJjEWQNAnr3omY0VR8ycYIf8d+e0oagw?=
+ =?us-ascii?Q?ZN0bCGTg2ohAiAaO/ZTEOXYirTG8TPdYr6NptbohWNSohP9Q08ergwNZc/pN?=
+ =?us-ascii?Q?hU9aTI3FjLSvsWhLt4JY8zAKtQhMKAc+7wB3AINritTb1cI9uEhU6wyCI37b?=
+ =?us-ascii?Q?9u2SY9OD1Sc7Yu/Y8gl1Bo/5JZMkTnN1jkmoq1uqF1G991/62ok+Vj8qd8JE?=
+ =?us-ascii?Q?uBywx0I7+kTUm+z5XPSpqLAbX1ffhDhhf2Hq58mqWhlrhGkumwkdWdhlI1GR?=
+ =?us-ascii?Q?bRiATstxJVURk/wcH8cgUA0FMTute0KZ9Izu63gS6xF4Lw63IQfy8pJ6kKi5?=
+ =?us-ascii?Q?ofTz7jtA6oyKmlaLIrZa9FRwamjR0Iz49el506FMjdUddOFqYZh2rku5+0Dm?=
+ =?us-ascii?Q?TkWHXNvlzMTYaDmH4YXVZqpHLn+JzhZS4IyRJp4zIPf6wAzTTova78phWkqH?=
+ =?us-ascii?Q?zXH6DD2mpeaS5dQqCzw8PKOVC+xq6m95TtBfIklEY4nvhyLBpEjUIxtCPfCb?=
+ =?us-ascii?Q?HdKICcbpC3om7WY4NrjMJIGsHFAbmobGNOYpF0cxdgRH/CX9XqvHg2EyhNMz?=
+ =?us-ascii?Q?+tIBJ5YWUvW/N/usbR8Zte4q3kmCmvtRKfoxeoYdWCdN3LDrg/4kyK1pvywn?=
+ =?us-ascii?Q?sn40ey/uuUEDC9ukFq3++2Fg+uSDoZSH18m2swoovwHeFzWgP0bARF+cztVU?=
+ =?us-ascii?Q?gAISSAnX28+zQQE9KvCj/PGpLCdC4Lp0WR9YTfh4Mrz7+ls0FVkQt1BxjNkW?=
+ =?us-ascii?Q?9ngcDEQ3Hs9PSmsm64TbK9UIsgTIsSexEJ6u2okcX9yEP80KXESJP6jdyo00?=
+ =?us-ascii?Q?HV2qYbNHwYxYkRTffWwTHyYDgHL4K5QJxIAZMCAqAvE1aw+GlhEVS6+9Kyq1?=
+ =?us-ascii?Q?GAg54gNbZPsQXuKOg5yznrjhiLUQCgJon9jAycYb5K9++arJMSyvPC4tycpc?=
+ =?us-ascii?Q?qMy90MueELrZ8s7rCZ3/6juWmDN9bn+d6NLraPb90QLlH8vkU6CWyRyQ5KXu?=
+ =?us-ascii?Q?zXDiG8pTCSe9bomb8OxtPwv5HUFkm6S3ImxVE1en0NhjKQDXbRnZrGsEN9le?=
+ =?us-ascii?Q?0Lz5HiJXwABnW5y9YNpay6UyuWQsK3NQizXWzFx2P2V7ShETa2tP6Tf5haiZ?=
+ =?us-ascii?Q?v/v2AT56yoOVUEG3ZcxLUFpjv8RwtjuZX9GDZY6w7LTXlye7oyVXqWej+SOh?=
+ =?us-ascii?Q?4W9K2ucQBUBJadAIhpO4zUYJ2nMm2c4G4uNAZpZnMZBkI2chfUQdfBSaCx/f?=
+ =?us-ascii?Q?yI4aQQktzAXgb9JcjV9+Rfvrr+tsmZY8x3/k1Xekdb0yZVRoCSb8xnDhB//Y?=
+ =?us-ascii?Q?NqAcHbEKu/Zbcsu7+mQBBz11Le84SfRU1WT4X5QgMe01Q+Cnh55sWHRMQ13Z?=
+ =?us-ascii?Q?SaihelwNWA=3D=3D?=
 X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3d3a47b-e156-4503-f524-08da3a552ec9
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1f51714-7f93-4ca1-63d0-08da3a5534e1
 X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8107.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2022 11:37:56.0933
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2022 11:38:06.1101
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WA03VNJyUWJ9gpmt0KRV5Uzh+kUkVcs3FwiTx6DR54X1hZXWVNRoDciQU9QPP9nr6x7bVXs7Q7JHhF39BOKTDQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB3253
+X-MS-Exchange-CrossTenant-UserPrincipalName: K6aHrWjv2aPSAzCmP6OGJK2/r52hPVIny4FIJNq56hKMhFzPpJtN9uDtE51+wl93kC2Eah1eWcV7/plD5PWQpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The BPF_SIZE check in the beginning of check_ld_imm() actually guard
-against program with JMP instructions that goes to the second
-instruction of BPF_LD_IMM64, but may be easily dismissed as an simple
-opcode check that's duplicating the effort of bpf_opcode_in_insntable().
+It may not be immediately clear why that ld_imm64 test cases are
+rejected, especially for test1 and test2 where JMP to the 2nd
+instruction of BPF_LD_IMM64 is performed.
 
-Add comment to better reflect the importance of the check.
+Add brief explaination of why each test case in verifier/ld_imm64.c
+should be rejected.
 
 Signed-off-by: Shung-Hsi Yu <shung-hsi.yu@suse.com>
 ---
- kernel/bpf/verifier.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../testing/selftests/bpf/verifier/ld_imm64.c | 20 ++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 79a2695ee2e2..133929751f80 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -9921,6 +9921,10 @@ static int check_ld_imm(struct bpf_verifier_env *env=
-, struct bpf_insn *insn)
- 	struct bpf_map *map;
- 	int err;
-=20
-+	/* checks that this is not the second part of BPF_LD_IMM64, which is
-+	 * skipped over during opcode check, but a JMP with invalid offset may
-+	 * cause check_ld_imm() to be called upon it.
-+	 */
- 	if (BPF_SIZE(insn->code) !=3D BPF_DW) {
- 		verbose(env, "invalid BPF_LD_IMM insn\n");
- 		return -EINVAL;
+diff --git a/tools/testing/selftests/bpf/verifier/ld_imm64.c b/tools/testin=
+g/selftests/bpf/verifier/ld_imm64.c
+index f9297900cea6..021312641aaf 100644
+--- a/tools/testing/selftests/bpf/verifier/ld_imm64.c
++++ b/tools/testing/selftests/bpf/verifier/ld_imm64.c
+@@ -1,5 +1,6 @@
++/* Note: BPF_LD_IMM64 is composed of two instructions of class BPF_LD */
+ {
+-	"test1 ld_imm64",
++	"test1 ld_imm64: reject JMP to 2nd instruction of BPF_LD_IMM64",
+ 	.insns =3D {
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 1),
+ 	BPF_LD_IMM64(BPF_REG_0, 0),
+@@ -14,7 +15,7 @@
+ 	.result =3D REJECT,
+ },
+ {
+-	"test2 ld_imm64",
++	"test2 ld_imm64: reject JMP to 2nd instruction of BPF_LD_IMM64",
+ 	.insns =3D {
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 1),
+ 	BPF_LD_IMM64(BPF_REG_0, 0),
+@@ -28,7 +29,7 @@
+ 	.result =3D REJECT,
+ },
+ {
+-	"test3 ld_imm64",
++	"test3 ld_imm64: reject incomplete BPF_LD_IMM64 instruction",
+ 	.insns =3D {
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 1),
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 0),
+@@ -42,7 +43,7 @@
+ 	.result =3D REJECT,
+ },
+ {
+-	"test4 ld_imm64",
++	"test4 ld_imm64: reject incomplete BPF_LD_IMM64 instruction",
+ 	.insns =3D {
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 0),
+ 	BPF_EXIT_INSN(),
+@@ -70,7 +71,7 @@
+ 	.retval =3D 1,
+ },
+ {
+-	"test8 ld_imm64",
++	"test8 ld_imm64: reject 1st off!=3D0",
+ 	.insns =3D {
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 1, 1),
+ 	BPF_RAW_INSN(0, 0, 0, 0, 1),
+@@ -80,7 +81,7 @@
+ 	.result =3D REJECT,
+ },
+ {
+-	"test9 ld_imm64",
++	"test9 ld_imm64: reject 2nd off!=3D0",
+ 	.insns =3D {
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 1),
+ 	BPF_RAW_INSN(0, 0, 0, 1, 1),
+@@ -90,7 +91,7 @@
+ 	.result =3D REJECT,
+ },
+ {
+-	"test10 ld_imm64",
++	"test10 ld_imm64: reject 2nd dst_reg!=3D0",
+ 	.insns =3D {
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 1),
+ 	BPF_RAW_INSN(0, BPF_REG_1, 0, 0, 1),
+@@ -100,7 +101,7 @@
+ 	.result =3D REJECT,
+ },
+ {
+-	"test11 ld_imm64",
++	"test11 ld_imm64: reject 2nd src_reg!=3D0",
+ 	.insns =3D {
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 1),
+ 	BPF_RAW_INSN(0, 0, BPF_REG_1, 0, 1),
+@@ -113,6 +114,7 @@
+ 	"test12 ld_imm64",
+ 	.insns =3D {
+ 	BPF_MOV64_IMM(BPF_REG_1, 0),
++	/* BPF_REG_1 is interpreted as BPF_PSEUDO_MAP_FD */
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, BPF_REG_1, 0, 1),
+ 	BPF_RAW_INSN(0, 0, 0, 0, 0),
+ 	BPF_EXIT_INSN(),
+@@ -121,7 +123,7 @@
+ 	.result =3D REJECT,
+ },
+ {
+-	"test13 ld_imm64",
++	"test13 ld_imm64: 2nd src_reg!=3D0",
+ 	.insns =3D {
+ 	BPF_MOV64_IMM(BPF_REG_1, 0),
+ 	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, BPF_REG_1, 0, 1),
 --=20
 2.36.1
 
