@@ -2,80 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FE4C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F00B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346758AbiETH7a (ORCPT
+        id S1346770AbiETH7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
+        Fri, 20 May 2022 03:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346751AbiETH7Z (ORCPT
+        with ESMTP id S1346738AbiETH71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:59:25 -0400
-Received: from relay3.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E527315D303
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:59:22 -0700 (PDT)
-Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay11.hostedemail.com (Postfix) with ESMTP id A07E7814D3;
-        Fri, 20 May 2022 07:59:21 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 5987220012;
-        Fri, 20 May 2022 07:59:15 +0000 (UTC)
-Message-ID: <ab048a2a99b7ff26da98ad01b575b036df7ddec9.camel@perches.com>
-Subject: Re: [PATCH v3] nvmem: brcm_nvram: check for allocation failure
-From:   Joe Perches <joe@perches.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Date:   Fri, 20 May 2022 00:59:12 -0700
-In-Reply-To: <20220520064516.GX4009@kadam>
-References: <20220520064516.GX4009@kadam>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Fri, 20 May 2022 03:59:27 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD8615D325;
+        Fri, 20 May 2022 00:59:24 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id F1E85100017;
+        Fri, 20 May 2022 07:59:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653033563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jUrOb7gzDfqcjgGGnV3qddsGrV2m84KgsE5E1hxmOQo=;
+        b=GGtq16fx0ICa1YTJHlP+y+ItSHWaMLcKTJ4U3FvZ2cV/IiKmp1XgxBlQuZyCeQh5he0fZj
+        cgwSCI8AYLvrICnV8Jd1LCsycV7nycaX2t1cD0j2q6IBy4i7QhZmcIwWy/PKLzmR0K+gOE
+        6u5SnJAPG9RcK3P6pnYWJlkhmlEX8NJfUQPgvGvH04Xt32g5krPn13Yzzfl+McDVYXaRhE
+        5n6wPT8KxAHmO4pBJLnjhrXGo29jxxtgodgWrcZ51rEaCCzG55iqTTtbm1grCyeOLnZs1j
+        WpNAIQrvcH/Iqli0EnQ9zTbfNCOEGAlclT1iKTsUxdYHMaGxWZQfneluY/YOcA==
+Date:   Fri, 20 May 2022 09:58:10 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next v5 07/13] net: dsa: rzn1-a5psw: add Renesas
+ RZ/N1 advanced 5 port switch driver
+Message-ID: <20220520095810.0b0c29ef@fixe.home>
+In-Reply-To: <20220519180851.chpqhou7ykt45oty@skbuf>
+References: <20220519153107.696864-1-clement.leger@bootlin.com>
+        <20220519153107.696864-8-clement.leger@bootlin.com>
+        <20220519180851.chpqhou7ykt45oty@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 5987220012
-X-Stat-Signature: uszn4rq8yguwbgz4noujdmrr6hoayhn8
-X-Rspamd-Server: rspamout05
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19k4XSOnPuhcFCvKet5IpLxGxgUIDlzBFA=
-X-HE-Tag: 1653033555-188531
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-20 at 09:45 +0300, Dan Carpenter wrote:
-> Check for if the kcalloc() fails.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 6e977eaa8280 ("nvmem: brcm_nvram: parse NVRAM content into NVMEM cells")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Acked-by: Rafał Miłecki <rafal@milecki.pl>
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> ---
-> v3: Update fixes tag
-> v2: I don't think anything changed in v2?  Added tags?
-[]
-> diff --git a/drivers/nvmem/brcm_nvram.c b/drivers/nvmem/brcm_nvram.c
-[]
-> @@ -97,6 +97,8 @@ static int brcm_nvram_parse(struct brcm_nvram *priv)
->  	len = le32_to_cpu(header.len);
->  
->  	data = kcalloc(1, len, GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
+Le Thu, 19 May 2022 21:08:51 +0300,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-trivia:
+> I think when you exit the for_each_available_child_of_node() loop you
+> need to manually call of_node_put(port).
 
-Not sure the kcalloc(1. ..) is useful.
+Yes you are right on that point. I'll fix that.
 
-It might be simpler using kzalloc, though given the memcpy_fromio
-below a kcalloc/kzalloc seems dubious and kmalloc could be used.
-
->  	memcpy_fromio(data, priv->base, len);
->  	data[len - 1] = '\0';
->  
-
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
