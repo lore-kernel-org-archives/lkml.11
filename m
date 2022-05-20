@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B65A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349211AbiETMWk (ORCPT
+        id S1348376AbiETMWq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35724 "EHLO
+        Fri, 20 May 2022 08:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349066AbiETMWc (ORCPT
+        with ESMTP id S1349070AbiETMWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 20 May 2022 08:22:32 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64EA4633AA;
-        Fri, 20 May 2022 05:22:26 -0700 (PDT)
-X-UUID: fe6414916f2d4efeaa4d8097663b7743-20220520
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B2462100;
+        Fri, 20 May 2022 05:22:25 -0700 (PDT)
+X-UUID: 9f970f6c4bf44003b6656ac957130f12-20220520
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:1de32e49-7415-4c35-b120-22d49b7567f1,OB:10,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:1de32e49-7415-4c35-b120-22d49b7567f1,OB:10,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:d5a2f4e2-edbf-4bd4-8a34-dfc5f7bb086d,C
-        OID:19ab49d313ef,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: fe6414916f2d4efeaa4d8097663b7743-20220520
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.5,REQID:ed9b546e-5ff6-497e-a020-fa2cef3cd8af,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:4ea4047a-5ef6-470b-96c9-bdb8ced32786,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 9f970f6c4bf44003b6656ac957130f12-20220520
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <allen-kh.cheng@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1490102431; Fri, 20 May 2022 20:22:19 +0800
+        with ESMTP id 1365632175; Fri, 20 May 2022 20:22:20 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 20 May 2022 20:22:20 +0800
 Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 20 May 2022 20:22:18 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 20 May 2022 20:22:20 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 20 May 2022 20:22:18 +0800
+ 15.2.792.3 via Frontend Transport; Fri, 20 May 2022 20:22:20 +0800
 From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -51,10 +51,12 @@ CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         "Chen-Yu Tsai" <wenst@chromium.org>,
         Ryder Lee <ryder.lee@kernel.org>, <hsinyi@chromium.org>,
         Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v11 0/3] Add basic node support for MediaTek MT8186 SoC
-Date:   Fri, 20 May 2022 20:22:14 +0800
-Message-ID: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
+Subject: [PATCH v11 2/3] dt-bindings: arm: Add compatible for MediaTek MT8186
+Date:   Fri, 20 May 2022 20:22:16 +0800
+Message-ID: <20220520122217.30716-3-allen-kh.cheng@mediatek.com>
 X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
+References: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -62,83 +64,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MT8186 is a SoC based on 64bit ARMv8 architecture.
-It contains 6 CA55 and 2 CA76 cores.
-MT8186 share many HW IP with MT65xx series.
+This commit adds dt-binding documentation for the MediaTek MT8186
+reference board.
 
-This patchset was tested on MT8186 evaluation board to shell.
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Based on next-20220519, linux-next/master
-
-changes since v9:
- - remove some merged PATCHs from series
- - reorder nodes in dts (cpu-map)
- - remove okay status in auxadc
- - remove unnecessary suffix node name for i2c
- - add pwm node 
- - add dsi-phy node 
- - add dpi node 
-
-changes since v9:
- - add one space before equal sign of drive-strength-adv
- - corect compatible name for big cores (ca76)
- - use upper case of address in pinctrl
- - add pwrap node
- - add pwm node
-
-changes since v8:
- - change name from pins_bus to pins-sda-scl
- - correct email address
- - add capacity-dmips-mhz for each CPU
- - add ppi-partitions in gic node
- - change name to power-domain
- - remove status "okay" in scp node
- - update timer and pericfg compatible in series
-
-changes since v7:
- - add scp&auxadc node
-
-changes since v6:
- - remove unnecessary blank line
-
-changes since v5:
- - replace Mediatek a to MediaTek
- - use GPL-2.0-only OR BSD-2-Clause
-
-changes since v4:
- - correct driver clock of mt8186
- - add power domains controller and clock controllers
- - add pinctrl, usb host, spi and i2c nodes
- - add node status in mt8186-evb.dts
- - correct some dtbs_check warnings
-
-changes since v3:
- - remove serial, mmc and phy patch from series. (already merged)
- - remove mcusysoff node
- - move oscillator nodes at the head of dts
- - change name from usb-phy to t-phy
-
-changes since v2:
- - add soc {} in mt8186.dtsi
-
-changes since v1:
- - add dt-bindings: arm: Add compatible for MediaTek MT8186
-
-Allen-KH Cheng (3):
-  dt-bindings: arm: mediatek: Add mt8186 pericfg compatible
-  dt-bindings: arm: Add compatible for MediaTek MT8186
-  arm64: dts: Add MediaTek SoC MT8186 dts and evaluation board and
-    Makefile
-
- .../devicetree/bindings/arm/mediatek.yaml     |    4 +
- .../arm/mediatek/mediatek,pericfg.yaml        |    1 +
- arch/arm64/boot/dts/mediatek/Makefile         |    1 +
- arch/arm64/boot/dts/mediatek/mt8186-evb.dts   |  232 ++++
- arch/arm64/boot/dts/mediatek/mt8186.dtsi      | 1016 +++++++++++++++++
- 5 files changed, 1254 insertions(+)
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8186-evb.dts
- create mode 100644 arch/arm64/boot/dts/mediatek/mt8186.dtsi
-
+diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
+index 4a2bd9759c47..5a29b7b381ef 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+@@ -131,6 +131,10 @@ properties:
+           - enum:
+               - mediatek,mt8183-evb
+           - const: mediatek,mt8183
++      - items:
++          - enum:
++              - mediatek,mt8186-evb
++          - const: mediatek,mt8186
+       - items:
+           - enum:
+               - mediatek,mt8192-evb
 -- 
 2.18.0
 
