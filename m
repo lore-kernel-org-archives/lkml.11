@@ -2,89 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A19D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351864AbiETQxA (ORCPT
+        id S1351905AbiETQxX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
+        Fri, 20 May 2022 12:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346045AbiETQw4 (ORCPT
+        with ESMTP id S1346045AbiETQxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:52:56 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C25C994FE;
-        Fri, 20 May 2022 09:52:55 -0700 (PDT)
-Date:   Fri, 20 May 2022 16:52:46 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1653065568;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h3cq8tceraEn5aryHaEp6+fdeoIPJQzR5dSACACvQ8I=;
-        b=XBnkrLsRDnLrdDwo/ZYTbEG8KHmWqxZNhcDsS6LXwZy0kf9Kg2e7GM0TmbgkHd7sHjR/2Z
-        GX5JOClwo7+Bhb9Sw9aAxj23Ws09l00m8C9o6CV4JLYXtE5Wvs+3xU+wjDe2LgrjEKqdVb
-        iepn2bao7z7REVaiWCLluxHvX+lgSnGhjgg+nwkbHAYWRiEvMAiQQIlg+cDtQXbZfkzpIk
-        jGnxQLPADeuWFOn52QZMtZfrCF31UzA5aujwHxzZKZVOT1+WroyjBCBBXSHbb6Gy9yLrAC
-        0+9iHbAMtZsnp5r9LezF6nEKPYiYK/G41Ijz7e8a/60C8nHg96qjMd/vzYw0XQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1653065568;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h3cq8tceraEn5aryHaEp6+fdeoIPJQzR5dSACACvQ8I=;
-        b=BjyBlSk/7BPNR49TmbEhfmNYan57JxLKfQDPvmo91kQttTmtCuySum9BT2oZhwHR/6p2N3
-        R56cQZYRcIj4AZAQ==
-From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: irq/core] Merge tag 'irqchip-5.19' of
- git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms into irq/core
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, maz@kernel.org
-In-Reply-To: <20220519165308.998315-1-maz@kernel.org>
-References: <20220519165308.998315-1-maz@kernel.org>
+        Fri, 20 May 2022 12:53:19 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EB5149162
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:53:17 -0700 (PDT)
+Received: from [192.168.1.18] ([86.243.180.246])
+        by smtp.orange.fr with ESMTPA
+        id s5sEnGEDBYaC7s5sEnOR8j; Fri, 20 May 2022 18:53:16 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 20 May 2022 18:53:16 +0200
+X-ME-IP: 86.243.180.246
+Message-ID: <7b1b26e4-cc8e-3375-788c-56b5b548367d@wanadoo.fr>
+Date:   Fri, 20 May 2022 18:53:10 +0200
 MIME-Version: 1.0
-Message-ID: <165306556654.4207.16860910960888100211.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] mtd: rawnand: cafe: fix drivers probe/remove methods
+Content-Language: en-GB
+To:     Peng Wu <wupeng58@huawei.com>, miquel.raynal@bootlin.com,
+        richard@nod.at, vigneshr@ti.com
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, liwei391@huawei.com,
+        Kernel Janitors <kernel-janitors@vger.kernel.org>
+References: <20220520084425.116686-1-wupeng58@huawei.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220520084425.116686-1-wupeng58@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/core branch of tip:
+Le 20/05/2022 à 10:44, Peng Wu a écrit :
+> Driver should call pci_disable_device() if it returns from
+> cafe_nand_probe() with error.
+> 
+> Meanwhile, the driver calls pci_enable_device() in
+> cafe_nand_probe(), but never calls pci_disable_device()
+> during removal.
+> 
+> Signed-off-by: Peng Wu <wupeng58@huawei.com>
+> ---
+> v2:
+> - fix the subject prefix with "mtd: ranwnand: cafe:"
+> ---
+>   drivers/mtd/nand/raw/cafe_nand.c | 9 +++++++--
+>   1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/mtd/nand/raw/cafe_nand.c b/drivers/mtd/nand/raw/cafe_nand.c
+> index 9dbf031716a6..af119e376352 100644
+> --- a/drivers/mtd/nand/raw/cafe_nand.c
+> +++ b/drivers/mtd/nand/raw/cafe_nand.c
+> @@ -679,8 +679,10 @@ static int cafe_nand_probe(struct pci_dev *pdev,
+>   	pci_set_master(pdev);
+>   
+>   	cafe = kzalloc(sizeof(*cafe), GFP_KERNEL);
+> -	if (!cafe)
+> -		return  -ENOMEM;
+> +	if (!cafe) {
+> +		err = -ENOMEM;
+> +		goto out_disable_device;
+> +	}
+>   
+>   	mtd = nand_to_mtd(&cafe->nand);
+>   	mtd->dev.parent = &pdev->dev;
+> @@ -801,6 +803,8 @@ static int cafe_nand_probe(struct pci_dev *pdev,
+>   	pci_iounmap(pdev, cafe->mmio);
+>    out_free_mtd:
+>   	kfree(cafe);
+> + out_disable_device:
+> +	pci_disable_device(pdev);
+>    out:
+>   	return err;
+>   }
+> @@ -822,6 +826,7 @@ static void cafe_nand_remove(struct pci_dev *pdev)
+>   	pci_iounmap(pdev, cafe->mmio);
+>   	dma_free_coherent(&cafe->pdev->dev, 2112, cafe->dmabuf, cafe->dmaaddr);
 
-Commit-ID:     cdb4913293897dde0df522ed5789ba016f3b9157
-Gitweb:        https://git.kernel.org/tip/cdb4913293897dde0df522ed5789ba016f3b9157
-Author:        Thomas Gleixner <tglx@linutronix.de>
-AuthorDate:    Fri, 20 May 2022 18:48:54 +02:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Fri, 20 May 2022 18:48:54 +02:00
+Hi,
 
-Merge tag 'irqchip-5.19' of git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms into irq/core
+Not related to this patch , but I wonder if this dma_free_coherent() is 
+needed.
+It is already part of cafe_nand_detach_chip() which is a .detach_chip() 
+function.
 
-Pull irqchip updates from Marc Zyngier:
+Is this .detach_chip() function already called (by nand_cleanup()) 
+somewhere in the removal process?
 
- - Add new infrastructure to stop gpiolib from rewriting irq_chip
-   structures behind our back. Convert a few of them, but this will
-   obviously be a long effort.
+CJ
 
- - A bunch of GICv3 improvements, such as using MMIO-based invalidations
-   when possible, and reducing the amount of polling we perform when
-   reconfiguring interrupts.
 
- - Another set of GICv3 improvements for the Pseudo-NMI functionality,
-   with a nice cleanup making it easy to reason about the various
-   states we can be in when an NMI fires.
+>   	kfree(cafe);
+> +	pci_disable_device(pdev);
+>   }
+>   
+>   static const struct pci_device_id cafe_nand_tbl[] = {
 
- - The usual bunch of misc fixes and minor improvements.
-
-Link: https://lore.kernel.org/all/20220519165308.998315-1-maz@kernel.org
----
