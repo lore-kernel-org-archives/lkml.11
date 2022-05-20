@@ -2,129 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346886AbiETIOp (ORCPT
+        id S1346881AbiETIOz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
+        Fri, 20 May 2022 04:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346833AbiETIOc (ORCPT
+        with ESMTP id S1346876AbiETIOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:14:32 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01olkn2106.outbound.protection.outlook.com [40.92.52.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA0F11E4A4;
-        Fri, 20 May 2022 01:14:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NyYnWqgRYl6SksZT5GTGvmcC87lx19VFHipt3ea+b9eAWF8LxNAHekm28KgZjaIWx6UVa79qgwJS5Yx3FsxTN/phTYAff6OAwfg0bV5cpHc65p3Sm3lYK5CFzCGaL6emeEvms4SEkTR6yjrUvjrjJXmpWkGR5PP7pKU/cGPuaT1uRRskfPCDiO8Lr+pCx4Wuq//B5cbhAI/6iGu60uI3ZqPu/2A0YaqaMreipAZ17WcmDGugZzro0AXt1blbO0kKtlB9Zit1vmeTsnn8mkGy1/VK0pdPGx/zL0IjdLgnSD9OtqrWjXsaf7TFcn9xOT8trM9mhd+G3dmS1uLyNz/Y3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NN9QdxiUtB9A3U61kYVT8XrrmhHpTh0o2HDMn0oAOOM=;
- b=EH4dSBuwLbH+H5sTfnK1hY7S1slCC0GsPlhEJet4Ik2O9zw3azQTVa0JZ/X/3yGv4PcY82ui2H42u5JLdRgITUAWu9fxvaZi4vI4utc3iH7GzRYm0v+2iiTw8UXTf1mIQBifo+v44CT3MPwrv4eeHam/H3t0xPD2ulRmiyVD1RJleqypJTeiHfJSxI4Ci6yG/OjcvS6g8V7WS7VsIqWukuf/dcmaP5fLMmKcQMssnKO8mFdVRjAuMAPBcLSUFvgsJaqNGqBSkag+0pB9CYBzuQujhgS8Yl2Wafe/o4vcejyzKfViBDLGClVPA/Nx/2MnT7MtANgzvNI1kbVDNmIkhQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NN9QdxiUtB9A3U61kYVT8XrrmhHpTh0o2HDMn0oAOOM=;
- b=q2sTQOf+Ad1cjoI6v6hGdEEpHGs4/1gHyro+Pf82sddpqIySE7NLoQ0n4UVn+u1/EqnMnH5hZ/C0E5dp7RwrJen/RyZ9tNw7GQIC5UadhpP18vZ9L+sNAXPInFNr1yUzldaBRCyLmqEYBflGGSpvS0qZZAziBWKdMr4Y4XTshP8/JRwy3FdvVU9MSvyKSLWOA0bM/6O2uthJFIJwvEDe4rRieU/L0hwBMKbb3owtnPil0brXs+H2Aut3l6nprYcdwWyLlq1gnQG9JU95OWHUteIZR08We7kZegcIQqqHVhKqo/9qpDrco272hvtolRkqtBnrKW5KlnMqSFKRYeRkyA==
-Received: from HK0PR01MB2801.apcprd01.prod.exchangelabs.com
- (2603:1096:203:95::22) by HK0PR01MB2962.apcprd01.prod.exchangelabs.com
- (2603:1096:203:8e::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17; Fri, 20 May
- 2022 08:14:28 +0000
-Received: from HK0PR01MB2801.apcprd01.prod.exchangelabs.com
- ([fe80::3022:ac4d:5d89:8c7c]) by HK0PR01MB2801.apcprd01.prod.exchangelabs.com
- ([fe80::3022:ac4d:5d89:8c7c%5]) with mapi id 15.20.5273.017; Fri, 20 May 2022
- 08:14:28 +0000
-From:   Kushagra Verma <kushagra765@outlook.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] usb: dwc3: Fix a repeated word checkpatch warning
-Date:   Fri, 20 May 2022 13:43:40 +0530
-Message-ID: <HK0PR01MB2801ED85410F9CCE4ED32880F8D39@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220520081341.16768-1-kushagra765@outlook.com>
-References: <20220520081341.16768-1-kushagra765@outlook.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN:  [lCJXP15wobY/x/Bw28khRrnMvmgU2fNgqNoVIgGG19kGevlyKqyfvG+3tPc2r/HA]
-X-ClientProxiedBy: BMXPR01CA0075.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:54::15) To HK0PR01MB2801.apcprd01.prod.exchangelabs.com
- (2603:1096:203:95::22)
-X-Microsoft-Original-Message-ID: <20220520081341.16768-3-kushagra765@outlook.com>
+        Fri, 20 May 2022 04:14:48 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF3B1271A7;
+        Fri, 20 May 2022 01:14:45 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id F389D60011;
+        Fri, 20 May 2022 08:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653034484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bc7UGMYsnzw6kppIUMYQ6w3HCbQTV2JavDJn16CiLWs=;
+        b=B3UPGYHh/MFenN+SGYf42FlOzx1XBlBg+yOYxWDfKkF3peYwAzFCj8+jh8dj9OOugTZS9a
+        7IpKbPkpoGCWCdl1mDB7DMoyBOotILQg7QjubU/5BS57OV30rBaPv7/u91ciPlP88XAglH
+        wRc82rWorsEitq1QkWybn3v8GSnAtb/I1Z4VizY90K04gavHrF+KYRFw2L0tv/d3B6DC6l
+        gmgpVbR3Nvj+7kAOVSTtXV/xkvRJYqGG1XZll1nDPDesoOPRxHCyYcZAixxftekJUeS3E6
+        ZL4c0eVztlulCSceOf3yJWY4gSQy5k7W8QHX8qdiYYQ3rzw1jS0Po8bxis6eCA==
+Date:   Fri, 20 May 2022 10:13:32 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v5 11/13] ARM: dts: r9a06g032: describe GMAC2
+Message-ID: <20220520101332.0905739f@fixe.home>
+In-Reply-To: <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
+References: <20220519153107.696864-1-clement.leger@bootlin.com>
+        <20220519153107.696864-12-clement.leger@bootlin.com>
+        <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f340cb79-5ba5-466b-7f0b-08da3a38c254
-X-MS-TrafficTypeDiagnostic: HK0PR01MB2962:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dK9Mg2B6Mdidm3aj9MtllOQKV0U/0dwBzIR3okq3o/SXKEpudgucdLBwWicusuQ/rqYgPvx8marojVQ3O61c7IrGwjdnwOyXSc8Tc17aVV/qndSFCfv3POe53Zkf6GQa6qwoMLyvl6l99k0DpamcIFdKhMBmKe1Yjx795kJKVNExeZD6HwIsdSjbRbkiS1U914pdM/e1xrkDYs8FkEqRC8WkhCyehhTQH/JV8AlYoMXy5RcRdYVqZtz7DGirlgMTnfGFRtQNcdXVcDS6l6DQ2xAU4N+Kktr3dNs9vb1u7C5SDjUQfLjfDwT+tU7Lsid/u+5kAzH2YtReb/G55MChH7Rc6SkT2kREgvz4Uut4dtkfYRqFbDCwhSMbliHXfE56l/n8QNYIVZS3joyQ+lBbwAPVAH1lyO3/HCCZTWx67Y5hYWD1jgb12T4xGhkYepZnHGTn7Dc0umpN2i+NlXRYlyWkdYWM+Gw1tyc4/fxtTs/SS7SX/yG491I+9djFBPCrNbjQKunv5Y9sI4pWWeAyOoAWM5V9s+xN51QKpydp7jDGNQUt1LKFIOOXiRaIhRkS1abXE8r701HyVmBlX+VO1Q==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+tfCDXSQcMTjovwH20lCzcTFm86OW1yrAZDrdb8FQeBCKGaLXsYBopWvF7Qg?=
- =?us-ascii?Q?TsrQNgSyHGDnhmOVKYHxd/JMiZCc3WHLrt7YZtHpAmPRWy75wV6BhBwtk1+l?=
- =?us-ascii?Q?KM7hOGxEbke8mvK0DUn1gVg5WOnshOYBPq5xfFbqhFwVwpbhTt5VnSvO3eOL?=
- =?us-ascii?Q?rxoqDKZncty7+21gUpstBGelFasIkmvlks/Smi3pHGAIZC0NzPxyE2ir44y9?=
- =?us-ascii?Q?c5RX1+Yu6EXqENP2ozzj3RvNEJJL6r1JrUBRvLhvIjyGdSueMCiMIEnoQSU4?=
- =?us-ascii?Q?XkAHNxqknMNdo7hanfeSremc00X1rYhhdZulYz8Z4zXqrL61gd3OkPjAj378?=
- =?us-ascii?Q?dX5yHyzZbZClh61htPPuDi7sPypMfa5WLGak7FptkC+2R6fZ5P4mHpRlC82F?=
- =?us-ascii?Q?i1/WL6FQzY4hD5F1PQuJKEbdfaNwJQLFPAEKihyxY2+Y1yQSllznX2mTOBAQ?=
- =?us-ascii?Q?tEKbcvz0nzOkzIRCNkK/nuh4C0uS/MoHDrRYb0OLeblZLPE6hX8LZ/57d4ug?=
- =?us-ascii?Q?KjkpUY1fp723S3uBSDIFEwrUH+azTg6OP9RWq7RM8Hu5BhxQWxyrO76oD4Qk?=
- =?us-ascii?Q?HTGLBcsv0FToNxi1bVlmWMxBxl3sGuUYBdJsDyMmA3o41XYJPe5QP81sFi8q?=
- =?us-ascii?Q?8K83zI5uFBN3QVvHKpYcIA/LMejruhg1cUEIdkWSUf753HVGZQHCEw/Hhc9s?=
- =?us-ascii?Q?JttUhqwqjYLWRzlnQCXBJ5Dbcb6Uw3MLoPJrfHunEEGrPvg9hcmLciGs3IrE?=
- =?us-ascii?Q?9NkdEFAIJkCDU9Z9DBZ8KdEP6RAI20a8/V79Q9h7SxSc7QqQh0gjGkLI7Wgl?=
- =?us-ascii?Q?L8c0VyZDYkq9blJrirXhztCX+J4dQ3zg02fXxGjc6n6/+VPOLCH/A1iDoBko?=
- =?us-ascii?Q?0KkgMjDpg+yiN/n79l+w429/khTv1C4Vsz5HxdXx9qTmth5IBZgVWUcMMbjt?=
- =?us-ascii?Q?Oo+bOytLCssdZ8Lvol7icFiajT3Rh+1fR7rwjPdtJ63Hv3LoWj2krfCMQA7L?=
- =?us-ascii?Q?C2I0Qnec/pnAIfEKGnXSnOU/VXE4IwhCcAwWz7q5CExS+869QTkV92C22b0j?=
- =?us-ascii?Q?IJ2eZTIZzGkqoexfjyIMaCKMdPzhsJlPjEki9S7oAlUk8B9l2fY6Nr06F2Dc?=
- =?us-ascii?Q?JGy3ezGI7mg80egEjJGe3P7B8OlSoJxxGoVYsHim7ZlEdFEzGdKd0F2LOEBk?=
- =?us-ascii?Q?5fkym8J9sutfye7ypMMChaNVHMr8143YwVN8e8Nxs2oQWrOyo/3Vi/vIe/F/?=
- =?us-ascii?Q?Aa7zZ8UDci5a7BMnCv5kWg/196jkCLwcAD9YGrO4Mj0MT1kPiRXsp/vWaZlm?=
- =?us-ascii?Q?mhieQfuPbeieHXTkgqhOfVbvnddEz9Uhlw3Fi/2XS/eBbge9eSG7BA57LZJS?=
- =?us-ascii?Q?yfwUwiCq+/IijOcVmtGSn0NilzKKWcXhHMQY7O4F+ra6zgdf702uM6fpDhWl?=
- =?us-ascii?Q?mNscxTymIXBPzn71tjwz5t11RwPD3LJOUpzLPpR0+G/D1Nbpg93yG6DGsJmy?=
- =?us-ascii?Q?S6H9Mnsja8HBRg0sThLQ0NHyIHbaLff7/E6x?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f340cb79-5ba5-466b-7f0b-08da3a38c254
-X-MS-Exchange-CrossTenant-AuthSource: HK0PR01MB2801.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2022 08:14:28.2524
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR01MB2962
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes a repeated word checkpatch warning in ep0.c by removing the repeated
-'only' word.
+Le Fri, 20 May 2022 09:18:58 +0200,
+Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
 
-Signed-off-by: Kushagra Verma <kushagra765@outlook.com>
----
- drivers/usb/dwc3/ep0.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Hi Cl=C3=A9ment
+>=20
+> On Thu, May 19, 2022 at 5:32 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
+otlin.com> wrote:
+> > RZ/N1 SoC includes two MAC named GMACx that are compatible with the
+> > "snps,dwmac" driver. GMAC1 is connected directly to the MII converter
+> > port 1. GMAC2 however can be used as the MAC for the switch CPU
+> > management port or can be muxed to be connected directly to the MII
+> > converter port 2. This commit add description for the GMAC2 which will
+> > be used by the switch description.
+> >
+> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> =20
+>=20
+> Thanks for your patch!
+>=20
+> > --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> > +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> > @@ -200,6 +200,23 @@ nand_controller: nand-controller@40102000 {
+> >                         status =3D "disabled";
+> >                 };
+> >
+> > +               gmac2: ethernet@44002000 {
+> > +                       compatible =3D "snps,dwmac"; =20
+>=20
+> Does this need an SoC-specific compatible value?
 
-diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
-index 5d642660fd15..2a510e84eef4 100644
---- a/drivers/usb/dwc3/ep0.c
-+++ b/drivers/usb/dwc3/ep0.c
-@@ -473,7 +473,7 @@ static int dwc3_ep0_handle_device(struct dwc3 *dwc,
- 	case USB_DEVICE_REMOTE_WAKEUP:
- 		break;
- 	/*
--	 * 9.4.1 says only only for SS, in AddressState only for
-+	 * 9.4.1 says only for SS, in AddressState only for
- 	 * default control pipe
- 	 */
- 	case USB_DEVICE_U1_ENABLE:
--- 
-2.36.1
+Indeed, it might be useful to introduce a specific SoC compatible since
+in a near future, there might be some specific support for that gmac.
+Here is an overview of the gmac connection on the SoC:
 
+                                          =E2=94=8C=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90   =E2=94=
+=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=90
+                                          =E2=94=82         =E2=94=82   =E2=
+=94=82          =E2=94=82
+                                          =E2=94=82  GMAC2  =E2=94=82   =E2=
+=94=82  GMAC1   =E2=94=82
+                                          =E2=94=82         =E2=94=82   =E2=
+=94=82          =E2=94=82
+                                          =E2=94=94=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98   =E2=94=
+=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=98
+                                              =E2=94=82               =E2=
+=94=82
+                                              =E2=94=82               =E2=
+=94=82
+                                              =E2=94=82               =E2=
+=94=82
+                                         =E2=94=8C=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=90        =E2=94=82
+                                         =E2=94=82           =E2=94=82     =
+   =E2=94=82
+            =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=A4  SWITCH   =E2=94=
+=82        =E2=94=82
+            =E2=94=82                            =E2=94=82           =E2=94=
+=82        =E2=94=82
+            =E2=94=82          =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=B4=E2=94=80=E2=94=AC=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=98        =E2=94=82
+            =E2=94=82          =E2=94=82            =E2=94=8C=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98    =E2=94=82           =
+  =E2=94=82
+            =E2=94=82          =E2=94=82            =E2=94=82           =E2=
+=94=82             =E2=94=82
+       =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BC=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BC=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BC=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=90
+       =E2=94=82                      MII Converter                        =
+=E2=94=82
+       =E2=94=82                                                           =
+=E2=94=82
+       =E2=94=82                                                           =
+=E2=94=82
+       =E2=94=82 port 1      port 2       port 3      port 4       port 5  =
+=E2=94=82
+       =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=98
+
+As you can see, the GMAC1 is directly connected to MIIC converter and
+thus will need a "pcs-handle" property to point on the MII converter
+port whereas the GMAC2 is directly connected to the switch in GMII.
+
+Is "renesas,r9a06g032-gmac2", "renesas,rzn1-switch-gmac2" looks ok for
+you for this one ?
+
+Thanks,
+
+Cl=C3=A9ment
+
+>=20
+> > +                       reg =3D <0x44002000 0x2000>;
+> > +                       interrupt-parent =3D <&gic>;
+> > +                       interrupts =3D <GIC_SPI 37
+> > IRQ_TYPE_LEVEL_HIGH>,
+> > +                                    <GIC_SPI 39
+> > IRQ_TYPE_LEVEL_HIGH>,
+> > +                                    <GIC_SPI 38
+> > IRQ_TYPE_LEVEL_HIGH>;
+> > +                       interrupt-names =3D "macirq", "eth_wake_irq",
+> > "eth_lpi";
+> > +                       clock-names =3D "stmmaceth";
+> > +                       clocks =3D <&sysctrl R9A06G032_HCLK_GMAC1>; =20
+>=20
+> Missing "power-domains", also in the DT bindings.
+> The driver already uses Runtime PM.
+
+Ok,I'll add that to the DT and modify the DWMAC bindings.
+
+>=20
+> > +                       snps,multicast-filter-bins =3D <256>;
+> > +                       snps,perfect-filter-entries =3D <128>;
+> > +                       tx-fifo-depth =3D <2048>;
+> > +                       rx-fifo-depth =3D <4096>;
+> > +                       status =3D "disabled";
+> > +               };
+> > +
+> >                 eth_miic: eth-miic@44030000 {
+> >                         compatible =3D "renesas,r9a06g032-miic",
+> > "renesas,rzn1-miic"; #address-cells =3D <1>; =20
+>=20
+> Gr{oetje,eeting}s,
+>=20
+>                         Geert
+>=20
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 --
+> geert@linux-m68k.org
+>=20
+> In personal conversations with technical people, I call myself a
+> hacker. But when I'm talking to journalists I just say "programmer"
+> or something like that. -- Linus Torvalds
+
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
