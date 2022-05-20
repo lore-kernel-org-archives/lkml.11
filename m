@@ -2,307 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB86C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 16:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351831AbiETQqO (ORCPT
+        id S1351894AbiETQqj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 12:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
+        Fri, 20 May 2022 12:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351836AbiETQqF (ORCPT
+        with ESMTP id S1351904AbiETQqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 12:46:05 -0400
+        Fri, 20 May 2022 12:46:33 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 506CA2D1E7
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:46:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F5B24B878
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 09:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653065163;
+        s=mimecast20190719; t=1653065179;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=8tY2q7zn9VRWJYmO/jzh+mhL3v7V1mGbIaM8GBQpyXM=;
-        b=WV4qqi1s1NmSV9eVs7i/iG0pQlSjNGB0Xl+bk8x28aI0UMCu+zZCPHdJHt0atz2L3e8fNT
-        CZoxVH4T1AXAcZtXcz8X++o1ktzvEgFfdQwqkRCabl+EyAyJ8xvA8++OSp0IyB6gN5Px9v
-        BnAVYaTHkOmfIqvvy7M/z4vUU2NIHd4=
+        bh=meBjhmFfWCWRF5B+rjjOpSQoSHbJGlzp2s50rRgeeMM=;
+        b=JL8AR+fNUVL1/VDGxPOBwXoOK41TXc9CLpODFB1bYdwYeHlZeOxVos7Zu3YZZeim1AwgqJ
+        Ig++DNs6IYw7zWMuDVdHhzWXElBk232i1CW9TG7T61BIsvFOGKIhojV0r9AUYxzXybzjmS
+        vMd55wkTqJUH3OEBCuQGx8Dt4q2MJio=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-368-KHhhVru3OwCsl5Dc4OFBKw-1; Fri, 20 May 2022 12:46:02 -0400
-X-MC-Unique: KHhhVru3OwCsl5Dc4OFBKw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-382-qKiHaK6kNsyICl_PfkytLg-1; Fri, 20 May 2022 12:46:15 -0400
+X-MC-Unique: qKiHaK6kNsyICl_PfkytLg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0A5F6101A52C;
-        Fri, 20 May 2022 16:46:02 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 566CE8001EA;
+        Fri, 20 May 2022 16:46:15 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 547387AE4;
-        Fri, 20 May 2022 16:46:01 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9F56BC53360;
+        Fri, 20 May 2022 16:46:14 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 1/7] rxrpc: Allow list of in-use local UDP endpoints
- to be viewed in /proc
+Subject: [PATCH net-next 3/7] rxrpc: Fix locking issue
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Fri, 20 May 2022 17:46:00 +0100
-Message-ID: <165306516064.34989.17925915798150710365.stgit@warthog.procyon.org.uk>
+Date:   Fri, 20 May 2022 17:46:13 +0100
+Message-ID: <165306517397.34989.14593967592142268589.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
 References: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow the list of in-use local UDP endpoints in the current network
-namespace to be viewed in /proc.
+There's a locking issue with the per-netns list of calls in rxrpc.  The
+pieces of code that add and remove a call from the list use write_lock()
+and the calls procfile uses read_lock() to access it.  However, the timer
+callback function may trigger a removal by trying to queue a call for
+processing and finding that it's already queued - at which point it has a
+spare refcount that it has to do something with.  Unfortunately, if it puts
+the call and this reduces the refcount to 0, the call will be removed from
+the list.  Unfortunately, since the _bh variants of the locking functions
+aren't used, this can deadlock.
 
-To aid with this, the endpoint list is converted to an hlist and RCU-safe
-manipulation is used so that the list can be read with only the RCU
-read lock held.
+================================
+WARNING: inconsistent lock state
+5.18.0-rc3-build4+ #10 Not tainted
+--------------------------------
+inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+ksoftirqd/2/25 [HC0[0]:SC1[1]:HE1:SE0] takes:
+ffff888107ac4038 (&rxnet->call_lock){+.?.}-{2:2}, at: rxrpc_put_call+0x103/0x14b
+{SOFTIRQ-ON-W} state was registered at:
+...
+ Possible unsafe locking scenario:
 
+       CPU0
+       ----
+  lock(&rxnet->call_lock);
+  <Interrupt>
+    lock(&rxnet->call_lock);
+
+ *** DEADLOCK ***
+
+1 lock held by ksoftirqd/2/25:
+ #0: ffff8881008ffdb0 ((&call->timer)){+.-.}-{0:0}, at: call_timer_fn+0x5/0x23d
+
+Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- net/rxrpc/ar-internal.h  |    5 ++-
- net/rxrpc/local_object.c |   37 ++++++++++++-------------
- net/rxrpc/net_ns.c       |    5 +++
- net/rxrpc/proc.c         |   69 ++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 94 insertions(+), 22 deletions(-)
+ fs/seq_file.c            |   32 ++++++++++++++++++++++++++++++++
+ include/linux/list.h     |   10 ++++++++++
+ include/linux/seq_file.h |    4 ++++
+ net/rxrpc/ar-internal.h  |    2 +-
+ net/rxrpc/call_accept.c  |    6 +++---
+ net/rxrpc/call_object.c  |   18 +++++++++---------
+ net/rxrpc/net_ns.c       |    2 +-
+ net/rxrpc/proc.c         |   10 ++--------
+ 8 files changed, 62 insertions(+), 22 deletions(-)
 
+diff --git a/fs/seq_file.c b/fs/seq_file.c
+index 7ab8a58c29b6..18bd1c8a8a38 100644
+--- a/fs/seq_file.c
++++ b/fs/seq_file.c
+@@ -931,6 +931,38 @@ struct list_head *seq_list_next(void *v, struct list_head *head, loff_t *ppos)
+ }
+ EXPORT_SYMBOL(seq_list_next);
+ 
++struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos)
++{
++	struct list_head *lh;
++
++	list_for_each_rcu(lh, head)
++		if (pos-- == 0)
++			return lh;
++
++	return NULL;
++}
++EXPORT_SYMBOL(seq_list_start_rcu);
++
++struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos)
++{
++	if (!pos)
++		return head;
++
++	return seq_list_start_rcu(head, pos - 1);
++}
++EXPORT_SYMBOL(seq_list_start_head_rcu);
++
++struct list_head *seq_list_next_rcu(void *v, struct list_head *head,
++				    loff_t *ppos)
++{
++	struct list_head *lh;
++
++	lh = rcu_dereference(((struct list_head *)v)->next);
++	++*ppos;
++	return lh == head ? NULL : lh;
++}
++EXPORT_SYMBOL(seq_list_next_rcu);
++
+ /**
+  * seq_hlist_start - start an iteration of a hlist
+  * @head: the head of the hlist
+diff --git a/include/linux/list.h b/include/linux/list.h
+index c147eeb2d39d..57e8b559cdf6 100644
+--- a/include/linux/list.h
++++ b/include/linux/list.h
+@@ -605,6 +605,16 @@ static inline void list_splice_tail_init(struct list_head *list,
+ #define list_for_each(pos, head) \
+ 	for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
+ 
++/**
++ * list_for_each_rcu - Iterate over a list in an RCU-safe fashion
++ * @pos:	the &struct list_head to use as a loop cursor.
++ * @head:	the head for your list.
++ */
++#define list_for_each_rcu(pos, head)		  \
++	for (pos = rcu_dereference((head)->next); \
++	     !list_is_head(pos, (head)); \
++	     pos = rcu_dereference(pos->next))
++
+ /**
+  * list_for_each_continue - continue iteration over a list
+  * @pos:	the &struct list_head to use as a loop cursor.
+diff --git a/include/linux/seq_file.h b/include/linux/seq_file.h
+index 60820ab511d2..bd023dd38ae6 100644
+--- a/include/linux/seq_file.h
++++ b/include/linux/seq_file.h
+@@ -277,6 +277,10 @@ extern struct list_head *seq_list_start_head(struct list_head *head,
+ extern struct list_head *seq_list_next(void *v, struct list_head *head,
+ 		loff_t *ppos);
+ 
++extern struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos);
++extern struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos);
++extern struct list_head *seq_list_next_rcu(void *v, struct list_head *head, loff_t *ppos);
++
+ /*
+  * Helpers for iteration over hlist_head-s in seq_files
+  */
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 969e532f77a9..ac1f88a0e120 100644
+index 52a23d03d694..dcc0ec0bf3de 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -88,7 +88,7 @@ struct rxrpc_net {
- 	struct work_struct	client_conn_reaper;
- 	struct timer_list	client_conn_reap_timer;
+@@ -60,7 +60,7 @@ struct rxrpc_net {
+ 	struct proc_dir_entry	*proc_net;	/* Subdir in /proc/net */
+ 	u32			epoch;		/* Local epoch for detecting local-end reset */
+ 	struct list_head	calls;		/* List of calls active in this namespace */
+-	rwlock_t		call_lock;	/* Lock for ->calls */
++	spinlock_t		call_lock;	/* Lock for ->calls */
+ 	atomic_t		nr_calls;	/* Count of allocated calls */
  
--	struct list_head	local_endpoints;
-+	struct hlist_head	local_endpoints;
- 	struct mutex		local_mutex;	/* Lock for ->local_endpoints */
+ 	atomic_t		nr_conns;
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index 8ae59edc2551..99e10eea3732 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -140,9 +140,9 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
+ 	write_unlock(&rx->call_lock);
  
- 	DECLARE_HASHTABLE	(peer_hash, 10);
-@@ -281,7 +281,7 @@ struct rxrpc_local {
- 	atomic_t		active_users;	/* Number of users of the local endpoint */
- 	atomic_t		usage;		/* Number of references to the structure */
- 	struct rxrpc_net	*rxnet;		/* The network ns in which this resides */
--	struct list_head	link;
-+	struct hlist_node	link;
- 	struct socket		*socket;	/* my UDP socket */
- 	struct work_struct	processor;
- 	struct rxrpc_sock __rcu	*service;	/* Service(s) listening on this endpoint */
-@@ -1014,6 +1014,7 @@ void rxrpc_put_peer_locked(struct rxrpc_peer *);
- extern const struct seq_operations rxrpc_call_seq_ops;
- extern const struct seq_operations rxrpc_connection_seq_ops;
- extern const struct seq_operations rxrpc_peer_seq_ops;
-+extern const struct seq_operations rxrpc_local_seq_ops;
+ 	rxnet = call->rxnet;
+-	write_lock(&rxnet->call_lock);
+-	list_add_tail(&call->link, &rxnet->calls);
+-	write_unlock(&rxnet->call_lock);
++	spin_lock_bh(&rxnet->call_lock);
++	list_add_tail_rcu(&call->link, &rxnet->calls);
++	spin_unlock_bh(&rxnet->call_lock);
  
- /*
-  * recvmsg.c
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index 6a1611b0e303..ea6f338bd131 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -82,7 +82,7 @@ static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
- 		atomic_set(&local->usage, 1);
- 		atomic_set(&local->active_users, 1);
- 		local->rxnet = rxnet;
--		INIT_LIST_HEAD(&local->link);
-+		INIT_HLIST_NODE(&local->link);
- 		INIT_WORK(&local->processor, rxrpc_local_processor);
- 		init_rwsem(&local->defrag_sem);
- 		skb_queue_head_init(&local->reject_queue);
-@@ -180,7 +180,7 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- {
- 	struct rxrpc_local *local;
- 	struct rxrpc_net *rxnet = rxrpc_net(net);
--	struct list_head *cursor;
-+	struct hlist_node *cursor;
- 	const char *age;
- 	long diff;
- 	int ret;
-@@ -190,16 +190,12 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
+ 	b->call_backlog[call_head] = call;
+ 	smp_store_release(&b->call_backlog_head, (call_head + 1) & (size - 1));
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 8764a4f19c03..84d0a4109645 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -337,9 +337,9 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
+ 	write_unlock(&rx->call_lock);
  
- 	mutex_lock(&rxnet->local_mutex);
+ 	rxnet = call->rxnet;
+-	write_lock(&rxnet->call_lock);
+-	list_add_tail(&call->link, &rxnet->calls);
+-	write_unlock(&rxnet->call_lock);
++	spin_lock_bh(&rxnet->call_lock);
++	list_add_tail_rcu(&call->link, &rxnet->calls);
++	spin_unlock_bh(&rxnet->call_lock);
  
--	for (cursor = rxnet->local_endpoints.next;
--	     cursor != &rxnet->local_endpoints;
--	     cursor = cursor->next) {
--		local = list_entry(cursor, struct rxrpc_local, link);
-+	hlist_for_each(cursor, &rxnet->local_endpoints) {
-+		local = hlist_entry(cursor, struct rxrpc_local, link);
+ 	/* From this point on, the call is protected by its own lock. */
+ 	release_sock(&rx->sk);
+@@ -633,9 +633,9 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
+ 		ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
  
- 		diff = rxrpc_local_cmp_key(local, srx);
--		if (diff < 0)
-+		if (diff != 0)
- 			continue;
--		if (diff > 0)
--			break;
- 
- 		/* Services aren't allowed to share transport sockets, so
- 		 * reject that here.  It is possible that the object is dying -
-@@ -211,9 +207,10 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 			goto addr_in_use;
+ 		if (!list_empty(&call->link)) {
+-			write_lock(&rxnet->call_lock);
++			spin_lock_bh(&rxnet->call_lock);
+ 			list_del_init(&call->link);
+-			write_unlock(&rxnet->call_lock);
++			spin_unlock_bh(&rxnet->call_lock);
  		}
  
--		/* Found a match.  We replace a dying object.  Attempting to
--		 * bind the transport socket may still fail if we're attempting
--		 * to use a local address that the dying object is still using.
-+		/* Found a match.  We want to replace a dying object.
-+		 * Attempting to bind the transport socket may still fail if
-+		 * we're attempting to use a local address that the dying
-+		 * object is still using.
- 		 */
- 		if (!rxrpc_use_local(local))
- 			break;
-@@ -230,10 +227,12 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 	if (ret < 0)
- 		goto sock_error;
+ 		rxrpc_cleanup_call(call);
+@@ -707,7 +707,7 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
+ 	_enter("");
  
--	if (cursor != &rxnet->local_endpoints)
--		list_replace_init(cursor, &local->link);
--	else
--		list_add_tail(&local->link, cursor);
-+	if (cursor) {
-+		hlist_replace_rcu(cursor, &local->link);
-+		cursor->pprev = NULL;
-+	} else {
-+		hlist_add_head_rcu(&local->link, &rxnet->local_endpoints);
-+	}
- 	age = "new";
+ 	if (!list_empty(&rxnet->calls)) {
+-		write_lock(&rxnet->call_lock);
++		spin_lock_bh(&rxnet->call_lock);
  
- found:
-@@ -374,7 +373,7 @@ static void rxrpc_local_destroyer(struct rxrpc_local *local)
- 	local->dead = true;
+ 		while (!list_empty(&rxnet->calls)) {
+ 			call = list_entry(rxnet->calls.next,
+@@ -722,12 +722,12 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
+ 			       rxrpc_call_states[call->state],
+ 			       call->flags, call->events);
  
- 	mutex_lock(&rxnet->local_mutex);
--	list_del_init(&local->link);
-+	hlist_del_init_rcu(&local->link);
- 	mutex_unlock(&rxnet->local_mutex);
- 
- 	rxrpc_clean_up_local_conns(local);
-@@ -458,9 +457,9 @@ void rxrpc_destroy_all_locals(struct rxrpc_net *rxnet)
- 
- 	flush_workqueue(rxrpc_workqueue);
- 
--	if (!list_empty(&rxnet->local_endpoints)) {
-+	if (!hlist_empty(&rxnet->local_endpoints)) {
- 		mutex_lock(&rxnet->local_mutex);
--		list_for_each_entry(local, &rxnet->local_endpoints, link) {
-+		hlist_for_each_entry(local, &rxnet->local_endpoints, link) {
- 			pr_err("AF_RXRPC: Leaked local %p {%d}\n",
- 			       local, atomic_read(&local->usage));
+-			write_unlock(&rxnet->call_lock);
++			spin_unlock_bh(&rxnet->call_lock);
+ 			cond_resched();
+-			write_lock(&rxnet->call_lock);
++			spin_lock_bh(&rxnet->call_lock);
  		}
+ 
+-		write_unlock(&rxnet->call_lock);
++		spin_unlock_bh(&rxnet->call_lock);
+ 	}
+ 
+ 	atomic_dec(&rxnet->nr_calls);
 diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
-index cc7e30733feb..34f389975a7d 100644
+index 34f389975a7d..bb4c25d6df64 100644
 --- a/net/rxrpc/net_ns.c
 +++ b/net/rxrpc/net_ns.c
-@@ -72,7 +72,7 @@ static __net_init int rxrpc_init_net(struct net *net)
- 	timer_setup(&rxnet->client_conn_reap_timer,
- 		    rxrpc_client_conn_reap_timeout, 0);
+@@ -50,7 +50,7 @@ static __net_init int rxrpc_init_net(struct net *net)
+ 	rxnet->epoch |= RXRPC_RANDOM_EPOCH;
  
--	INIT_LIST_HEAD(&rxnet->local_endpoints);
-+	INIT_HLIST_HEAD(&rxnet->local_endpoints);
- 	mutex_init(&rxnet->local_mutex);
+ 	INIT_LIST_HEAD(&rxnet->calls);
+-	rwlock_init(&rxnet->call_lock);
++	spin_lock_init(&rxnet->call_lock);
+ 	atomic_set(&rxnet->nr_calls, 1);
  
- 	hash_init(rxnet->peer_hash);
-@@ -98,6 +98,9 @@ static __net_init int rxrpc_init_net(struct net *net)
- 	proc_create_net("peers", 0444, rxnet->proc_net,
- 			&rxrpc_peer_seq_ops,
- 			sizeof(struct seq_net_private));
-+	proc_create_net("locals", 0444, rxnet->proc_net,
-+			&rxrpc_local_seq_ops,
-+			sizeof(struct seq_net_private));
- 	return 0;
- 
- err_proc:
+ 	atomic_set(&rxnet->nr_conns, 1);
 diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
-index e2f990754f88..8a8f776f91ae 100644
+index 8967201fd8e5..245418943e01 100644
 --- a/net/rxrpc/proc.c
 +++ b/net/rxrpc/proc.c
-@@ -334,3 +334,72 @@ const struct seq_operations rxrpc_peer_seq_ops = {
- 	.stop   = rxrpc_peer_seq_stop,
- 	.show   = rxrpc_peer_seq_show,
- };
-+
-+/*
-+ * Generate a list of extant virtual local endpoints in /proc/net/rxrpc/locals
-+ */
-+static int rxrpc_local_seq_show(struct seq_file *seq, void *v)
-+{
-+	struct rxrpc_local *local;
-+	char lbuff[50];
-+
-+	if (v == SEQ_START_TOKEN) {
-+		seq_puts(seq,
-+			 "Proto Local                                          "
-+			 " Use Act\n");
-+		return 0;
-+	}
-+
-+	local = hlist_entry(v, struct rxrpc_local, link);
-+
-+	sprintf(lbuff, "%pISpc", &local->srx.transport);
-+
-+	seq_printf(seq,
-+		   "UDP   %-47.47s %3u %3u\n",
-+		   lbuff,
-+		   atomic_read(&local->usage),
-+		   atomic_read(&local->active_users));
-+
-+	return 0;
-+}
-+
-+static void *rxrpc_local_seq_start(struct seq_file *seq, loff_t *_pos)
-+	__acquires(rcu)
-+{
-+	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
-+	unsigned int n;
-+
-+	rcu_read_lock();
-+
-+	if (*_pos >= UINT_MAX)
-+		return NULL;
-+
-+	n = *_pos;
-+	if (n == 0)
-+		return SEQ_START_TOKEN;
-+
-+	return seq_hlist_start_rcu(&rxnet->local_endpoints, n - 1);
-+}
-+
-+static void *rxrpc_local_seq_next(struct seq_file *seq, void *v, loff_t *_pos)
-+{
-+	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
-+
-+	if (*_pos >= UINT_MAX)
-+		return NULL;
-+
-+	return seq_hlist_next_rcu(v, &rxnet->local_endpoints, _pos);
-+}
-+
-+static void rxrpc_local_seq_stop(struct seq_file *seq, void *v)
-+	__releases(rcu)
-+{
-+	rcu_read_unlock();
-+}
-+
-+const struct seq_operations rxrpc_local_seq_ops = {
-+	.start  = rxrpc_local_seq_start,
-+	.next   = rxrpc_local_seq_next,
-+	.stop   = rxrpc_local_seq_stop,
-+	.show   = rxrpc_local_seq_show,
-+};
+@@ -26,29 +26,23 @@ static const char *const rxrpc_conn_states[RXRPC_CONN__NR_STATES] = {
+  */
+ static void *rxrpc_call_seq_start(struct seq_file *seq, loff_t *_pos)
+ 	__acquires(rcu)
+-	__acquires(rxnet->call_lock)
+ {
+ 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+ 
+ 	rcu_read_lock();
+-	read_lock(&rxnet->call_lock);
+-	return seq_list_start_head(&rxnet->calls, *_pos);
++	return seq_list_start_head_rcu(&rxnet->calls, *_pos);
+ }
+ 
+ static void *rxrpc_call_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ {
+ 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+ 
+-	return seq_list_next(v, &rxnet->calls, pos);
++	return seq_list_next_rcu(v, &rxnet->calls, pos);
+ }
+ 
+ static void rxrpc_call_seq_stop(struct seq_file *seq, void *v)
+-	__releases(rxnet->call_lock)
+ 	__releases(rcu)
+ {
+-	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
+-
+-	read_unlock(&rxnet->call_lock);
+ 	rcu_read_unlock();
+ }
+ 
 
 
