@@ -2,86 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6877DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 01:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F89DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 01:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344325AbiETBKR (ORCPT
+        id S1344437AbiETBLJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 21:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
+        Thu, 19 May 2022 21:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344285AbiETBJp (ORCPT
+        with ESMTP id S1344416AbiETBK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 21:09:45 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1043133277;
-        Thu, 19 May 2022 18:09:34 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24K0IxNW005510;
-        Fri, 20 May 2022 01:09:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=I56I1cKcx8EtQH9A94iklFo5Z0QHsE+PkcopdKYfep4=;
- b=uFkiqPKKr4x4b6P8suLtDvNVO89uPLvZRr2lBYhjx3EK8h9rHrDW2qA5GJi4Q5k5WGwL
- LluPEcnnLs/WLd0YY+ZiWGYB08i/beEtDA+VcBVp9daQjAqeBvX719djQjzu4wT3w1rp
- Is0EMX+RNt3XGf/ktJNqEM1YBFnP14fh2n8RW9FEXPpN0wkAbImnSqR0Z+EllsGUC+ov
- hVyRozY5Jm1ki9oIwThT7dQh5tlWY9IISG7D5sT0YF0iU8OKM0QrB6sZ2lqCi7OQCkG2
- wRZUHZvNpsb63dW9kqJv7HMMk1kx8Mrs1JUw+YTfQY+g3AZD1lMr1HlUDfq+EuYyaMcM Gg== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g22ucddr7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 May 2022 01:09:31 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24K15nFe020165;
-        Fri, 20 May 2022 01:09:30 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g37crytrj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 May 2022 01:09:30 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 24K19GKM030710;
-        Fri, 20 May 2022 01:09:29 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g37crythd-10;
-        Fri, 20 May 2022 01:09:29 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org,
-        Kashyap Desai <kashyap.desai@broadcom.com>,
-        megaraidlinux.pdl@broadcom.com,
-        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        linux-kernel@vger.kernel.org,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        dan.carpenter@oracle.com
-Subject: Re: [PATCH] scsi: megaraid_sas: Remove redundant memset statement
-Date:   Thu, 19 May 2022 21:09:09 -0400
-Message-Id: <165300891231.11465.13139857766667126042.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220505143214.44908-1-harshit.m.mogalapalli@oracle.com>
-References: <20220505143214.44908-1-harshit.m.mogalapalli@oracle.com>
-MIME-Version: 1.0
+        Thu, 19 May 2022 21:10:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE04F13B8DD;
+        Thu, 19 May 2022 18:10:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56091B8297A;
+        Fri, 20 May 2022 01:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CDE3EC385B8;
+        Fri, 20 May 2022 01:10:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653009017;
+        bh=zKDszjw+FQvQwJMRAb9Fclk+cN7VO6xEcSjWwsNYDtE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mK7k1ZsCOUHvcC7NHhWNX9Xc4C1s17Bp42Tx1SoX3pv+B5NcXYFYjoFjjXpyBZzQR
+         3wrOyMVnwtoJa4ij1z2Flqsx114w7shjO/zczDeFAvbKK3rOigfn2Sw6nHedNGc6G4
+         9/raNsZmZhd2hDI4lOj8GyUhgkeHjYg7ZGk6KOvr6i2p1M8YNv1PSFcJ+HDwiY8Qp6
+         /JWWjNrSX+2ttNIspaaNElruetnRtBWnJ9cdyngyE9jlTOtkxb+Tv/M8GsL0PSNu8x
+         Kr7sAuptLM2qgGSXOT44h+wZB67i0Gxu/8acgOqKcrVHdcHhHOJs8vg+E+G5O2OGmk
+         B0P7fAF7u3vAA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B2F6EF0389D;
+        Fri, 20 May 2022 01:10:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: zQOEP5NxUbOFEDNb8ISN8e_lcfZZL12C
-X-Proofpoint-ORIG-GUID: zQOEP5NxUbOFEDNb8ISN8e_lcfZZL12C
+Subject: Re: [PATCH net v3] NFC: hci: fix sleep in atomic context bugs in
+ nfc_hci_hcp_message_tx
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165300901772.19017.10175085376155326113.git-patchwork-notify@kernel.org>
+Date:   Fri, 20 May 2022 01:10:17 +0000
+References: <20220518115733.62111-1-duoming@zju.edu.cn>
+In-Reply-To: <20220518115733.62111-1-duoming@zju.edu.cn>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 07:32:13 -0700, Harshit Mogalapalli wrote:
+Hello:
 
-> As memset of 'scmd->sense_buffer' is immediately followed by a memcpy
-> where 'scmd->sense_buffer' is the destination, memset is redundant.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 18 May 2022 19:57:33 +0800 you wrote:
+> There are sleep in atomic context bugs when the request to secure
+> element of st21nfca is timeout. The root cause is that kzalloc and
+> alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
+> st21nfca_se_wt_timeout which is a timer handler. The call tree shows
+> the execution paths that could lead to bugs:
 > 
+>    (Interrupt context)
+> st21nfca_se_wt_timeout
+>   nfc_hci_send_event
+>     nfc_hci_hcp_message_tx
+>       kzalloc(..., GFP_KERNEL) //may sleep
+>       alloc_skb(..., GFP_KERNEL) //may sleep
+>       mutex_lock() //may sleep
 > 
+> [...]
 
-Applied to 5.19/scsi-queue, thanks!
+Here is the summary with links:
+  - [net,v3] NFC: hci: fix sleep in atomic context bugs in nfc_hci_hcp_message_tx
+    https://git.kernel.org/netdev/net/c/b413b0cb0086
 
-[1/1] scsi: megaraid_sas: Remove redundant memset statement
-      https://git.kernel.org/mkp/scsi/c/2f9e9a7b0ce3
-
+You are awesome, thank you!
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
