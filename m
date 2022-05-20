@@ -2,587 +2,598 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6603C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A89C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241071AbiETNqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 09:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
+        id S1349947AbiETNtR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 09:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349828AbiETNql (ORCPT
+        with ESMTP id S234399AbiETNtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 09:46:41 -0400
-Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558035F25E
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:46:37 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id s2xbnumuaJXxRs2xbnj41y; Fri, 20 May 2022 15:46:34 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 20 May 2022 15:46:34 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <3844186b-aba7-d5e2-dbd1-813a624cf210@wanadoo.fr>
-Date:   Fri, 20 May 2022 15:46:31 +0200
+        Fri, 20 May 2022 09:49:15 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F2516A25A;
+        Fri, 20 May 2022 06:49:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Ba6DMHWyXzdLsqC4Y07ESqJjiG6gg4aITxzVthnQoC8=; b=cUJqXgYw330e56mSFSoMDsdrjj
+        OspQ054YYQ+xxQD+1gausbKU4e7IZ9hMPLr0OxvpzlDiZY8pzexJ/dtirkR3HGbJwBxsr2ditCb5h
+        QeJYJQcw+aNqHwNzWpGcHATSEVecgMMCwxi7xmM8v1WswIXxhMgqeeK3OyW8vHnaVTFnkYB5h0Ia3
+        wUhucQPz4WuqIahwKquyttn5oUz/6yWDyHHAAIDmhe3vaZSDVLzpDBr4fOGHHd7LRRxKu4R2sWZzB
+        8/9xGRyKuz9otdxKJox0jl/FJLJ9J4WoZ6lp2N6dyskWuPIVc3u82KiCTF1ApbPpU4HuZb8VcrcwS
+        NSMM05lw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ns306-00DmZI-Eg; Fri, 20 May 2022 13:49:06 +0000
+Date:   Fri, 20 May 2022 14:49:06 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
+Subject: Re: [RFC PATCH v2 20/21] x86: Add support for CONFIG_CFI_CLANG
+Message-ID: <YoecUo+D1XaphlA/@casper.infradead.org>
+References: <20220513202159.1550547-1-samitolvanen@google.com>
+ <20220513202159.1550547-21-samitolvanen@google.com>
+ <YoIfWENLV1AR2ijj@hirez.programming.kicks-ass.net>
+ <YoI5TbDfw/88vf1f@hirez.programming.kicks-ass.net>
+ <YoJKhHluN4n0kZDm@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
- devfreq driver
-Content-Language: fr
-To:     johnson.wang@mediatek.com
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        cw00.choi@samsung.com, devicetree@vger.kernel.org,
-        jia-wei.chang@mediatek.com, khilman@kernel.org, krzk+dt@kernel.org,
-        kyungmin.park@samsung.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-pm@vger.kernel.org, robh+dt@kernel.org
-References: <20220520131956.31150-1-johnson.wang@mediatek.com>
- <20220520131956.31150-3-johnson.wang@mediatek.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220520131956.31150-3-johnson.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoJKhHluN4n0kZDm@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, May 16, 2022 at 02:58:44PM +0200, Peter Zijlstra wrote:
+> @willy, how horribly broken is this xarray usage?
 
-Should there be a v6, below a few nitpicks.
+The xarray doesn't work very well as a hash ;-(  It has pretty much
+pessimal memory usage if you have a good hash.  You'll end up allocating
+essentially the entire 4 billion * ptr_size address space of the hash.
+Can you use an rhashtable instead?
 
-just my 2c.
-
-CJ
-
-Le 20/05/2022 à 15:19, Johnson Wang a écrit :
-> We introduce a devfreq driver for the MediaTek Cache Coherent Interconnect
-> (CCI) used by some MediaTek SoCs.
-> 
-> In this driver, we use the passive devfreq driver to get target frequencies
-> and adjust voltages accordingly. In MT8183 and MT8186, the MediaTek CCI
-> is supplied by the same regulators with the little core CPUs.
-> 
-> Signed-off-by: Jia-Wei Chang <jia-wei.chang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> Signed-off-by: Johnson Wang <johnson.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> Acked-by: Chanwoo Choi <cw00.choi-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 > ---
-> This patch depends on "devfreq-testing"[1].
-> [1]https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing
-> ---
->   drivers/devfreq/Kconfig           |  10 +
->   drivers/devfreq/Makefile          |   1 +
->   drivers/devfreq/mtk-cci-devfreq.c | 447 ++++++++++++++++++++++++++++++
->   3 files changed, 458 insertions(+)
->   create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
+>  arch/x86/include/asm/traps.h            |   1 +
+>  arch/x86/kernel/alternative.c           | 316 ++++++++++++++++++++++++++++++++
+>  arch/x86/kernel/cpu/common.c            |   5 +
+>  arch/x86/kernel/vmlinux.lds.S           |   9 +
+>  tools/objtool/check.c                   |  67 ++++++-
+>  tools/objtool/include/objtool/objtool.h |   1 +
+>  tools/objtool/objtool.c                 |   1 +
+>  7 files changed, 399 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
-> index 87eb2b837e68..9754d8b31621 100644
-> --- a/drivers/devfreq/Kconfig
-> +++ b/drivers/devfreq/Kconfig
-> @@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
->   	  It reads ACTMON counters of memory controllers and adjusts the
->   	  operating frequencies and voltages with OPP support.
->   
-> +config ARM_MEDIATEK_CCI_DEVFREQ
-> +	tristate "MEDIATEK CCI DEVFREQ Driver"
-> +	depends on ARM_MEDIATEK_CPUFREQ || COMPILE_TEST
-> +	select DEVFREQ_GOV_PASSIVE
-> +	help
-> +	  This adds a devfreq driver for MediaTek Cache Coherent Interconnect
-> +	  which is shared the same regulators with the cpu cluster. It can track
-> +	  buck voltages and update a proper CCI frequency. Use the notification
-> +	  to get the regulator status.
-> +
->   config ARM_RK3399_DMC_DEVFREQ
->   	tristate "ARM RK3399 DMC DEVFREQ Driver"
->   	depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
-> diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
-> index 0b6be92a25d9..bf40d04928d0 100644
-> --- a/drivers/devfreq/Makefile
-> +++ b/drivers/devfreq/Makefile
-> @@ -11,6 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)	+= governor_passive.o
->   obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)	+= exynos-bus.o
->   obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)	+= imx-bus.o
->   obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
-> +obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)	+= mtk-cci-devfreq.o
->   obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
->   obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)	+= sun8i-a33-mbus.o
->   obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
-> diff --git a/drivers/devfreq/mtk-cci-devfreq.c b/drivers/devfreq/mtk-cci-devfreq.c
-> new file mode 100644
-> index 000000000000..2eaff24fb487
-> --- /dev/null
-> +++ b/drivers/devfreq/mtk-cci-devfreq.c
-> @@ -0,0 +1,447 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
+> diff --git a/arch/x86/include/asm/traps.h b/arch/x86/include/asm/traps.h
+> index 35317c5c551d..a423343cffbc 100644
+> --- a/arch/x86/include/asm/traps.h
+> +++ b/arch/x86/include/asm/traps.h
+> @@ -19,6 +19,7 @@ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *e
+>  #endif
+>  
+>  extern bool ibt_selftest(void);
+> +extern bool ibt_broken;
+>  
+>  #ifdef CONFIG_X86_F00F_BUG
+>  /* For handling the FOOF bug */
+> diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+> index d374cb3cf024..abce4e78a1e0 100644
+> --- a/arch/x86/kernel/alternative.c
+> +++ b/arch/x86/kernel/alternative.c
+> @@ -18,6 +18,9 @@
+>  #include <linux/mmu_context.h>
+>  #include <linux/bsearch.h>
+>  #include <linux/sync_core.h>
+> +#include <linux/moduleloader.h>
+> +#include <linux/xarray.h>
+> +#include <linux/set_memory.h>
+>  #include <asm/text-patching.h>
+>  #include <asm/alternative.h>
+>  #include <asm/sections.h>
+> @@ -115,6 +118,7 @@ static void __init_or_module add_nops(void *insns, unsigned int len)
+>  }
+>  
+>  extern s32 __retpoline_sites[], __retpoline_sites_end[];
+> +extern s32 __cfi_sites[], __cfi_sites_end[];
+>  extern s32 __ibt_endbr_seal[], __ibt_endbr_seal_end[];
+>  extern struct alt_instr __alt_instructions[], __alt_instructions_end[];
+>  extern s32 __smp_locks[], __smp_locks_end[];
+> @@ -549,6 +553,315 @@ void __init_or_module noinline apply_ibt_endbr(s32 *start, s32 *end) { }
+>  
+>  #endif /* CONFIG_X86_KERNEL_IBT */
+>  
+> +#ifdef CONFIG_CFI_CLANG
 > +/*
-> + * Copyright (C) 2022 MediaTek Inc.
+> + *  FineIBT                                         kCFI
+> + *
+> + *  __fineibt_\hash:
+> + *    xor     \hash, %r10     # 7
+> + *    jz      1f              # 2
+> + *    ud2                     # 2
+> + *  1:ret                     # 1
+> + *    int3                    # 1
+> + *
+> + *
+> + *  __cfi_\sym:                                     __cfi_\sym:
+> + *                                                    int3; int3                              # 2
+> + *    endbr                   # 4                     mov     \hash, %eax                     # 5
+> + *    call    __fineibt_\hash # 5                     int3; int3                              # 2
+> + *  \sym:                                           \sym:
+> + *  ...                                             ...
+> + *
+> + *
+> + *  caller:                                         caller:
+> + *    movl    \hash, %r10d    # 6                     cmpl    \hash, -6(%r11)                 # 8
+> + *    sub     $9, %r11        # 4                     je      1f                              # 2
+> + *    nop2                    # 2                     ud2                                     # 2
+> + *
+> + *    call    *%r11           # 3                     call    __x86_indirect_thunk_r11        # 5
+> + *    nop2                    # 2
 > + */
 > +
-> +#include <linux/clk.h>
-> +#include <linux/devfreq.h>
-> +#include <linux/minmax.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_opp.h>
-> +#include <linux/regulator/consumer.h>
+> +static DEFINE_XARRAY(cfi_hashes);
+> +static int nr_cfi_hashes;
 > +
-> +struct mtk_ccifreq_platform_data {
-> +	int min_volt_shift;
-> +	int max_volt_shift;
-> +	int proc_max_volt;
-> +	int sram_min_volt;
-> +	int sram_max_volt;
-> +};
-> +
-> +struct mtk_ccifreq_drv {
-> +	struct device *dev;
-> +	struct devfreq *devfreq;
-> +	struct regulator *proc_reg;
-> +	struct regulator *sram_reg;
-> +	struct clk *cci_clk;
-> +	struct clk *inter_clk;
-> +	int inter_voltage;
-> +	unsigned long pre_freq;
-> +	/* Avoid race condition for regulators between notify and policy */
-> +	struct mutex reg_lock;
-> +	struct notifier_block opp_nb;
-> +	const struct mtk_ccifreq_platform_data *soc_data;
-> +	int vtrack_max;
-> +};
-> +
-> +static int mtk_ccifreq_set_voltage(struct mtk_ccifreq_drv *drv, int new_voltage)
+> +static u32 decode_cfi_preamble(void *addr)
 > +{
-> +	const struct mtk_ccifreq_platform_data *soc_data = drv->soc_data;
-> +	struct device *dev = drv->dev;
-> +	int pre_voltage, pre_vsram, new_vsram, vsram, voltage, ret;
-> +	int retry_max = drv->vtrack_max;
+> +	u8 *p = addr;
 > +
-> +	if (!drv->sram_reg) {
-> +		ret = regulator_set_voltage(drv->proc_reg, new_voltage,
-> +					    drv->soc_data->proc_max_volt);
-> +		return ret;
-> +	}
+> +	if (p[0] == 0xcc && p[1] == 0xcc &&
+> +	    p[2] == 0xb8 &&
+> +	    p[7] == 0xcc && p[8] == 0xcc)
+> +		return *(u32 *)(addr + 3);
 > +
-> +	pre_voltage = regulator_get_voltage(drv->proc_reg);
-> +	if (pre_voltage < 0) {
-> +		dev_err(dev, "invalid vproc value: %d\n", pre_voltage);
-> +		return pre_voltage;
-> +	}
+> +	return 0; /* invalid hash value */
+> +}
 > +
-> +	pre_vsram = regulator_get_voltage(drv->sram_reg);
-> +	if (pre_vsram < 0) {
-> +		dev_err(dev, "invalid vsram value: %d\n", pre_vsram);
-> +		return pre_vsram;
-> +	}
+> +static u32 decode_cfi_caller(void *addr)
+> +{
+> +	u8 *p = addr;
 > +
-> +	new_vsram = clamp(new_voltage + soc_data->min_volt_shift,
-> +			  soc_data->sram_min_volt, soc_data->sram_max_volt);
+> +	if (((p[0] == 0x41 && p[1] == 0x81) ||
+> +	     (p[0] == 0xeb && p[1] == 0x0a)) && p[2] == 0x7b &&
+> +	    p[8] == 0x74 && p[9] == 0x02 &&
+> +	    p[10] == 0x0f && p[11] == 0x0b)
+> +		return *(u32 *)(addr + 4);
 > +
-> +	do {
-> +		if (pre_voltage <= new_voltage) {
-> +			vsram = clamp(pre_voltage + soc_data->max_volt_shift,
-> +				      soc_data->sram_min_volt, new_vsram);
-> +			ret = regulator_set_voltage(drv->sram_reg, vsram,
-> +						    soc_data->sram_max_volt);
-> +			if (ret)
-> +				return ret;
+> +	return 0; /* invalid hash value */
+> +}
 > +
-> +			if (vsram == soc_data->sram_max_volt ||
-> +			    new_vsram == soc_data->sram_min_volt)
-> +				voltage = new_voltage;
-> +			else
-> +				voltage = vsram - soc_data->min_volt_shift;
+> +// .cfi_sites
+> +static int cfi_index_hashes(s32 *start, s32 *end)
+> +{
+> +	s32 *s;
 > +
-> +			ret = regulator_set_voltage(drv->proc_reg, voltage,
-> +						    soc_data->proc_max_volt);
-> +			if (ret) {
-> +				regulator_set_voltage(drv->sram_reg, pre_vsram,
-> +						      soc_data->sram_max_volt);
-> +				return ret;
-> +			}
-> +		} else if (pre_voltage > new_voltage) {
-> +			voltage = max(new_voltage,
-> +				      pre_vsram - soc_data->max_volt_shift);
-> +			ret = regulator_set_voltage(drv->proc_reg, voltage,
-> +						    soc_data->proc_max_volt);
-> +			if (ret)
-> +				return ret;
+> +	for (s = start; s < end; s++) {
+> +		void *addr = (void *)s + *s;
+> +		void *xa;
+> +		u32 hash;
 > +
-> +			if (voltage == new_voltage)
-> +				vsram = new_vsram;
-> +			else
-> +				vsram = max(new_vsram,
-> +					    voltage + soc_data->min_volt_shift);
-> +
-> +			ret = regulator_set_voltage(drv->sram_reg, vsram,
-> +						    soc_data->sram_max_volt);
-> +			if (ret) {
-> +				regulator_set_voltage(drv->proc_reg, pre_voltage,
-> +						      soc_data->proc_max_volt);
-> +				return ret;
-> +			}
-> +		}
-> +
-> +		pre_voltage = voltage;
-> +		pre_vsram = vsram;
-> +
-> +		if (--retry_max < 0) {
-> +			dev_err(dev,
-> +				"over loop count, failed to set voltage\n");
+> +		hash = decode_cfi_preamble(addr);
+> +		if (!hash) {
+> +			//WARN();
 > +			return -EINVAL;
 > +		}
-> +	} while (voltage != new_voltage || vsram != new_vsram);
 > +
-> +	return ret;
-
-'return 0;' would be more explicit. (it looks like 'ret' is always 0 if 
-we arrive here)
-
-
+> +		xa = xa_store(&cfi_hashes, hash, NULL, GFP_KERNEL);
+> +		if (xa_is_err(xa)) {
+> +			//WARN();
+> +			return xa_err(xa);
+> +		}
+> +		nr_cfi_hashes++;
+> +	}
+> +
+> +	return 0;
 > +}
 > +
-> +static int mtk_ccifreq_target(struct device *dev, unsigned long *freq,
-> +			      u32 flags)
+> +asm (	".pushsection .rodata\n"
+> +	"fineibt_template_start:\n"
+> +	"	xorl	$0x12345678, %r10d\n"	// 7
+> +	"	je	1f\n"			// 2
+> +	"	ud2\n"				// 2
+> +	"1:	ret\n"				// 1
+> +	"	int3\n"
+> +	"	int3\n"
+> +	"	int3\n"
+> +	"	int3\n"				// 4
+> +	"fineibt_template_end:\n"
+> +	".popsection\n"
+> +    );
+> +
+> +extern u8 fineibt_template_start[];
+> +extern u8 fineibt_template_end[];
+> +
+> +static int cfi_create_fineibt_stubs(void)
 > +{
-> +	struct mtk_ccifreq_drv *drv = dev_get_drvdata(dev);
-> +	struct clk *cci_pll = clk_get_parent(drv->cci_clk);
-> +	struct dev_pm_opp *opp;
-> +	unsigned long opp_rate;
-> +	int voltage, pre_voltage, inter_voltage, target_voltage, ret;
+> +	size_t size = 16 * nr_cfi_hashes;
+> +	int pages = 1 + ((size - 1) >> PAGE_SHIFT);
+> +	void *text, *entry, *xa;
+> +	unsigned long hash;
+> +	int err = -ENOMEM;
 > +
-> +	if (!drv)
-> +		return -EINVAL;
+> +	text = module_alloc(size);
+> +	if (!text)
+> +		return err;
 > +
-> +	if (drv->pre_freq == *freq)
-> +		return 0;
+> +	entry = text;
+> +	xa_for_each(&cfi_hashes, hash, xa) {
 > +
-> +	inter_voltage = drv->inter_voltage;
+> +		memcpy(entry, fineibt_template_start, 16);
+> +		*(u32 *)(entry + 3) = hash;
 > +
-> +	opp_rate = *freq;
-> +	opp = devfreq_recommended_opp(dev, &opp_rate, 1);
-> +	if (IS_ERR(opp)) {
-> +		dev_err(dev, "failed to find opp for freq: %ld\n", opp_rate);
-> +		return PTR_ERR(opp);
-> +	}
-> +
-> +	mutex_lock(&drv->reg_lock);
-> +
-> +	voltage = dev_pm_opp_get_voltage(opp);
-> +	dev_pm_opp_put(opp);
-> +
-> +	pre_voltage = regulator_get_voltage(drv->proc_reg);
-> +	if (pre_voltage < 0) {
-> +		dev_err(dev, "invalid vproc value: %d\n", pre_voltage);
-> +		ret = pre_voltage;
-> +		goto out_unlock;
-> +	}
-> +
-> +	/* scale up: set voltage first then freq. */
-> +	target_voltage = max(inter_voltage, voltage);
-> +	if (pre_voltage <= target_voltage) {
-> +		ret = mtk_ccifreq_set_voltage(drv, target_voltage);
-> +		if (ret) {
-> +			dev_err(dev, "failed to scale up voltage\n");
-> +			goto out_restore_voltage;
+> +		xa = xa_store(&cfi_hashes, hash, entry, GFP_KERNEL);
+> +		if (xa_is_err(xa)) {
+> +			err = xa_err(xa);
+> +			goto err_alloc;
 > +		}
+> +		if (xa) {
+> +			err = -EINVAL;
+> +			goto err_alloc;
+> +		}
+> +
+> +		entry += 16;
 > +	}
 > +
-> +	/* switch the cci clock to intermediate clock source. */
-> +	ret = clk_set_parent(drv->cci_clk, drv->inter_clk);
-> +	if (ret) {
-> +		dev_err(dev, "failed to re-parent cci clock\n");
-> +		goto out_restore_voltage;
-> +	}
+> +	set_memory_ro((unsigned long)text, pages);
+> +	set_memory_x((unsigned long)text, pages);
 > +
-> +	/* set the original clock to target rate. */
-> +	ret = clk_set_rate(cci_pll, *freq);
-> +	if (ret) {
-> +		dev_err(dev, "failed to set cci pll rate: %d\n", ret);
-> +		clk_set_parent(drv->cci_clk, cci_pll);
-> +		goto out_restore_voltage;
-> +	}
+> +	return 0;
 > +
-> +	/* switch the cci clock back to the original clock source. */
-> +	ret = clk_set_parent(drv->cci_clk, cci_pll);
-> +	if (ret) {
-> +		dev_err(dev, "failed to re-parent cci clock\n");
-> +		mtk_ccifreq_set_voltage(drv, inter_voltage);
-> +		goto out_unlock;
-> +	}
+> +err_alloc:
+> +	module_memfree(text);
+> +	return -EINVAL;
+> +}
 > +
+> +// .retpoline_sites
+> +static int cfi_disable_callers(s32 *start, s32 *end)
+> +{
 > +	/*
-> +	 * If the new voltage is lower than the intermediate voltage or the
-> +	 * original voltage, scale down to the new voltage.
+> +	 * Disable CFI by patching in a 2 byte JMP, this leaves the hash in
+> +	 * tact for later usage. Also see decode_cfi_caller() and
+> +	 * cfu_rewrite_callers().
 > +	 */
-> +	if (voltage < inter_voltage || voltage < pre_voltage) {
-> +		ret = mtk_ccifreq_set_voltage(drv, voltage);
-> +		if (ret) {
-> +			dev_err(dev, "failed to scale down voltage\n");
-> +			goto out_unlock;
+> +	const u8 jmp12[] = { 0xeb, 0x0a };
+> +	s32 *s;
+> +
+> +	for (s = start; s < end; s++) {
+> +		void *addr = (void *)s + *s;
+> +		u32 hash;
+> +
+> +		hash = decode_cfi_caller(addr - 12);
+> +		if (!hash) {
+> +			// WARN();
+> +			return -EINVAL;
 > +		}
-> +	}
 > +
-> +	drv->pre_freq = *freq;
-> +	mutex_unlock(&drv->reg_lock);
-> +
-> +	return 0;
-> +
-> +out_restore_voltage:
-> +	mtk_ccifreq_set_voltage(drv, pre_voltage);
-> +
-> +out_unlock:
-> +	mutex_unlock(&drv->reg_lock);
-> +	return ret;
-> +}
-> +
-> +static int mtk_ccifreq_opp_notifier(struct notifier_block *nb,
-> +				    unsigned long event, void *data)
-> +{
-> +	struct dev_pm_opp *opp = data;
-> +	struct mtk_ccifreq_drv *drv;
-> +	unsigned long freq, volt;
-> +
-> +	drv = container_of(nb, struct mtk_ccifreq_drv, opp_nb);
-> +
-> +	if (event == OPP_EVENT_ADJUST_VOLTAGE) {
-> +		freq = dev_pm_opp_get_freq(opp);
-> +
-> +		mutex_lock(&drv->reg_lock);
-> +		/* current opp item is changed */
-> +		if (freq == drv->pre_freq) {
-> +			volt = dev_pm_opp_get_voltage(opp);
-> +			mtk_ccifreq_set_voltage(drv, volt);
-> +		}
-> +		mutex_unlock(&drv->reg_lock);
+> +		text_poke_early(addr - 12, jmp12, 2);
 > +	}
 > +
 > +	return 0;
 > +}
 > +
-> +static struct devfreq_dev_profile mtk_ccifreq_profile = {
-> +	.target = mtk_ccifreq_target,
-> +};
+> +asm (	".pushsection .rodata\n"
+> +	"fineibt_cfi_start:\n"
+> +	"	endbr64\n"
+> +	"	call fineibt_caller_start\n"
+> +	"fineibt_cfi_end:"
+> +	".popsection\n"
+> +    );
 > +
-> +static int mtk_ccifreq_probe(struct platform_device *pdev)
+> +extern u8 fineibt_cfi_start[];
+> +extern u8 fineibt_cfi_end[];
+> +
+> +// .cfi_sites
+> +static int cfi_rewrite_cfi(s32 *start, s32 *end)
 > +{
-> +	struct device *dev = &pdev->dev;
-> +	struct mtk_ccifreq_drv *drv;
-> +	struct devfreq_passive_data *passive_data;
-> +	struct dev_pm_opp *opp;
-> +	unsigned long rate, opp_volt;
+> +	s32 *s;
+> +
+> +	for (s = start; s < end; s++) {
+> +		void *dest, *addr = (void *)s + *s;
+> +		unsigned long index;
+> +		u32 hash;
+> +
+> +		index = hash = decode_cfi_preamble(addr);
+> +		dest = xa_find(&cfi_hashes, &index, hash, XA_PRESENT);
+> +
+> +		if (WARN_ON_ONCE(index != hash || !dest))
+> +			return -EINVAL;
+> +
+> +		text_poke_early(addr, fineibt_cfi_start,
+> +				(fineibt_cfi_end - fineibt_cfi_start));
+> +
+> +		__text_gen_insn(addr + 4,
+> +				CALL_INSN_OPCODE, addr + 4,
+> +				dest, CALL_INSN_SIZE);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +asm (	".pushsection .rodata\n"
+> +	"fineibt_caller_start:\n"
+> +	"	movl	$0x12345678, %r10d\n"
+> +	"	sub	$9, %r11\n"
+> +	"	.nops	2\n"
+> +	"fineibt_caller_end:"
+> +	".popsection\n"
+> +    );
+> +
+> +extern u8 fineibt_caller_start[];
+> +extern u8 fineibt_caller_end[];
+> +
+> +// .retpoline_sites
+> +static int cfi_rewrite_callers(s32 *start, s32 *end)
+> +{
+> +	s32 *s;
+> +
+> +	for (s = start; s < end; s++) {
+> +		void *addr = (void *)s + *s;
+> +		u32 hash;
+> +
+> +		hash = decode_cfi_caller(addr - 12);
+> +
+> +		if (WARN_ON_ONCE(!hash))
+> +			return -EINVAL;
+> +
+> +		text_poke_early(addr - 12, fineibt_caller_start,
+> +				(fineibt_caller_end - fineibt_caller_end));
+> +
+> +		*(u32 *)(addr - 12 + 2) = hash;
+> +
+> +		/* rely on apply_retpolines() to rewrite the actual call */
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +bool __ro_after_init ibt_broken = false;
+> +
+> +static void apply_fineibt(s32 *start_retpoline, s32 *end_retpoline,
+> +			  s32 *start_cfi, s32 *end_cfi)
+> +{
 > +	int ret;
 > +
-> +	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
-> +	if (!drv)
-> +		return -ENOMEM;
-> +
-> +	drv->dev = dev;
-> +	drv->soc_data = (const struct mtk_ccifreq_platform_data *)
-> +				of_device_get_match_data(&pdev->dev);
-> +	mutex_init(&drv->reg_lock);
-> +	platform_set_drvdata(pdev, drv);
-> +
-> +	drv->cci_clk = devm_clk_get(dev, "cci");
-> +	if (IS_ERR(drv->cci_clk)) {
-> +		ret = PTR_ERR(drv->cci_clk);
-> +		return dev_err_probe(dev, ret,
-> +				     "failed to get cci clk: %d\n", ret);
-> +	}
-> +
-> +	drv->inter_clk = devm_clk_get(dev, "intermediate");
-> +	if (IS_ERR(drv->inter_clk)) {
-> +		ret = PTR_ERR(drv->inter_clk);
-> +		dev_err_probe(dev, ret,
-> +			      "failed to get intermediate clk: %d\n", ret);
-> +		goto out_free_resources;
-
-Could be a direct return, nothing to undo in the error handling path.
-
-> +	}
-> +
-> +	drv->proc_reg = devm_regulator_get_optional(dev, "proc");
-> +	if (IS_ERR(drv->proc_reg)) {
-> +		ret = PTR_ERR(drv->proc_reg);
-> +		dev_err_probe(dev, ret,
-> +			      "failed to get proc regulator: %d\n", ret);
-> +		goto out_free_resources;
-
-Could be a direct return, nothing to undo in the error handling path.
-
-> +	}
-> +
-> +	ret = regulator_enable(drv->proc_reg);
-> +	if (ret) {
-> +		dev_err(dev, "failed to enable proc regulator\n");
-> +		goto out_free_resources;
-
-Could be a direct return, nothing to undo in the error handling path.
-
-> +	}
-> +
-> +	drv->sram_reg = devm_regulator_get_optional(dev, "sram");
-> +	if (IS_ERR(drv->sram_reg))
-> +		drv->sram_reg = NULL;
-> +	else {
-> +		ret = regulator_enable(drv->sram_reg);
-> +		if (ret) {
-> +			dev_err(dev, "failed to enable sram regulator\n");
-> +			goto out_free_resources;
-> +		}
-> +	}
+> +	/* If IBT, use FineIBT */
+> +	if (!HAS_KERNEL_IBT || !cpu_feature_enabled(X86_FEATURE_IBT))
+> +		return;
 > +
 > +	/*
-> +	 * We assume min voltage is 0 and tracking target voltage using
-> +	 * min_volt_shift for each iteration.
-> +	 * The retry_max is 3 times of expected iteration count.
+> +	 * Find and count all unique hash values.
 > +	 */
-> +	drv->vtrack_max = 3 * DIV_ROUND_UP(max(drv->soc_data->sram_max_volt,
-> +					       drv->soc_data->proc_max_volt),
-> +					   drv->soc_data->min_volt_shift);
-> +
-> +	ret = clk_prepare_enable(drv->cci_clk);
+> +	ret = cfi_index_hashes(start_cfi, end_cfi);
 > +	if (ret)
-> +		goto out_free_resources;
+> +		goto err;
 > +
-> +	ret = dev_pm_opp_of_add_table(dev);
-> +	if (ret) {
-> +		dev_err(dev, "failed to add opp table: %d\n", ret);
-> +		goto out_disable_cci_clk;
-> +	}
+> +	/*
+> +	 * Allocate module memory and write FineIBT stubs.
+> +	 */
+> +	ret = cfi_create_fineibt_stubs();
+> +	if (ret)
+> +		goto err;
 > +
-> +	rate = clk_get_rate(drv->inter_clk);
-> +	opp = dev_pm_opp_find_freq_ceil(dev, &rate);
-> +	if (IS_ERR(opp)) {
-> +		ret = PTR_ERR(opp);
-> +		dev_err(dev, "failed to get intermediate opp: %d\n", ret);
-> +		goto out_remove_opp_table;
-> +	}
-> +	drv->inter_voltage = dev_pm_opp_get_voltage(opp);
-> +	dev_pm_opp_put(opp);
+> +	/*
+> +	 * Rewrite the callers to not use the __cfi_ stubs, such that we might
+> +	 * rewrite them. Disables all CFI. If this succeeds but any of the
+> +	 * later stages fails, we're CFI-less.
+> +	 */
+> +	ret = cfi_disable_callers(start_retpoline, end_retpoline);
+> +	if (ret)
+> +		goto err;
 > +
-> +	rate = U32_MAX;
-> +	opp = dev_pm_opp_find_freq_floor(drv->dev, &rate);
-> +	if (IS_ERR(opp)) {
-> +		dev_err(dev, "failed to get opp\n");
-> +		ret = PTR_ERR(opp);
-> +		goto out_remove_opp_table;
-> +	}
+> +	/*
+> +	 * Rewrite the __cfi_ stubs from kCFI to FineIBT.
+> +	 */
+> +	ret = cfi_rewrite_cfi(start_cfi, end_cfi);
+> +	if (ret)
+> +		goto err;
 > +
-> +	opp_volt = dev_pm_opp_get_voltage(opp);
-> +	dev_pm_opp_put(opp);
-> +	ret = mtk_ccifreq_set_voltage(drv, opp_volt);
-> +	if (ret) {
-> +		dev_err(dev, "failed to scale to highest voltage %lu in proc_reg\n",
-> +			opp_volt);
-> +		goto out_remove_opp_table;
-> +	}
+> +	/*
+> +	 * Now that everything is in place; rewrite the callers to FineIBT.
+> +	 */
+> +	ret = cfi_rewrite_callers(start_retpoline, end_retpoline);
+> +	if (ret)
+> +		goto err;
 > +
-> +	passive_data = devm_kzalloc(dev, sizeof(struct devfreq_passive_data),
-> +				    GFP_KERNEL);
-
-sizeof(*passive_data) could maybe save 1 LoC.
-
-> +	if (!passive_data) {
-> +		ret = -ENOMEM;
-> +		goto out_remove_opp_table;
-> +	}
+> +	return;
 > +
-> +	passive_data->parent_type = CPUFREQ_PARENT_DEV;
-> +	drv->devfreq = devm_devfreq_add_device(dev, &mtk_ccifreq_profile,
-> +					       DEVFREQ_GOV_PASSIVE,
-> +					       passive_data);
-> +	if (IS_ERR(drv->devfreq)) {
-> +		ret = -EPROBE_DEFER;
-> +		dev_err(dev, "failed to add devfreq device: %ld\n",
-> +			PTR_ERR(drv->devfreq));
-> +		goto out_remove_opp_table;
-> +	}
-> +
-> +	drv->opp_nb.notifier_call = mtk_ccifreq_opp_notifier;
-> +	ret = dev_pm_opp_register_notifier(dev, &drv->opp_nb);
-> +	if (ret) {
-> +		dev_err(dev, "failed to register opp notifier: %d\n", ret);
-> +		goto out_remove_devfreq_device;
-> +	}
-> +	return 0;
-> +
-> +out_remove_devfreq_device:
-> +	devm_devfreq_remove_device(dev, drv->devfreq);
-
-Why is this needed? Should'nt devm_devfreq_add_device() already do it?
-It is also not in the remove function.
-
-CJ
-
-> +
-> +out_remove_opp_table:
-> +	dev_pm_opp_of_remove_table(dev);
-> +
-> +out_disable_cci_clk:
-> +	clk_disable_unprepare(drv->cci_clk);
-> +
-> +out_free_resources:
-> +	if (regulator_is_enabled(drv->proc_reg))
-> +		regulator_disable(drv->proc_reg);
-> +	if (drv->sram_reg && regulator_is_enabled(drv->sram_reg))
-> +		regulator_disable(drv->sram_reg);
-> +
-> +	return ret;
+> +err:
+> +	pr_err("Something went horribly wrong trying to rewrite the CFI implementation.\n");
+> +	/* must *NOT* enable IBT */
+> +	ibt_broken = true;
 > +}
 > +
-> +static int mtk_ccifreq_remove(struct platform_device *pdev)
+> +#else
+> +
+> +static void apply_fineibt(s32 *start_retpoline, s32 *end_retpoline,
+> +			  s32 *start_cfi, s32 *end_cfi)
 > +{
-> +	struct device *dev = &pdev->dev;
-> +	struct mtk_ccifreq_drv *drv;
+> +}
 > +
-> +	drv = platform_get_drvdata(pdev);
+> +#endif
 > +
-> +	dev_pm_opp_unregister_notifier(dev, &drv->opp_nb);
-> +	dev_pm_opp_of_remove_table(dev);
-> +	clk_disable_unprepare(drv->cci_clk);
-> +	regulator_disable(drv->proc_reg);
-> +	if (drv->sram_reg)
-> +		regulator_disable(drv->sram_reg);
+>  #ifdef CONFIG_SMP
+>  static void alternatives_smp_lock(const s32 *start, const s32 *end,
+>  				  u8 *text, u8 *text_end)
+> @@ -855,6 +1168,9 @@ void __init alternative_instructions(void)
+>  	 */
+>  	apply_paravirt(__parainstructions, __parainstructions_end);
+>  
+> +	apply_fineibt(__retpoline_sites, __retpoline_sites_end,
+> +		      __cfi_sites, __cfi_sites_end);
+> +
+>  	/*
+>  	 * Rewrite the retpolines, must be done before alternatives since
+>  	 * those can rewrite the retpoline thunks.
+> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+> index e342ae4db3c4..e4377256b952 100644
+> --- a/arch/x86/kernel/cpu/common.c
+> +++ b/arch/x86/kernel/cpu/common.c
+> @@ -630,6 +630,11 @@ static __always_inline void setup_cet(struct cpuinfo_x86 *c)
+>  	    !cpu_feature_enabled(X86_FEATURE_IBT))
+>  		return;
+>  
+> +#ifdef CONFIG_CFI_CLANG
+> +	if (ibt_broken)
+> +		return;
+> +#endif
+> +
+>  	wrmsrl(MSR_IA32_S_CET, msr);
+>  	cr4_set_bits(X86_CR4_CET);
+>  
+> diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+> index 7fda7f27e762..72ffc91ddd20 100644
+> --- a/arch/x86/kernel/vmlinux.lds.S
+> +++ b/arch/x86/kernel/vmlinux.lds.S
+> @@ -294,6 +294,15 @@ SECTIONS
+>  	}
+>  #endif
+>  
+> +#if defined(CONFIG_CFI_CLANG) && defined(CONFIG_RETPOLINE) && defined(CONFIG_X86_KERNEL_IBT)
+> +	. = ALIGN(8);
+> +	.cfi_sites : AT(ADDR(.cfi_sites) - LOAD_OFFSET) {
+> +		__cfi_sites = .;
+> +		*(.cfi_sites)
+> +		__cfi_sites_end = .;
+> +	}
+> +#endif
+> +
+>  	/*
+>  	 * struct alt_inst entries. From the header (alternative.h):
+>  	 * "Alternative instructions for different CPU types or capabilities"
+> diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+> index 88f005ae6dcc..edc8aecf229c 100644
+> --- a/tools/objtool/check.c
+> +++ b/tools/objtool/check.c
+> @@ -797,6 +797,52 @@ static int create_ibt_endbr_seal_sections(struct objtool_file *file)
+>  	return 0;
+>  }
+>  
+> +static int create_cfi_sections(struct objtool_file *file)
+> +{
+> +	struct instruction *insn;
+> +	struct section *sec;
+> +	int idx;
+> +
+> +	sec = find_section_by_name(file->elf, ".cfi_sites");
+> +	if (sec) {
+> +		WARN("file already has .cfi_sites, skipping");
+> +		return 0;
+> +	}
+> +
+> +	idx = 0;
+> +	list_for_each_entry(insn, &file->cfi_list, call_node)
+> +		idx++;
+> +
+> +	if (!idx)
+> +		return 0;
+> +
+> +	sec = elf_create_section(file->elf, ".cfi_sites", 0,
+> +				 sizeof(int), idx);
+> +	if (!sec) {
+> +		WARN("elf_create_section: .cfi_sites");
+> +		return -1;
+> +	}
+> +
+> +	idx = 0;
+> +	list_for_each_entry(insn, &file->cfi_list, call_node) {
+> +
+> +		int *site = (int *)sec->data->d_buf + idx;
+> +		*site = 0;
+> +
+> +		if (elf_add_reloc_to_insn(file->elf, sec,
+> +					  idx * sizeof(int),
+> +					  R_X86_64_PC32,
+> +					  insn->sec, insn->offset)) {
+> +			WARN("elf_add_reloc_to_insn: .cfi_sites");
+> +			return -1;
+> +		}
+> +
+> +		idx++;
+> +	}
 > +
 > +	return 0;
 > +}
 > +
-> +static const struct mtk_ccifreq_platform_data mt8183_platform_data = {
-> +	.min_volt_shift = 100000,
-> +	.max_volt_shift = 200000,
-> +	.proc_max_volt = 1150000,
-> +};
+>  static int create_mcount_loc_sections(struct objtool_file *file)
+>  {
+>  	struct section *sec;
+> @@ -3301,6 +3347,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+>  {
+>  	struct alternative *alt;
+>  	struct instruction *next_insn, *prev_insn = NULL;
+> +	struct instruction *first_insn = insn;
+>  	struct section *sec;
+>  	u8 visited;
+>  	int ret;
+> @@ -3312,8 +3359,19 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+>  
+>  		if (func && insn->func && func != insn->func->pfunc) {
+>  			/* Ignore KCFI type preambles, which always fall through */
+> -			if (!strncmp(func->name, "__cfi_", 6))
+> +			if (!strncmp(func->name, "__cfi_", 6)) {
+> +				/*
+> +				 * If the function has a __cfi_ preamble, the endbr
+> +				 * will live in there.
+> +				 */
+> +				insn->noendbr = true;
+> +				/*
+> +				 * The preamble starts with INSN_TRAP,
+> +				 * call_node cannot be used.
+> +				 */
+> +				list_add_tail(&first_insn->call_node, &file->cfi_list);
+>  				return 0;
+> +			}
+>  
+>  			WARN("%s() falls through to next function %s()",
+>  			     func->name, insn->func->name);
+> @@ -3953,6 +4011,13 @@ int check(struct objtool_file *file)
+>  		warnings += ret;
+>  	}
+>  
+> +	if (ibt && retpoline) {
+> +		ret = create_cfi_sections(file);
+> +		if (ret < 0)
+> +			goto out;
+> +		warnings += ret;
+> +	}
 > +
-> +static const struct mtk_ccifreq_platform_data mt8186_platform_data = {
-> +	.min_volt_shift = 100000,
-> +	.max_volt_shift = 250000,
-> +	.proc_max_volt = 1118750,
-> +	.sram_min_volt = 850000,
-> +	.sram_max_volt = 1118750,
-> +};
-> +
-> +static const struct of_device_id mtk_ccifreq_machines[] = {
-> +	{ .compatible = "mediatek,mt8183-cci", .data = &mt8183_platform_data },
-> +	{ .compatible = "mediatek,mt8186-cci", .data = &mt8186_platform_data },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, mtk_ccifreq_machines);
-> +
-> +static struct platform_driver mtk_ccifreq_platdrv = {
-> +	.probe	= mtk_ccifreq_probe,
-> +	.remove	= mtk_ccifreq_remove,
-> +	.driver = {
-> +		.name = "mtk-ccifreq",
-> +		.of_match_table = mtk_ccifreq_machines,
-> +	},
-> +};
-> +module_platform_driver(mtk_ccifreq_platdrv);
-> +
-> +MODULE_DESCRIPTION("MediaTek CCI devfreq driver");
-> +MODULE_AUTHOR("Jia-Wei Chang <jia-wei.chang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>");
-> +MODULE_LICENSE("GPL v2");
-
+>  	if (stats) {
+>  		printf("nr_insns_visited: %ld\n", nr_insns_visited);
+>  		printf("nr_cfi: %ld\n", nr_cfi);
+> diff --git a/tools/objtool/include/objtool/objtool.h b/tools/objtool/include/objtool/objtool.h
+> index a6e72d916807..93f52e275fa6 100644
+> --- a/tools/objtool/include/objtool/objtool.h
+> +++ b/tools/objtool/include/objtool/objtool.h
+> @@ -27,6 +27,7 @@ struct objtool_file {
+>  	struct list_head static_call_list;
+>  	struct list_head mcount_loc_list;
+>  	struct list_head endbr_list;
+> +	struct list_head cfi_list;
+>  	bool ignore_unreachables, hints, rodata;
+>  
+>  	unsigned int nr_endbr;
+> diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
+> index 843ff3c2f28e..16ed3613b0e2 100644
+> --- a/tools/objtool/objtool.c
+> +++ b/tools/objtool/objtool.c
+> @@ -129,6 +129,7 @@ struct objtool_file *objtool_open_read(const char *_objname)
+>  	INIT_LIST_HEAD(&file.static_call_list);
+>  	INIT_LIST_HEAD(&file.mcount_loc_list);
+>  	INIT_LIST_HEAD(&file.endbr_list);
+> +	INIT_LIST_HEAD(&file.cfi_list);
+>  	file.ignore_unreachables = no_unreachable;
+>  	file.hints = false;
+>  
