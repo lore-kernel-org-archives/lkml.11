@@ -2,84 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8102C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 06:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C69CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 06:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345736AbiETGIV (ORCPT
+        id S1345773AbiETGKZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 02:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
+        Fri, 20 May 2022 02:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245362AbiETGIQ (ORCPT
+        with ESMTP id S1345760AbiETGKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 02:08:16 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BF614B67B
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 23:08:14 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nrvnu-0005lu-63; Fri, 20 May 2022 08:08:02 +0200
-Message-ID: <e9597cbc-cabb-facf-deb6-662d40cf16a3@leemhuis.info>
-Date:   Fri, 20 May 2022 08:08:01 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/1] um: fix error return code in winch_tramp()
-Content-Language: en-US
-To:     Richard Weinberger <richard@nod.at>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     Thorsten Leemhuis <regressions@leemhuis.info>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eduard-Gabriel Munteanu <maxdamage@aladin.ro>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        regressions <regressions@lists.linux.dev>
-References: <20210508032239.2177-1-thunder.leizhen@huawei.com>
- <Yjt31seiNv18HYrf@dev-arch.thelio-3990X>
- <1b03d888-cea3-3e6f-087f-daeb5642a975@leemhuis.info>
- <1087614384.239493.1649583213699.JavaMail.zimbra@nod.at>
- <YlRp9KR1mp3/4Txo@thelio-3990X>
- <1287561645.244713.1649702724736.JavaMail.zimbra@nod.at>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <1287561645.244713.1649702724736.JavaMail.zimbra@nod.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1653026894;32ff9c44;
-X-HE-SMSGID: 1nrvnu-0005lu-63
+        Fri, 20 May 2022 02:10:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972EE14C755;
+        Thu, 19 May 2022 23:10:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 248EE61D92;
+        Fri, 20 May 2022 06:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 86537C34100;
+        Fri, 20 May 2022 06:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653027016;
+        bh=+g8bHb2ilbuh8waM+HYF0p83yeXeOKZUATDuTJKYzKk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Idy55GefI4ac6/SHeU30qdRAsd9T8UPBNPrBsTOHDBUiSdRCRd48J9pLXOmsPwYU9
+         gzzPq7LIikMc1Jft8nXQ2S2QHGnxGJHAn81lu2ipnXHJaizUzdTeOHyE/MNRIIkhtP
+         Tx38e9hpqo1+gv1ZVJKiMbAv1W56FXVn2hJB5t1rkSXBQb2a0/2cHP4E8dg7eXZ+Dh
+         SWweC3XtthwO7morsohtTjZtz1ctjKi9WclOov/fNBEB7pWkwQQrlzwL2tCO7zCE/P
+         jSFx7hNxY/K2D+LctLAHbVTCx8cao/gt5wbraXWBApAtXgb+/WKdEUynas8dUYw/mO
+         lcyWTQUzJvyGA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73025F0383D;
+        Fri, 20 May 2022 06:10:16 +0000 (UTC)
+Subject: Re: [GIT PULL] Crypto Fixes for 5.18
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Yocp8BaZacpvwJEL@gondor.apana.org.au>
+References: <20210108035450.GA6191@gondor.apana.org.au>
+ <20210708030913.GA32097@gondor.apana.org.au>
+ <20210817013601.GA14148@gondor.apana.org.au>
+ <20210929023843.GA28594@gondor.apana.org.au>
+ <20211029041408.GA3192@gondor.apana.org.au>
+ <20211112104815.GA14105@gondor.apana.org.au>
+ <YcKz4wHYTe3qlW7L@gondor.apana.org.au>
+ <YgMn+1qQPQId50hO@gondor.apana.org.au>
+ <YjE5yThYIzih2kM6@gondor.apana.org.au>
+ <YkUdKiJflWqxBmx5@gondor.apana.org.au> <Yocp8BaZacpvwJEL@gondor.apana.org.au>
+X-PR-Tracked-List-Id: <linux-crypto.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yocp8BaZacpvwJEL@gondor.apana.org.au>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git tags/v5.18-p2
+X-PR-Tracked-Commit-Id: 16287397ec5c08aa58db6acf7dbc55470d78087d
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3d7285a335edaf23b699e87c528cf0b0070e3293
+Message-Id: <165302701646.26960.7262335626261692818.pr-tracker-bot@kernel.org>
+Date:   Fri, 20 May 2022 06:10:16 +0000
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11.04.22 20:45, Richard Weinberger wrote:
-> ----- Ursprüngliche Mail -----
->> Von: "Nathan Chancellor" <nathan@kernel.org>
->> I attempted to print out the error code but it seems like there is no
->> output in the console after "reboot: System halted". If I add an
->> unconditional print right before the call to os_set_fd_block(), I see it
->> during start up but I do not see it during shutdown. Is there some way
->> to see that console output during shutdown?
-> 
-> I think in this case the easiest way is attaching gdb with a breakpoint.
+The pull request you sent on Fri, 20 May 2022 13:41:04 +0800:
 
-I noticed this in my list of open regressions. It seems there wasn't any
-progress to get this regression fixed (please let me know in case I
-missed something), but I guess nobody considered it urgent which is
-likely not that much of a problem in this case. Hence I'm moving this to
-the back-burner:
+> git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git tags/v5.18-p2
 
-#regzbot backburner: special case and UML a leisure pursuit for the
-maintainer
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3d7285a335edaf23b699e87c528cf0b0070e3293
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+Thank you!
 
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
-
-
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
