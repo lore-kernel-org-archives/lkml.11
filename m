@@ -2,131 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D986BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352218AbiETRYh (ORCPT
+        id S1352235AbiETRYz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 13:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35140 "EHLO
+        Fri, 20 May 2022 13:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352251AbiETRYI (ORCPT
+        with ESMTP id S1352198AbiETRYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 13:24:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77E7E18AA95
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:23:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653067435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kov56r1jsuiTzaYs0eaT4ViAnRJYvmg/k+QVFy5P/+0=;
-        b=Uow3c0OjELahIknlNkrHROQ7l5cxdLy7UlMbc02O0bKZUB891UYuIaWNQjwcxRBe3O+zzF
-        cXlupxuqlhyn0UrHhP19hDHm4EKwt0D6fPbgOnyKl9YK8kq5eep3LFs172aiHXoWrozZ7u
-        gBd3u/obebCq/3wjhkGbXeZiNuaaY58=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-673-nwlB4FZBM6KK2GEL8ZhIIQ-1; Fri, 20 May 2022 13:23:49 -0400
-X-MC-Unique: nwlB4FZBM6KK2GEL8ZhIIQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 20 May 2022 13:24:51 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BEA187DA3;
+        Fri, 20 May 2022 10:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1653067489; x=1684603489;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BILEFO7OFJnSGLDg0SNK5vxBLhA8zQLyjIg6JwTmdXo=;
+  b=BvvtvLV5RozgNr7Pftn81AIOS3leKR+bLut+9BhWoKQWzEZWHYP72glR
+   FglSrZON9bsegM4xuDbdyAXLDJX3Ab0NV9YsaOT0vvTOClpgYkWFxzdad
+   YS4zV2Cc0l68EtCP4zY+PiGK5/ox2PPPbt2MzLW8sEdPP9UqCAvf9N0dT
+   8=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="296154464"
+X-IronPort-AV: E=Sophos;i="5.91,240,1647298800"; 
+   d="scan'208";a="296154464"
+Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 19:24:47 +0200
+Received: from MUCSE819.infineon.com (MUCSE819.infineon.com [172.23.29.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8842285A5AA;
-        Fri, 20 May 2022 17:23:47 +0000 (UTC)
-Received: from eperezma.remote.csb (unknown [10.39.192.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C8458492C14;
-        Fri, 20 May 2022 17:23:42 +0000 (UTC)
-From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-To:     virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>, martinh@xilinx.com,
-        hanand@xilinx.com, Si-Wei Liu <si-wei.liu@oracle.com>,
-        dinang@xilinx.com, Eli Cohen <elic@nvidia.com>, lvivier@redhat.com,
-        pabloc@xilinx.com, gautam.dawar@amd.com,
-        Xie Yongji <xieyongji@bytedance.com>, habetsm.xilinx@gmail.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        tanuj.kamde@amd.com, eperezma@redhat.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        martinpo@xilinx.com, lulu@redhat.com, ecree.xilinx@gmail.com,
-        Parav Pandit <parav@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH 3/4] vhost-vdpa: uAPI to stop the device
-Date:   Fri, 20 May 2022 19:23:24 +0200
-Message-Id: <20220520172325.980884-4-eperezma@redhat.com>
-In-Reply-To: <20220520172325.980884-1-eperezma@redhat.com>
-References: <20220520172325.980884-1-eperezma@redhat.com>
+        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
+        Fri, 20 May 2022 19:24:46 +0200 (CEST)
+Received: from MUCSE817.infineon.com (172.23.29.43) by MUCSE819.infineon.com
+ (172.23.29.45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 20 May
+ 2022 19:24:46 +0200
+Received: from ISCNPC0VBFBX.infineon.com (172.23.8.247) by
+ MUCSE817.infineon.com (172.23.29.43) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 20 May 2022 19:24:45 +0200
+From:   Alexander Steffen <Alexander.Steffen@infineon.com>
+To:     <jarkko@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-integrity@vger.kernel.org>
+CC:     Alexander Steffen <Alexander.Steffen@infineon.com>,
+        <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        Johannes Holland <johannes.holland@infineon.com>,
+        Amir Mizinski <amirmizi6@gmail.com>
+Subject: [PATCH v3 0/2] tpm_tis_i2c
+Date:   Fri, 20 May 2022 19:24:20 +0200
+Message-ID: <20220520172422.4309-1-Alexander.Steffen@infineon.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE824.infineon.com (172.23.29.55) To
+ MUCSE817.infineon.com (172.23.29.43)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ioctl adds support for stop the device from userspace.
+Johannes asked me to take over this series. I've decided to split off the
+later patches from this series, since it was suggested to split those changes
+into multiple patches and I don't want to blow up this series with too many
+changes that are not strictly necessary for the I2C driver to work correctly.
+So let's first concentrate on getting the basic functionality right, then we
+can work on additional improvements.
 
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
----
- drivers/vhost/vdpa.c       | 18 ++++++++++++++++++
- include/uapi/linux/vhost.h |  3 +++
- 2 files changed, 21 insertions(+)
+I've addressed all review comments for patch 1/2.
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index a325bc259afb..da4a8c709bc1 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -478,6 +478,21 @@ static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
- 	return 0;
- }
- 
-+static long vhost_vdpa_stop(struct vhost_vdpa *v, u32 __user *argp)
-+{
-+	struct vdpa_device *vdpa = v->vdpa;
-+	const struct vdpa_config_ops *ops = vdpa->config;
-+	int stop;
-+
-+	if (!ops->stop)
-+		return -EOPNOTSUPP;
-+
-+	if (copy_to_user(argp, &stop, sizeof(stop)))
-+		return -EFAULT;
-+
-+	return ops->stop(vdpa, stop);
-+}
-+
- static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
- 				   void __user *argp)
- {
-@@ -649,6 +664,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
- 	case VHOST_VDPA_GET_VQS_COUNT:
- 		r = vhost_vdpa_get_vqs_count(v, argp);
- 		break;
-+	case VHOST_STOP:
-+		r = vhost_vdpa_stop(v, argp);
-+		break;
- 	default:
- 		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
- 		if (r == -ENOIOCTLCMD)
-diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-index cab645d4a645..e7526968ab0c 100644
---- a/include/uapi/linux/vhost.h
-+++ b/include/uapi/linux/vhost.h
-@@ -171,4 +171,7 @@
- #define VHOST_VDPA_SET_GROUP_ASID	_IOW(VHOST_VIRTIO, 0x7C, \
- 					     struct vhost_vring_state)
- 
-+/* Stop or resume a device so it does not process virtqueue requests anymore */
-+#define VHOST_STOP			_IOW(VHOST_VIRTIO, 0x7D, int)
-+
- #endif
+Patch 2/2 is unmodified.
+
+Johannes Holland (2):
+  tpm: Add tpm_tis_i2c backend for tpm_tis_core
+  tpm: Add tpm_tis_verify_crc to the tpm_tis_phy_ops protocol layer
+
+ drivers/char/tpm/Kconfig        |  12 +
+ drivers/char/tpm/Makefile       |   1 +
+ drivers/char/tpm/tpm_tis_core.c |  14 ++
+ drivers/char/tpm/tpm_tis_core.h |  10 +
+ drivers/char/tpm/tpm_tis_i2c.c  | 405 ++++++++++++++++++++++++++++++++
+ 5 files changed, 442 insertions(+)
+ create mode 100644 drivers/char/tpm/tpm_tis_i2c.c
+
 -- 
-2.27.0
+2.25.1
 
