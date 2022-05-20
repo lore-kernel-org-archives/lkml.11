@@ -2,153 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346231AbiETHJq convert rfc822-to-8bit (ORCPT
+        id S1346425AbiETHLs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
+        Fri, 20 May 2022 03:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345889AbiETHJk (ORCPT
+        with ESMTP id S1346274AbiETHLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:09:40 -0400
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F47C14D7BA;
-        Fri, 20 May 2022 00:09:38 -0700 (PDT)
-Received: by mail-qk1-f182.google.com with SMTP id 14so207266qkl.6;
-        Fri, 20 May 2022 00:09:38 -0700 (PDT)
+        Fri, 20 May 2022 03:11:06 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41F4DF1A
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:11:01 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id fw21-20020a17090b129500b001df9f62edd6so5901212pjb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:11:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=97zq3Qo0/Ny+Q7r8sMLtMXEzhnPp1W1hgAntg+pA9PY=;
+        b=uGNZuK2pXyA3XYjj10+l0gMcXEl0/o0lX5su3Epqzrx9iTt/ijBcfFP49nW1hs3dSk
+         Gx988oH+cPRR+q+JDUd1PlRAW5NmgcldcCCo4uCD3nDeWeOxCDTgz6MBqIK3WBf39Vbz
+         0Iw3WKKCDWtX1ka3hrFGkmzf/P+uR+LRsWZCIPpK5z18FRXbGFG+4dd/Lclj1IdBgivl
+         OKTsBtc5iAzKtMfOs3J0pNWTJCKWsUtSthRJUxCZWeU3VR6oJWpED+4A9SVQNsbDSzFT
+         3E3cU4UjI9DWk12TMkoHEY5l8ELvcnrLZaugXjs0jpQts5hL0xEtkj/xCx2RUfozj/LA
+         UJzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/gd2QrNW920jKEDeNc6oH0JJgiKsVitkuy57vUL4Nt8=;
-        b=zJEYFOCH88VTDjpb6Re2XR51abX5fHhhqQmIIZ2AC5cgWAMfdpGB4XOEyP8JwD0pAU
-         f6aLzuWdneinCzdBCbWyqUywNV2gcu6lx5xg+8BqyjWOA8Rwxosh3q8AA/rn6DxMXaDu
-         36xU72IkqujUiAS8jhzWcz/geZsmTmoomSOntBXiU4YwfTD4zenx0ge8fbEDyNkbDihm
-         4Z584mYYKJPNanuYJR6B9r6g7aJsjLDgxLq2bzVC3tRh9fAXUdMih1J22/ijocC3B2+t
-         qJAeP4zEs5hogWUX/tbJfqDj/74q1Va5dS7h1hW+2mRYvV5VRfqDLrew7q+7ANthMhO1
-         uxBQ==
-X-Gm-Message-State: AOAM531kfI+CChePhytdYb8Fyy2TtSge7iSXzZEXUToZ3egLf3GXZPOx
-        zg9WC+dZDinUaVQESzjDubeBoMtgZQSQKQ==
-X-Google-Smtp-Source: ABdhPJyquiVofAh1ku48QqyP8uC8wSBQtT7lK5ZBBF7uLh3iVl68HLy98JZsCCY6C+0g1qJqC/ZPYw==
-X-Received: by 2002:a37:6247:0:b0:6a3:3620:b07e with SMTP id w68-20020a376247000000b006a33620b07emr3975545qkb.339.1653030576830;
-        Fri, 20 May 2022 00:09:36 -0700 (PDT)
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
-        by smtp.gmail.com with ESMTPSA id h18-20020ac87152000000b002f39b99f69asm2470384qtp.52.2022.05.20.00.09.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 00:09:36 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2f83983782fso78286537b3.6;
-        Fri, 20 May 2022 00:09:35 -0700 (PDT)
-X-Received: by 2002:a81:ad11:0:b0:2fe:fb00:a759 with SMTP id
- l17-20020a81ad11000000b002fefb00a759mr8671091ywh.283.1653030575421; Fri, 20
- May 2022 00:09:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=97zq3Qo0/Ny+Q7r8sMLtMXEzhnPp1W1hgAntg+pA9PY=;
+        b=3Du1mskVFKkUuVCmSAmTC5Qwfr++qHeBRQ1FtR/HdY7iVtkQJdFsvvR2QdpYZx92s6
+         UTZVXWWveZ8bNypPh7Y2pT/j6gMIz0L7f3joCPMdG0p+sqfJxOkKf/OfwDrTpm/+QDKT
+         wSYb3rCw3H4kWPJBu7s7cUHwJqAJqELZ1nNSXgQ6rIa4xH8gSS2QWIH1SeRtBa0W3jzj
+         0usrzizRH0hDhKQ3ShhuNK5z+oZCuFZqXaRr2DqjkbLKfLsN2OHYr/SsBpDNL31XteZe
+         BScNhA+EiixcbC54rn1sGWoDRB86QEha1sWcNM0NmPF/6HqpgDdFX76n9qGz7AWEW+Fb
+         skyw==
+X-Gm-Message-State: AOAM5334l0Te3gBhZNW7a/nCn2ApFP3w4SflDaaug1gA+4n6vkiIdxj6
+        Eakre9BThu0RsFXAtn3dQVvaRA==
+X-Google-Smtp-Source: ABdhPJy+dBTvNY4bONBwGn0CvJdBUJt+Emcg5t0eGDRQEsSgzVaznzXkndYO31HfhwH8jj8MFZY8vg==
+X-Received: by 2002:a17:90b:3948:b0:1df:b2c1:dc07 with SMTP id oe8-20020a17090b394800b001dfb2c1dc07mr6435774pjb.0.1653030661138;
+        Fri, 20 May 2022 00:11:01 -0700 (PDT)
+Received: from always-x1.www.tendawifi.com ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id t18-20020a170902d21200b00161b3d5e3e4sm4965168ply.304.2022.05.20.00.10.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 00:11:00 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     akpm@linux-foundation.org, naoya.horiguchi@nec.com, mst@redhat.com,
+        david@redhat.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        pbonzini@redhat.com, peterx@redhat.com, qemu-devel@nongnu.org,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: [PATCH 0/3] recover hardware corrupted page by virtio balloon
+Date:   Fri, 20 May 2022 15:06:45 +0800
+Message-Id: <20220520070648.1794132-1-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220519153107.696864-1-clement.leger@bootlin.com> <20220519153107.696864-5-clement.leger@bootlin.com>
-In-Reply-To: <20220519153107.696864-5-clement.leger@bootlin.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 May 2022 09:09:23 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUdsgoOyFqMq--F3d67QwE4V=CTEedm=uC7grmWZZEHJg@mail.gmail.com>
-Message-ID: <CAMuHMdUdsgoOyFqMq--F3d67QwE4V=CTEedm=uC7grmWZZEHJg@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 04/13] dt-bindings: net: pcs: add bindings for
- Renesas RZ/N1 MII converter
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Clément,
+Hi,
 
-On Thu, May 19, 2022 at 5:32 PM Clément Léger <clement.leger@bootlin.com> wrote:
-> This MII converter can be found on the RZ/N1 processor family. The MII
-> converter ports are declared as subnodes which are then referenced by
-> users of the PCS driver such as the switch.
->
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+I'm trying to recover hardware corrupted page by virtio balloon, the
+workflow of this feature like this:
 
-Thanks for your patch!
+Guest              5.MF -> 6.RVQ FE    10.Unpoison page
+                    /           \            /
+-------------------+-------------+----------+-----------
+                   |             |          |
+                4.MCE        7.RVQ BE   9.RVQ Event
+ QEMU             /               \       /
+             3.SIGBUS              8.Remap
+                /
+----------------+------------------------------------
+                |
+            +--2.MF
+ Host       /
+       1.HW error
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
-> @@ -0,0 +1,162 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/pcs/renesas,rzn1-miic.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Renesas RZ/N1 MII converter
-> +
-> +maintainers:
-> +  - Clément Léger <clement.leger@bootlin.com>
-> +
-> +description: |
-> +  This MII converter is present on the Renesas RZ/N1 SoC family. It is
-> +  responsible to do MII passthrough or convert it to RMII/RGMII.
-> +
-> +properties:
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - renesas,r9a06g032-miic
-> +      - const: renesas,rzn1-miic
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: MII reference clock
-> +      - description: RGMII reference clock
-> +      - description: RMII reference clock
-> +      - description: AHB clock used for the MII converter register interface
+1, HardWare page error occurs randomly.
+2, host side handles corrupted page by Memory Failure mechanism, sends
+   SIGBUS to the user process if early-kill is enabled.
+3, QEMU handles SIGBUS, if the address belongs to guest RAM, then:
+4, QEMU tries to inject MCE into guest.
+5, guest handles memory failure again.
 
-Please add clock-names (and make it required), as there are multiple clocks.
+1-5 is already supported for a long time, the next steps are supported
+in this patch(also related driver patch):
 
-The rest LGTM (from an SoC integration PoV), so
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+6, guest balloon driver gets noticed of the corrupted PFN, and sends
+   request to host side by Recover VQ FrontEnd.
+7, QEMU handles request from Recover VQ BackEnd, then:
+8, QEMU remaps the corrupted HVA fo fix the memory failure, then:
+9, QEMU acks the guest side the result by Recover VQ.
+10, guest unpoisons the page if the corrupted page gets recoverd
+    successfully.
 
-Gr{oetje,eeting}s,
+Test:
+This patch set can be tested with QEMU(also in developing):
+https://github.com/pizhenwei/qemu/tree/balloon-recover
 
-                        Geert
+Emulate MCE by QEMU(guest RAM normal page only, hugepage is not supported):
+virsh qemu-monitor-command vm --hmp mce 0 9 0xbd000000000000c0 0xd 0x61646678 0x8c
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+The guest works fine(on Intel Platinum 8260):
+ mce: [Hardware Error]: Machine check events logged
+ Memory failure: 0x61646: recovery action for dirty LRU page: Recovered
+ virtio_balloon virtio5: recovered pfn 0x61646
+ Unpoison: Unpoisoned page 0x61646 by virtio-balloon
+ MCE: Killing stress:24502 due to hardware memory corruption fault at 7f5be2e5a010
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+And the 'HardwareCorrupted' in /proc/meminfo also shows 0 kB.
+
+About the protocol of virtio balloon recover VQ, it's undefined and in
+developing currently:
+- 'struct virtio_balloon_recover' defines the structure which is used to
+  exchange message between guest and host.
+- '__le32 corrupted_pages' in struct virtio_balloon_config is used in the next
+  step:
+  1, a VM uses RAM of 2M huge page, once a MCE occurs, the 2M becomes
+     unaccessible. Reporting 512 * 4K 'corrupted_pages' to the guest, the guest
+     has a chance to isolate the 512 pages ahead of time.
+
+  2, after migrating to another host, the corrupted pages are actually recovered,
+     once the guest gets the 'corrupted_pages' with 0, then the guest could
+     unpoison all the poisoned pages which are recorded in the balloon driver.
+
+zhenwei pi (3):
+  memory-failure: Introduce memory failure notifier
+  mm/memory-failure.c: support reset PTE during unpoison
+  virtio_balloon: Introduce memory recover
+
+ drivers/virtio/virtio_balloon.c     | 243 ++++++++++++++++++++++++++++
+ include/linux/mm.h                  |   4 +-
+ include/uapi/linux/virtio_balloon.h |  16 ++
+ mm/hwpoison-inject.c                |   2 +-
+ mm/memory-failure.c                 |  59 ++++++-
+ 5 files changed, 315 insertions(+), 9 deletions(-)
+
+-- 
+2.20.1
+
