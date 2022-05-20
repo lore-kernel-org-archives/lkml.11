@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB41C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352533AbiETS6G (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 14:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
+        id S241113AbiETS6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 14:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353108AbiETSzz (ORCPT
+        with ESMTP id S238453AbiETS4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 14:55:55 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C451F3
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:44 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id z18so9618493iob.5
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:44 -0700 (PDT)
+        Fri, 20 May 2022 14:56:04 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704DBBEE
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:47 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id o190so9597469iof.10
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vSHRCF1zLoP2q/+UJGoTXeLZBLEijQ7Yq4ob+ptO93g=;
-        b=use2A+KKg9Sv5uQTeKKXHg+JPg9IR+ucBAucOwKMSclHUiyx9Y12Qu4htGnlv5tHEa
-         a9jlfDtihpR34uljS689Gc1MI+tqS9sF3Hz9qWVDExxcK/QpFn6YId7K7rD3Z7iTKwaj
-         TeRUOunB00uXXogG+KG4fhd0P2eCKoJ3O/wZc4QJSbJAshSav3IfZhZGP/OILKSfZapw
-         tq6t5lyMvDXjr6vLf2vByxjsCQTGqq1cOgFaEzGHUT/vf0nU8W9EqfrAWr7T4j0q1idQ
-         UlpqD9TjWfKmE7dXSND98LoX1FIyOsPZomglOEmvXGA/1czV6308ek5qQHwsivkyOHHQ
-         KPBQ==
+        bh=doVlcQ6Xlwn2BqCTeY/iG09ipnCZzy9t3u/uMA+1XFU=;
+        b=fZZsDJJrboSe4IKnxyoJSpV9nG4DIyCBw3i1qGKRzT7ZyiZ1D6SRzHzdAfSeT7Rb87
+         amgtbD5Podj6C7xp1Ep+hPQFdnknmfUd3RT7e0Mnic403zG21KF36hamsWtXSxPgwU2c
+         IkWJB99HnUAN+K2XjKEiuPEASJytbu72xcDNcKlXxxZMhLw7kJX+oDn55Y4OdAt93faG
+         C9Umg0D8N+zZ/eafFOtyQPWof8qCx2L33IkBToZ6seDrmLFt6LeR60Cg3PbklmpgooKD
+         Sli0cLr9i2Ua4SMxAQhU+Q0Fkb899oRCgXOMNu9K4AfEtw5j2QYO4ck7mgwGpq+PXG8k
+         3Xvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vSHRCF1zLoP2q/+UJGoTXeLZBLEijQ7Yq4ob+ptO93g=;
-        b=OC4EsibZBj/+ZTlr7zumgjaGid1/Ilps1XBTmRmn9SAt0gd7PNuGhQZObbt38Q3PKm
-         nVjY4YF8qkeA8OHvBkX6xFU/fYxj4pk/Xab1OV6of0fMgJk+CJSYDQiQHrH3jfAQvDIA
-         5nKdwgA2xjKRWHaUWueEpEPQ6aQ7Yv3Jn7gZ5wpBTc3Ec3wQ3oAAs6/LSWbMMMj6v17N
-         SUxsPQxzEXqaWsorteq6h9TiDbM40cq3z/UHjbHGIA1b3l6Sb+UPTbLmfTDGo5eJAQiB
-         ko9bIRAZAboDkTaIUV5EwpfstB2J09oEeAnM9B7mCtQoBEnJf23oasVAKlT+7Dy+gAJB
-         OCsQ==
-X-Gm-Message-State: AOAM533U2i8PiaZ291aX+MnayQAd97j042aIBapTzRYXneSIMoNSXZiy
-        Hx8Q2IR5lUA0D3PomGGiDeNfMA==
-X-Google-Smtp-Source: ABdhPJyryWagy5ATXvZy4DFcPeeA/wDNrlNcnw2qKZFlArLd1CpHNVhjH0Fdsc2y/AQRLsQHXvQ+pg==
-X-Received: by 2002:a05:6638:1509:b0:32e:5c10:29ab with SMTP id b9-20020a056638150900b0032e5c1029abmr6157084jat.223.1653072943749;
-        Fri, 20 May 2022 11:55:43 -0700 (PDT)
+        bh=doVlcQ6Xlwn2BqCTeY/iG09ipnCZzy9t3u/uMA+1XFU=;
+        b=dqMvN84IoaZUCAzvl9MwXV//37URRrOcL0S2lQFvJPa+6klhpOAWjeMrehO1mSGrg/
+         6VMNqF6yWzSrNA/IETe+ECphM+gepavsbb4OopLouovEREEsChF1Bm7SVEbJKf480IDY
+         3Zm06QM4YXsRgvmI+eGowxGB4KTTQjnDmcOQb5lBltycrSR8xc7feLc2JUYydPojiPLp
+         RM/oqemuvqi7+iVLBPxFruO+KLuizmegWIr0D5eQr1RDLBWkkfkr3VQAK4g9d5tTcxJ3
+         +fK06QOh52jdbZa971MxmXviGt/iJKVWhPRt7ofZheqIvBiMQGTHTL9iKC2Dak34xz8Z
+         EdRQ==
+X-Gm-Message-State: AOAM532kVUqtFhUEPmRNn7QsxRuRZ8p8M3gaDvFOWoDyYzyeTPrZKCk5
+        da/UA+bS8oGF7kr60lkSgpRmYQ==
+X-Google-Smtp-Source: ABdhPJy6V1vTe1zz3jCZ5jBx46z3InfbrmSKe+OrxZ52VboJkNW4lCWa/9QEfijW+NblkRpqme+Wuw==
+X-Received: by 2002:a02:6619:0:b0:32e:25b7:d9ed with SMTP id k25-20020a026619000000b0032e25b7d9edmr6108523jac.30.1653072946839;
+        Fri, 20 May 2022 11:55:46 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id a6-20020a056638058600b0032b3a7817acsm871958jar.112.2022.05.20.11.55.42
+        by smtp.gmail.com with ESMTPSA id a6-20020a056638058600b0032b3a7817acsm871958jar.112.2022.05.20.11.55.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 11:55:43 -0700 (PDT)
+        Fri, 20 May 2022 11:55:46 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +56,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/8] net: ipa: get rid of ipa_cmd_info->direction
-Date:   Fri, 20 May 2022 13:55:30 -0500
-Message-Id: <20220520185533.877920-6-elder@linaro.org>
+Subject: [PATCH net-next 8/8] net: ipa: use data space for command opcodes
+Date:   Fri, 20 May 2022 13:55:33 -0500
+Message-Id: <20220520185533.877920-9-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220520185533.877920-1-elder@linaro.org>
 References: <20220520185533.877920-1-elder@linaro.org>
@@ -69,60 +68,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The direction field of the ipa_cmd_info structure is set, but never
-used.  It seems it might have been used for the DMA_SHARED_MEM
-immediate command, but the DIRECTION flag is set based on the value
-of the passed-in direction flag there.
-
-Anyway, remove this unused field from the ipa_cmd_info structure.
-This is done as a separate patch to make it very obvious that it's
-not required.
+The 64-bit data field in a transaction is not used for commands.
+And the opcode array is *only* used for commands.  They're
+(currently) the same size; save a little space in the transaction
+structure by enclosing the two fields in a union.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi_trans.c | 5 +----
- drivers/net/ipa/ipa_cmd.h   | 2 --
- 2 files changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/ipa/gsi_trans.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index bf31ef3d56adc..cf8ee42373547 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -413,7 +413,6 @@ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
- 		       dma_addr_t addr, enum dma_data_direction direction,
- 		       enum ipa_cmd_opcode opcode)
- {
--	struct ipa_cmd_info *info;
- 	u32 which = trans->used++;
- 	struct scatterlist *sg;
+diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
+index 99ce2cba0dc3c..020c3b32de1d7 100644
+--- a/drivers/net/ipa/gsi_trans.h
++++ b/drivers/net/ipa/gsi_trans.h
+@@ -60,8 +60,10 @@ struct gsi_trans {
+ 	u8 used;			/* # entries used in sgl[] */
+ 	u32 len;			/* total # bytes across sgl[] */
  
-@@ -438,9 +437,7 @@ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
- 	sg_dma_address(sg) = addr;
- 	sg_dma_len(sg) = size;
+-	void *data;
+-	u8 cmd_opcode[IPA_COMMAND_TRANS_TRE_MAX];
++	union {
++		void *data;
++		u8 cmd_opcode[IPA_COMMAND_TRANS_TRE_MAX];
++	};
+ 	struct scatterlist *sgl;
+ 	enum dma_data_direction direction;
  
--	info = &trans->info[which];
--	info->opcode = opcode;
--	info->direction = direction;
-+	trans->info[which].opcode = opcode;
- }
- 
- /* Add a page transfer to a transaction.  It will fill the only TRE. */
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index 05ed7e42e1842..d4dbe2ce96dcd 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -50,11 +50,9 @@ enum ipa_cmd_opcode {
-  * struct ipa_cmd_info - information needed for an IPA immediate command
-  *
-  * @opcode:	The command opcode.
-- * @direction:	Direction of data transfer for DMA commands
-  */
- struct ipa_cmd_info {
- 	enum ipa_cmd_opcode opcode;
--	enum dma_data_direction direction;
- };
- 
- /**
 -- 
 2.32.0
 
