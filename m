@@ -2,289 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3188C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236347AbiETS6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 14:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
+        id S1345047AbiETS7w (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 14:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353123AbiETSz4 (ORCPT
+        with ESMTP id S237963AbiETS7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 14:55:56 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA30B0D
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:46 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id i74so2932512ioa.4
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gEtlxxZ1RupvbnWDC4YcRwDjh6C8P556iqC2Z5nSepA=;
-        b=dC1IcXoD1qLP1XGDvCaTQ9iJGHrIgvxLRY2jDteDlWBFkubYE3lCzSCR3NNjVtz3vU
-         Yy8l+ErmezaJV7KsshGorRpfcuVAvcXglz+VIOvXviixnfcuoQxuT88UvGHkDhwp+gPS
-         +K9kRHxflz7OEIrUTyhaghHz0T/tLiMNMTqugU7yXCeDZLZZmhY59op4T28Lr4+uFhGj
-         iwSahg08LlPSIF001nIPBhf8QjBVBEqSMGBoKgt2DIvOvJ02RMes7Gci90aaZmvaTQVE
-         V989vSD9tyYNISn8qpG62LtS4ORVvvC4haCGiNs/kAX0gHk6GV9wACybD3CSfWtq1dOF
-         J/Hw==
+        Fri, 20 May 2022 14:59:48 -0400
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A0F195E92;
+        Fri, 20 May 2022 11:59:47 -0700 (PDT)
+Received: by mail-oi1-f175.google.com with SMTP id w130so11041009oig.0;
+        Fri, 20 May 2022 11:59:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gEtlxxZ1RupvbnWDC4YcRwDjh6C8P556iqC2Z5nSepA=;
-        b=d/P7iW58Fyj5bbmxs0IKBqWyo3q/NuSrUhx3MxoovxHtA6TOW5ddh06v0CNw9P3+BC
-         WzRLcIo8KzS9Cc14cGZ5ZcmLXHhsTySyCzXKJRMq/bKfSs9uI+CQ5MMdCaU8lHaT/52y
-         mmnHYyrJs8bA7vM/z7Lu/b9sHDKKFCVfZkY6qMfxU69Zh1ZqxEInyFMBti2/Qp1tU0pv
-         Oko4bWaB4BCIJIOfo/Pq8a4J7X6lJ+SFkDZvfeO0JRhWv15ULnUHAvcDskGQaHFYXDw4
-         7J92Ga2n2NwVV/RwOQAZzYP3kG9YS0zGBkZ00z6Dt1WwU4UmAh8OLAlHEk7fJ3Fk7RR0
-         gLvg==
-X-Gm-Message-State: AOAM532R8zCU8UGxXNgddwNKiMFwXr4M2g5GFnnb7PKz43d0eSD1el6U
-        K8N6ppqCVDp9IixiGhlcxNUcJg==
-X-Google-Smtp-Source: ABdhPJzlYPIGq4yyx+Umrsmc+ij38/S2G9E1t0ThslaLhxYH7Rh+OolF1MllMV3xxO0U0S1bLckMeQ==
-X-Received: by 2002:a05:6638:16d6:b0:32e:97e4:ac16 with SMTP id g22-20020a05663816d600b0032e97e4ac16mr2996363jat.199.1653072945901;
-        Fri, 20 May 2022 11:55:45 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id a6-20020a056638058600b0032b3a7817acsm871958jar.112.2022.05.20.11.55.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 11:55:45 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 7/8] net: ipa: remove command info pool
-Date:   Fri, 20 May 2022 13:55:32 -0500
-Message-Id: <20220520185533.877920-8-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220520185533.877920-1-elder@linaro.org>
-References: <20220520185533.877920-1-elder@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GFbPgQEtbW912BPIItjV08RciM4FEzthIck0qttGkpk=;
+        b=fDsPDHpCxd2z66DUW2lygsqMnwmm+Oemfn/HWNOJM5u3y+fwXKI7FC2OVjuDN/mdJL
+         WGOIwyGxQin0Fs/iuoAB6cpUM117DT2VXt7Lwq/q9SUyjZG24V07OKFP8VCywKCIhwiq
+         jHyUf1gOLSfJY5c5NRUV4ZL38Q21609njDFdgYm5TuKxLht69Hjp+KBQzZC49uwd3bmY
+         nqyXw5/CTlR6pSEElBHjxqghCNN7TTrqEXgrOjIEc9D+o0aitpB2MZyI1ln4Dq15gEDi
+         H+shatSm9R06b+e2fahalh/oVOIl1RUcORpFkdSLYhTOiTAojzg5Quryn7vNnKj+2wUR
+         UtGg==
+X-Gm-Message-State: AOAM531qC9rJ2vQT+Bq1CEm7yopMmzl2B2nyvDFYSOhlmoZtfNNpx0pw
+        a0oLDhgx84YcL4WlUueXchgjurDkJmYiB+PrGFY=
+X-Google-Smtp-Source: ABdhPJxqogoOMkG4+gq8mrfj4XEMfuHTadYZbi0FuE9/BP6hynPyQ+19JDm9/rtXUghz8nAXO8bAy051UWUXYYGCxss=
+X-Received: by 2002:a05:6808:2218:b0:326:bd8c:d044 with SMTP id
+ bd24-20020a056808221800b00326bd8cd044mr6204978oib.92.1653073187030; Fri, 20
+ May 2022 11:59:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220422093833.340873-1-nakamura.shun@fujitsu.com> <20220422093833.340873-3-nakamura.shun@fujitsu.com>
+In-Reply-To: <20220422093833.340873-3-nakamura.shun@fujitsu.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Fri, 20 May 2022 11:59:35 -0700
+Message-ID: <CAM9d7cjoDXmQ=6B3zMfq_+0QNyTc-r5nBCJoKJBx98JrJjv-YA@mail.gmail.com>
+Subject: Re: [PATCH 2/7] libperf: Introduce perf_{evsel, evlist}__open_opt
+ with extensible struct opts
+To:     Shunsuke Nakamura <nakamura.shun@fujitsu.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ipa_cmd_info structure now contains only one field, and it's an
-enumerated type whose values all fit in 8 bits.  Currently we'll
-never use more than 8 TREs in a command transaction, and we can
-represent that number of command opcodes in the same space as a 64
-bit pointer to an ipa_cmd_info structure.
+Hello,
 
-Define IPA_COMMAND_TRANS_TRE_MAX as the maximum number of TREs that
-can be in a command transaction.  Replace the info pointer in a
-transaction with a fixed-size array named cmd_opcode[] of that many
-bytes.  Store the opcode in this array when adding a command TRE to
-a transaction, as was done previously for the info array.  This
-makes the ipa_cmd_info unused, so get rid of it.
+On Fri, Apr 22, 2022 at 2:44 AM Shunsuke Nakamura
+<nakamura.shun@fujitsu.com> wrote:
+>
+> Introduce perf_{evsel, evlist}__open_opt with extensible structure opts.
+> The mechanism of the extensible structure opts imitates
+> tools/lib/bpf/libbpf.h. Currently, only open_flags is supported for the
+> opts structure.
+>
+> Signed-off-by: Shunsuke Nakamura <nakamura.shun@fujitsu.com>
+> ---
+[SNIP]
+> diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
+> index 210ea7c06ce8..00c0cea43b52 100644
+> --- a/tools/lib/perf/evsel.c
+> +++ b/tools/lib/perf/evsel.c
+> @@ -16,8 +16,12 @@
+>  #include <internal/lib.h>
+>  #include <linux/string.h>
+>  #include <sys/ioctl.h>
+> +#include <signal.h>
+> +#include <fcntl.h>
+> +#include <sys/types.h>
+>  #include <sys/mman.h>
+>  #include <asm/bug.h>
+> +#include "internal.h"
+>
+>  void perf_evsel__init(struct perf_evsel *evsel, struct perf_event_attr *attr,
+>                       int idx)
+> @@ -26,6 +30,7 @@ void perf_evsel__init(struct perf_evsel *evsel, struct perf_event_attr *attr,
+>         evsel->attr = *attr;
+>         evsel->idx  = idx;
+>         evsel->leader = evsel;
+> +       evsel->open_flags = 0;
 
-When committing an immediate command transaction, use the channel's
-Boolean command flag to determine whether to fill in the opcode,
-which will be taken (as before) from the array in the transaction.
+In general, you don't need to reset it to zero as it's allocated with
+zalloc().
 
-This makes the command info pool unnecessary, so get rid of it.
+>  }
+>
+[SNIP]
+> diff --git a/tools/lib/perf/internal.h b/tools/lib/perf/internal.h
+> index 2c27e158de6b..4b91a087ed62 100644
+> --- a/tools/lib/perf/internal.h
+> +++ b/tools/lib/perf/internal.h
+> @@ -20,4 +20,48 @@ do {                            \
+>  #define pr_debug2(fmt, ...)     __pr(LIBPERF_DEBUG2, fmt, ##__VA_ARGS__)
+>  #define pr_debug3(fmt, ...)     __pr(LIBPERF_DEBUG3, fmt, ##__VA_ARGS__)
+>
+> +static inline bool libperf_is_mem_zeroed(const char *p, ssize_t len)
+> +{
+> +       while (len > 0) {
+> +               if (*p)
+> +                       return false;
+> +               p++;
+> +               len--;
+> +       }
+> +       return true;
+> +}
+> +
+> +static inline bool libperf_validate_opts(const char *opts,
+> +                                        size_t opts_sz, size_t user_sz,
+> +                                        const char *type_name)
+> +{
+> +       if (user_sz < sizeof(size_t)) {
+> +               pr_warning("%s size (%zu) is too small\n", type_name, user_sz);
+> +               return false;
+> +       }
+> +       if (!libperf_is_mem_zeroed(opts + opts_sz, (ssize_t)user_sz - opts_sz)) {
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi.h       |  1 -
- drivers/net/ipa/gsi_trans.c | 10 ++++-----
- drivers/net/ipa/gsi_trans.h |  7 +++++--
- drivers/net/ipa/ipa_cmd.c   | 41 ++++++++-----------------------------
- drivers/net/ipa/ipa_cmd.h   |  9 --------
- 5 files changed, 18 insertions(+), 50 deletions(-)
+I don't think the cast is necessary since it'll be promoted again
+to size_t due to opts_sz.  Instead, we can check if user_sz is
+greater than opts_sz explicitly and call the function.
 
-diff --git a/drivers/net/ipa/gsi.h b/drivers/net/ipa/gsi.h
-index 9cc6576588116..5d66116b46b03 100644
---- a/drivers/net/ipa/gsi.h
-+++ b/drivers/net/ipa/gsi.h
-@@ -84,7 +84,6 @@ struct gsi_trans_info {
- 	struct gsi_trans_pool pool;	/* transaction pool */
- 	struct gsi_trans_pool sg_pool;	/* scatterlist pool */
- 	struct gsi_trans_pool cmd_pool;	/* command payload DMA pool */
--	struct gsi_trans_pool info_pool;/* command information pool */
- 	struct gsi_trans **map;		/* TRE -> transaction map */
- 
- 	spinlock_t spinlock;		/* protects updates to the lists */
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index 472792992f866..55f8fe7d2668e 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -436,7 +436,7 @@ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
- 	sg_dma_address(sg) = addr;
- 	sg_dma_len(sg) = size;
- 
--	trans->info[which].opcode = opcode;
-+	trans->cmd_opcode[which] = opcode;
- }
- 
- /* Add a page transfer to a transaction.  It will fill the only TRE. */
-@@ -552,10 +552,10 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 	struct gsi_ring *ring = &channel->tre_ring;
- 	enum ipa_cmd_opcode opcode = IPA_CMD_NONE;
- 	bool bei = channel->toward_ipa;
--	struct ipa_cmd_info *info;
- 	struct gsi_tre *dest_tre;
- 	struct scatterlist *sg;
- 	u32 byte_count = 0;
-+	u8 *cmd_opcode;
- 	u32 avail;
- 	u32 i;
- 
-@@ -566,7 +566,7 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 	 * If there is no info array we're doing a simple data
- 	 * transfer request, whose opcode is IPA_CMD_NONE.
- 	 */
--	info = trans->info ? &trans->info[0] : NULL;
-+	cmd_opcode = channel->command ? &trans->cmd_opcode[0] : NULL;
- 	avail = ring->count - ring->index % ring->count;
- 	dest_tre = gsi_ring_virt(ring, ring->index);
- 	for_each_sg(trans->sgl, sg, trans->used, i) {
-@@ -577,8 +577,8 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 		byte_count += len;
- 		if (!avail--)
- 			dest_tre = gsi_ring_virt(ring, 0);
--		if (info)
--			opcode = info++->opcode;
-+		if (cmd_opcode)
-+			opcode = *cmd_opcode++;
- 
- 		gsi_trans_tre_fill(dest_tre, addr, len, last_tre, bei, opcode);
- 		dest_tre++;
-diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
-index 9a39909915ef5..99ce2cba0dc3c 100644
---- a/drivers/net/ipa/gsi_trans.h
-+++ b/drivers/net/ipa/gsi_trans.h
-@@ -22,6 +22,9 @@ struct gsi;
- struct gsi_trans;
- struct gsi_trans_pool;
- 
-+/* Maximum number of TREs in an IPA immediate command transaction */
-+#define IPA_COMMAND_TRANS_TRE_MAX	8
-+
- /**
-  * struct gsi_trans - a GSI transaction
-  *
-@@ -34,8 +37,8 @@ struct gsi_trans_pool;
-  * @used:	Number of TREs *used* (could be less than tre_count)
-  * @len:	Total # of transfer bytes represented in sgl[] (set by core)
-  * @data:	Preserved but not touched by the core transaction code
-+ * @cmd_opcode:	Array of command opcodes (command channel only)
-  * @sgl:	An array of scatter/gather entries managed by core code
-- * @info:	Array of command information structures (command channel)
-  * @direction:	DMA transfer direction (DMA_NONE for commands)
-  * @refcount:	Reference count used for destruction
-  * @completion:	Completed when the transaction completes
-@@ -58,8 +61,8 @@ struct gsi_trans {
- 	u32 len;			/* total # bytes across sgl[] */
- 
- 	void *data;
-+	u8 cmd_opcode[IPA_COMMAND_TRANS_TRE_MAX];
- 	struct scatterlist *sgl;
--	struct ipa_cmd_info *info;	/* array of entries, or null */
- 	enum dma_data_direction direction;
- 
- 	refcount_t refcount;
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index 5fd74d7007044..e58cd4478fd3d 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -349,7 +349,6 @@ int ipa_cmd_pool_init(struct gsi_channel *channel, u32 tre_max)
- {
- 	struct gsi_trans_info *trans_info = &channel->trans_info;
- 	struct device *dev = channel->gsi->dev;
--	int ret;
- 
- 	/* This is as good a place as any to validate build constants */
- 	ipa_cmd_validate_build();
-@@ -358,20 +357,9 @@ int ipa_cmd_pool_init(struct gsi_channel *channel, u32 tre_max)
- 	 * a single transaction can require up to tlv_count of them,
- 	 * so we treat them as if that many can be allocated at once.
- 	 */
--	ret = gsi_trans_pool_init_dma(dev, &trans_info->cmd_pool,
--				      sizeof(union ipa_cmd_payload),
--				      tre_max, channel->tlv_count);
--	if (ret)
--		return ret;
--
--	/* Each TRE needs a command info structure */
--	ret = gsi_trans_pool_init(&trans_info->info_pool,
--				   sizeof(struct ipa_cmd_info),
--				   tre_max, channel->tlv_count);
--	if (ret)
--		gsi_trans_pool_exit_dma(dev, &trans_info->cmd_pool);
--
--	return ret;
-+	return gsi_trans_pool_init_dma(dev, &trans_info->cmd_pool,
-+				       sizeof(union ipa_cmd_payload),
-+				       tre_max, channel->tlv_count);
- }
- 
- void ipa_cmd_pool_exit(struct gsi_channel *channel)
-@@ -379,7 +367,6 @@ void ipa_cmd_pool_exit(struct gsi_channel *channel)
- 	struct gsi_trans_info *trans_info = &channel->trans_info;
- 	struct device *dev = channel->gsi->dev;
- 
--	gsi_trans_pool_exit(&trans_info->info_pool);
- 	gsi_trans_pool_exit_dma(dev, &trans_info->cmd_pool);
- }
- 
-@@ -652,28 +639,16 @@ void ipa_cmd_pipeline_clear_wait(struct ipa *ipa)
- 	wait_for_completion(&ipa->completion);
- }
- 
--static struct ipa_cmd_info *
--ipa_cmd_info_alloc(struct ipa_endpoint *endpoint, u32 tre_count)
--{
--	struct gsi_channel *channel;
--
--	channel = &endpoint->ipa->gsi.channel[endpoint->channel_id];
--
--	return gsi_trans_pool_alloc(&channel->trans_info.info_pool, tre_count);
--}
--
- /* Allocate a transaction for the command TX endpoint */
- struct gsi_trans *ipa_cmd_trans_alloc(struct ipa *ipa, u32 tre_count)
- {
- 	struct ipa_endpoint *endpoint;
--	struct gsi_trans *trans;
-+
-+	if (WARN_ON(tre_count > IPA_COMMAND_TRANS_TRE_MAX))
-+		return NULL;
- 
- 	endpoint = ipa->name_map[IPA_ENDPOINT_AP_COMMAND_TX];
- 
--	trans = gsi_channel_trans_alloc(&ipa->gsi, endpoint->channel_id,
--					tre_count, DMA_NONE);
--	if (trans)
--		trans->info = ipa_cmd_info_alloc(endpoint, tre_count);
--
--	return trans;
-+	return gsi_channel_trans_alloc(&ipa->gsi, endpoint->channel_id,
-+				       tre_count, DMA_NONE);
- }
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index d4dbe2ce96dcd..9215ddad10107 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -46,15 +46,6 @@ enum ipa_cmd_opcode {
- 	IPA_CMD_IP_PACKET_TAG_STATUS	= 0x14,
- };
- 
--/**
-- * struct ipa_cmd_info - information needed for an IPA immediate command
-- *
-- * @opcode:	The command opcode.
-- */
--struct ipa_cmd_info {
--	enum ipa_cmd_opcode opcode;
--};
--
- /**
-  * ipa_cmd_table_valid() - Validate a memory region holding a table
-  * @ipa:	- IPA pointer
--- 
-2.32.0
+> +               pr_warning("%s has non-zero extra bytes\n", type_name);
+> +               return false;
+> +       }
+> +       return true;
+> +}
+> +
+> +#define offsetofend(TYPE, FIELD) \
+> +       (offsetof(TYPE, FIELD) + sizeof(((TYPE *)0)->FIELD))
+> +
+> +#define OPTS_VALID(opts, type)                                                 \
+> +       (!(opts) || libperf_validate_opts((const char *)opts,                   \
+> +                                         offsetofend(struct type,              \
+> +                                                     type##__last_field),      \
+> +                                               (opts)->sz, #type))
+> +#define OPTS_HAS(opts, field) \
+> +       ((opts) && opts->sz >= offsetofend(typeof(*(opts)), field))
+> +#define OPTS_GET(opts, field, fallback_value) \
+> +       (OPTS_HAS(opts, field) ? (opts)->field : fallback_value)
 
+It'd be nice if you add a blank line between the macros.
+
+Thanks,
+Namhyung
+
+
+> +#define OPTS_SET(opts, field, value)           \
+> +       do {                                    \
+> +               if (OPTS_HAS(opts, field))      \
+> +                       (opts)->field = value;  \
+> +       } while (0)
+> +
+>  #endif /* __LIBPERF_INTERNAL_H */
+> diff --git a/tools/lib/perf/libperf.map b/tools/lib/perf/libperf.map
+> index 190b56ae923a..eeeb3075e092 100644
+> --- a/tools/lib/perf/libperf.map
+> +++ b/tools/lib/perf/libperf.map
+> @@ -25,6 +25,7 @@ LIBPERF_0.0.1 {
+>                 perf_evsel__enable;
+>                 perf_evsel__disable;
+>                 perf_evsel__open;
+> +               perf_evsel__open_opts;
+>                 perf_evsel__close;
+>                 perf_evsel__mmap;
+>                 perf_evsel__munmap;
+> @@ -36,6 +37,7 @@ LIBPERF_0.0.1 {
+>                 perf_evlist__new;
+>                 perf_evlist__delete;
+>                 perf_evlist__open;
+> +               perf_evlist__open_opts;
+>                 perf_evlist__close;
+>                 perf_evlist__enable;
+>                 perf_evlist__disable;
+> --
+> 2.25.1
+>
