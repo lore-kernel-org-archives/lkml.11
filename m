@@ -2,135 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20058C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349541AbiETNjz (ORCPT
+        id S1349901AbiETNl1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 09:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35222 "EHLO
+        Fri, 20 May 2022 09:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349898AbiETNju (ORCPT
+        with ESMTP id S229807AbiETNlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 09:39:50 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA57169E3B
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 06:39:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653053989; x=1684589989;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tEsNkD67VlMRMMbJpoolW2AuTZVamWWhFYXi0Uoe5Js=;
-  b=ROaTiu4dGndqNw9TQ06QbwwWYMvS9fK5zOvMYfJ0JwtLycRxyOlLWG8y
-   olOyHJE6NAZQet4SiipT69Rv8b4j2rZEMJ1zVk9GAOT7ycTcEeQIDIdfY
-   fYBqRH8nQM39+08TuWTdav4O8hxrSEhEWqUL7jZc/zSCoUj4jz3+plcjL
-   vmwD82O7pcruMtuOtxKrP7BCG3Qr19lxa/9R5Y54HKLKMc3mWd6APVfjR
-   QBpZwYHHQHFKZd5wm8Pyurs14s+k4aFsP9+TkiCvMsGNxW1Bc+VG6zCXB
-   i95khF3dHJQonYlpGURWNT1tf6DgxZRz+4KWFto+B+XiWhR30atYelzuE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="253123435"
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="253123435"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 06:39:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="818556999"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 20 May 2022 06:39:46 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ns2r3-0004k5-Eb;
-        Fri, 20 May 2022 13:39:45 +0000
-Date:   Fri, 20 May 2022 21:39:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     zhenwei pi <pizhenwei@bytedance.com>, akpm@linux-foundation.org,
-        naoya.horiguchi@nec.com, mst@redhat.com, david@redhat.com
-Cc:     kbuild-all@lists.01.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, pbonzini@redhat.com,
-        peterx@redhat.com, qemu-devel@nongnu.org,
-        zhenwei pi <pizhenwei@bytedance.com>
-Subject: Re: [PATCH 3/3] virtio_balloon: Introduce memory recover
-Message-ID: <202205202151.7T3K7Szf-lkp@intel.com>
-References: <20220520070648.1794132-4-pizhenwei@bytedance.com>
+        Fri, 20 May 2022 09:41:24 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2863531379;
+        Fri, 20 May 2022 06:41:22 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id eg11so10815166edb.11;
+        Fri, 20 May 2022 06:41:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lcv326N5l/221uSMBna/cd7I8SJc4EhekStbcIIhtpE=;
+        b=ovZ4Vh1BHfKy5NEow/4z/wJot02yZZDFl2MFFmTx+Y0ahHPvGO+OEd6jNsWe/NU85P
+         3JNbwpGKECltQJAgwwrtifTsDGRh3BTsN1RajwOSmgiWbyH/s+slzHjwX35zlIVY80X1
+         Klj2fA4h6DaZs7ePqd55KKqEEEoXRQqvC4CMg4VyubGP2KF4V1+pittAuSLVn7EfekjV
+         v79/UrjinmQ2DjUtJEb/t04+VP0O8hGcnMHIjHuplrLhGLBy/ocFZL78tp8GCJbIlWBu
+         pFS7KjISI6NfXU4NGAm+RWCRj3fVNUHHv5yRaoef+rPZ75ems59xrln35IMy4L0TNw5i
+         Z7VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lcv326N5l/221uSMBna/cd7I8SJc4EhekStbcIIhtpE=;
+        b=z9eF3J3DXMxnNrG0bYyoHCMOUdTkWELQzzpYs/dIJ+M7aACmPzvnYdBWfWJhAccybl
+         AJg/uBSd7ga4cjMood2ziP4QHzrCpsj+8q1DNBjT/ckp3wGcGmh9UJTP993aLtXyJjZY
+         /BltpkLXP4s9VquV+Bb51Lgi4SkqZ1api2vyo1WblmQoJ6IzzpiKj7JrEMcaupG7Woux
+         GU+9SVhcTdsu0sF4bPGnb0Z95bv3aurG+BwHSTdB/vpdQSZe9Ni3h4QfP4w4zHCiNOlK
+         e5CT6afi5USJsOhq8SfLTzlsQ6OElV9eFznrVSHNsVb0N779p41z0dB2bAs/DiwAhbpo
+         fSbQ==
+X-Gm-Message-State: AOAM533ncUQlhLCJUK5foBv2bky6BaRZx8o6cdbE5PWV5fUd9/NwFF32
+        fBU+IoA/1HEQBSjuaGJiIUXjppM8VVviKg==
+X-Google-Smtp-Source: ABdhPJxoDGyuC3nchI3VwzaFElzcGpiBzu4U57f8FPYzC3YYoTsdhQ8nh2Bcgd2WAIQVRCzpC869lA==
+X-Received: by 2002:aa7:c506:0:b0:42a:b067:cbe7 with SMTP id o6-20020aa7c506000000b0042ab067cbe7mr10991176edq.4.1653054080609;
+        Fri, 20 May 2022 06:41:20 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id m5-20020a17090677c500b006f3ef214e24sm3187796ejn.138.2022.05.20.06.41.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 06:41:19 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <f7585471-43be-4b40-f398-dfd7dc937131@redhat.com>
+Date:   Fri, 20 May 2022 15:41:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220520070648.1794132-4-pizhenwei@bytedance.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] KVM: x86: Move kzalloc out of atomic context on
+ PREEMPT_RT
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Yajun Deng <yajun.deng@linux.dev>
+Cc:     vkuznets@redhat.com, wanpengli@tencent.com, jmattson@google.com,
+        joro@8bytes.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220519090218.2230653-1-yajun.deng@linux.dev>
+ <YoZeI6UeQbP3t1dF@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YoZeI6UeQbP3t1dF@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi zhenwei,
+On 5/19/22 17:11, Sean Christopherson wrote:
+> AFAICT, kfree() is safe to call under a raw spinlock, so this?  Compile tested
+> only...
 
-Thank you for the patch! Yet something to improve:
+Freeing outside the lock is not complicated enough to check if it is:
 
-[auto build test ERROR on akpm-mm/mm-everything]
-[also build test ERROR on next-20220519]
-[cannot apply to linux/master linus/master v5.18-rc7]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/zhenwei-pi/recover-hardware-corrupted-page-by-virtio-balloon/20220520-151328
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: nios2-randconfig-r002-20220519 (https://download.01.org/0day-ci/archive/20220520/202205202151.7T3K7Szf-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a42127073dd4adb6354649c8235c5cde033d01f2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review zhenwei-pi/recover-hardware-corrupted-page-by-virtio-balloon/20220520-151328
-        git checkout a42127073dd4adb6354649c8235c5cde033d01f2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   nios2-linux-ld: drivers/virtio/virtio_balloon.o: in function `unpoison_memory_func':
->> drivers/virtio/virtio_balloon.c:679: undefined reference to `unpoison_memory'
-   drivers/virtio/virtio_balloon.c:679:(.text+0xc00): relocation truncated to fit: R_NIOS2_CALL26 against `unpoison_memory'
-   nios2-linux-ld: drivers/virtio/virtio_balloon.o: in function `virtballoon_probe':
->> drivers/virtio/virtio_balloon.c:1247: undefined reference to `register_memory_failure_notifier'
-   drivers/virtio/virtio_balloon.c:1247:(.text+0x1940): relocation truncated to fit: R_NIOS2_CALL26 against `register_memory_failure_notifier'
-   nios2-linux-ld: drivers/virtio/virtio_balloon.o: in function `virtballoon_remove':
->> drivers/virtio/virtio_balloon.c:1323: undefined reference to `unregister_memory_failure_notifier'
-   drivers/virtio/virtio_balloon.c:1323:(.text+0x1bcc): relocation truncated to fit: R_NIOS2_CALL26 against `unregister_memory_failure_notifier'
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index 6aa1241a80b7..f849f7c9fbf2 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -229,12 +229,15 @@ void kvm_async_pf_task_wake(u32 token)
+  		dummy->cpu = smp_processor_id();
+  		init_swait_queue_head(&dummy->wq);
+  		hlist_add_head(&dummy->link, &b->list);
++		dummy = NULL;
+  	} else {
+-		kfree(dummy);
+  		apf_task_wake_one(n);
+  	}
+  	raw_spin_unlock(&b->lock);
+-	return;
++
++	/* A dummy token might be allocated and ultimately not used.  */
++	if (dummy)
++		kfree(dummy);
+  }
+  EXPORT_SYMBOL_GPL(kvm_async_pf_task_wake);
 
 
-vim +679 drivers/virtio/virtio_balloon.c
+I queued your patch with the above fixup.
 
-   661	
-   662	static void unpoison_memory_func(struct work_struct *work)
-   663	{
-   664		struct virtio_balloon *vb;
-   665		struct page *page;
-   666	
-   667		vb = container_of(work, struct virtio_balloon, unpoison_memory_work);
-   668	
-   669		do {
-   670			spin_lock(&vb->recover_page_list_lock);
-   671			page = list_first_entry_or_null(&vb->recovered_page_list,
-   672							struct page, lru);
-   673			if (page)
-   674				list_del(&page->lru);
-   675			spin_unlock(&vb->recover_page_list_lock);
-   676	
-   677			if (page) {
-   678				put_page(page);
- > 679				unpoison_memory(page_to_pfn(page), true, "virtio-balloon");
-   680			}
-   681		} while (page);
-   682	}
-   683	
+Paolo
+> --
+> From: Sean Christopherson <seanjc@google.com>
+> Date: Thu, 19 May 2022 07:57:11 -0700
+> Subject: [PATCH] x86/kvm: Alloc dummy async #PF token outside of raw spinlock
+> 
+> Drop the raw spinlock in kvm_async_pf_task_wake() before allocating the
+> the dummy async #PF token, the allocator is preemptible on PREEMPT_RT
+> kernels and must not be called from truly atomic contexts.
+> 
+> Opportunistically document why it's ok to loop on allocation failure,
+> i.e. why the function won't get stuck in an infinite loop.
+> 
+> Reported-by: Yajun Deng <yajun.deng@linux.dev>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>   arch/x86/kernel/kvm.c | 38 ++++++++++++++++++++++++--------------
+>   1 file changed, 24 insertions(+), 14 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+> index d0bb2b3fb305..5a4100896969 100644
+> --- a/arch/x86/kernel/kvm.c
+> +++ b/arch/x86/kernel/kvm.c
+> @@ -190,7 +190,7 @@ void kvm_async_pf_task_wake(u32 token)
+>   {
+>   	u32 key = hash_32(token, KVM_TASK_SLEEP_HASHBITS);
+>   	struct kvm_task_sleep_head *b = &async_pf_sleepers[key];
+> -	struct kvm_task_sleep_node *n;
+> +	struct kvm_task_sleep_node *n, *dummy = NULL;
+> 
+>   	if (token == ~0) {
+>   		apf_task_wake_all();
+> @@ -202,24 +202,34 @@ void kvm_async_pf_task_wake(u32 token)
+>   	n = _find_apf_task(b, token);
+>   	if (!n) {
+>   		/*
+> -		 * async PF was not yet handled.
+> -		 * Add dummy entry for the token.
+> +		 * Async #PF not yet handled, add a dummy entry for the token.
+> +		 * Allocating the token must be down outside of the raw lock
+> +		 * as the allocator is preemptible on PREEMPT_RT kernels.
+>   		 */
+> -		n = kzalloc(sizeof(*n), GFP_ATOMIC);
+> -		if (!n) {
+> -			/*
+> -			 * Allocation failed! Busy wait while other cpu
+> -			 * handles async PF.
+> -			 */
+> +		if (!dummy) {
+>   			raw_spin_unlock(&b->lock);
+> -			cpu_relax();
+> +			dummy = kzalloc(sizeof(*dummy), GFP_KERNEL);
+> +
+> +			/*
+> +			 * Continue looping on allocation failure, eventually
+> +			 * the async #PF will be handled and allocating a new
+> +			 * node will be unnecessary.
+> +			 */
+> +			if (!dummy)
+> +				cpu_relax();
+> +
+> +			/*
+> +			 * Recheck for async #PF completion before enqueueing
+> +			 * the dummy token to avoid duplicate list entries.
+> +			 */
+>   			goto again;
+>   		}
+> -		n->token = token;
+> -		n->cpu = smp_processor_id();
+> -		init_swait_queue_head(&n->wq);
+> -		hlist_add_head(&n->link, &b->list);
+> +		dummy->token = token;
+> +		dummy->cpu = smp_processor_id();
+> +		init_swait_queue_head(&dummy->wq);
+> +		hlist_add_head(&dummy->link, &b->list);
+>   	} else {
+> +		kfree(dummy);
+>   		apf_task_wake_one(n);
+>   	}
+>   	raw_spin_unlock(&b->lock);
+> 
+> base-commit: a3808d88461270c71d3fece5e51cc486ecdac7d0
+> --
+> 
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
