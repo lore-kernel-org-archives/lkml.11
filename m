@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48405C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5180C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 18:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353131AbiETS4B (ORCPT
+        id S1353130AbiETS6A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 14:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36624 "EHLO
+        Fri, 20 May 2022 14:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353083AbiETSzq (ORCPT
+        with ESMTP id S1353112AbiETSzz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 14:55:46 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5498818AAA9
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:42 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id t2so6091273ilm.13
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:42 -0700 (PDT)
+        Fri, 20 May 2022 14:55:55 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FB2201
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:45 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id s23so9580197iog.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 11:55:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=O/hJEGVRLdpoiwk4u/5VFj9MSjRvGNpyvBvim/3YzJc=;
-        b=fyxtyUOPH8fSOEgdE0y9DVnA9Bce0Rxr9m/nXyNCi/MjPsaNhmCxa2UksO4vjv15Lb
-         Y5yU3BVWRCVO3Yt92Y/b2qOLlGOySjmB3XzP7x1Joj6hRNtCnbmO6oLcq/oXNxbo0cZX
-         Cnxmc56jFUZ0/gV8dsF8jKmVw7FuYqzmPJY4U4S86/o1Pn60MOw5HQjTj8nVFXSQPSDz
-         c2z0g7P8nilOugVErsywgXgxCKtEkMdYttUlkwby9fCBGs66xz2SR/OIPWrTvXJ6Q2pE
-         b5xqZOY3qbpU42XYnsmhYziGMeE8myjJJd7g4xwoAT/U//T6Qlgzm8XfLIwV41mOflhp
-         Rauw==
+        bh=ym9OYI6aJ18dYi6ySu0CCwN+bayr/dGSVhve9l8ISjg=;
+        b=mE+FkCxojjAto0pFAfUskYPevpNUQG3yxDugA73zttAEJrz6DJGHZKArIc3V/MyhKv
+         7k6pO2FApKI9LHhi8FWZH27wUzriLdyafR9dMWTPTi70tJm5ux7RbaiIcgi2Q8bzB7z0
+         JD6B9TXVXxuhZ8BGYew5OCIjqtPmYsIBU6QIWoGsyzGGqoeotGHMsbUP6mB23v36liYe
+         KJVJenndZklSunzaJ/dnRYISLzB2YM4k6YfINWGXRMFgZhXWAJINb+s1iZuvTywL9WYW
+         cJtuedFc6AZ2TXU3ZfNyGfl7gxuuiTKZd37Blt8HmQHpflBOxgr4qTnjoS/tU33vqZPK
+         Bf6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=O/hJEGVRLdpoiwk4u/5VFj9MSjRvGNpyvBvim/3YzJc=;
-        b=pHUU24yus+PtfNvKUO7aa9fKsBn+RKnLSb/e1zSaj2EnAMnvROUmSHZGR8fO1IWqN0
-         YCv2Sh3n4J5UkNYACEoDOnkW7puS7JTutq4RuTsPMC9YCdZ84lSRMNq2erO+XMkmKmwR
-         N6BX4E4yU5rFQr/iuIGaCSURKxCfEkOI/SMsGAG4JlA4ebbOQyZgwCjcFkKZvQaMTntO
-         nQtbdH4S/qlFsqAKMbtjBay7V41AOWlSmQgU9l8jPolcIzYcfZOEZ9t19tGvwP7eotH/
-         IMEWcSN8rgjarnd11uOVr2riZ//yZxW2X3LiGqJBSIYKJ9QsdwAlR3Zbw54VV8bUXdfE
-         WAcw==
-X-Gm-Message-State: AOAM5330RE8l4GImQtpEjmwS7/RXe1Ik/aQZtXkJ4xplQD2hJodX6if+
-        x0Hc+6rvJWUiwHVcWa7oK6XTQQ==
-X-Google-Smtp-Source: ABdhPJwcAwB3/qjOMNJzHWE4YVnRSuOpM+eHNwES2j1f4iGrDzXRTl+y0z8GItv1yVndQfNBJFS19A==
-X-Received: by 2002:a05:6e02:17ce:b0:2d1:1c16:5084 with SMTP id z14-20020a056e0217ce00b002d11c165084mr5995717ilu.88.1653072941585;
-        Fri, 20 May 2022 11:55:41 -0700 (PDT)
+        bh=ym9OYI6aJ18dYi6ySu0CCwN+bayr/dGSVhve9l8ISjg=;
+        b=HR6v8tDXuEBc5ppEWI/ZLIrZCho+YevZmU0R6niuUm2eAI0ZBMIczLiOTG+ShAlVv/
+         EEDim1Lrrc6rTluOcpJfTvAsw6lIBJDUKXiNA5RMrPj/13g12yGvdintyyvaNeDLGgcE
+         /3RJlD4dtWaXNVZd0fqK1QaJ3LiEsq5Giq/A8JSxisztPYhpQQjMyDfXQWNZ5c4nCxix
+         jIirrnfZWrfp0iUzaLhmiDSDiridv/WowHTimt4fMs1E4mDxMDIo20OBJVKZyj55SDGq
+         2MsaOkAwq+4gyh7Y3k47DBdk41R0lQ6c/A2fETN/nbgdndrFDrGzLVvqLsUFr7cJKny4
+         4vdg==
+X-Gm-Message-State: AOAM531P8lrurcQulWX+YToM0n+KB4EfZdmdo/gsG5S4nuFqYvRD33wb
+        KUMsAWVfyEHQO5k/Tr40KTJWkA==
+X-Google-Smtp-Source: ABdhPJwxnJzi0Gfwnd1RtO8u/aF4fAFkuBnZF97qyGGsGw1fSKRBlgxTNSAfkSZjXiBbBX1hc3in3w==
+X-Received: by 2002:a05:6602:2019:b0:65e:5056:1df4 with SMTP id y25-20020a056602201900b0065e50561df4mr3614967iod.203.1653072944806;
+        Fri, 20 May 2022 11:55:44 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id a6-20020a056638058600b0032b3a7817acsm871958jar.112.2022.05.20.11.55.40
+        by smtp.gmail.com with ESMTPSA id a6-20020a056638058600b0032b3a7817acsm871958jar.112.2022.05.20.11.55.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 11:55:41 -0700 (PDT)
+        Fri, 20 May 2022 11:55:44 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/8] net: ipa: specify RX aggregation time limit in config data
-Date:   Fri, 20 May 2022 13:55:28 -0500
-Message-Id: <20220520185533.877920-4-elder@linaro.org>
+Subject: [PATCH net-next 6/8] net: ipa: remove command direction argument
+Date:   Fri, 20 May 2022 13:55:31 -0500
+Message-Id: <20220520185533.877920-7-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220520185533.877920-1-elder@linaro.org>
 References: <20220520185533.877920-1-elder@linaro.org>
@@ -69,240 +69,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't assume that a 500 microsecond time limit should be used for
-all receive endpoints that support aggregation.  Instead, specify
-the time limit to use in the configuration data.
-
-Set a 500 microsecond limit for all existing RX endpoints, as before.
-
-Checking for overflow for the time limit field is a bit complicated.
-Rather than duplicate a lot of code in ipa_endpoint_data_valid_one(),
-call WARN() if any value is found to be too large when encoding it.
+We no longer use the direction argument for gsi_trans_cmd_add(), so
+get rid of it in its definition, and in its seven callers.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_data-v3.1.c   |  2 ++
- drivers/net/ipa/ipa_data-v3.5.1.c |  2 ++
- drivers/net/ipa/ipa_data-v4.11.c  |  2 ++
- drivers/net/ipa/ipa_data-v4.2.c   |  2 ++
- drivers/net/ipa/ipa_data-v4.5.c   |  2 ++
- drivers/net/ipa/ipa_data-v4.9.c   |  2 ++
- drivers/net/ipa/ipa_endpoint.c    | 21 +++++++++++++++++----
- drivers/net/ipa/ipa_endpoint.h    |  6 ++++++
- 8 files changed, 35 insertions(+), 4 deletions(-)
+ drivers/net/ipa/gsi_trans.c |  3 +--
+ drivers/net/ipa/gsi_trans.h |  4 +---
+ drivers/net/ipa/ipa_cmd.c   | 22 +++++++---------------
+ 3 files changed, 9 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_data-v3.1.c b/drivers/net/ipa/ipa_data-v3.1.c
-index 8ff351aefd23f..00f4e506e6e51 100644
---- a/drivers/net/ipa/ipa_data-v3.1.c
-+++ b/drivers/net/ipa/ipa_data-v3.1.c
-@@ -103,6 +103,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.rx = {
- 					.buffer_size	= 8192,
- 					.pad_align	= ilog2(sizeof(u32)),
-+					.aggr_time_limit = 500,
- 				},
- 			},
- 		},
-@@ -150,6 +151,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.aggregation	= true,
- 				.rx = {
- 					.buffer_size	= 8192,
-+					.aggr_time_limit = 500,
- 					.aggr_close_eof	= true,
- 				},
- 			},
-diff --git a/drivers/net/ipa/ipa_data-v3.5.1.c b/drivers/net/ipa/ipa_data-v3.5.1.c
-index d1c466abddb22..b7e32e87733eb 100644
---- a/drivers/net/ipa/ipa_data-v3.5.1.c
-+++ b/drivers/net/ipa/ipa_data-v3.5.1.c
-@@ -94,6 +94,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.rx = {
- 					.buffer_size	= 8192,
- 					.pad_align	= ilog2(sizeof(u32)),
-+					.aggr_time_limit = 500,
- 				},
- 			},
- 		},
-@@ -142,6 +143,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.aggregation	= true,
- 				.rx = {
- 					.buffer_size	= 8192,
-+					.aggr_time_limit = 500,
- 					.aggr_close_eof	= true,
- 				},
- 			},
-diff --git a/drivers/net/ipa/ipa_data-v4.11.c b/drivers/net/ipa/ipa_data-v4.11.c
-index b1991cc6f0ca6..1be823e5c5c22 100644
---- a/drivers/net/ipa/ipa_data-v4.11.c
-+++ b/drivers/net/ipa/ipa_data-v4.11.c
-@@ -88,6 +88,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.rx = {
- 					.buffer_size	= 8192,
- 					.pad_align	= ilog2(sizeof(u32)),
-+					.aggr_time_limit = 500,
- 				},
- 			},
- 		},
-@@ -135,6 +136,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.aggregation	= true,
- 				.rx = {
- 					.buffer_size	= 32768,
-+					.aggr_time_limit = 500,
- 					.aggr_close_eof	= true,
- 				},
- 			},
-diff --git a/drivers/net/ipa/ipa_data-v4.2.c b/drivers/net/ipa/ipa_data-v4.2.c
-index 1190a43e8743c..683f1f91042f4 100644
---- a/drivers/net/ipa/ipa_data-v4.2.c
-+++ b/drivers/net/ipa/ipa_data-v4.2.c
-@@ -84,6 +84,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.rx = {
- 					.buffer_size	= 8192,
- 					.pad_align	= ilog2(sizeof(u32)),
-+					.aggr_time_limit = 500,
- 				},
- 			},
- 		},
-@@ -132,6 +133,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.aggregation	= true,
- 				.rx = {
- 					.buffer_size	= 8192,
-+					.aggr_time_limit = 500,
- 					.aggr_close_eof	= true,
- 				},
- 			},
-diff --git a/drivers/net/ipa/ipa_data-v4.5.c b/drivers/net/ipa/ipa_data-v4.5.c
-index 944f72b0f285e..79398f286a9cf 100644
---- a/drivers/net/ipa/ipa_data-v4.5.c
-+++ b/drivers/net/ipa/ipa_data-v4.5.c
-@@ -97,6 +97,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.rx = {
- 					.buffer_size	= 8192,
- 					.pad_align	= ilog2(sizeof(u32)),
-+					.aggr_time_limit = 500,
- 				},
- 			},
- 		},
-@@ -144,6 +145,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.aggregation	= true,
- 				.rx = {
- 					.buffer_size	= 8192,
-+					.aggr_time_limit = 500,
- 					.aggr_close_eof	= true,
- 				},
- 			},
-diff --git a/drivers/net/ipa/ipa_data-v4.9.c b/drivers/net/ipa/ipa_data-v4.9.c
-index 16786bff7ef84..4b96efd05cf22 100644
---- a/drivers/net/ipa/ipa_data-v4.9.c
-+++ b/drivers/net/ipa/ipa_data-v4.9.c
-@@ -89,6 +89,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.rx = {
- 					.buffer_size	= 8192,
- 					.pad_align	= ilog2(sizeof(u32)),
-+					.aggr_time_limit = 500,
- 				},
- 			},
- 		},
-@@ -136,6 +137,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
- 				.aggregation	= true,
- 				.rx = {
- 					.buffer_size	= 8192,
-+					.aggr_time_limit = 500,
- 					.aggr_close_eof	= true,
- 				},
- 			},
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 6079670bd8605..586529511cf6b 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -35,7 +35,6 @@
- #define IPA_ENDPOINT_QMAP_METADATA_MASK		0x000000ff /* host byte order */
+diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
+index cf8ee42373547..472792992f866 100644
+--- a/drivers/net/ipa/gsi_trans.c
++++ b/drivers/net/ipa/gsi_trans.c
+@@ -410,8 +410,7 @@ void gsi_trans_free(struct gsi_trans *trans)
  
- #define IPA_ENDPOINT_RESET_AGGR_RETRY_MAX	3
--#define IPA_AGGR_TIME_LIMIT			500	/* microseconds */
+ /* Add an immediate command to a transaction */
+ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
+-		       dma_addr_t addr, enum dma_data_direction direction,
+-		       enum ipa_cmd_opcode opcode)
++		       dma_addr_t addr, enum ipa_cmd_opcode opcode)
+ {
+ 	u32 which = trans->used++;
+ 	struct scatterlist *sg;
+diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
+index 387ea50dd039e..9a39909915ef5 100644
+--- a/drivers/net/ipa/gsi_trans.h
++++ b/drivers/net/ipa/gsi_trans.h
+@@ -165,12 +165,10 @@ void gsi_trans_free(struct gsi_trans *trans);
+  * @buf:	Buffer pointer for command payload
+  * @size:	Number of bytes in buffer
+  * @addr:	DMA address for payload
+- * @direction:	Direction of DMA transfer (or DMA_NONE if none required)
+  * @opcode:	IPA immediate command opcode
+  */
+ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
+-		       dma_addr_t addr, enum dma_data_direction direction,
+-		       enum ipa_cmd_opcode opcode);
++		       dma_addr_t addr, enum ipa_cmd_opcode opcode);
  
- /** enum ipa_status_opcode - status element opcode hardware values */
- enum ipa_status_opcode {
-@@ -142,6 +141,13 @@ static bool ipa_endpoint_data_valid_one(struct ipa *ipa, u32 count,
- 			bool result = true;
+ /**
+  * gsi_trans_page_add() - Add a page transfer to a transaction
+diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+index 77b84cea6e68f..5fd74d7007044 100644
+--- a/drivers/net/ipa/ipa_cmd.c
++++ b/drivers/net/ipa/ipa_cmd.c
+@@ -402,7 +402,6 @@ void ipa_cmd_table_init_add(struct gsi_trans *trans,
+ 			    dma_addr_t hash_addr)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_hw_ip_fltrt_init *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -433,7 +432,7 @@ void ipa_cmd_table_init_add(struct gsi_trans *trans,
+ 	payload->nhash_rules_addr = cpu_to_le64(addr);
  
- 			/* No aggregation; check for bogus aggregation data */
-+			if (rx_config->aggr_time_limit) {
-+				dev_err(dev,
-+					"time limit with no aggregation for RX endpoint %u\n",
-+					data->endpoint_id);
-+				result = false;
-+			}
-+
- 			if (rx_config->aggr_hard_limit) {
- 				dev_err(dev, "hard limit with no aggregation for RX endpoint %u\n",
- 					data->endpoint_id);
-@@ -722,9 +728,13 @@ static u32 aggr_time_limit_encoded(enum ipa_version version, u32 limit)
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
  
- 	if (version < IPA_VERSION_4_5) {
- 		/* We set aggregation granularity in ipa_hardware_config() */
--		limit = DIV_ROUND_CLOSEST(limit, IPA_AGGR_GRANULARITY);
-+		fmask = aggr_time_limit_fmask(true);
-+		val = DIV_ROUND_CLOSEST(limit, IPA_AGGR_GRANULARITY);
-+		WARN(val > field_max(fmask),
-+		     "aggr_time_limit too large (%u > %u usec)\n",
-+		     val, field_max(fmask) * IPA_AGGR_GRANULARITY);
+ /* Initialize header space in IPA-local memory */
+@@ -442,7 +441,6 @@ void ipa_cmd_hdr_init_local_add(struct gsi_trans *trans, u32 offset, u16 size,
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_HDR_INIT_LOCAL;
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_hw_hdr_init_local *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -464,7 +462,7 @@ void ipa_cmd_hdr_init_local_add(struct gsi_trans *trans, u32 offset, u16 size,
+ 	payload->flags = cpu_to_le32(flags);
  
--		return u32_encode_bits(limit, aggr_time_limit_fmask(true));
-+		return u32_encode_bits(val, fmask);
- 	}
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
  
- 	/* IPA v4.5 expresses the time limit using Qtime.  The AP has
-@@ -739,6 +749,9 @@ static u32 aggr_time_limit_encoded(enum ipa_version version, u32 limit)
- 		/* Have to use pulse generator 1 (millisecond granularity) */
- 		gran_sel = AGGR_GRAN_SEL_FMASK;
- 		val = DIV_ROUND_CLOSEST(limit, 1000);
-+		WARN(val > field_max(fmask),
-+		     "aggr_time_limit too large (%u > %u usec)\n",
-+		     limit, field_max(fmask) * 1000);
- 	} else {
- 		/* We can use pulse generator 0 (100 usec granularity) */
- 		gran_sel = 0;
-@@ -779,7 +792,7 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
- 						 rx_config->aggr_hard_limit);
- 			val |= aggr_byte_limit_encoded(version, limit);
+ void ipa_cmd_register_write_add(struct gsi_trans *trans, u32 offset, u32 value,
+@@ -521,7 +519,7 @@ void ipa_cmd_register_write_add(struct gsi_trans *trans, u32 offset, u32 value,
+ 	payload->clear_options = cpu_to_le32(options);
  
--			limit = IPA_AGGR_TIME_LIMIT;
-+			limit = rx_config->aggr_time_limit;
- 			val |= aggr_time_limit_encoded(version, limit);
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  DMA_NONE, opcode);
++			  opcode);
+ }
  
- 			/* AGGR_PKT_LIMIT is 0 (unlimited) */
-diff --git a/drivers/net/ipa/ipa_endpoint.h b/drivers/net/ipa/ipa_endpoint.h
-index 1e72a9695d3d9..01790c60bee8d 100644
---- a/drivers/net/ipa/ipa_endpoint.h
-+++ b/drivers/net/ipa/ipa_endpoint.h
-@@ -59,6 +59,7 @@ struct ipa_endpoint_tx {
-  * struct ipa_endpoint_rx - Endpoint configuration for RX endpoints
-  * @buffer_size:	requested receive buffer size (bytes)
-  * @pad_align:		power-of-2 boundary to which packet payload is aligned
-+ * @aggr_time_limit:	time before aggregation closes (microseconds)
-  * @aggr_hard_limit:	whether aggregation closes before or after boundary
-  * @aggr_close_eof:	whether aggregation closes on end-of-frame
-  * @holb_drop:		whether to drop packets to avoid head-of-line blocking
-@@ -74,6 +75,10 @@ struct ipa_endpoint_tx {
-  * Aggregation is "open" while a buffer is being filled, and "closes" when
-  * certain criteria are met.
-  *
-+ * A time limit can be specified to close aggregation.  Aggregation will be
-+ * closed if this period passes after data is first written into a receive
-+ * buffer.  If not specified, no time limit is imposed.
-+ *
-  * Insufficient space available in the receive buffer can close aggregation.
-  * The aggregation byte limit defines the point (in units of 1024 bytes) in
-  * the buffer where aggregation closes.  With a "soft" aggregation limit,
-@@ -84,6 +89,7 @@ struct ipa_endpoint_tx {
- struct ipa_endpoint_rx {
- 	u32 buffer_size;
- 	u32 pad_align;
-+	u32 aggr_time_limit;
- 	bool aggr_hard_limit;
- 	bool aggr_close_eof;
- 	bool holb_drop;
+ /* Skip IP packet processing on the next data transfer on a TX channel */
+@@ -529,7 +527,6 @@ static void ipa_cmd_ip_packet_init_add(struct gsi_trans *trans, u8 endpoint_id)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_IP_PACKET_INIT;
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_ip_packet_init *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -541,7 +538,7 @@ static void ipa_cmd_ip_packet_init_add(struct gsi_trans *trans, u8 endpoint_id)
+ 					IPA_PACKET_INIT_DEST_ENDPOINT_FMASK);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ /* Use a DMA command to read or write a block of IPA-resident memory */
+@@ -552,7 +549,6 @@ void ipa_cmd_dma_shared_mem_add(struct gsi_trans *trans, u32 offset, u16 size,
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_DMA_SHARED_MEM;
+ 	struct ipa_cmd_hw_dma_mem_mem *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+-	enum dma_data_direction direction;
+ 	dma_addr_t payload_addr;
+ 	u16 flags;
+ 
+@@ -583,17 +579,14 @@ void ipa_cmd_dma_shared_mem_add(struct gsi_trans *trans, u32 offset, u16 size,
+ 	payload->flags = cpu_to_le16(flags);
+ 	payload->system_addr = cpu_to_le64(addr);
+ 
+-	direction = toward_ipa ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
+-
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ static void ipa_cmd_ip_tag_status_add(struct gsi_trans *trans)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_IP_PACKET_TAG_STATUS;
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_ip_packet_tag_status *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -604,14 +597,13 @@ static void ipa_cmd_ip_tag_status_add(struct gsi_trans *trans)
+ 	payload->tag = le64_encode_bits(0, IP_PACKET_TAG_STATUS_TAG_FMASK);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ /* Issue a small command TX data transfer */
+ static void ipa_cmd_transfer_add(struct gsi_trans *trans)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_NONE;
+ 	union ipa_cmd_payload *payload;
+ 	dma_addr_t payload_addr;
+@@ -620,7 +612,7 @@ static void ipa_cmd_transfer_add(struct gsi_trans *trans)
+ 	payload = ipa_cmd_payload_alloc(ipa, &payload_addr);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ /* Add immediate commands to a transaction to clear the hardware pipeline */
 -- 
 2.32.0
 
