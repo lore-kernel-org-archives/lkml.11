@@ -2,145 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 610E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8309FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346829AbiETILi (ORCPT
+        id S1346857AbiETILx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
+        Fri, 20 May 2022 04:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235949AbiETILa (ORCPT
+        with ESMTP id S1346833AbiETILk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:11:30 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4385252E49;
-        Fri, 20 May 2022 01:11:29 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id n8so6786361plh.1;
-        Fri, 20 May 2022 01:11:29 -0700 (PDT)
+        Fri, 20 May 2022 04:11:40 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462DC57B03;
+        Fri, 20 May 2022 01:11:39 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id v11so7153525pff.6;
+        Fri, 20 May 2022 01:11:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XsDbXLkM/SD1gIqolJSdHpOWgyWe8lXWJA+Qz0s6McE=;
-        b=eg8vz0xPF3x92KYNdkg2qpQTecRdTZDTj8Ub+NAl8OeO1ep1lDeLuB5jO2uc44xHth
-         xpwlne//yPNs9kG4mTLlIEPZJmrhO/MS0PuUrLv7y6aPdrWiymowlgpfaiOaFW3+hc5n
-         3Lgy4Sza/h7jiHNbKvwxlSkJ5ooWCHBYeqfqJwSO9n6kPjKtXTjF4jvUN9d+dom2vbw0
-         0mcz7iJK85ZnCQUCNimQ6pRDzmRb1zZHbgZ7+B3tpFRHgg+ttjx0FayzwJHeNUCmMcZt
-         LWwWfyDllBEwk0ddMgg7PJkSbV62gDDLHYEqIrLEHPSU2/F2u8QGvFEYxcwCv7WtQH6M
-         dPYw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0D6j8CG4wAttV/yAKAZ15WeKE5ykR2+FoJ/c9XSjWvY=;
+        b=UwoIWhyCGRR+ITUai34luAHOCkbCRrMxfoq5DZWqZPVv77ojBE9pno6+Wv/vMEA7eF
+         v69KyubsrRnMswOrJ4eAX+PjjarNipZwL19uQrifqqz6L2a+lI/xk7W2/fYKdWCEZEGA
+         g1tUy+PRquT3oDWe4fxYJAr/HJmapzDun7DeZRp0UVGwMspZr7YPYlijvQRxK4MaWukl
+         Yc23DLAcSMf8zTupRi0txPyTmAbC+KwOlFwsjWdFyYzsAJzaJkMQJN/QdKoY1lne+cHQ
+         pTAgrgJTwaVyufWsIpX3akaB5H1/Yrvrwl2a0fiEuHeJM8hUrP7LCw3lUPkxa5a8Isb5
+         8mNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=XsDbXLkM/SD1gIqolJSdHpOWgyWe8lXWJA+Qz0s6McE=;
-        b=WrXdP7jl5Gram+BbnD0LdKKAWbfp7ausynKZni/Aj6bRWmxIP+pN/Y2KYdyj3ZTtrB
-         jYcCe3rIeuyXx9QiNbRgJOwGmG7g/E23zWJC6ufxHIwsjSuv5JXuQV26l8Bf9gNU92+t
-         XyQsgPUPNCE4ZDky0EHEqZIv6S/uFHJzpR7VbTmPMZT8oqoGo7CLK7FJhmEyV0LTIhTe
-         0DK6g2Vj1Nw9NSbHDkNlkvfr7ygbasKuWvXx96ePPgntSiaH/PqO6Lh2gra43mw9tZh6
-         uUzZN1TNEZL3ACxC/oUzU+Nzy8mkEpDNHeZyxTDWhk4l3RUL39NblPGiBmahVgp3224p
-         ql3g==
-X-Gm-Message-State: AOAM530/WcCpNUa/Fy3mtrkgcluQQjUi/Gvx6B8lHCkaGtEfJ/icXbUI
-        EJeXbJBTVrAou5b+6OXnPnE=
-X-Google-Smtp-Source: ABdhPJypatUyV/ufYREcR4VO4QOd+pO6wNuURAzg0PEZLZdQILYK8o5WgCQ/hpzFvG4VIwbJRIURtQ==
-X-Received: by 2002:a17:902:a502:b0:151:8289:b19 with SMTP id s2-20020a170902a50200b0015182890b19mr8683368plq.149.1653034288294;
-        Fri, 20 May 2022 01:11:28 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:1761])
-        by smtp.gmail.com with ESMTPSA id p6-20020a170902780600b0015e8d4eb299sm5038111pll.227.2022.05.20.01.11.27
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0D6j8CG4wAttV/yAKAZ15WeKE5ykR2+FoJ/c9XSjWvY=;
+        b=sdbuvOoMPxdwseyyFsc4D3fuigZfBiBrx6lPVNcVTDRtiN5OSwqguMhN0slXvhsuD4
+         8NgyjHS/KZdGebxESibEszfwBcXJVABS2uuVxADsrossADxrjTmw2PVv+Hdg/ZwvhkDX
+         NpjLSZbfvY1HHTCM8s/AhdngNiik3VIxwkyGfj3CZbvZ1WBCqljZZXKIIhYQLvVDyulg
+         i5/tQBYOx/fSEt6/SE2A+Z+NJ9e9cU1AkRtAg+O8Bg5Pad16ZyyFoe/pDNpNsiPPmLdG
+         66E6aqkNZIJSVsNGZwEhZvx9POmwKmVpUVEzGjuzN1CPirq/ujbK1BJnIsawfQauMOah
+         C/mw==
+X-Gm-Message-State: AOAM532q/BRSfOwFF4NWSbtELe+4fIap+XghaQOjbOMLxrMu7mAt/4Cw
+        18pj0czcj8+qGf8oEAHIEtw=
+X-Google-Smtp-Source: ABdhPJz8tD9PSGaThd46JCD3oJZtBhfEh6uYSkECowQnsl/6K8z6H4dnzDmBtgDQiI2O5ZzdGSUw7Q==
+X-Received: by 2002:a62:8206:0:b0:518:3c6a:21ba with SMTP id w6-20020a628206000000b005183c6a21bamr8203596pfd.63.1653034298762;
+        Fri, 20 May 2022 01:11:38 -0700 (PDT)
+Received: from arch-pc.genesyslogic.com.tw (60-251-58-169.hinet-ip.hinet.net. [60.251.58.169])
+        by smtp.gmail.com with ESMTPSA id t9-20020a17090a3e4900b001d960eaed66sm1161908pjm.42.2022.05.20.01.11.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 01:11:27 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 19 May 2022 22:11:26 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
-Message-ID: <YodNLpxut+Zddnre@slm.duckdns.org>
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-4-yosryahmed@google.com>
- <YodGI73xq8aIBrNM@slm.duckdns.org>
- <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
+        Fri, 20 May 2022 01:11:38 -0700 (PDT)
+From:   Ben Chuang <benchuanggli@gmail.com>
+To:     andrian.hunter@intel.com, ulf.hansson@linaro.org
+Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ben.chuang@genesyslogic.com.tw, greg.tu@genesyslogic.com.tw,
+        SeanHY.Chen@genesyslogic.com.tw, jason.lai@genesyslogic.com.tw,
+        victor.shih@genesyslogic.com.tw,
+        kana.chen@intel.corp-partner.google.com,
+        Ben Chuang <benchuanggli@gmail.com>
+Subject: [PATCH] mmc: sdhci-pci-gli: Fix GL9763E runtime PM when the system resumes from suspend
+Date:   Fri, 20 May 2022 16:11:20 +0800
+Message-Id: <20220520081120.143927-1-benchuanggli@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+When the system resumes from suspend (S3 or S4), the power mode is
+MMC_POWER_OFF. In this status, gl9763e_runtime_resume() should not enable
+PLL. Add a condition to this function to enable PLL only when the power
+mode is MMC_POWER_ON.
 
-On Fri, May 20, 2022 at 12:58:52AM -0700, Yosry Ahmed wrote:
-> On Fri, May 20, 2022 at 12:41 AM Tejun Heo <tj@kernel.org> wrote:
-> >
-> > On Fri, May 20, 2022 at 01:21:31AM +0000, Yosry Ahmed wrote:
-> > > From: Hao Luo <haoluo@google.com>
-> > >
-> > > Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
-> > > iter doesn't iterate a set of kernel objects. Instead, it is supposed to
-> > > be parameterized by a cgroup id and prints only that cgroup. So one
-> > > needs to specify a target cgroup id when attaching this iter. The target
-> > > cgroup's state can be read out via a link of this iter.
-> > >
-> > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> >
-> > This could be me not understanding why it's structured this way but it keeps
-> > bothering me that this is adding a cgroup iterator which doesn't iterate
-> > cgroups. If all that's needed is extracting information from a specific
-> > cgroup, why does this need to be an iterator? e.g. why can't I use
-> > BPF_PROG_TEST_RUN which looks up the cgroup with the provided ID, flushes
-> > rstat, retrieves whatever information necessary and returns that as the
-> > result?
-> 
-> I will let Hao and Yonghong reply here as they have a lot more
-> context, and they had previous discussions about cgroup_iter. I just
-> want to say that exposing the stats in a file is extremely convenient
-> for userspace apps. It becomes very similar to reading stats from
-> cgroupfs. It also makes migrating cgroup stats that we have
-> implemented in the kernel to BPF a lot easier.
+Fixes: d607667bb8fa (mmc: sdhci-pci-gli: Add runtime PM for GL9763E)
+Signed-off-by: Ben Chuang <benchuanggli@gmail.com>
+---
+ drivers/mmc/host/sdhci-pci-gli.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-So, if it were upto me, I'd rather direct energy towards making retrieving
-information through TEST_RUN_PROG easier rather than clinging to making
-kernel output text. I get that text interface is familiar but it kinda
-sucks in many ways.
-
-> AFAIK there are also discussions about using overlayfs to have links
-> to the bpffs files in cgroupfs, which makes it even better. So I would
-> really prefer keeping the approach we have here of reading stats
-> through a file from userspace. As for how we go about this (and why a
-> cgroup iterator doesn't iterate cgroups) I will leave this for Hao and
-> Yonghong to explain the rationale behind it. Ideally we can keep the
-> same functionality under a more descriptive name/type.
-
-My answer would be the same here. You guys seem dead set on making the
-kernel emulate cgroup1. I'm not gonna explicitly block that but would
-strongly suggest having a longer term view.
-
-If you *must* do the iterator, can you at least make it a proper iterator
-which supports seeking? AFAICS there's nothing fundamentally preventing bpf
-iterators from supporting seeking. Or is it that you need something which is
-pinned to a cgroup so that you can emulate the directory structure?
-
-Thanks.
-
+diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
+index d09728c37d03..d81e5dc90e15 100644
+--- a/drivers/mmc/host/sdhci-pci-gli.c
++++ b/drivers/mmc/host/sdhci-pci-gli.c
+@@ -972,6 +972,9 @@ static int gl9763e_runtime_resume(struct sdhci_pci_chip *chip)
+ 	struct sdhci_host *host = slot->host;
+ 	u16 clock;
+ 
++	if (host->mmc->ios.power_mode != MMC_POWER_ON)
++		return 0;
++
+ 	clock = sdhci_readw(host, SDHCI_CLOCK_CONTROL);
+ 
+ 	clock |= SDHCI_CLOCK_PLL_EN;
 -- 
-tejun
+2.36.0
+
