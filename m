@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 281ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E1FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350967AbiETPjA (ORCPT
+        id S1350914AbiETPjI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58836 "EHLO
+        Fri, 20 May 2022 11:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350916AbiETPik (ORCPT
+        with ESMTP id S1350934AbiETPil (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:38:40 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A38F163286
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:38:34 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id r23so12030515wrr.2
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:38:34 -0700 (PDT)
+        Fri, 20 May 2022 11:38:41 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016761796EE
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:38:40 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id u3so12016419wrg.3
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:38:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:in-reply-to:references:date:message-id
          :mime-version;
-        bh=Ch3JaRYsWBaRQyyQSaegfZcgNn3JYTpcgpD9p93zsi0=;
-        b=BY1FqXli4TOEwBg63OaVGNdly8bNSEBgEeoVLGRcCl93RUHxozyzVnLWBxNiiHNnIb
-         c6ZAXhhKjXBPC/ksMWrS91Ndv0miTlNWVHfZ80bJaUXIrzPs7jz2JNEP1y3KzcBbL/jL
-         qVCbq5xTAu7FA5G/mHnLTq2sLuEka6UNZY3FRmyffiKmcGylcK2smkmIEAB7x294ciz2
-         vDwkuiPBYDeV54G6+DudJmv90mS6nqGvhUboo7RYS7Q8MV3stCFBHNmieeUQ3e0GBTVl
-         IHmyPBTRATA7v7JVyTpacijgcFCobbXEi2ZfF8RQTbd5BNZQoG+J4UgwPmYxPq3K6zuc
-         oisQ==
+        bh=ZnvK6ktuMG6z7kIuQh9oc4o9U2vLN3omm5vhkUl4qvQ=;
+        b=h6ZjivXbYXLq94WOxUL4/sgzsSx6HM0CeDzJh3R/zNe5ZsF8w7YH0BPwc34Mlgy5TB
+         RyOc3jMK5YlUxqQ00CNn+B2kZYZ7bSpUGx5PS59kjYX/gR6s201dtYkZGe2lD06amo5l
+         i8M1uorqkR5eBdonQZi6cvqm5o0n6Fz0QhRZY1XjpSkoF/aVjJx97ISgfgHUciNnUiMC
+         kw1UJ8VnRnNDxpdFHwGeM5j1dYY3IrM805smq7HREQTxyQ7kYe5/yH3qgdC3tUXRlpMt
+         WYRanunRlhIdOpRRcUTbHmxuYsmvCoASN+fLAEGB4Ii1zpMqV0tmyxUIOltnsdbmWSW8
+         uZ4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=Ch3JaRYsWBaRQyyQSaegfZcgNn3JYTpcgpD9p93zsi0=;
-        b=4Gpu9sLXBxA0wyOyUWj9cBUP1BB/QbAYg6m68iORqozj9HBS+9Xzq14q8h9IlZUWrK
-         ANi9yX0U7W+PKv/Y0MgxJqGVf4vm9w0wnAOUdj9u7+cSzTiHmUyb4Y4bSETA01rG+xNN
-         762SDtqb3jbEjgtDd75doat3zq1OnqY+coyATkxYpPX+VEbDJodzyWXHSKqe5ks1OsvG
-         R4r3VJ9g9bFWPnRCxdbtaAMtqgqwxZIjThIDp9+h52lWx4foZIu3wKBp5T1S79NaA3Ms
-         Hp+44OV8Mw/bX8ubYuu15cYQcsaCAcekR6a4GYQNHEXQJtEYZ+sVvta4r3GuBY2r6y02
-         hDBg==
-X-Gm-Message-State: AOAM531BT7E3eEfmlYulESs2ElwwWmVmGEHgI+5R5vBv8/2TwzOQxwwr
-        v2c+AH5J3MXl4c5sNsOdQ7QYmQ==
-X-Google-Smtp-Source: ABdhPJzVSD4PBgB+VfBmhbz+EkcV3IHwMXyJG3ofUjWKkWJxkcPBsJJki2o9dwaQg7B0ao6+gegkvg==
-X-Received: by 2002:adf:dccc:0:b0:20e:5930:9e85 with SMTP id x12-20020adfdccc000000b0020e59309e85mr8837405wrm.20.1653061112894;
-        Fri, 20 May 2022 08:38:32 -0700 (PDT)
+        bh=ZnvK6ktuMG6z7kIuQh9oc4o9U2vLN3omm5vhkUl4qvQ=;
+        b=qLlJZSRH6Aj+87rSiVAQA39l5t+hM5r9t34OaKpG6IZsudI006f4wpmeqlvEzDlGNv
+         LGcsB0RQ9cCdjk0iYEhx+h+1OD/uSOUh2cCTj7oewlxvcWDmdUdv2ycSf79xlQHigSoy
+         CNjcJvwtKp2vD0CsPi1C/LLyoxILGkq9ZghoC4uFxrhuNS/trfrqNXw2M9dtvDuMlE6i
+         wZ8O5YsvAo5T5oU5Jna2OFamFPH4JkqkMdv64BOgQit+IvzcPKr+gLKLzxfuwlJHjoPC
+         S67eQFsMh9em/WPWg4LwpkPUAtmehWBNmkyuHXmIxVfO2moae/jCdpmVpuxV8UheBnRC
+         GjRg==
+X-Gm-Message-State: AOAM533D8tqVMABA4PmGsK3xy/9j9RKt9ctIhTrGjE1XCyPl+qaTNVZh
+        Dm4/RigXNCGfiTo5Pz38lJidFQ==
+X-Google-Smtp-Source: ABdhPJxRQjeoU324RH2NZNV3sYFQW171hzOW0yMrNpMbN8+QJqIUVyPGkcsWjMf9IfheJl0o7C7ykQ==
+X-Received: by 2002:adf:dec1:0:b0:20e:6313:a4a5 with SMTP id i1-20020adfdec1000000b0020e6313a4a5mr8973519wrn.659.1653061118533;
+        Fri, 20 May 2022 08:38:38 -0700 (PDT)
 Received: from localhost ([2a01:cb19:85e6:1900:41e3:1219:c56c:30b8])
-        by smtp.gmail.com with ESMTPSA id k10-20020adfc70a000000b0020c66310845sm2759639wrg.55.2022.05.20.08.38.32
+        by smtp.gmail.com with ESMTPSA id s26-20020adfa29a000000b0020d069148bcsm2828619wra.110.2022.05.20.08.38.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 08:38:32 -0700 (PDT)
+        Fri, 20 May 2022 08:38:38 -0700 (PDT)
 From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
 To:     AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
@@ -56,13 +56,13 @@ To:     AngeloGioacchino Del Regno
 Cc:     matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
         linux-input@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] Input: mtk-pmic-keys - Transfer per-key bit in
- mtk_pmic_keys_regs
-In-Reply-To: <20220520125132.229191-4-angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH 5/5] Input: mtk-pmic-keys - Add support for MT6331 PMIC
+ keys
+In-Reply-To: <20220520125132.229191-6-angelogioacchino.delregno@collabora.com>
 References: <20220520125132.229191-1-angelogioacchino.delregno@collabora.com>
- <20220520125132.229191-4-angelogioacchino.delregno@collabora.com>
-Date:   Fri, 20 May 2022 17:38:31 +0200
-Message-ID: <874k1kkydk.fsf@baylibre.com>
+ <20220520125132.229191-6-angelogioacchino.delregno@collabora.com>
+Date:   Fri, 20 May 2022 17:38:37 +0200
+Message-ID: <871qwokyde.fsf@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
@@ -71,147 +71,67 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On ven., mai 20, 2022 at 14:51, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com> wrote:
 
-> Place the key bit in struct mtk_pmic_keys_regs to enhance this
-> driver's flexibility, in preparation for adding support for more
-> PMICs.
->
-> While at it, also remove the *_MASK and *_SHIFT definitions, as
-> these can be simply expressed as BIT(x), and "slightly rename"
-> the MTK_PMIC_{HOME,PWR}KEY_RST macro to better reflect the real
-> name for these bits.
->
-> This commit brings no functional changes.
+> Add support for PMIC Keys of the MT6331 PMIC.
 >
 > Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
 Reviewed-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
 > ---
->  drivers/input/keyboard/mtk-pmic-keys.c | 46 ++++++++++++++------------
->  1 file changed, 25 insertions(+), 21 deletions(-)
+>  drivers/input/keyboard/mtk-pmic-keys.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
 >
 > diff --git a/drivers/input/keyboard/mtk-pmic-keys.c b/drivers/input/keyboard/mtk-pmic-keys.c
-> index 83d0b90cc8cb..d8285612265f 100644
+> index acd5aefac5f9..4a03fdfe8282 100644
 > --- a/drivers/input/keyboard/mtk-pmic-keys.c
 > +++ b/drivers/input/keyboard/mtk-pmic-keys.c
-> @@ -18,17 +18,11 @@
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
+> @@ -9,6 +9,7 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+>  #include <linux/mfd/mt6323/registers.h>
+> +#include <linux/mfd/mt6331/registers.h>
+>  #include <linux/mfd/mt6358/registers.h>
+>  #include <linux/mfd/mt6397/core.h>
+>  #include <linux/mfd/mt6397/registers.h>
+> @@ -22,6 +23,10 @@
+>  #define MTK_PMIC_MT6397_PWRKEY_RST_EN	BIT(6)
+>  #define MTK_PMIC_MT6397_RST_DU_MASK	GENMASK(9, 8)
 >  
-> -#define MTK_PMIC_PWRKEY_RST_EN_MASK	0x1
-> -#define MTK_PMIC_PWRKEY_RST_EN_SHIFT	6
-> -#define MTK_PMIC_HOMEKEY_RST_EN_MASK	0x1
-> -#define MTK_PMIC_HOMEKEY_RST_EN_SHIFT	5
->  #define MTK_PMIC_RST_DU_MASK		0x3
->  #define MTK_PMIC_RST_DU_SHIFT		8
->  
-> -#define MTK_PMIC_PWRKEY_RST		\
-> -	(MTK_PMIC_PWRKEY_RST_EN_MASK << MTK_PMIC_PWRKEY_RST_EN_SHIFT)
-> -#define MTK_PMIC_HOMEKEY_RST		\
-> -	(MTK_PMIC_HOMEKEY_RST_EN_MASK << MTK_PMIC_HOMEKEY_RST_EN_SHIFT)
-> +#define MTK_PMIC_MT6397_HOMEKEY_RST_EN	BIT(5)
-> +#define MTK_PMIC_MT6397_PWRKEY_RST_EN	BIT(6)
->  
+> +#define MTK_PMIC_MT6331_HOMEKEY_RST_EN	BIT(8)
+> +#define MTK_PMIC_MT6331_PWRKEY_RST_EN	BIT(9)
+> +#define MTK_PMIC_MT6331_RST_DU_MASK	GENMASK(13, 12)
+> +
 >  #define MTK_PMIC_PWRKEY_INDEX	0
 >  #define MTK_PMIC_HOMEKEY_INDEX	1
-> @@ -40,21 +34,24 @@
->   * @deb_mask:            Bitmask of this key in status register
->   * @intsel_reg:          Interrupt selector register
->   * @intsel_mask:         Bitmask of this key in interrupt selector
-> + * @rst_en_mask:         Bitmask of this key in PMIC keys reset register
->   */
->  struct mtk_pmic_keys_regs {
->  	u32 deb_reg;
->  	u32 deb_mask;
->  	u32 intsel_reg;
->  	u32 intsel_mask;
-> +	u32 rst_en_mask;
+>  #define MTK_PMIC_MAX_KEY_COUNT	2
+> @@ -86,6 +91,19 @@ static const struct mtk_pmic_regs mt6323_regs = {
+>  	.rst_lprst_mask = MTK_PMIC_MT6397_RST_DU_MASK,
 >  };
 >  
->  #define MTK_PMIC_KEYS_REGS(_deb_reg, _deb_mask,		\
-> -	_intsel_reg, _intsel_mask)			\
-> +	_intsel_reg, _intsel_mask, _rst_mask)		\
->  {							\
->  	.deb_reg		= _deb_reg,		\
->  	.deb_mask		= _deb_mask,		\
->  	.intsel_reg		= _intsel_reg,		\
->  	.intsel_mask		= _intsel_mask,		\
-> +	.rst_en_mask		= _rst_mask,		\
->  }
->  
->  /**
-> @@ -70,30 +67,32 @@ struct mtk_pmic_regs {
->  static const struct mtk_pmic_regs mt6397_regs = {
->  	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
->  		MTK_PMIC_KEYS_REGS(MT6397_CHRSTATUS,
-> -		0x8, MT6397_INT_RSV, 0x10),
-> +		0x8, MT6397_INT_RSV, 0x10, MTK_PMIC_MT6397_PWRKEY_RST_EN),
->  	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
->  		MTK_PMIC_KEYS_REGS(MT6397_OCSTATUS2,
-> -		0x10, MT6397_INT_RSV, 0x8),
-> +		0x10, MT6397_INT_RSV, 0x8, MTK_PMIC_MT6397_HOMEKEY_RST_EN),
->  	.pmic_rst_reg = MT6397_TOP_RST_MISC,
->  };
->  
->  static const struct mtk_pmic_regs mt6323_regs = {
->  	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
->  		MTK_PMIC_KEYS_REGS(MT6323_CHRSTATUS,
-> -		0x2, MT6323_INT_MISC_CON, 0x10),
-> +		0x2, MT6323_INT_MISC_CON, 0x10, MTK_PMIC_MT6397_PWRKEY_RST_EN),
->  	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
->  		MTK_PMIC_KEYS_REGS(MT6323_CHRSTATUS,
-> -		0x4, MT6323_INT_MISC_CON, 0x8),
-> +		0x4, MT6323_INT_MISC_CON, 0x8, MTK_PMIC_MT6397_HOMEKEY_RST_EN),
->  	.pmic_rst_reg = MT6323_TOP_RST_MISC,
->  };
->  
+> +static const struct mtk_pmic_regs mt6331_regs = {
+> +	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
+> +		MTK_PMIC_KEYS_REGS(MT6331_TOPSTATUS, 0x2,
+> +				   MT6331_INT_MISC_CON, 0x4,
+> +				   MTK_PMIC_MT6331_PWRKEY_RST_EN),
+> +	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
+> +		MTK_PMIC_KEYS_REGS(MT6331_TOPSTATUS, 0x4,
+> +				   MT6331_INT_MISC_CON, 0x2,
+> +				   MTK_PMIC_MT6331_HOMEKEY_RST_EN),
+> +	.pmic_rst_reg = MT6331_TOP_RST_MISC,
+> +	.rst_lprst_mask = MTK_PMIC_MT6331_RST_DU_MASK,
+> +};
+> +
 >  static const struct mtk_pmic_regs mt6358_regs = {
 >  	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
 >  		MTK_PMIC_KEYS_REGS(MT6358_TOPSTATUS,
-> -				   0x2, MT6358_PSC_TOP_INT_CON0, 0x5),
-> +				   0x2, MT6358_PSC_TOP_INT_CON0, 0x5,
-> +				   MTK_PMIC_MT6397_PWRKEY_RST_EN),
->  	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
->  		MTK_PMIC_KEYS_REGS(MT6358_TOPSTATUS,
-> -				   0x8, MT6358_PSC_TOP_INT_CON0, 0xa),
-> +				   0x8, MT6358_PSC_TOP_INT_CON0, 0xa,
-> +				   MTK_PMIC_MT6397_HOMEKEY_RST_EN),
->  	.pmic_rst_reg = MT6358_TOP_RST_MISC,
->  };
->  
-> @@ -140,6 +139,11 @@ static void mtk_pmic_keys_lp_reset_setup(struct mtk_pmic_keys *keys,
->  {
->  	int ret;
->  	u32 long_press_mode, long_press_debounce;
-> +	const struct mtk_pmic_keys_regs *kregs_pwr;
-> +	const struct mtk_pmic_keys_regs *kregs_home;
-> +
-> +	kregs_pwr = keys->keys[MTK_PMIC_PWRKEY_INDEX].regs;
-> +	kregs_home = keys->keys[MTK_PMIC_HOMEKEY_INDEX].regs;
->  
->  	ret = of_property_read_u32(keys->dev->of_node,
->  		"power-off-time-sec", &long_press_debounce);
-> @@ -157,16 +161,16 @@ static void mtk_pmic_keys_lp_reset_setup(struct mtk_pmic_keys *keys,
->  
->  	switch (long_press_mode) {
->  	case LP_ONEKEY:
-> -		regmap_set_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_PWRKEY_RST);
-> -		regmap_clear_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_HOMEKEY_RST);
-> +		regmap_set_bits(keys->regmap, pmic_rst_reg, kregs_pwr->rst_en_mask);
-> +		regmap_clear_bits(keys->regmap, pmic_rst_reg, kregs_home->rst_en_mask);
->  		break;
->  	case LP_TWOKEY:
-> -		regmap_set_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_PWRKEY_RST);
-> -		regmap_set_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_HOMEKEY_RST);
-> +		regmap_set_bits(keys->regmap, pmic_rst_reg, kregs_pwr->rst_en_mask);
-> +		regmap_set_bits(keys->regmap, pmic_rst_reg, kregs_home->rst_en_mask);
->  		break;
->  	case LP_DISABLE:
-> -		regmap_clear_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_PWRKEY_RST);
-> -		regmap_clear_bits(keys->regmap, pmic_rst_reg, MTK_PMIC_HOMEKEY_RST);
-> +		regmap_clear_bits(keys->regmap, pmic_rst_reg, kregs_pwr->rst_en_mask);
-> +		regmap_clear_bits(keys->regmap, pmic_rst_reg, kregs_home->rst_en_mask);
->  		break;
->  	default:
->  		break;
+> @@ -284,6 +302,9 @@ static const struct of_device_id of_mtk_pmic_keys_match_tbl[] = {
+>  	}, {
+>  		.compatible = "mediatek,mt6323-keys",
+>  		.data = &mt6323_regs,
+> +	}, {
+> +		.compatible = "mediatek,mt6331-keys",
+> +		.data = &mt6331_regs,
+>  	}, {
+>  		.compatible = "mediatek,mt6358-keys",
+>  		.data = &mt6358_regs,
 > -- 
 > 2.35.1
