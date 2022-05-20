@@ -2,105 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350837AbiETP26 (ORCPT
+        id S1350856AbiETP30 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
+        Fri, 20 May 2022 11:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237528AbiETP2z (ORCPT
+        with ESMTP id S237528AbiETP3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:28:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0686B0A5
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:28:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653060533; x=1684596533;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2leG2LmaeymdY17ZfAaPpngzgqFnDp+gD2t1Nl2U6Yo=;
-  b=kPaoqNhWtZNol28aIuNoeAARTbnLmQOssIOaJ26GU507cx5K6Cfr9LWP
-   l6Q1VPc7ULItdIzxAM36n98J955KairBcIuhGuTAaVdziWm0iaeStSED0
-   jbZdkWA2pT5WNh+uUrgRym3Zx0XeIAuG/GXqPaGb/1qw1JC8DkIpJPdA2
-   Oj0qVG5JYzE5MR1BIOW/Su2cph3v8Ni2LJiWEZgiCG4IflNrzPOFLmb/P
-   lP4PwEQFlEPolvmwNvLLMptrEqXNRClb5+OwoVaZGbPFsRn7mHlzAkpb1
-   DmNH8hVB61QCdtbo1MHNdoTufR8dc82sgX9LQYnPeDvMLj7DNRMzvkdgZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="272612188"
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="272612188"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 08:28:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="899369665"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 20 May 2022 08:28:50 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ns4Yb-0004rl-NI;
-        Fri, 20 May 2022 15:28:49 +0000
-Date:   Fri, 20 May 2022 23:28:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     zhenwei pi <pizhenwei@bytedance.com>, akpm@linux-foundation.org,
-        naoya.horiguchi@nec.com, mst@redhat.com, david@redhat.com
-Cc:     kbuild-all@lists.01.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, pbonzini@redhat.com,
-        peterx@redhat.com, qemu-devel@nongnu.org,
-        zhenwei pi <pizhenwei@bytedance.com>
-Subject: Re: [PATCH 3/3] virtio_balloon: Introduce memory recover
-Message-ID: <202205202330.u0vQWiWG-lkp@intel.com>
-References: <20220520070648.1794132-4-pizhenwei@bytedance.com>
+        Fri, 20 May 2022 11:29:23 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E591611F3
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:29:21 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id j21so7806830pga.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:29:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bQXzIo9ckva6G/ZcC8rPAUx7ZPhN3Zb8y3Z1L1PXiyU=;
+        b=J20PHEYxmRCzb89gR7QlS9bFp98iY/j5yKWxBuFfBqsFeU1LNkOnADp3JoN/L35nQV
+         AXS5CI/ZzUSW/3x52C5ScfNb2XvgSGbHFa2xxoJXWfsXJC6X7A/fOLRaHAKpffUwm771
+         bOf5GbBrEBbFmIoUo+cDa1qb7CWe8Sg2Y4u5E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bQXzIo9ckva6G/ZcC8rPAUx7ZPhN3Zb8y3Z1L1PXiyU=;
+        b=4RP3o0nvqyxUdh67wxNvUz0arRFIjO/jY/kyDYoS6JH8MpgZcT3aclnsMXJFKbllMd
+         08dLtt2QrG29kZpfMAX3QUroSZ2d+7RuLVSFGCS0R8iA2L4YoP9SpTJeDYJzCK2RoPK8
+         HmIdSLzwj4Ck7BV8upL7zjenMyAXrlcXAURNTzAJIRVGhcgJxNpi8QyNrsdtOg91Z2Ej
+         IFHUjSKGsoAmyuys1sgkx/0+6/Qf/IOuunfRWmj+dfsYt1K/WL++d7GaDVcS/yNwgeby
+         XfngsSWqh+zYE5UEjZVK/mTLO1xM0NaKOqaLVa596D5dsD2Rg1VsXqEX+c4kgOVXPUIC
+         ngqw==
+X-Gm-Message-State: AOAM53293YrxzTxru0QmHwzFI4H8Ex8LyJmBE1BsitnGcUkD03MGwfZ2
+        WE0PVfRnRLSjICPXMxhDA+W/Og==
+X-Google-Smtp-Source: ABdhPJz2G97WiSo4fI9WPH+8M+Zn+mODh4vK9XNKFG5aCH6g5DHAXGRM0OR7/ye5WnneaI42stYMCQ==
+X-Received: by 2002:a05:6a00:2985:b0:510:66a4:375d with SMTP id cj5-20020a056a00298500b0051066a4375dmr10858560pfb.18.1653060561157;
+        Fri, 20 May 2022 08:29:21 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:5332:2096:60a3:3455])
+        by smtp.gmail.com with UTF8SMTPSA id a9-20020a170902710900b0015e8d4eb1c6sm5777273pll.16.2022.05.20.08.29.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 08:29:20 -0700 (PDT)
+Date:   Fri, 20 May 2022 08:29:19 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
+        chrome-platform@lists.linux.dev, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 5/5] platform/chrome: cros_kbd_led_backlight: support
+ EC PWM backend
+Message-ID: <YoezzzLdVfb0K7Ak@google.com>
+References: <20220321085547.1162312-1-tzungbi@kernel.org>
+ <20220321085547.1162312-6-tzungbi@kernel.org>
+ <YobHVST2Nfn+z8n6@google.com>
+ <YocewB/lLJhIAuQP@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220520070648.1794132-4-pizhenwei@bytedance.com>
+In-Reply-To: <YocewB/lLJhIAuQP@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi zhenwei,
+On Fri, May 20, 2022 at 12:53:20PM +0800, Tzung-Bi Shih wrote:
+> On Thu, May 19, 2022 at 03:40:21PM -0700, Matthias Kaehlcke wrote:
+> > On Mon, Mar 21, 2022 at 04:55:47PM +0800, Tzung-Bi Shih wrote:
+> > > +struct keyboard_led_private {
+> > 
+> > Why 'private', isn't this more a 'cros_ec_kdb_bl' or similar?
+> 
+> It is just drvdata.
 
-Thank you for the patch! Yet something to improve:
+The data structure represents an instance of the device, as such it
+is an important part of the driver, drvdata is just a way to attach
+it to the platform device.
 
-[auto build test ERROR on akpm-mm/mm-everything]
-[also build test ERROR on next-20220519]
-[cannot apply to linux/master linus/master v5.18-rc7]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> I would prefer to keep the original prefix "keyboard_led_" if you wouldn't
+> have strong opinion.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/zhenwei-pi/recover-hardware-corrupted-page-by-virtio-balloon/20220520-151328
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: arm-randconfig-r026-20220519 (https://download.01.org/0day-ci/archive/20220520/202205202330.u0vQWiWG-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a42127073dd4adb6354649c8235c5cde033d01f2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review zhenwei-pi/recover-hardware-corrupted-page-by-virtio-balloon/20220520-151328
-        git checkout a42127073dd4adb6354649c8235c5cde033d01f2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+I'm fine with 'keyboard_led', but object to the 'private' part. In the
+kernel 'private' fields are typically used when a driver consists of a
+generic part and a device specific part. The driver has a 'private'
+void* field that points to a device specific data structure about which
+the generic driver is agnostic. This data structure is only used by the
+device specific implementation. That isn't the case here, so naming the
+structure anything 'private' is misleading.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> > > +static int
+> > > +keyboard_led_set_brightness_blocking_ec_pwm(struct led_classdev *cdev,
+> > > +					    enum led_brightness brightness)
+> > 
+> > nit: since there is only a blocking version of .set_brightness you could omit
+> > 'blocking' in the function name.
+> 
+> Ack, will fix it in next version.
+> 
+> > > +	struct {
+> > > +		struct cros_ec_command msg;
+> > > +		struct ec_params_pwm_set_keyboard_backlight params;
+> > > +	} __packed buf;
+> > > +	struct ec_params_pwm_set_keyboard_backlight *params = &buf.params;
+> > > +	struct cros_ec_command *msg = &buf.msg;
+> > > +	struct keyboard_led_private *private =
 
-All errors (new ones prefixed by >>):
+Continuation of the argument above: the variable name 'private' doesn't
+reveal anything about it's nature, something like 'kbd_led' would be much
+clearer.
 
-   arm-linux-gnueabi-ld: drivers/virtio/virtio_balloon.o: in function `unpoison_memory_func':
->> virtio_balloon.c:(.text+0x89a): undefined reference to `unpoison_memory'
-   arm-linux-gnueabi-ld: drivers/virtio/virtio_balloon.o: in function `virtballoon_probe':
->> virtio_balloon.c:(.text+0x111a): undefined reference to `register_memory_failure_notifier'
-   arm-linux-gnueabi-ld: drivers/virtio/virtio_balloon.o: in function `virtballoon_remove':
->> virtio_balloon.c:(.text+0x12a2): undefined reference to `unregister_memory_failure_notifier'
+> > > +		container_of(cdev, struct keyboard_led_private, cdev);
+> > > +
+> > > +	memset(&buf, 0, sizeof(buf));
+> > > +
+> > > +	msg->version = 0;
+> > 
+> > not strictly needed since you do the memset above, I guess it's
+> > fine to keep the assignment if you want to be explicit about the
+> > version.
+> 
+> Ack, let's remove them in next version.
+> 
+> > > +static int keyboard_led_init_ec_pwm(struct platform_device *pdev)
+> > > +{
+> > > +	struct keyboard_led_private *private = platform_get_drvdata(pdev);
+> > > +
+> > > +	private->ec = dev_get_drvdata(pdev->dev.parent);
+> > > +	if (!private->ec) {
+> > > +		dev_err(&pdev->dev, "no parent EC device\n");
+> > > +		return -EINVAL;
+> > > +	}
+> > 
+> > The only thing this 'init' function does is assigning private->ec. Wouldn't
+> > it be clearer to do this directly in probe() from where callback is called?
+> > It could be with the condition that the device as a DT node.
+> 
+> No.  The probe() isn't aware of the device is from ACPI or OF.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+But it could be:
+
+	if (pdev->dev.of_node)
+		kbd_led->ec = dev_get_drvdata(pdev->dev.parent);
+
+> > Is it actually possible that the keyboard backlight device gets instantiated
+> > if there is no EC parent?
+> 
+> It shouldn't be but just in case.
+
+If this can only occur due to an error in common kernel frameworks then
+the check should be omitted IMO.
+
+> > > +static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
+> > > +	.init = keyboard_led_init_ec_pwm_null,
+> > 
+> > Is this really needed?
+> > 
+> > keyboard_led_probe() checks if .init is assigned before invoking the callback:
+> > 
+> > 	if (drvdata->init) {
+> > 		error = drvdata->init(pdev);
+> > 
+> > The whole 'else' branch could be eliminated if .of_match_table of the driver
+> > only is assigned when CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM is set. IMO that
+> > would preferable over creating 'stubs'.
+> 
+> CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM and CONFIG_OF are independent.  The stubs
+> were created to avoid compile errors if CONFIG_OF=y but
+> CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM=n.
+
+Is there functional version of the driver that uses instantiation through the
+device tree if CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM=n? If not .of_match_table
+should not be assigned.
+
+> However, I just realized it could also have compile errors if CONFIG_OF=n and
+> CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM=y.  The `keyboard_led_drvdata_ec_pwm` is
+> unused.
+> 
+> In any case, I agree with you.  Let's remove the stubs in next version.  I
+> would use __maybe_unused for some of them.
