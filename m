@@ -2,154 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D29D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98ACFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353484AbiETUfO (ORCPT
+        id S1353492AbiETUfY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 16:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
+        Fri, 20 May 2022 16:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237028AbiETUfM (ORCPT
+        with ESMTP id S237028AbiETUfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 16:35:12 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B6518C040
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:35:11 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id c10so12201066edr.2
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:35:11 -0700 (PDT)
+        Fri, 20 May 2022 16:35:22 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD94819FF5B
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:35:21 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id j21so8458366pga.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:35:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q/W5Amkj7ZY4RSpu5Emv9DEEKFEY7HPKddkjE1BLIVo=;
-        b=A97QoE/yONP/9WLQzD+5uujl9gs6LncY7kXoqdZTcS8CvSag2jhDf5peXlijQFFM89
-         7xxU/K8CVotJr/JrPHhf3V1IVK5i6qclaIg2lVvyrBzNyCzxgCe5fp56nccGtG2ce6QZ
-         by/Khy+qBy6khUe1wfEiGwRSeC3+QOAgMnb+A=
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3vHBVIVFWKzsVxkwc0nHHOOCh+s7xB12NezweFvNW6E=;
+        b=BuiiqR40Fh9qrE/Wrzuu+BttdgbfvoE5pQkQfFAFV/s2HTC2A/0XUWCPD/l4KH7Zd3
+         AxLHjBC+5RknD/9gzB04Y0DSbIN5PB6HMEcTyuMIZMnQjjl1XocPBuQXZl/QUHXKgfuH
+         1KRo4Wk0of63noo+XGTjV9GnM8O6wDHcBTBeg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q/W5Amkj7ZY4RSpu5Emv9DEEKFEY7HPKddkjE1BLIVo=;
-        b=nK1/XCgfoUOaLqsXC/BXp+rC4sCVqSRYgbEQH3dCjVyLoweWnq4VBY3HtmJnr5+E5K
-         iEhIh6dQlkyuhbYf+P+BZVFKE4Zg7+zZSswlAyMV7b6PPLnkmHzczZN8zaczMlwV2n+X
-         4tpEPb1XI8IIAqgq3zOL8w/7pDZebUvRW4URMrW+K5V99gvw3zmvmhItJPv1uikG4vYM
-         649bd18DbWCqgM78H/55tTejt9CueFhTTzuoQfGQPG06kiDHD8FVS1wKN2/5fNISjOqL
-         BqWARzKSseeT/Voqxfugwkz3KoDRgB08ohhEZbeJmWvFxkVa7gT8e8bRLEbQm07xmImk
-         FK3Q==
-X-Gm-Message-State: AOAM531/u47XO+w4Fmb+TQEtLJM1XOWYh6heqZzphJQWXiwTBggbmTbJ
-        6CiFRImAHrBmOnDQNKDE62+wrKPmT6orL1sFQNg=
-X-Google-Smtp-Source: ABdhPJxYy1IM7KLJAS1a2Cki7ZVHkqKItl2L6YO7+pW1CqZq9qGAnKRU/k38VXPnSL/yc6qdP7C5Rg==
-X-Received: by 2002:a05:6402:1cc1:b0:413:2b12:fc49 with SMTP id ds1-20020a0564021cc100b004132b12fc49mr12716045edb.118.1653078909328;
-        Fri, 20 May 2022 13:35:09 -0700 (PDT)
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com. [209.85.128.44])
-        by smtp.gmail.com with ESMTPSA id hs33-20020a1709073ea100b006feb71acbb3sm515961ejc.105.2022.05.20.13.35.08
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3vHBVIVFWKzsVxkwc0nHHOOCh+s7xB12NezweFvNW6E=;
+        b=1QUPE97raLF+KfGFK8cKoCNc4V9XXLfQrzU6yW6wV0HIs6CqWJzMCl8QrR7cZo6qgg
+         zfPGCyb8kUNuEUrOF2qBNZBWIXMMMiepxHqgadORv2koAZx9HnxBe+UY2/mdoNdyYIKq
+         2yOu1t4HSf7tQjSJ9DICqF99wmnjHSkdZvTq74iikBNynTUQeIxBoBjjaj25NlQH9NsJ
+         7bbF9Ip79ZIsN+bTzpb4GNe7c+0yxRlMl+eYXj8kgpbfe78FAOaTY+VOTODMgVTwrqyb
+         Z7ZvTMVaP3iLNXpJ5EcfpQUPpMTHsVGp2tG6ORMUMPN/sqvPHGM/DlgjAHTCIdd5GdUz
+         llcg==
+X-Gm-Message-State: AOAM532qqWKu5uSClcdzJ/t7oYaxTMHaKcYxuZXzmptPmeQImFNYf5hn
+        84hAjRkp1rYVkZxqeBIKEXEMew==
+X-Google-Smtp-Source: ABdhPJzI7hQHoQSzMwA79g07yOdZRZqt49wF8VqdqwqSu7Dgzggk6BMoyBJC+wYWFmGhcGSRO9zAbQ==
+X-Received: by 2002:a63:1d6:0:b0:3c1:732a:3855 with SMTP id 205-20020a6301d6000000b003c1732a3855mr9913625pgb.571.1653078920547;
+        Fri, 20 May 2022 13:35:20 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:5332:2096:60a3:3455])
+        by smtp.gmail.com with UTF8SMTPSA id nh11-20020a17090b364b00b001df4e851aecsm2306272pjb.3.2022.05.20.13.35.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 13:35:08 -0700 (PDT)
-Received: by mail-wm1-f44.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso7479109wma.0
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:35:08 -0700 (PDT)
-X-Received: by 2002:a05:600c:3d8c:b0:394:6097:9994 with SMTP id
- bi12-20020a05600c3d8c00b0039460979994mr10021915wmb.29.1653078454242; Fri, 20
- May 2022 13:27:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220510192944.2408515-1-dianders@chromium.org> <20220510122726.v3.1.Ia91f4849adfc5eb9da1eb37ba79aa65fb3c95a0f@changeid>
-In-Reply-To: <20220510122726.v3.1.Ia91f4849adfc5eb9da1eb37ba79aa65fb3c95a0f@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 20 May 2022 13:27:21 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Ui8c4EY3Yc8JaXfkhho0HxEiOVbHfA=Szt3U-KGe-4HA@mail.gmail.com>
-Message-ID: <CAD=FV=Ui8c4EY3Yc8JaXfkhho0HxEiOVbHfA=Szt3U-KGe-4HA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/4] drm/dp: Export symbol / kerneldoc fixes for DP AUX bus
-To:     dri-devel <dri-devel@lists.freedesktop.org>
-Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Philip Chen <philipchen@chromium.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Fri, 20 May 2022 13:35:20 -0700 (PDT)
+Date:   Fri, 20 May 2022 13:35:19 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
         linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lyude Paul <lyude@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Kevin Lund <kglund@google.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280: Enable wifi for Chrome OS
+ boards
+Message-ID: <Yof7h++Aj6UM8YF+@google.com>
+References: <20220518155252.1.I176d4254c79cfaafa38cbe36f066f02f819df9b6@changeid>
+ <CAD=FV=X+4JhN8EScFDZAiduo6zy7c0pbr6EOJpSo25ctOW-zRA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=X+4JhN8EScFDZAiduo6zy7c0pbr6EOJpSo25ctOW-zRA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, May 20, 2022 at 01:07:53PM -0700, Doug Anderson wrote:
+> Hi,
+> 
+> On Wed, May 18, 2022 at 3:53 PM Matthias Kaehlcke <mka@chromium.org> wrote:
+> >
+> > Enable the 'wifi' and 'remoteproc_wpss' nodes for all sc7280
+> > based Chrome OS boards. Delete the corresponding entries from
+> > sc7280-idp.dtsi since this file includes sc7280-chrome-common.dtsi.
+> >
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > ---
+> >
+> >  arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi | 13 +++++++++++++
+> >  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           | 11 -----------
+> >  2 files changed, 13 insertions(+), 11 deletions(-)
+> 
+> Looks right to me. You're also adding the firmware-name, but:
+> 
+> * That's in the bindings.
+> 
+> * The name you have there matches what's in the linux-firmware
+> repository in commit 0d5e9f7e0aa1 ("ath11k: WCN6750 hw1.0: add to
+> WLAN.MSL.1.0.1-00887-QCAMSLSWPLZ-1")
+> 
+> Hmmm, I guess one question is whether this same firmware would also be
+> used for other, non-Chrome sc7280 devices. If so then the
+> firmware-name probably belongs straight in sc7280.dtsi? I suppose that
+> could always happen in a future change if/when we have other sc7280
+> devices and it's clear that they're sharing firmware. Thus:
 
-On Tue, May 10, 2022 at 12:30 PM Douglas Anderson <dianders@chromium.org> wrote:
->
-> While working on the DP AUX bus code I found a few small things that
-> should be fixed. Namely the non-devm version of
-> of_dp_aux_populate_ep_devices() was missing an export. There was also
-> an extra blank line in a kerneldoc and a kerneldoc that incorrectly
-> documented a return value. Fix these.
->
-> Fixes: aeb33699fc2c ("drm: Introduce the DP AUX bus")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> None of these seem critical, so my plan is to land this in
-> drm-misc-next and not drm-misc-fixes. This will avoid merge conflicts
-> with future patches.
->
-> Changes in v3:
-> - Patch ("drm/dp: Export symbol / kerneldoc fixes...") split for v3.
->
->  drivers/gpu/drm/display/drm_dp_aux_bus.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+It could go either way. One of our wifi engineers mentioned that his
+contact at QC said the FW should reside directly in /lib/firmware, not
+in any sub-directory, which would be odd, but up to them ;-)
 
-I landed this one in drm-misc-next:
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-39c28cdfb719 drm/dp: Export symbol / kerneldoc fixes for DP AUX bus
-
-I chose "drm-misc-next" instead of a "fixes" branch because:
-* It's not super urgent.
-* I'm still hoping to get review for the other patches in this series
-and it would be nice to avoid the conflicts when landing.
-
--Doug
-
-
-
-
-
->
-> diff --git a/drivers/gpu/drm/display/drm_dp_aux_bus.c b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-> index dccf3e2ea323..552f949cff59 100644
-> --- a/drivers/gpu/drm/display/drm_dp_aux_bus.c
-> +++ b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-> @@ -66,7 +66,6 @@ static int dp_aux_ep_probe(struct device *dev)
->   * @dev: The device to remove.
->   *
->   * Calls through to the endpoint driver remove.
-> - *
->   */
->  static void dp_aux_ep_remove(struct device *dev)
->  {
-> @@ -120,8 +119,6 @@ ATTRIBUTE_GROUPS(dp_aux_ep_dev);
->  /**
->   * dp_aux_ep_dev_release() - Free memory for the dp_aux_ep device
->   * @dev: The device to free.
-> - *
-> - * Return: 0 if no error or negative error code.
->   */
->  static void dp_aux_ep_dev_release(struct device *dev)
->  {
-> @@ -256,6 +253,7 @@ int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
->
->         return 0;
->  }
-> +EXPORT_SYMBOL_GPL(of_dp_aux_populate_ep_devices);
->
->  static void of_dp_aux_depopulate_ep_devices_void(void *data)
->  {
-> --
-> 2.36.0.550.gb090851708-goog
->
+Thanks!
