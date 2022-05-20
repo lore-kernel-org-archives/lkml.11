@@ -2,111 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8232BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 11:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B4E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348943AbiETL6Q (ORCPT
+        id S1348826AbiETMAZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 07:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46940 "EHLO
+        Fri, 20 May 2022 08:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348904AbiETL6H (ORCPT
+        with ESMTP id S239395AbiETMAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 07:58:07 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9008343AE4;
-        Fri, 20 May 2022 04:57:43 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id rs12so3441697ejb.13;
-        Fri, 20 May 2022 04:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JPzY3rG4aAiGP4Adx8qp4zYUH//ThardXl1nVOzIKwg=;
-        b=jCPS7ml3TGMhhu8lNLCaV/PUeGvhBdasFiSPsWXogU170UjHCU3us9XoBdap4NaULV
-         dt5mfbhndQnfJfwiEdf6qUIVs8yNIdn5z+pFlw/qBuGUYEO3y02jTKQCfKBsnCFPiyM4
-         tb+Yw7mrSzDGgYRCyCv+VdpIvCO3bNaggokkLzGYif5m5ryLY9Abl4gnFDxdp+zMsImt
-         4qvl/37kIO2UhFY8GIoao4yWDnGFO1fM+Efl6Qn/AqGhZhnOF+DPoL4WNCSG7S4tvuTD
-         1Z8EjX+LY/AXDH5SqRZ07pRCJhO+OlsLNaBpuoJp0gujMecG/qvIgqWIHihJTeYAjOOe
-         H51Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JPzY3rG4aAiGP4Adx8qp4zYUH//ThardXl1nVOzIKwg=;
-        b=iDLdn6/ArBVapUuqojt3y911o9uaY+ZDE/XlPkfA8Uo2yqrmJVao1xomMmEJhr9ovS
-         nsKZx2ExP7Z0oRO6Hqbv4qnVx5iwsUlfLYa93ImM8bApv+1/9HDcyqhUESqFEJIuBXo+
-         mBIBxT/fwPTIZNkAwvM1Qs+uEaJOnKKPXYgpZoVhl67kNosBxydMpKw6WJ91f3Gp0A5W
-         HpQTqK71EtlbAF51BcsQz99wAWMg8eR3jDJmtS/hJfjgUf+cWjYT24Qkp2W1UcD/N/5n
-         RGiSneY36BESAxAGj9Tad8SUzi2AKInzhRmbviKPtMis/11nID9UHQwddeXilJdwMMrb
-         I8EQ==
-X-Gm-Message-State: AOAM53192hgDv5RgpNAArSE1ZyAZ/NsNPvZ2uCag9aoyFaU5S+A3E5rb
-        8ZCL4qRGql+Zmld9c/RDnWMSrHEtajw=
-X-Google-Smtp-Source: ABdhPJw3J7+OdXRHM+j5hLfP9q6N7a+WUYPDb3oEqiwVpUjB58HVoQEg2A6NCMEHbgqBSPi1FTJipw==
-X-Received: by 2002:a17:906:c14c:b0:6f4:6e30:9ace with SMTP id dp12-20020a170906c14c00b006f46e309acemr8315896ejc.678.1653047862167;
-        Fri, 20 May 2022 04:57:42 -0700 (PDT)
-Received: from localhost.localdomain ([195.55.223.2])
-        by smtp.googlemail.com with ESMTPSA id h8-20020a170906530800b006fa8c685af1sm3100687ejo.163.2022.05.20.04.57.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 04:57:41 -0700 (PDT)
-From:   Javier Abrego <javier.abrego.lorente@gmail.com>
-To:     trond.myklebust@hammerspace.com, anna@kernel.org
-Cc:     linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        javier.abrego.lorente@gmail.com
-Subject: [PATCH] FS: nfs: removed goto statement
-Date:   Fri, 20 May 2022 13:57:14 +0200
-Message-Id: <20220520115714.47321-1-javier.abrego.lorente@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 20 May 2022 08:00:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 174D33A72C
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:00:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653048015;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=605A85MV8zA5Tmbn3R+kznNXMiIuQQdRxWs90LDiRko=;
+        b=P8J0JOo1fEo4xUCciSKpZjhOxcSk1OQG41HwokQlp9zNpItQ/BSoGLHKVNeKjd9If8LX4Z
+        R3XUMZHGHjzh6yRSdW9Si6ekOBMA1JrHKckyz8ZPC/4hqFSVORcGMu118R+SdCabVO1Zpr
+        9hrIjnf7eXA8+Xt/nwGXKaSQ3IxOEzI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-413-yhoQ07uhNDSq52_IpxLa3w-1; Fri, 20 May 2022 08:00:14 -0400
+X-MC-Unique: yhoQ07uhNDSq52_IpxLa3w-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 37B7B3C0218E;
+        Fri, 20 May 2022 12:00:14 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D9323403152;
+        Fri, 20 May 2022 12:00:13 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     likexu@tencent.com
+Subject: [PATCH] KVM: x86/pmu: remove useless prototype
+Date:   Fri, 20 May 2022 08:00:13 -0400
+Message-Id: <20220520120013.3312909-1-pbonzini@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In this function goto can be replaced. Avoiding goto will improve the
-readability
-
-Signed-off-by: Javier Abrego<javier.abrego.lorente@gmail.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- fs/nfs/nfs42xattr.c | 24 +++++++++++-------------
- 1 file changed, 11 insertions(+), 13 deletions(-)
+ arch/x86/kvm/pmu.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/fs/nfs/nfs42xattr.c b/fs/nfs/nfs42xattr.c
-index e7b34f7e0..78130462c 100644
---- a/fs/nfs/nfs42xattr.c
-+++ b/fs/nfs/nfs42xattr.c
-@@ -747,20 +747,18 @@ void nfs4_xattr_cache_set_list(struct inode *inode, const char *buf,
- 		return;
+diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
+index 0bce361f72b8..4e9785d3dc70 100644
+--- a/arch/x86/kvm/pmu.h
++++ b/arch/x86/kvm/pmu.h
+@@ -196,7 +196,6 @@ void kvm_pmu_cleanup(struct kvm_vcpu *vcpu);
+ void kvm_pmu_destroy(struct kvm_vcpu *vcpu);
+ int kvm_vm_ioctl_set_pmu_event_filter(struct kvm *kvm, void __user *argp);
+ void kvm_pmu_trigger_event(struct kvm_vcpu *vcpu, u64 perf_hw_id);
+-void kvm_init_pmu_capability(void);
  
- 	entry = nfs4_xattr_alloc_entry(NULL, buf, NULL, buflen);
--	if (entry == NULL)
--		goto out;
--
--	/*
--	 * This is just there to be able to get to bucket->cache,
--	 * which is obviously the same for all buckets, so just
--	 * use bucket 0.
--	 */
--	entry->bucket = &cache->buckets[0];
--
--	if (!nfs4_xattr_set_listcache(cache, entry))
--		kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
-+	if (entry != NULL) {
-+	       /*
-+		* This is just there to be able to get to bucket->cache,
-+		* which is obviously the same for all buckets, so just
-+		* use bucket 0.
-+		*/
-+		entry->bucket = &cache->buckets[0];
-+
-+		if (!nfs4_xattr_set_listcache(cache, entry))
-+			kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
-+	}
- 
--out:
- 	kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
- }
+ bool is_vmware_backdoor_pmc(u32 pmc_idx);
  
 -- 
-2.25.1
+2.31.1
 
