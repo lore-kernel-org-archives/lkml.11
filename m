@@ -2,85 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5FAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ACDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 03:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345178AbiETDlV (ORCPT
+        id S1345197AbiETDqz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 19 May 2022 23:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
+        Thu, 19 May 2022 23:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234673AbiETDlS (ORCPT
+        with ESMTP id S240860AbiETDqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 19 May 2022 23:41:18 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D89186CC
-        for <linux-kernel@vger.kernel.org>; Thu, 19 May 2022 20:41:16 -0700 (PDT)
-Received: (Authenticated sender: ash@heyquark.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 71E83200003;
-        Fri, 20 May 2022 03:41:08 +0000 (UTC)
-Message-ID: <d84e4d24-f350-80fc-6c31-b7e7f8d429f4@heyquark.com>
-Date:   Fri, 20 May 2022 13:41:04 +1000
+        Thu, 19 May 2022 23:46:52 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB84A30542;
+        Thu, 19 May 2022 20:46:49 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id x12so6695529pgj.7;
+        Thu, 19 May 2022 20:46:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/VikhDlDIJyIH73NRxQkB3ZE1WQu0G4Ns/0LJwqLnks=;
+        b=mZEYcXVLOBS1Ve29MU+uG2hu32buxfY0bsbb8XSiCFttMoX5hRMSUN+zChGwJkKG8v
+         W5h6OJCR+h49kSaPilh0L5wTK7Lh8oP6MIdudzZMWeXj5/i1kaaT6tlg2mVQHaOD6IfB
+         W44WfRnmmgUhk7TNQ+xNPjxlWCK0Pkmu6US3Pxg74jc5UzdVNbNHB9HtUhSeXJqLm/1V
+         viddMSamrI9MnAa4tuW7RJqGsJWriqSbiq2rS+AONczyMSot8p3uCpPrfALXfYVPdI4c
+         Ks1QOgKEnsZyBCzNqMEkTac3JSziGE0qU8hPYrbDoiNU3gy/efRQay/AzskhyrPOKry3
+         C90A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/VikhDlDIJyIH73NRxQkB3ZE1WQu0G4Ns/0LJwqLnks=;
+        b=qbpE6SmKn6VehAPG0/S6hYej7CEII8knVPiSAUX9WfWAMTiR31qQiNglL1q452inF4
+         WGkEyGl0IMtmoJCaCc/dTkKYqyxwEgMnocuMjYiKuAa82TdhpIEF+/QJii4DKfQMoT3I
+         XQjlI/9JMH2lMZ/un29t2ePQR27nrTcm2f949pOn4Q/yQR0K3Sm/Yf3O79FqhwpXhltL
+         ENCoyihIaFnhFrcJaiLeMwoovJzr2Sf+2fjK0pdL97CxbHwl2REaDcAdHMCzwO2hm442
+         Nm+Ssb4Pkj4zRHy2fZqIoJPvLLYe3JCgKAC1JROnjZr27a7jAop8mzFx8d/cnnOg2888
+         Pa3g==
+X-Gm-Message-State: AOAM532i10VfESj7Ps/oYLFIodvImXaMMk+GmmB98Z/9d8JCCMvoKKmu
+        AhJTpk6gihdNKIVmyxtcMDGwcybjJc8m1DMjIw==
+X-Google-Smtp-Source: ABdhPJzrQ6ntAU/WFr+YDc3l0WoI1X1KLri6KUai1jfgGpDhODlE7mGaZ7jWf6iVZaGLz1316hhvwsUeoN2TmNgStx0=
+X-Received: by 2002:a63:d3:0:b0:3f6:139:d62 with SMTP id 202-20020a6300d3000000b003f601390d62mr6646266pga.113.1653018409307;
+ Thu, 19 May 2022 20:46:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 11/12] powerpc: wiiu: don't enforce flat memory
-Content-Language: en-US
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     paulus@samba.org, mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
-        robh+dt@kernel.org, benh@kernel.crashing.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        j.ne@posteo.net
-References: <20220302044406.63401-1-ash@heyquark.com>
- <20220302044406.63401-12-ash@heyquark.com>
- <20220513224353.n56qg5fhstbaqhfz@pali>
-From:   Ash Logan <ash@heyquark.com>
-In-Reply-To: <20220513224353.n56qg5fhstbaqhfz@pali>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220409062449.3752252-1-zheyuma97@gmail.com> <CA++WF2Np7Bk_qT68Uc3mrC38mN5p3fm9eVT7VA8NoX6=es2r2w@mail.gmail.com>
+ <CAMhUBjkWcg4+YYynsd90jX1A+zp95tUUcLgYrTPAqSmbxM7TJA@mail.gmail.com> <CA++WF2MFwtKs8-uy+e_77P0ySsN8y6W_8+Z8AdxBKsutcYK-ig@mail.gmail.com>
+In-Reply-To: <CA++WF2MFwtKs8-uy+e_77P0ySsN8y6W_8+Z8AdxBKsutcYK-ig@mail.gmail.com>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Fri, 20 May 2022 11:46:38 +0800
+Message-ID: <CAMhUBjmbfYCiNvgVkC7x0QQLCxsttEX9CpHOK=N+Gt4YxUCu2Q@mail.gmail.com>
+Subject: Re: [PATCH] wireless: ipw2x00: Refine the error handling of ipw2100_pci_init_one()
+To:     Stanislav Yakovlev <stas.yakovlev@gmail.com>
+Cc:     kvalo@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/5/22 08:43, Pali Rohár wrote:
-> On Wednesday 02 March 2022 15:44:05 Ash Logan wrote:
->> pgtable_32.c:mapin_ram loops over each valid memory range, which means
->> non-contiguous memory just works.
-> 
-> Hello! Does it mean that non-contiguous memory works for any 32-bit
-> powerpc platform, and not only for wiiu? If yes, should not be
-> non-contiguous memory support enabled for all 32-bit ppc boards then?
+On Sat, Apr 23, 2022 at 3:25 AM Stanislav Yakovlev
+<stas.yakovlev@gmail.com> wrote:
+>
+> Hi Zheyu,
+>
+> On 18/04/2022, Zheyu Ma <zheyuma97@gmail.com> wrote:
+> > On Thu, Apr 14, 2022 at 2:40 AM Stanislav Yakovlev
+> > <stas.yakovlev@gmail.com> wrote:
+> >>
+> >> On Sat, 9 Apr 2022 at 02:25, Zheyu Ma <zheyuma97@gmail.com> wrote:
+> >> >
+> >> > The driver should release resources in reverse order, i.e., the
+> >> > resources requested first should be released last, and the driver
+> >> > should adjust the order of error handling code by this rule.
+> >> >
+> >> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> >> > ---
+> >> >  drivers/net/wireless/intel/ipw2x00/ipw2100.c | 34 +++++++++-----------
+> >> >  1 file changed, 16 insertions(+), 18 deletions(-)
+> >> >
+> >> [Skipped]
+> >>
+> >> > @@ -6306,9 +6303,13 @@ static int ipw2100_pci_init_one(struct pci_dev
+> >> > *pci_dev,
+> >> >  out:
+> >> >         return err;
+> >> >
+> >> > -      fail_unlock:
+> >> > +fail_unlock:
+> >> >         mutex_unlock(&priv->action_mutex);
+> >> > -      fail:
+> >> > +fail:
+> >> > +       pci_release_regions(pci_dev);
+> >> > +fail_disable:
+> >> > +       pci_disable_device(pci_dev);
+> >> We can't move these functions before the following block.
+> >>
+> >> > +fail_dev:
+> >> >         if (dev) {
+> >> >                 if (registered >= 2)
+> >> >                         unregister_netdev(dev);
+> >> This block continues with a function call to ipw2100_hw_stop_adapter
+> >> which assumes that device is still accessible via pci bus.
+> >
+> > Thanks for your reminder, but the existing error handling does need to
+> > be revised, I got the following warning when the probing fails at
+> > pci_resource_flags():
+> >
+> > [   20.712160] WARNING: CPU: 1 PID: 462 at lib/iomap.c:44
+> > pci_iounmap+0x40/0x50
+> > [   20.716583] RIP: 0010:pci_iounmap+0x40/0x50
+> > [   20.726342]  <TASK>
+> > [   20.726550]  ipw2100_pci_init_one+0x101/0x1ee0 [ipw2100]
+> >
+> > Since I am not familiar with the ipw2100, could someone give me some
+> > advice to fix this.
+>
+> Could you please rebuild the kernel with IPW2100_DEBUG config option
+> enabled, rerun the test and post your results here? Also, please post
+> the output of "lspci -v" here.
 
-Hi! Sorry for my delayed response. As best I can tell, it does indeed
-Just Work, but I have only been able to test on wiiu which is missing a
-lot of features other boards have (like PCI) - so it's possible there's
-still an assumption elsewhere in the kernel that I haven't hit.
+Sorry for the late response.
+I have rebuilt the kernel with IPW2100_DEBUG, and got the following result:
 
-As best I can tell, the Wii and Wii U are the only 32-bit powerpc boards
-out there where it's even possible to have non-contiguous memory.
+[   29.469624] libipw: 802.11 data/management/control stack, git-1.1.13
+[   29.470034] libipw: Copyright (C) 2004-2005 Intel Corporation
+<jketreno@linux.intel.com>
+[   29.477455] ipw2100: Intel(R) PRO/Wireless 2100 Network Driver, git-1.2.2
+[   29.477833] ipw2100: Copyright(c) 2003-2006 Intel Corporation
+[   29.478197] ipw2100Error calling ioremap.
+[   29.478398] ------------[ cut here ]------------
+[   29.478630] Bad IO access at port 0x0 ()
+[   29.478834] WARNING: CPU: 0 PID: 304 at lib/iomap.c:44 pci_iounmap+0x40/0x50
+[   29.481116] RIP: 0010:pci_iounmap+0x40/0x50
+[   29.485282] Call Trace:
+[   29.485407]  <TASK>
+[   29.485514]  ipw2100_pci_init_one+0x192/0x20c0 [ipw2100]
+[   29.487496]  local_pci_probe+0x13f/0x200
 
->> Signed-off-by: Ash Logan <ash@heyquark.com>
->> ---
->>  arch/powerpc/mm/init_32.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/arch/powerpc/mm/init_32.c b/arch/powerpc/mm/init_32.c
->> index 3d690be48e84..59a84629d9a0 100644
->> --- a/arch/powerpc/mm/init_32.c
->> +++ b/arch/powerpc/mm/init_32.c
->> @@ -125,10 +125,10 @@ void __init MMU_init(void)
->>  	 * lowmem_end_addr is initialized below.
->>  	 */
->>  	if (memblock.memory.cnt > 1) {
->> -#ifndef CONFIG_WII
->> +#if !defined(CONFIG_WII) && !defined(CONFIG_WIIU)
->>  		memblock_enforce_memory_limit(memblock.memory.regions[0].size);
->>  		pr_warn("Only using first contiguous memory region\n");
->> -#else
->> +#elif defined(CONFIG_WII)
->>  		wii_memory_fixups();
->>  #endif
->>  	}
->> -- 
->> 2.35.1
->>
+Actually, I made a special virtual device to test this driver, not
+real hardware, so the "lspci" results are irrelevant here.
+I injected a software fault in the pci_iomap() function to force the
+driver to fail here, and then the driver goto "fail" tag, and under
+the "fail" tag the pci_iounmap() is called, resulting in a crash.
+In fact such error handling is incorrect and we should not release
+resources that have not been requested yet.
+
+Thanks,
+Zheyu Ma
