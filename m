@@ -2,154 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56222C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37136C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347776AbiETJmL (ORCPT
+        id S1347823AbiETJmZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
+        Fri, 20 May 2022 05:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347782AbiETJls (ORCPT
+        with ESMTP id S1347807AbiETJmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:41:48 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2BF1498CD;
-        Fri, 20 May 2022 02:41:47 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gh17so1535714ejc.6;
-        Fri, 20 May 2022 02:41:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:subject:to:cc:message-id:in-reply-to:references
-         :mime-version;
-        bh=+Q0QiA7ru6i8BsA9kJw7SZPGcwHJrhsZ4QvZNcEI9Dg=;
-        b=qx0h4A1phm5nsIroUsJwfajaIeD7n912JaN0mRC5EAn8j78j6xSyKlsylTXxCMZuKu
-         eJvfLlqevQHJrDbbh7RkFrgnPLbVyOxA6T9kGy/6LI16CeXYpHply9dWKVG9qsadXonh
-         oan7RSXE4Ywm7kwFwLR7qTXKKepqKeKLatdAyrw8LsA0D3fkmQoEcENyBFUc0pgNnUzv
-         TUhQ/gF8jQ2uG8pFukE4tFlIdVmD2EMpRZTmNRVm5JXZTwwTbDOJSagsWkk/d9WtHaaD
-         AlY40bQ44f2z94SYbbgiGUKxRMvQI2lfY23GPi27X4wixARlyi6KppYRTutH5kuyy17j
-         w/Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:subject:to:cc:message-id:in-reply-to
-         :references:mime-version;
-        bh=+Q0QiA7ru6i8BsA9kJw7SZPGcwHJrhsZ4QvZNcEI9Dg=;
-        b=xunQQkfiWyeLedzfRvS0yQbpHXW5IaFZOkJ+f2Vs36/3Gz5pfmf2QwLqp/KKYp0Om2
-         Km7GYLcvDuey7cslQ2qOpJcxa+pSilGRAXuOpaAmHH3lmWUicbxOcOaoI/1ZlF1qg+Ch
-         t9mIFUNg+TOKmG2HTPPnNkhRA2yofOG07AvB3DwcJ+MHek2rGbpVlegwxEI6xYy07jFJ
-         CRgt1SvB5zFr/Z1r2vSVHL0LOwMlRa9gXBsKZQrNWQSd8L6mg4GZhpT5rHQY5wIiy5o5
-         TWIH1E6lZSCFNGmLlqoZ4bXCGBkMkOEjCAQl/IJlZ+rhW6tGLb0wK23h4X8vZNrrjwH4
-         lFlA==
-X-Gm-Message-State: AOAM533ydAmMN/EdVR1Xborgf5k9PeEvhSPLe+QJoVccydURpMOS3CmR
-        4B+w7XiftOiTjOGkmL8EXZM=
-X-Google-Smtp-Source: ABdhPJx8KoctJFPDI79r21gvLJwl+tekVa1UwU2OiLxDKk1gsbX922JsgN+mWcLDYdoCB7xhEaRD/A==
-X-Received: by 2002:a17:906:1f52:b0:6f4:ebc2:da82 with SMTP id d18-20020a1709061f5200b006f4ebc2da82mr8207315ejk.176.1653039705676;
-        Fri, 20 May 2022 02:41:45 -0700 (PDT)
-Received: from [192.168.151.247] ([138.199.7.159])
-        by smtp.gmail.com with ESMTPSA id z22-20020a170906435600b006f4c4330c49sm2937723ejm.57.2022.05.20.02.41.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 02:41:45 -0700 (PDT)
-Date:   Fri, 20 May 2022 13:41:33 +0400
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-Subject: Re: [PATCH 3/6] clk: mediatek: reset: Return reset data pointer on
- register
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        =?iso-8859-1?q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht
-Message-Id: <9LD6CR.FM55IKDYS0IC2@gmail.com>
-In-Reply-To: <5b5f6656-8694-dc78-ef42-7ce301849aa4@collabora.com>
-References: <20220519134728.456643-1-y.oudjana@protonmail.com>
-        <20220519134728.456643-4-y.oudjana@protonmail.com>
-        <5b5f6656-8694-dc78-ef42-7ce301849aa4@collabora.com>
-X-Mailer: geary/40.0
+        Fri, 20 May 2022 05:42:19 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5A7149AAF;
+        Fri, 20 May 2022 02:42:15 -0700 (PDT)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPA id E74F51C0011;
+        Fri, 20 May 2022 09:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653039734;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9lFUeoVRYN54qYNWAM9UozSrrbHgfx0SB7tDXiiZJ5A=;
+        b=Lx58oJLucHixvC8m5oLSHtXGC1hx0QawumGYKZZJb3mE6D99slrBU0s7z0MX0SpgacG6xg
+        FRRgWSfzmBS/QD4ODxFmEYpbvcjbwuJW5ywPg+pfDeY+/H7vo+PvOvRo/96Shfc7ZPHQHb
+        DLtH3uWstnEbXT7zDWEhQpUbpDLhlAjP9QqSN1/5BqzFnw1/+bPfmwq1e//JvOFLmKBpP+
+        t/koUi8MBIs+OqreFqBmjiZVMhCg8xtoqKihu/pzSZ61QTScWDMTf7ev7Gze250uw6fSSB
+        Z5giGkcdpCv0rk2Gp6hUpl8WXr8PbffVVm8ODFS52u4sYWS+2gFz/VooXhnUvA==
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>
+Subject: [PATCH v6 0/6] RZN1 USB Host support
+Date:   Fri, 20 May 2022 11:41:49 +0200
+Message-Id: <20220520094155.313784-1-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-On Fri, May 20 2022 at 10:42:40 +0200, AngeloGioacchino Del Regno 
-<angelogioacchino.delregno@collabora.com> wrote:
-> Il 19/05/22 15:47, Yassine Oudjana ha scritto:
->> From: Yassine Oudjana <y.oudjana@protonmail.com>
->> 
->> Return a struct mtk_clk_rst_data * when registering a reset
->> controller in preparation for adding an unregister helper
->> that will take it as an argument. Make the necessary changes
->> in drivers that do not currently discard the return value
->> of register functions.
->> 
->> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
-> 
-> Hello Yassine,
-> 
-> Thanks for your efforts on helping to make the MediaTek clocks better 
-> - I agree
-> (and I'm not the only one..) that there's a lot of work to do on this 
-> side.
-> 
-> Though... I don't think that this is the right direction: you're 
-> right about
-> properly unregistering (in patch 4/6) the reset controllers on 
-> rmmod/failure
-> but I'm not sure that this kind of noise brings any benefit.
-> 
-> Explaining:
-> You definitely saw that there's a new register _with_dev, which uses 
-> devm ops
-> and that's going to automatically cleanup in case of removal/failure.
-> This is what we should do.
-> 
-> Hence, my proposal is to drop patch 3/6, 4/6, 5/6 and (slowly, 
-> steadily) migrate
-> all of the MediaTek clocks from CLK_OF_DECLARE() to platform drivers 
-> (which also
-> means that we can eventually change them to tristate!), so that we 
-> slowly remove
-> all users of all functions that are not "_with_dev", and that we 
-> finally remove
-> all of these then-unused functions as well.
+This series add support for the USB Host controllers available on
+RZN1 (r9a06g032) SOC.
 
-I've tried to make small (but hopefully not too small) steps with
-little improvements. Originally in MT6735 clock drivers v1, I only
-added reset controller unregister, and while rebasing on Rex-BC's
-reset cleanup series I found mtk_clk_simple_probe/remove while
-looking for references to mtk_register_reset_controller, so
-I thought of using it for my drivers resulting in this series
-adding support for the extra 4 clock types. I started finding
-other things that could be improved such as the other clock types
-not having register_*_with_dev(), but I had to avoid adding
-anything else since that would only make me find more things to
-improve and this series would've never been finished and sent.
+These USB Host controllers are PCI OHCI/EHCI controllers located
+behind a bridge.
 
-With that said, if these patches could become an obstacle for
-later more complete reworks, then by all means drop them.
+Regards,
+Herve
 
-> 
-> Making sure that I don't get misunderstood:
->      I'm not implying that this huge migration work is on your 
-> shoulders!
-> 
+Changes v2:
+- Convert bindings to json-schema
+- Update clocks description
+- Remove unneeded '.compatible = "renesas,pci-r9a06g032"'
 
-Of course. I would never be able to handle such a large task.
-Everyone currently helping with modernizing this common clock
-framework has my full respect. You are doing amazing work.
+Changes v3:
+- Remove the unneeded patch that calls clk_bulk_prepare_enable()
+- Rework the device tree binding (conversion from .txt and RZ/N1 support)
+- Use the RZ/N1 SOCs family only in the driver match compatible string.
+- Enable PM and PM_GENERIC_DOMAIN for RZ/N1 and add the missing
+  '#power-domain-cells' in sysctrl node.
 
-Thanks,
-Yassine
+Changes v4:
+- Remove patches related to PM enable and #pwower-domain-cells as they
+  will be handle out of this series.
+- Add Bob's reviewed-by on patch 1
+- Add Geert's reviewed by on patch 1 and 6
+- Rename clocks and make the 'resets' property optional on RZ/N1 family
+- Reword some commit logs and titles
+- Fix dst node location (sort by node names or unit addresses)
+- Fix the USB PHY node name
 
+Changes v5:
+- Rename clocks ("usb_" prefix removed)
+- Add Geert's reviewed-by on patch 2, 3, 4 and 5
 
+Changes v6:
+- Include schema optionnal part (ie 'if:') in a 'allOf:' block
+- Modify commit log on commit 2/6
+
+Herve Codina (6):
+  dt-bindings: PCI: pci-rcar-gen2: Convert bindings to json-schema
+  dt-bindings: PCI: renesas,pci-rcar-gen2: Add device tree support for
+    r9a06g032
+  PCI: rcar-gen2: Add RZ/N1 SOCs family compatible string
+  ARM: dts: r9a06g032: Add internal PCI bridge node
+  ARM: dts: r9a06g032: Add USB PHY DT support
+  ARM: dts: r9a06g032: Link the PCI USB devices to the USB PHY
+
+ .../devicetree/bindings/pci/pci-rcar-gen2.txt |  84 --------
+ .../bindings/pci/renesas,pci-rcar-gen2.yaml   | 186 ++++++++++++++++++
+ arch/arm/boot/dts/r9a06g032.dtsi              |  47 +++++
+ drivers/pci/controller/pci-rcar-gen2.c        |   1 +
+ 4 files changed, 234 insertions(+), 84 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pci/pci-rcar-gen2.txt
+ create mode 100644 Documentation/devicetree/bindings/pci/renesas,pci-rcar-gen2.yaml
+
+-- 
+2.35.1
 
