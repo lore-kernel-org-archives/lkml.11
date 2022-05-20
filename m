@@ -2,136 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC2FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B06F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 17:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352148AbiETRWz (ORCPT
+        id S1352162AbiETRXo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 13:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33356 "EHLO
+        Fri, 20 May 2022 13:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345306AbiETRWx (ORCPT
+        with ESMTP id S1352160AbiETRXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 13:22:53 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A70B16D4A9;
-        Fri, 20 May 2022 10:22:52 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 20 May 2022 13:23:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A604018706D
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 10:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653067417;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+mUQhLcxz6TZwVt0puoA8uLFKO7ahYDhUTcQY+6+1vw=;
+        b=IiiDZ1c+PYx9tlAd32lbmsUqEzepZR/dJjsV0ymioZFUAokXdy/CvWg61mThhfUp25fOl8
+        IcIOvMO4O6Lg+DJzpcEi3byNB8YkEzoLIk4FQB9NaMxpB6oqKV8Fy06o+RS9fIhzMtE6tK
+        x4HuGDBqdDPnRpjRGu/GUv4CQhO7RxA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-400-66oEZV14PGix7OSjvRA3fQ-1; Fri, 20 May 2022 13:23:33 -0400
+X-MC-Unique: 66oEZV14PGix7OSjvRA3fQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 050A01F899;
-        Fri, 20 May 2022 17:22:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653067371;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U1vEEBx5l6lck/ZVYtVMS6/WSLGFTxzXzQhGy8n6n1Y=;
-        b=1K0EXYYgwzsP5pttWIVJPO7peR7LU+5/FGwrIehUJrgtYp1b2Z1gmnbsrlrvfd9lUvK2VA
-        zu24tnaYU76hI6QXg7nbkOeg0BgdflDuWpJoTzQjH360AGI4TCOxit8DE29sKLWYXVeAlH
-        Jl7ARw2GtOYQYSYYjCB3PhyECWDOHus=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653067371;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U1vEEBx5l6lck/ZVYtVMS6/WSLGFTxzXzQhGy8n6n1Y=;
-        b=fdfW8UYvFzHZKAsM32Bd+yUPieD8tKqZpNTkU0+Ww4cQ9TxtNrH3v7+6LIxP4Bdiz6Gq/f
-        1Yvz9mmtz7ulOzDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 83B7A13AF4;
-        Fri, 20 May 2022 17:22:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 53QXH2rOh2KIPwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Fri, 20 May 2022 17:22:50 +0000
-Date:   Fri, 20 May 2022 19:18:30 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier.gonz@samsung.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "pankydev8@gmail.com" <pankydev8@gmail.com>,
-        "gost.dev@samsung.com" <gost.dev@samsung.com>,
-        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        "dsterba@suse.com" <dsterba@suse.com>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Adam Manzanares <a.manzanares@samsung.com>
-Subject: Re: [dm-devel] [PATCH v4 00/13] support non power of 2 zoned devices
-Message-ID: <20220520171830.GR18596@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier.gonz@samsung.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
-        Mike Snitzer <snitzer@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Luis Chamberlain <mcgrof@kernel.org>, Theodore Ts'o <tytso@mit.edu>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "pankydev8@gmail.com" <pankydev8@gmail.com>,
-        "gost.dev@samsung.com" <gost.dev@samsung.com>,
-        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        "dsterba@suse.com" <dsterba@suse.com>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>, Keith Busch <kbusch@kernel.org>,
-        Adam Manzanares <a.manzanares@samsung.com>
-References: <YoPAnj9ufkt5nh1G@mit.edu>
- <7f9cb19b-621b-75ea-7273-2d2769237851@opensource.wdc.com>
- <20220519031237.sw45lvzrydrm7fpb@garbanzo>
- <69f06f90-d31b-620b-9009-188d1d641562@opensource.wdc.com>
- <PH0PR04MB74166C87F694B150A5AE0F009BD09@PH0PR04MB7416.namprd04.prod.outlook.com>
- <4a8f0e1b-0acb-1ed4-8d7a-c9ba93fcfd02@opensource.wdc.com>
- <16f3f9ee-7db7-2173-840c-534f67bcaf04@suse.de>
- <20220520062720.wxdcp5lkscesppch@mpHalley-2.localdomain>
- <be429864-09cb-e3fb-2afe-46a3453c4d73@opensource.wdc.com>
- <aee22e8a-b89b-378c-3d5b-238c1215b01d@samsung.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B40E138041D6;
+        Fri, 20 May 2022 17:23:32 +0000 (UTC)
+Received: from eperezma.remote.csb (unknown [10.39.192.124])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 189E1492C14;
+        Fri, 20 May 2022 17:23:27 +0000 (UTC)
+From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
+To:     virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>, martinh@xilinx.com,
+        hanand@xilinx.com, Si-Wei Liu <si-wei.liu@oracle.com>,
+        dinang@xilinx.com, Eli Cohen <elic@nvidia.com>, lvivier@redhat.com,
+        pabloc@xilinx.com, gautam.dawar@amd.com,
+        Xie Yongji <xieyongji@bytedance.com>, habetsm.xilinx@gmail.com,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        tanuj.kamde@amd.com, eperezma@redhat.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        martinpo@xilinx.com, lulu@redhat.com, ecree.xilinx@gmail.com,
+        Parav Pandit <parav@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Subject: [PATCH 0/4] Implement vdpasim stop operation
+Date:   Fri, 20 May 2022 19:23:21 +0200
+Message-Id: <20220520172325.980884-1-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aee22e8a-b89b-378c-3d5b-238c1215b01d@samsung.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 11:30:09AM +0200, Pankaj Raghav wrote:
-> On 5/20/22 08:41, Damien Le Moal wrote:
-> >> Note that for F2FS there is no blocker. Jaegeuk picked the initial
-> >> patches, and he agreed to add native support.
-> > 
-> > And until that is done, f2fs will not work with these new !po2 devices...
-> > Having the new dm will avoid that support fragmentation which I personally
-> > really dislike. With the new dm, we can keep support for *all* zoned block
-> > devices, albeit needing a different setup depending on the device. That is
-> > not nice at all but at least there is a way to make things work continuously.
-> 
-> I see that many people in the community feel it is better to target the
-> dm layer for the initial support of npo2 devices. I can give it a shot
-> and maintain a native out-of-tree support for FSs for npo2 devices and
-> merge it upstream as we see fit later.
+Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer=0D
+that backend feature and userspace can effectively stop the device.=0D
+=0D
+This is a must before get virtqueue indexes (base) for live migration,=0D
+since the device could modify them after userland gets them. There are=0D
+individual ways to perform that action for some devices=0D
+(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no=0D
+way to perform it for any vhost device (and, in particular, vhost-vdpa).=0D
+=0D
+Comments are welcome.=0D
+=0D
+Eugenio P=C3=A9rez (4):=0D
+  vdpa: Add stop operation=0D
+  vhost-vdpa: introduce STOP backend feature bit=0D
+  vhost-vdpa: uAPI to stop the device=0D
+  vdpa_sim: Implement stop vdpa op=0D
+=0D
+ drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++++=0D
+ drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +=0D
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++=0D
+ drivers/vhost/vdpa.c                 | 31 ++++++++++++++++++++++++++++=0D
+ include/linux/vdpa.h                 |  6 ++++++=0D
+ include/uapi/linux/vhost.h           |  3 +++=0D
+ include/uapi/linux/vhost_types.h     |  2 ++=0D
+ 7 files changed, 67 insertions(+)=0D
+=0D
+-- =0D
+2.27.0=0D
+=0D
 
-Some of the changes from your patchset are cleanups or abstracting the
-alignment and zone calculations, so this can be merged to minimize the
-out of tree code.
