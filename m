@@ -2,151 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2758FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E624C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347987AbiETMWC (ORCPT
+        id S1349189AbiETMWg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
+        Fri, 20 May 2022 08:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349291AbiETMVt (ORCPT
+        with ESMTP id S1348670AbiETMWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:21:49 -0400
-X-Greylist: delayed 2803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 05:21:16 PDT
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2724C406;
-        Fri, 20 May 2022 05:21:13 -0700 (PDT)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 89441FF810;
-        Fri, 20 May 2022 12:21:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653049272;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P9/j3N/5Wrep8nEVTKpfSVpG01w0RrIsJwIuJSpfUqk=;
-        b=RfW0rjzcmmERfR5djFuVWqGNNOXEXZH64WSz4zF6bNV8PZOupWqEnejx3YHzGPR+ANVyqf
-        u1X+8G40M4FtwDyht1zoabB49i3jwiatJroTJKQsi8taz+RmQUh7KOjlv3g7H4mwsBkOEX
-        E/2xcdCNRM5z9JO4Qlm5sMWl3Px7hdyoPqweUk79/uJg6x8eq86WoxsWxi9VL98gUDG6wv
-        wt0+qMRqFXeArB91COg4rAgJAMcC6yoywoHCtjeNU8H2BTfoF1zFcuBdcf1kk46rzz6dOu
-        K1/VdbzH87ALHDx9nJLW3gvFjxdEVBf1JMUA+bWEM3Kl7OnBLa1FtUBEnu2L1A==
-Date:   Fri, 20 May 2022 14:21:09 +0200
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 20 May 2022 08:22:31 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CC25FF28;
+        Fri, 20 May 2022 05:22:24 -0700 (PDT)
+X-UUID: ddcb149cd5dd4e0787aa960b5523824f-20220520
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:27d37219-5e39-474c-af1e-a409f0369d02,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:baa2f4e2-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: ddcb149cd5dd4e0787aa960b5523824f-20220520
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1893242791; Fri, 20 May 2022 20:22:20 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Fri, 20 May 2022 20:22:19 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Fri, 20 May 2022 20:22:19 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH 2/3] dt-bindings: usb: atmel: Add Microchip LAN966x
- compatible string
-Message-ID: <20220520142109.57b84da2@bootlin.com>
-In-Reply-To: <b087c34f-0e2f-edd0-a738-3ffc2853a41b@linaro.org>
-References: <20220513105850.310375-1-herve.codina@bootlin.com>
-        <20220513105850.310375-3-herve.codina@bootlin.com>
-        <8f0d4127-7e66-cf50-21c9-99680f737e30@linaro.org>
-        <20220520133426.3b4728ae@bootlin.com>
-        <b087c34f-0e2f-edd0-a738-3ffc2853a41b@linaro.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.31; x86_64-redhat-linux-gnu)
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>, <hsinyi@chromium.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v11 1/3] dt-bindings: arm: mediatek: Add mt8186 pericfg compatible
+Date:   Fri, 20 May 2022 20:22:15 +0800
+Message-ID: <20220520122217.30716-2-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
+References: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Add mt8186 pericfg compatible to binding document.
 
-On Fri, 20 May 2022 13:40:13 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml       | 1 +
+ 1 file changed, 1 insertion(+)
 
-> On 20/05/2022 13:34, Herve Codina wrote:
-> > On Fri, 13 May 2022 14:57:55 +0200
-> > Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> >  =20
-> >> On 13/05/2022 12:58, Herve Codina wrote: =20
-> >>> The USB device controller available in the Microchip LAN966x SOC
-> >>> is the same IP as the one present in the SAMA5D3 SOC.
-> >>>
-> >>> Add the LAN966x compatible string and set the SAMA5D3 compatible
-> >>> string as a fallback for the LAN966x.
-> >>>
-> >>> Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-> >>> ---
-> >>>  Documentation/devicetree/bindings/usb/atmel-usb.txt | 3 +++
-> >>>  1 file changed, 3 insertions(+)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/usb/atmel-usb.txt b/Do=
-cumentation/devicetree/bindings/usb/atmel-usb.txt
-> >>> index f512f0290728..a6fab7d63f37 100644
-> >>> --- a/Documentation/devicetree/bindings/usb/atmel-usb.txt
-> >>> +++ b/Documentation/devicetree/bindings/usb/atmel-usb.txt
-> >>> @@ -87,6 +87,9 @@ Required properties:
-> >>>  	       "atmel,at91sam9g45-udc"
-> >>>  	       "atmel,sama5d3-udc"
-> >>>  	       "microchip,sam9x60-udc"
-> >>> +	       "microchip,lan996x-udc"   =20
-> >>
-> >> No wildcards please, especially that it closely fits previous wildcard
-> >> (lan996x includes lan9960 which looks a lot like sam9x60...)
-> >> =20
-> >=20
-> > Well, first, I made a mistake. It should be lan966x instead of lan996x.
-> >=20
-> > This family is composed of the LAN9662 and the LAN9668 SOCs.
-> >=20
-> > Related to the wilcard, lan966x is used in several bindings for common
-> > parts used by both SOCs:
-> > - microchip,lan966x-gck
-> > - microchip,lan966x-cpu-syscon
-> > - microchip,lan966x-switch
-> > - microchip,lan966x-miim
-> > - microchip,lan966x-serdes
-> > - microchip,lan966x-pinctrl =20
->=20
-> And for new bindings I pointed that it is not preferred, so already few
-> other started using specific compatible.
->=20
-> >=20
-> > I think it makes sense to keep 'microchip,lan966x-udc' for the USB
-> > device controller (same controller on LAN9662 and LAN9668) and so
-> > keeping the same rules as for other common parts. =20
->=20
-> Having wildcard was rather a mistake and we already started correcting
-> it, so keeping the "mistake" neither gives you consistency, nor
-> correctness...
->=20
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
+index 611f666f359d..8585f6f18f69 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
+@@ -26,6 +26,7 @@ properties:
+               - mediatek,mt8135-pericfg
+               - mediatek,mt8173-pericfg
+               - mediatek,mt8183-pericfg
++              - mediatek,mt8186-pericfg
+               - mediatek,mt8195-pericfg
+               - mediatek,mt8516-pericfg
+           - const: syscon
+-- 
+2.18.0
 
-I think that the "family" compatible should be present.
-This one allows to define the common parts in the common
-.dtsi file (lan966x.dtsi in our case).
-
-What do you think about:
-- microchip,lan9662-udc
-- microchip,lan9668-udc
-- microchip,lan966-udc  <-- Family
-
-lan966 is defined as the family compatible string since (1) in
-bindings/arm/atmel-at91.yaml and in Documentation/arm/microchip.rst
-
-(1) https://lore.kernel.org/all/20211004105926.5696-1-kavyasree.kotagiri@mi=
-crochip.com/
-
-Regards,
-Herve
-
---=20
-Herv=C3=A9 Codina, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
