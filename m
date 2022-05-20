@@ -2,123 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F09F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD243C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353340AbiETTwX (ORCPT
+        id S1353347AbiETTwg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 15:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
+        Fri, 20 May 2022 15:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353316AbiETTwO (ORCPT
+        with ESMTP id S1353342AbiETTwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 15:52:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 861CB197F51
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 12:52:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653076332;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QC4HhoSa5ax5VuJxdudrkP+hQQcM6Ir26+NRsLLyTuA=;
-        b=Gy6eba3kYo6WE7murJkD+d8WGdSnfcXDlxD5ZQ8QUaDvG0KBFFnLKd5hugor6BUe4+V0dp
-        vmBmPMEA5Rl6oEAQZo3aTZ8L0JWLkpXS/MTy0UV9np4Uf7IyElRzeHN+pClQFD/3s9aH3R
-        xjcpBOdELecv5R+ZIp3/juRP94GhnkU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-4t-3E9E5PQGx31S7cEd1eQ-1; Fri, 20 May 2022 15:52:06 -0400
-X-MC-Unique: 4t-3E9E5PQGx31S7cEd1eQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5AC1829AB3FB;
-        Fri, 20 May 2022 19:52:04 +0000 (UTC)
-Received: from [10.22.32.226] (unknown [10.22.32.226])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ED99440D2821;
-        Fri, 20 May 2022 19:52:01 +0000 (UTC)
-Message-ID: <f3627eae-f5ae-1d30-2c09-1820a255334a@redhat.com>
-Date:   Fri, 20 May 2022 15:52:01 -0400
+        Fri, 20 May 2022 15:52:33 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A841519C38A;
+        Fri, 20 May 2022 12:52:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=sN/LpPLdT2mbsP7DF3PDcCREB6oSMVQAq5zqlYlmSbg=; b=jkPDL8A4W/pvGUu0xaZAVxejzh
+        rwNPL/9VrA1vhD5VyCfsIbOG+DQhTNF8A90elI7Qkp0XkK9VmorpU7gxvAnHbQKjcGIfrklkj5zEl
+        ID7zK9z4VhTn/P+dbjGNQZaSrsE2l1M2cZG7iaCCc/cGjWpmdEdN2Gkr8hroisd1vaIpuMRPH+blg
+        QJfkh6mQu71Il4vr7Ydq8HgS6gs0qQ1YNUMgnMXWZ1IPbg/YVlz5yB5a5Yhnhl9G2cDWaDr18kE7q
+        KSQ9vE5/5BQO2DUbeIQ1uUKfD+1nrSUWYL9cq1Ujyb80oOCd7IdS6ipvqEjT0yLqWOiDGd8doERdy
+        Hcf8QoQg==;
+Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1ns8fm-00D3rs-3e; Fri, 20 May 2022 21:52:30 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     ardb@kernel.org, linux-efi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
+        keescook@chromium.org, matt@codeblueprint.co.uk,
+        matthew.garrett@nebula.com, tony.luck@intel.com,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: [PATCH 2/2] efi-panic: Introduce the UEFI panic notification module
+Date:   Fri, 20 May 2022 16:50:28 -0300
+Message-Id: <20220520195028.1347426-3-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220520195028.1347426-1-gpiccoli@igalia.com>
+References: <20220520195028.1347426-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 1/5] kallsyms: pass buffer size in sprint_* APIs
-Content-Language: en-US
-To:     Maninder Singh <maninder1.s@samsung.com>, keescook@chromium.org,
-        pmladek@suse.com, bcain@quicinc.com, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com, satishkh@cisco.com,
-        sebaddel@cisco.com, kartilak@cisco.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, mcgrof@kernel.org,
-        jason.wessel@windriver.com, daniel.thompson@linaro.org,
-        dianders@chromium.org, naveen.n.rao@linux.ibm.com,
-        anil.s.keshavamurthy@intel.com, davem@davemloft.net,
-        mhiramat@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        will@kernel.org, boqun.feng@gmail.com, rostedt@goodmis.org,
-        senozhatsky@chromium.org, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, akpm@linux-foundation.org, arnd@arndb.de
-Cc:     linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net, v.narang@samsung.com,
-        onkarnath.1@samsung.com
-References: <20220520083701.2610975-1-maninder1.s@samsung.com>
- <CGME20220520083725epcas5p1c3e2989c991e50603a40c81ccc4982e0@epcas5p1.samsung.com>
- <20220520083701.2610975-2-maninder1.s@samsung.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220520083701.2610975-2-maninder1.s@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/20/22 04:36, Maninder Singh wrote:
-> As of now sprint_* APIs don't pass buffer size as an argument
-> and use sprintf directly.
->
-> To replace dangerous sprintf API to scnprintf,
-> buffer size is required in arguments.
->
-> Co-developed-by: Onkarnath <onkarnath.1@samsung.com>
-> Signed-off-by: Onkarnath <onkarnath.1@samsung.com>
-> Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
-> ---
->   arch/s390/lib/test_unwind.c    |  2 +-
->   drivers/scsi/fnic/fnic_trace.c |  8 ++++----
->   include/linux/kallsyms.h       | 20 ++++++++++----------
->   init/main.c                    |  2 +-
->   kernel/kallsyms.c              | 27 ++++++++++++++++-----------
->   kernel/trace/trace_output.c    |  2 +-
->   lib/vsprintf.c                 | 10 +++++-----
->   7 files changed, 38 insertions(+), 33 deletions(-)
->
-> diff --git a/arch/s390/lib/test_unwind.c b/arch/s390/lib/test_unwind.c
-> index 5a053b393d5c..adbc2b53db16 100644
-> --- a/arch/s390/lib/test_unwind.c
-> +++ b/arch/s390/lib/test_unwind.c
-> @@ -75,7 +75,7 @@ static noinline int test_unwind(struct task_struct *task, struct pt_regs *regs,
->   			ret = -EINVAL;
->   			break;
->   		}
-> -		sprint_symbol(sym, addr);
-> +		sprint_symbol(sym, KSYM_SYMBOL_LEN, addr);
+Despite we have pstore, kdump and other panic-time  mechanisms,
+there's no generic way to let the firmware know a panic event
+happened. Some hypervisors might have special code for that, but
+that's not generic.
 
-Instead of hardcoding KSYM_SYMBOL_LEN everywhere, will it better to hide 
-it like this:
+The UEFI panic notification module hereby proposed aims to fill
+this need: once we face a panic, through the panic notifier
+infrastructure we set a UEFI variable named PanicWarn with a
+value - default is 0xFF, but it's adjustable via module parameter.
+The firmware is then enabled to take a proper action.
 
-         extern int __sprint_symbol(char *buffer, size_t size, unsigned 
-long address);
-         #define sprint_symbol(buf, addr)        __sprint_symbol(buf, 
-sizeof(buf), addr)
+The module also let the users know that last execution likely
+panicked if the UEFI variable is present on module load - then
+it clears that to avoid confusing users, only the last panic
+event is recorded.
 
-Or you can use sizeof(buf) directly instead of KSYM_SYMBOL_LEN.
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+---
+ drivers/firmware/efi/Kconfig     | 10 ++++
+ drivers/firmware/efi/Makefile    |  1 +
+ drivers/firmware/efi/efi-panic.c | 97 ++++++++++++++++++++++++++++++++
+ include/linux/efi.h              |  1 +
+ 4 files changed, 109 insertions(+)
+ create mode 100644 drivers/firmware/efi/efi-panic.c
 
-Cheers,
-Longman
+diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
+index 2c3dac5ecb36..12f2d963333e 100644
+--- a/drivers/firmware/efi/Kconfig
++++ b/drivers/firmware/efi/Kconfig
+@@ -145,6 +145,16 @@ config EFI_BOOTLOADER_CONTROL
+ 	  bootloader reads this reboot reason and takes particular
+ 	  action according to its policy.
+ 
++config EFI_PANIC_NOTIFIER
++	tristate "UEFI Panic Notifier"
++	depends on EFI
++	default n
++	help
++	  With this module, kernel creates the UEFI variable "PanicWarn" if
++	  the system faces a panic event. With that, the firmware is entitled
++	  to take an action if the last kernel panicked; it also shows a
++	  message during boot time if last run faced a panic event.
++
+ config EFI_CAPSULE_LOADER
+ 	tristate "EFI capsule loader"
+ 	depends on EFI && !IA64
+diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
+index c02ff25dd477..abbc7d9af2da 100644
+--- a/drivers/firmware/efi/Makefile
++++ b/drivers/firmware/efi/Makefile
+@@ -26,6 +26,7 @@ obj-$(CONFIG_EFI_RUNTIME_WRAPPERS)	+= runtime-wrappers.o
+ subdir-$(CONFIG_EFI_STUB)		+= libstub
+ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
+ obj-$(CONFIG_EFI_BOOTLOADER_CONTROL)	+= efibc.o
++obj-$(CONFIG_EFI_PANIC_NOTIFIER)	+= efi-panic.o
+ obj-$(CONFIG_EFI_TEST)			+= test/
+ obj-$(CONFIG_EFI_DEV_PATH_PARSER)	+= dev-path-parser.o
+ obj-$(CONFIG_APPLE_PROPERTIES)		+= apple-properties.o
+diff --git a/drivers/firmware/efi/efi-panic.c b/drivers/firmware/efi/efi-panic.c
+new file mode 100644
+index 000000000000..c59655e22fc7
+--- /dev/null
++++ b/drivers/firmware/efi/efi-panic.c
+@@ -0,0 +1,97 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * efi-panic: UEFI panic notification mechanism
++ */
++
++#define pr_fmt(fmt) "efi-panic: " fmt
++
++#include <linux/efi.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/panic_notifier.h>
++
++#define EFI_PANIC_ATTR		(EFI_VARIABLE_NON_VOLATILE |\
++				 EFI_VARIABLE_BOOTSERVICE_ACCESS |\
++				 EFI_VARIABLE_RUNTIME_ACCESS)
++
++#define EFI_DATA_SIZE		(2 * sizeof(efi_char16_t))
++
++static struct efivar_entry *entry;
++
++static u8 panic_warn_val = 0xFF;
++module_param(panic_warn_val, byte, 0644);
++MODULE_PARM_DESC(panic_warn_val,
++		 "Value written to PanicWarn efivar on panic event [default=0xFF]");
++
++static int efi_panic_cb(struct notifier_block *nb, unsigned long ev,
++			void *unused)
++{
++	int ret;
++
++	efi_str8_to_str16((efi_char16_t *)entry->var.Data, &panic_warn_val, 1);
++	ret = efivar_entry_set_safe(entry->var.VariableName,
++				    entry->var.VendorGuid,
++				    EFI_PANIC_ATTR, false, EFI_DATA_SIZE,
++				    entry->var.Data);
++	if (ret)
++		pr_err("failed to notify panic to UEFI\n");
++
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block efi_panic_notifier = {
++	.notifier_call = efi_panic_cb,
++};
++
++static int __init efi_panic_init(void)
++{
++	efi_guid_t guid = LINUX_EFI_PANIC_WARN_GUID;
++	unsigned long sz = EFI_DATA_SIZE;
++	const char *name = "PanicWarn";
++	u8 data[EFI_DATA_SIZE];
++	int err;
++
++	if (!efivars_kobject() || !efivar_supports_writes()) {
++		pr_err("UEFI vars not available (or not writable)\n");
++		return -ENODEV;
++	}
++
++	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
++	if (!entry)
++		return -ENOMEM;
++
++	memcpy(&entry->var.VendorGuid, &guid, sizeof(guid));
++	efi_str8_to_str16(entry->var.VariableName, name, strlen(name));
++
++	err = efivar_entry_get(entry, NULL, &sz, (void *)data);
++
++	if (!err) {
++		pr_info("previous kernel (likely) had a panic\n");
++
++		if (__efivar_entry_delete(entry))
++			pr_err("cannot delete %s UEFI variable\n", name);
++
++		memset(entry->var.Data, 0, EFI_DATA_SIZE);
++	} else {
++		if (err != -ENOENT)
++			pr_err("can't read the UEFI variables (err=%d)\n", err);
++	}
++
++	atomic_notifier_chain_register(&panic_notifier_list,
++				       &efi_panic_notifier);
++
++	return 0;
++}
++module_init(efi_panic_init);
++
++static void __exit efi_panic_exit(void)
++{
++	atomic_notifier_chain_unregister(&panic_notifier_list,
++					 &efi_panic_notifier);
++	kfree(entry);
++}
++module_exit(efi_panic_exit);
++
++MODULE_AUTHOR("Guilherme G. Piccoli <gpiccoli@igalia.com>");
++MODULE_DESCRIPTION("UEFI Panic Notification Mechanism");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index 066ebc5bcb2a..4219f3d44183 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -365,6 +365,7 @@ void efi_native_runtime_setup(void);
+ #define EFI_GLOBAL_VARIABLE_GUID		EFI_GUID(0x8be4df61, 0x93ca, 0x11d2,  0xaa, 0x0d, 0x00, 0xe0, 0x98, 0x03, 0x2b, 0x8c)
+ #define UV_SYSTEM_TABLE_GUID			EFI_GUID(0x3b13a7d4, 0x633e, 0x11dd,  0x93, 0xec, 0xda, 0x25, 0x56, 0xd8, 0x95, 0x93)
+ #define LINUX_EFI_CRASH_GUID			EFI_GUID(0xcfc8fc79, 0xbe2e, 0x4ddc,  0x97, 0xf0, 0x9f, 0x98, 0xbf, 0xe2, 0x98, 0xa0)
++#define LINUX_EFI_PANIC_WARN_GUID		EFI_GUID(0x9e85b665, 0x08d4, 0x42c9,  0x83, 0x24, 0x47, 0xed, 0x5f, 0xe5, 0x0b, 0xf3)
+ #define LOADED_IMAGE_PROTOCOL_GUID		EFI_GUID(0x5b1b31a1, 0x9562, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
+ #define EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID	EFI_GUID(0x9042a9de, 0x23dc, 0x4a38,  0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a)
+ #define EFI_UGA_PROTOCOL_GUID			EFI_GUID(0x982c298b, 0xf4fa, 0x41cb,  0xb8, 0x38, 0x77, 0xaa, 0x68, 0x8f, 0xb8, 0x39)
+-- 
+2.36.0
 
