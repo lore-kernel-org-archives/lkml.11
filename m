@@ -2,168 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5046C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 23:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A16C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 23:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354078AbiETX00 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 19:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37432 "EHLO
+        id S241628AbiETXaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 19:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354068AbiETX0X (ORCPT
+        with ESMTP id S229733AbiETXaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 19:26:23 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178AE65426
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 16:26:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653089181; x=1684625181;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kVjmWwMEvCixYbw/9qk9PdvBuagh38ipestoWpqf7to=;
-  b=EmCgryBwn5wdlVd5Yb+B8Tliyvr+SzixrhWqfUPUYA5JkssD0D+L2bpR
-   81ZJT0INq1kR/VEDFRcY93V3zyoZsxnrykof1kZ/DHD30bYP0splOS+B6
-   SdKlNc4vZxs5vK5p/L5wHV5Dmuv4L1O1wJtP6EYjbpBlxiJkHlJANF0w+
-   MbEzMZuXvzALcKtbDD3yHQLIe192rwPfwPgIkouywLkH/NW83YzETuEPa
-   OydHT+G3IGhsTxeDb/huGg98C/RVqbk0IzVrUk/lwAx/PNVcuqfPSThEc
-   w53Ctuedoa2zoEbmYUHpGQSAdoaMnI2FYAs+29NbyoQbOXuT4d9RUAfRk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="272896064"
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="272896064"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 16:26:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="743717635"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 20 May 2022 16:26:19 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nsC0g-0005bq-Do;
-        Fri, 20 May 2022 23:26:18 +0000
-Date:   Sat, 21 May 2022 07:25:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Saleem Abdulrasool <abdulras@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmerdabbelt@google.com>
-Subject: arch/riscv/kernel/signal.c:197:28: error: use of undeclared
- identifier '__vdso_rt_sigreturn_offset'
-Message-ID: <202205210713.al93bRN0-lkp@intel.com>
+        Fri, 20 May 2022 19:30:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0251A6ADF;
+        Fri, 20 May 2022 16:30:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C83461E4A;
+        Fri, 20 May 2022 23:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C0FC385A9;
+        Fri, 20 May 2022 23:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653089417;
+        bh=P2DRkR32s1NsMQQYdV69P9AP9FWKxnSxvUzmxP2UTfM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LFVuDPyLOIgq5/gp0vFI0m4iG1e6x7YD5eJ2kPMDn/VIcatZdMgpdluKZy2mBMZtX
+         knxjLbbEso3dCFrNebOOFKdAI8LwT4dJgGhOJm0J9UDgxgEz0TEd6Jbl2o+xbR3CUS
+         25aFWx7YU6EJrRjgiTdkw6hIHgKn4pMbqEhrnhPT3lr1XZem18X+i9CJYpSUqAo2MR
+         lSj3XRTDdBM2zh5y66b3X4FnmTZdSgYfXMYP341H0lCORsBOqduq79NwUbybfr11V8
+         8W6wKgpEo+Jk4S0RbRD+kqLMWsMdtEdrl2+TNQ53v8kkyvD4do9AgaQYwRbchQS+wS
+         p3UuzRLAmIJEw==
+Date:   Fri, 20 May 2022 16:30:14 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Rob Herring <robh@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Thierry Reding <treding@nvidia.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, kernel-team@android.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver
+ registration
+Message-ID: <YogkhvFGVcjNQ21Z@dev-arch.thelio-3990X>
+References: <20220429220933.1350374-1-saravanak@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220429220933.1350374-1-saravanak@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Saleem,
+Hi Saravana,
 
-FYI, the error/warning still remains.
+On Fri, Apr 29, 2022 at 03:09:32PM -0700, Saravana Kannan wrote:
+> The deferred probe timer that's used for this currently starts at
+> late_initcall and runs for driver_deferred_probe_timeout seconds. The
+> assumption being that all available drivers would be loaded and
+> registered before the timer expires. This means, the
+> driver_deferred_probe_timeout has to be pretty large for it to cover the
+> worst case. But if we set the default value for it to cover the worst
+> case, it would significantly slow down the average case. For this
+> reason, the default value is set to 0.
+> 
+> Also, with CONFIG_MODULES=y and the current default values of
+> driver_deferred_probe_timeout=0 and fw_devlink=on, devices with missing
+> drivers will cause their consumer devices to always defer their probes.
+> This is because device links created by fw_devlink defer the probe even
+> before the consumer driver's probe() is called.
+> 
+> Instead of a fixed timeout, if we extend an unexpired deferred probe
+> timer on every successful driver registration, with the expectation more
+> modules would be loaded in the near future, then the default value of
+> driver_deferred_probe_timeout only needs to be as long as the worst case
+> time difference between two consecutive module loads.
+> 
+> So let's implement that and set the default value to 10 seconds when
+> CONFIG_MODULES=y.
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Kevin Hilman <khilman@kernel.org>
+> Cc: Thierry Reding <treding@nvidia.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   3b5e1590a26713a8c76896f0f1b99f52ec24e72f
-commit: fde9c59aebafb91caeed816cc510b56f14aa63ae riscv: explicitly use symbol offsets for VDSO
-date:   9 months ago
-config: riscv-randconfig-r042-20220519 (https://download.01.org/0day-ci/archive/20220521/202205210713.al93bRN0-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e00cbbec06c08dc616a0d52a20f678b8fbd4e304)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fde9c59aebafb91caeed816cc510b56f14aa63ae
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout fde9c59aebafb91caeed816cc510b56f14aa63ae
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+I bisected a boot hang with ARCH=s390 defconfig in QEMU down to this
+change as commit 2b28a1a84a0e ("driver core: Extend deferred probe
+timeout on driver registration") in next-20220520 (bisect log below).
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+$ make -skj"$(nproc)" ARCH=s390 CROSS_COMPILE=s390x-linux-gnu- defconfig bzImage
 
-All errors (new ones prefixed by >>):
+$ timeout --foreground 15m stdbuf -oL -eL \
+qemu-system-s390x \
+-initrd ... \
+-M s390-ccw-virtio \
+-display none \
+-kernel arch/s390/boot/bzImage \
+-m 512m \
+-nodefaults \
+-serial mon:stdio
+...
+[    2.077303] In-situ OAM (IOAM) with IPv6
+[    2.077639] NET: Registered PF_PACKET protocol family
+[    2.078063] bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
+[    2.078795] Key type dns_resolver registered
+[    2.079317] cio: Channel measurement facility initialized using format extended (mode autodetected)
+[    2.081494] Discipline DIAG cannot be used without z/VM
+[  260.626363] random: crng init done
+qemu-system-s390x: terminating on signal 15 from pid 3815762 (timeout)
 
->> arch/riscv/kernel/signal.c:197:28: error: use of undeclared identifier '__vdso_rt_sigreturn_offset'
-           regs->ra = (unsigned long)VDSO_SYMBOL(
-                                     ^
-   arch/riscv/include/asm/vdso.h:20:42: note: expanded from macro 'VDSO_SYMBOL'
-           (void __user *)((unsigned long)(base) + __vdso_##name##_offset)
-                                                   ^
-   <scratch space>:204:1: note: expanded from here
-   __vdso_rt_sigreturn_offset
-   ^
-   arch/riscv/kernel/signal.c:309:27: warning: no previous prototype for function 'do_notify_resume' [-Wmissing-prototypes]
-   asmlinkage __visible void do_notify_resume(struct pt_regs *regs,
-                             ^
-   arch/riscv/kernel/signal.c:309:22: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   asmlinkage __visible void do_notify_resume(struct pt_regs *regs,
-                        ^
-                        static 
-   1 warning and 1 error generated.
+We have a simple rootfs available if necessary:
 
+https://github.com/ClangBuiltLinux/boot-utils/raw/bc0d17785eb67f1edd0ee0a134970a807895f741/images/s390/rootfs.cpio.zst
 
-vim +/__vdso_rt_sigreturn_offset +197 arch/riscv/kernel/signal.c
+If there is any other information I can provide, please let me know!
 
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  173  
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  174  static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  175  	struct pt_regs *regs)
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  176  {
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  177  	struct rt_sigframe __user *frame;
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  178  	long err = 0;
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  179  
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  180  	frame = get_sigframe(ksig, regs, sizeof(*frame));
-96d4f267e40f95 Linus Torvalds    2019-01-03  181  	if (!access_ok(frame, sizeof(*frame)))
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  182  		return -EFAULT;
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  183  
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  184  	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  185  
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  186  	/* Create the ucontext. */
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  187  	err |= __put_user(0, &frame->uc.uc_flags);
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  188  	err |= __put_user(NULL, &frame->uc.uc_link);
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  189  	err |= __save_altstack(&frame->uc.uc_stack, regs->sp);
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  190  	err |= setup_sigcontext(frame, regs);
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  191  	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  192  	if (err)
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  193  		return -EFAULT;
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  194  
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  195  	/* Set up to return from userspace. */
-6bd33e1ece528f Christoph Hellwig 2019-10-28  196  #ifdef CONFIG_MMU
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10 @197  	regs->ra = (unsigned long)VDSO_SYMBOL(
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  198  		current->mm->context.vdso, rt_sigreturn);
-6bd33e1ece528f Christoph Hellwig 2019-10-28  199  #else
-6bd33e1ece528f Christoph Hellwig 2019-10-28  200  	/*
-6bd33e1ece528f Christoph Hellwig 2019-10-28  201  	 * For the nommu case we don't have a VDSO.  Instead we push two
-6bd33e1ece528f Christoph Hellwig 2019-10-28  202  	 * instructions to call the rt_sigreturn syscall onto the user stack.
-6bd33e1ece528f Christoph Hellwig 2019-10-28  203  	 */
-6bd33e1ece528f Christoph Hellwig 2019-10-28  204  	if (copy_to_user(&frame->sigreturn_code, __user_rt_sigreturn,
-6bd33e1ece528f Christoph Hellwig 2019-10-28  205  			 sizeof(frame->sigreturn_code)))
-6bd33e1ece528f Christoph Hellwig 2019-10-28  206  		return -EFAULT;
-6bd33e1ece528f Christoph Hellwig 2019-10-28  207  	regs->ra = (unsigned long)&frame->sigreturn_code;
-6bd33e1ece528f Christoph Hellwig 2019-10-28  208  #endif /* CONFIG_MMU */
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  209  
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  210  	/*
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  211  	 * Set up registers for signal handler.
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  212  	 * Registers that we don't modify keep the value they had from
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  213  	 * user-space at the time we took the signal.
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  214  	 * We always pass siginfo and mcontext, regardless of SA_SIGINFO,
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  215  	 * since some things rely on this (e.g. glibc's debug/segfault.c).
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  216  	 */
-a4c3733d32a72f Christoph Hellwig 2019-10-28  217  	regs->epc = (unsigned long)ksig->ka.sa.sa_handler;
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  218  	regs->sp = (unsigned long)frame;
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  219  	regs->a0 = ksig->sig;                     /* a0: signal number */
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  220  	regs->a1 = (unsigned long)(&frame->info); /* a1: siginfo pointer */
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  221  	regs->a2 = (unsigned long)(&frame->uc);   /* a2: ucontext pointer */
-e2c0cdfba7f699 Palmer Dabbelt    2017-07-10  222  
+Cheers,
+Nathan
 
-:::::: The code at line 197 was first introduced by commit
-:::::: e2c0cdfba7f69925afc92b20cd9835d81e11a4f1 RISC-V: User-facing API
-
-:::::: TO: Palmer Dabbelt <palmer@dabbelt.com>
-:::::: CC: Palmer Dabbelt <palmer@dabbelt.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+# bad: [18ecd30af1a8402c162cca1bd58771c0e5be7815] Add linux-next specific files for 20220520
+# good: [b015dcd62b86d298829990f8261d5d154b8d7af5] Merge tag 'for-5.18/parisc-4' of git://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux
+git bisect start '18ecd30af1a8402c162cca1bd58771c0e5be7815' 'b015dcd62b86d298829990f8261d5d154b8d7af5'
+# good: [f9b63740b666dd9887eb0282d21b5f65bb0cadd0] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git
+git bisect good f9b63740b666dd9887eb0282d21b5f65bb0cadd0
+# good: [1f5eb3e76303572f0318e8c50da51c516580aa03] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
+git bisect good 1f5eb3e76303572f0318e8c50da51c516580aa03
+# bad: [4c1d9cc0363691893ef94fa0d798faca013e27d3] Merge branch 'staging-next' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git
+git bisect bad 4c1d9cc0363691893ef94fa0d798faca013e27d3
+# bad: [dcb68304485c0ba5f84f1a54687c751b68263d93] Merge branch 'usb-next' of git://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git
+git bisect bad dcb68304485c0ba5f84f1a54687c751b68263d93
+# good: [61271996dc46aecb40fd26f89a4ec0a6bd8f3a8f] Merge branch 'next' of git://git.kernel.org/pub/scm/virt/kvm/kvm.git
+git bisect good 61271996dc46aecb40fd26f89a4ec0a6bd8f3a8f
+# good: [d4db45a71f56032b552e161968bb0e5fdd2767f8] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git
+git bisect good d4db45a71f56032b552e161968bb0e5fdd2767f8
+# good: [d090c7a2ab84663185e4abda21d7d83880937c8a] USB / dwc3: Fix a checkpatch warning in core.c
+git bisect good d090c7a2ab84663185e4abda21d7d83880937c8a
+# bad: [b232b02bf3c205b13a26dcec08e53baddd8e59ed] driver core: fix deadlock in __device_attach
+git bisect bad b232b02bf3c205b13a26dcec08e53baddd8e59ed
+# good: [4c32174a24759d5ac6dc42b508fcec2afb8b9602] Documentation: dd: Use ReST lists for return values of driver_deferred_probe_check_state()
+git bisect good 4c32174a24759d5ac6dc42b508fcec2afb8b9602
+# good: [38ea74eb8fc1b82b39e13a6527095a0036539117] rpmsg: use local 'dev' variable
+git bisect good 38ea74eb8fc1b82b39e13a6527095a0036539117
+# good: [1f7ff11ca68f464b6a9a71b8fbe9e5219e7cac57] driver core: location: Add "back" as a possible output for panel
+git bisect good 1f7ff11ca68f464b6a9a71b8fbe9e5219e7cac57
+# good: [6ee60e9c9f2f83ad218159af6a175c57a395ae69] MAINTAINERS: add Russ Weight as a firmware loader maintainer
+git bisect good 6ee60e9c9f2f83ad218159af6a175c57a395ae69
+# bad: [15f214f9bdb7c1f560b4bf863c5a72ff53b442a4] topology: Remove unused cpu_cluster_mask()
+git bisect bad 15f214f9bdb7c1f560b4bf863c5a72ff53b442a4
+# bad: [2b28a1a84a0eb3412bad1a2d5cce2bb4addec626] driver core: Extend deferred probe timeout on driver registration
+git bisect bad 2b28a1a84a0eb3412bad1a2d5cce2bb4addec626
+# first bad commit: [2b28a1a84a0eb3412bad1a2d5cce2bb4addec626] driver core: Extend deferred probe timeout on driver registration
