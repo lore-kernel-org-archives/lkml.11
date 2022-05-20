@@ -2,181 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A62F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347375AbiETIkL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
+        id S244428AbiETImE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 04:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347278AbiETIjM (ORCPT
+        with ESMTP id S1347397AbiETIlc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:39:12 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B059E9F7;
-        Fri, 20 May 2022 01:39:05 -0700 (PDT)
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220520083904epoutp01d633c5bcdcb6da73271b21c597906494~ww27ZggBF2627726277epoutp01N;
-        Fri, 20 May 2022 08:39:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220520083904epoutp01d633c5bcdcb6da73271b21c597906494~ww27ZggBF2627726277epoutp01N
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1653035944;
-        bh=2237/Ofuxqe67/VYFRa9P3BISgr2hp9724ybcz8E9F4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u8EuLCU4damLDZX89+GSfa5zldk34IKUPwDaK6R19ZlesjN7mpBhJsbdnTTWC3qDM
-         fObGoLvRtp1uMLJfVvZnPfccUAhB8mogz6NlgreqwZCLKObcXlegTji+lQFr2s3Flw
-         pokB64aAUXpFmH+syf18ARawGRcf2nl2fHB5465I=
-Received: from epsmges5p2new.samsung.com (unknown [182.195.42.74]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220520083903epcas5p3adf18f19c5ed99372f394308244c18ae~ww26m8o2E0240402404epcas5p3-;
-        Fri, 20 May 2022 08:39:03 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        3F.B5.09827.7A357826; Fri, 20 May 2022 17:39:03 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220520083733epcas5p4ff2414309bf128f40b0bbd3adde52297~ww1nQxUww1594815948epcas5p4M;
-        Fri, 20 May 2022 08:37:33 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220520083733epsmtrp1ebe1d16f82b71ff5466e4767a66bb9a8~ww1nPCU0l0237202372epsmtrp1R;
-        Fri, 20 May 2022 08:37:33 +0000 (GMT)
-X-AuditID: b6c32a4a-b3bff70000002663-8c-628753a72e5d
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        12.FB.11276.D4357826; Fri, 20 May 2022 17:37:33 +0900 (KST)
-Received: from localhost.localdomain (unknown [107.109.224.44]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220520083725epsmtip23ee302e3ef5a51c52121b1c30ddb4167~ww1f26llB3055130551epsmtip2R;
-        Fri, 20 May 2022 08:37:25 +0000 (GMT)
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     keescook@chromium.org, pmladek@suse.com, bcain@quicinc.com,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com, satishkh@cisco.com,
-        sebaddel@cisco.com, kartilak@cisco.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, mcgrof@kernel.org,
-        jason.wessel@windriver.com, daniel.thompson@linaro.org,
-        dianders@chromium.org, naveen.n.rao@linux.ibm.com,
-        anil.s.keshavamurthy@intel.com, davem@davemloft.net,
-        mhiramat@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        will@kernel.org, longman@redhat.com, boqun.feng@gmail.com,
-        rostedt@goodmis.org, senozhatsky@chromium.org,
-        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
-        akpm@linux-foundation.org, arnd@arndb.de
-Cc:     linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net, v.narang@samsung.com,
-        onkarnath.1@samsung.com, Maninder Singh <maninder1.s@samsung.com>
-Subject: [PATCH 2/5] kallsyms: replace sprintf with scnprintf
-Date:   Fri, 20 May 2022 14:06:58 +0530
-Message-Id: <20220520083701.2610975-3-maninder1.s@samsung.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220520083701.2610975-1-maninder1.s@samsung.com>
+        Fri, 20 May 2022 04:41:32 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E2763BDC
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:41:30 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id w14so13079251lfl.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:41:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mOM3/bXCDSJ92n64FbMH5hkxby+aWy4nmII/rMMLa6s=;
+        b=aBTsMjpo5a0JI53DGkowLuB+EgUd542Asyjlt9vBPtUGTaLS6s199Hqs9zX1zVmDHf
+         ni9SWEsIYw4KfL41gYhFHrDDvkijSNH0TfSUH+Avfx0HKUak1vMNkrVlUlC9T26x9W7/
+         ksEArMkLaCAo6g84mSV1nvezZXN6WnfK1/4VhPNX0F7M/SNGDo+3UOQNObkjPMjfg0X1
+         BZBwiF5AMoD/Uq8ET5Ytcu/1oeIAwdDbZVMgwW9kyh9Y4sumDOA09NsgKsSJRPnK/+zA
+         JpzVAsAEdJJjA+tWHv+2WK/4rkYoacjsa6C8OR1Ru2DEaSbroriOhbXVEx1Rmb5WXA4q
+         fSVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mOM3/bXCDSJ92n64FbMH5hkxby+aWy4nmII/rMMLa6s=;
+        b=UUE9PQyXqR+f4Mfa4S4Raihwbcf1fI/iGi2KZmNYgyxrl64dt+j9tuSV3vGpBaz09+
+         DYDzkIrqMSy3lZzFEGfe5XuGQWyHGQwZhJrYxtogYKdOSiK4lXHfLZmssTl+MnuXbIQH
+         LY+upXRIJex/S3Yy8e4kE5rz94jkPtJVK1WFKQ37Q0fnNgGhcNmb28ZRWh9KPWFaCxW2
+         x5yvtCuXKd8EN7aohUCjbiFwPH37DLuypnOk/hn6QfTSWMpoKkOyGENssdC4w8qTVfl9
+         Yfej/drw2/eL4El4XvSGkxU5eCSjVTAtUwdYiLfM1SoBABn5tSPEAP6U5XKcVfyC/7aG
+         6jwg==
+X-Gm-Message-State: AOAM531jtoynR9YE8i3oLWHbCXAah8Jxtx1mPEvelwVNnvYXTQIhMa4P
+        hm1UbKw7wmwqe909cDgwI+Y7ZQLDnjdWaivm1pnUlg==
+X-Google-Smtp-Source: ABdhPJwESBHW/XZ/646NXd8royKCOv0R5aOPj1t/RZqKCDp/1YjSS8L0pS0nqqPng00EAJzWLMS4/pUqepkrCBNINew=
+X-Received: by 2002:a05:6512:696:b0:473:a6ef:175d with SMTP id
+ t22-20020a056512069600b00473a6ef175dmr6305530lfe.540.1653036088376; Fri, 20
+ May 2022 01:41:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Te0xTVxzHd27vo9QUr4jxDHQCGWwwrejEnS0oc/i4sGzBOI1blsyiN8Cg
-        wKiKM1lWoPJGkeGAUgoFZ+VVBAtDWpSH8hglrEjkMZhgwcE0Gy9BaZBRLmb+9znfR37nd5LD
-        59klUQ78kPDTbFS4OMyFFOA1ze4e2zRHEgI9R7NtUGXHBImUFWUkSovNwpB+/A8cLWa0UGhE
-        L8fRZOwFHirTxWDIvNhEIuPTIQopu5aNzmuNJPpdMUegJ6oSgMwtOgwV9tVgqL9UiowpEiSv
-        NBHIUN+Oo3/ltSS6X6ckkSx3nkDp6jgeSuld1swKFYks8y8J1NHShqPm/HgcaVpfYqgvfQyg
-        Io0b6m4owJBOtjy5NHORQtdTJwlUdreIQq1pDRhaMj8j0O3EYQwZf8kFKGUhByB9ZSGJrlWU
-        U6ipPQ8g+aDXxyLGspABmFyZCWcyLZUEoyvux5jCCRnO3FIMUYz89gDF3LzuwRQZJjAm9amc
-        YKpKkkhm8IGBZNqyLTiTXtgAGFX7YaYrWw0CHL4SeJ9iw0LOslHb954QBPdoS6nIRNtzurEW
-        Qgaq1iQDGz6kd8GbyfFEMhDw7Wg9gL/GGUirYUdPAzh95TzHcwC+aAhNBvyVwvOxA1y+HsB8
-        YyvOHWYBjGlMXSmTtAiW1BlwK9vTlSScM35mDfHoIQxqxycpq7Ge3gMLZiswK+O0K6yb1azo
-        QnovnDGrKe56W2BO9/wK29A+sO+fQZzLrIPtOaMrzFvOxFXn8qwDIN0ogNXjD1fL+6G+8zHJ
-        8Xr4d6tuVXeAE5fiKW6daFid/iPXlQN4R5m5mveBoyY1Yc3waHdYUbedkzfDK79pMW6uLUyz
-        jGKcLoS1qlfsCuX9NwiOHeHM1BTOMQOfaLoo7rUyAMxVXabSgZPitX0Ur+2j+H90AeCVgDfZ
-        SKkkiJV6Re4MZ6NFUrFEeiY8SHQyQlIFVn6Lh38tGBmeFDUBjA+aAOTzXOyFQCIPtBOeEn9/
-        no2K+CbqTBgrbQKOfNxlo5Beigm0o4PEp9lQlo1ko165GN/GQYat86rOcg74y/Z4hmxN/eeN
-        j2IHojfkXy4p3lpRKSt2yYKJJaafjfsOT7vi7uhFt7ixp/frXZ1B3qLig0V+P1Qt3TviEVd9
-        9Us30eDdkTsuSUmlkqk82VX+znlLX8K9CZXFe9/uT5rhxRMdU0c/6l+QxMouvf1+87c70tam
-        2GuLyGPNG3bnDXxa3LnVz+2A8qKNNrDsoP/JY/k9/vH9M3Nbnmn/VLYJ33F22tQVenaTYUlt
-        6TUd0hlHHNWz5hrNnhvvPvrJ38k3LHzM09Pki3rTY89hvsdN5Qn233W99fBowFqzR+cX26L1
-        bwQ7P3Ae/tAPPNbdCrkveH5o436f8IgLmzvJ8vc+cMGlweIdHrwoqfg/NRNEd5wEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SfVDTdRzH+/6ewZY/gTt/wiW1K0rUEWXyOc9gfxT+otMUu9OzOhj5u+m5
-        IbchKWVNXLJ4MNRdsgeQgYA8Pw9ikxvQTSbzQCGBhC5bBFw7xJQICIiH687/Xp/P+3Wf9z8f
-        BvezkYHM8cRkQZUoU4gpX8LaKQ7evvdgesIb091iqOueoMBcU0lBdtpVDGzjDwhYuOyk4aFN
-        S8BU2jc4VDaew8Cz0EGB2ztCg7lnObhT0k5Br/FvEv7ML0fgcTZiUDhoxWCoQg3uTCVo6+6S
-        YL/pIuCRtoWCvlYzBRrTDAk5lvM4ZA4s7zzGfArmZxZJ6HZ2EdB57QIBpbcWMRjMGUVQVBoC
-        9xwFGDRqlpsr9As03MiaIqHyxyIabmU7MFjyTJPQpvsVA3exCUHmnAGBra6QgpKaKho6XHkI
-        tMNvSyX8/NxlxJs0dwleP19H8o1lQxhfOKEh+B+MIzSvbfuZ5htuhPJF9gmMz/JqSb6+/FuK
-        H75vp/iu3HmCzyl0ID7fdYDvybWg/YFHfHcfFRTHUwRVWGS877H+6go6SffC6cZRJ6lB9esy
-        EMNw7A7un9H3MpAP48faENeS9soKc2wQN7v4iFhjf65scYxec/5CXF/7JytMsRKuvNW+7Pgy
-        AewIxf2RfpFeGXB2DONqH3bhK5Y/+w5X8LQGW2GCfZVrfVq6eknERnJPPBZ6rSGYM9ybWWUf
-        NoobnBwm1toiOafeQq35GziX4ffVPb7sn28y4TmINT4TGZ+JChBWjjYJSWqlXKkOTwpPFD6X
-        qGVK9alEueSzk8p6tPpfoVtaUHP5lKQDYQzqQByDiwNESKlN8BMdlZ1JFVQn41SnFIK6AwUx
-        hHijqDfDFefHymXJwglBSBJU/6cY4xOowfSZU7+4i2YlTWe7Mr8r2Ox/u8ZQ2VWqq00feJ4c
-        ZaVDe56MXLsef0VrqV3ouRL0xYN9ER9UdZ6J+thXLq1akmZtqThscocthOShHOdrd3rtebrN
-        ou+bFW9tPWu78GnsNOGwzm1sMDhu4gV4fNDh6B0vx6QOvH4geiziK0t1+6Hcr9v6FCneTc9F
-        t71rjY29lBKhN20IqjLL+9dP/rQ9bVwe4B3ZuquJyd5b/+KJnZJiZ8njlOrbBnzykM/SR2X7
-        T0ddbYMGRn/ElpravGu2OGSiP3o2wcjHHUw+tzvspXGv7nHVm0ytfNtFxzbzlPTD34LL0J5/
-        Y2Ka72dYr8fttL5v/3KdmFAfk4WH4iq17D/cxLrazgMAAA==
-X-CMS-MailID: 20220520083733epcas5p4ff2414309bf128f40b0bbd3adde52297
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20220520083733epcas5p4ff2414309bf128f40b0bbd3adde52297
-References: <20220520083701.2610975-1-maninder1.s@samsung.com>
-        <CGME20220520083733epcas5p4ff2414309bf128f40b0bbd3adde52297@epcas5p4.samsung.com>
+References: <000000000000f0da6305cb1feacb@google.com> <15a67989-9ad7-11ef-9472-8e16ca6ec11a@kernel.dk>
+In-Reply-To: <15a67989-9ad7-11ef-9472-8e16ca6ec11a@kernel.dk>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Fri, 20 May 2022 10:41:16 +0200
+Message-ID: <CACT4Y+bNGPfF-z-9fxCXQO7huMJ=yCknWm_-H=7CJNvKOne3qA@mail.gmail.com>
+Subject: Re: [syzbot] general protection fault in __io_arm_poll_handler
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     syzbot <syzbot+ba74b85fa15fd7a96437@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        syzkaller <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-replace sprintf API with scnprintf which prevents buffer overflow.
+On Sat, 4 Sept 2021 at 02:49, Jens Axboe <axboe@kernel.dk> wrote:
+>
+> On 9/3/21 5:47 PM, syzbot wrote:
+> > Hello,
+> >
+> > syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+> >
+> > Reported-and-tested-by: syzbot+ba74b85fa15fd7a96437@syzkaller.appspotmail.com
+> >
+> > Tested on:
+> >
+> > commit:         31efe48e io_uring: fix possible poll event lost in mul..
+> > git tree:       git://git.kernel.dk/linux-block for-5.15/io_uring
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=914bb805fa8e8da9
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=ba74b85fa15fd7a96437
+> > compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.1
+> >
+> > Note: testing is done by a robot and is best-effort only.
+>
+> Dmitry, I wonder if there's a way to have syzbot know about what it's
+> testing and be able to run the pending patches for that tree? I think
+> we're up to 4 reports now that are all just fallout from the same bug,
+> and where a patch has been queued up for a few days. Since they all look
+> different, I can't fault syzbot for thinking they are different, even if
+> they have the same root cause.
+>
+> Any way we can make this situation better? I can't keep replying that we
+> should test the current branch, and it'd be a shame to have a ton of
+> dupes.
 
-Co-developed-by: Onkarnath <onkarnath.1@samsung.com>
-Signed-off-by: Onkarnath <onkarnath.1@samsung.com>
-Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
----
- kernel/kallsyms.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Hi Jens,
 
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index f354378e241f..9e4316fe0ba1 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -472,28 +472,29 @@ static int __sprint_symbol(char *buffer, size_t buf_size, unsigned long address,
- 	name = kallsyms_lookup_buildid(address, &size, &offset, &modname, &buildid,
- 				       buffer);
- 	if (!name)
--		return sprintf(buffer, "0x%lx", address - symbol_offset);
-+		return scnprintf(buffer, buf_size, "0x%lx", address - symbol_offset);
- 
- 	if (name != buffer)
--		strcpy(buffer, name);
-+		strncpy(buffer, name, buf_size);
-+
- 	len = strlen(buffer);
- 	offset -= symbol_offset;
- 
- 	if (add_offset)
--		len += sprintf(buffer + len, "+%#lx/%#lx", offset, size);
-+		len += scnprintf(buffer + len, buf_size - len, "+%#lx/%#lx", offset, size);
- 
- 	if (modname) {
--		len += sprintf(buffer + len, " [%s", modname);
-+		len += scnprintf(buffer + len, buf_size - len, " [%s", modname);
- #if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
- 		if (add_buildid && buildid) {
- 			/* build ID should match length of sprintf */
- #if IS_ENABLED(CONFIG_MODULES)
- 			static_assert(sizeof(typeof_member(struct module, build_id)) == 20);
- #endif
--			len += sprintf(buffer + len, " %20phN", buildid);
-+			len += scnprintf(buffer + len, buf_size - len, " %20phN", buildid);
- 		}
- #endif
--		len += sprintf(buffer + len, "]");
-+		len += scnprintf(buffer + len, buf_size - len, "]");
- 	}
- 
- 	return len;
--- 
-2.17.1
+This somehow fell through the cracks, but better late than never.
 
+We could set up a syzbot instance for the io-uring tree.
+It won't solve the problem directly, but if the branch contains both
+new development ("for-next") and fixes, it will have good chances of
+discovering issues before they reach mainline and spread to other
+trees.
+Do you think it's a good idea? Is there a branch that contains new
+development and fixes?
