@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B08C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C92AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349222AbiETMUE (ORCPT
+        id S1349204AbiETMUN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
+        Fri, 20 May 2022 08:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349175AbiETMTm (ORCPT
+        with ESMTP id S1349253AbiETMTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:19:42 -0400
+        Fri, 20 May 2022 08:19:54 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858131649BF;
-        Fri, 20 May 2022 05:19:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A5C16499D;
+        Fri, 20 May 2022 05:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1653049177; x=1684585177;
+  t=1653049190; x=1684585190;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=ePtNVNeW/upibIXa1g8IP42rTGKoLQIlCMu62PBIHpM=;
-  b=ym9P/9Bet+/ZsSn7ueSFWdE91TusAULyRhAbfAN25flO3XqBgyyt22x4
-   qcXSx8hbmkkBPS+JAUjQbXLsNW966v0U25SHKxZAZQZ62yxHUUR3/qPr9
-   WSkjzFCX7tMIkqyM3LPaQfEekVv2Rq/fDt+pfJuuUw+/WFgluRK+w41C+
-   8=;
+  bh=tB92zRPWED5OduLbKCFAuOWrtLKijRm9N98ksj+EFks=;
+  b=VJ4aVk+8M9A8C6Qi805HcJ51iN4S395D9XP7ooPY/dtTbpNIu003SzsR
+   5TTPliTP+1tRAsmHzDrlHegdhYs5lxY2B9au2M9YE2FnwEJ4T7F+eQdwW
+   cEIR8EBwFN0TvFaNNIMPg0fM28DcsK0Deq8s367RFdA1BjzM3ddObccvr
+   4=;
 Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 20 May 2022 05:19:37 -0700
+  by alexa-out.qualcomm.com with ESMTP; 20 May 2022 05:19:50 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 05:19:36 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 05:19:50 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 05:19:36 -0700
+ 15.2.986.22; Fri, 20 May 2022 05:19:49 -0700
 Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 20 May 2022 05:19:32 -0700
+ 15.2.986.22; Fri, 20 May 2022 05:19:45 -0700
 From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
@@ -48,9 +48,9 @@ To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
         <judyhsiao@chromium.org>
 CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
         "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v12 07/12] arm64: dts: qcom: sc7280: herobrine: Add max98360a codec node
-Date:   Fri, 20 May 2022 17:48:39 +0530
-Message-ID: <1653049124-24713-8-git-send-email-quic_srivasam@quicinc.com>
+Subject: [PATCH v12 10/12] arm64: dts: qcom: sc7280: Enable lpass cpu node for CRD 3.0/3.1
+Date:   Fri, 20 May 2022 17:48:42 +0530
+Message-ID: <1653049124-24713-11-git-send-email-quic_srivasam@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1653049124-24713-1-git-send-email-quic_srivasam@quicinc.com>
 References: <1653049124-24713-1-git-send-email-quic_srivasam@quicinc.com>
@@ -63,35 +63,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add max98360a codec node for audio use case on all herobrine boards.
+Enable lpass cpu node and add pin control and dai-links for audio on
+sc7280 based platforms of rev5+ (aka CRD 3.0/3.1) boards.
 
 Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 28 +++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-index 9cb1bc8..1098916 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
-@@ -295,6 +295,14 @@
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+index 602437f..e8a596c 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+@@ -102,6 +102,34 @@ ap_ts_pen_1v8: &i2c13 {
+ 	};
+ };
  
- 	/* BOARD-SPECIFIC TOP LEVEL NODES */
- 
-+	max98360a: audio-codec-0 {
-+		compatible = "maxim,max98360a";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&amp_en>;
-+		sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
-+		#sound-dai-cells = <0>;
++&lpass_cpu {
++	status = "okay";
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&mi2s1_data0>, <&mi2s1_sclk>, <&mi2s1_ws>;
++
++	dai-link@1 {
++		reg = <MI2S_SECONDARY>;
++		qcom,playback-sd-lines = <0>;
 +	};
 +
- 	pwmleds {
- 		compatible = "pwm-leds";
- 		status = "disabled";
++	dai-link@5 {
++		reg = <LPASS_DP_RX>;
++	};
++
++	dai-link@6 {
++		reg = <LPASS_CDC_DMA_RX0>;
++	};
++
++	dai-link@19 {
++		reg = <LPASS_CDC_DMA_TX3>;
++	};
++
++	dai-link@25 {
++		reg = <LPASS_CDC_DMA_VA_TX0>;
++	};
++};
++
+ &lpass_rx_macro {
+ 	status = "okay";
+ };
 -- 
 2.7.4
 
