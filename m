@@ -2,180 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A84DC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19878C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349498AbiETMsz (ORCPT
+        id S1349533AbiETMuB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
+        Fri, 20 May 2022 08:50:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349377AbiETMst (ORCPT
+        with ESMTP id S1347387AbiETMtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:48:49 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7211668BE
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:48:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653050928; x=1684586928;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ydq2rAxzxy58oJMneM/mj2UuLnLEiLOSmzW01gULOvU=;
-  b=MSm8y7ERl1vOHqWSxFKE2gN9U3wbeqkM/stuQiL4ilarmWbq7OJ2S6VZ
-   aFVmI+1DqfuUwIdHS8HR7V7yWfsBudnOUWY7j+9dPdahj1b/9BBoZAbup
-   sl8tY5vZQ3Uade6UM70hVfaIR+mB2AsadPiHIbbtSwqmpPr2vRfyuoAC8
-   HNwO8uYEr0wSw9Osy4Qgb1eMXeJWRIRT7yBnPaiDP3+AP8KeCVb+pEluV
-   quRb04DU7FjSU2hCSzs2ge5xznxgK+wx/2DrNFU4xZUWmcKANdHIJeM5M
-   Od2j7j2b976g8Q1SpPeH/5q5N4KysXfGvvUzy7H19bQuJoNbzQq6L6/It
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="271414100"
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="271414100"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 05:48:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
-   d="scan'208";a="662248000"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 20 May 2022 05:48:44 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ns23g-0004hw-5m;
-        Fri, 20 May 2022 12:48:44 +0000
-Date:   Fri, 20 May 2022 20:48:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     zhenwei pi <pizhenwei@bytedance.com>, akpm@linux-foundation.org,
-        naoya.horiguchi@nec.com, mst@redhat.com, david@redhat.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, pbonzini@redhat.com,
-        peterx@redhat.com, qemu-devel@nongnu.org,
-        zhenwei pi <pizhenwei@bytedance.com>
-Subject: Re: [PATCH 3/3] virtio_balloon: Introduce memory recover
-Message-ID: <202205202014.mgqgBrKd-lkp@intel.com>
-References: <20220520070648.1794132-4-pizhenwei@bytedance.com>
+        Fri, 20 May 2022 08:49:50 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD29B1668B0
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:49:49 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id ob14-20020a17090b390e00b001dff2a43f8cso1528416pjb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:49:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=L5PMblmmvoFAeFdsYsUFWHO7SIHwulVtXRKpa8zsMb4=;
+        b=28tz65xXLtKpfh4aJ2vYSm3Ig9VveaDYnjyOkMc28CTA0q6pR5fjJK3ZQ5Umul/Sxr
+         K2GrMhwmgXQEAFhhGRTqdbRyhUhC54ozVB9zM9Gb/xk1QtpT5PtxSepRDXre6UO/2cbb
+         DWVYuyM2mDqeRlbxLHEFhgbLeL4yNxuJRCjoBbE/Eoqs04AlSqBTP/m9Z+U7KMf4wGXt
+         fHQOr3tGUjin6oDbJzUlPtHdB7e+mI0decQedxHq9+OKcI4jwTy+zJf9odwt2FuFxFjd
+         vk4w4/4mf3jOLlvF9qsZNSRhUkTnQn07nItty4zX4/8B/X5r4wVwibciDl+i7Posjlsj
+         Awow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=L5PMblmmvoFAeFdsYsUFWHO7SIHwulVtXRKpa8zsMb4=;
+        b=6UUh6o9pdD1J+4K0ei2FI7b1q79snoj/Fxw+WRSVb9D8sOlfWNs5dL6TjdhuTmB6oj
+         ilpyjrvXCdpZuwaIMWuRaitGxmkDSJjzSupptlsXjQUYeETLew/aIoTeYMJ+3OrTpK3x
+         I2iLOtxcKuxjl6zphjYSKGVRhCIkijqNzEN5UcYP4g2ziLcoT53cIaesZsHAaOCmJJh9
+         zH+OJhyDbqiUI/MXnhBtsMoND6vh/ETCnD5gLA+iuVqcKV+GADzB7RZLa14ARH7WNqOU
+         JyrRK9yAi5EFk39MQ+q9s+CozKwRsQ4MX95RJxkk0Emry2z96u67u5yt+JVWvzDPplUp
+         MNQA==
+X-Gm-Message-State: AOAM532xdH4r9XisLlijiDAl6NRw9hIGsx6lKJUYbnMgAUQbg0NyPnWP
+        qbyg5WyYO2kkHREuPPYn/A7WWBh1UsJipw==
+X-Google-Smtp-Source: ABdhPJyQykJwg3rfKF87IWw+moG2G6VP1tO5mjGoc2XXzdpA5vDIApiSwil4Q+D5P6+gP/ie5hotjQ==
+X-Received: by 2002:a17:903:186:b0:161:f394:3e75 with SMTP id z6-20020a170903018600b00161f3943e75mr2974469plg.113.1653050989176;
+        Fri, 20 May 2022 05:49:49 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id z7-20020a655a47000000b003c67e472338sm5437060pgs.42.2022.05.20.05.49.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 05:49:47 -0700 (PDT)
+Message-ID: <110504dc-4720-1430-2e18-a7b6e3a12015@kernel.dk>
+Date:   Fri, 20 May 2022 06:49:45 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220520070648.1794132-4-pizhenwei@bytedance.com>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCHSET 0/2] Fix splice from random/urandom
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <CAHmME9riX+YuqSVp64bhy=nX08_7d-m8es82BHy2qh-oWkqa8Q@mail.gmail.com>
+ <aa7ae20c-a2d7-4959-b5fb-efe7b56294f1@kernel.dk>
+ <CAHmME9oLPxzsnRezFPFVssmedOQUi2E9NWFbakEe92=Hdk1QuQ@mail.gmail.com>
+ <03c7d6c9-0c86-d4b6-357d-d51be0143c80@kernel.dk>
+ <CAHmME9qVQNkx-0J8rq_0ZVaSR+-eEgOUtcZhvq5dAY4-kJxSAA@mail.gmail.com>
+ <13899409-e81b-8689-3380-249de46c0b6f@kernel.dk> <YobldmDn6pU9mr4f@zx2c4.com>
+ <84d073aa-9937-1a58-dd7a-b1828874c21a@kernel.dk> <YoboEokc00YACuha@zx2c4.com>
+ <435cc499-7564-13e2-c4ef-a71119379cf0@kernel.dk> <YoeM6hP0JVqL9edj@zx2c4.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <YoeM6hP0JVqL9edj@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi zhenwei,
+On 5/20/22 6:43 AM, Jason A. Donenfeld wrote:
+> Hi Jens,
+> 
+> On Thu, May 19, 2022 at 07:10:56PM -0600, Jens Axboe wrote:
+>> On 5/19/22 7:00 PM, Jason A. Donenfeld wrote:
+>>> Hi Jens,
+>>>
+>>> On Thu, May 19, 2022 at 06:56:12PM -0600, Jens Axboe wrote:
+>>>> On 5/19/22 6:48 PM, Jason A. Donenfeld wrote:
+>>>>> sendfile() returns -EINVAL even with your patches. Only splicing to pipes
+>>>>> seems to work.
+>>>>
+>>>> Huh, that really should work. Are you trying to sendfile() to random? If
+>>>> so, you need that last write_iter patch too, and add the splice_write as
+>>>> I mentioned.
+>>>  
+>>> No, I've only tried the read side so far. I made a little program:
+>>>
+>>> #include <sys/sendfile.h>
+>>> #include <stdio.h>
+>>>
+>>> int main(int argc, char *argv[])
+>>> {
+>>>         ssize_t s = sendfile(1, 0, NULL, 0xffff);
+>>>         fprintf(stderr, "ret: %zd\n", s);
+>>>         return 0;
+>>> }
+>>>
+>>> Then I ran `./a.out < /dev/urandom > /dev/null`. Fails. OTOH, if I
+>>> replace /dev/urandom with an ordinary file, it succeeds.
+>>
+>> Here's why, it's limited to regular files or block devices:
+>>
+>> if (unlikely(!S_ISREG(i_mode) && !S_ISBLK(i_mode)))
+>> 	return -EINVAL;
+>>
+>> in splice_direct_to_actor().
+> 
+> Indeed. Looks like that was your code from long long ago!
 
-Thank you for the patch! Perhaps something to improve:
+Yep I would not be surprised if that is the case!
 
-[auto build test WARNING on akpm-mm/mm-everything]
-[also build test WARNING on next-20220519]
-[cannot apply to linux/master linus/master v5.18-rc7]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> I posted
+> https://lore.kernel.org/lkml/20220520095747.123748-1-Jason@zx2c4.com/ to
+> fix it if you'd like to review.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/zhenwei-pi/recover-hardware-corrupted-page-by-virtio-balloon/20220520-151328
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: hexagon-randconfig-r041-20220519 (https://download.01.org/0day-ci/archive/20220520/202205202014.mgqgBrKd-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e00cbbec06c08dc616a0d52a20f678b8fbd4e304)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a42127073dd4adb6354649c8235c5cde033d01f2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review zhenwei-pi/recover-hardware-corrupted-page-by-virtio-balloon/20220520-151328
-        git checkout a42127073dd4adb6354649c8235c5cde033d01f2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/virtio/
+Not in my inbox, but you also used an email that hasn't been valid in 16
+years :-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/virtio/virtio_balloon.c:654:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
-           default:
-           ^
-   drivers/virtio/virtio_balloon.c:654:2: note: insert 'break;' to avoid fall-through
-           default:
-           ^
-           break; 
-   1 warning generated.
-
-
-vim +654 drivers/virtio/virtio_balloon.c
-
-   593	
-   594	static void recover_vq_handle_response(struct virtio_balloon *vb, unsigned int len)
-   595	{
-   596		struct __virtio_balloon_recover *in_vbr;
-   597		struct virtio_balloon_recover *vbr;
-   598		struct page *page;
-   599		unsigned int pfns;
-   600		u32 pfn0, pfn1;
-   601		__u8 status;
-   602	
-   603		/* the response is not expected */
-   604		if (unlikely(len != sizeof(struct __virtio_balloon_recover)))
-   605			return;
-   606	
-   607		in_vbr = &vb->in_vbr;
-   608		vbr = &in_vbr->vbr;
-   609		if (unlikely(vbr->cmd != VIRTIO_BALLOON_R_CMD_RESPONSE))
-   610			return;
-   611	
-   612		/* to make sure the contiguous balloon PFNs */
-   613		for (pfns = 1; pfns < VIRTIO_BALLOON_PAGES_PER_PAGE; pfns++) {
-   614			pfn0 = virtio32_to_cpu(vb->vdev, in_vbr->pfns[pfns - 1]);
-   615			pfn1 = virtio32_to_cpu(vb->vdev, in_vbr->pfns[pfns]);
-   616			if (pfn1 - pfn0 != 1)
-   617				return;
-   618		}
-   619	
-   620		pfn0 = virtio32_to_cpu(vb->vdev, in_vbr->pfns[0]);
-   621		if (!pfn_valid(pfn0))
-   622			return;
-   623	
-   624		pfn1 = -1;
-   625		spin_lock(&vb->recover_page_list_lock);
-   626		list_for_each_entry(page, &vb->corrupted_page_list, lru) {
-   627			pfn1 = page_to_pfn(page);
-   628			if (pfn1 == pfn0)
-   629				break;
-   630		}
-   631		spin_unlock(&vb->recover_page_list_lock);
-   632	
-   633		status = vbr->status;
-   634		switch (status) {
-   635		case VIRTIO_BALLOON_R_STATUS_RECOVERED:
-   636			if (pfn1 == pfn0) {
-   637				spin_lock(&vb->recover_page_list_lock);
-   638				list_del(&page->lru);
-   639				balloon_page_push(&vb->recovered_page_list, page);
-   640				spin_unlock(&vb->recover_page_list_lock);
-   641				queue_work(system_freezable_wq, &vb->unpoison_memory_work);
-   642				dev_info_ratelimited(&vb->vdev->dev, "recovered pfn 0x%x", pfn0);
-   643			}
-   644			break;
-   645		case VIRTIO_BALLOON_R_STATUS_FAILED:
-   646			/* the hypervisor can't fix this corrupted page, balloon puts page */
-   647			if (pfn1 == pfn0) {
-   648				spin_lock(&vb->recover_page_list_lock);
-   649				list_del(&page->lru);
-   650				spin_unlock(&vb->recover_page_list_lock);
-   651				put_page(page);
-   652				dev_info_ratelimited(&vb->vdev->dev, "failed to recover pfn 0x%x", pfn0);
-   653			}
- > 654		default:
-   655			break;
-   656		};
-   657	
-   658		/* continue to get response from host side if the response gets handled successfully */
-   659		recover_vq_get_response(vb);
-   660	}
-   661	
+But looks fine to me, we can open this up to character devices, don't
+see an issue with that.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Jens Axboe
+
