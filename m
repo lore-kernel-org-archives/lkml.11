@@ -2,160 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B58F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD469C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 12:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348857AbiETMAf (ORCPT
+        id S1348909AbiETMAw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 08:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        Fri, 20 May 2022 08:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348856AbiETMAb (ORCPT
+        with ESMTP id S1348879AbiETMAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 08:00:31 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FDE3F881
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:00:29 -0700 (PDT)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DC6DD3F1F7
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 12:00:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653048027;
-        bh=QoaPiq4fPTA6G3V+mSGQc3xph8tZR7IAsq6+ZAgT0A4=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=sKslWemWhZ6Q++u5L+DLiGypqCwVaL+u5jSvs8dRHshyRYt+4CvxPEJqrvo3+ahHa
-         xdg7qKTOyQ6Iok9WaZ2uSNLyFNhn2lUg+7NxpbcA4BigXvbrZElwIJ3bwDWKcWLJD1
-         o8ze3P/DFXX1bTp/Mv1bCXDIQSr9gZoqLK5fm0xMBEL4uk57Y5awBieAG9jTNFJD8/
-         BkciK4JO6VhjWIks/GPaWu46MuRwjvwYHpWMUAdakXcTPbEKaORJ9ml4a5NiEE1zJg
-         /MsqcxxBObL1D+HVysNQnFQ6TZ3tipeJtlQzVfmi7mFsaJkV71RmzOEHaee0WPqQKB
-         Yvu5czcWpOEgg==
-Received: by mail-ed1-f70.google.com with SMTP id o10-20020aa7c7ca000000b0042a4f08405fso5514556eds.22
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 05:00:27 -0700 (PDT)
+        Fri, 20 May 2022 08:00:44 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA84240A38;
+        Fri, 20 May 2022 05:00:40 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id a3so13815767ybg.5;
+        Fri, 20 May 2022 05:00:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SsuQwYfm5G6xrNGiS/dHpJ/FwoJ31MhACc8+V8rTgs4=;
+        b=QNjKLehntMGX87wICh6YufpfX4yIxbslpam/PjvE0Xqsw4x/7SguqhkrUfBzEP1n4V
+         ilJureFeTvKEVR9uUcEw39VUnCUlNIjkgBYYXqcnQ9k3ZNmwiEWk2DKRg8flJc7/X3BA
+         ftK3v+kWAg8AUIL5dT+olwc39P/fHaXiMLSKPD6yIYG1qE2IJugelGfjj9pfZ8Y8BxGS
+         bpsYdLHIm0VRROCIRwSjkl2d0CI4xsPYwdFTcyvFw0TRx1YKZjO1H0q3jyH55CIa4Q9c
+         gYbSYOf5HfR8q7KGz8AieiBQvWUkjZpGEfRwB9NX0APmg68uXrQY70xnb1tBe4PFggJu
+         E8Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QoaPiq4fPTA6G3V+mSGQc3xph8tZR7IAsq6+ZAgT0A4=;
-        b=d2zX856NK6ge1XNxhOTLpSJJJLvTcj/wh/FYrt66fF7SHBM3cqY7J2MKXpOjpkaLYZ
-         9NTVt9wCdCmuJgCzwYH5lGf+1wHLkFv7fPGUJG0kf02GTVhv5Nyp4Jv/8dPurMoApVOa
-         afdf5LCU54IK45+igUf6Q7u6D6zn1fUIUC2PVqQYeAeVexrjlpLRKWczJM34+dpRoMRk
-         zG3wyp5On7qOIo9nXzNKnJQORecAmpwgQYNjqjiVqnIrMINyGCIewgiwter6iEGQTkkq
-         Z1f8Oqb13xPB4lzPbZ5eS36XBsLqAuVzVY+CFMhXqAyhFt9TnJSZxK6TD9O3xkB0WMPQ
-         9udg==
-X-Gm-Message-State: AOAM5312G0CmA7SpgUJ2sNvODLuSaw0bVf+uupRaKlndJMgebp4DEgSR
-        pCHdAHVMFwUC/ZyTbQ0uK9X2gF1uyiEiG1EQTSWUiau+bi34om6EXreERFh1HkSWMTeu6wONsvp
-        lCFbb28r0ijHO9c5MO+zLz6QxHIYjFSrjSLe4qCGjaA==
-X-Received: by 2002:a17:907:1c01:b0:6f4:2692:e23 with SMTP id nc1-20020a1709071c0100b006f426920e23mr8218173ejc.243.1653048025197;
-        Fri, 20 May 2022 05:00:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxjdIpS5lf1o/Ls6OBum8Ss6pStZxh6kQPYL97iuWOYjg+EuIR/jTzAtO0AaRPc7ixliuARsQ==
-X-Received: by 2002:a17:907:1c01:b0:6f4:2692:e23 with SMTP id nc1-20020a1709071c0100b006f426920e23mr8218152ejc.243.1653048024940;
-        Fri, 20 May 2022 05:00:24 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id i14-20020a1709067a4e00b006fea4d258cfsm892227ejo.147.2022.05.20.05.00.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 05:00:24 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     linux-ia64@vger.kernel.org, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] ia64: Kconfig: Fix indentation and add comments
-Date:   Fri, 20 May 2022 14:00:21 +0200
-Message-Id: <20220520120021.148069-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SsuQwYfm5G6xrNGiS/dHpJ/FwoJ31MhACc8+V8rTgs4=;
+        b=qPMlhcxmZyYupxUiseBRQgH7p3eiEdfFJlcd77udUHDMoClYnFwze5TbJXSWtGPb6Z
+         2nvwPLIOtWrfnn8reVhjQzri4/Q7bfgbwQnQSr/syNhOPxLvoFTbrQf7Z+3PWAdVIxTH
+         6B+DC+cmQYHUeZUhSJLJSUHTa59BLFdqgUbZg2Ouh3bllyLp6ZyMuRE9FL0RAPvoqJmJ
+         6jIAtXj1bNjIBgtwpooGDm867Ki0+fcDfbIR5f58DN3a4yEg2Vn2PWS3Wz3ZDAQntJKm
+         CV29eYigOCzjB3Ce6VxZRMp95ieCKN8oBH08IhxpDrpat2FfWaYmIUDZAB9GiwT8Nt+U
+         OGhQ==
+X-Gm-Message-State: AOAM531QpCnEQVK1eq3vKik5vRFLBLvbn9jGjvH8jwaacus6OF9mlOse
+        ijVKiwkgxyEwOj/oGnlpWdFsuPVxhXXqywBhKZ4=
+X-Google-Smtp-Source: ABdhPJwujyCk/43sRIvp26J8wkO6JVNTSR+PioHs1VjDwLcTBQGwCdzMjlSPwT7BjDW2IjsCeP9z3sYt2L4qkTFGzX8=
+X-Received: by 2002:a25:a222:0:b0:64a:edb4:cf02 with SMTP id
+ b31-20020a25a222000000b0064aedb4cf02mr8875692ybi.615.1653048038443; Fri, 20
+ May 2022 05:00:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220520115714.47321-1-javier.abrego.lorente@gmail.com>
+In-Reply-To: <20220520115714.47321-1-javier.abrego.lorente@gmail.com>
+From:   Javier Abrego Lorente <javier.abrego.lorente@gmail.com>
+Date:   Fri, 20 May 2022 14:00:02 +0200
+Message-ID: <CAPsi6X+M11NttnV80dYhA=0t=ZGH1YR1ZGssEZvz+kN8RYTcbw@mail.gmail.com>
+Subject: Re: [PATCH] FS: nfs: removed goto statement
+To:     Javier Abrego <javier.abrego.lorente@gmail.com>
+Cc:     trond.myklebust@hammerspace.com, anna@kernel.org,
+        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+final version, I promise.
 
-While add it, add trailing comments to endif and endmenu statements for
-better readability.
-
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/ia64/Kconfig | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
-index cb93769a9f2a..caf2ace768bc 100644
---- a/arch/ia64/Kconfig
-+++ b/arch/ia64/Kconfig
-@@ -259,19 +259,19 @@ config PERMIT_BSP_REMOVE
- 	depends on HOTPLUG_CPU
- 	default n
- 	help
--	Say Y here if your platform SAL will support removal of BSP with HOTPLUG_CPU
--	support. 
-+	  Say Y here if your platform SAL will support removal of BSP with HOTPLUG_CPU
-+	  support.
- 
- config FORCE_CPEI_RETARGET
- 	bool "Force assumption that CPEI can be re-targeted"
- 	depends on PERMIT_BSP_REMOVE
- 	default n
- 	help
--	Say Y if you need to force the assumption that CPEI can be re-targeted to
--	any cpu in the system. This hint is available via ACPI 3.0 specifications.
--	Tiger4 systems are capable of re-directing CPEI to any CPU other than BSP.
--	This option it useful to enable this feature on older BIOS's as well.
--	You can also enable this by using boot command line option force_cpei=1.
-+	  Say Y if you need to force the assumption that CPEI can be re-targeted to
-+	  any cpu in the system. This hint is available via ACPI 3.0 specifications.
-+	  Tiger4 systems are capable of re-directing CPEI to any CPU other than BSP.
-+	  This option it useful to enable this feature on older BIOS's as well.
-+	  You can also enable this by using boot command line option force_cpei=1.
- 
- config ARCH_SELECT_MEMORY_MODEL
- 	def_bool y
-@@ -335,7 +335,7 @@ config IA64_PALINFO
- config IA64_MC_ERR_INJECT
- 	tristate "MC error injection support"
- 	help
--	  Adds support for MC error injection. If enabled, the kernel 
-+	  Adds support for MC error injection. If enabled, the kernel
- 	  will provide a sysfs interface for user applications to
- 	  call MC error injection PAL procedures to inject various errors.
- 	  This is a useful tool for MCA testing.
-@@ -379,12 +379,12 @@ config KEXEC
- 	  made.
- 
- config CRASH_DUMP
--	  bool "kernel crash dumps"
--	  depends on IA64_MCA_RECOVERY && (!SMP || HOTPLUG_CPU)
--	  help
--	    Generate crash dump after being started by kexec.
-+	bool "kernel crash dumps"
-+	depends on IA64_MCA_RECOVERY && (!SMP || HOTPLUG_CPU)
-+	help
-+	  Generate crash dump after being started by kexec.
- 
--endmenu
-+endmenu # "Processor type and features"
- 
- menu "Power management and ACPI options"
- 
-@@ -395,10 +395,10 @@ source "drivers/acpi/Kconfig"
- if PM
- menu "CPU Frequency scaling"
- source "drivers/cpufreq/Kconfig"
--endmenu
--endif
-+endmenu # "CPU Frequency scaling"
-+endif # PM
- 
--endmenu
-+endmenu # "Power management and ACPI options"
- 
- config MSPEC
- 	tristate "Memory special operations driver"
--- 
-2.32.0
-
+On Fri, 20 May 2022 at 13:57, Javier Abrego
+<javier.abrego.lorente@gmail.com> wrote:
+>
+> In this function goto can be replaced. Avoiding goto will improve the
+> readability
+>
+> Signed-off-by: Javier Abrego<javier.abrego.lorente@gmail.com>
+> ---
+>  fs/nfs/nfs42xattr.c | 24 +++++++++++-------------
+>  1 file changed, 11 insertions(+), 13 deletions(-)
+>
+> diff --git a/fs/nfs/nfs42xattr.c b/fs/nfs/nfs42xattr.c
+> index e7b34f7e0..78130462c 100644
+> --- a/fs/nfs/nfs42xattr.c
+> +++ b/fs/nfs/nfs42xattr.c
+> @@ -747,20 +747,18 @@ void nfs4_xattr_cache_set_list(struct inode *inode, const char *buf,
+>                 return;
+>
+>         entry = nfs4_xattr_alloc_entry(NULL, buf, NULL, buflen);
+> -       if (entry == NULL)
+> -               goto out;
+> -
+> -       /*
+> -        * This is just there to be able to get to bucket->cache,
+> -        * which is obviously the same for all buckets, so just
+> -        * use bucket 0.
+> -        */
+> -       entry->bucket = &cache->buckets[0];
+> -
+> -       if (!nfs4_xattr_set_listcache(cache, entry))
+> -               kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
+> +       if (entry != NULL) {
+> +              /*
+> +               * This is just there to be able to get to bucket->cache,
+> +               * which is obviously the same for all buckets, so just
+> +               * use bucket 0.
+> +               */
+> +               entry->bucket = &cache->buckets[0];
+> +
+> +               if (!nfs4_xattr_set_listcache(cache, entry))
+> +                       kref_put(&entry->ref, nfs4_xattr_free_entry_cb);
+> +       }
+>
+> -out:
+>         kref_put(&cache->ref, nfs4_xattr_free_cache_cb);
+>  }
+>
+> --
+> 2.25.1
+>
