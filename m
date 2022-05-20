@@ -2,78 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A94C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76761C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 07:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346655AbiETHvW (ORCPT
+        id S1346653AbiETHwS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 03:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
+        Fri, 20 May 2022 03:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346641AbiETHvT (ORCPT
+        with ESMTP id S233004AbiETHwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 03:51:19 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8B4335;
-        Fri, 20 May 2022 00:50:59 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id f10so7354968pjs.3;
-        Fri, 20 May 2022 00:50:59 -0700 (PDT)
+        Fri, 20 May 2022 03:52:13 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35033EBA98
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:52:13 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id 10so3307177plj.0
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 00:52:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YlH159IcSNXAnSMmJrm8SPIzKKgsdQNyWHqQ6RmP5X8=;
-        b=UFMQ6EQgUHKYqvJqw5I6s0P7kMn6UxEfOGOyCHgjfGaTURsUdYbkyHzzQNaiSkc0B8
-         kzo2XZXZ9YsddgW/3uR4CTQ49h2BWa17hKYq3sFHmshzOxgYsIOtGAQKCZEWty554kys
-         Cp+JrBH/gYGExZiKTJzX7MyD9EcAeSczl6tQ1SohJuptWykoZcNPfK4YlyGmY24LsTWG
-         Iwcbb2ILRU33S13LSaKFCK2mJntHkAXligibXRmYhjSIB/en61VfXoz0vLqiyYDMo71p
-         fbR+7X7qgWrbdwGihSZdWt1PZ3Ii/ayrpduRnCLwcysQ7ZDEVmAs7O6VJE1Z7KM5DkOl
-         LQKQ==
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=5vIeqJ2l7ohbADo6n14qY+TAL6tqjFMC+/vvZ+WHJvA=;
+        b=QbMBFcQM9qRP+Zt3g3VsB3vTZOpvKm6co4eXrI0mMajeM60kX9QU+FH98IFoV4NfxD
+         oRl0QjfFPBhMbU2V8gl/4x95UfmTyCaYSwq6U9PgyvQxVsCf4tzMbl9WOdYQJHo1qPcw
+         6lH+gvtR04sra0+Q4UwHEm6eSKsJKD0RHgLwSU1VIh8K98sH+Sm7Mg/PNk0OO11VygyX
+         I/a5DQemxJjUDN9jnRlMyQ8E7Aow7y1AnyqI8UyDT5KbsOWrir/uPpHFcx9LoIWiF5Db
+         SOd6VQmpcmW7+w065G+ZrR4LNhyHz0SY/j1URG/gcgJOLrnFH8do/XBfJ2zzmXfgnAW9
+         6vJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=YlH159IcSNXAnSMmJrm8SPIzKKgsdQNyWHqQ6RmP5X8=;
-        b=Jpv1kcr19gN7pIke43XedcGVEVKupKbiRslITe8JJDDJH198zcZjAbvD68syIc1d/5
-         2hHgiRqJoAeXdtr3LBRYA078+qBpPOF2t03jrOFiG6s+YNspha0dFDyR2O+0rZFv5qgd
-         aJk/aoLDT2eNUENjyg1VP8mDJ02sY9Gpj6zBn5GfM4mGr3FbdinjDdzfUZFIWcBCE9ha
-         ZQ5AzmMttLKnzkrGmlCCmOzh9DLz5Rs1zsh6Qaqj5feTRdX0X86R5A97V12ICIyGw5a2
-         2NYdDgxGQ49vnQNMVsyWUGvDVmMAL3c87vA+NBqCaq2C4mbiuNjCq0XFacRRqdj1KH27
-         BFQw==
-X-Gm-Message-State: AOAM533u+aUTvaZamkyhZ52V6NM18JfJ/m03J6ycxg1F6X766q81GDXw
-        jnUxQag9gClrEdc8ZU73q2IdsRIre54=
-X-Google-Smtp-Source: ABdhPJwE8KcWrrWcyZwZjrXCxLx99rVuSOz/yzpbM6ERGWN7qY/MeDDOy/Z+8blksEJUtYx3KwpWlg==
-X-Received: by 2002:a17:902:8608:b0:158:c532:d8b2 with SMTP id f8-20020a170902860800b00158c532d8b2mr8650398plo.46.1653033059309;
-        Fri, 20 May 2022 00:50:59 -0700 (PDT)
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=5vIeqJ2l7ohbADo6n14qY+TAL6tqjFMC+/vvZ+WHJvA=;
+        b=2jUhXC4eKTOEI6Pf+4qJvmtvTlvM6vaF2L0kGOrS0JfK8MrjyJfNQsh2b8snF4Diya
+         770jN+5pcVySh8DHgN1Qs7wfScgarg4c2Fcsl9+Vsul+SEezL6A/MxxGSGywLE/f4t3N
+         yaVMznWuLsMRxOBXGGRTXb17nomES+hGLrQ9nG3cJGNZXkDvSoG5eu3NSJJ4ZeODunrP
+         /VhH5gxj4kAlXk/bhwB6BE+y3Xg4071nVSu+VRwCpeVmCwZMzvHYKv/gu8I6JWAm3hCk
+         779qmGJ2Jdub4lXrw3rEUS3yi8L3Qe0uw6M7c1Auv9WmeHwIE31FVRsTMaN8eVRjgQ57
+         LtUg==
+X-Gm-Message-State: AOAM530qW2gb5Mc8GUyDrIKAY9NkYin9M3iua+7esziyipPiy5tHvKBz
+        pbZY2h7Pkj486G3c4VgGwLA=
+X-Google-Smtp-Source: ABdhPJz2uw+P0c+QcAEevcQomiSCOXCL0p/z1jWLOWE65LWBQt5+YLv0FiSxkyiQpvuR3U6l2l8jRw==
+X-Received: by 2002:a17:90b:1e4f:b0:1dc:847d:38b5 with SMTP id pi15-20020a17090b1e4f00b001dc847d38b5mr10177098pjb.3.1653033132554;
+        Fri, 20 May 2022 00:52:12 -0700 (PDT)
 Received: from localhost ([2620:10d:c090:400::4:1761])
-        by smtp.gmail.com with ESMTPSA id k3-20020aa79983000000b005181133ff2dsm1077631pfh.176.2022.05.20.00.50.58
+        by smtp.gmail.com with ESMTPSA id c17-20020a170902c1d100b0015e8d4eb243sm4943881plc.141.2022.05.20.00.52.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 00:50:58 -0700 (PDT)
+        Fri, 20 May 2022 00:52:12 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 19 May 2022 21:50:57 -1000
+Date:   Thu, 19 May 2022 21:52:10 -1000
 From:   Tejun Heo <tj@kernel.org>
-To:     Shida Zhang <starzhangzsd@gmail.com>
-Cc:     lizefan.x@bytedance.com, hannes@cmpxchg.org, zhangshida@kylinos.cn,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
-Subject: Re: [PATCH v2] cgroup: remove the superfluous judgment
-Message-ID: <YodIYdu0T+HYKlY7@slm.duckdns.org>
-References: <20220518013647.1749568-1-zhangshida@kylinos.cn>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= 
+        <ckoenig.leichtzumerken@gmail.com>
+Cc:     Lai Jiangshan <jiangshanlai@gmail.com>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx@lists.freedesktop.org, Christian.Koenig@amd.com
+Subject: Re: [PATCH] Revert "workqueue: remove unused cancel_work()"
+Message-ID: <YodIquufXzK581gw@slm.duckdns.org>
+References: <20220519135642.83209-1-andrey.grodzovsky@amd.com>
+ <CAJhGHyBQ60Lh3WZCa+2cE4T36t3vjNxYTBCxS7J0xhZr8Eb2wg@mail.gmail.com>
+ <e1e2e63d-a1a9-12ad-97a7-a3771210edda@amd.com>
+ <CAJhGHyC7VLM1PnXMu2zmdX=xtSNKo6VGO5p0AkUnaaMsuZytpA@mail.gmail.com>
+ <045157bb-31a0-2d76-18b7-4272fab218ef@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220518013647.1749568-1-zhangshida@kylinos.cn>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <045157bb-31a0-2d76-18b7-4272fab218ef@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 18, 2022 at 09:36:47AM +0800, Shida Zhang wrote:
-> Remove the superfluous judgment since the function is
-> never called for a root cgroup, as suggested by Tejun.
+On Fri, May 20, 2022 at 08:22:39AM +0200, Christian König wrote:
+> Am 20.05.22 um 02:47 schrieb Lai Jiangshan:
+> > On Thu, May 19, 2022 at 11:04 PM Andrey Grodzovsky
+> > <andrey.grodzovsky@amd.com> wrote:
+> > > See this patch-set https://www.spinics.net/lists/amd-gfx/msg78514.html, specifically patch
+> > > 'drm/amdgpu: Switch to delayed work from work_struct.
+> > > 
+> > > I will just reiterate here -
+> > > 
+> > > We need to be able to do non blocking cancel pending reset works
+> > > from within GPU reset. Currently kernel API allows this only
+> > > for delayed_work and not for work_struct.
+> > > 
+> > I'm OK with the change.
+> > 
+> > With an updated changelog:
+> > 
+> > Reviewed-by: Lai Jiangshan<jiangshanlai@gmail.com>
 > 
-> Suggested-by: Tejun Heo <tj@kernel.org>
-> Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
+> Good morning guys,
+> 
+> for the patch itself Reviewed-by: Christian König <christian.koenig@amd.com>
+> 
+> And just for the record: We plan to push this upstream through the drm
+> branches, if anybody has any objections to that please speak up.
 
-Applied to cgroup/for-5.19.
+Andrey, care to resend with updated description?
 
 Thanks.
 
