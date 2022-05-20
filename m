@@ -2,124 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB77C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD81C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347050AbiETI37 (ORCPT
+        id S1347010AbiETIaE convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
+        Fri, 20 May 2022 04:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346999AbiETI3e (ORCPT
+        with ESMTP id S1347014AbiETI3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:29:34 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4156D5E166;
-        Fri, 20 May 2022 01:29:33 -0700 (PDT)
-Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L4KZB2267z687Dc;
-        Fri, 20 May 2022 16:26:26 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 20 May 2022 10:29:31 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 20 May 2022 09:29:27 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
-        <will@kernel.org>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hch@lst.de>,
-        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-        <linux-scsi@vger.kernel.org>, <liyihang6@hisilicon.com>,
-        <chenxiang66@hisilicon.com>, <thunder.leizhen@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 2/4] dma-iommu: Add iommu_dma_opt_mapping_size()
-Date:   Fri, 20 May 2022 16:23:21 +0800
-Message-ID: <1653035003-70312-3-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1653035003-70312-1-git-send-email-john.garry@huawei.com>
-References: <1653035003-70312-1-git-send-email-john.garry@huawei.com>
+        Fri, 20 May 2022 04:29:44 -0400
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A2F5E166;
+        Fri, 20 May 2022 01:29:43 -0700 (PDT)
+Received: by mail-qt1-f181.google.com with SMTP id 11so4201836qtp.9;
+        Fri, 20 May 2022 01:29:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vQOf+Td+ygkeVxH/Q4rPVYerZmfW/Jb9XT+06okoXpI=;
+        b=3zG89MuHpotbf+Ws6VqTyT4EWHR8D275ghcUJfZobqyP6jxYOYe/lWBA2EwoVMmAD8
+         vfZoQq4IyYdRJuNXSfVYYbocrousz+jwPzkk/RN0ivwbLqAfOfudIe4L8W2KBSYS26oF
+         bjfmZO8sW/MlD3jk4y77WW+kjXwu6r3vpOOVYZf5ilT/XIvj2sE70kExTIBVsJLZ3QQb
+         F/aQokyus9yU2aDW0zglu4PStivKK3hGUSoiZXE+QLIkkY/U7Dn3Giby6mjYEd69up+n
+         BZadpuqeMoZj5dg03NT0Zeq7UrJOaD7BV+3E3ZKaa8n7B1/AT4GY8iDMQRfgyUIPBFAz
+         hc+Q==
+X-Gm-Message-State: AOAM533yeRvGdTI7F5B2tDzrtAk9tNT99Omryo78IkX3Mpv3W9chOwfr
+        dNccvF/VlkcvEUCnV2zuSq29wsyTSYLMFg==
+X-Google-Smtp-Source: ABdhPJwlZmN9N3HbUeX50IpW7oo4V5w3MCII46HPIX4xlZ3znPCqOSlUCEYOymQ7RxNuUCJu63popQ==
+X-Received: by 2002:ac8:58c9:0:b0:2f3:d8f0:185f with SMTP id u9-20020ac858c9000000b002f3d8f0185fmr6798687qta.381.1653035382854;
+        Fri, 20 May 2022 01:29:42 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id bs26-20020ac86f1a000000b002f39b99f6bdsm2699378qtb.87.2022.05.20.01.29.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 01:29:42 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2ff39b44b06so79589747b3.13;
+        Fri, 20 May 2022 01:29:42 -0700 (PDT)
+X-Received: by 2002:a81:9b0c:0:b0:2f4:c522:7d3c with SMTP id
+ s12-20020a819b0c000000b002f4c5227d3cmr8935563ywg.316.1653035382015; Fri, 20
+ May 2022 01:29:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20220429134143.628428-1-herve.codina@bootlin.com>
+ <20220429134143.628428-4-herve.codina@bootlin.com> <29ba3db6-e5c7-06d3-29d9-918ee5b34555@linaro.org>
+ <20220520102329.6b0a58d0@bootlin.com>
+In-Reply-To: <20220520102329.6b0a58d0@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 20 May 2022 10:29:28 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX6zXbFXo-tojpvrbobkWBe0MsjONEgZJismwFvhZ7SKA@mail.gmail.com>
+Message-ID: <CAMuHMdX6zXbFXo-tojpvrbobkWBe0MsjONEgZJismwFvhZ7SKA@mail.gmail.com>
+Subject: Re: [PATCH v5 2/6] dt-bindings: PCI: renesas,pci-rcar-gen2: Add
+ device tree support for r9a06g032
+To:     Herve Codina <herve.codina@bootlin.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Rob Herring <robh@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Clement Leger <clement.leger@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the IOMMU callback for DMA mapping API dma_opt_mapping_size(), which
-allows the drivers to know the optimal mapping limit and thus limit the
-requested IOVA lengths.
+Hi Hervé,
 
-This value is based on the IOVA rcache range limit, as IOVAs allocated
-above this limit must always be newly allocated, which may be quite slow.
+On Fri, May 20, 2022 at 10:23 AM Herve Codina <herve.codina@bootlin.com> wrote:
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/iommu/dma-iommu.c | 6 ++++++
- drivers/iommu/iova.c      | 5 +++++
- include/linux/iova.h      | 2 ++
- 3 files changed, 13 insertions(+)
+> On Sun, 1 May 2022 10:51:43 +0200
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+>
+> [...]
+> > >    resets:
+> > >      maxItems: 1
+> > > @@ -106,13 +106,45 @@ required:
+> > >    - interrupt-map
+> > >    - interrupt-map-mask
+> > >    - clocks
+> > > -  - resets
+> > >    - power-domains
+> > >    - bus-range
+> > >    - "#address-cells"
+> > >    - "#size-cells"
+> > >    - "#interrupt-cells"
+> > >
+> > > +if:
+> >
+> > allOf.
+> >
+> > > +  properties:
+> > > +    compatible:
+> > > +      contains:
+> > > +        enum:
+>
+> I Have an issue with this allOf.
+>
+> The yaml has the following structure and so has 2 AllOf:
+>   ...
+>   allOf:
+>   - $ref: /schemas/pci/pci-bus.yaml#
+>
+>   properties:
+>     compatible:
+>   ...
+>   allOf:
+>   - if:
+>       properties:
+>         compatible:
+>           contains:
+>   ...
+> Is having a 'allOf' for schemas inclusion and a 'allOf' for conditionnal
+> parts allowed ?
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 09f6e1c0f9c0..f619e41b9172 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1442,6 +1442,11 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
- 	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
- }
- 
-+static size_t iommu_dma_opt_mapping_size(void)
-+{
-+	return iova_rcache_range();
-+}
-+
- static const struct dma_map_ops iommu_dma_ops = {
- 	.alloc			= iommu_dma_alloc,
- 	.free			= iommu_dma_free,
-@@ -1462,6 +1467,7 @@ static const struct dma_map_ops iommu_dma_ops = {
- 	.map_resource		= iommu_dma_map_resource,
- 	.unmap_resource		= iommu_dma_unmap_resource,
- 	.get_merge_boundary	= iommu_dma_get_merge_boundary,
-+	.opt_mapping_size	= iommu_dma_opt_mapping_size,
- };
- 
- /*
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index db77aa675145..9f00b58d546e 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -26,6 +26,11 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
- static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
- static void free_iova_rcaches(struct iova_domain *iovad);
- 
-+unsigned long iova_rcache_range(void)
-+{
-+	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
-+}
-+
- static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
- {
- 	struct iova_domain *iovad;
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 320a70e40233..c6ba6d95d79c 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -79,6 +79,8 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
- int iova_cache_get(void);
- void iova_cache_put(void);
- 
-+unsigned long iova_rcache_range(void);
-+
- void free_iova(struct iova_domain *iovad, unsigned long pfn);
- void __free_iova(struct iova_domain *iovad, struct iova *iova);
- struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
--- 
-2.26.2
+Just combine them into a single "allOf".
+See e.g. Documentation/devicetree/bindings/i2c/renesas,rcar-i2c.yaml.
 
+{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
