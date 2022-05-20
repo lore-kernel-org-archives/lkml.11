@@ -2,110 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF71C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71674C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353514AbiETUjC (ORCPT
+        id S1353522AbiETUjk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 16:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
+        Fri, 20 May 2022 16:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241610AbiETUi7 (ORCPT
+        with ESMTP id S241610AbiETUji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 16:38:59 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6935F19FF45;
-        Fri, 20 May 2022 13:38:58 -0700 (PDT)
-Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24KFjYX9028627;
-        Fri, 20 May 2022 20:38:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pps0720;
- bh=5EP4WWdQHl2GA9A4nkZcKwln/XTzNpHsE6OOEXMtWg4=;
- b=cdxLViPCAOfi0bOw7sm7GiypYJ9YO1GmWP9ujXzYTeLUOzaqqfHu7cdHR/ubef1LF+Ph
- 9uxaAGamAQtwMt795mlZYeDqnuvYvu3AAbhUijPmHv1ZxVyWID2bneg2V1goaOxSBXiP
- z2awl1oqtv0wLR5cBJXMSaSVDKBZ0QtMbJb921GiRObxQiQ7DDfOrhw7/iwjwxDYEL42
- y96D2OG0U6ti/83+08Ff/RYhcd9qs2+5S3qr5zOYh90gniR+M4cgHrWYo6xkCkKLqbfv
- kWM/Usebx8Nr/nVDKCq0Xf5cmRFfhUuBqOEG5tj5Zcz7pmgZAvV/4Ank6m+DRQc6lJUU NA== 
-Received: from g2t2354.austin.hpe.com (g2t2354.austin.hpe.com [15.233.44.27])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3g6athkpuy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 20:38:12 +0000
-Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
-        by g2t2354.austin.hpe.com (Postfix) with ESMTP id 6EFFA81;
-        Fri, 20 May 2022 20:38:11 +0000 (UTC)
-Received: from dog.eag.rdlabs.hpecorp.net (dog.eag.rdlabs.hpecorp.net [128.162.243.181])
-        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id C04CF37;
-        Fri, 20 May 2022 20:38:09 +0000 (UTC)
-From:   Mike Travis <mike.travis@hpe.com>
-To:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steve Wahl <steve.wahl@hpe.com>, x86@kernel.org
-Cc:     Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Andy Shevchenko <andy@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH] x86/platform/uv: Dont use smp_processor_id while preemptable
-Date:   Fri, 20 May 2022 15:37:55 -0500
-Message-Id: <20220520203755.266337-1-mike.travis@hpe.com>
-X-Mailer: git-send-email 2.26.2
+        Fri, 20 May 2022 16:39:38 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D15419FF45
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:39:37 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id rs12so5914178ejb.13
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:39:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iSGqP8k10DFS00Kv/7Pr3iy8rKQRiyeNX2aJmQ3LLsM=;
+        b=FTMVepZP6e/k7QioiDdbKxNtwhWGQn0dhQoWkprd/KGGrVjGhD8TaFhu0SKJJneTu3
+         WXVoqKaj9KwLoKuh0hSVIaVAyLbluk+TKxuDlLVhpkvClzrdh8/2Zsf2NWWy/OXqPpZ5
+         rJaozeD4h4ZnFkjfHsMC40Q208VRfheGECHpI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iSGqP8k10DFS00Kv/7Pr3iy8rKQRiyeNX2aJmQ3LLsM=;
+        b=ISUy+nIwDlAm0gveNuK2UKUpL5WOqT45Mq+7ffXmmEZ2SmWEKITfTL6Gbvrn8gRsNL
+         oV9QEVYLzyArx3MVObzmn28Nlxy7UuV0yHAnEKwOcL+RzxwSzmOnts+WSdWtlyoat4D+
+         bZWmjxYeib+41F5o6sL+uJ3b2YbanuAB4SRRF54VOdzqyU19RwPaYBX0my8I9uUJdEaK
+         SKBcGqJbwNimtxVMqmh9WragycBW0oXSENJ3/yoYhkiS9AaLRlfUUCPwHmisa1IpUwAQ
+         fVMYwrgaOBUVF1dnFXfMJrOEboBUs8YKee2HtL8UcEdp9w0lbU5xucB9EJzRj3937VhI
+         DYDw==
+X-Gm-Message-State: AOAM533Eb3Oa8YHmyCACnHdyOuxTb+avOYEdrfFksnH1MZTgMQ0tVd/x
+        XNPUAkYBqEef791rvKGvp+fTkO0LKtX1Vw2csNo=
+X-Google-Smtp-Source: ABdhPJwC4eHy3ov+NictO7kFusDMw+N2yDLvrDP1Mf/XvPFqiih+GrkXsEpz0ZJnMyo81RLbXkB8HQ==
+X-Received: by 2002:a17:907:2da4:b0:6fe:a585:8092 with SMTP id gt36-20020a1709072da400b006fea5858092mr5271667ejc.55.1653079175991;
+        Fri, 20 May 2022 13:39:35 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id hg23-20020a1709072cd700b006f3ef214decsm3510954ejc.82.2022.05.20.13.39.33
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 13:39:34 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id s28so12820110wrb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:39:33 -0700 (PDT)
+X-Received: by 2002:a05:6000:1c03:b0:20e:5cac:1eb5 with SMTP id
+ ba3-20020a0560001c0300b0020e5cac1eb5mr9870704wrb.422.1653079173296; Fri, 20
+ May 2022 13:39:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: m21svjX_-GCqeTwK_FVQ7dSkUI5r4ybe
-X-Proofpoint-ORIG-GUID: m21svjX_-GCqeTwK_FVQ7dSkUI5r4ybe
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-20_06,2022-05-20_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 suspectscore=0 adultscore=0 mlxlogscore=915 spamscore=0
- phishscore=0 lowpriorityscore=0 mlxscore=0 clxscore=1011 bulkscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205200126
+References: <20220520161004.1141554-1-judyhsiao@chromium.org>
+ <20220520161004.1141554-2-judyhsiao@chromium.org> <CAE-0n53e0bq_MbfgZYdxatP8CpGVMKkBKOnSDOV+MvbBFB6wOA@mail.gmail.com>
+In-Reply-To: <CAE-0n53e0bq_MbfgZYdxatP8CpGVMKkBKOnSDOV+MvbBFB6wOA@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 20 May 2022 13:39:21 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VX_dr+hrNEGyC7GxcYcbMeL-uMaVLEJ5EgKnb76HVoDA@mail.gmail.com>
+Message-ID: <CAD=FV=VX_dr+hrNEGyC7GxcYcbMeL-uMaVLEJ5EgKnb76HVoDA@mail.gmail.com>
+Subject: Re: [v2 1/3] arm64: dts: qcom: sc7280: herobrine: Add pinconf
+ settings for mi2s1
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Judy Hsiao <judyhsiao@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Jimmy Cheng-Yi Chiang <cychiang@google.com>,
+        Judy Hsiao <judyhsiao@google.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid a "BUG: using smp_processor_id() in preemptible" debug
-warning message, disable preemption around use of the processor id.
+Hi,
 
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
----
- arch/x86/platform/uv/uv_time.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+On Fri, May 20, 2022 at 1:38 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Judy Hsiao (2022-05-20 09:10:02)
+> > 1. Add drive strength property for mi2s1 on sc7280 based platforms.
+> > 2. Disbale the pull-up mi2s1_data0, mi2s1_sclk.
+>
+> s/Disbale/Disable/
+>
+> The commit text is a list of things done but no reason why they're done.
+> I'd appreciate more freeform text with a blurb why a drive strength is
+> chosen and why pulls are disabled.
+>
+> > Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
+> > ---
+> >  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> >
+> > diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> > index 9cb1bc8ed6b5..6d8744e130b0 100644
+> > --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> > @@ -612,6 +612,20 @@ &dp_hot_plug_det {
+> >         bias-disable;
+> >  };
+> >
+> > +&mi2s1_data0 {
+> > +       drive-strength = <6>;
+> > +       bias-disable;
+>
+> Is there an external pull on this line?
+>
+> > +};
+> > +
+> > +&mi2s1_sclk {
+> > +       drive-strength = <6>;
+> > +       bias-disable;
+>
+> Is there an external pull on this line? If so please add that details as
+> a comment like we do for other external pulls.
 
-diff --git a/arch/x86/platform/uv/uv_time.c b/arch/x86/platform/uv/uv_time.c
-index 54663f3e00cb..094190814a28 100644
---- a/arch/x86/platform/uv/uv_time.c
-+++ b/arch/x86/platform/uv/uv_time.c
-@@ -275,14 +275,17 @@ static int uv_rtc_unset_timer(int cpu, int force)
-  */
- static u64 uv_read_rtc(struct clocksource *cs)
- {
--	unsigned long offset;
-+	unsigned long offset, time;
-+	unsigned int cpu = get_cpu();
- 
- 	if (uv_get_min_hub_revision_id() == 1)
- 		offset = 0;
- 	else
--		offset = (uv_blade_processor_id() * L1_CACHE_BYTES) % PAGE_SIZE;
-+		offset = (uv_cpu_blade_processor_id(cpu) * L1_CACHE_BYTES) % PAGE_SIZE;
- 
--	return (u64)uv_read_local_mmr(UVH_RTC | offset);
-+	time = (u64)uv_read_local_mmr(UVH_RTC | offset);
-+	put_cpu();
-+	return time;
- }
- 
- /*
--- 
-2.26.2
+Actually, I think they are output lines, which is why they have a
+drive-strength. I think for output lines we don't usually comment
+about why we're disabling the pulls, only for input lines?
 
+-Doug
