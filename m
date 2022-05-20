@@ -2,121 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E54D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 08:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346761AbiETIBy convert rfc822-to-8bit (ORCPT
+        id S1346803AbiETICp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 04:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        Fri, 20 May 2022 04:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346790AbiETIBs (ORCPT
+        with ESMTP id S1346771AbiETICn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 04:01:48 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972DC37A12;
-        Fri, 20 May 2022 01:01:47 -0700 (PDT)
-Received: by mail-qt1-f178.google.com with SMTP id b9so224922qtx.11;
-        Fri, 20 May 2022 01:01:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=H1iVOpRla5rs6rYvY27pFyr760HB96cTo8Ladb3Lo6o=;
-        b=lBHH6y7xt5cg2Cl1+lNnZHtczZi0hkIEMCWn8a8E/7YotQCqL++AP8Y8px5K654cTK
-         QDYIaD9ISI6QOLNcRDFSBVdG1QDF1QeshhWLaV3kupIxKvzRMDBf/sZNM4ctO1w1T5Xc
-         5x9PYZfOhvDsaN67cMUsXfcFlne3Q6JOFXOxMvFb1/oXAbu4MBnzUQFbLUnrPlgvj3pr
-         rAWmYZBu5o/Tx9WBBcYY7uukrph7O9PIWzO1YAKbnwrFbC2cRzltFiLCc6wgrFSx/cs9
-         cMi7JaWvMUqgPaipMrcouwcwwFSz9XnVfVlpIrwoHz26C1FUlae8AFxJ3XvhrnkNUhrr
-         BoWQ==
-X-Gm-Message-State: AOAM533R3xdVpGNwZdVRc58DBxRIPrHhkA0NAQ1RmdbQqn7WG/VD7Ri2
-        CDPCjMqfTal7FujeemX7FEQdJJSaFMhqzw==
-X-Google-Smtp-Source: ABdhPJy9rlq6FYckE6dvWhZXO5Xifn+8i7hpHnmg+AMuwMrCVUiVYubqnyrVW+beXfgSifPp3eGymg==
-X-Received: by 2002:ac8:5c56:0:b0:2f3:bdd1:4f1e with SMTP id j22-20020ac85c56000000b002f3bdd14f1emr6801141qtj.545.1653033706208;
-        Fri, 20 May 2022 01:01:46 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id f9-20020a05622a104900b002f39b99f69fsm3200042qte.57.2022.05.20.01.01.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 01:01:45 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2ec42eae76bso79086497b3.10;
-        Fri, 20 May 2022 01:01:45 -0700 (PDT)
-X-Received: by 2002:a81:9b0c:0:b0:2f4:c522:7d3c with SMTP id
- s12-20020a819b0c000000b002f4c5227d3cmr8843852ywg.316.1653033705399; Fri, 20
- May 2022 01:01:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220519153107.696864-1-clement.leger@bootlin.com>
- <20220519153107.696864-7-clement.leger@bootlin.com> <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
- <20220520095730.512bbb8d@fixe.home>
-In-Reply-To: <20220520095730.512bbb8d@fixe.home>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 May 2022 10:01:32 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
-Message-ID: <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings for
- Renesas RZ/N1 Advanced 5 port switch
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Fri, 20 May 2022 04:02:43 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD4939810
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 01:02:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id B82A521C96;
+        Fri, 20 May 2022 08:02:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653033761; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4dyUHFa2rIcc2e9oqlM5k+EFPG8cyRAb8yrunmcF9hY=;
+        b=xcESGwPy0Oxm8ptaMYTeQ1ZUtWS7igSONK/J1gei8hDXK5TxtVUMbHlvSvUQ+VvfdqjA2z
+        b5FRJvkFB8kjiGesex4wRf1LZb0OpJuZ8tIJiyI7Dh4D24rchxdyQ0GVUDjJbelPcZAgkq
+        TgGHfcbTnCwHe4b1mpnZVhzT8xDLkKY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653033761;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4dyUHFa2rIcc2e9oqlM5k+EFPG8cyRAb8yrunmcF9hY=;
+        b=2vqju6SyMmmrV/hF8pQp+vdFfGjAiivQJBMAbq4l/eQLpLOq0D/Alfa8fDgCzc+RUuwSwr
+        9cJguiVGdFSpsiBg==
+Received: from valkyrie.site.suse.de (unknown [10.163.18.242])
+        by relay2.suse.de (Postfix) with ESMTP id 8ED052C141;
+        Fri, 20 May 2022 08:02:41 +0000 (UTC)
+Date:   Fri, 20 May 2022 10:02:41 +0200
+Message-ID: <87leuwr5r2.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        "Mark Brown" <broonie@kernel.org>, <alsa-devel@alsa-project.org>,
+        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>,
+        Vitaly Rodionov <vitaly.rodionov@cirrus.com>
+Subject: Re: [PATCH v3 04/17] ALSA: hda: cs35l41: Add initial DSP support and firmware loading
+In-Reply-To: <87mtfcr5v1.wl-tiwai@suse.de>
+References: <20220519174749.15459-1-vitalyr@opensource.cirrus.com>
+        <20220519174749.15459-5-vitalyr@opensource.cirrus.com>
+        <87mtfcr5v1.wl-tiwai@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?ISO-2022-JP-2?B?R29qGyQoRCtXGyhC?=) APEL/10.8 Emacs/27
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Clément,
+On Fri, 20 May 2022 10:00:18 +0200,
+Takashi Iwai wrote:
+> 
+> On Thu, 19 May 2022 19:47:36 +0200,
+> Vitaly Rodionov wrote:
+> > 
+> > From: Vitaly Rodionov <vitaly.rodionov@cirrus.com>
+> > 
+> > This patch adds support for the CS35L41 DSP.
+> > The DSP allows for extra features, such as running
+> > speaker protection algorithms and hibernations.
+> > 
+> > To utilize these features, the driver must load
+> > firmware into the DSP, as well as various tuning
+> > files which allow for cusomtization for specific
+> > models.
+> 
+> Wouldn't this sequence be required after S3/S4 resume?
+> I thought cs35l41_hda_bind() is called only at the first binding.
 
-On Fri, May 20, 2022 at 9:58 AM Clément Léger <clement.leger@bootlin.com> wrote:
-> Le Fri, 20 May 2022 09:13:23 +0200,
-> Geert Uytterhoeven <geert@linux-m68k.org> a écrit :
-> > On Thu, May 19, 2022 at 5:32 PM Clément Léger <clement.leger@bootlin.com> wrote:
-> > > Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
-> > > present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
-> > > This company does not exists anymore and has been bought by Synopsys.
-> > > Since this IP can't be find anymore in the Synospsy portfolio, lets use
-> > > Renesas as the vendor compatible for this IP.
-> > >
-> > > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+OK, I see that the later patches in the series are about hibernation.
+It might be good to mention that in this patch, though.
 
-> > Missing "power-domains" property.
->
-> I do not use pm_runtime* in the switch driver. I should probably do that
-> right ?
 
-For now you don't have to.  But I think it is a good idea, and it helps if the
-IP block is ever reused in an SoC with real power areas.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Takashi
