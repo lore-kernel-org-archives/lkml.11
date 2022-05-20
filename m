@@ -2,156 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A13CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 14:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350145AbiETOKe (ORCPT
+        id S1346474AbiETOMb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 10:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33818 "EHLO
+        Fri, 20 May 2022 10:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbiETOKU (ORCPT
+        with ESMTP id S234377AbiETOM2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 10:10:20 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813C91668A6;
-        Fri, 20 May 2022 07:10:18 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id c26so8477058vsl.6;
-        Fri, 20 May 2022 07:10:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7xlJ0095zgB0c2Vb8evf5eblS7KNjFsBRz7hA5cc4xk=;
-        b=F2adFm0dsksybi2rC6k+PIt076DVcea/Bd3N45htU6EsZqv1MmC95+sCQDslUJqtp+
-         1UTtP8FAs/s2Hr4RRaiXr/CW6VuR07LJ5aNDn1kTlxpIISVvJbQvigLbPcpb+/VsKuw7
-         t8lw4FfVrlH7WwYXRSwvgX32weXdKkRLbCvGFHD7rBDXVr1Q5WSvC8Otj8IZ5Fvelxuk
-         bhYnmp3KEixDXCDc9b+YK+wXR8uC+7yGs4dJiokFQ+Om0+GlC1YFr6dq3qj/4wTsZ5J+
-         mlJ8w0+XTB7cP4DnskE2lLCFPEc4Gumwy9vN4cxHh25yhvzu/xDmcYcZ/fFixXNC4BkC
-         XW4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7xlJ0095zgB0c2Vb8evf5eblS7KNjFsBRz7hA5cc4xk=;
-        b=JhFd6mc7OKAa27vkqeAgVJCVtyvASf5iCQqgVG4WRUn8vMYuMs6ARYX2CPglMAoJHf
-         J+yXkorhp/6cB3JKEh8t3C9cOUzzvVEKhQ6/RwKtf/uTdjd7C5jBuRc/PqrtoJ/C6pdh
-         V85MKimDBiFjOpakatRfqP0fXPJsblcx9gjR0nLUxive9eEgnkkecUPHaaW+OH9Dytzi
-         fspASuqiA418aTq2aWCXMvA118RRye8nwI+iJvmWS73hxHsdxffxV7FNm8qhHcSlnQ+v
-         /02rpmDFPja2HsMxCy4OyK5dF1vOa3lEx4Q1rHoUxArerPhiwXq+9NBSVaTTU9crxzgY
-         QBNw==
-X-Gm-Message-State: AOAM530HyJlY7xSRmMVoKjs5rqMQrE3NP+4xFYKbQalXB0/csJK/ztd1
-        8HfItTSnNNLj95BEPLkXljoH5yh0qMQLOjRyRuJb5EUkNVOak1ot
-X-Google-Smtp-Source: ABdhPJwMOpVVngVB9TKYcsUkabtpLsRVzOSIqPkMg89E3lfuVoGU22wXBvVzfFrEzkIrrUjt/KLQjQYOViE2Oykxv6s=
-X-Received: by 2002:a67:e1c4:0:b0:335:cdc4:395f with SMTP id
- p4-20020a67e1c4000000b00335cdc4395fmr4220006vsl.71.1653055817568; Fri, 20 May
- 2022 07:10:17 -0700 (PDT)
+        Fri, 20 May 2022 10:12:28 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76381271A5;
+        Fri, 20 May 2022 07:12:26 -0700 (PDT)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 176FD100008;
+        Fri, 20 May 2022 14:12:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653055945;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MaQV0rcRl9yju3BQiEVjVqUfjR6zffQamWBXh+IHtho=;
+        b=T1I9QydTzzgBi3C/MLXC5ctI80aDQxh39c7tD4yw7kBo1kQgcR8zFJOs4rO5TmLCDkoVrl
+        BeYlBXUXcDFOY/DSA6KnjZH/3v7aFq+O4ryT8AOU6kCFDk48+qKtIZh5vDNZCFbMydakf7
+        g8HFzQ9c9eQQ+xIdLcj6IHmOmObocR3OeHO+Nk59Y7H156wJjPefrwQsYypFHvB9uLohuG
+        49G0r5hUELpkt6P2LuJSGFxtUy3HtYn2Lg+KVEU2fiZkdIXfDlrDSQhJWJqjya1luTXEdv
+        RWvYOkBrduLtm1JmPtHMgBCKTqEHb5EwqWlXPr69NjpHB/OdYbQV6+1DJv/txg==
+Date:   Fri, 20 May 2022 16:12:22 +0200
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH 2/3] dt-bindings: usb: atmel: Add Microchip LAN966x
+ compatible string
+Message-ID: <20220520161222.71fc3a75@bootlin.com>
+In-Reply-To: <YoedFkAsTdoOn/3Y@mail.local>
+References: <20220513105850.310375-1-herve.codina@bootlin.com>
+        <20220513105850.310375-3-herve.codina@bootlin.com>
+        <8f0d4127-7e66-cf50-21c9-99680f737e30@linaro.org>
+        <20220520133426.3b4728ae@bootlin.com>
+        <b087c34f-0e2f-edd0-a738-3ffc2853a41b@linaro.org>
+        <20220520142109.57b84da2@bootlin.com>
+        <01b31a02-523e-10bf-3b46-5b830e456522@linaro.org>
+        <20220520150243.625723fa@bootlin.com>
+        <d26c7ebd-fc1a-391e-39e4-5ec41bf4fbfa@linaro.org>
+        <YoedFkAsTdoOn/3Y@mail.local>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20220518092619.1269111-1-chenhuacai@loongson.cn>
- <20220518092619.1269111-10-chenhuacai@loongson.cn> <CAMj1kXEBVWi2ZdR5Le5-G0DA43u-AMxmSO=pVt39qwN=PkzQfw@mail.gmail.com>
- <0bae0df1-48ae-d02f-bce4-d1f69acf269e@redhat.com>
-In-Reply-To: <0bae0df1-48ae-d02f-bce4-d1f69acf269e@redhat.com>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Fri, 20 May 2022 22:09:18 +0800
-Message-ID: <CAAhV-H5dqNiecER3fChkBjQUGGszj6gwcpOFM1b4Kaax5vz27g@mail.gmail.com>
-Subject: Re: [PATCH V11 09/22] LoongArch: Add boot and setup routines
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-efi <linux-efi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Javier,
+Hi Alexandre,
 
-On Fri, May 20, 2022 at 5:41 PM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
->
-> Hello Ard and Huacai,
->
-> On 5/20/22 11:17, Ard Biesheuvel wrote:
->
-> [snip]
->
-> >> +
-> >> +static int __init register_gop_device(void)
-> >> +{
-> >> +       void *pd;
-> >> +
-> >> +       if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI)
-> >> +               return 0;
-> >> +       pd = platform_device_register_data(NULL, "efi-framebuffer", 0,
-> >> +                       &screen_info, sizeof(screen_info));
-> >> +       return PTR_ERR_OR_ZERO(pd);
-> >> +}
-> >> +subsys_initcall(register_gop_device);
-> >
-> > Not sure this is now the correct way to do this - cc'ing Javier.
-> >
->
-> Is not the correct way to do it indeed, that can just be dropped.
->
-> We have unified now all the system framebuffer platform device
-> registration under drivers/firmware/sysfb.c (and the EFI quirks
-> if needed under drivers/firmware/efi/sysfb_efi.c).
->
-> So the only thing that a platform should do, is to enable the
-> the CONFIG_SYSFB config option. The screen_info should be set
-> correctly from the EFI GOP, but it seems that's already working
-> since you were already using it in register_gop_device().
->
-> But also, the "efi-framebuffer" platform device matches against
-> the legacy efifb fbdev driver. And now there's a simpledrm driver
-> that is also able to use the firmware-provided framebuffer.
->
-> You can enable that driver with CONFIG_DRM_SIMPLEDRM.
->
-> That driver though doesn't match against "efi-framebuffer" but with
-> a "simple-framebuffer", to make sysfb register that instead of the
-> "efi-framebuffer" device, you need to set CONFIG_SYSFB_SIMPLEFB too.
->
-> If for some reasons you need to provide a fbdev interface to the
-> user-space, you can enable CONFIG_DRM_FBDEV_EMULATION to have that.
->
-> In summary, just enable the following to use the firmware framebuffer:
->
-> CONFIG_DRM_SIMPLEDRM=y
-> CONFIG_DRM_FBDEV_EMULATION=y
-> CONFIG_SYSFB=y
-> CONFIG_SYSFB_SIMPLEFB=y
-Thank you very much, since 5.15 sysfb_init() do all things of
-register_gop_device(), so register_gop_device() here can be removed.
-But there is another small problem: if simpledrm or efifb driver is
-built-in, there is no display. The reason is both sysfb_init() and
-display driver are in the same initcall level (device_initcall()).
-From the comments I know that sysfb_init() should after PCI
-enumeration which is in subsys_initcall(), so, could we make
-sysfb_init() to be a subsys_initcall_sync()?
+On Fri, 20 May 2022 15:52:22 +0200
+Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
 
-Huacai
->
-> --
-> Best regards,
->
-> Javier Martinez Canillas
-> Linux Engineering
-> Red Hat
->
+> Hello,
+>=20
+> On 20/05/2022 15:38:36+0200, Krzysztof Kozlowski wrote:
+> > On 20/05/2022 15:02, Herve Codina wrote: =20
+> > > On Fri, 20 May 2022 14:50:24 +0200
+> > > Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+> > >  =20
+> > >> On 20/05/2022 14:21, Herve Codina wrote: =20
+> > >>>>> I think it makes sense to keep 'microchip,lan966x-udc' for the USB
+> > >>>>> device controller (same controller on LAN9662 and LAN9668) and so
+> > >>>>> keeping the same rules as for other common parts.     =20
+> > >>>>
+> > >>>> Having wildcard was rather a mistake and we already started correc=
+ting
+> > >>>> it, so keeping the "mistake" neither gives you consistency, nor
+> > >>>> correctness...
+> > >>>>   =20
+> > >>>
+> > >>> I think that the "family" compatible should be present.
+> > >>> This one allows to define the common parts in the common
+> > >>> .dtsi file (lan966x.dtsi in our case).
+> > >>>
+> > >>> What do you think about:
+> > >>> - microchip,lan9662-udc
+> > >>> - microchip,lan9668-udc
+> > >>> - microchip,lan966-udc  <-- Family
+> > >>>
+> > >>> lan966 is defined as the family compatible string since (1) in
+> > >>> bindings/arm/atmel-at91.yaml and in Documentation/arm/microchip.rst
+> > >>>    =20
+> > >>
+> > >> You can add some family compatible, if it makes sense. I don't get w=
+hy
+> > >> do you mention it - we did not discuss family names, but using
+> > >> wildcards... Just please do not add wildcards. =20
+> > >=20
+> > > Well, I mentioned it as I will only use the family compatible string
+> > > and not the SOC (lan9662 or lan9668) compatible string in lan966x.dts=
+i.
+> > > In this case, the family compatible string can be seen as a kind of
+> > > "wildcard". =20
+> >=20
+> > I understood as "the "family" compatible should be present" as you want
+> > to add it as a fallback. It would be okay (assuming devices indeed share
+> > family design). If you want to use it as the only one, then it is again
+> > not a recommended approach. Please use specific compatibles.
+> >=20
+> > I mean, why do we have this discussion? What is the benefit for you to
+> > implement something not-recommended by Devicetree spec and style?
+> >  =20
+>=20
+> Honestly, I would just go for microchip,lan9662-udc. There is no
+> difference between lan9662 and lan9668 apart from the number of switch
+> ports.
+>=20
+
+Sounds good.
+I will do that.
+
+Thanks,
+Herv=C3=A9
+
+--=20
+Herv=C3=A9 Codina, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
