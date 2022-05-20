@@ -2,173 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3710C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4074BC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 13:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349962AbiETNti (ORCPT
+        id S1349975AbiETNt6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 09:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        Fri, 20 May 2022 09:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236525AbiETNtb (ORCPT
+        with ESMTP id S236525AbiETNtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 09:49:31 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8346216D4A5;
-        Fri, 20 May 2022 06:49:30 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id rs12so4009563ejb.13;
-        Fri, 20 May 2022 06:49:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vLu6prHE7CXUmpUtYCqU/VlBGj2MznfppHbEU5NVX48=;
-        b=N9cHE+cMf4gYMXLgkqEgNtyHL9BZ9o5tzR31xFjwHF0V8HddVlxGGzjTqvFC6mF6tS
-         Bqdoxw0pmdtsvorcrIoS8vrO1IdnqYUmHBxeP0R9hLjgYsIg25edbuUm3vttaywz88AR
-         uMN+14dZXH/xTZ2zNclfm5auurIPGsRZy15KKUZnK/KfxqeCM0F+Tg+ViPTzL2YIVnk3
-         hIr1ln2/8tukjEe63snmQBwFoeXSbLdcTtyEsBuH12cHfHT5ovkbworONslL5dtliDjH
-         NOCTyevP45qqR9tOuKlVXlF2zmgfpldPJNG2m37oFBsyOodHB0LWBflLGCs4BerxwJO0
-         JexQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vLu6prHE7CXUmpUtYCqU/VlBGj2MznfppHbEU5NVX48=;
-        b=eVcKz770JTSwlPz0eIn5TLpPw2J2F6YMgedo7wd7E/1rnKnNW1bO9raUwehj4XzqYx
-         W3mmyocLByJzRr6oHB1NeDy/bH4ZhGrY9Z1sUe1Ina2jnY8i/KqCwtRjKyaZAAVv5ECX
-         ftZb55U6/NQMMkqmbsxck4vmJOtgAWMM4AcztjAhXrL0vHlBP4FcMGcFNc4iGElyHC9c
-         A37jhGqmAwZ/Sl8hbXgWdwkuCPYz8z0zIeMR3MiXPGMPbTbMFhl5mRpQ5GD1Lc234uIi
-         ViE5rEVZZW9bOOSnRpP98XxiYrqvY99SAbaFDCywFdhsDl9R8uDfd+oLjXAegZfLLynV
-         eVsg==
-X-Gm-Message-State: AOAM530tfuBFzECCf47jUmxfCzVqHOhsOjF8jinJ7H23uy/nWzytDUg4
-        JSzL80TEF6wxk/bs/QONWQ0A/H0W+v76A5fmypc=
-X-Google-Smtp-Source: ABdhPJyufemWfCAAyN03k8cJt2zC0fl4W3n9O0xqGHX18dypGPM+f/0G/4mda4EIBQy9huNnu8/fb9Maq9joHhxdHUU=
-X-Received: by 2002:a17:907:a088:b0:6f4:f661:f77a with SMTP id
- hu8-20020a170907a08800b006f4f661f77amr8866778ejc.77.1653054569000; Fri, 20
- May 2022 06:49:29 -0700 (PDT)
+        Fri, 20 May 2022 09:49:55 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665B716D487;
+        Fri, 20 May 2022 06:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=GJGrGL+DVcHuhI2r84CqAD4dzEKyqLSzvpB5MkYxmUM=; b=qWlrAWtiiSwwBulv4IYFR9fEOz
+        6FcXu7NOEcQVvL4/TxgBlw1rhpVym0B86FlkPfClxMuSXzIJJ+V5/ZRkFy1Gs2XhmLPpzXGO9Xgn7
+        PqBOMo//RkZZe761KFF5z6INgOjL6ocASL7q9oUygcJaH+j34p0EFc43B8hRdM2+Dg1s=;
+Received: from p200300daa70ef200f0b63cecc7e2566c.dip0.t-ipconnect.de ([2003:da:a70e:f200:f0b6:3cec:c7e2:566c] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1ns30a-0002dC-NH; Fri, 20 May 2022 15:49:36 +0200
+Message-ID: <39b34170-cf98-72fc-881f-ce0e42573f66@nbd.name>
+Date:   Fri, 20 May 2022 15:49:36 +0200
 MIME-Version: 1.0
-References: <20220520025624.3803776-1-zheyuma97@gmail.com>
-In-Reply-To: <20220520025624.3803776-1-zheyuma97@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 20 May 2022 15:48:52 +0200
-Message-ID: <CAHp75Vc5MERshhsqfiG5XXREJYkWO03V0a=6v4TUKG-fPdy+sw@mail.gmail.com>
-Subject: Re: [PATCH v3] gpio: ml-ioh: Convert to use managed functions pcim*
- and devm_*
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Content-Language: en-US
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220520145957.1ec50e44@canb.auug.org.au>
+ <20220519222044.1106dbd7@kernel.org> <YodFzAu0gSSMdJIz@salvia>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <YodFzAu0gSSMdJIz@salvia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 4:56 AM Zheyu Ma <zheyuma97@gmail.com> wrote:
->
->  When removing the module, we will get the following flaw:
->
-> [   14.204955] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'gpio_ml_ioh'
-> [   14.205827] WARNING: CPU: 0 PID: 305 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
-> ...
-> [   14.220613]  ioh_gpio_remove+0xc5/0xe0 [gpio_ml_ioh]
-> [   14.221075]  pci_device_remove+0x92/0x240
->
-> Fix this by using managed functions, this makes the error handling more
-> simpler.
 
-Thanks!
+On 20.05.22 09:39, Pablo Neira Ayuso wrote:
+> On Thu, May 19, 2022 at 10:20:44PM -0700, Jakub Kicinski wrote:
+>> On Fri, 20 May 2022 14:59:57 +1000 Stephen Rothwell wrote:
+>> > Hi all,
+>> > 
+>> > After merging the net-next tree, today's linux-next build (x86_64
+>> > allmodconfig) failed like this:
+>> 
+>> FWIW just merged the fix, if you pull again you'll get this and a fix
+>> for the netfilter warning about ctnetlink_dump_one_entry().
+> 
+> Thanks.
+> 
+> Felix forgot to include the update for the mtk driver in his batch it
+> seems.
+I didn't forget. It was in the series I posted for -next but I had to 
+remove it to rebase the patch onto nf (as requested by you).
+The affected code didn't exist in nf.git.
 
-I have a few comments, but they are not critical, so either a followup
-or new version depends on Bart's preferences.
-
-...
-
-> -       ret = pci_enable_device(pdev);
-> +       ret = pcim_enable_device(pdev);
->         if (ret) {
-> -               dev_err(dev, "%s : pci_enable_device failed", __func__);
-> -               goto err_pci_enable;
-> +               dev_err(dev, "%s : pcim_enable_device failed", __func__);
-> +               return ret;
-
-Since you touch them both, we may convert to `return
-dev_err_probe(...);` pattern here and elsewhere. But it might be
-better to have in the followup as logically different change.
-
->         }
-
-...
-
-> -       base = pci_iomap(pdev, 1, 0);
-> +       base = pcim_iomap_table(pdev)[1];
-
->         if (!base) {
-> -               dev_err(dev, "%s : pci_iomap failed", __func__);
-> -               ret = -ENOMEM;
-> -               goto err_iomap;
-> +               dev_err(dev, "%s : pcim_iomap_table failed", __func__);
-> +               return -ENOMEM;
->         }
-
-These lines are dead code since you already checked
-pcim_ioremap_regions(). If it doesn't fail, this one never fails.
-
-...
-
-> -       chip_save = kcalloc(8, sizeof(*chip), GFP_KERNEL);
-> +       chip_save = devm_kcalloc(dev, 8, sizeof(*chip), GFP_KERNEL);
-
->         if (chip_save == NULL) {
-> -               ret = -ENOMEM;
-> -               goto err_kzalloc;
-> +               return -ENOMEM;
->         }
-
-The {} are redundant now and the ' == NULL' part can be replaced by '!'.
-
-...
-
->                 if (irq_base < 0) {
-
->                         dev_warn(dev,
->                                 "ml_ioh_gpio: Failed to get IRQ base num\n");
-
-This should be dev_err(), but you may convert it altogether to `return
-dev_err_probe(...);` in the respective patch.
-
-> -                       ret = irq_base;
-> -                       goto err_gpiochip_add;
-> +                       return irq_base;
->                 }
->                 chip->irq_base = irq_base;
->
->                 ret = ioh_gpio_alloc_generic_chip(chip,
->                                                   irq_base, num_ports[j]);
->                 if (ret)
-> -                       goto err_gpiochip_add;
-> +                       return ret;
->         }
-
-...
-
->         if (ret != 0) {
-
-Also in a separate patch you may replace all this kind of lines;
-
-if (chip == NULL) ==> if (!chip)
-if (ret != 0) ==> if (ret)
-
->                 dev_err(dev, "%s request_irq failed\n", __func__);
-> -               goto err_gpiochip_add;
-> +               return ret;
-
-return dev_err_probe(...);
-But here it's definitely in a separate patch.
-
->         }
-
--- 
-With Best Regards,
-Andy Shevchenko
+- Felix
