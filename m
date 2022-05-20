@@ -2,119 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2808C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 09:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E84C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 10:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348019AbiETJ6a (ORCPT
+        id S1348016AbiETKCx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 05:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
+        Fri, 20 May 2022 06:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347728AbiETJ60 (ORCPT
+        with ESMTP id S229809AbiETKCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 05:58:26 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47840EC3FD;
-        Fri, 20 May 2022 02:58:25 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F001B1F88B;
-        Fri, 20 May 2022 09:58:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653040703; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=64ihC9Z8An8BVNW7TtS5ZeiD3v6obwU4Wb5TbN/d6lE=;
-        b=rtE5ey666MicJjXHbgWRKj4LKRbVjjbtZKGOlcEy0wYWsmtAxl0gOH3JIchkIUpk5/QrEx
-        S2eehmOuYALLl7ipS8ZcojV8wS61nbxkTA8SHF+8lGFopefr0S+lketbS5TnIW9F35kJeK
-        /jqQZ+v9kFHpDzNfHKmUMEFsPLGculw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653040703;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=64ihC9Z8An8BVNW7TtS5ZeiD3v6obwU4Wb5TbN/d6lE=;
-        b=4WIMZ8b0BHB7yygq7FdP0yMfnRLqf4/mr1Eup2XUb9bb3irniVoZkLmTCJWqKJ2Ji9V8sO
-        A4BhfRvi3GHbVMCg==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
+        Fri, 20 May 2022 06:02:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D1BA30BC;
+        Fri, 20 May 2022 03:02:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C94CD2C141;
-        Fri, 20 May 2022 09:58:23 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 26F32A0634; Fri, 20 May 2022 11:50:28 +0200 (CEST)
-Date:   Fri, 20 May 2022 11:50:28 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     Jan Kara <jack@suse.cz>, linux-ext4@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: kernel BUG in ext4_writepages
-Message-ID: <20220520095028.rq4ef2o5nwetzog3@quack3>
-References: <49ac1697-5235-ca2e-2738-f0399c26d718@linaro.org>
- <20220519122353.eqpnxiaybvobfszb@quack3.lan>
- <e9ccb919-1616-f94f-c465-7024011ad8e5@linaro.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6792F61CCC;
+        Fri, 20 May 2022 10:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB789C385A9;
+        Fri, 20 May 2022 10:02:44 +0000 (UTC)
+Message-ID: <b7b5ac18-b4d2-a801-c2ff-6b48c8b863b9@xs4all.nl>
+Date:   Fri, 20 May 2022 12:02:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e9ccb919-1616-f94f-c465-7024011ad8e5@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 0/4] Add Toshiba Visconti DNN image processing accelerator
+ driver
+Content-Language: en-US
+To:     yuji2.ishikawa@toshiba.co.jp, robh+dt@kernel.org,
+        nobuhiro1.iwamatsu@toshiba.co.jp, sumit.semwal@linaro.org,
+        christian.koenig@amd.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org
+References: <20220428131128.5053-1-yuji2.ishikawa@toshiba.co.jp>
+ <b5e35985-c159-6b11-8752-d6dd29fc6a64@xs4all.nl>
+ <TYAPR01MB62015F4029956F009EC03FBE92D39@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <TYAPR01MB62015F4029956F009EC03FBE92D39@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 19-05-22 16:14:17, Tadeusz Struk wrote:
-> On 5/19/22 05:23, Jan Kara wrote:
-> > Hi!
-> > 
-> > On Tue 10-05-22 15:28:38, Tadeusz Struk wrote:
-> > > Syzbot found another BUG in ext4_writepages [1].
-> > > This time it complains about inode with inline data.
-> > > C reproducer can be found here [2]
-> > > I was able to trigger it on 5.18.0-rc6
-> > > 
-> > > [1] https://syzkaller.appspot.com/bug?id=a1e89d09bbbcbd5c4cb45db230ee28c822953984
-> > > [2] https://syzkaller.appspot.com/text?tag=ReproC&x=129da6caf00000
-> > 
-> > Thanks for report. This should be fixed by:
-> > 
-> > https://lore.kernel.org/all/20220516012752.17241-1-yebin10@huawei.com/
-> 
-> 
-> In case of the syzbot bug there is something messed up with PAGE DIRTY flags
-> and the way syzbot sets up the write. This is what triggers the crash:
+Hi Yuji,
 
-Can you tell me where exactly we hit the bug? I've now noticed that this is
-on 5.10 kernel and on vanilla 5.10 there's no BUG_ON on line 2753.
-
-> $ ftrace -f ./repro
-> ...
-> [pid  2395] open("./bus", O_RDWR|O_CREAT|O_SYNC|O_NOATIME, 000 <unfinished ...>
-> [pid  2395] <... open resumed> )        = 6
-> ...
-> [pid  2395] write(6, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 22 <unfinished ...>
-> ...
-> [pid  2395] <... write resumed> )       = 22
+On 5/20/22 11:48, yuji2.ishikawa@toshiba.co.jp wrote:
+> Hi Hans,
 > 
-> One way I could fix it was to clear the PAGECACHE_TAG_DIRTY on the mapping in
-> ext4_try_to_write_inline_data() after the page has been updated:
-> 
-> diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
-> index 9c076262770d..e4bbb53fa26f 100644
-> --- a/fs/ext4/inline.c
-> +++ b/fs/ext4/inline.c
-> @@ -715,6 +715,7 @@ int ext4_try_to_write_inline_data(struct address_space *mapping,
->  			put_page(page);
->  			goto out_up_read;
->  		}
-> +		__xa_clear_mark(&mapping->i_pages, 0, PAGECACHE_TAG_DIRTY);
->  	}
->  	ret = 1;
-> 
-> Please let me know it if makes sense any I will send a proper patch.
+> Thank you for your comment.
+> I agree that this submission lacks documents sharing basic idea of the accelerators; what do they accept and what do they yield.
+> Where can I put a new document? Can I put it as a comment in a source? Can I add a file under Documentation/misc-devices directory?
 
-No, this looks really wrong... We need to better understand what's going
-on.
+Start with explaining it by replying to this mail. Without knowing anything
+about the hardware, it is difficult to say what the best place is. Usually
+it is either the public API header, or somewhere in Documentation.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+The first step is to have a better understanding of the Visconti image hardware
+and to see what the best subsystem would be to support that hardware.
+
+Regards,
+
+	Hans
+
+> 
+> Thanks,
+> Yuji Ishikawa
+> 
+>> -----Original Message-----
+>> From: Hans Verkuil <hverkuil@xs4all.nl>
+>> Sent: Thursday, May 12, 2022 8:15 PM
+>> To: ishikawa yuji(石川 悠司 ○ＲＤＣ□ＡＩＴＣ○ＥＡ開)
+>> <yuji2.ishikawa@toshiba.co.jp>; Rob Herring <robh+dt@kernel.org>;
+>> iwamatsu nobuhiro(岩松 信洋 □ＳＷＣ◯ＡＣＴ)
+>> <nobuhiro1.iwamatsu@toshiba.co.jp>; Sumit Semwal
+>> <sumit.semwal@linaro.org>; Christian König <christian.koenig@amd.com>
+>> Cc: linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
+>> linux-media@vger.kernel.org; dri-devel@lists.freedesktop.org;
+>> linaro-mm-sig@lists.linaro.org
+>> Subject: Re: [PATCH 0/4] Add Toshiba Visconti DNN image processing
+>> accelerator driver
+>>
+>> Hi Yuji,
+>>
+>> On 4/28/22 15:11, Yuji Ishikawa wrote:
+>>> This series is the DNN image processing accelerator driver for Toshiba's ARM
+>> SoC, Visconti[0].
+>>> This provides DT binding documentation, device driver, MAINTAINER files.
+>>>
+>>> The second patch "soc: visconti: Add Toshiba Visconti image processing
+>> accelerator common source"
+>>> and the fourth patch "MAINTAINERS: ..." are the same as the ones in the
+>> preceding post for affine driver.
+>>
+>> There appears to be no documentation whatsoever, unless I am missing
+>> something.
+>>
+>> How is the uAPI supposed to be used? What does it do? What formats does it
+>> accept or produce?
+>>
+>> If this processes images, then (as Laurent mentioned) this is more suitable as a
+>> V4L2 mem2mem driver.
+>>
+>> See
+>> https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/dev-me
+>> m2mem.html
+>> and the many drivers in drivers/media that use it (git grep v4l2-mem2mem.h).
+>>
+>> But without any explanation whatsoever I have no idea what does or does not
+>> make sense.
+>>
+>> Regards,
+>>
+>> 	Hans
+>>
+>>>
+>>> Best regards,
+>>> Yuji
+>>>
+>>> [0]:
+>>>
+>> https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-
+>>> recognition-processors-visconti.html
+>>>
+>>> Yuji Ishikawa (4):
+>>>   dt-bindings: soc: visconti: Add Toshiba Visconti DNN image processing
+>>>     accelerator bindings
+>>>   soc: visconti: Add Toshiba Visconti image processing accelerator
+>>>     common source
+>>>   soc: visconti: Add Toshiba Visconti DNN image processing accelerator
+>>>   MAINTAINERS: Add entries for Toshiba Visconti DNN image processing
+>>>     accelerator
+>>>
+>>>  .../soc/visconti/toshiba,visconti-dnn.yaml    |  54 ++
+>>>  MAINTAINERS                                   |   2 +
+>>>  drivers/soc/Kconfig                           |   1 +
+>>>  drivers/soc/Makefile                          |   1 +
+>>>  drivers/soc/visconti/Kconfig                  |   7 +
+>>>  drivers/soc/visconti/Makefile                 |   8 +
+>>>  drivers/soc/visconti/dnn/Makefile             |   6 +
+>>>  drivers/soc/visconti/dnn/dnn.c                | 533
+>> ++++++++++++++++++
+>>>  drivers/soc/visconti/dnn/hwd_dnn.c            | 183 ++++++
+>>>  drivers/soc/visconti/dnn/hwd_dnn.h            |  68 +++
+>>>  drivers/soc/visconti/dnn/hwd_dnn_reg.h        | 228 ++++++++
+>>>  drivers/soc/visconti/ipa_common.c             |  55 ++
+>>>  drivers/soc/visconti/ipa_common.h             |  18 +
+>>>  drivers/soc/visconti/uapi/dnn.h               |  77 +++
+>>>  drivers/soc/visconti/uapi/ipa.h               |  88 +++
+>>>  15 files changed, 1329 insertions(+)
+>>>  create mode 100644
+>>> Documentation/devicetree/bindings/soc/visconti/toshiba,visconti-dnn.ya
+>>> ml  create mode 100644 drivers/soc/visconti/Kconfig  create mode
+>>> 100644 drivers/soc/visconti/Makefile  create mode 100644
+>>> drivers/soc/visconti/dnn/Makefile  create mode 100644
+>>> drivers/soc/visconti/dnn/dnn.c  create mode 100644
+>>> drivers/soc/visconti/dnn/hwd_dnn.c
+>>>  create mode 100644 drivers/soc/visconti/dnn/hwd_dnn.h
+>>>  create mode 100644 drivers/soc/visconti/dnn/hwd_dnn_reg.h
+>>>  create mode 100644 drivers/soc/visconti/ipa_common.c  create mode
+>>> 100644 drivers/soc/visconti/ipa_common.h  create mode 100644
+>>> drivers/soc/visconti/uapi/dnn.h  create mode 100644
+>>> drivers/soc/visconti/uapi/ipa.h
+>>>
