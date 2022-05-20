@@ -2,97 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69020C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2293C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 15:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350893AbiETPex (ORCPT
+        id S1350903AbiETPia (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 11:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51572 "EHLO
+        Fri, 20 May 2022 11:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243036AbiETPeu (ORCPT
+        with ESMTP id S1344615AbiETPi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 11:34:50 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A93179084
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:34:49 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id r71so8066736pgr.0
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:34:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=e3zRTRtgvILEICGPiLa/WYEa5fM29ZCSz7EUFRvdtTU=;
-        b=oGkNhLX3ZdPbv/FoolRZwwzMYLvSflVnMKZndrubwwVxefDL/TJsFcwA7PHv3NPmop
-         1AjRtWBBvEnjh5/Hz5IT6vr880lfZw2A02pAcAcrssPEWPQm+BfkFrNZgqPu+pOgqZNI
-         5//sCsv6kGtH1fLbFATDm0TD4qVmx936MlA8s+V9XKNR72F5kWuYpZAskohh3Ll9URu0
-         5wAIPJ6ZsufyrR/wE7C3HSYq74VRIRgH8Mlrv3yercHpUNtj7yt5kexMM5Pd12uPcLv8
-         oxQiynEUoCRcvOF84+EE8T46bpi5LD2PvABqt1I3iezIB50wrHQW2uHMYWqrFEzgtXSh
-         Z6xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=e3zRTRtgvILEICGPiLa/WYEa5fM29ZCSz7EUFRvdtTU=;
-        b=whtJ3/NfnYPa1JBV6UsQ6suBip3Co9+YvaH1Mys2tLN2ljD+4peLrLq4rw5MVqb1UX
-         I4Gc7gZ5JsdXH9TfXYuE+j0R1LyhUCY78LAqBa8gmeZmAxqAjh1HBOQpKuqaQVHjx//5
-         H8OSZ1Ikg3GAiK4Oh0NlpCOYFLQ7x09PqhJ8/N7MkfP9e8r0bcgCKwQSGUs6/qSMOpy1
-         mq1Cmr1rpe7FZ4cmtOwMuJ5+74ZWDvgILSDvIyzcKFXiV++odeNorsHNqThTCm3bFThl
-         i1YKkbIbdLgggt8xyYBKqZixys9Cl86a0HQY84Xf5IfRL+klhS/hXrY/69KrNGQsuQMN
-         NYZw==
-X-Gm-Message-State: AOAM532aZzS4vJkgpYeQslR+Y62pIrZ+besFHKa3WE6d0FTsm5ED27+Y
-        e+QIkUxyTZo3WYkDz6w2F4uceQ==
-X-Google-Smtp-Source: ABdhPJye3iSjVZVnCNjKkjVoudazo5xjF4r6gxTAf/5wgpCjyoSqMp8Kyzng+oax8HnxSmv5B37mqA==
-X-Received: by 2002:a63:115b:0:b0:3c1:eb46:6f5 with SMTP id 27-20020a63115b000000b003c1eb4606f5mr9021128pgr.277.1653060888405;
-        Fri, 20 May 2022 08:34:48 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id l13-20020a17090af8cd00b001cd4989ff42sm2029545pjd.9.2022.05.20.08.34.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 08:34:47 -0700 (PDT)
-Message-ID: <bbdeeca7-9c99-e661-6596-f04ea783a30b@kernel.dk>
-Date:   Fri, 20 May 2022 09:34:46 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 0/3] random: convert to using iters, for Al Viro
-Content-Language: en-US
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>, Christoph Hellwig <hch@lst.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-References: <20220520094459.116240-1-Jason@zx2c4.com>
- <Yoey+FOYO69lS5qP@zx2c4.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <Yoey+FOYO69lS5qP@zx2c4.com>
-Content-Type: text/plain; charset=UTF-8
+        Fri, 20 May 2022 11:38:28 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E729D05C
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 08:38:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653061107; x=1684597107;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FTcYXObNA72+JfxB9UBcj9N5vY/n/OK6No5jETfhSeQ=;
+  b=XigNgZyMyKxRuG0zyupy9og5KeSHEmflANghRU84Hm8GpNC8w6CIhdWc
+   COSCFwaSaKarnUEIu10wcGgsEuiPAj9flf8WB+y4GwuIxyZq7fyT8AB5p
+   ipz/u2CAxhhM+UXUiH0QFcYKI/AsM8llWCaNWLn79mwHZOXClj5zDL4qR
+   wEwCdaO2vS9mLu+ECNLnUDPvfLJ3kFco3OP/j3cCFZIjNv/Ok6705yws9
+   2pCW2yLRYvWPYh0xt1PB9hnhGuqrd/JZshd3k0S/AoS0g7p7vd0L/2ihV
+   TevAy+LzSYYPhk8b18W9drGDXspPS9tjqmQGvQVRnboI32nWfyPCdryjf
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="359042209"
+X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
+   d="scan'208";a="359042209"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 08:38:26 -0700
+X-IronPort-AV: E=Sophos;i="5.91,239,1647327600"; 
+   d="scan'208";a="599278128"
+Received: from yyan7-mobl1.ccr.corp.intel.com ([10.255.31.53])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 08:38:19 -0700
+Message-ID: <a2fba1bf7cf0833372a825f626c12502a44a660e.camel@intel.com>
+Subject: Re: [PATCH v3 1/3] x86: Use HLT in default_idle when idle=nomwait
+ cmdline arg is passed
+From:   Zhang Rui <rui.zhang@intel.com>
+To:     Wyes Karny <wyes.karny@amd.com>, linux-kernel@vger.kernel.org
+Cc:     Lewis.Carroll@amd.com, Mario.Limonciello@amd.com,
+        gautham.shenoy@amd.com, Ananth.Narayan@amd.com, bharata@amd.com,
+        len.brown@intel.com, x86@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, peterz@infradead.org, chang.seok.bae@intel.com,
+        keescook@chromium.org, metze@samba.org, zhengqi.arch@bytedance.com,
+        mark.rutland@arm.com, puwen@hygon.cn, rafael.j.wysocki@intel.com,
+        andrew.cooper3@citrix.com, jing2.liu@intel.com,
+        jmattson@google.com, pawan.kumar.gupta@linux.intel.com
+Date:   Fri, 20 May 2022 23:38:17 +0800
+In-Reply-To: <1b24cadcf1d86a91352baa13905218015b9d4fed.1652176835.git-series.wyes.karny@amd.com>
+References: <cover.fba143c82098dffab6bbf0a2f3c4be8bae07ccf1.1652176835.git-series.wyes.karny@amd.com>
+         <1b24cadcf1d86a91352baa13905218015b9d4fed.1652176835.git-series.wyes.karny@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/20/22 9:25 AM, Jason A. Donenfeld wrote:
-> Hi Jens,
+Hi, Wyes,
+
+On Tue, 2022-05-10 at 15:48 +0530, Wyes Karny wrote:
+> When kernel is booted with idle=nomwait do not use MWAIT as the
+> default idle state.
 > 
-> On Fri, May 20, 2022 at 11:44:56AM +0200, Jason A. Donenfeld wrote:
->> Jens Axboe (3):
->>   random: convert to using fops->read_iter()
->>   random: convert to using fops->write_iter()
->>   random: wire up fops->splice_{read,write}_iter()
+> If the user boots the kernel with idle=nomwait, it is a clear
+> direction to not use mwait as the default idle state.
+> However, the current code does not take this into consideration
+> while selecting the default idle state on x86.
 > 
-> FYI, this series makes reads from /dev/urandom slower, from around 616
-> MiB/s to 598 MiB/s on my system. That seems rather unfortunate.
+> This patch fixes it by checking for the idle=nomwait boot option in
+> prefer_mwait_c1_over_halt().
+> 
+> Also update the documentation around idle=nomwait appropriately.
 
-How reproducible is that? That seems like a huge difference for the
-change. How big are the reads?
+I think we also need to update the comment in idle_setup() as well. 
 
-> Are we sure we really want to do this and need to do this?
+        } else if (!strcmp(str, "nomwait")) {
+                /*
+        
+         * If the boot option of "idle=nomwait" is added,
+              
+   * it means that mwait will be disabled for CPU C2/C3
+                
+ * states. In such case it won't touch the variable
+                 *
+of boot_option_idle_override.
+                 */
+                boot_op
+tion_idle_override = IDLE_NOMWAIT;
+        } else
 
-I'm very sure, otherwise we're just accepting that we're breaking real
-world applications. Alternatively, you can keep the ->read() and add the
-->read_iter() as well, but I'm a bit skeptical at your initial results
-there.
-
--- 
-Jens Axboe
+thanks,
+rui
+> 
+> Signed-off-by: Wyes Karny <wyes.karny@amd.com>
+> ---
+> Changes in v3:
+> - Update documentation around idle=mwait
+> 
+>  Documentation/admin-guide/pm/cpuidle.rst | 15 +++++++++------
+>  arch/x86/kernel/process.c                |  4 ++++
+>  2 files changed, 13 insertions(+), 6 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/pm/cpuidle.rst
+> b/Documentation/admin-guide/pm/cpuidle.rst
+> index aec2cd2aaea7..19754beb5a4e 100644
+> --- a/Documentation/admin-guide/pm/cpuidle.rst
+> +++ b/Documentation/admin-guide/pm/cpuidle.rst
+> @@ -612,8 +612,8 @@ the ``menu`` governor to be used on the systems
+> that use the ``ladder`` governor
+>  by default this way, for example.
+>  
+>  The other kernel command line parameters controlling CPU idle time
+> management
+> -described below are only relevant for the *x86* architecture and
+> some of
+> -them affect Intel processors only.
+> +described below are only relevant for the *x86* architecture and
+> references
+> +to ``intel_idle`` affect Intel processors only.
+>  
+>  The *x86* architecture support code recognizes three kernel command
+> line
+>  options related to CPU idle time management: ``idle=poll``,
+> ``idle=halt``,
+> @@ -635,10 +635,13 @@ idle, so it very well may hurt single-thread
+> computations performance as well as
+>  energy-efficiency.  Thus using it for performance reasons may not be
+> a good idea
+>  at all.]
+>  
+> -The ``idle=nomwait`` option disables the ``intel_idle`` driver and
+> causes
+> -``acpi_idle`` to be used (as long as all of the information needed
+> by it is
+> -there in the system's ACPI tables), but it is not allowed to use the
+> -``MWAIT`` instruction of the CPUs to ask the hardware to enter idle
+> states.
+> +The ``idle=nomwait`` option prevents the use of ``MWAIT``
+> instruction of
+> +the CPU to enter idle states. When this option is used, the
+> ``acpi_idle``
+> +driver will use the ``HLT`` instruction instead of ``MWAIT``. On
+> systems
+> +running Intel processors, this option disables the ``intel_idle``
+> driver
+> +and forces the use of the ``acpi_idle`` driver instead. Note that in
+> either
+> +case, ``acpi_idle`` driver will function only if all the information
+> needed
+> +by it is in the system's ACPI tables.
+>  
+>  In addition to the architecture-level kernel command line options
+> affecting CPU
+>  idle time management, there are parameters affecting individual
+> ``CPUIdle``
+> diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+> index b370767f5b19..49b915d1b7b4 100644
+> --- a/arch/x86/kernel/process.c
+> +++ b/arch/x86/kernel/process.c
+> @@ -824,6 +824,10 @@ static void amd_e400_idle(void)
+>   */
+>  static int prefer_mwait_c1_over_halt(const struct cpuinfo_x86 *c)
+>  {
+> +	/* User has disallowed the use of MWAIT. Fallback to HALT */
+> +	if (boot_option_idle_override == IDLE_NOMWAIT)
+> +		return 0;
+> +
+>  	if (c->x86_vendor != X86_VENDOR_INTEL)
+>  		return 0;
+>  
 
