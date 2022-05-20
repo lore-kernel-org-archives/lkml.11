@@ -2,119 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0460C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B487C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 20:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353400AbiETUGY (ORCPT
+        id S1353402AbiETUGb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 16:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43204 "EHLO
+        Fri, 20 May 2022 16:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353397AbiETUGQ (ORCPT
+        with ESMTP id S1353408AbiETUGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 16:06:16 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A69186FC
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:06:14 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d22so8205176plr.9
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 13:06:14 -0700 (PDT)
+        Fri, 20 May 2022 16:06:20 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F6B186FC;
+        Fri, 20 May 2022 13:06:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=oxi/xz+TkSciTWltjC+rtPwMZ91WNdjZnku8HYu4+Do=;
-        b=YLeZA/Kh3pdiyKkWKKN8fsqVCpHcK0kf8mkJoiOqg1Jo1ti+YqjrFSeBaCwmg8jaRG
-         rHFTxR2ltkA2sJ0JQ+0plz29WFRu3tI8SAk6hO7A3UE70QuOEuOLy35bHN0zuhqHfwpP
-         x1QpI3WbaCBFV0ddp254gRd0Fj47AN5AVwIyuxuSB/ZWFJ2KTDKahAQ2tjH1WZyVv2Ir
-         VU0eXJgp4bQfGuqAb3ZeLpZg6kCJ/F4Iso+4kTolcMYknPHyxEJrm6QrU/mpVcoxMqwR
-         OeF18Usf87IA5s3EP0cyxw5oi76OBRTCQ/YaN0tRelrW3M8egRPqD9Xxr/cg2impTibm
-         v37w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=oxi/xz+TkSciTWltjC+rtPwMZ91WNdjZnku8HYu4+Do=;
-        b=3B7SEtwPn3KoXxjpRmpfihknNjo3RKrViDec/YdJsJUnYYDEl5yJyDKH4K6HSFgZVb
-         Bnh3sYmmqHNRUdQtmeP8Bh9mBwx0SXBj8T6k1jTMFc+Muq8nnqBJ445jgjUnMf3pLmtQ
-         enS5O5TihsfUZwSD1qQO/vUUinLUJFan4JB6s59YG7SuJmCJFB9qTL9jHaH65hujE1y9
-         zBnGRxUa6lza/hKo9qY/wF29FxHSl39pr7rnkf75lHA1ACcGc5TZtkw5QItJvEaspuw8
-         gSSrOwZmkyZOv+RmlxGD69TyTsQU2PB6D3BucPGbVbXUMkwge1WmB9ogKfM2ENIsOsjB
-         MrlA==
-X-Gm-Message-State: AOAM532+i5Qdc2HXTPKogKDggsFXHg/BFpZgE6L75EyZhSMyMasrasYU
-        tXbSwhzByXSIF2oy/MQKZvmKLg==
-X-Google-Smtp-Source: ABdhPJwCAh2L7xVmugWXxwOMvGlfvdKsTSxrUSMsWmDJKPsXKxG8pNYNQZ0N5fdRgJfnez3HVXcYmA==
-X-Received: by 2002:a17:90b:250c:b0:1df:453f:561a with SMTP id ns12-20020a17090b250c00b001df453f561amr12763432pjb.35.1653077174024;
-        Fri, 20 May 2022 13:06:14 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id z1-20020a17090ab10100b001df93c8e737sm2244751pjq.39.2022.05.20.13.06.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 13:06:13 -0700 (PDT)
-Date:   Fri, 20 May 2022 20:06:09 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Waiman Long <longman@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] KVM: VMX: do not disable interception for
- MSR_IA32_SPEC_CTRL on eIBRS
-Message-ID: <Yof0sSy/xKrCY5ke@google.com>
-References: <20220512174427.3608-1-jon@nutanix.com>
- <YoRPDp/3jfDUE529@google.com>
- <29CDF294-5394-47C7-8B50-5F1FC101891C@nutanix.com>
- <732266F9-9904-434A-857F-847203901A0C@nutanix.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1653077178; x=1684613178;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=8zgVhbKaaCWKcJY0T51NsROyLoIg1PoDUFSoZavYV28=;
+  b=Crbj7pwITxn8uwyuNl2+p84tSWXPnk+q58rgKdpX9ayTFROa0Narzmc7
+   /vs1vkDo8u2xCF98OICJXN41t9txOvSIgDcIS4omMNSgl75+o9CCohodI
+   6caKm61r4Ce231OPRxMW+wSX1NNVaBNryEddnMRTpPov1lc+MQjk3ePu3
+   Q=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 May 2022 13:06:17 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 13:06:17 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 20 May 2022 13:06:17 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 20 May 2022 13:06:16 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
+        <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v9 0/3] eDP/DP Phy vdda realted function
+Date:   Fri, 20 May 2022 13:06:04 -0700
+Message-ID: <1653077167-16684-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <732266F9-9904-434A-857F-847203901A0C@nutanix.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022, Jon Kohler wrote:
-> 
-> > On May 18, 2022, at 10:23 AM, Jon Kohler <jon@nutanix.com> wrote:
-> > 
-> >> On May 17, 2022, at 9:42 PM, Sean Christopherson <seanjc@google.com> wrote:
-> >>> +		if (boot_cpu_has(X86_FEATURE_IBRS_ENHANCED) && data == BIT(0)) {
-> >> 
-> >> Use SPEC_CTRL_IBRS instead of open coding "BIT(0)", then a chunk of the comment
-> >> goes away.
-> >> 
-> >>> +			vmx->spec_ctrl = data;
-> >>> +			break;
-> >>> +		}
-> >> 
-> >> There's no need for a separate if statement.  And the boot_cpu_has() check can
-> >> be dropped, kvm_spec_ctrl_test_value() has already verified the bit is writable
-> >> (unless you're worried about bit 0 being used for something else?)
-> 
-> I was (and am) worried about misbehaving guests on pre-eIBRS systems spamming IBRS
-> MSR, which we wouldn’t be able to see today. Intel’s guidance for eIBRS has long been
-> set it once and be done with it, so any eIBRS aware guest should behave nicely with that.
-> That limits the blast radius a bit here.
+1) add regulator_set_load() to eDP phy
+2) add regulator_set_load() to DP phy
+3) remove vdda related function out of eDP/DP controller
 
-Then check the guest capabilities, not the host flag.
+Kuogee Hsieh (3):
+  phy: qcom-edp: add regulator_set_load to edp phy
+  phy: qcom-qmp: add regulator_set_load to dp phy
+  drm/msm/dp: delete vdda regulator related functions from eDP/DP
+    controller
 
-	if (data == SPEC_CTRL_IBRS &&
-	    (vcpu->arch.arch_capabilities & ARCH_CAP_IBRS_ALL))
+ drivers/gpu/drm/msm/dp/dp_parser.c  | 14 ------
+ drivers/gpu/drm/msm/dp/dp_parser.h  |  6 ---
+ drivers/gpu/drm/msm/dp/dp_power.c   | 95 +------------------------------------
+ drivers/phy/qualcomm/phy-qcom-edp.c |  3 ++
+ drivers/phy/qualcomm/phy-qcom-qmp.c | 19 +++++++-
+ 5 files changed, 23 insertions(+), 114 deletions(-)
 
-> Sent out the v2 just now with a few minor tweaks, only notable one was keeping
-> the boot cpu check and small tweaks to comments here and there to suit.
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
-In the future, give reviewers a bit of time to respond to a contented point before
-sending out the next revision, e.g. you could have avoided v3 :-)
