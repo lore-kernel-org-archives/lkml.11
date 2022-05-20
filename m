@@ -2,157 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2626C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 20 May 2022 19:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353326AbiETTvc (ORCPT
+        id S1353340AbiETTwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 15:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
+        Fri, 20 May 2022 15:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353318AbiETTva (ORCPT
+        with ESMTP id S1353316AbiETTwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 15:51:30 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84BF5A2E3;
-        Fri, 20 May 2022 12:51:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=i1SabHWBF9yjaawRYqmI4JtnrLJvNYnK3oYqAVGf7Ao=; b=gesr4pHQ0zxgkl4V4UHZOm/9At
-        KVQwK8sl9PhTHOAgnypdTxNXRdkr4bWPbUK6Li6GY/6LRRY/OTndzqrYB+wh5lLbyiv5wCVLQIm5P
-        fYyOUVReou6EYoVA/0t/qOjs6hxpyWFPQzJ1htTgcxM9t8DHtec9N7KXN03AGiaE51w09F/xGYSJl
-        vdlSJkoWe+NXaNOgRtbx77ASGNpf6PugBB5YcKh7/kYy7lCooFnkz/NFBEHxEehRXtMbjbc+CI0Ba
-        142I0nIDZEhkGopOp5PAE/n9Yb35rOttg5fc7SE2WE0avYKZjdTqEW72WUd51ielFusXPxF6mesHd
-        PcrvrEcQ==;
-Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1ns8ei-00D3mx-Qz; Fri, 20 May 2022 21:51:25 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     ardb@kernel.org, linux-efi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
-        keescook@chromium.org, matt@codeblueprint.co.uk,
-        matthew.garrett@nebula.com, tony.luck@intel.com,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH 1/2] efi: Add a generic helper to convert strings to unicode
-Date:   Fri, 20 May 2022 16:50:27 -0300
-Message-Id: <20220520195028.1347426-2-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220520195028.1347426-1-gpiccoli@igalia.com>
-References: <20220520195028.1347426-1-gpiccoli@igalia.com>
+        Fri, 20 May 2022 15:52:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 861CB197F51
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 12:52:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653076332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QC4HhoSa5ax5VuJxdudrkP+hQQcM6Ir26+NRsLLyTuA=;
+        b=Gy6eba3kYo6WE7murJkD+d8WGdSnfcXDlxD5ZQ8QUaDvG0KBFFnLKd5hugor6BUe4+V0dp
+        vmBmPMEA5Rl6oEAQZo3aTZ8L0JWLkpXS/MTy0UV9np4Uf7IyElRzeHN+pClQFD/3s9aH3R
+        xjcpBOdELecv5R+ZIp3/juRP94GhnkU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-644-4t-3E9E5PQGx31S7cEd1eQ-1; Fri, 20 May 2022 15:52:06 -0400
+X-MC-Unique: 4t-3E9E5PQGx31S7cEd1eQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5AC1829AB3FB;
+        Fri, 20 May 2022 19:52:04 +0000 (UTC)
+Received: from [10.22.32.226] (unknown [10.22.32.226])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ED99440D2821;
+        Fri, 20 May 2022 19:52:01 +0000 (UTC)
+Message-ID: <f3627eae-f5ae-1d30-2c09-1820a255334a@redhat.com>
+Date:   Fri, 20 May 2022 15:52:01 -0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/5] kallsyms: pass buffer size in sprint_* APIs
+Content-Language: en-US
+To:     Maninder Singh <maninder1.s@samsung.com>, keescook@chromium.org,
+        pmladek@suse.com, bcain@quicinc.com, mpe@ellerman.id.au,
+        benh@kernel.crashing.org, paulus@samba.org, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, svens@linux.ibm.com, satishkh@cisco.com,
+        sebaddel@cisco.com, kartilak@cisco.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, mcgrof@kernel.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, naveen.n.rao@linux.ibm.com,
+        anil.s.keshavamurthy@intel.com, davem@davemloft.net,
+        mhiramat@kernel.org, peterz@infradead.org, mingo@redhat.com,
+        will@kernel.org, boqun.feng@gmail.com, rostedt@goodmis.org,
+        senozhatsky@chromium.org, andriy.shevchenko@linux.intel.com,
+        linux@rasmusvillemoes.dk, akpm@linux-foundation.org, arnd@arndb.de
+Cc:     linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-modules@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, v.narang@samsung.com,
+        onkarnath.1@samsung.com
+References: <20220520083701.2610975-1-maninder1.s@samsung.com>
+ <CGME20220520083725epcas5p1c3e2989c991e50603a40c81ccc4982e0@epcas5p1.samsung.com>
+ <20220520083701.2610975-2-maninder1.s@samsung.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220520083701.2610975-2-maninder1.s@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently both efi-pstore and efibc rely in simple for-loops
-to convert from regular char pointers to u16/unicode strings;
-efibc has even a nice helper to perform such work.
+On 5/20/22 04:36, Maninder Singh wrote:
+> As of now sprint_* APIs don't pass buffer size as an argument
+> and use sprintf directly.
+>
+> To replace dangerous sprintf API to scnprintf,
+> buffer size is required in arguments.
+>
+> Co-developed-by: Onkarnath <onkarnath.1@samsung.com>
+> Signed-off-by: Onkarnath <onkarnath.1@samsung.com>
+> Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
+> ---
+>   arch/s390/lib/test_unwind.c    |  2 +-
+>   drivers/scsi/fnic/fnic_trace.c |  8 ++++----
+>   include/linux/kallsyms.h       | 20 ++++++++++----------
+>   init/main.c                    |  2 +-
+>   kernel/kallsyms.c              | 27 ++++++++++++++++-----------
+>   kernel/trace/trace_output.c    |  2 +-
+>   lib/vsprintf.c                 | 10 +++++-----
+>   7 files changed, 38 insertions(+), 33 deletions(-)
+>
+> diff --git a/arch/s390/lib/test_unwind.c b/arch/s390/lib/test_unwind.c
+> index 5a053b393d5c..adbc2b53db16 100644
+> --- a/arch/s390/lib/test_unwind.c
+> +++ b/arch/s390/lib/test_unwind.c
+> @@ -75,7 +75,7 @@ static noinline int test_unwind(struct task_struct *task, struct pt_regs *regs,
+>   			ret = -EINVAL;
+>   			break;
+>   		}
+> -		sprint_symbol(sym, addr);
+> +		sprint_symbol(sym, KSYM_SYMBOL_LEN, addr);
 
-So, let's export this helper to common EFI code to prevent
-code duplication (like in efi-pstore); this helper will also
-be used in a subsequent patch (adding a new module).
+Instead of hardcoding KSYM_SYMBOL_LEN everywhere, will it better to hide 
+it like this:
 
-Notice that efi-pstore didn't write the end NULL char in the
-unicode string before this patch, but this should not change
-anything. No functional change is expected here.
+         extern int __sprint_symbol(char *buffer, size_t size, unsigned 
+long address);
+         #define sprint_symbol(buf, addr)        __sprint_symbol(buf, 
+sizeof(buf), addr)
 
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
----
- drivers/firmware/efi/efi-pstore.c |  5 ++---
- drivers/firmware/efi/efibc.c      | 16 ++++------------
- include/linux/efi.h               | 15 +++++++++++++++
- 3 files changed, 21 insertions(+), 15 deletions(-)
+Or you can use sizeof(buf) directly instead of KSYM_SYMBOL_LEN.
 
-diff --git a/drivers/firmware/efi/efi-pstore.c b/drivers/firmware/efi/efi-pstore.c
-index 7e771c56c13c..299116ecfb4e 100644
---- a/drivers/firmware/efi/efi-pstore.c
-+++ b/drivers/firmware/efi/efi-pstore.c
-@@ -249,7 +249,7 @@ static int efi_pstore_write(struct pstore_record *record)
- 	char name[DUMP_NAME_LEN];
- 	efi_char16_t efi_name[DUMP_NAME_LEN];
- 	efi_guid_t vendor = LINUX_EFI_CRASH_GUID;
--	int i, ret = 0;
-+	int ret = 0;
- 
- 	record->id = generic_id(record->time.tv_sec, record->part,
- 				record->count);
-@@ -262,8 +262,7 @@ static int efi_pstore_write(struct pstore_record *record)
- 		 (long long)record->time.tv_sec,
- 		 record->compressed ? 'C' : 'D');
- 
--	for (i = 0; i < DUMP_NAME_LEN; i++)
--		efi_name[i] = name[i];
-+	efi_str8_to_str16(efi_name, name, DUMP_NAME_LEN - 1);
- 
- 	ret = efivar_entry_set_safe(efi_name, vendor, PSTORE_EFI_ATTRIBUTES,
- 			      false, record->size, record->psi->buf);
-diff --git a/drivers/firmware/efi/efibc.c b/drivers/firmware/efi/efibc.c
-index 15a47539dc56..63fe2bf753cb 100644
---- a/drivers/firmware/efi/efibc.c
-+++ b/drivers/firmware/efi/efibc.c
-@@ -11,16 +11,6 @@
- #include <linux/reboot.h>
- #include <linux/slab.h>
- 
--static void efibc_str_to_str16(const char *str, efi_char16_t *str16)
--{
--	size_t i;
--
--	for (i = 0; i < strlen(str); i++)
--		str16[i] = str[i];
--
--	str16[i] = '\0';
--}
--
- static int efibc_set_variable(const char *name, const char *value)
- {
- 	int ret;
-@@ -39,8 +29,10 @@ static int efibc_set_variable(const char *name, const char *value)
- 		return -ENOMEM;
- 	}
- 
--	efibc_str_to_str16(name, entry->var.VariableName);
--	efibc_str_to_str16(value, (efi_char16_t *)entry->var.Data);
-+	efi_str8_to_str16(entry->var.VariableName, name, strlen(name));
-+	efi_str8_to_str16((efi_char16_t *)entry->var.Data, value,
-+			  strlen(value));
-+
- 	memcpy(&entry->var.VendorGuid, &guid, sizeof(guid));
- 
- 	ret = efivar_entry_set_safe(entry->var.VariableName,
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..066ebc5bcb2a 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -1030,6 +1030,21 @@ efivar_unregister(struct efivar_entry *var)
- 	kobject_put(&var->kobj);
- }
- 
-+/*
-+ * Helper that converts regular char buffer to u16 unicode-like strings;
-+ * notice that the unicode buffer requires to be at least len+1 in size.
-+ */
-+static inline void
-+efi_str8_to_str16(efi_char16_t *str16, const char *str8, size_t len)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < len; i++)
-+		str16[i] = str8[i];
-+
-+	str16[i] = '\0';
-+}
-+
- int efivars_register(struct efivars *efivars,
- 		     const struct efivar_operations *ops,
- 		     struct kobject *kobject);
--- 
-2.36.0
+Cheers,
+Longman
 
