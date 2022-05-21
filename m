@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7897EC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB665C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232089AbiEULQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
+        id S1354958AbiEULRI (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 07:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237544AbiEULMU (ORCPT
+        with ESMTP id S1353485AbiEULMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:20 -0400
+        Sat, 21 May 2022 07:12:19 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDC7344CF;
-        Sat, 21 May 2022 04:12:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0D631372;
+        Sat, 21 May 2022 04:12:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=Sse69UXGgPJIp1+jRucjbT9ptGTvZZVZyLqJcWhxwaE=;
-  b=fF11EU1r5UFogIvp9YVtHDqepTR6/bPtJOSRROpo1PFARDpz0+c0sH7R
-   Ukgk5CPC7IP0laCLZV4gQk7u+TfNsHZ/Cu+6v8UC2DY7zpyrgtU632kLO
-   FqMniYtoLHhSCv4EWYEILNJ5LZ0ft9kBEIKkjcoJ0lnlUtYxRV0rEz7/O
-   Q=;
+  bh=oPdcALAaBw9fcOVQZXeV7Yoon9/2TK0QuC9S3pvCoog=;
+  b=rrEX98JdyfaDH4iOqv44r1t8Lxt5w4sFze+MuN8ruu4cVyJPxL4eWyX5
+   OMyJmYJvA0P451C+b0E5J2kdPD4BP2vQn8fG23dzRasBTYveT38IgfgxL
+   7c5mProM2uPdk5qmeZyDotPjEorGb8V04cL0s3dymVASfugDlLP1KIpFN
+   s=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727937"
+   d="scan'208";a="14727935"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:59 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:58 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Bradley Grove <linuxdrivers@attotech.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] scsi: esas2r: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:50 +0200
-Message-Id: <20220521111145.81697-40-Julia.Lawall@inria.fr>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     kernel-janitors@vger.kernel.org, John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] crypto: ccp - fix typo in comment
+Date:   Sat, 21 May 2022 13:10:48 +0200
+Message-Id: <20220521111145.81697-38-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -51,20 +52,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/scsi/esas2r/esas2r_flash.c |    2 +-
+ drivers/crypto/ccp/ccp-dev.h |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/esas2r/esas2r_flash.c b/drivers/scsi/esas2r/esas2r_flash.c
-index 429d64299fe9..f910e2553fbb 100644
---- a/drivers/scsi/esas2r/esas2r_flash.c
-+++ b/drivers/scsi/esas2r/esas2r_flash.c
-@@ -232,7 +232,7 @@ static bool load_image(struct esas2r_adapter *a, struct esas2r_request *rq)
- 	 */
- 	rq->req_stat = RS_PENDING;
- 	if (test_bit(AF_DEGRADED_MODE, &a->flags))
--		/* not suppported for now */;
-+		/* not supported for now */;
- 	else
- 		build_flash_msg(a, rq);
+diff --git a/drivers/crypto/ccp/ccp-dev.h b/drivers/crypto/ccp/ccp-dev.h
+index a5d9123a22ea..83350e2d9821 100644
+--- a/drivers/crypto/ccp/ccp-dev.h
++++ b/drivers/crypto/ccp/ccp-dev.h
+@@ -366,7 +366,7 @@ struct ccp_device {
  
+ 	/* Master lists that all cmds are queued on. Because there can be
+ 	 * more than one CCP command queue that can process a cmd a separate
+-	 * backlog list is neeeded so that the backlog completion call
++	 * backlog list is needed so that the backlog completion call
+ 	 * completes before the cmd is available for execution.
+ 	 */
+ 	spinlock_t cmd_lock ____cacheline_aligned;
 
