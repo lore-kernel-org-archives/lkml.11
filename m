@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8DF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348798AbiEULQ1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
+        id S235144AbiEULQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 07:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349941AbiEULMQ (ORCPT
+        with ESMTP id S242769AbiEULMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:16 -0400
+        Sat, 21 May 2022 07:12:10 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906842D1EB;
-        Sat, 21 May 2022 04:12:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFCC2B240;
+        Sat, 21 May 2022 04:12:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=IFMk+sG1UkKvvet9eVEjt93RJXFlKUDi3Jz4fWOgUhg=;
-  b=PBKOlLXg1sPPVZuZm2u8rC85P2knGUduUA24hKtJrGlcBfo3iDZt85Mt
-   xVtAPUidhjAQg3jrSeKusd7UflRGrzlMKveeAxM+fga8okdZFKdOQbHg+
-   Cpr1z83U/f+8HMk7rJ5wrocuQI4r6uvHk2cEisQL1eY0SOaHnLv5DrV3m
-   s=;
+  bh=z+UdviyqVJKaussspFyvgPoTQANAMyQBNyEo6pguiAk=;
+  b=qboyWFjr2xXNmXsYGdh4lH1WCHL+5IgD1dPdAPDxvLJ7Iz/qwlQsUqyp
+   w2e2+daaHuMKGt7lBtnNYIvOrLf3zyh0RfeF20482fRw85l7ihgDfDtxv
+   vjpsCwHfp3TyyOnpMG9tSsTb0ow52dm6W5Z4TlYF700TmkSjWWqAcexoq
+   I=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727925"
+   d="scan'208";a="14727923"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:57 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Tiffany Lin <tiffany.lin@mediatek.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] media: mediatek: vcodec: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:40 +0200
-Message-Id: <20220521111145.81697-30-Julia.Lawall@inria.fr>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kernel-janitors@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] mtip32xx: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:38 +0200
+Message-Id: <20220521111145.81697-28-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -54,20 +49,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h |    2 +-
+ drivers/block/mtip32xx/mtip32xx.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-index a29041a0b7e0..c156048cd4a5 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_drv.h
-@@ -255,7 +255,7 @@ struct vdec_pic_info {
-  * @param_change: indicate encode parameter type
-  * @enc_params: encoding parameters
-  * @dec_if: hooked decoder driver interface
-- * @enc_if: hoooked encoder driver interface
-+ * @enc_if: hooked encoder driver interface
-  * @drv_handle: driver handle for specific decode/encode instance
-  *
-  * @picinfo: store picture info after header parsing
+diff --git a/drivers/block/mtip32xx/mtip32xx.c b/drivers/block/mtip32xx/mtip32xx.c
+index 4fbaf0b4958b..27386a572ba4 100644
+--- a/drivers/block/mtip32xx/mtip32xx.c
++++ b/drivers/block/mtip32xx/mtip32xx.c
+@@ -2729,7 +2729,7 @@ static int mtip_dma_alloc(struct driver_data *dd)
+ {
+ 	struct mtip_port *port = dd->port;
+ 
+-	/* Allocate dma memory for RX Fis, Identify, and Sector Bufffer */
++	/* Allocate dma memory for RX Fis, Identify, and Sector Buffer */
+ 	port->block1 =
+ 		dma_alloc_coherent(&dd->pdev->dev, BLOCK_DMA_ALLOC_SZ,
+ 					&port->block1_dma, GFP_KERNEL);
 
