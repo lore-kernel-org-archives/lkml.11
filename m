@@ -2,164 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E91C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242280AbiEUOXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S244638AbiEUOZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 10:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232339AbiEUOXo (ORCPT
+        with ESMTP id S230171AbiEUOZM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:23:44 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A80336E28;
-        Sat, 21 May 2022 07:23:43 -0700 (PDT)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 4554E20B6C7C;
-        Sat, 21 May 2022 07:23:43 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4554E20B6C7C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1653143023;
-        bh=dJ9FOpSCgx5aFau9EXn3cqD6jLljJRXBBXibNoXWwbs=;
-        h=From:To:Subject:Date:From;
-        b=H55LDMs3ElWgyB3rRWyalm4i8ziWUCQUSXUdrPSIpXwF2uOsjuWjG09P4R57VYlL1
-         VL1QFf+T/bjfjXXna3wsrvH+BLLNm3ZaugGh2Fk5ekClq+1nk2mcIlXBcA3A402qsL
-         NxKsVBNnPN9f3bQX3CYuTgnF8vL3xRURRc3wfRgM=
-From:   Saurabh Sengar <ssengar@linux.microsoft.com>
-To:     ssengar@microsoft.com, drawat.floss@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, linux-hyperv@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        decui@microsoft.com, haiyangz@microsoft.com
-Subject: [PATCH v2] drm/hyperv : Removing the restruction of VRAM allocation with PCI bar size
-Date:   Sat, 21 May 2022 07:23:39 -0700
-Message-Id: <1653143019-20032-1-git-send-email-ssengar@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
+        Sat, 21 May 2022 10:25:12 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DA1366BF
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:25:10 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id v8so16723274lfd.8
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:25:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IbbNsxWO/m2lPWhlsd3aTys0/Azk77kx0rBYcjjzxrw=;
+        b=X7Xpxa/+7lKMnKDnsjZKhJ62fLY3M/Bnlu2oTHf1xVs0aDuL6HaFBRursY1TX571Mz
+         CTTvITI8UTOU0bVIRqJzdeoY9tvL74IRnKuafMd0fKQhr9aSrbySUUUfjoGyIaRQ8Bsd
+         rq1ehvsn+QNWX8JuMg83bVBb141ynroEuXWJ54qYYeJNfrsA7F4ia7U9kRAVJc63vT8S
+         4M8f3yEPO65NtNNJ20uF0+3gHIQXGAHNLaNEEZlWrWLCWQf/zI0YohR609F9v+5+nhJi
+         E9Zz7Cp9Fq5GYIbAveb2cQk/sth5VKAI5afZFuEbTy+sHdwhZvLjaJUyOwfHt6o67Z0q
+         RxgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IbbNsxWO/m2lPWhlsd3aTys0/Azk77kx0rBYcjjzxrw=;
+        b=jLQLPJOeJLb8bCTdoWuZU8D/dnKP9JhQOFYMMT46KrlRAFRUDLFq4Z48oad4+wogRj
+         3u89pU9N+M+D7eRVRhaGVF8vEUmdMbGo5xUeOqjrCnrz6rUKQp6lKNIJubCQiJ8cNM2J
+         IcDdFOkXgsfxGz9FILpeRNffpWLTH7CvcelquhsXiTV4VUyuTEEhBDZ4RS6v8vFjvv1q
+         eQ2sACq+mkUt9zkXepQcUGJEG093tMiXWHpXBb5Jk6JS++HH+4vLVAy+yVeHhauCtW5F
+         A+5mTYYb1tJ0I4A4NmTFZpuyj2anl+HsJLsUdwBv1YFgsQ5V18OaeT0qbErdpvvtr48t
+         /zgQ==
+X-Gm-Message-State: AOAM531KcQ17VCl4hVAjQ4GrLYCuW/8JdUGf7zH9XJk+qjBRqlzAkugk
+        pNgAPAdmVHpwurZcg3tqfji6bQ==
+X-Google-Smtp-Source: ABdhPJxWmFsSb0Vzg1NAnz2GPn7MlkNF023jy6AnGMkyrTd5OmsIHxz8MDigJ2L10kwaol2EYaevwQ==
+X-Received: by 2002:a05:6512:c0e:b0:478:5a91:20bb with SMTP id z14-20020a0565120c0e00b004785a9120bbmr3982177lfu.587.1653143109161;
+        Sat, 21 May 2022 07:25:09 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id r26-20020a2e995a000000b0024f3d1daea0sm724179ljj.40.2022.05.21.07.25.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 May 2022 07:25:08 -0700 (PDT)
+Message-ID: <7fd80a4b-5e60-0117-b790-359f6d94aeef@linaro.org>
+Date:   Sat, 21 May 2022 16:25:07 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] dt-bindings: mips: Convert plain text file to ReST
+Content-Language: en-US
+To:     Soumya Negi <soumya.negi97@gmail.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220521015613.6197-1-soumya.negi97@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220521015613.6197-1-soumya.negi97@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There were two different approaches getting used in this driver to
-allocate vram:
-	1. VRAM allocation from PCI region for Gen1
-	2. VRAM alloaction from MMIO region for Gen2
-First approach limilts the vram to PCI BAR size, which is 64 MB in most
-legacy systems. This limits the maximum resolution to be restricted to
-64 MB size, and with recent conclusion on fbdev issue its concluded to have
-similar allocation strategy for both Gen1 and Gen2. This patch unifies
-the Gen1 and Gen2 vram allocation strategy.
+On 21/05/2022 03:56, Soumya Negi wrote:
+> Converts .txt documentation file to ReST format(.rst).
+> 
+> Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+> ---
+>  .../devicetree/bindings/mips/cpu_irq.rst      | 56 +++++++++++++++++++
+>  1 file changed, 56 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mips/cpu_irq.rst
+> 
+> diff --git a/Documentation/devicetree/bindings/mips/cpu_irq.rst b/Documentation/devicetree/bindings/mips/cpu_irq.rst
+> new file mode 100644
+> index 000000000000..601cc12caa2a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mips/cpu_irq.rst
+> @@ -0,0 +1,56 @@
+> +=============================
+> +MIPS CPU interrupt controller
+> +=============================
+> +
+> +On MIPS the ``mips_cpu_irq_of_init()`` helper can be used to initialize the 8 CPU
+> +IRQs from a devicetree file and create a ``irq_domain`` for IRQ controller.
 
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-Reviewed-by: Deepak Rawat <drawat.floss@gmail.com>
----
- drivers/gpu/drm/hyperv/hyperv_drm_drv.c | 74 ++-------------------------------
- 1 file changed, 3 insertions(+), 71 deletions(-)
+Bindings is not a place for code. No.
 
-diff --git a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-index 4a8941f..6d11e79 100644
---- a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-+++ b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-@@ -69,56 +69,7 @@ static void hyperv_pci_remove(struct pci_dev *pdev)
- 	.remove =	hyperv_pci_remove,
- };
- 
--static int hyperv_setup_gen1(struct hyperv_drm_device *hv)
--{
--	struct drm_device *dev = &hv->dev;
--	struct pci_dev *pdev;
--	int ret;
--
--	pdev = pci_get_device(PCI_VENDOR_ID_MICROSOFT,
--			      PCI_DEVICE_ID_HYPERV_VIDEO, NULL);
--	if (!pdev) {
--		drm_err(dev, "Unable to find PCI Hyper-V video\n");
--		return -ENODEV;
--	}
--
--	ret = drm_aperture_remove_conflicting_pci_framebuffers(pdev, &hyperv_driver);
--	if (ret) {
--		drm_err(dev, "Not able to remove boot fb\n");
--		return ret;
--	}
--
--	if (pci_request_region(pdev, 0, DRIVER_NAME) != 0)
--		drm_warn(dev, "Cannot request framebuffer, boot fb still active?\n");
--
--	if ((pdev->resource[0].flags & IORESOURCE_MEM) == 0) {
--		drm_err(dev, "Resource at bar 0 is not IORESOURCE_MEM\n");
--		ret = -ENODEV;
--		goto error;
--	}
--
--	hv->fb_base = pci_resource_start(pdev, 0);
--	hv->fb_size = pci_resource_len(pdev, 0);
--	if (!hv->fb_base) {
--		drm_err(dev, "Resource not available\n");
--		ret = -ENODEV;
--		goto error;
--	}
--
--	hv->fb_size = min(hv->fb_size,
--			  (unsigned long)(hv->mmio_megabytes * 1024 * 1024));
--	hv->vram = devm_ioremap(&pdev->dev, hv->fb_base, hv->fb_size);
--	if (!hv->vram) {
--		drm_err(dev, "Failed to map vram\n");
--		ret = -ENOMEM;
--	}
--
--error:
--	pci_dev_put(pdev);
--	return ret;
--}
--
--static int hyperv_setup_gen2(struct hyperv_drm_device *hv,
-+static int hyperv_setup_vram(struct hyperv_drm_device *hv,
- 			     struct hv_device *hdev)
- {
- 	struct drm_device *dev = &hv->dev;
-@@ -181,10 +132,7 @@ static int hyperv_vmbus_probe(struct hv_device *hdev,
- 		goto err_hv_set_drv_data;
- 	}
- 
--	if (efi_enabled(EFI_BOOT))
--		ret = hyperv_setup_gen2(hv, hdev);
--	else
--		ret = hyperv_setup_gen1(hv);
-+	ret = hyperv_setup_vram(hv, hdev);
- 
- 	if (ret)
- 		goto err_vmbus_close;
-@@ -225,29 +173,13 @@ static int hyperv_vmbus_remove(struct hv_device *hdev)
- {
- 	struct drm_device *dev = hv_get_drvdata(hdev);
- 	struct hyperv_drm_device *hv = to_hv(dev);
--	struct pci_dev *pdev;
- 
- 	drm_dev_unplug(dev);
- 	drm_atomic_helper_shutdown(dev);
- 	vmbus_close(hdev->channel);
- 	hv_set_drvdata(hdev, NULL);
- 
--	/*
--	 * Free allocated MMIO memory only on Gen2 VMs.
--	 * On Gen1 VMs, release the PCI device
--	 */
--	if (efi_enabled(EFI_BOOT)) {
--		vmbus_free_mmio(hv->mem->start, hv->fb_size);
--	} else {
--		pdev = pci_get_device(PCI_VENDOR_ID_MICROSOFT,
--				      PCI_DEVICE_ID_HYPERV_VIDEO, NULL);
--		if (!pdev) {
--			drm_err(dev, "Unable to find PCI Hyper-V video\n");
--			return -ENODEV;
--		}
--		pci_release_region(pdev, 0);
--		pci_dev_put(pdev);
--	}
-+	vmbus_free_mmio(hv->mem->start, hv->fb_size);
- 
- 	return 0;
- }
--- 
-1.8.3.1
+> +
+> +With the ``irq_domain`` in place we can describe how the 8 IRQs are wired to the
+> +platforms internal interrupt controller cascade.
+> +
+> +Below is an example of a platform describing the cascade inside the devicetree
+> +and the code used to load it inside ``arch_init_irq()``.
+> +
+> +Required properties
+> +-------------------
+> +* compatible: Should be **"mti,cpu-interrupt-controller"**
 
+If you wanted to add bindings, please use DT schema format (see
+writing-schema, writing-bindings and example-schema files).
+
+
+Best regards,
+Krzysztof
