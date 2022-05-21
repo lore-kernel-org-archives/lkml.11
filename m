@@ -2,122 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90554C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 10:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237382AbiEUK5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 06:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
+        id S238799AbiEULKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 07:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235388AbiEUK51 (ORCPT
+        with ESMTP id S229848AbiEULKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 06:57:27 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C96C580D7
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 03:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=J/wgaEZZPzTbr+Xe8tD8yBF1WihgmlBahTE13m1ErG0=; b=QvqJ/Te08o3S0En7DTuvQtGdBy
-        PTlNWP8rCToOfbw95crDdvNcDSGr+0ZJ2KO3LFvqgNjgfNv/vfpNYr3nwMVg3BtKt79cWeIdzCr/i
-        JJUPjI8O+s4P4haCaPRlbJkQHbdw20zrXjs7rcGdUlnO6pZPFALmR7CUbgDPonoZCMsa2wSEPSx6g
-        Qa61+TCrQYSst0qOcKrqVwRGstWehT4/dPr1f3Y42gQSgE3LUKuYZZG2rRzQKA5i6RfRGC+a80X6s
-        0nzKCW7Nj7tcysZg4GAmxSJggDrOddUS6lh3p9zccF/VH3781qSrf9MK/WEZVhP7Uhew3xHnqkLlj
-        tzzQAMsQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nsMnA-000D1N-Uh; Sat, 21 May 2022 10:57:05 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 75EB6980E99; Sat, 21 May 2022 12:57:04 +0200 (CEST)
-Date:   Sat, 21 May 2022 12:57:04 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>
-Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
-Message-ID: <20220521105704.GE2578@worktop.programming.kicks-ass.net>
-References: <20220318105140.43914-1-sv@linux.ibm.com>
- <20220318105140.43914-4-sv@linux.ibm.com>
- <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
- <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
- <20220328195920.dqlfra3lcardko6r@treble>
- <b8fac6e2-c117-86cf-2901-5ae0852ca403@csgroup.eu>
- <20220512151206.dphxz5jyeshwc4jb@treble>
- <bedd240b-d5b1-72f9-156d-96d160f180d4@csgroup.eu>
+        Sat, 21 May 2022 07:10:33 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92085C9EC7
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 04:10:31 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id v8so16254641lfd.8
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 04:10:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=wirenboard-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Xqs6YalYM/kNVrXG6osA8oyceYVKDzeo65YCCK/3l9g=;
+        b=mj9BhqTSoYRQOMpfY3xrHR1CAdK7oXyc/d/CHN9V196CT6I3GKWesOrdpv7vpjewcj
+         Hns8zTN5aHbBex299iCJZLioczKpCpgY4iYn8SExl4Ud269BQW1SfXM4epNO2FQXFmOU
+         PZAIq64XOxX+bn3OURD/M6lymXfdoIRHpwvmhVwyacgLe5weG9omzuDkyu4EO+Rfm/78
+         sJREgrfKdXOqo4ZkdZddQ18V0QQzncdc54M3CHmJRvNzTTgYyfTvbFbdtonL6Ywy1vSK
+         dAAHVpj3I21t2p8C3Q6wBdRuJPYnZaIfi6pH77si3ohvp6jbfZ/I/la/KbTAYwqQJVQk
+         LhUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xqs6YalYM/kNVrXG6osA8oyceYVKDzeo65YCCK/3l9g=;
+        b=F5TWPhIhCQms53NwjVXbJGtwPI1gKOLxTrwp9sDVFpkrrbbzX84IcUigStHv9PR+X4
+         Z9uniCE4FwuY5dVVzjg/1SxIs19SXRYyzzzKbvhVMk2QwCVkZV2tzClERKSOfz6zOXiJ
+         mBRA7T32Dt5+rzH7g5xmhp1NVwOm234hzcGbg3rDHaRWbd1svSzxVHGnydEP5eu63+1y
+         4x0m8v0ZsBNpWO2+Me49EDsXfSty/MgxZ32yqHGkGY+IXMua0WvpF76gFMVN3CXrp69h
+         FP3mJbnaqeJuvO9kC4CJZDOPLABxToINSsxvdB7PrN73eJ8gH3AjuJJTnt2gAaw6fFXh
+         qI4Q==
+X-Gm-Message-State: AOAM53366xBHNjQSCJn0rxtONcf99H3yNWbYwyjNorR2rTzlSlPrQXNj
+        fKy3Wc/9nockYqZjHJ3K6JYFPg==
+X-Google-Smtp-Source: ABdhPJy6SkyZ59wlAQLT8eiNrpq3N/c796d8ejEmHOPq5HL32Hsz14BhU927QwnR8drIMEjP9AeEQA==
+X-Received: by 2002:a05:6512:13a9:b0:448:9dd3:b84 with SMTP id p41-20020a05651213a900b004489dd30b84mr9864847lfa.556.1653131429762;
+        Sat, 21 May 2022 04:10:29 -0700 (PDT)
+Received: from [192.168.1.21] ([78.109.71.116])
+        by smtp.googlemail.com with ESMTPSA id o24-20020a056512051800b0047255d21201sm1013555lfb.304.2022.05.21.04.10.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 May 2022 04:10:27 -0700 (PDT)
+Message-ID: <21a659db-f64c-fbea-b3e7-ccc27aec29a0@wirenboard.com>
+Date:   Sat, 21 May 2022 14:10:25 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bedd240b-d5b1-72f9-156d-96d160f180d4@csgroup.eu>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 0/2] ARM: sun8i-r40: Enable usb otg support
+Content-Language: en-GB
+To:     qianfan <qianfanguijin@163.com>
+Cc:     andre.przywara@arm.com, devicetree@vger.kernel.org,
+        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, robh+dt@kernel.org,
+        samuel@sholland.org, wens@csie.org
+References: <264cb004-677a-13df-cc68-676ef3c2e7d8@163.com>
+ <ec5f7fe8-d47d-ce7f-0e0a-2bdf41a88ba2@wirenboard.com>
+ <0936de49-a349-8fd4-2598-2a8995b01c86@163.com>
+From:   Evgeny Boger <boger@wirenboard.com>
+In-Reply-To: <0936de49-a349-8fd4-2598-2a8995b01c86@163.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 09:38:35AM +0000, Christophe Leroy wrote:
+Hi,
 
-> I gave it a try this morning, I selected HAVE_OBJTOOL and 
-> HAVE_OBJTOOL_MCOUNT from arch/powerpc/Kconfig
-> 
-> 
-> Seems like there are still some x86 arch specific stuff in common common 
-> code and I get the following errors.
+my point is not that your patch is good enough.
 
-I'm assuming there's a metric ton of x86 specific stuff in there.
-That'll take a while to clean out.
+My point is that it would be very difficult to maintain backward 
+compatibility with this device tree once proper driver support is 
+implemented.
 
-Mostly Josh's rewrite was centered around splitting out the runtime
-options, but objtool is still always build with all options included,
-even the ones you're not using for your arch, which is what's triggering
-the problems you see here, I suppose...
 
-> Also, is it normal to get those functions built allthough I have not 
-> selected HAVE_STACK_VALIDATION ?
-> 
->    CC      /home/chleroy/linux-powerpc/tools/objtool/check.o
-> check.c: In function 'has_valid_stack_frame':
-> check.c:2369:30: error: 'CFI_BP' undeclared (first use in this 
-> function); did you mean 'CFI_SP'?
->   2369 |         if (cfi->cfa.base == CFI_BP &&
->        |                              ^~~~~~
->        |                              CFI_SP
-> check.c:2369:30: note: each undeclared identifier is reported only once 
-> for each function it appears in
-> check.c:2371:44: error: 'CFI_RA' undeclared (first use in this 
-> function); did you mean 'CFI_R3'?
->   2371 |             check_reg_frame_pos(&cfi->regs[CFI_RA], 
-> -cfi->cfa.offset + 8))
->        |                                            ^~~~~~
->        |                                            CFI_R3
-> check.c: In function 'update_cfi_state':
-> check.c:2499:70: error: 'CFI_BP' undeclared (first use in this 
-> function); did you mean 'CFI_SP'?
->   2499 |                         if (op->src.reg == CFI_SP && 
-> op->dest.reg == CFI_BP &&
->        | 
->        ^~~~~~
->        | 
->        CFI_SP
-> make[3]: *** [/home/chleroy/linux-powerpc/tools/build/Makefile.build:97: 
-> /home/chleroy/linux-powerpc/tools/objtool/check.o] Error 1
-> make[2]: *** [Makefile:54: 
-> /home/chleroy/linux-powerpc/tools/objtool/objtool-in.o] Error 2
-> make[1]: *** [Makefile:69: objtool] Error 2
-> make: *** [Makefile:1337: tools/objtool] Error 2
-> 
-> 
-> What would be the best approach to fix that ?
+On 5/21/22 07:26, qianfan wrote:
+>
+>
+> 在 2022/5/20 4:54, Evgeny Boger 写道:
+>> Hi qianfan,
+>>
+>> As Allwinner A40i user, let me first thank you for your effort for 
+>> making better upstream support for R40!
+>>
+>> However, I would strongly suggest *not* to add USB support to one 
+>> more Allwinner SoC in this particular way.
+>> The problem is, this approach consists of a number of carefully 
+>> crafted hacks in device tree to make current drivers work on 
+>> Allwinner hardware without modification to the drivers.
+>>
+>> a few examples:
+>>
+>> 1) please notice how ohci0 and ehci0 nodes do not contain reference 
+>> to usb phy. It is done intentionally, otherwise EHCI will reset musb 
+>> mode.
+>> Of course omitting phy reference here is also completely breaking 
+>> power cycling in case of usb error and otherwise messes with a power 
+>> management.
+>>
+>> 2) one must always enable ohci, ehci and usb_otg nodes at the same 
+>> time. If one forgets to enable ohci/ehci nodes while enabling usb_otg 
+>> node, the system will silently fail to work as USB host.
+>>
+>> 3) For host-only mode we still have to enable usb_otg node despite no 
+>> role switching is needed. That's because phy reference is missing in 
+>> ehci/ohci, so the ehci/ohci driver won't enable the PHY.
+>> Also I might be wrong, but I think phy won't be routed to ehci/ohci 
+>> controllers is this case.
+>>
+>> 4) musb host controller is initialized and present to hardware though 
+>> never actually used
+>>
+>> To summarize, not only the resulting device tree is not describing 
+>> the hardware properly, it is creating device tree configuration which 
+>> will be very hard to support in future, once proper driver support is 
+>> in place.
+> PHY setting is did in MUSB driver, so we need enable MUSB regardless 
+> of host mode.
+>
+> I know your's point, OHCI/EHCI need do more works to init USBPHY, it 
+> shoule be able to work
+> in dependently, but I don't have the ability to deal with these things 
+> right now, I need
+> learn more things about OHCI/EHCI, that's a long-term goal.
+>
+> So now I need to make the whole usb work and do some tests as much as 
+> possible,
+> hoping to merge this patch into master. Some other optimizations can 
+> be made later.
+>
+> Thanks for yours guide.
+>>
+>>
+>> At Wiren Board kernel tree we tried to untangle this issue [1-6]. 
+>> Unfortunately I didn't have time to prepare it for kernel submission 
+>> yet, but I think I better submit it as RFC to get a feedback from you 
+>> and others.
+>>
+>>
+>> [1] 
+>> https://github.com/wirenboard/linux/commit/359abbbd86ddff4d3c61179c882c286de32bb089
+>> [2] 
+>> https://github.com/wirenboard/linux/commit/6327f9d7972c21b229fb83457fdde643b31553f9
+>> [3] 
+>> https://github.com/wirenboard/linux/commit/f01f4c66758bde460a4d8c5b54ecee3b585c0232
+>> [4] 
+>> https://github.com/wirenboard/linux/commit/c27598ad601e5a46f624b73412a531d6f1f63d37
+>> [5] 
+>> https://github.com/wirenboard/linux/commit/5796d6eebb86b32a3751b2038b63af46f94954b3
+>> [6] 
+>> https://github.com/wirenboard/linux/commit/0928a675d875f9c2849fd3a9888f718bbb673bda
+>>
+>>
+>
 
-Define CFI_BP to your frame register (r2, afaict) I suppose. If you're
-only using OBJTOOL_MCOUNT this code will never run, so all you have to
-ensure is that it compiles, not that it makes sense (-:
 
-The very long and complicated way would be to propagate the various
-CONFIG_HAVE_* build time things to the objtool build and librally
-sprinkle a lot of #ifdef around.
+-- 
+Kind regards,
+Evgeny Boger
+CTO @ Wiren Board
++49 3046690053
+https://wirenboard.com/
 
