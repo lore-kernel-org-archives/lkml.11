@@ -2,89 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E87C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 06:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 06:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352818AbiEUGgq (ORCPT
+        id S1354675AbiEUGhU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 02:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
+        Sat, 21 May 2022 02:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiEUGgo (ORCPT
+        with ESMTP id S1349685AbiEUGhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 02:36:44 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F4215A0A;
-        Fri, 20 May 2022 23:36:43 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id y199so9383532pfb.9;
-        Fri, 20 May 2022 23:36:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=LI4LxelWEjEaX1Q8c74mSsIuglj1BIMj7hPy6RZdBWU=;
-        b=krDiS0tWzf4yZqe9YLwZohr5GraL2gzIFd9ot/Kj0fRMoOtw4+cET5/WyGnPwPHIyw
-         dckRcE/nyT+u8ePN8HZxY85dxQYBJfVDY89t61rOHerC9SIN/2SbOjgZNG3QQQuv+0Qr
-         cl4Wx3mhK0wz3gvKpssMoO4H3eVFoyUaIhqdr4kGYyN8WcjKRWqHBztrmM+GGlUueuH2
-         8AMjuRBj+X/QTfzvNJqIe+/HydLmpzzogZgcZzbw6c7ky8pN8M5dPaUwI0gEaKTt4k9s
-         eQsq9Hvv449COPCNLiz5gPMq3uXJW0G+i2Oh/4+INPoQ4VkdCaCM965ild5pQpnNen0i
-         kofw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=LI4LxelWEjEaX1Q8c74mSsIuglj1BIMj7hPy6RZdBWU=;
-        b=m6lkSfF5EH7kL9lOZydWkYR88XjhryVQL2FRSl47cQPSFjSeg5Y/bk3NqIbxRoaZ5B
-         4mXy0hW6mYkqebW6P521nk00MUq/yOlsxzo4SrXmNhkEp/tSasJCvvl4/HH0HxGktaHS
-         iAoHia11U8uogjj5zBL4naqvWXeYc5DgrtfHsoG7upeStauf6H685R7Rp3ds3XOSFzR2
-         XYbo1ItWOC6CgUBxvy/2xgZ48R+6t4gKy1udXVfjZorCPHwPiPe5BCtE9pvZZm6ZlZDy
-         kXVs8bQNq6lAmoXZ3JOd1n8/e55/M8tLIv3nvxNc/xm5dX9jnUqfgsGoQzN/pkt+Bow6
-         NPeQ==
-X-Gm-Message-State: AOAM533JUGcpj0bk4SzJ3pg2o8Y4uwERFtWneGvrF+veAngMCmIDNspG
-        Td2opDA7u11XkBjKL1k6kvbCO5CWsebXDQ==
-X-Google-Smtp-Source: ABdhPJzDUUyxPh+4E2F/F1Ikqk8CKNA1QtsqzcgZ7yuZwLkqqeloj+WzWL3eWZPGPvlRSOK6iO6mIA==
-X-Received: by 2002:a63:f355:0:b0:3f6:41f4:b551 with SMTP id t21-20020a63f355000000b003f641f4b551mr9790328pgj.383.1653115002830;
-        Fri, 20 May 2022 23:36:42 -0700 (PDT)
-Received: from Negi ([207.151.52.3])
-        by smtp.gmail.com with ESMTPSA id h5-20020a62de05000000b0051831863f10sm2848702pfg.109.2022.05.20.23.36.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 23:36:42 -0700 (PDT)
-From:   Soumya Negi <soumya.negi97@gmail.com>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Soumya Negi <soumya.negi97@gmail.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: drivers/dma-buf: Improve message in selftest summary
-Date:   Fri, 20 May 2022 23:36:10 -0700
-Message-Id: <20220521063610.4924-1-soumya.negi97@gmail.com>
+        Sat, 21 May 2022 02:37:18 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77021DA5E;
+        Fri, 20 May 2022 23:37:17 -0700 (PDT)
+Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L4v4j1VY5zjWx6;
+        Sat, 21 May 2022 14:36:21 +0800 (CST)
+Received: from kwepemm600014.china.huawei.com (7.193.23.54) by
+ kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 21 May 2022 14:37:14 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.28) by
+ kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 21 May 2022 14:37:14 +0800
+From:   Yi Yang <yiyang13@huawei.com>
+To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yiyang13@huawei.com>
+Subject: [PATCH -next] cpufreq: Fix reserved space in cpufreq_show_cpus()
+Date:   Sat, 21 May 2022 14:35:34 +0800
+Message-ID: <20220521063534.138930-1-yiyang13@huawei.com>
 X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.28]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Selftest udmabuf for the dma-buf driver is skipped when the device file
-(e.g. /dev/udmabuf) for the DMA buffer cannot be opened i.e. no DMA buffer
-has been allocated.
+Function scnprintf() would reserve space for the trailing '\0' and return 
+value is the number of characters written into buf not including the 
+trailing '\0'. internally meaning the next scnprintf() would write begin 
+the trailing '\0'. The code specifying "PAGE_SIZE - i - 2" here is trying 
+to reserve space for "\n\0" which would cause scnprintf() to reserve an 
+additional byte making the tail of the buf looks like this: "\n\0\0". 
+Thus. we should reserve only the space for one '\0'. passing in 
+"PAGE_SIZE - i - 1".
 
-This patch adds clarity to the SKIP message.
+Additionally, each iteration would replace the trailing '\0' from the last 
+iteration with a space, and append 4 additional bytes to the string making 
+it a total of 5 additional bytes. That means we should stop printing into 
+the buffer if the remaining size is less than 7 bytes(1 for the ' ', 4 for 
+the %u and 2 for the tailing "\n\0")
 
-Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
 ---
- tools/testing/selftests/drivers/dma-buf/udmabuf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/cpufreq/cpufreq.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/dma-buf/udmabuf.c b/tools/testing/selftests/drivers/dma-buf/udmabuf.c
-index de1c4e6de0b2..c812080e304e 100644
---- a/tools/testing/selftests/drivers/dma-buf/udmabuf.c
-+++ b/tools/testing/selftests/drivers/dma-buf/udmabuf.c
-@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 1f6667ce43bd..60c005c9961e 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -844,9 +844,9 @@ ssize_t cpufreq_show_cpus(const struct cpumask *mask, char *buf)
  
- 	devfd = open("/dev/udmabuf", O_RDWR);
- 	if (devfd < 0) {
--		printf("%s: [skip,no-udmabuf]\n", TEST_PREFIX);
-+		printf("%s: [skip,no-udmabuf: Unable to access DMA buffer device file]\n",
-+		       TEST_PREFIX);
- 		exit(77);
+ 	for_each_cpu(cpu, mask) {
+ 		if (i)
+-			i += scnprintf(&buf[i], (PAGE_SIZE - i - 2), " ");
+-		i += scnprintf(&buf[i], (PAGE_SIZE - i - 2), "%u", cpu);
+-		if (i >= (PAGE_SIZE - 5))
++			i += scnprintf(&buf[i], (PAGE_SIZE - i - 1), " ");
++		i += scnprintf(&buf[i], (PAGE_SIZE - i - 1), "%u", cpu);
++		if (i >= (PAGE_SIZE - 6))
+ 			break;
  	}
- 
+ 	i += sprintf(&buf[i], "\n");
 -- 
 2.17.1
 
