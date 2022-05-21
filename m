@@ -2,90 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 10:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFAE0C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 10:18:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242095AbiEUKPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 06:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        id S1343708AbiEUKSq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 06:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235635AbiEUKPO (ORCPT
+        with ESMTP id S232724AbiEUKSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 06:15:14 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7033492D11;
-        Sat, 21 May 2022 03:15:12 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 77A5C1F465E9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653128111;
-        bh=U5YYJMFVDj3+ZXv5ZAFidJafbwiSoIY5HnfXpGh6rAQ=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=oMoyK3w1YJ2PVNfPvw+RD6t1fHMeeqpJmiDcE8SpeQ/4muCzkrsfGVkHgvqJ9C6Hn
-         N88TlBup/hKQ3eFIWH9s0JoZvlDU8HHTOh6SWzS5BSSymMx96ikENa15ZWXHKAAaID
-         PHVtndYhUdryLb8NM7id4YsBl1GrJ9G0SyFwd7ckZBB4o0yWbX26QprnBdiNu1Dgng
-         BHgEzene+7JSCWDzDkdfHhTRnlb/4V/KG1eoK5AYJEiB1qLWyE1STxBG96D2/5DVch
-         eDRa7e7UEBzQV8bq6hqPJLRjjl8/Uhh9w3mEZW1GJPiltOKPxE8Kjb/jC52lITXsAh
-         d83BYBjPrh67A==
-Message-ID: <0d63c264-520c-687d-7ac6-26cb3f119f0b@collabora.com>
-Date:   Sat, 21 May 2022 15:15:03 +0500
+        Sat, 21 May 2022 06:18:43 -0400
+X-Greylist: delayed 371 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 21 May 2022 03:18:40 PDT
+Received: from pokefinder.org (sauhun.de [88.99.104.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C981A5A83;
+        Sat, 21 May 2022 03:18:39 -0700 (PDT)
+Received: from localhost (p54ac0650.dip0.t-ipconnect.de [84.172.6.80])
+        by pokefinder.org (Postfix) with ESMTPSA id 4E04D2C0024;
+        Sat, 21 May 2022 12:12:27 +0200 (CEST)
+Date:   Sat, 21 May 2022 12:12:26 +0200
+From:   Wolfram Sang <wsa@the-dreams.de>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
+        matthias.bgg@gmail.com, sr@denx.de, christophe.jaillet@wanadoo.fr
+Subject: Re: [PATCH -next v2 1/2] i2c: mt7621: fix missing
+ clk_disable_unprepare() on error in mtk_i2c_probe()
+Message-ID: <Yoi7CtG+ZoNHvKdl@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@the-dreams.de>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
+        matthias.bgg@gmail.com, sr@denx.de, christophe.jaillet@wanadoo.fr
+References: <20220514023148.305457-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     usama.anjum@collabora.com, daniel@ffwll.ch, tj@kernel.org,
-        hridya@google.com, christian.koenig@amd.com, jstultz@google.com,
-        tkjos@android.com, cmllamas@google.com, surenb@google.com,
-        kaleshsingh@google.com, Kenny.Ho@amd.com, mkoutny@suse.com,
-        skhan@linuxfoundation.org, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v7 6/6] selftests: Add binder cgroup gpu memory transfer
- tests
-Content-Language: en-US
-To:     "T.J. Mercier" <tjmercier@google.com>,
-        Shuah Khan <shuah@kernel.org>
-References: <20220510235653.933868-1-tjmercier@google.com>
- <20220510235653.933868-7-tjmercier@google.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220510235653.933868-7-tjmercier@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/QvgFcbHc+KnC2YM"
+Content-Disposition: inline
+In-Reply-To: <20220514023148.305457-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/11/22 4:56 AM, T.J. Mercier wrote:
->  .../selftests/drivers/android/binder/Makefile |   8 +
->  .../drivers/android/binder/binder_util.c      | 250 +++++++++
->  .../drivers/android/binder/binder_util.h      |  32 ++
->  .../selftests/drivers/android/binder/config   |   4 +
->  .../binder/test_dmabuf_cgroup_transfer.c      | 526 ++++++++++++++++++
->  5 files changed, 820 insertions(+)
->  create mode 100644 tools/testing/selftests/drivers/android/binder/Makefile
->  create mode 100644 tools/testing/selftests/drivers/android/binder/binder_util.c
->  create mode 100644 tools/testing/selftests/drivers/android/binder/binder_util.h
->  create mode 100644 tools/testing/selftests/drivers/android/binder/config
->  create mode 100644 tools/testing/selftests/drivers/android/binder/test_dmabuf_cgroup_transfer.c
-> 
-> diff --git a/tools/testing/selftests/drivers/android/binder/Makefile b/tools/testing/selftests/drivers/android/binder/Makefile
-> new file mode 100644
-> index 000000000000..726439d10675
-> --- /dev/null
-> +++ b/tools/testing/selftests/drivers/android/binder/Makefile
-> @@ -0,0 +1,8 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +CFLAGS += -Wall
-Please add $(KHDR_INCLUDES) here to include the uapi header files from
-the source tree.
 
-> +
-> +TEST_GEN_PROGS = test_dmabuf_cgroup_transfer
-Please create a .gitignore file and add test_dmabuf_cgroup_transfer to it.
+--/QvgFcbHc+KnC2YM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +
-> +include ../../../lib.mk
-> +
-> +$(OUTPUT)/test_dmabuf_cgroup_transfer: ../../../cgroup/cgroup_util.c binder_util.c
+On Sat, May 14, 2022 at 10:31:47AM +0800, Yang Yingliang wrote:
+> Fix the missing clk_disable_unprepare() before return
+> from mtk_i2c_probe() in the error handling case.
+>=20
+> Fixes: d04913ec5f89 ("i2c: mt7621: Add MediaTek MT7621/7628/7688 I2C driv=
+er")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
--- 
-Muhammad Usama Anjum
+Applied to for-current, thanks!
+
+
+--/QvgFcbHc+KnC2YM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKIuwoACgkQFA3kzBSg
+KbaAgg//aO+UxNd59hJiNRJesX7hbSoNvNi/Am6E07iqb75UlXN1Ljx1FhagnAGY
+GvFXynEZsyCG8kFRRi2SN11MSYm0KVcGTQ9R5ZPPMB7YMZkNoUMzm1TOCUPKk1vV
+I862euXxp00U7PTZ6MlyzabWcEPhjBTU0pLmSDb5LAnT0QD5Qsb69hvk64ZWk3i6
+bpuN+DUehqjQ5tnDURtC6UBwGar7WoY/sAQtLh80fBgKrLY1Q7SzYMmuLerCJmiU
+QFR/L+/aJZw9ZLsN9sKFhT83xNxkQRfbBYQ+SY+WSoNapX8q0KajBQkdH9a2lzs0
+ORJhGv25QzIudNLVAB1crTPq/uKN4o22T6HZlngIh9Dl+yFiI2WWZg1De2TevgwT
+MTV+L9hm9SCkrAwIwpxWHzXdcz31Fh2yM1wNn/HRhH6dxiIxlsEqBW2NeIvbNwzZ
+KNLPW5Xa2vE5PI8OeNDBpIMN/hu/YXs9ZBLb/0JjiWbsrpJTrLCwHQ78yxYHk2WN
+OvNzqj4cUXeyhTox8xJUFSHtQa1EKxPyRF4QDR7alh7oQ1PQfUDDX1b4PM5oplkf
+e9nclfIbgN3l/AgumUc0EGYzUXPGNiznz0rDbQInIGZAjCY6ldLaYjMR9XSxrfW0
+Dw22qdw2mTXZ01Iy1BYwNow/BHcyZNIMM1MVvdg3HayduC2xCvA=
+=VY7J
+-----END PGP SIGNATURE-----
+
+--/QvgFcbHc+KnC2YM--
