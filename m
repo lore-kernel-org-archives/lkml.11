@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 635AAC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72715C4321E
 	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355628AbiEULV4 (ORCPT
+        id S1355693AbiEULWB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        Sat, 21 May 2022 07:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242683AbiEULMG (ORCPT
+        with ESMTP id S1354897AbiEULMt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:06 -0400
+        Sat, 21 May 2022 07:12:49 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7E528E33;
-        Sat, 21 May 2022 04:12:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656B1527DC;
+        Sat, 21 May 2022 04:12:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=8fYJyg30jVrQqFQpOJmI0wxHHBVbkdTQBhJk6eEiDi8=;
-  b=FWvKDSai1Ov/mxDSznsYrLA0RAMr9D2+KBw28LYTDtjjqk/dK2YTB2sE
-   bPJ1RseFvavr4t9f6c8JaaLSMie1WhhogxLDit21HMRkxECJlvdRTuzfp
-   o7+YfbObhZoPvZQVZp5SeKGwx6qz/Shlp/cNRrklQeEe3tt4b2iSzvRh3
-   o=;
+  bh=6cd8sX8fQeDB8o08/mQAvibf5LOyGxA4vJuioHsPmtI=;
+  b=WvZn6zpVB9RIg6tHWzUf7sIz5mw31+mqebiByBRvwX29724hssTIPg5j
+   RkDP94HTsvtKoegWKVfzi3dhKsFD8V2wH4nDPlz3M/w6ebnQuWzAJu7tA
+   iu2bkGeA42HKsQFa78g58+QwfTBfHb5yfabyluzNPLQ/FffquOweT49w8
+   M=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727916"
+   d="scan'208";a="14727971"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:55 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:03 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     kernel-janitors@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/mlx5: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:31 +0200
-Message-Id: <20220521111145.81697-21-Julia.Lawall@inria.fr>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     kernel-janitors@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] MIPS: Octeon: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:15 +0200
+Message-Id: <20220521111145.81697-65-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -54,20 +50,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c |    2 +-
+ arch/mips/pci/pcie-octeon.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index fbd4dd76a19f..c9b4e50a593e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1769,7 +1769,7 @@ static int mlx5_try_fast_unload(struct mlx5_core_dev *dev)
- 	}
+diff --git a/arch/mips/pci/pcie-octeon.c b/arch/mips/pci/pcie-octeon.c
+index 50a3394a9d25..c9edd3fb380d 100644
+--- a/arch/mips/pci/pcie-octeon.c
++++ b/arch/mips/pci/pcie-octeon.c
+@@ -895,7 +895,7 @@ static int __cvmx_pcie_rc_initialize_gen1(int pcie_port)
+ 	mem_access_subid.s.nsw = 0;	/* Enable Snoop for Writes. */
+ 	mem_access_subid.s.ror = 0;	/* Disable Relaxed Ordering for Reads. */
+ 	mem_access_subid.s.row = 0;	/* Disable Relaxed Ordering for Writes. */
+-	mem_access_subid.s.ba = 0;	/* PCIe Adddress Bits <63:34>. */
++	mem_access_subid.s.ba = 0;	/* PCIe Address Bits <63:34>. */
  
- 	/* Panic tear down fw command will stop the PCI bus communication
--	 * with the HCA, so the health polll is no longer needed.
-+	 * with the HCA, so the health poll is no longer needed.
- 	 */
- 	mlx5_drain_health_wq(dev);
- 	mlx5_stop_health_poll(dev, false);
+ 	/*
+ 	 * Setup mem access 12-15 for port 0, 16-19 for port 1,
 
