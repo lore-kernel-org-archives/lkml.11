@@ -2,186 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7031FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241110AbiEUQnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 12:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38614 "EHLO
+        id S1355413AbiEUQqF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 12:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230294AbiEUQnJ (ORCPT
+        with ESMTP id S230294AbiEUQpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 12:43:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4494D344D7;
-        Sat, 21 May 2022 09:43:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FA83608D6;
-        Sat, 21 May 2022 16:43:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4213CC385A5;
-        Sat, 21 May 2022 16:43:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653151386;
-        bh=az64NAXmbt4SZ0Idjh2q6rIuye3/f5hZ/eibgzKipTc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=EPB+gH2T3lz6z9Mhd+CRPKJqp/Uk6n6Gm12lVIgQgBJzsiTs5jeValjrGoSZhyNkM
-         gES8SDqGvn1BvV75+/tnFM40KdVGpbf2STgC5SA/+1iTaRPY1JeRgHOv8P52ZfXCO4
-         xYoPzRmwhJKKbDjNN50EqhZNQdO5PMSnEOpGdJd31lzdgfTLtwTPIDEkm3V2a0JjTa
-         BQ8rCRWtz+aO5mVoD4VG62MLM/a72TDM+GPzjxW0Nd41VPGL7ZN+n9RB8Z3Y67vW1Q
-         SXqrY0oYrdp2A2hfcx+tWxCzhn2PecmecAnB3rkM9IRiCTlh7R6+ln04vbBPepWg5e
-         fM5OEk2H8cXxg==
-Date:   Sat, 21 May 2022 11:43:03 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jim Quinlan <jim2101024@gmail.com>
-Cc:     linux-pci@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, james.dutton@gmail.com,
-        kibi@debian.org, bcm-kernel-feedback-list@broadcom.com,
-        james.quinlan@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v1] PCI: brcmstb: Fix regression regarding missing PCIe
- linkup
-Message-ID: <20220521164303.GA106705@bhelgaas>
+        Sat, 21 May 2022 12:45:52 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54170FF3;
+        Sat, 21 May 2022 09:45:50 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id g3so9986222qtb.7;
+        Sat, 21 May 2022 09:45:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hIMTrtnjZ9gqkDWInY5qR+iQZXXgSvv+Fs8Mw2FuFq0=;
+        b=fBn1s4wNEYbraZzXmKP2EyONUlmW8I8BgBrKTm5RQON25DyvbzWLg+/vl/bwdVHJKP
+         QLioOfyR5jbf6Mt2MzSfCjKCAdkuQc5TfsUvQ57u7K8AbEDJfIL87aaSCPXeCWwKkV3f
+         dMJqant5hrCiOAypmsMB/vmwysoDXDMAMLzq1gr4/q8Q2ESVzZBC9HKmlrD7Ah0d6xMj
+         ZkX9koF2urPM0YdiGb5YmK471qrZNZ8UtkIOgNpV2POVXJlc/AWy7TKU7Q48INKmVJVS
+         5s0b6e5rN7dcLAhe0mi7xDXh/BScbmWMvrX9cqvnKm8ONl3Vrfa/m8+TiYmJI+0Kymvn
+         17hA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hIMTrtnjZ9gqkDWInY5qR+iQZXXgSvv+Fs8Mw2FuFq0=;
+        b=rCulwQbc9YqiyOegLpjU1sWESCq2Df+PXRc6JdQ9Ib42hoCh+dYQJz/hbAH+qYVEix
+         ZwcS1AAb8wthz5sYuZlNtAbrIpRUmXjmZECxZTfjmAQdJEolaX+CMbAidg2E6Zqh6uTm
+         /h5q3Rw8dUKBriTmdQQVJOmlEXK9MudVa+YL1wy1QJ9923rHshZYPbF/0cb7ryIWzExL
+         kehHkWx1vURyUrh9K6DBJVKbayiH2o3dvbNcKjI1q0INUtJ9PfH5sZnQM6wkcgsyZBnz
+         I/fY9qPQqt4FaJ3X9xnRkegVUe7MJbiqfcvn7Z3vaqGo0m84QrZoPNd07Ie4513YnbaT
+         +wFg==
+X-Gm-Message-State: AOAM5324Xt2f2qOof7EG4eUI58MRjWS2WAKnqWBUi0XgGOm5IHqZAeSn
+        UVl6bKDhvQrtJmQwwedZYA==
+X-Google-Smtp-Source: ABdhPJyek8YSkEb5b3A0KQzbpWST89kREvGQc6v6hOXCeHBh9vLoseUyMrXzt0U1xN0KuHBx4A9llQ==
+X-Received: by 2002:a05:622a:41:b0:2f3:c678:34df with SMTP id y1-20020a05622a004100b002f3c67834dfmr11396132qtw.67.1653151549474;
+        Sat, 21 May 2022 09:45:49 -0700 (PDT)
+Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id y76-20020a37644f000000b0069ffe63228fsm1690243qkb.121.2022.05.21.09.45.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 May 2022 09:45:48 -0700 (PDT)
+Date:   Sat, 21 May 2022 12:45:46 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        mcgrof@kernel.org, tytso@mit.edu
+Subject: Re: RFC: Ioctl v2
+Message-ID: <20220521164546.h7huckdwvguvmmyy@moria.home.lan>
+References: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
+ <Yof6hsC1hLiYITdh@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220518194211.20143-1-jim2101024@gmail.com>
+In-Reply-To: <Yof6hsC1hLiYITdh@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Rafael, linux-pm because I think there are interesting power
-management questions here]
-
-On Wed, May 18, 2022 at 03:42:11PM -0400, Jim Quinlan wrote:
-> commit 93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
+On Fri, May 20, 2022 at 10:31:02PM +0200, Andrew Lunn wrote:
+> > I want to circulate this and get some comments and feedback, and if
+> > no one raises any serious objections - I'd love to get collaborators
+> > to work on this with me. Flame away!
 > 
-> introduced a regression on the PCIe RPi4 Compute Module.  If the PCIe
-> endpoint node described in [2] was missing, no linkup would be attempted,
-> and subsequent accesses would cause a panic because this particular PCIe HW
-> causes a CPU abort on illegal accesses (instead of returning 0xffffffff).
+> Hi Kent
 > 
-> We fix this by allowing the DT endpoint subnode to be missing.  This is
-> important for platforms like the CM4 which have a standard PCIe socket and
-> the endpoint device is unknown.
+> I doubt you will get much interest from netdev. netdev already
+> considers ioctl as legacy, and mostly uses netlink and a message
+> passing structure, which is easy to extend in a backwards compatible
+> manor.
 
-I think the problem here is that on the CM, we try to enumerate
-devices that are not powered up, isn't it?  The commit log should say
-something about that power situation and how the driver learns about
-the power regulators instead of just pointing at an DT endpoint node.
+The more I look at netlink the more I wonder what on earth it's targeted at or
+was trying to solve. It must exist for a reason, but I've written a few ioctls
+myself and I can't fathom a situation where I'd actually want any of the stuff
+netlink provides.
 
-I guess the intent of this patch is to turn on the power to downstream
-devices before enumerating them?  What happens if we turn on the power
-but don't find any downstream devices?  From looking at the code, I
-assume we just leave the power on.  Maybe that's what you want, I
-dunno.
+Why bother with getting a special socket type? Why asynchronous messages with
+all the marshalling/unmarshalling that entails?
 
-I added Rafael because this seems vaguely similar to runtime power
-management, and if we can integrate with that somehow, I'd sure like
-to avoid building a parallel infrastructure for it.
-
-The current path we're on is to move some of this code that's
-currently in pcie-brcmstb.c to the PCIe portdrv [0].  I'm a little
-hesitant about that because ACPI does just fine without it.  If we're
-adding new DT functionality that could not be implemented via ACPI,
-that's one thing.  But I'm not convinced this is that new.
-
-That's a longer term question.  In the short term we need to fix the
-regression.  More specifics about that below.
-
-[0] https://lore.kernel.org/r/20211110221456.11977-6-jim2101024@gmail.com
-
-> [1] https://bugzilla.kernel.org/show_bug.cgi?id=215925
-> [2] Documentation/devicetree/bindings/pci/brcm,stb-pcie.yaml
-> 
-> Fixes: 93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
-> Fixes: 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
-> Signed-off-by: Jim Quinlan <jim2101024@gmail.com>
-> ---
->  drivers/pci/controller/pcie-brcmstb.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-> index ba5c120816b2..adca74e235cb 100644
-> --- a/drivers/pci/controller/pcie-brcmstb.c
-> +++ b/drivers/pci/controller/pcie-brcmstb.c
-> @@ -540,16 +540,18 @@ static int pci_subdev_regulators_add_bus(struct pci_bus *bus)
->  
->  static int brcm_pcie_add_bus(struct pci_bus *bus)
->  {
-> -	struct device *dev = &bus->dev;
->  	struct brcm_pcie *pcie = (struct brcm_pcie *) bus->sysdata;
->  	int ret;
->  
-> -	if (!dev->of_node || !bus->parent || !pci_is_root_bus(bus->parent))
-> +	/* Only busno==1 requires us to linkup */
-> +	if ((int)bus->number != 1)
->  		return 0;
->  
->  	ret = pci_subdev_regulators_add_bus(bus);
-> -	if (ret)
-> +	if (ret) {
-> +		pcie->refusal_mode = true;
->  		return ret;
-> +	}
->  
->  	/* Grab the regulators for suspend/resume */
->  	pcie->sr = bus->dev.driver_data;
-
-IIUC, this path:
-
-  pci_alloc_child_bus
-    brcm_pcie_add_bus                   # .add_bus method
-      pci_subdev_regulators_add_bus     # in pcie-brcmstb.c for now
-        alloc_subdev_regulators         # in pcie-brcmstb.c for now
-        regulator_bulk_get
-        regulator_bulk_enable
-      brcm_pcie_linkup			# bring link up
-
-is basically so we can leave power to downstream devices off, then
-turn it on when we're ready to enumerate those downstream devices.
-
-I think the brcmstb root bus is always bus 0, it only has a single
-Root Port on the root bus, and it always leads to bus 1, so it sort of
-makes sense that we only need to turn on power when we're about to
-scan "bus->number == 1".
-
-But this power management seems like a pattern that other controllers
-will use.  Other controllers will have several Root Ports, so checking
-the bus number won't work for them.  Instead of checking the bus
-number, I think brcmstb should check more directly for a power
-regulator.
-
-Tangent 1: I think this means a downstream device goes from D3cold to
-D0uninitialized?  Does this code account for the required delays
-accesses to the device?  I see some in brcm_pcie_linkup(), but I don't
-see anything that looks like Tpvperl (the time PERST# must remain
-asserted after power becomes valid) or Tperst (when asserted, PERST#
-must remain asserted at least this long) (both from PCIe r6.0, sec
-6.6.1).
-
-Tangent 2: "brcm_pcie_link_up()" makes sense -- it's the conventional
-name for the simple boolean function that tells us whether the link is
-up.  "brcm_pcie_linkup()", which *brings* the link up, is confusing
-because it's too similar to "brcm_pcie_link_up()".  The conventional
-name for this would be "brcm_pcie_start_link()".
-
-Tangent 3: There are fewer than 20 forward function declarations in
-drivers/pci/controller/, and 9 of them are in pcie-brcmstb.c.  It's a
-lot easier to maintain all these drivers if they use a common style.
-Generally speaking, Linux code orders function definitions to avoid
-the need for forward declarations.
-
-Bjorn
+From what I've seen all we really want is driver private syscalls, and the
+things about ioctls that suck are where it's _not_ like syscalls. Let's just
+make it work more like normal function calls.
