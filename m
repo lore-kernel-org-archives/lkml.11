@@ -2,254 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD21C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244454AbiEUO2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
+        id S244474AbiEUO3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 10:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235561AbiEUO2v (ORCPT
+        with ESMTP id S235561AbiEUO3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:28:51 -0400
-Received: from sender4-pp-o94.zoho.com (sender4-pp-o94.zoho.com [136.143.188.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BA79808C;
-        Sat, 21 May 2022 07:28:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1653143254; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=c+/tGylXTkKCH8VmgCs2I+V4lFhNnQvTv+s0puxSnmKb8I0Ie0Lu7BS20WXmM4OLfw/jyY8qDdWMaa/2O/0KG5RbLGW5QYl1t9iydBquq4yRTLa/Z/IvkN7/4LEMpc8hxdh3W1oU3P2Pf5iK3pEEXKiG6XD5oesREt0eRfZWCvY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1653143254; h=Content-Type:Content-Transfer-Encoding:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=UlXrovz8Wqe8HXRNPOZSPGTS1/sjZPQNfVVq1dmIgNU=; 
-        b=hywHRY+OcPizi/P3VuQ26m7YTkCFDSAayDnichehMwX0TXi85TJFPTiiINruza+aS6TE5DabCJ7OyYeyoMF50Mb2Ga018bTXLq9bMo6/TeWy+y8+m0eGcl+ml/CFW58xYjoLCdZMdDtg4EeyVkZtZirE0WPgiuIwN/7sRuaN6Zw=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=zohomail.com;
-        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
-        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653143254;
-        s=zm2022; d=zohomail.com; i=lchen.firstlove@zohomail.com;
-        h=Date:Date:From:From:To:To:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To:Cc;
-        bh=UlXrovz8Wqe8HXRNPOZSPGTS1/sjZPQNfVVq1dmIgNU=;
-        b=TNzibeeNfWwu4kEGBZkBMhbIIhE10jBHBeErdLKWxKqpq9wvBjhyAQ/qAX4nNzGR
-        fmCpFMv0fXjNLx+ZvXyWCYu62KjzL4OKl5l7CYBodtC43+l+Q6ad5z6/6+E1kX4SWdX
-        8uU9Ikm8TNgYO+Iifh5J8l8MD+RlryRTG1QmQ9Ak=
-Received: from mail.zoho.com by mx.zohomail.com
-        with SMTP id 1653143253499869.7381347385351; Sat, 21 May 2022 07:27:33 -0700 (PDT)
-Received: from  [45.12.140.94] by mail.zoho.com
-        with HTTP;Sat, 21 May 2022 07:27:33 -0700 (PDT)
-Date:   Sat, 21 May 2022 07:27:33 -0700
-From:   Li Chen <lchen.firstlove@zohomail.com>
-To:     "Mark Brown" <broonie@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "linux-gpio" <linux-gpio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "linux-arm-kernel" <linux-arm-kernel@lists.infradead.org>,
-        "Patrice Chotard" <patrice.chotard@foss.st.com>,
-        "linux-sunxi" <linux-sunxi@lists.linux.dev>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        "Jaroslav Kysela" <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>, "Chen-Yu Tsai" <wens@csie.org>,
-        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
-        "Samuel Holland" <samuel@sholland.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>
-Message-ID: <180e70431e2.e6d0d6a445873.707989504680364975@zohomail.com>
-In-Reply-To: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
-References: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
-Subject: [PATCH 2/4] ASoC: sunxi: Use {regmap/regmap_field}_{set/clear}_bits
-  helpers
+        Sat, 21 May 2022 10:29:15 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13FE3AA5E;
+        Sat, 21 May 2022 07:29:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=r96J06AA/hx9f6lJVo/su3KBEml3SMC6atekdO73IQM=; b=DA7AJxCsP7mGwECk9LimTyPCeq
+        mGKgm41gxsuHHV7QhgBYxPT8DUmPSCyenxJ71/uLaEg5vufk0igLqeQ+OZFcnaYb6Aq2PRGmnwkq5
+        NN1bQ+lQmxVO8nAmtFk7J0Y/KM7jdI/Q7Nw67nC4GQgYTJUkYAdwWLLSO0ym/EyuljdE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nsPZq-003lku-2S; Sat, 21 May 2022 15:55:30 +0200
+Date:   Sat, 21 May 2022 15:55:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        kuba@kernel.org, clement.leger@bootlin.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: ocelot: fix wrong time_after usage
+Message-ID: <YojvUsJ090H/wfEk@lunn.ch>
+References: <YoeMW+/KGk8VpbED@lunn.ch>
+ <20220520213115.7832-1-paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
-Feedback-ID: rr08011226fc4fb690dd5c15119599758d00000190ae69003a295b80119919281cb46f4b5244f61666e528:zu080112272922073d411fb8225a27fea900001e32b3b788a60cd605a8a30418c81f31b39b25aaaa67ef454f:rf0801122cf6f8dfec8995b3a466518fdc00009d1ce4269968f953bd45db03d0b1c28e264caa264f36f2c01711c30a2b54:ZohoMail
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220520213115.7832-1-paskripkin@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Chen <lchen@ambarella.com>
+On Sat, May 21, 2022 at 12:31:15AM +0300, Pavel Skripkin wrote:
+> Accidentally noticed, that this driver is the only user of
+> while (time_after(jiffies...)).
+> 
+> It looks like typo, because likely this while loop will finish after 1st
+> iteration, because time_after() returns true when 1st argument _is after_
+> 2nd one.
+> 
+> There is one possible problem with this poll loop: the scheduler could put
+> the thread to sleep, and it does not get woken up for
+> OCELOT_FDMA_CH_SAFE_TIMEOUT_US. During that time, the hardware has done
+> its thing, but you exit the while loop and return -ETIMEDOUT.
+> 
+> Fix it by using sane poll API that avoids all problems described above
+> 
+> Fixes: 753a026cfec1 ("net: ocelot: add FDMA support")
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+> 
+> I can't say if 0 is a good choise for 5th readx_poll_timeout() argument,
+> so this patch is build-tested only.
 
-Appropriately change calls to {regmap/regmap_field}_update_bits()
-with {regmap/regmap_field}_set_bits()
-and {regmap/regmap_field}_clear_bits() for improved readability.
+> Testing and suggestions are welcomed!
 
-Signed-off-by: Li Chen <lchen@ambarella.com>
----
- sound/soc/sunxi/sun4i-codec.c | 78 ++++++++++++++---------------------
- 1 file changed, 30 insertions(+), 48 deletions(-)
+If you had the hardware, i would suggest you profile how often it does
+complete on the first iteration. And when it does not complete on the
+first iteration, how many more iterations it needs.
 
-diff --git a/sound/soc/sunxi/sun4i-codec.c b/sound/soc/sunxi/sun4i-codec.c
-index 60712f24ade5..53e3f43816cc 100644
---- a/sound/soc/sunxi/sun4i-codec.c
-+++ b/sound/soc/sunxi/sun4i-codec.c
-@@ -250,37 +250,33 @@ struct sun4i_codec {
- static void sun4i_codec_start_playback(struct sun4i_codec *scodec)
- {
- 	/* Flush TX FIFO */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH),
--			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH));
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH));
- 
- 	/* Enable DAC DRQ */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN),
--			   BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN));
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN));
- }
- 
- static void sun4i_codec_stop_playback(struct sun4i_codec *scodec)
- {
- 	/* Disable DAC DRQ */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN),
--			   0);
-+	regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			  BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN));
- }
- 
- static void sun4i_codec_start_capture(struct sun4i_codec *scodec)
- {
- 	/* Enable ADC DRQ */
--	regmap_field_update_bits(scodec->reg_adc_fifoc,
--				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN),
--				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN));
-+	regmap_field_set_bits(scodec->reg_adc_fifoc,
-+			      BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN));
- }
- 
- static void sun4i_codec_stop_capture(struct sun4i_codec *scodec)
- {
- 	/* Disable ADC DRQ */
--	regmap_field_update_bits(scodec->reg_adc_fifoc,
--				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN), 0);
-+	regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+				 BIT(SUN4I_CODEC_ADC_FIFOC_ADC_DRQ_EN));
- }
- 
- static int sun4i_codec_trigger(struct snd_pcm_substream *substream, int cmd,
-@@ -323,8 +319,7 @@ static int sun4i_codec_prepare_capture(struct snd_pcm_substream *substream,
- 
- 
- 	/* Flush RX FIFO */
--	regmap_field_update_bits(scodec->reg_adc_fifoc,
--				 BIT(SUN4I_CODEC_ADC_FIFOC_FIFO_FLUSH),
-+	regmap_field_set_bits(scodec->reg_adc_fifoc,
- 				 BIT(SUN4I_CODEC_ADC_FIFOC_FIFO_FLUSH));
- 
- 
-@@ -365,8 +360,7 @@ static int sun4i_codec_prepare_playback(struct snd_pcm_substream *substream,
- 	u32 val;
- 
- 	/* Flush the TX FIFO */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH),
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 			   BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH));
- 
- 	/* Set TX FIFO Empty Trigger Level */
-@@ -386,9 +380,8 @@ static int sun4i_codec_prepare_playback(struct snd_pcm_substream *substream,
- 			   val);
- 
- 	/* Send zeros when we have an underrun */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   BIT(SUN4I_CODEC_DAC_FIFOC_SEND_LASAT),
--			   0);
-+	regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+			   BIT(SUN4I_CODEC_DAC_FIFOC_SEND_LASAT));
- 
- 	return 0;
- };
-@@ -485,33 +478,27 @@ static int sun4i_codec_hw_params_capture(struct sun4i_codec *scodec,
- 
- 	/* Set the number of channels we want to use */
- 	if (params_channels(params) == 1)
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN),
-+		regmap_field_set_bits(scodec->reg_adc_fifoc,
- 					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN));
- 	else
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN),
--					 0);
-+		regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+					 BIT(SUN4I_CODEC_ADC_FIFOC_MONO_EN));
- 
- 	/* Set the number of sample bits to either 16 or 24 bits */
- 	if (hw_param_interval(params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS)->min == 32) {
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS),
-+		regmap_field_set_bits(scodec->reg_adc_fifoc,
- 				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS));
- 
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE),
--				   0);
-+		regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE));
- 
- 		scodec->capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
- 	} else {
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS),
--				   0);
-+		regmap_field_clear_bits(scodec->reg_adc_fifoc,
-+				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_SAMPLE_BITS));
- 
- 		/* Fill most significant bits with valid data MSB */
--		regmap_field_update_bits(scodec->reg_adc_fifoc,
--				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE),
-+		regmap_field_set_bits(scodec->reg_adc_fifoc,
- 				   BIT(SUN4I_CODEC_ADC_FIFOC_RX_FIFO_MODE));
- 
- 		scodec->capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
-@@ -543,24 +530,20 @@ static int sun4i_codec_hw_params_playback(struct sun4i_codec *scodec,
- 
- 	/* Set the number of sample bits to either 16 or 24 bits */
- 	if (hw_param_interval(params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS)->min == 32) {
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS),
-+		regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS));
- 
- 		/* Set TX FIFO mode to padding the LSBs with 0 */
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE),
--				   0);
-+		regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE));
- 
- 		scodec->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
- 	} else {
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS),
--				   0);
-+		regmap_clear_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
-+				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_SAMPLE_BITS));
- 
- 		/* Set TX FIFO mode to repeat the MSB */
--		regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE),
-+		regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 				   BIT(SUN4I_CODEC_DAC_FIFOC_TX_FIFO_MODE));
- 
- 		scodec->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
-@@ -624,8 +607,7 @@ static int sun4i_codec_startup(struct snd_pcm_substream *substream,
- 	 * Stop issuing DRQ when we have room for less than 16 samples
- 	 * in our TX FIFO
- 	 */
--	regmap_update_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
--			   3 << SUN4I_CODEC_DAC_FIFOC_DRQ_CLR_CNT,
-+	regmap_set_bits(scodec->regmap, SUN4I_CODEC_DAC_FIFOC,
- 			   3 << SUN4I_CODEC_DAC_FIFOC_DRQ_CLR_CNT);
- 
- 	return clk_prepare_enable(scodec->clk_module);
--- 
-2.36.1
+Tobias made an interesting observation with the mv88e6xxx switch. He
+found that two tight polls was enough 99% of the time. Putting a sleep
+in there doubles the time it took to setup the switch. So he ended up
+with a hybrid of open coded polling twice, followed by iopoll with a
+timer value set.
 
+That was with a heavily used poll function. How often is this function
+used? No point in overly optimising this if it is not used much.
 
+      Andrew
+ 
