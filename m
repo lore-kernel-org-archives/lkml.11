@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237DDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 635AAC4167B
 	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355435AbiEULVn (ORCPT
+        id S1355628AbiEULV4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
+        Sat, 21 May 2022 07:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242689AbiEULMG (ORCPT
+        with ESMTP id S242683AbiEULMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 07:12:06 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3730F2980B;
-        Sat, 21 May 2022 04:12:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7E528E33;
+        Sat, 21 May 2022 04:12:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=ysSCHxYUYI2fnvbvjl19r0L14v2vd2rA12vVrwVzVi0=;
-  b=UqK5kh2EBbAGZipXfNg9E2KfKuDxjrFxb0oz0Ho0tGLgmOEKYhG4lkwD
-   3M3Zc7SdrIYY8eKOLYmjLyUQp1i6YDnmV8YgSIZfqGlCdSIYPZAlxuq2k
-   6Kun0ZXJw0CRqeGDpOM8Qhe3U+AsddizZOk4z1RJIQQfo4i2UoVO6GwGj
-   4=;
+  bh=8fYJyg30jVrQqFQpOJmI0wxHHBVbkdTQBhJk6eEiDi8=;
+  b=FWvKDSai1Ov/mxDSznsYrLA0RAMr9D2+KBw28LYTDtjjqk/dK2YTB2sE
+   bPJ1RseFvavr4t9f6c8JaaLSMie1WhhogxLDit21HMRkxECJlvdRTuzfp
+   o7+YfbObhZoPvZQVZp5SeKGwx6qz/Shlp/cNRrklQeEe3tt4b2iSzvRh3
+   o=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727919"
+   d="scan'208";a="14727916"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:56 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:55 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Wolfgang Grandegger <wg@grandegger.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     kernel-janitors@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] can: peak_usb: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:34 +0200
-Message-Id: <20220521111145.81697-24-Julia.Lawall@inria.fr>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net/mlx5: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:31 +0200
+Message-Id: <20220521111145.81697-21-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -55,20 +54,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/net/can/usb/peak_usb/pcan_usb.c |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/main.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
-index 17dc178f555b..091c631ebe23 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
-@@ -533,7 +533,7 @@ static int pcan_usb_handle_bus_evt(struct pcan_usb_msg_context *mc, u8 ir)
- {
- 	struct pcan_usb *pdev = mc->pdev;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index fbd4dd76a19f..c9b4e50a593e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1769,7 +1769,7 @@ static int mlx5_try_fast_unload(struct mlx5_core_dev *dev)
+ 	}
  
--	/* acccording to the content of the packet */
-+	/* according to the content of the packet */
- 	switch (ir) {
- 	case PCAN_USB_ERR_CNT_DEC:
- 	case PCAN_USB_ERR_CNT_INC:
+ 	/* Panic tear down fw command will stop the PCI bus communication
+-	 * with the HCA, so the health polll is no longer needed.
++	 * with the HCA, so the health poll is no longer needed.
+ 	 */
+ 	mlx5_drain_health_wq(dev);
+ 	mlx5_stop_health_poll(dev, false);
 
