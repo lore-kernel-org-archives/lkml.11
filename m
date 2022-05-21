@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF78C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355039AbiEULUR (ORCPT
+        id S1354842AbiEULU2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48542 "EHLO
+        Sat, 21 May 2022 07:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354658AbiEULMj (ORCPT
+        with ESMTP id S1354367AbiEULMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 07:12:39 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72591369E6;
-        Sat, 21 May 2022 04:12:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706232B27C;
+        Sat, 21 May 2022 04:12:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=KxLxJK4VOX7mHM48ak0sH0Qf6XuYFijUuIB0IUsxg3c=;
-  b=Pql/802JQPyh4rPCmRCgVDVIBEkS+wVVlZ2X1tphoXpKdnPiubrnVR5A
-   wLZ5SMMNxms0hs+Cgn7xNm3q9oR2JeJlsAzL8ljcQy92sAY3y0pQbaFD2
-   iMvVKN9rgbUAKi16vJcMrkjf9Dd76vWH8ooEwhoRVY0VkiJhS4m8awEUa
-   8=;
+  bh=N3RDg1x0n+WbKnIQmUyewjqWSlz3Ckp24b++BGrDZF8=;
+  b=mEpdmp9QBpryUwFXcRalpXycTdjluSdOqCWavqcvuK+bAcVMB/dp7yNk
+   g8uflwSRXq23Hx0hxKJsW10mBbBbUqbsZ68ILjOeL5NTFIh9Fg/2n9jTt
+   btP34bMnLF6mkGa/5j+SbRN2U+WBpVwbs6W/2KH+DG9PxGfDP1XVo6f9r
+   M=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727946"
+   d="scan'208";a="14727941"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:00 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:59 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] firmware: arm_scmi: fix typos in comments
-Date:   Sat, 21 May 2022 13:10:58 +0200
-Message-Id: <20220521111145.81697-48-Julia.Lawall@inria.fr>
+To:     Jaroslav Kysela <perex@perex.cz>
+Cc:     kernel-janitors@vger.kernel.org, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: ctxfi: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:54 +0200
+Message-Id: <20220521111145.81697-44-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -45,40 +44,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Spelling mistakes (triple letters) in comments.
+Spelling mistake (triple letters) in comment.
 Detected with the help of Coccinelle.
 
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/firmware/arm_scmi/driver.c |    2 +-
- drivers/firmware/arm_scmi/smc.c    |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ sound/pci/ctxfi/cthw20k1.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index c1922bd650ae..3846b46eb8f7 100644
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -1117,7 +1117,7 @@ struct scmi_msg_resp_domain_name_get {
-  *	  stored as a NULL terminated string.
-  * @len: The len in bytes of the @name char array.
-  *
-- * Return: 0 on Succcess
-+ * Return: 0 on Success
-  */
- static int scmi_common_extended_name_get(const struct scmi_protocol_handle *ph,
- 					 u8 cmd_id, u32 res_id, char *name,
-diff --git a/drivers/firmware/arm_scmi/smc.c b/drivers/firmware/arm_scmi/smc.c
-index 745acfdd0b3d..13d59a1d7844 100644
---- a/drivers/firmware/arm_scmi/smc.c
-+++ b/drivers/firmware/arm_scmi/smc.c
-@@ -236,7 +236,7 @@ const struct scmi_desc scmi_smc_desc = {
- 	 * once the SMC instruction has completed successfully, the issued
- 	 * SCMI command would have been already fully processed by the SCMI
- 	 * platform firmware and so any possible response value expected
--	 * for the issued command will be immmediately ready to be fetched
-+	 * for the issued command will be immediately ready to be fetched
- 	 * from the shared memory area.
- 	 */
- 	.sync_cmds_completed_on_ret = true,
+diff --git a/sound/pci/ctxfi/cthw20k1.c b/sound/pci/ctxfi/cthw20k1.c
+index 0cea4982ed7d..9edbf5d8c3c7 100644
+--- a/sound/pci/ctxfi/cthw20k1.c
++++ b/sound/pci/ctxfi/cthw20k1.c
+@@ -1916,7 +1916,7 @@ static int hw_card_start(struct hw *hw)
+ 
+ 	}
+ 
+-	/* Switch to X-Fi mode from UAA mode if neeeded */
++	/* Switch to X-Fi mode from UAA mode if needed */
+ 	if (hw->model == CTUAA) {
+ 		err = uaa_to_xfi(pci);
+ 		if (err)
 
