@@ -2,86 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 06:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 06:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354675AbiEUGhU (ORCPT
+        id S1354683AbiEUGiQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 02:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39506 "EHLO
+        Sat, 21 May 2022 02:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349685AbiEUGhS (ORCPT
+        with ESMTP id S240014AbiEUGiK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 02:37:18 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77021DA5E;
-        Fri, 20 May 2022 23:37:17 -0700 (PDT)
-Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L4v4j1VY5zjWx6;
-        Sat, 21 May 2022 14:36:21 +0800 (CST)
-Received: from kwepemm600014.china.huawei.com (7.193.23.54) by
- kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 21 May 2022 14:37:14 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.28) by
- kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 21 May 2022 14:37:14 +0800
-From:   Yi Yang <yiyang13@huawei.com>
-To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>
-CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yiyang13@huawei.com>
-Subject: [PATCH -next] cpufreq: Fix reserved space in cpufreq_show_cpus()
-Date:   Sat, 21 May 2022 14:35:34 +0800
-Message-ID: <20220521063534.138930-1-yiyang13@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Sat, 21 May 2022 02:38:10 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1272515A773;
+        Fri, 20 May 2022 23:38:09 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id x143so9383155pfc.11;
+        Fri, 20 May 2022 23:38:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=smaHFvOwAesiG7cYWVCNK0rzH0N79mjIDdkzCW+d3SU=;
+        b=Xxj6incOCD6+c1sZEp8cdl1Iubj82KGyzf6Gufs0MVXDHm+WvHgQqbaTA1zK4z8Lyp
+         rUQLnh1q7csxY8FzDUyyvi7Wt3kk2QOQPW7ZqUkx69AyD4OLXNG9GBpW9CPsHkoIJoeM
+         jR9lKGoKYhHDzqkRmFFVSAu2SHGfgwhaTceECagDcaqou03DJGxovzRsXxdf3LV/2dZV
+         D2hs+7WnM/mc+ycfZzAPyAKpD4JLc+E6xPfre3hoU7pbeylYCXZPtPvRV/E2XhMAHbbS
+         KrNkwbOYflvd7rv0e5sTCHhhpkb6/tSYxgV5HxzKFsepTYRHtt9QBpXEp+xa5bWg1uEE
+         Gj0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=smaHFvOwAesiG7cYWVCNK0rzH0N79mjIDdkzCW+d3SU=;
+        b=IxMmVDVPHJiN1TOfp9qAtblqFdZwo7rj1UPTqKEXTQNV8a9o0ewGMO5KaZtg2dQ++N
+         qQ1CLKB5Rw9FC58zPzlwB58oPio4rDRnE0yRxel7Zp10kGtZG41qH5wKJeP8k59V7NmI
+         flL9kJS3b1AwB1xYDPkIO9MU12GeAfbARZYODzkxwdItvv7ChrhSddyGYPXDhuarW/nA
+         I1XZNf+hiNZEH96Ydv7+x8YSG5JQ/phFz6BXD/ajwXauR/KvjPo6pWf+CbDsKVG7AWgy
+         HuQO6LEiuo5lng6S0f4BQtX4iXJJhMMoLAvZTaTGe1v3VWvqb0froheVtj/bRIVdrBs4
+         m7bw==
+X-Gm-Message-State: AOAM533FO9HnV5AsGKpcLos8uEJeFFXjxNHLwEon8Ko0gHxAWOkY5+0t
+        j3dfGK/xmXqsX0OUsznUkctxZCmWcYuYYcr/BQ==
+X-Google-Smtp-Source: ABdhPJzeV4LovcLtaXuvqmqsLafmDVX4iKvf+5XD6MPWdPxgl4vN/pJYu7JazY9Ir3jgpykLQ7GF/SMAT3Ai7TG0Ce0=
+X-Received: by 2002:a63:9043:0:b0:3f9:6c36:3de3 with SMTP id
+ a64-20020a639043000000b003f96c363de3mr4363866pge.616.1653115088581; Fri, 20
+ May 2022 23:38:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.28]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600014.china.huawei.com (7.193.23.54)
-X-CFilter-Loop: Reflected
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Sat, 21 May 2022 14:37:57 +0800
+Message-ID: <CAMhUBjmSVGUm+9tki3J029z=JWKY8TOB73V5hQOgn_zjodhj1Q@mail.gmail.com>
+Subject: [BUG] mfd: tps65217: Got a warning when removing the module
+To:     tony@atomide.com, Lee Jones <lee.jones@linaro.org>
+Cc:     linux-omap@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Function scnprintf() would reserve space for the trailing '\0' and return 
-value is the number of characters written into buf not including the 
-trailing '\0'. internally meaning the next scnprintf() would write begin 
-the trailing '\0'. The code specifying "PAGE_SIZE - i - 2" here is trying 
-to reserve space for "\n\0" which would cause scnprintf() to reserve an 
-additional byte making the tail of the buf looks like this: "\n\0\0". 
-Thus. we should reserve only the space for one '\0'. passing in 
-"PAGE_SIZE - i - 1".
+Hello,
 
-Additionally, each iteration would replace the trailing '\0' from the last 
-iteration with a space, and append 4 additional bytes to the string making 
-it a total of 5 additional bytes. That means we should stop printing into 
-the buffer if the remaining size is less than 7 bytes(1 for the ' ', 4 for 
-the %u and 2 for the tailing "\n\0")
+I found a bug in the driver tps65217, the following log reveals it:
 
-Signed-off-by: Yi Yang <yiyang13@huawei.com>
----
- drivers/cpufreq/cpufreq.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+[   53.301059] remove_proc_entry: removing non-empty directory
+'irq/1', leaking at least 'i8042'
+[   53.301774] WARNING: CPU: 0 PID: 305 at fs/proc/generic.c:717
+remove_proc_entry+0x389/0x3f0
+[   53.304647] RIP: 0010:remove_proc_entry+0x389/0x3f0
+[   53.308912] Call Trace:
+[   53.309044]  <TASK>
+[   53.309158]  unregister_irq_proc+0x14c/0x170
+[   53.309377]  irq_free_descs+0x94/0xe0
+[   53.309777]  tps65217_remove+0x117/0x280 [tps65217]
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 1f6667ce43bd..60c005c9961e 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -844,9 +844,9 @@ ssize_t cpufreq_show_cpus(const struct cpumask *mask, char *buf)
- 
- 	for_each_cpu(cpu, mask) {
- 		if (i)
--			i += scnprintf(&buf[i], (PAGE_SIZE - i - 2), " ");
--		i += scnprintf(&buf[i], (PAGE_SIZE - i - 2), "%u", cpu);
--		if (i >= (PAGE_SIZE - 5))
-+			i += scnprintf(&buf[i], (PAGE_SIZE - i - 1), " ");
-+		i += scnprintf(&buf[i], (PAGE_SIZE - i - 1), "%u", cpu);
-+		if (i >= (PAGE_SIZE - 6))
- 			break;
- 	}
- 	i += sprintf(&buf[i], "\n");
--- 
-2.17.1
-
+Regards,
+Zheyu Ma
