@@ -2,89 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD415C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53421C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353108AbiEUDrw (ORCPT
+        id S1354480AbiEUDuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 23:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
+        Fri, 20 May 2022 23:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiEUDrt (ORCPT
+        with ESMTP id S229773AbiEUDuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 23:47:49 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3D8187DB4;
-        Fri, 20 May 2022 20:47:48 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D4DAD1A0740;
-        Sat, 21 May 2022 05:47:46 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9F16F1A02E1;
-        Sat, 21 May 2022 05:47:46 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 7CD7D180031E;
-        Sat, 21 May 2022 11:47:45 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        arnaud.pouliquen@foss.st.com
-Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shengjiu.wang@gmail.com
-Subject: [RESEND PATCH] rpmsg: char: Add mutex protection for rpmsg_eptdev_open()
-Date:   Sat, 21 May 2022 11:35:05 +0800
-Message-Id: <1653104105-16779-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Fri, 20 May 2022 23:50:16 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65238187DB4
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 20:50:15 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso9314133pjg.0
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 20:50:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=1thg0gD9LkoJN152HkT0OTmkJzX4+vIrjo7MEWofe+w=;
+        b=jo+qEFyNr7yZv2BLra+Du20hufyMVTOka43o6y0X1kCVL+qxdrbSb5wGRDLDcy2mIC
+         QKiAYZ0hDQOUN8R1P7p9IrIv0f8K8ABeeWf2kbJxnPoD9wUZYXXYODjWq6E3yzztuTCP
+         fb3gCYiMvrJMqdFuPG+bzQHnbx++aq0T3HQB2VTzc2ClYYftzifKCX2hK6aX+iWrzYnh
+         CEYyGv22r8ctZ6Dfk15ecRT9apCGJNWpiNjfTT3L2OJq+IR7EdVaau5CFLkBT8XmkSV4
+         pKnHnIKhCno5XvopZ4/Y12x6tzcUXnUVAmtpu97+601e7uTHdM8OOCSYK9HkuFiF4v6+
+         dSaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=1thg0gD9LkoJN152HkT0OTmkJzX4+vIrjo7MEWofe+w=;
+        b=4Yvljn+soJ1zTXDSTRJtUKCv0EiAxK0Lt6Erb1eC6jIPfI89I7KPSn2t47HorXiSoP
+         7hwOOu9AEedsk6lahCoBn8jCKBMwCU1mZdhFFbwCM4+z5nShaEEpvHy+f5OGwojJmVd+
+         lunmmL0fYAlRFVgb9ser5vVmme7hPNaZmLXJZ24aIov6FAxLzyVM2RLm3NgbQJWAkunM
+         HN//Eo8qXZXoit4hjQcmrIFcfVx9aTEMzjA8DGBzKocS5XW9dqzFQLi7LwpyuSwwE+4z
+         4x1VyABNm9uSaknjFDdC1fPmlJsB9Jtd6fwK4Ri3CfNaDA9tD6SHYiR05+ONYftaAniT
+         u0bA==
+X-Gm-Message-State: AOAM5313QyIe/3/Ns6eXcOXNtaSEQo7UZO+U4reXKu/uskG0UBrxiDea
+        7VlBHUEkC6aKWgH8MXwX7Qs=
+X-Google-Smtp-Source: ABdhPJwrmcJWaI5Mv2ARLKgUuuvw86bgEuR9UlPJEFOvrpvfOBAMVgMH/2LtnJltOwaKfoPbKAFROQ==
+X-Received: by 2002:a17:902:f647:b0:161:67af:6bf0 with SMTP id m7-20020a170902f64700b0016167af6bf0mr12093832plg.100.1653105014641;
+        Fri, 20 May 2022 20:50:14 -0700 (PDT)
+Received: from strix-laptop (2001-b011-20e0-15d4-84b3-8c62-a0b8-199e.dynamic-ip6.hinet.net. [2001:b011:20e0:15d4:84b3:8c62:a0b8:199e])
+        by smtp.gmail.com with ESMTPSA id z15-20020a170903018f00b0015e8d4eb2easm445903plg.308.2022.05.20.20.50.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 20:50:14 -0700 (PDT)
+Date:   Sat, 21 May 2022 11:50:06 +0800
+From:   Chih-En Lin <shiyn.lin@gmail.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        William Kucharski <william.kucharski@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Colin Cross <ccross@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Xu <peterx@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kaiyang Zhao <zhao776@purdue.edu>,
+        Huichun Feng <foxhoundsk.tw@gmail.com>,
+        Jim Huang <jserv.tw@gmail.com>
+Subject: Re: [RFC PATCH 2/6] mm: clone3: Add CLONE_COW_PGTABLE flag
+Message-ID: <20220521035006.GB1506735@strix-laptop>
+References: <20220519183127.3909598-1-shiyn.lin@gmail.com>
+ <20220519183127.3909598-3-shiyn.lin@gmail.com>
+ <7cb4c588-7a24-8557-6cd6-3ec59051c2b1@csgroup.eu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7cb4c588-7a24-8557-6cd6-3ec59051c2b1@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no mutex protection for rpmsg_eptdev_open(),
-especially for eptdev->ept read and write operation.
-It may cause issues when multiple instances call
-rpmsg_eptdev_open() in parallel,the return state
-may be success or EBUGY.
+On Fri, May 20, 2022 at 02:13:25PM +0000, Christophe Leroy wrote:
+> 
+> 
+> Le 19/05/2022 à 20:31, Chih-En Lin a écrit :
+> > Add CLONE_COW_PGTABLE flag to support clone3() system call to enable the
+> > Copy-On-Write (COW) mechanism on the page table.
+> 
+> Is that really something we want the user to decide ? Isn't it an 
+> internal stuff that should be transparent for users ?
+> 
+> As far as I know, there is no way today to decide whether you want COW 
+> or not for main memory. Why should there be a choice for the COW of page 
+> tables ?
 
-Fixes: 964e8bedd5a1 ("rpmsg: char: Return an error if device already open")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Agree.
+It should not expose to the user.
+COW of page table should become the configuration.
+Or, if the change is fine, it can even be the default setting.
+
+Thanks.
+
 ---
-changes in resend:
-- add fixes tag
 
- drivers/rpmsg/rpmsg_char.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
-index b6183d4f62a2..4f2189111494 100644
---- a/drivers/rpmsg/rpmsg_char.c
-+++ b/drivers/rpmsg/rpmsg_char.c
-@@ -120,8 +120,11 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
- 	struct rpmsg_device *rpdev = eptdev->rpdev;
- 	struct device *dev = &eptdev->dev;
- 
--	if (eptdev->ept)
-+	mutex_lock(&eptdev->ept_lock);
-+	if (eptdev->ept) {
-+		mutex_unlock(&eptdev->ept_lock);
- 		return -EBUSY;
-+	}
- 
- 	get_device(dev);
- 
-@@ -137,11 +140,13 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
- 	if (!ept) {
- 		dev_err(dev, "failed to open %s\n", eptdev->chinfo.name);
- 		put_device(dev);
-+		mutex_unlock(&eptdev->ept_lock);
- 		return -EINVAL;
- 	}
- 
- 	eptdev->ept = ept;
- 	filp->private_data = eptdev;
-+	mutex_unlock(&eptdev->ept_lock);
- 
- 	return 0;
- }
--- 
-2.17.1
-
+Sorry I did not group reply the first time.
