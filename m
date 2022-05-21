@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E77C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355122AbiEULSB (ORCPT
+        id S1355103AbiEULSV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        Sat, 21 May 2022 07:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354795AbiEULMj (ORCPT
+        with ESMTP id S1354858AbiEULMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:39 -0400
+        Sat, 21 May 2022 07:12:45 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21E1369FC;
-        Sat, 21 May 2022 04:12:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C252B18B;
+        Sat, 21 May 2022 04:12:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=8K1/DloTDesR+bq4AHgyaSURFCZevhgxa5E3Jn/XL1c=;
-  b=a/psZPSi13IpZb0RMQIqF5AoRfXaUO5TA+N+TYZ5QqwPfDsCMdq3SiAn
-   NCZ76UQ9B779Y9jtbIYaLNAno1ccaCaAOl6YulNFepfryiMWiyGplw4tU
-   k1DIn0SjUCSsOLncBDeVHFp6GeqvIRfYxOSneRDcYjTdmeBa6Vcfsq+JE
-   A=;
+  bh=FijcdnWeNJHGkmGIXKvwmM4MTGHZdgWDIgV1eJ838sw=;
+  b=HLWioN3D7KOIrKtH4lHd6OUnJLBBrp1vadDwRoGPWJKu9oUED85+q9kV
+   tqgb0tuy46WU1Sr+AjRpPA4ZHAv1GnsdabNFfHAmxScFuF7d7ngXm8nuE
+   A5k29y821XahNM3iJceVcTKt47A6DFvA5OAsqNYVgW2kN0ThF/5AnojrD
+   8=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727948"
+   d="scan'208";a="14727966"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:00 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:03 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Zhenyu Wang <zhenyuw@linux.intel.com>
-Cc:     kernel-janitors@vger.kernel.org, Zhi Wang <zhi.a.wang@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/i915/gvt: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:59 +0200
-Message-Id: <20220521111145.81697-49-Julia.Lawall@inria.fr>
+To:     Sean Wang <sean.wang@mediatek.com>
+Cc:     kernel-janitors@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dmaengine: mediatek-cqdma: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:11 +0200
+Message-Id: <20220521111145.81697-61-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -58,20 +52,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/gpu/drm/i915/gvt/gtt.c |    2 +-
+ drivers/dma/mediatek/mtk-cqdma.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gvt/gtt.c b/drivers/gpu/drm/i915/gvt/gtt.c
-index 9c5cc2800975..c919f14c4fcb 100644
---- a/drivers/gpu/drm/i915/gvt/gtt.c
-+++ b/drivers/gpu/drm/i915/gvt/gtt.c
-@@ -2341,7 +2341,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
- 			gvt_vgpu_err("fail to populate guest ggtt entry\n");
- 			/* guest driver may read/write the entry when partial
- 			 * update the entry in this situation p2m will fail
--			 * settting the shadow entry to point to a scratch page
-+			 * setting the shadow entry to point to a scratch page
- 			 */
- 			ops->set_pfn(&m, gvt->gtt.scratch_mfn);
- 		} else
+diff --git a/drivers/dma/mediatek/mtk-cqdma.c b/drivers/dma/mediatek/mtk-cqdma.c
+index f8847c48ba03..9ae92b8940ef 100644
+--- a/drivers/dma/mediatek/mtk-cqdma.c
++++ b/drivers/dma/mediatek/mtk-cqdma.c
+@@ -373,7 +373,7 @@ static void mtk_cqdma_tasklet_cb(struct tasklet_struct *t)
+ 
+ 		/*
+ 		 * free child CVD after completion.
+-		 * the parent CVD would be freeed with desc_free by user.
++		 * the parent CVD would be freed with desc_free by user.
+ 		 */
+ 		if (cvd->parent != cvd)
+ 			kfree(cvd);
 
