@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25855C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 04:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14443C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 04:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiEUEPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 00:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
+        id S231450AbiEUEPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 00:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354364AbiEUEPN (ORCPT
+        with ESMTP id S1353683AbiEUEPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 00:15:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9A8195EB4;
-        Fri, 20 May 2022 21:15:07 -0700 (PDT)
+        Sat, 21 May 2022 00:15:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722DD195925;
+        Fri, 20 May 2022 21:15:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7410FB82F2B;
-        Sat, 21 May 2022 04:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2443EC385A9;
-        Sat, 21 May 2022 04:15:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 682FB60109;
+        Sat, 21 May 2022 04:15:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A76C385A9;
+        Sat, 21 May 2022 04:15:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653106505;
-        bh=cGeqohzEq3pO7WtVL1/WGiNCikjXFQargsBMTKHAJfU=;
+        s=k20201202; t=1653106515;
+        bh=ZOX6ujBcMnT7GDeHWouQ9gtLDH8gdmG9zioCEXGXYII=;
         h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=iG+QXWMit7REIdVZYpvG1QIoimMt+1EQ5bqaaBBb5L2EHQg850kbOsSe2e2H34UYz
-         B2VvxvWGkpIltuk8wg7MRaOM6YhlE0rkkEq/YQ4MvWJnoX9cN4ydm2yrzraNUnIgGG
-         Q3YxT6e6Xxwismx2+z28m31l89vvMcjUCFWjliL3hKwXPjHToSSDq6kzY5t8nkjLNY
-         IHpPIk9C3kk8XqF5BGiHmiWRcrdNb5EHIJmmXvYIX1koqY4KUoHUZ1YRjzn/awRipg
-         iT/eWXo+xcF7yY7xjPzJvAyYzFKeCmqlpf+c38JeUbna51mN3SLftB4o/LKWLiObuX
-         Z4DfRCAUafYVQ==
+        b=SakLCbZLYal0PnCmDP06gQFnGApWEwK/hW5pccJ3X9GXrPGii0QrgpWQSjaXkjbkT
+         AdIdJsptFfqFL1L2hAeEtvlCZmKjZlLArqikHTeCGmOEnaPKSxzwMuT9DAuHuuwou1
+         qDElSNgVOet4HKcnA/5sRFa5Hek4QTU5k4Cqvkmq/0t2HevaMXfWVt+y97t2EaSVw5
+         PJ636UG18l1KD8CzPeCJdB3E2Xv5SomaK907A6ubrSoyWDfBtKjdAwo6qQwnrLA6Ve
+         GAbdaqY5Y4XCCWaam3jy0nRnZAatPvuUgvuy244FLFSUaaFz/k18/sc/Xl+SZhg8UP
+         PliAJ9AIw69GA==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220516070600.7692-4-gabriel.fernandez@foss.st.com>
-References: <20220516070600.7692-1-gabriel.fernandez@foss.st.com> <20220516070600.7692-4-gabriel.fernandez@foss.st.com>
-Subject: Re: [PATCH v4 03/14] clk: stm32mp13: add stm32_mux clock management
+In-Reply-To: <20220516070600.7692-5-gabriel.fernandez@foss.st.com>
+References: <20220516070600.7692-1-gabriel.fernandez@foss.st.com> <20220516070600.7692-5-gabriel.fernandez@foss.st.com>
+Subject: Re: [PATCH v4 04/14] clk: stm32mp13: add stm32_gate management
 From:   Stephen Boyd <sboyd@kernel.org>
 Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
@@ -49,17 +49,17 @@ To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Michael Turquette <mturquette@baylibre.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 20 May 2022 21:15:03 -0700
+Date:   Fri, 20 May 2022 21:15:13 -0700
 User-Agent: alot/0.10
-Message-Id: <20220521041505.2443EC385A9@smtp.kernel.org>
+Message-Id: <20220521041515.B9A76C385A9@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting gabriel.fernandez@foss.st.com (2022-05-16 00:05:49)
+Quoting gabriel.fernandez@foss.st.com (2022-05-16 00:05:50)
 > From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 >=20
-> Just to introduce management of a stm32 mux clock.
+> Just to introduce management of a stm32 gate clock.
 >=20
 > Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 > ---
