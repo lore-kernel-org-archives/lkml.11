@@ -2,42 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D03C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E423C38A04
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356545AbiEULXT (ORCPT
+        id S1356365AbiEULXH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
+        Sat, 21 May 2022 07:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354908AbiEULM5 (ORCPT
+        with ESMTP id S1354945AbiEULM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:57 -0400
+        Sat, 21 May 2022 07:12:59 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1AD57B06;
-        Sat, 21 May 2022 04:12:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFF5D0287;
+        Sat, 21 May 2022 04:12:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=Pj8CLWvJWySucqqRsGRS5/KgmbYhAg/eJuA1XFa9eQY=;
-  b=JhgeavRxxl1FrzcwzttSY4W0TDGF/wBWegsAijcoUZfCvtcOpiyk3Ood
-   5YdEktlduBh+GLXtzSyqS+M+NnNp17TNseUr7scWZKT8FPzC/jxNx0s+L
-   6HHrqQgqiWwU322sRVT2nyoun3aCkWgTsdIHHXeZK7sKrctchDmKhlQb4
-   A=;
+  bh=d94EiU7I4dYEf/e8AGlSALnSLNIwuUWhlAtOJ2fj7AE=;
+  b=Oz3S4nFWXWBAM+iu7fkLDRrlzwyi5PJ5WLqB+yoQt/IBI3R8CAgCAIB8
+   zAVDkXmGNSb4IrZG1h4zI30RnSV9+vaiu+mXkOFtBKPA5gup9+5cGG4/q
+   1W3DLvh/aPLl/qgUr7tGM4VC1W5JEyaJETifgRGeKh9/sO2qtDrWpOGd0
+   8=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727975"
+   d="scan'208";a="14727984"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:04 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:05 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Jonathan Cameron <jic23@kernel.org>
+To:     Olivier Moysan <olivier.moysan@foss.st.com>
 Cc:     kernel-janitors@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: chemical: bme680: fix typo in comment
-Date:   Sat, 21 May 2022 13:11:18 +0200
-Message-Id: <20220521111145.81697-68-Julia.Lawall@inria.fr>
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: stm32: dfsdm: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:26 +0200
+Message-Id: <20220521111145.81697-76-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -51,20 +59,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/iio/chemical/bme680_core.c |    2 +-
+ sound/soc/stm/stm32_adfsdm.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
-index 16ff7a98c9f0..ef5e0e46fd34 100644
---- a/drivers/iio/chemical/bme680_core.c
-+++ b/drivers/iio/chemical/bme680_core.c
-@@ -638,7 +638,7 @@ static int bme680_read_temp(struct bme680_data *data, int *val)
- 	comp_temp = bme680_compensate_temp(data, adc_temp);
+diff --git a/sound/soc/stm/stm32_adfsdm.c b/sound/soc/stm/stm32_adfsdm.c
+index 6ee714542b84..122805160e70 100644
+--- a/sound/soc/stm/stm32_adfsdm.c
++++ b/sound/soc/stm/stm32_adfsdm.c
+@@ -296,7 +296,7 @@ static int stm32_adfsdm_pcm_new(struct snd_soc_component *component,
+ static int stm32_adfsdm_dummy_cb(const void *data, void *private)
+ {
  	/*
- 	 * val might be NULL if we're called by the read_press/read_humid
--	 * routine which is callled to get t_fine value used in
-+	 * routine which is called to get t_fine value used in
- 	 * compensate_press/compensate_humid to get compensated
- 	 * pressure/humidity readings.
+-	 * This dummmy callback is requested by iio_channel_get_all_cb() API,
++	 * This dummy callback is requested by iio_channel_get_all_cb() API,
+ 	 * but the stm32_dfsdm_get_buff_cb() API is used instead, to optimize
+ 	 * DMA transfers.
  	 */
 
