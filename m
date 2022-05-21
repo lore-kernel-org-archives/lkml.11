@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0438C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA0AC4707A
 	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356901AbiEULXu (ORCPT
+        id S1356840AbiEULXq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
+        Sat, 21 May 2022 07:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353244AbiEULNv (ORCPT
+        with ESMTP id S1354997AbiEULOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:13:51 -0400
+        Sat, 21 May 2022 07:14:01 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA2EF74B2;
-        Sat, 21 May 2022 04:12:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20697106346;
+        Sat, 21 May 2022 04:12:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=lfkmiRjm0rrMRH5/qVszM4Nbsakjf+VgxH/LVjz5wvc=;
-  b=N7ZFZHpoZF5kMF0I8jm8ws+3zweEwjnhZYpBt2bhpPPocUnCD1JpjWeT
-   ASHxqX7uwDLUNLUvBn4Go3/TuLmQ2HpB2BD3mGe4m3zrLrKi+Xxs0By9K
-   6OFHNBJUjtMBmtS2v0kZJpm12cLg4Gb14gd6/zhvqfY5WRls9EUq6RfS5
-   c=;
+  bh=y/6NGQjtjKURfO9GuBRgYSn6RmGl/qwDj/5EGpGJGIU=;
+  b=ThRvXcAfzT/pn3SVxqI2qokUtGznDGJ0/7+VBDUrKq2PQstGi/kCKZYj
+   b/Z0Et8kEaL/zRT6MJKn0L+n7ZDSMLnkOYa0/QhbSLTZb8VUNzzS5zNtt
+   Eyr69uuRoWiQoMNwzT3wsri0ZCBrxqPbq0T1YVQd6mWMsby8OlHpDpRue
+   E=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727986"
+   d="scan'208";a="14727988"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:06 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Ariel Elior <aelior@marvell.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     kernel-janitors@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] qed: fix typos in comments
-Date:   Sat, 21 May 2022 13:11:28 +0200
-Message-Id: <20220521111145.81697-78-Julia.Lawall@inria.fr>
+Subject: [PATCH] selftests/vm/pkeys: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:30 +0200
+Message-Id: <20220521111145.81697-80-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,40 +45,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Spelling mistakes (triple letters) in comments.
+Spelling mistake (triple letters) in comment.
 Detected with the help of Coccinelle.
 
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h |    2 +-
- drivers/net/ethernet/qlogic/qed/qed_vf.h      |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/vm/protection_keys.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h
-index 9d5a0c9e1ca0..f6cd1b3efdfd 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h
-@@ -1282,7 +1282,7 @@ void qed_dbg_mcp_trace_set_meta_data(struct qed_hwfn *p_hwfn,
-  * @results_buf_size: (OUT) required buffer size (in bytes) for the parsed
-  *                    results.
-  *
-- * Return: Rrror if the parsing fails, ok otherwise.
-+ * Return: Error if the parsing fails, ok otherwise.
-  */
- enum dbg_status qed_get_mcp_trace_results_buf_size(struct qed_hwfn *p_hwfn,
- 						   u32 *dump_buf,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.h b/drivers/net/ethernet/qlogic/qed/qed_vf.h
-index 306b5f4bc632..2bd51a41ce8d 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_vf.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_vf.h
-@@ -225,7 +225,7 @@ struct pfvf_start_queue_resp_tlv {
- };
+diff --git a/tools/testing/selftests/vm/protection_keys.c b/tools/testing/selftests/vm/protection_keys.c
+index 2d0ae88665db..291bc1e07842 100644
+--- a/tools/testing/selftests/vm/protection_keys.c
++++ b/tools/testing/selftests/vm/protection_keys.c
+@@ -1523,7 +1523,7 @@ void test_implicit_mprotect_exec_only_memory(int *ptr, u16 pkey)
+ 	/*
+ 	 * Reset the shadow, assuming that the above mprotect()
+ 	 * correctly changed PKRU, but to an unknown value since
+-	 * the actual alllocated pkey is unknown.
++	 * the actual allocated pkey is unknown.
+ 	 */
+ 	shadow_pkey_reg = __read_pkey_reg();
  
- /* Extended queue information - additional index for reference inside qzone.
-- * If commmunicated between VF/PF, each TLV relating to queues should be
-+ * If communicated between VF/PF, each TLV relating to queues should be
-  * extended by one such [or have a future base TLV that already contains info].
-  */
- struct vfpf_qid_tlv {
 
