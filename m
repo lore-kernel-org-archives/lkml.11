@@ -2,92 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF84C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DE0C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352951AbiEUHYK (ORCPT
+        id S1354734AbiEUHYR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 03:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54752 "EHLO
+        Sat, 21 May 2022 03:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232990AbiEUHYG (ORCPT
+        with ESMTP id S1354722AbiEUHYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 03:24:06 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AD16CA91;
-        Sat, 21 May 2022 00:24:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653117845; x=1684653845;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3asQqEgN3HAp03iRISKotmL8Hzh0H0AiQ5h1mdRd4mU=;
-  b=dLksq0kCgeneLrIg7mul/8YOhdwXbgG9ejzHDLGiuwwVna9ncgzrQHy8
-   TIIQ9NkKNcOrPrF6micVC7/5SYVFusSyXtp0Dg20naCsBZO0IVK13Ior6
-   LmquI+TSuqbZ7tgtSmTW16VilI3HIR80O0c9NoWwy6lD4yN8UmjdRtAZ3
-   T9jjBkcII9EHxpqtP+waM2Gk2jEaFi0aeqtOmBMRGmwbo1/vtXuHGJMNK
-   iJiiZfq5yI1TPWlwlD5p8VIBSNFji2kMmuS6nhS3iknP5iSBGdshu4dpI
-   1oe9HtE8jNTDANiTYA4vy465tIXLt9ElHiN2znHVy0Ni2eJTXL/hjn2Zk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="254871996"
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="254871996"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 00:24:04 -0700
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="599658223"
-Received: from tower.bj.intel.com ([10.238.157.62])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 00:24:01 -0700
-From:   Yanfei Xu <yanfei.xu@intel.com>
-To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, wei.w.wang@intel.com,
-        kan.liang@intel.com
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] KVM: x86: Fix the intel_pt PMI handling wrongly considered from guest
-Date:   Sat, 21 May 2022 15:23:18 +0800
-Message-Id: <20220521072318.1226928-1-yanfei.xu@intel.com>
-X-Mailer: git-send-email 2.32.0
+        Sat, 21 May 2022 03:24:15 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8386D166683;
+        Sat, 21 May 2022 00:24:13 -0700 (PDT)
+Received: from kwepemi100017.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L4w2916rczCsjR;
+        Sat, 21 May 2022 15:19:13 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100017.china.huawei.com (7.221.188.163) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 21 May 2022 15:24:10 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 21 May
+ 2022 15:24:10 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <josef@toxicpanda.com>, <axboe@kernel.dk>, <yukuai3@huawei.com>,
+        <ming.lei@redhat.com>
+CC:     <linux-block@vger.kernel.org>, <nbd@other.debian.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+Subject: [PATCH -next v3 1/6] nbd: call genl_unregister_family() first in nbd_cleanup()
+Date:   Sat, 21 May 2022 15:37:44 +0800
+Message-ID: <20220521073749.3146892-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220521073749.3146892-1-yukuai3@huawei.com>
+References: <20220521073749.3146892-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When kernel handles the vm-exit caused by external interrupts and NMI,
-it always set a type of kvm_intr_type to handling_intr_from_guest to
-tell if it's dealing an IRQ or NMI. For the PMI scenario, it could be
-IRQ or NMI.
-However the intel_pt PMI certainly is a NMI PMI, hence using
-kvm_handling_nmi_from_guest() to distinguish if the intel_pt PMI comes
-from guest is more appropriate. This modification can avoid the host
-wrongly considered the intel_pt PMI comes from a guest once the host
-intel_pt PMI breaks the handling of vm-exit of external interrupts.
+Otherwise there may be race between module removal and the handling of
+netlink command, which can lead to the oops as shown below:
 
-Fixes: db215756ae59 ("KVM: x86: More precisely identify NMI from guest when handling PMI")
-Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
+  BUG: kernel NULL pointer dereference, address: 0000000000000098
+  Oops: 0002 [#1] SMP PTI
+  CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  RIP: 0010:down_write+0x1a/0x50
+  Call Trace:
+   start_creating+0x89/0x130
+   debugfs_create_dir+0x1b/0x130
+   nbd_start_device+0x13d/0x390 [nbd]
+   nbd_genl_connect+0x42f/0x748 [nbd]
+   genl_family_rcv_msg_doit.isra.0+0xec/0x150
+   genl_rcv_msg+0xe5/0x1e0
+   netlink_rcv_skb+0x55/0x100
+   genl_rcv+0x29/0x40
+   netlink_unicast+0x1a8/0x250
+   netlink_sendmsg+0x21b/0x430
+   ____sys_sendmsg+0x2a4/0x2d0
+   ___sys_sendmsg+0x81/0xc0
+   __sys_sendmsg+0x62/0xb0
+   __x64_sys_sendmsg+0x1f/0x30
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  Modules linked in: nbd(E-)
+
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
-v1->v2:
-1.Fix vmx_handle_intel_pt_intr() directly instead of changing the generic function.
-2.Tune the commit message.
+ drivers/block/nbd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
- arch/x86/kvm/vmx/vmx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 610355b9ccce..378036c1cf94 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7856,7 +7856,7 @@ static unsigned int vmx_handle_intel_pt_intr(void)
- 	struct kvm_vcpu *vcpu = kvm_get_running_vcpu();
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index ac8b045c777c..a73e853f5833 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -2528,6 +2528,12 @@ static void __exit nbd_cleanup(void)
+ 	struct nbd_device *nbd;
+ 	LIST_HEAD(del_list);
  
- 	/* '0' on failure so that the !PT case can use a RET0 static call. */
--	if (!kvm_arch_pmi_in_guest(vcpu))
-+	if (!kvm_handling_nmi_from_guest(vcpu))
- 		return 0;
++	/*
++	 * Unregister netlink interface prior to waiting
++	 * for the completion of netlink commands.
++	 */
++	genl_unregister_family(&nbd_genl_family);
++
+ 	nbd_dbg_close();
  
- 	kvm_make_request(KVM_REQ_PMI, vcpu);
+ 	mutex_lock(&nbd_index_mutex);
+@@ -2546,7 +2552,6 @@ static void __exit nbd_cleanup(void)
+ 	destroy_workqueue(nbd_del_wq);
+ 
+ 	idr_destroy(&nbd_index_idr);
+-	genl_unregister_family(&nbd_genl_family);
+ 	unregister_blkdev(NBD_MAJOR, "nbd");
+ }
+ 
 -- 
-2.32.0
+2.31.1
 
