@@ -2,63 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 412ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D192FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354918AbiEUNOn (ORCPT
+        id S1354942AbiEUNOw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 09:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33754 "EHLO
+        Sat, 21 May 2022 09:14:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243648AbiEUNNx (ORCPT
+        with ESMTP id S1351062AbiEUNO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 09:13:53 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C468339B80
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:47 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id q4so9411051plr.11
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:47 -0700 (PDT)
+        Sat, 21 May 2022 09:14:27 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523B639B80
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:09 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id s14so9413288plk.8
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=egjC6NgwBLWYIyKnRSW+X/wYthcyg40wdtxiZu51vtc=;
-        b=Eri97N4csdJvg9j8fzgy7MS1YyQ+NxThLJw+0XcBkwt0rJ1Yl0MhA7CKtyi3sFq4/3
-         ULDf/1UNk03mIhAcJHfX7ygdKGmgIuMQCynaG7TnOKget9/Bz3FkKGmA7RcApHDDfMn0
-         ruE2gs/UdKz88zxVSTbSzTgfIUVN4tHFGwD49EwfHsRcBRj+NrUV9EoNwsyyd2ptsFeU
-         F688McRuRwqfX7YU3NsutYHF3bkqt6xMcDnzCunYHdsYLrYcJMocb5VV4TEB94yz2SJ/
-         5JOgRW0ngIxg/Aj0RLNItndbolIiTuDWWUJmCgV+xXtd5fse1Jw4rouMplXomwJKTVOs
-         WwaA==
+        bh=g7Q4DIyBFdkOfQfLesIacT6b2x85qOReA4ewSFpfUcU=;
+        b=DXSLnl6bzRiqQd9B3yCFb3QN0I29DuZvmyvMOt1C5IzPBsMZujmBjjyjiPXn8dM5Mi
+         1EI6K4reqiBhLCza62OYrJa3ud9LTNNkk1lz32pXboLjnSv9jja0+LzxK8QgXWcXidAL
+         JUi/BgVHD1aLJfk6SrAZans9hpJJaDzzW4PwoCNXGGJxW3Fl7Guwjot7Kfi1ws4O8UB/
+         TfYKuiNdoCEO6UmA0QqO8qghU9qoscOe0g+tEcxinZ5zkle3SWuNXXlUqaEudsZ+q8mS
+         AckGqF8C890g19t7+O78uuwQig6Pj3bmEq4dmoKbNDK9GfOvCVYN0pn9Jt0kRQPsNTEQ
+         EIYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=egjC6NgwBLWYIyKnRSW+X/wYthcyg40wdtxiZu51vtc=;
-        b=5B6uyoVPF9uvRnGOBDWo8xpswkIneYnXh4B65s2Zk7RX/hKWdnCzci0f5wQNFqeTLf
-         Pjexsug9E5qkfX4yRbnJrYDHGnr/WLVYlejWD3JSHLo69cSG/Np7n/Vph5iLm3R8VQoQ
-         AbZT2b56RkxNDIUrZLf3m61gdARQSRU9POqPw52UQ76D0mf2yKtWw34OIbKCpVeWEkL/
-         NlFhiEaTet11zwZfrABJ7LYqRxWcTbg9gYcUUR8P/Eiwu6nKb/0oPu1KKT/AbWt6S0s8
-         3HfOO1k9ynYUIC0d9ScLEY++9Db34bJJrYf5gsxnuwbaWiOFWz8MvMfRfemUQ7dyWWx/
-         cNdA==
-X-Gm-Message-State: AOAM5314BtdtQYoQStgfnys5PdZ9ch8xZFLocn/Eu5qW/m3yhP30ZDWd
-        u6a9qMjihQZerobYBjEeS7He7DhMXko=
-X-Google-Smtp-Source: ABdhPJxkPxXSelXTcn/TSy5d8joziO5MtffGIlNjryF2zLVJkVfnQdR0EZUMgSBwiqMSUdHFgvcSmQ==
-X-Received: by 2002:a17:90b:1482:b0:1df:5b39:8a4 with SMTP id js2-20020a17090b148200b001df5b3908a4mr17034745pjb.233.1653138826467;
-        Sat, 21 May 2022 06:13:46 -0700 (PDT)
+        bh=g7Q4DIyBFdkOfQfLesIacT6b2x85qOReA4ewSFpfUcU=;
+        b=2ONfr7WJ9qfFmPBBLdzqNsFeZIZ2AtuNr391KXg0hZtIBZjCoPGUFrj+oUgJQE+IsJ
+         c8Km7zXabGpUGZnd8sV0mpHsz0PXSL+vkOE2acvibuXLGy1cTD/FPWOnQyHjLUDQj/4a
+         DlZ9ZqFWDO1TYoz0uZFCphIzlnC5FyAPWlntbZA8ZGpzEm1uhTngH75+d8F8YFVeTXrj
+         KgsRvHZcQIB2yVhv0HmFTUd24jg3OjyMjL7gC8QpeAUovfhxQKg96NeJ3YPY5Yuh90A4
+         kkUeYl3Qwi++gGItpcOjinI0nmHcwO5/IhOEb7c5QSezpYi2Q0rGC7zSVrRniuvqK+Sc
+         QJ4g==
+X-Gm-Message-State: AOAM530Gy0/YagirfnwuOqMRsg2nDp8X4hY87o0Cx/8Ub812CMqF3LAB
+        tmKTF8ozvb43KjzYgJoB8vP6NRPyxLoCng==
+X-Google-Smtp-Source: ABdhPJzRR6zf4/aFz4vGSyRfNAJ3VFLw0FA+iXux+gNdzSOHEVGhZYeu9Oa58IX6yFdO8P/mN1weHQ==
+X-Received: by 2002:a17:902:ea53:b0:15b:1bb8:ac9e with SMTP id r19-20020a170902ea5300b0015b1bb8ac9emr14147213plg.45.1653138848062;
+        Sat, 21 May 2022 06:14:08 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id p19-20020a1709028a9300b00161a9df4de8sm1566514plo.145.2022.05.21.06.13.45
+        by smtp.gmail.com with ESMTPSA id z17-20020a170903019100b00161c3fc7a44sm1581665plg.108.2022.05.21.06.14.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 06:13:45 -0700 (PDT)
+        Sat, 21 May 2022 06:14:07 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Openrisc <openrisc@lists.librecores.org>,
         Stafford Horne <shorne@gmail.com>,
         Jonas Bonn <jonas@southpole.se>,
         Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH v3 03/13] openrisc: Add support for liteuart emergency printing
-Date:   Sat, 21 May 2022 22:13:13 +0900
-Message-Id: <20220521131323.631209-4-shorne@gmail.com>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH v3 09/13] openrisc/traps: Declare unhandled_exception for asmlinkage
+Date:   Sat, 21 May 2022 22:13:19 +0900
+Message-Id: <20220521131323.631209-10-shorne@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220521131323.631209-1-shorne@gmail.com>
 References: <20220521131323.631209-1-shorne@gmail.com>
@@ -68,42 +71,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds support for sending emergency print output, such as
-unhandled exception details, to a liteuart serial device.  This is the
-default device available on litex platforms.
-
-If a developer want to use this they should update UART_BASE_ADD
-to the address of liteuart.
+Noticed this when workin on warnings.  As unhandled_exception is used in
+entry.S we should attribute it with asmlinkage.
 
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/openrisc/kernel/head.S | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ arch/openrisc/kernel/traps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 7bfa6e4b60c5..21db50563f97 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -1555,7 +1555,18 @@ ENTRY(_emergency_putc)
- 	l.movhi r4,hi(UART_BASE_ADD)
- 	l.ori	r4,r4,lo(UART_BASE_ADD)
+diff --git a/arch/openrisc/kernel/traps.c b/arch/openrisc/kernel/traps.c
+index 99cd2e6f8873..fd9a0f2b66c4 100644
+--- a/arch/openrisc/kernel/traps.c
++++ b/arch/openrisc/kernel/traps.c
+@@ -235,7 +235,7 @@ void __noreturn die(const char *str, struct pt_regs *regs, long err)
+ 	make_task_dead(SIGSEGV);
+ }
  
--#if defined(CONFIG_SERIAL_8250)
-+#if defined(CONFIG_SERIAL_LITEUART)
-+	/* Check OFF_TXFULL status */
-+1:      l.lwz	r5,4(r4)
-+	l.andi	r5,r5,0xff
-+	l.sfnei	r5,0
-+	l.bf	1b
-+	 l.nop
-+
-+	/* Write character */
-+	l.andi	r7,r7,0xff
-+	l.sw	0(r4),r7
-+#elif defined(CONFIG_SERIAL_8250)
- 	/* Check UART LSR THRE (hold) bit */
- 	l.addi  r6,r0,0x20
- 1:      l.lbz   r5,5(r4)
+-void unhandled_exception(struct pt_regs *regs, int ea, int vector)
++asmlinkage void unhandled_exception(struct pt_regs *regs, int ea, int vector)
+ {
+ 	printk("Unable to handle exception at EA =0x%x, vector 0x%x",
+ 	       ea, vector);
 -- 
 2.31.1
 
