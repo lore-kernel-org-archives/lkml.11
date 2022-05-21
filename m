@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E70C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84392C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354822AbiEULPs (ORCPT
+        id S1355135AbiEULP5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
+        Sat, 21 May 2022 07:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242750AbiEULMI (ORCPT
+        with ESMTP id S243828AbiEULMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:08 -0400
+        Sat, 21 May 2022 07:12:15 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB262AE01;
-        Sat, 21 May 2022 04:12:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03D92E9F3;
+        Sat, 21 May 2022 04:12:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=91FcthRZsnkKRXhwIYvDgOJJlKzvfDbh2te2fvYQnj0=;
-  b=hCWdnSbFQ9xzfyd+bTnkumDL9yBImrrPX17LI3gQ9hLP/nVknlGgoQ+1
-   Wh5qfmgtOxBI+O0mfd87eGVAGxyOGoEQ1N7f2CUjZHUww9LyMEAUEWkG2
-   AxDhlat6o9yWCh6zq1sKJp6uXGla7+8R9iClqXAlDFYCVM2IaKNPGXeuV
-   E=;
+  bh=aEtLv6/sHpKdEIHHv47IliOQ3MF2mvDe3gJfa14qUM4=;
+  b=nE7iGePxisTsaiDzj7rnXaAZ7YFIvNc31Ee6LEk446uzGR/mrrAmXP6s
+   qF8lke5uJ7693Sy2s23Od4oq0Qsbp35kENF1AS6O124xWZI+cpE1YGhg7
+   mBE9D2eZVYSl0BFrB8KJ0f1zJn9W6a8UH41WVTu2mkPGVpcjIsH/hdc+r
+   M=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727922"
+   d="scan'208";a="14727928"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:56 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:57 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     kernel-janitors@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Input: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:37 +0200
-Message-Id: <20220521111145.81697-27-Julia.Lawall@inria.fr>
+To:     Lucas Stach <l.stach@pengutronix.de>
+Cc:     kernel-janitors@vger.kernel.org,
+        Russell King <linux+etnaviv@armlinux.org.uk>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, etnaviv@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/etnaviv: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:43 +0200
+Message-Id: <20220521111145.81697-33-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,20 +54,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/input/mouse/cypress_ps2.c |    2 +-
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/mouse/cypress_ps2.c b/drivers/input/mouse/cypress_ps2.c
-index 5f868009d35b..d272f1ec27ba 100644
---- a/drivers/input/mouse/cypress_ps2.c
-+++ b/drivers/input/mouse/cypress_ps2.c
-@@ -696,7 +696,7 @@ int cypress_init(struct psmouse *psmouse)
- err_exit:
- 	/*
- 	 * Reset Cypress Trackpad as a standard mouse. Then
--	 * let psmouse driver commmunicating with it as default PS2 mouse.
-+	 * let psmouse driver communicating with it as default PS2 mouse.
- 	 */
- 	cypress_reset(psmouse);
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+index 37018bc55810..ac9c29d3a1c5 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+@@ -716,7 +716,7 @@ static void etnaviv_gpu_hw_init(struct etnaviv_gpu *gpu)
+ 	etnaviv_gpu_enable_mlcg(gpu);
  
+ 	/*
+-	 * Update GPU AXI cache atttribute to "cacheable, no allocate".
++	 * Update GPU AXI cache attribute to "cacheable, no allocate".
+ 	 * This is necessary to prevent the iMX6 SoC locking up.
+ 	 */
+ 	gpu_write(gpu, VIVS_HI_AXI_CONFIG,
 
