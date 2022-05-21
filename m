@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF41C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9671DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343705AbiEUQqw (ORCPT
+        id S1355381AbiEUQq5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 12:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        Sat, 21 May 2022 12:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355434AbiEUQqF (ORCPT
+        with ESMTP id S1355462AbiEUQqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 12:46:05 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AED1261B
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:02 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id q1so2984173ljb.5
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:02 -0700 (PDT)
+        Sat, 21 May 2022 12:46:07 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472D91180F
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:06 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id br17so6705424lfb.2
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lV6XE1ObPcqdSJehI4oOM5CcaG9hBJhYUJVtFsl6KVA=;
-        b=SlF8HSmJ37m/auQxe5mt5Wgps17gPY1s9HhSGiiP1KFyNvJzGhQowQxpe3tLjki7aw
-         ai67ybC6IH/467bxmNRIlUTtTHQGXF3wTpR660iO88ztsy+QEnEP1P0Nb+SAfYqJ6IRs
-         Q6iNvqUuoMLFoBdWDYcUa2L0PthPj43lOepkanheo1VdsB17enX85QA4dO8Qu7IAlHNo
-         9GR+pF0KN+iFCWvkWJnAYkD/skdlwyOL5AxduWNcPjBXnnLKHJwOflCNsQhWofqW0FQ+
-         Zurv0vRihj5MSQmxOgh2ANjZ2tr8v5ql9tcEjlkZe/zcJH3oIfzrXY6PjKTvHVdi6tsz
-         HEeg==
+        bh=zRW+nitNdiyJveLQkWDP36MSIJ7syqdFIWi2TI2HCgY=;
+        b=Bv/dAc+VzEsQCIsBmd0Miu5xiEkNXBxebVCMj/8aWCD9am4WJqyWegU7xw2vQsvkwm
+         T5vRvJrNfW8Bt1SY95HmlqhePEgKlpHwPJUXLNnWl4lRRlogUt2a0WwKnig+0IKFsAuJ
+         +RDcv+gZzj7FcD/8maBNwZHe7o2oMbfeQ4ztQehPP897xQu+HuI9dLaXL9dfCP8N36Zv
+         8FeaAKQ9dgKCJslawUeU9KY6IjF4eoyAeh9HrqW2FerINJNtP3QqZxOLYbFuZWurtSnG
+         HEKXgenjDHBcz1smtBZbmg8CJZsFgPpVlqxFREoILWN+uianc8vwgIQdt6508++tUKdT
+         fEYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lV6XE1ObPcqdSJehI4oOM5CcaG9hBJhYUJVtFsl6KVA=;
-        b=dq5Rv3idP69Q1m1UvzRKY0NVQQHPWsUQQJTsO8idNg4P7i4b1Db5RaONXD5jPw644J
-         b9VMiyGB8f0aOT6gYH+l/T2W/MuwVXonR3OCyNUTlA7VCGFV5mgpMmMI1zw6pPhPAVWW
-         9WkhQCHWshmhQNU3zafs6C6Hl7Nhdmwg25KTd1/y11+AuJsTL/ogPSSKNDjFO1cphRGd
-         VNvT2Tpuu8dX3LYU6B8BrcC1kdyiZL321r36Ur5Fklr4NpoX5SYpkS9kftOj1qQ180Xx
-         /xRKGom+g2ZVn0FYxfHHFdOSxRJXx0Hiu9iMcP0jRA9r26vVPf6YjaP8nw1C8zqOmQ2A
-         SOZw==
-X-Gm-Message-State: AOAM530vHDO11zXblgDnr7/Js4VfoJz70UaWxisa/NNgwwNGuMO4MQvz
-        kgLwvfg9xsJICiymBEiiEYtDONvS3yy35VDG
-X-Google-Smtp-Source: ABdhPJwBJx86nm4AGXMi3tXkTmiD+126msLSL/MxRxN7ylxSmhbk5p7qheACXUDPfoRhAPNsqtCenA==
-X-Received: by 2002:a2e:8346:0:b0:24d:ac67:42c7 with SMTP id l6-20020a2e8346000000b0024dac6742c7mr8195551ljh.323.1653151561926;
-        Sat, 21 May 2022 09:46:01 -0700 (PDT)
+        bh=zRW+nitNdiyJveLQkWDP36MSIJ7syqdFIWi2TI2HCgY=;
+        b=MEPUxxuRbthnJOWGOZHoM++KbxDUUhjQ7mgBu6+FXwpMyI+8iOxwaYt2lAdrOa/V00
+         hU2yYaxQn/LF6cjAgDe7khqcE4Mn8m4DLDehsDK9yKbBAoAGk8xJMp8z/gbnA91MjJRU
+         tIBHakcRVTdYGAH2rLjrKssciY+aXL5kuKdQNc1BkOIHt/3z5EEXK6oMuoXNcEYhsPI1
+         993f1CrmbgsQmhQV9Llw6KWw/fY73feuRGhcMLh7D/9ikVjdCigo2Jj8wwMiJPtmNN0N
+         rgRSfniEYRqr6KrarCOfMvXt8JxZ17+FMN7MTEq/ZmgxoC6QtOvrhOKc7fzytM7qUfoZ
+         +XlA==
+X-Gm-Message-State: AOAM533vPkTv5FQLplq6beV2gnOIhpr+gDkFap39i4+RfZ8cpZC6YHjN
+        cTclLprHSRUE840LOsb2qeolwdoPZZLl7kyL
+X-Google-Smtp-Source: ABdhPJwMLxE9peJiV5bTCFMHmJLCBB/4xmpluVOGXyg/k2jOobRsPXPTbFA6benVUrkt7ZCzSk8jqA==
+X-Received: by 2002:ac2:46e8:0:b0:477:ba2c:a68b with SMTP id q8-20020ac246e8000000b00477ba2ca68bmr10766667lfo.55.1653151565843;
+        Sat, 21 May 2022 09:46:05 -0700 (PDT)
 Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id f26-20020a19ae1a000000b0047255d211cesm1114282lfc.253.2022.05.21.09.46.00
+        by smtp.gmail.com with ESMTPSA id f26-20020a19ae1a000000b0047255d211cesm1114282lfc.253.2022.05.21.09.46.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 09:46:01 -0700 (PDT)
+        Sat, 21 May 2022 09:46:05 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,9 +57,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 08/12] dt-bindings: arm: qcom: add missing SM6125 board compatibles
-Date:   Sat, 21 May 2022 18:45:46 +0200
-Message-Id: <20220521164550.91115-8-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 11/12] arm64: dts: qcom: ipq6018-cp01-c1: fix Micron SPI NOR compatible
+Date:   Sat, 21 May 2022 18:45:49 +0200
+Message-Id: <20220521164550.91115-11-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org>
 References: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org>
@@ -69,37 +69,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document board compatibles already present in Linux kernel.
+The proper compatible for Micron n25q128a11 SPI NOR flash should include
+vendor-prefix.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 84fdb4f337b6..9f4be49aceb8 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -53,6 +53,7 @@ description: |
-         sdm845
-         sdx55
-         sdx65
-+        sm6125
-         sm7225
-         sm8150
-         sm8250
-@@ -353,6 +354,11 @@ properties:
-               - xiaomi,beryllium
-           - const: qcom,sdm845
- 
-+      - items:
-+          - enum:
-+              - sony,pdx201
-+          - const: qcom,sm6125
-+
-       - items:
-           - enum:
-               - fairphone,fp4
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts b/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts
+index 821cb7c0c183..d9a8c2e68ae1 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts
++++ b/arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dts
+@@ -43,7 +43,7 @@ flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		reg = <0>;
+-		compatible = "n25q128a11";
++		compatible = "micron,n25q128a11", "jedec,spi-nor";
+ 		spi-max-frequency = <50000000>;
+ 	};
+ };
 -- 
 2.32.0
 
