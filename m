@@ -2,62 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8203FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FE7C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243735AbiEUNNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 09:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
+        id S1354857AbiEUNOE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 09:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243648AbiEUNNq (ORCPT
+        with ESMTP id S1354590AbiEUNN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 09:13:46 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78FC38D86
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:43 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id v5-20020a17090a7c0500b001df84fa82f8so9882833pjf.5
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:43 -0700 (PDT)
+        Sat, 21 May 2022 09:13:59 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3816644E8
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:54 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id bo5so9874425pfb.4
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=eUjPg/5e1ChZn1rwFI2hAczpBcOEyorc/hxHSfQm0Lg=;
-        b=SS4710Djm9iHegQA+cfPB+xbNAqruJrs33j7ATRahJ1U9eXijmD1rT4DJTo2NuR94x
-         T1zuJtRspNJRaF/L0vKRigl8c/BfMuE4qKDQhbyMVG71P4krpawCgRze/y9tca1M2OFY
-         OyM24SlF0wkbeMIizNftta18emQlpMNg/R7KKrxw8AsZZc3QAU38Dbu/7nD1Po8dOGvH
-         Pim+7QPHdxH2G6ex1K760GvAEmy37SXLA8yjZ75qVt5mG4PfN+4Nl6EqKEt6JolLoac/
-         iJ+kqtUN/cCEVRM9SZiFdLnTFs6aC1K9lYIhabAj/izbx0QIzj3H2DOQh68GA9bKD6fN
-         uFMw==
+        bh=6s5Kt+Fz8ODBsnaEn4hTWh6elxNZ/IIbeZw2XTvUCZg=;
+        b=E5YlB7DR9wKAmnr1kNUjXgHvPlt7rIutr9zqF9ZwzMKuBVLBZNo8YeGkUR+kZ6iUpT
+         KXy1yNWEezsUEcvM/kytC7dl6xbf/h5R2W5aco6unOeXhw5FCjMUu8Ir/UcCYwuxjeHt
+         5V35G3DFAmB+epUNfvoRlTcgBEP9wiYKkK9+V9uC+rAa37CoCvZwXgmi+UxsW0qfhlMG
+         gLOyWJCe/DExV7JxeyWKiVjLb9ARtw99SOcLrgtFciOWA9lT5tHaC3M7lACe4erFXLAw
+         n8CK8EPVaP+SRyD7OWhi4uNEBdQsoOFEkn/kRPdENTDXNrMvmWJb8wwh7icH4hwSW0go
+         bvyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=eUjPg/5e1ChZn1rwFI2hAczpBcOEyorc/hxHSfQm0Lg=;
-        b=S3nXuC0vb1eKjXO0CuF81HQWmPVsdZ2FQ53YRdO2C5REMTcY2ue1GgEBIHEaILDRnI
-         7rbFsta/Bn9tBOGKW+v/F+YMATKP4lt1unHYMYFb4PxMDobFdWNDpBC9oR7Lk6AE+14a
-         Qz1ljMZVqFIXz6kW5TmDWL9ikAHhAsQncW8nrnONPeCrLxT4rEdP7cDYWE9a6ORrhfYQ
-         m5SVsw95ZzHw0BM+NMzNAsNoDpeMIUbxrsNy8c3AdMnfVM0cQbgOsoKUhjRA1h/LygTq
-         USQ9UvTqh1MW9JUCVdhZ7QYW9TvYJ40+ryCugClTac9yZ12dsWixu5qKi7o6SjO/kcFR
-         XXOg==
-X-Gm-Message-State: AOAM5326gX+YmCSM1Q8IYWbVA2aIeNJsT86c+LcEcqzNZ549Z85Y1YVz
-        CmuXo1eM29fSnz7gvlGT8oDDOjdVUmA=
-X-Google-Smtp-Source: ABdhPJxMYtezTY+sdkBxMLe3TSGcu0YJtnAkGJd79Tkz+n/+UZhPZvQz85k1873ZBzqQgTW1EZznfg==
-X-Received: by 2002:a17:90b:164a:b0:1dc:981d:f197 with SMTP id il10-20020a17090b164a00b001dc981df197mr17010054pjb.228.1653138822715;
-        Sat, 21 May 2022 06:13:42 -0700 (PDT)
+        bh=6s5Kt+Fz8ODBsnaEn4hTWh6elxNZ/IIbeZw2XTvUCZg=;
+        b=ww27mn1PMD4F5PN0/uEmFsnTA16dtgBEgiT1RCKQt0qBiVGpIqqJKddxdCLdLwK+0I
+         cI5j5j9SXfNRFYiHiPBEys91mZxUrPQ8SxZ88L4eP76hH/V8ILI/B/snuWIrf1fbq5Ct
+         PUqHP20zT9WLPiZb8JpK2cJmQMlRHCJufYkPUGpG8eWe8RNIF+3X4gPiKFUluZz6m/pA
+         FGXtlBZYVtEVvUiyBENWzs4YfDYGB61RkvWGYJx7QsPC68xaFyuM4ZlQYgmhJM/WtLdI
+         8k5ik0YxP8UsTW/kFFTjshhVdEsFSVy1n8dpy9+0iBCkp/umSwEclXqRENERCui7I4hs
+         tpcw==
+X-Gm-Message-State: AOAM532ZpXRjtXLxmna8hwfyjONXACWuDCr4dOALbr+aVK4CtcQEzr8X
+        76yoXIp3iw8Zq0hCtjjHM06xNIQ5vGjjaA==
+X-Google-Smtp-Source: ABdhPJw9okdrDgb1vUahM8hyulgKTKxGm09be9n5L9BA2zsBs0mxsDX31gMptWextpj9RiwT8YDlaQ==
+X-Received: by 2002:a63:4401:0:b0:3fa:df3:4201 with SMTP id r1-20020a634401000000b003fa0df34201mr805064pga.65.1653138833789;
+        Sat, 21 May 2022 06:13:53 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id k193-20020a633dca000000b003f60a8d7dadsm1497174pga.15.2022.05.21.06.13.41
+        by smtp.gmail.com with ESMTPSA id jh5-20020a170903328500b00161527e1d9fsm1545279plb.294.2022.05.21.06.13.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 06:13:42 -0700 (PDT)
+        Sat, 21 May 2022 06:13:53 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Openrisc <openrisc@lists.librecores.org>,
         Stafford Horne <shorne@gmail.com>,
         Jonas Bonn <jonas@southpole.se>,
         Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH v3 02/13] openrisc: Cleanup emergency print handling
-Date:   Sat, 21 May 2022 22:13:12 +0900
-Message-Id: <20220521131323.631209-3-shorne@gmail.com>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v3 05/13] openrisc: Pretty print show_registers memory dumps
+Date:   Sat, 21 May 2022 22:13:15 +0900
+Message-Id: <20220521131323.631209-6-shorne@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220521131323.631209-1-shorne@gmail.com>
 References: <20220521131323.631209-1-shorne@gmail.com>
@@ -67,292 +72,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The emergency print support only works for 8250 compatible serial ports.
-Now that OpenRISC platforms may be configured with different serial port
-hardware we don't want emergency print to try to print to non-existent
-hardware which will cause lockups.
+Currently show registers, print memory dumps character by character and
+there is no address information, so its a bit difficult to use.  For
+example before a stack dump looks as follows.
 
-This patch contains several fixes to get emergency print working again:
+    [   13.650000] Stack:
+    [   13.650000] Call trace
+    [   13.690000] [<(ptrval)>] ? put_timespec64+0x44/0x60
+    [   13.690000] [<(ptrval)>] ? _data_page_fault_handler+0x104/0x10c
+    [   13.700000]
+    [   13.700000] Code:
+    [   13.700000] 13
+    [   13.700000] ff
+    [   13.700000] ff
+    [   13.700000] f9
+    [   13.710000] 84
+    [   13.710000] 82
+    [   13.710000] ff
+    [   13.710000] bc
+    [   13.710000] 07
+    [   13.710000] fd
+    [   13.720000] 4e
+    [   13.720000] 67
+    [   13.720000] 84
+    [   13.720000] 62
+    [   13.720000] ff
+    ...
 
- - Update symbol loading to not assume the location of symbols
- - Split the putc print operation out to its own function to allow
-   for different future implementations.
- - Update _emergency_print_nr and _emergency_print to use the putc
-   function.
- - Guard serial 8250 specific sequences by CONFIG_SERIAL_8250
- - Update string line feed from lf,cr to cr,lf.
+This change updates this to print the address and data a word at time.
+
+    [    0.830000] Stack:
+    [    0.830000] Call trace:
+    [    0.830000] [<(ptrval)>] load_elf_binary+0x744/0xf5c
+    [    0.830000] [<(ptrval)>] ? __kernel_read+0x144/0x184
+    [    0.830000] [<(ptrval)>] bprm_execve+0x27c/0x3e4
+    [    0.830000] [<(ptrval)>] kernel_execve+0x16c/0x1a0
+    [    0.830000] [<(ptrval)>] run_init_process+0xa0/0xec
+    [    0.830000] [<(ptrval)>] ? kernel_init+0x0/0x14c
+    [    0.830000] [<(ptrval)>] kernel_init+0x7c/0x14c
+    [    0.830000] [<(ptrval)>] ? calculate_sigpending+0x30/0x40
+    [    0.830000] [<(ptrval)>] ret_from_fork+0x1c/0x84
+    [    0.830000]
+    [    0.830000]  c1033dbc:       c1033dec
+    [    0.830000]  c1033dc0:       c015258c
+    [    0.830000]  c1033dc4:       c129da00
+    [    0.830000]  c1033dc8:       00000002
+    [    0.830000]  c1033dcc:       00000000
+    [    0.830000]  c1033dd0:       c129da00
+    [    0.830000]  c1033dd4:       00000000
+    [    0.830000]  c1033dd8:       00000000
+    [    0.830000] (c1033ddc:)      00001e04
+    [    0.830000]  c1033de0:       001501fc
+    [    0.830000]  c1033de4:       c1033e68
+    [    0.830000]  c1033de8:       c0152e60
+    [    0.830000]  c1033dec:       c129da5c
+    [    0.830000]  c1033df0:       c0674a20
+    [    0.830000]  c1033df4:       c1033e50
+    [    0.830000]  c1033df8:       c00e3d6c
+    [    0.830000]  c1033dfc:       c129da5c
+    [    0.830000]  c1033e00:       00000003
+    [    0.830000]  c1033e04:       00150000
+    [    0.830000]  c1033e08:       00002034
+    [    0.830000]  c1033e0c:       001501fc
+    [    0.830000]  c1033e10:       00000000
+    [    0.830000]  c1033e14:       00150000
+    [    0.830000]  c1033e18:       0014ebbc
+    [    0.830000]  c1033e1c:       00002000
+    [    0.830000]  c1033e20:       00000003
+    [    0.830000]  c1033e24:       c12a07e0
+    [    0.830000]  c1033e28:       00000000
+    [    0.830000]  c1033e2c:       00000000
+    [    0.830000]  c1033e30:       00000000
+    [    0.830000]  c1033e34:       40040000
+    [    0.830000]  c1033e38:       00000000
+    [    0.830000]
+    [    0.830000] Code:
+    [    0.830000]  c00047a4:       9c21fff8
+    [    0.830000]  c00047a8:       d4012000
+    [    0.830000]  c00047ac:       d4011804
+    [    0.830000]  c00047b0:       e4040000
+    [    0.830000]  c00047b4:       10000005
+    [    0.830000]  c00047b8:       9c84ffff
+    [    0.830000] (c00047bc:)      d8030000
+    [    0.830000]  c00047c0:       03fffffc
+    [    0.830000]  c00047c4:       9c630001
+    [    0.830000]  c00047c8:       9d640001
+    [    0.830000]  c00047cc:       84810000
+    [    0.830000]  c00047d0:       84610004
+
+Now we are also printing a bit of the stack as well as the code.  The
+stack is output to help with debugging.  There may be concern about
+exposing sensitive information on the stack, but we are already dumping
+all register content which would have similar sensitive information.  So
+I am going ahead as this proves useful in investigation.
 
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/openrisc/kernel/head.S | 148 +++++++++++++++++++++---------------
- 1 file changed, 85 insertions(+), 63 deletions(-)
+ arch/openrisc/kernel/traps.c | 46 ++++++++++++++++++++++++++----------
+ 1 file changed, 33 insertions(+), 13 deletions(-)
 
-diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
-index 15f1b38dfe03..7bfa6e4b60c5 100644
---- a/arch/openrisc/kernel/head.S
-+++ b/arch/openrisc/kernel/head.S
-@@ -297,19 +297,23 @@
- 	/* temporary store r3, r9 into r1, r10 */		;\
- 	l.addi	r1,r3,0x0					;\
- 	l.addi	r10,r9,0x0					;\
--	/* the string referenced by r3 must be low enough */	;\
-+	LOAD_SYMBOL_2_GPR(r9,_string_unhandled_exception)	;\
-+	tophys	(r3,r9)						;\
- 	l.jal	_emergency_print				;\
--	l.ori	r3,r0,lo(_string_unhandled_exception)		;\
-+	 l.nop							;\
- 	l.mfspr	r3,r0,SPR_NPC					;\
- 	l.jal	_emergency_print_nr				;\
--	l.andi	r3,r3,0x1f00					;\
--	/* the string referenced by r3 must be low enough */	;\
-+	 l.andi	r3,r3,0x1f00					;\
-+	LOAD_SYMBOL_2_GPR(r9,_string_epc_prefix)		;\
-+	tophys	(r3,r9)						;\
- 	l.jal	_emergency_print				;\
--	l.ori	r3,r0,lo(_string_epc_prefix)			;\
-+	 l.nop							;\
- 	l.jal	_emergency_print_nr				;\
--	l.mfspr	r3,r0,SPR_EPCR_BASE				;\
-+	 l.mfspr r3,r0,SPR_EPCR_BASE				;\
-+	LOAD_SYMBOL_2_GPR(r9,_string_nl)			;\
-+	tophys	(r3,r9)						;\
- 	l.jal	_emergency_print				;\
--	l.ori	r3,r0,lo(_string_nl)				;\
-+	 l.nop							;\
- 	/* end of printing */					;\
- 	l.addi	r3,r1,0x0					;\
- 	l.addi	r9,r10,0x0					;\
-@@ -1530,65 +1534,99 @@ trampoline_out:
- 	l.jr	r9
- 	l.nop
+diff --git a/arch/openrisc/kernel/traps.c b/arch/openrisc/kernel/traps.c
+index 0446a3c34372..f2478bba77b9 100644
+--- a/arch/openrisc/kernel/traps.c
++++ b/arch/openrisc/kernel/traps.c
+@@ -46,6 +46,14 @@ void print_trace(void *data, unsigned long addr, int reliable)
+ 	       (void *) addr);
+ }
  
--
- /*
-- * DSCR: prints a string referenced by r3.
-+ * DESC: Prints ASCII character stored in r7
-  *
-- * PRMS: r3     	- address of the first character of null
-- *			terminated string to be printed
-+ * PRMS: r7	- a 32-bit value with an ASCII character in the first byte
-+ *		position.
-  *
-- * PREQ: UART at UART_BASE_ADD has to be initialized
-+ * PREQ: The UART at UART_BASE_ADD has to be initialized
-  *
-- * POST: caller should be aware that r3, r9 are changed
-+ * POST: internally used but restores:
-+ * 	 r4	- to store UART_BASE_ADD
-+ *	 r5	- for loading OFF_TXFULL / THRE,TEMT
-+ *	 r6	- for storing bitmask (SERIAL_8250)
-  */
--ENTRY(_emergency_print)
-+ENTRY(_emergency_putc)
- 	EMERGENCY_PRINT_STORE_GPR4
- 	EMERGENCY_PRINT_STORE_GPR5
- 	EMERGENCY_PRINT_STORE_GPR6
--	EMERGENCY_PRINT_STORE_GPR7
--2:
--	l.lbz	r7,0(r3)
--	l.sfeq	r7,r0
--	l.bf	9f
--	l.nop
- 
--// putc:
- 	l.movhi r4,hi(UART_BASE_ADD)
-+	l.ori	r4,r4,lo(UART_BASE_ADD)
- 
-+#if defined(CONFIG_SERIAL_8250)
-+	/* Check UART LSR THRE (hold) bit */
- 	l.addi  r6,r0,0x20
- 1:      l.lbz   r5,5(r4)
- 	l.andi  r5,r5,0x20
- 	l.sfeq  r5,r6
- 	l.bnf   1b
--	l.nop
-+	 l.nop
- 
-+	/* Write character */
- 	l.sb    0(r4),r7
- 
-+	/* Check UART LSR THRE|TEMT (hold, empty) bits */
- 	l.addi  r6,r0,0x60
- 1:      l.lbz   r5,5(r4)
- 	l.andi  r5,r5,0x60
- 	l.sfeq  r5,r6
- 	l.bnf   1b
--	l.nop
-+	 l.nop
-+#endif
-+	EMERGENCY_PRINT_LOAD_GPR6
-+	EMERGENCY_PRINT_LOAD_GPR5
-+	EMERGENCY_PRINT_LOAD_GPR4
-+	l.jr	r9
-+	 l.nop
++static void print_data(unsigned long base_addr, unsigned long word, int i)
++{
++	if (i == 0)
++		printk("(%08lx:)\t%08lx", base_addr + (i * 4), word);
++	else
++		printk(" %08lx:\t%08lx", base_addr + (i * 4), word);
++}
 +
-+/*
-+ * DSCR: prints a string referenced by r3.
-+ *
-+ * PRMS: r3     	- address of the first character of null
-+ *			terminated string to be printed
-+ *
-+ * PREQ: UART at UART_BASE_ADD has to be initialized
-+ *
-+ * POST: caller should be aware that r3, r9 are changed
-+ */
-+ENTRY(_emergency_print)
-+	EMERGENCY_PRINT_STORE_GPR7
-+	EMERGENCY_PRINT_STORE_GPR9
+ /* displays a short stack trace */
+ void show_stack(struct task_struct *task, unsigned long *esp, const char *loglvl)
+ {
+@@ -99,22 +107,36 @@ void show_registers(struct pt_regs *regs)
+ 		printk("\nStack: ");
+ 		show_stack(NULL, (unsigned long *)esp, KERN_EMERG);
+ 
++		if (esp < PAGE_OFFSET)
++			goto bad_stack;
 +
-+	/* Load character to r7, check for null terminator */
-+2:	l.lbz	r7,0(r3)
-+	l.sfeqi	r7,0x0
-+	l.bf	9f
-+	 l.nop
++		printk("\n");
++		for (i = -8; i < 24; i += 1) {
++			unsigned long word;
 +
-+	l.jal	_emergency_putc
-+	 l.nop
++			if (__get_user(word, &((unsigned long *)esp)[i])) {
++bad_stack:
++				printk(" Bad Stack value.");
++				break;
++			}
++
++			print_data(esp, word, i);
++		}
++
+ 		printk("\nCode: ");
+ 		if (regs->pc < PAGE_OFFSET)
+ 			goto bad;
  
- 	/* next character */
- 	l.j	2b
--	l.addi	r3,r3,0x1
-+	 l.addi	r3,r3,0x1
+-		for (i = -24; i < 24; i++) {
+-			unsigned char c;
+-			if (__get_user(c, &((unsigned char *)regs->pc)[i])) {
++		for (i = -6; i < 6; i += 1) {
++			unsigned long word;
++
++			if (__get_user(word, &((unsigned long *)regs->pc)[i])) {
+ bad:
+ 				printk(" Bad PC value.");
+ 				break;
+ 			}
  
- 9:
-+	EMERGENCY_PRINT_LOAD_GPR9
- 	EMERGENCY_PRINT_LOAD_GPR7
--	EMERGENCY_PRINT_LOAD_GPR6
--	EMERGENCY_PRINT_LOAD_GPR5
--	EMERGENCY_PRINT_LOAD_GPR4
- 	l.jr	r9
--	l.nop
-+	 l.nop
+-			if (i == 0)
+-				printk("(%02x) ", c);
+-			else
+-				printk("%02x ", c);
++			print_data(regs->pc, word, i);
+ 		}
+ 	}
+ 	printk("\n");
+@@ -185,13 +207,11 @@ void nommu_dump_state(struct pt_regs *regs,
+ 	printk("\nCode: ");
  
-+/*
-+ * DSCR: prints a number in r3 in hex.
-+ *
-+ * PRMS: r3     	- a 32-bit unsigned integer
-+ *
-+ * PREQ: UART at UART_BASE_ADD has to be initialized
-+ *
-+ * POST: caller should be aware that r3, r9 are changed
-+ */
- ENTRY(_emergency_print_nr)
--	EMERGENCY_PRINT_STORE_GPR4
--	EMERGENCY_PRINT_STORE_GPR5
--	EMERGENCY_PRINT_STORE_GPR6
- 	EMERGENCY_PRINT_STORE_GPR7
- 	EMERGENCY_PRINT_STORE_GPR8
-+	EMERGENCY_PRINT_STORE_GPR9
+ 	for (i = -24; i < 24; i++) {
+-		unsigned char c;
+-		c = ((unsigned char *)(__pa(regs->pc)))[i];
++		unsigned long word;
++
++		word = ((unsigned long *)(__pa(regs->pc)))[i];
  
- 	l.addi	r8,r0,32		// shift register
- 
-@@ -1600,58 +1638,39 @@ ENTRY(_emergency_print_nr)
- 	/* don't skip the last zero if number == 0x0 */
- 	l.sfeqi	r8,0x4
- 	l.bf	2f
--	l.nop
-+	 l.nop
- 
- 	l.sfeq	r7,r0
- 	l.bf	1b
--	l.nop
-+	 l.nop
- 
- 2:
- 	l.srl	r7,r3,r8
- 
- 	l.andi	r7,r7,0xf
- 	l.sflts	r8,r0
--	l.bf	9f
-+	 l.bf	9f
- 
-+	/* Numbers greater than 9 translate to a-f */
- 	l.sfgtui r7,0x9
- 	l.bnf	8f
--	l.nop
-+	 l.nop
- 	l.addi	r7,r7,0x27
- 
--8:
--	l.addi	r7,r7,0x30
--// putc:
--	l.movhi r4,hi(UART_BASE_ADD)
--
--	l.addi  r6,r0,0x20
--1:      l.lbz   r5,5(r4)
--	l.andi  r5,r5,0x20
--	l.sfeq  r5,r6
--	l.bnf   1b
--	l.nop
--
--	l.sb    0(r4),r7
--
--	l.addi  r6,r0,0x60
--1:      l.lbz   r5,5(r4)
--	l.andi  r5,r5,0x60
--	l.sfeq  r5,r6
--	l.bnf   1b
--	l.nop
-+	/* Convert to ascii and output character */
-+8:	l.jal	_emergency_putc
-+	 l.addi	r7,r7,0x30
- 
- 	/* next character */
- 	l.j	2b
- 	l.addi	r8,r8,-0x4
- 
- 9:
-+	EMERGENCY_PRINT_LOAD_GPR9
- 	EMERGENCY_PRINT_LOAD_GPR8
- 	EMERGENCY_PRINT_LOAD_GPR7
--	EMERGENCY_PRINT_LOAD_GPR6
--	EMERGENCY_PRINT_LOAD_GPR5
--	EMERGENCY_PRINT_LOAD_GPR4
- 	l.jr	r9
--	l.nop
--
-+	 l.nop
- 
- /*
-  * This should be used for debugging only.
-@@ -1676,7 +1695,9 @@ ENTRY(_emergency_print_nr)
- 
- ENTRY(_early_uart_init)
- 	l.movhi	r3,hi(UART_BASE_ADD)
-+	l.ori	r3,r3,lo(UART_BASE_ADD)
- 
-+#if defined(CONFIG_SERIAL_8250)
- 	l.addi	r4,r0,0x7
- 	l.sb	0x2(r3),r4
- 
-@@ -1694,9 +1715,10 @@ ENTRY(_early_uart_init)
- 	l.addi  r4,r0,((UART_DIVISOR) & 0x000000ff)
- 	l.sb	UART_DLL(r3),r4
- 	l.sb	0x3(r3),r5
-+#endif
- 
- 	l.jr	r9
--	l.nop
-+	 l.nop
- 
- 	.align	0x1000
- 	.global _secondary_evbar
-@@ -1711,13 +1733,13 @@ _secondary_evbar:
- 
- 	.section .rodata
- _string_unhandled_exception:
--	.string "\n\rRunarunaround: Unhandled exception 0x\0"
-+	.string "\r\nRunarunaround: Unhandled exception 0x\0"
- 
- _string_epc_prefix:
- 	.string ": EPC=0x\0"
- 
- _string_nl:
--	.string "\n\r\0"
-+	.string "\r\n\0"
- 
- 
- /* ========================================[ page aligned structures ]=== */
+-		if (i == 0)
+-			printk("(%02x) ", c);
+-		else
+-			printk("%02x ", c);
++		print_data(regs->pc, word, i);
+ 	}
+ 	printk("\n");
+ }
 -- 
 2.31.1
 
