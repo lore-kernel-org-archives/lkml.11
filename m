@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 527C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 301E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355154AbiEULUk (ORCPT
+        id S1355189AbiEULUp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        Sat, 21 May 2022 07:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346360AbiEULMh (ORCPT
+        with ESMTP id S1352848AbiEULMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:37 -0400
+        Sat, 21 May 2022 07:12:18 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC34340C4;
-        Sat, 21 May 2022 04:12:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AC930F76;
+        Sat, 21 May 2022 04:12:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=mB8l1GCbfKAnkvTEOuwQbMcqJkOALm9/Uh/5seVHVos=;
-  b=Ii0dJztjsqFKCix8G7b0UXZwXpRuDlGSasN4tTGObNMg0rC4WyeaiW/j
-   MRIbZhGm7I9tT9JVp1NMrSFhw3NLfgFPH6tOimpvb/F1ZHl9jlYFpaaSD
-   trA2Ck9zzOOVv5yEbO6IP8IAuE0x3fqKzz8HCXBZ2eX1nBEhYvuOI5hHh
-   c=;
+  bh=qcJTHawlRKoeOim3g0cgniU9sUekvVwjFkRe7wj2hDQ=;
+  b=WO6dpJmgWMyl0xCWIpgSlZaD3CQxpEXfBfcqtqHEOz9uoxKGHTKjBNDM
+   cj8gchDORum81IfppDCRi1SdSLge8YG3laSbf1NH/6PpeBNbQoUWhIpo2
+   6brK3HY41/mxcaIUu8bQzR3FJYfpLevtJBcnQXpFnushgG4NlLxkKfG+Z
+   8=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727939"
+   d="scan'208";a="14727934"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:59 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:58 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Michael Turquette <mturquette@baylibre.com>
-Cc:     kernel-janitors@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Vladimir Zapolskiy <vz@mleia.com>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] clk: nxp: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:52 +0200
-Message-Id: <20220521111145.81697-42-Julia.Lawall@inria.fr>
+To:     Michael Walle <michael@walle.cc>
+Cc:     kernel-janitors@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:47 +0200
+Message-Id: <20220521111145.81697-37-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -51,20 +51,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/clk/nxp/clk-lpc18xx-cgu.c |    2 +-
+ drivers/hwmon/sl28cpld-hwmon.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/nxp/clk-lpc18xx-cgu.c b/drivers/clk/nxp/clk-lpc18xx-cgu.c
-index c23ac463ab0f..1bb18dc0a80a 100644
---- a/drivers/clk/nxp/clk-lpc18xx-cgu.c
-+++ b/drivers/clk/nxp/clk-lpc18xx-cgu.c
-@@ -609,7 +609,7 @@ static void __init lpc18xx_cgu_register_source_clks(struct device_node *np,
- 	if (IS_ERR(clk))
- 		pr_warn("%s: failed to register irc clk\n", __func__);
+diff --git a/drivers/hwmon/sl28cpld-hwmon.c b/drivers/hwmon/sl28cpld-hwmon.c
+index e2fc60bf40bd..9ce4899a81a5 100644
+--- a/drivers/hwmon/sl28cpld-hwmon.c
++++ b/drivers/hwmon/sl28cpld-hwmon.c
+@@ -54,7 +54,7 @@ static int sl28cpld_hwmon_read(struct device *dev,
  
--	/* Register crystal oscillator controlller */
-+	/* Register crystal oscillator controller */
- 	parents[0] = of_clk_get_parent_name(np, 0);
- 	clk = clk_register_gate(NULL, clk_src_names[CLK_SRC_OSC], parents[0],
- 				0, base + LPC18XX_CGU_XTAL_OSC_CTRL,
+ 		/*
+ 		 * The counter period is 1000ms and the sysfs specification
+-		 * says we should asssume 2 pulses per revolution.
++		 * says we should assume 2 pulses per revolution.
+ 		 */
+ 		value *= 60 / 2;
+ 
 
