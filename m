@@ -2,97 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3366AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 15:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB04BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 15:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245125AbiEUPcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 11:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
+        id S245332AbiEUPis (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 11:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbiEUPcN (ORCPT
+        with ESMTP id S239507AbiEUPig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 11:32:13 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A632AE23
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 08:32:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=W4TUiEIdq5HcuLZw5jcWt2qZJ3RX3G8mxdh0nA1JeNU=; b=i548B275KQ2uVw/gK+rQS7z83v
-        7ywiroVH4OOObHSfKdxZ9yjAn5ePtZfG0DwPCXbnp8N7FfeJrHs8pvTPhFKHQedQV/69LXFqf6/Da
-        IVc76CWnsVlJa3/b+t3XLIKFqdAUCmmtAU1qa1ndxLN5l2A9p/kw4c5zEH3kuysBYjmnFe/37ubmI
-        v+HV2QUdjyV6xunUXTotgYL5GBR0xoyDMO7ti5lYzftAVGt9Btpn8BjvVd0qHjrZ0x8A7YFUYjdqP
-        D3qB5sATLmsxWT8k5cfbsEirYBD3cXKLqloJenajbnI7NdCKZRzB34ISvIK8ihIekcAMVxfNhYJLE
-        5xod/fdw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nsR5D-00EjdF-Jk; Sat, 21 May 2022 15:31:59 +0000
-Message-ID: <c02b4ae7-218e-2349-afcb-9ada25beb934@infradead.org>
-Date:   Sat, 21 May 2022 08:31:54 -0700
+        Sat, 21 May 2022 11:38:36 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577E662CD2
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 08:38:34 -0700 (PDT)
+Received: from dslb-188-096-138-194.188.096.pools.vodafone-ip.de ([188.96.138.194] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nsRBW-0007XY-Ao; Sat, 21 May 2022 17:38:30 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 02/12] staging: r8188eu: use defines for the block action codes
+Date:   Sat, 21 May 2022 17:38:14 +0200
+Message-Id: <20220521153824.218196-3-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220521153824.218196-1-martin@kaiser.cx>
+References: <20220521153824.218196-1-martin@kaiser.cx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] fscache: fix misdocumented parameter name
-Content-Language: en-US
-To:     Khalid Masum <khalid.masum.92@gmail.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
-        linux-kernel@vger.kernel.org
-References: <20220521142446.4746-1-khalid.masum.92@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220521142446.4746-1-khalid.masum.92@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Replace the numeric values for the block action codes in issue_action_BA
+with the defines from ieee80211.h.
 
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On 5/21/22 07:24, Khalid Masum wrote:
-> To fix warning generated by make docs in the file fscache.h:
-> The functions fscache_use_cookie and fscache_unuse_cookie have a
-> parameter named cookie. But they are documented with the name "object".
-> Which generates warning when creating docs. This commit will replace
-> the documentation with a better one named "cookie". This new
-> documentation
-> line is taken from the function fscache_update_cookie in the same
-> file.
-> 
-> Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
-
-LGTM. Thanks.
-
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-
-> ---
->  include/linux/fscache.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/fscache.h b/include/linux/fscache.h
-> index e25539072..32cf593b8 100644
-> --- a/include/linux/fscache.h
-> +++ b/include/linux/fscache.h
-> @@ -256,7 +256,7 @@ struct fscache_cookie *fscache_acquire_cookie(struct fscache_volume *volume,
->  
->  /**
->   * fscache_use_cookie - Request usage of cookie attached to an object
-> - * @object: Object description
-> + * @cookie: The cookie representing the cache object
->   * @will_modify: If cache is expected to be modified locally
->   *
->   * Request usage of the cookie attached to an object.  The caller should tell
-> @@ -272,7 +272,7 @@ static inline void fscache_use_cookie(struct fscache_cookie *cookie,
->  
->  /**
->   * fscache_unuse_cookie - Cease usage of cookie attached to an object
-> - * @object: Object description
-> + * @cookie: The cookie representing the cache object
->   * @aux_data: Updated auxiliary data (or NULL)
->   * @object_size: Revised size of the object (or NULL)
->   *
-
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index f47cf3e7316c..0265784368e2 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -5416,7 +5416,7 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+ 	pframe = rtw_set_fixed_ie(pframe, 1, &(action), &pattrib->pktlen);
+ 
+ 	switch (action) {
+-	case 0: /* ADDBA req */
++	case WLAN_ACTION_ADDBA_REQ:
+ 		do {
+ 			pmlmeinfo->dialogToken++;
+ 		} while (pmlmeinfo->dialogToken == 0);
+@@ -5441,7 +5441,7 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+ 		le_tmp = cpu_to_le16(BA_starting_seqctrl);
+ 		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
+ 		break;
+-	case 1: /* ADDBA rsp */
++	case WLAN_ACTION_ADDBA_RESP:
+ 		pframe = rtw_set_fixed_ie(pframe, 1, &pmlmeinfo->ADDBA_req.dialog_token, &pattrib->pktlen);
+ 		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&status, &pattrib->pktlen);
+ 		BA_para_set = le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f;
+@@ -5456,7 +5456,7 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+ 		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
+ 		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&pmlmeinfo->ADDBA_req.BA_timeout_value, &pattrib->pktlen);
+ 		break;
+-	case 2:/* DELBA */
++	case WLAN_ACTION_DELBA:
+ 		BA_para_set = (status & 0x1F) << 3;
+ 		le_tmp = cpu_to_le16(BA_para_set);
+ 		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
 -- 
-~Randy
+2.30.2
+
