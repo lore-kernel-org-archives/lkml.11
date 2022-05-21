@@ -2,103 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1F9C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22646C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236023AbiEULc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
+        id S237822AbiEULdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 07:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355761AbiEULcQ (ORCPT
+        with ESMTP id S1355851AbiEULcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:32:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4DF2FE7A;
-        Sat, 21 May 2022 04:28:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 087966121D;
-        Sat, 21 May 2022 11:28:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D549BC385A5;
-        Sat, 21 May 2022 11:28:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653132532;
-        bh=irdHG4XDhujs78rGcOOT8dP4dOtrCFTYOdf9CAfk39w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sgOZAHYxmYyEB7Uo+QAfXe2IdQ7Mk4lnm8Aj6IoqXaqRqOUlM7rqnO81DQr4r+zyW
-         NzK6j5Z4bcp+i/0krDKekWYmFp8DM4gsOP/GByRecd1RYU/NPu6ELtunFV4pynLXzs
-         cpPXzct4JGtPkgJ9tpTrLUz7TBhkY9U0dLEYS7HdX1zhlRRgzOEsE8RT22uUCu1O2A
-         xgeZdPYApXG9n/s5IcBA+cP6V5Lpt2BLVC4Z6e9AuQyJib47iEOhqGPFl4P1sQNNSS
-         IINt1sR1M0KkKJrXP1g9dlagRr5DrOny7C6riyIxhFnNAPvhhJYrmwFDq3A6ai5Snp
-         cU0kCXW6PeOHQ==
-Date:   Sat, 21 May 2022 13:28:48 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Conor.Dooley@microchip.com
-Cc:     linux-i2c@vger.kernel.org, ben.dooks@codethink.co.uk,
-        Daire.McNamara@microchip.com, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v3] i2c: add support for microchip fpga i2c controllers
-Message-ID: <YojM8KiGJneGh16D@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>, Conor.Dooley@microchip.com,
-        linux-i2c@vger.kernel.org, ben.dooks@codethink.co.uk,
-        Daire.McNamara@microchip.com, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-References: <20220516073331.3508505-1-conor.dooley@microchip.com>
- <Yoi1bV95l7+thgS5@shikoro>
- <dbf6073c-0814-ec25-cec5-cb3cf9c931d8@microchip.com>
+        Sat, 21 May 2022 07:32:22 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF3E21AD
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 04:30:58 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nsNJt-00055r-6N; Sat, 21 May 2022 13:30:53 +0200
+Message-ID: <6b12a0b4-2f6d-1c35-f2e2-a28022583c47@leemhuis.info>
+Date:   Sat, 21 May 2022 13:30:51 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="afvwLyDuav/fPEU/"
-Content-Disposition: inline
-In-Reply-To: <dbf6073c-0814-ec25-cec5-cb3cf9c931d8@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: Linux regressions report for mainline [2022-05-09] (was: Linux
+ 5.18-rc6)
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux regressions mailing list <regressions@lists.linux.dev>
+References: <CAHk-=wi0vqZQUAS67tBsJQW+dtt89m+dqA-Z4bOs8CH-mm8u2w@mail.gmail.com>
+ <165209064657.193515.10163777181547077546@leemhuis.info>
+ <CAHk-=wj0gHsG6iw3D8ufptm9a_dvTSqrrOFY9WopObbYbyuwnA@mail.gmail.com>
+ <54664f6a-b046-1330-e794-cb533e942a94@redhat.com>
+ <04f2e08c-4c39-16d3-d785-f36494c6256c@redhat.com>
+ <063d7fdb-2d4c-5798-773b-d82b4f0e918a@redhat.com>
+ <CAHk-=wjKtV3mT3S=vxgqe__MUzxRrZ7=fopKQtTKOeQJAVyoUQ@mail.gmail.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <CAHk-=wjKtV3mT3S=vxgqe__MUzxRrZ7=fopKQtTKOeQJAVyoUQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1653132658;dc06f463;
+X-HE-SMSGID: 1nsNJt-00055r-6N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 21.05.22 07:01, Linus Torvalds wrote:
+> On Thu, May 19, 2022 at 6:10 AM Hans de Goede <hdegoede@redhat.com> wrote:
+>>
+>> Note this is not part of any pending drm-fixes* pull-reqs yet though.
+> 
+> It has now hit my tree as part of Dave's drm pull today.
 
---afvwLyDuav/fPEU/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Great, just like Hans I have been watching the progress of that patch
+closely. A fix for a regression on the Raspi CM4 also landed in the past
+24 hours.
 
+I assume you'll also get the patch "objtool: Fix objtool regression on
+x32 systems"
+(https://lore.kernel.org/all/165304401319.4207.18392602354110557584.tip-bot2@tip-bot2/
 
-> > > +	ret =3D devm_request_irq(&pdev->dev, irq, mchp_corei2c_isr, IRQF_SH=
-ARED,
-> > > +			       pdev->name, idev);
-> >=20
-> > Really SHARED?
->=20
-> Yeah, this driver supports both the hard peripherals & soft FPGA cores.
-> The hard peripherals do not have shared IRQs, but we don't really have
-> any control over what way the interrupts are wired for the soft cores.
-> Worth adding a comment to explain the reason for it being shared?
+) today or tomorrow.
 
-Yes. Such information never hurst, I'd say.
+That leaves the following post-5.17 regressions on my list where no fix
+is in sight yet:
 
-Thanks, have a nice weekend,
+* Laptop with Ryzen 4600H fails to resume video
+https://lore.kernel.org/stable/2584945.lGaqSPkdTl@geek500.localdomain/
+(doesn't look like it first, but this apparently is a post-5.17
+regression, as the commit causing it was backported; note, the Laptop
+has some other problems with suspend that make the first suspend fail;
+Mario is working hard with the reporter to find a fix)
 
-   Wolfram
+* dpaa2: TSO offload on lx2160a causes fatal exception in interrupt
+https://bugzilla.kernel.org/show_bug.cgi?id=215886
+Debugging is ongoing, there is a patch now, but it's not clear yet if it
+helps.
 
+* the netperf.Throughput_Mbps -18.0% regression that made it into mainline:
+https://lore.kernel.org/lkml/20220420013526.GB14333@xsang-OptiPlex-9020/
+Didn't follow that one closely, as you were active in the discussion
+yourself.
 
---afvwLyDuav/fPEU/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKIzO0ACgkQFA3kzBSg
-KbaIyg//ZJ9OqPwDGI8q+886yLcIadgterwgro/F5vVGHPWu3Bh4v2KRijTQGoq1
-7dHVT3oy8UM+4BIRtn43zNq43g6ZmZykrOrnkcCrDrZinU+XLgd8d0O/DwnaVnlX
-eppOrkrgO7x/eTSUZxngbi0t3MyGbFxHeM7seOVZ3wxIEA3UZ2Dr39U9ZQh8enRB
-w9aZ7rJ8VrYx0wMDoHcoO3Gn6aHguRxN4y5xnRIeYjiPek9OuQNBA3DES7x+CXq1
-ZHiU3pQW1CW3+kPyJf/sY57YhMXTEOPQrloYISzWiBuETQJdAGFP2PBmduEKlO6h
-Nw5V/mJK9DUU9aUsqLW3+7Sw/QPVKL6Xkf11WUX5NzFv8BBYpIK2m68hjY1ZVYKx
-Gcelmi/Z8skWHCGhIiDwjXN2YSaxnCoTTer983CHBjqAL0M8oPURTv9NkjzOqCxx
-Pn3h/wfWjdmOa3z7DaquKFSH54lmzuZwJEx3F1Q+GFKdgbPYLVI26za2ahGFkSMj
-ptW7ZWtKsTXBaLnMRRteaEZTqHfbpuy4vxGhhK1fAqMsIwhsLBxmgTBmDrxDoGRr
-zJmHAEzWtEssWAEnqvBLPGndkA/g5HkXW6fo9HuFxVnBlBa0GrbfGEBXki/cqpVX
-XwBY9PL+xaDMlmRNrvn4iI6JPPyAkTQd+Vc6gBfyjXMFLbqX/jU=
-=4rJa
------END PGP SIGNATURE-----
-
---afvwLyDuav/fPEU/--
+HTH, Ciao, Thorsten
