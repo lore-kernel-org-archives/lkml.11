@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C937C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0438C4167B
 	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356625AbiEULXd (ORCPT
+        id S1356901AbiEULXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
+        Sat, 21 May 2022 07:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354882AbiEULNd (ORCPT
+        with ESMTP id S1353244AbiEULNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:13:33 -0400
+        Sat, 21 May 2022 07:13:51 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD3DFD343;
-        Sat, 21 May 2022 04:12:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA2EF74B2;
+        Sat, 21 May 2022 04:12:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=pWoCUGdviuZI5iODDD1JF7dkvDTJv+5eX8iN8NQct24=;
-  b=K28lkGiaOe5KEVzwtoRzMjs8mJixl0TNpMEoax6CmaSF6VwjJaL5zM+4
-   4tWYS44QfuCYv6332Qyl/fW8XwFxFTd8+xrHGFtboM34H9uFFHQwKPb+D
-   PPzeZWszzPtQKFKgwqH+JMbR79g1wFr+PvDtYyfDU1dzWQuWWMoK+Hwmf
-   I=;
+  bh=lfkmiRjm0rrMRH5/qVszM4Nbsakjf+VgxH/LVjz5wvc=;
+  b=N7ZFZHpoZF5kMF0I8jm8ws+3zweEwjnhZYpBt2bhpPPocUnCD1JpjWeT
+   ASHxqX7uwDLUNLUvBn4Go3/TuLmQ2HpB2BD3mGe4m3zrLrKi+Xxs0By9K
+   6OFHNBJUjtMBmtS2v0kZJpm12cLg4Gb14gd6/zhvqfY5WRls9EUq6RfS5
+   c=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727989"
+   d="scan'208";a="14727986"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:06 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     kernel-janitors@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+To:     Ariel Elior <aelior@marvell.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] ftrace: fix typo in comment
-Date:   Sat, 21 May 2022 13:11:31 +0200
-Message-Id: <20220521111145.81697-81-Julia.Lawall@inria.fr>
+Subject: [PATCH] qed: fix typos in comments
+Date:   Sat, 21 May 2022 13:11:28 +0200
+Message-Id: <20220521111145.81697-78-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,26 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Spelling mistake (triple letters) in comment.
+Spelling mistakes (triple letters) in comments.
 Detected with the help of Coccinelle.
 
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- kernel/trace/ftrace.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h |    2 +-
+ drivers/net/ethernet/qlogic/qed/qed_vf.h      |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index c12bcd26cb17..500c469144d5 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -119,7 +119,7 @@ struct ftrace_ops __rcu *ftrace_ops_list __read_mostly = &ftrace_list_end;
- ftrace_func_t ftrace_trace_function __read_mostly = ftrace_stub;
- struct ftrace_ops global_ops;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h
+index 9d5a0c9e1ca0..f6cd1b3efdfd 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h
+@@ -1282,7 +1282,7 @@ void qed_dbg_mcp_trace_set_meta_data(struct qed_hwfn *p_hwfn,
+  * @results_buf_size: (OUT) required buffer size (in bytes) for the parsed
+  *                    results.
+  *
+- * Return: Rrror if the parsing fails, ok otherwise.
++ * Return: Error if the parsing fails, ok otherwise.
+  */
+ enum dbg_status qed_get_mcp_trace_results_buf_size(struct qed_hwfn *p_hwfn,
+ 						   u32 *dump_buf,
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.h b/drivers/net/ethernet/qlogic/qed/qed_vf.h
+index 306b5f4bc632..2bd51a41ce8d 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_vf.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_vf.h
+@@ -225,7 +225,7 @@ struct pfvf_start_queue_resp_tlv {
+ };
  
--/* Defined by vmlinux.lds.h see the commment above arch_ftrace_ops_list_func for details */
-+/* Defined by vmlinux.lds.h see the comment above arch_ftrace_ops_list_func for details */
- void ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
- 			  struct ftrace_ops *op, struct ftrace_regs *fregs);
- 
+ /* Extended queue information - additional index for reference inside qzone.
+- * If commmunicated between VF/PF, each TLV relating to queues should be
++ * If communicated between VF/PF, each TLV relating to queues should be
+  * extended by one such [or have a future base TLV that already contains info].
+  */
+ struct vfpf_qid_tlv {
 
