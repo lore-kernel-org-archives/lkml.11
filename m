@@ -2,91 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355429AbiEUQrv (ORCPT
+        id S1355457AbiEUQsB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 12:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
+        Sat, 21 May 2022 12:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355520AbiEUQrQ (ORCPT
+        with ESMTP id S1355393AbiEUQqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 12:47:16 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AE53B546
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:46 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id w14so18963590lfl.13
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:46 -0700 (PDT)
+        Sat, 21 May 2022 12:46:04 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4E21180F
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:00 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id c19so5921297lfv.5
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P2kEMO+k3KqoaBmrgFL5cTZMjgKCdDFHY3d2enGDyKc=;
-        b=CB8SjMC4p14bqrVBg5mPB4IlC9MPYueP9GGNl+fAuJv9Utg5wTh6ysfEBdN0OGiHz3
-         tInv8SRpo0tfuOKiFiSSB6BtKL3h3nXfU2tYPqXAFoboT9w6T1/pe+wGd+zR8/5xKrwI
-         sye4o2MONzdFNwlPhnulojnB4NPb2o3E3jIXeOSPxpUCMpchTKIhEnHccG3IbDwK7s1x
-         mmh0IVvLrADFXvm5p2Nds6jU8grVGktmsVbrwLLknf9zG/I7y5yd4TDit6qotHadwGVz
-         2KdnDuduP16FFVcr2N9bvqD3q7whkohdQU//Goq1ZKtxaG8RBkocdQHSqZ7yj2dxX/Qo
-         Lq0A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=q4UNyQ9G5Lhwfxa4KuG1fans5FyNR6CezgqxCfOyraY=;
+        b=kVdmAQH7Ib0pcSBs4x2V3Mn85KJPhMxtDYwSXkmWxY272fQqnXV9P0sYe0SfR1UEG7
+         yflCfjfuwU7ZgZsSsepTAewsYbpWUNJ3vCeg0qJgpTHBldpgvW5qeT2elST0stP/yfuG
+         k68nwn1ffF2x7EkS/GOTlHC6+ylPsVFpE304XLnxfZqMKW+sWcJGikC9gBgsC+7VylCS
+         zmiWLEdj8YzvdHrtocFlVxad3di2B1mcKQUx1AH6IxdxkD70ZqsHu/sbhonAfKMet2+v
+         KHKDgMplPc3cgAvSYjC9kbnq4k8uAgOH442o2AwKf3whyhVexsotR8aK4nnZL1Os4rtP
+         U9/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P2kEMO+k3KqoaBmrgFL5cTZMjgKCdDFHY3d2enGDyKc=;
-        b=xQ2ijIPvV6lBYMbbVbt8PipyyPeOyCgZSytDBAHjM8oBv+kOrm5sB/bDKW7QB7mrys
-         fAY5q8GS4AzlYwww9h/PWMwL+UH2QbzUT76Dg8hklIV4TjNHxkWzsnX0+Is23LBhUGAs
-         +Ucnh4Q/vADW6PH8S7gM/zpf/0gyglURznSKxOlQV+cOtoCLS6frT0y3T+qgmGkSZlyM
-         7CyN5QyztpwTFUvCL27xsuP3FYpirgkAZlPW4vX4z8V9wQVMw0pHKjtuRuXbv8Drc1Y4
-         B1dwLUBCmCjsXxW5WK9HSn3+3HnONFQzvixfKDnpI9r3wAd/U+RzjL48iINH6SIX7Nad
-         wD+g==
-X-Gm-Message-State: AOAM533c3E4gfJ733cfpypGDMQ9nPGaxP+s93/9kfeBZ5fs7nZsPbg57
-        HZ4/rqN3nvgodDwWsl4d6/SzXu/PxnBz3DFa
-X-Google-Smtp-Source: ABdhPJx8++fJiKyZSbdVdjgR4TJBTCYMGiZVRoXPr16sNl2bQUzMvyHc/hPHadCnP/Lx8Xw9pCE9cw==
-X-Received: by 2002:a05:6512:ace:b0:473:cca7:a7fa with SMTP id n14-20020a0565120ace00b00473cca7a7famr10511617lfu.410.1653151606327;
-        Sat, 21 May 2022 09:46:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=q4UNyQ9G5Lhwfxa4KuG1fans5FyNR6CezgqxCfOyraY=;
+        b=Pm+yf0IsTa+1R1tQXUjwGInG1zSKvFLyI48+QdnTMU4dQ+yM0rAAHfjoGss5bLUU+5
+         tutlhZKzk+fnjRvgXG3gjlymuTfsVpVLlaPvy+cWkZ23SUZsqcAvWADjm0e1myx+XdcX
+         utKgHM8eCjxeliwdBcO5ebfzJBDgKkSldjv5dnfAifvuKSfHqUXToxP1Z2iyio5+nm/0
+         ZYe/ww03HgHZDbF14dpaBjqLCbmbH575KN9+qDC1Z8NZLY0ZcsKhcOOnhZB6hmEoZuSe
+         qtafI+culX0bA8efYzCUTqZIe/iQ+SeMQiIMN8b6r5+8G2kmrVBCA+b92/FRxnUS2hj/
+         XfhA==
+X-Gm-Message-State: AOAM5310JT7E8FAqdJuhoRei4ENkHSa/rmjrCTyQja7GjA5OJMm+l7Aq
+        N4dXv1Uoz09Efj6TJiDLVD0B3Q==
+X-Google-Smtp-Source: ABdhPJxqyCE9sj2nUajGxMjyhOcE1bzwssbGKHjgnpaZk/Xid4K8TBp8xZQPEvxmO0aSkPMP9S1eoQ==
+X-Received: by 2002:ac2:4e15:0:b0:473:c4c2:dc0f with SMTP id e21-20020ac24e15000000b00473c4c2dc0fmr10502177lfr.13.1653151558095;
+        Sat, 21 May 2022 09:45:58 -0700 (PDT)
 Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id cf13-20020a056512280d00b0047867f0b7basm96245lfb.154.2022.05.21.09.46.44
+        by smtp.gmail.com with ESMTPSA id f26-20020a19ae1a000000b0047255d211cesm1114282lfc.253.2022.05.21.09.45.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 09:46:45 -0700 (PDT)
+        Sat, 21 May 2022 09:45:57 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] arm64: dts: fsl: ls1012a: fix Micron SPI NOR compatible
-Date:   Sat, 21 May 2022 18:46:38 +0200
-Message-Id: <20220521164638.91410-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 05/12] dt-bindings: arm: qcom: add missing SDM630 board compatibles
+Date:   Sat, 21 May 2022 18:45:43 +0200
+Message-Id: <20220521164550.91115-5-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org>
+References: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The proper compatible for Micron n25q128a11 SPI NOR flash should include
-vendor-prefix.
+Document board compatibles already present in Linux kernel.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls1012a-qds.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1012a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1012a-qds.dts
-index e22c5e77fecd..5a8d85a7d161 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1012a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1012a-qds.dts
-@@ -69,7 +69,7 @@ &dspi {
- 	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
--		compatible = "n25q128a11", "jedec,spi-nor";
-+		compatible = "micron,n25q128a11", "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <10000000>;
- 	};
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 888b640cf646..776149a3f628 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -279,6 +279,14 @@ properties:
+               - qcom,sc8280xp-qrd
+           - const: qcom,sc8280xp
+ 
++      - items:
++          - enum:
++              - sony,discovery-row
++              - sony,kirin-row
++              - sony,pioneer-row
++              - sony,voyager-row
++          - const: qcom,sdm630
++
+       - items:
+           - enum:
+               - fairphone,fp3
 -- 
 2.32.0
 
