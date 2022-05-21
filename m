@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B39C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4171BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354885AbiEULRm (ORCPT
+        id S1355112AbiEULRq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
+        Sat, 21 May 2022 07:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354815AbiEULMj (ORCPT
+        with ESMTP id S1354423AbiEULMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 07:12:39 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED18436E24;
-        Sat, 21 May 2022 04:12:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BCA36162;
+        Sat, 21 May 2022 04:12:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=oeoGIolh+B9ZKlRkght98N+Q1Q4N0R0ACfahDR8k8E0=;
-  b=t0WGoZZkithIR0lsLcF5kJUvFhQjWfgtfuiQPWCqIflq8HdSPL49Uwkm
-   wkKmfhZ2K6fU29BPSBtNxVriFfumR5zXL+SH4zK/6Sdrd3HgHzAwf7R5c
-   8O62uz80+GW8lYMfVBAa1akYtNaR5lCXrE7JZe+gk3R2e+Y13ZsJM7xnm
-   Y=;
+  bh=QPe3ISczFAZ0adoqqo0AJShVG8SLHWNRbndX3z8Gar0=;
+  b=AokhO/x5DIoEIEyYm2gzM5fRtI2t65E1IYgOXBDboAEiA1Tdf9FQ5ZhX
+   WYJX3h5/HO7gYYed+4JaugSIeLWw0JPZGF+gnSLFkb010j53edy5lelMu
+   0h9CK41J4JA7XAqsxoiW1QWb/sQIwV34wJbWj4Jm+sXmwvfSmI3Hz0aA6
+   c=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727953"
+   d="scan'208";a="14727940"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:01 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:59 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     kernel-janitors@vger.kernel.org, dmaengine@vger.kernel.org,
+To:     Ariel Elior <aelior@marvell.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Manish Chopra <manishc@marvell.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] dmaengine: fix typos in comments
-Date:   Sat, 21 May 2022 13:11:01 +0200
-Message-Id: <20220521111145.81697-51-Julia.Lawall@inria.fr>
+Subject: [PATCH] net: qed: fix typos in comments
+Date:   Sat, 21 May 2022 13:10:53 +0200
+Message-Id: <20220521111145.81697-43-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,34 +51,66 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/dma/amba-pl08x.c |    2 +-
- drivers/dma/mv_xor_v2.c  |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/linux/qed/qed_fcoe_if.h    |    4 ++--
+ include/linux/qed/qed_iscsi_if.h   |    4 ++--
+ include/linux/qed/qed_nvmetcp_if.h |    2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/dma/amba-pl08x.c b/drivers/dma/amba-pl08x.c
-index a4a794e62ac2..487a01aa207d 100644
---- a/drivers/dma/amba-pl08x.c
-+++ b/drivers/dma/amba-pl08x.c
-@@ -231,7 +231,7 @@ enum pl08x_dma_chan_state {
- 
- /**
-  * struct pl08x_dma_chan - this structure wraps a DMA ENGINE channel
-- * @vc: wrappped virtual channel
-+ * @vc: wrapped virtual channel
-  * @phychan: the physical channel utilized by this channel, if there is one
-  * @name: name of channel
-  * @cd: channel platform data
-diff --git a/drivers/dma/mv_xor_v2.c b/drivers/dma/mv_xor_v2.c
-index f10b29034da1..f629ef6fd3c2 100644
---- a/drivers/dma/mv_xor_v2.c
-+++ b/drivers/dma/mv_xor_v2.c
-@@ -313,7 +313,7 @@ mv_xor_v2_tx_submit(struct dma_async_tx_descriptor *tx)
- 		"%s sw_desc %p: async_tx %p\n",
- 		__func__, sw_desc, &sw_desc->async_tx);
- 
--	/* assign coookie */
-+	/* assign cookie */
- 	spin_lock_bh(&xor_dev->lock);
- 	cookie = dma_cookie_assign(tx);
- 
+diff --git a/include/linux/qed/qed_fcoe_if.h b/include/linux/qed/qed_fcoe_if.h
+index 16752eca5cbd..90e3045b2dcb 100644
+--- a/include/linux/qed/qed_fcoe_if.h
++++ b/include/linux/qed/qed_fcoe_if.h
+@@ -76,7 +76,7 @@ void qed_fcoe_set_pf_params(struct qed_dev *cdev,
+  * @fill_dev_info:	fills FCoE specific information
+  *			@param cdev
+  *			@param info
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @register_ops:	register FCoE operations
+  *			@param cdev
+  *			@param ops - specified using qed_iscsi_cb_ops
+@@ -96,7 +96,7 @@ void qed_fcoe_set_pf_params(struct qed_dev *cdev,
+  *				connection.
+  *			@param p_doorbell - qed will fill the address of the
+  *				doorbell.
+- *			return 0 on sucesss, otherwise error value.
++ *			return 0 on success, otherwise error value.
+  * @release_conn:	release a previously acquired fcoe connection
+  *			@param cdev
+  *			@param handle - the connection handle.
+diff --git a/include/linux/qed/qed_iscsi_if.h b/include/linux/qed/qed_iscsi_if.h
+index 494cdc3cd840..fbf7973ae9ba 100644
+--- a/include/linux/qed/qed_iscsi_if.h
++++ b/include/linux/qed/qed_iscsi_if.h
+@@ -133,7 +133,7 @@ struct qed_iscsi_cb_ops {
+  * @fill_dev_info:	fills iSCSI specific information
+  *			@param cdev
+  *			@param info
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @register_ops:	register iscsi operations
+  *			@param cdev
+  *			@param ops - specified using qed_iscsi_cb_ops
+@@ -152,7 +152,7 @@ struct qed_iscsi_cb_ops {
+  *				connection.
+  *			@param p_doorbell - qed will fill the address of the
+  *				doorbell.
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @release_conn:	release a previously acquired iscsi connection
+  *			@param cdev
+  *			@param handle - the connection handle.
+diff --git a/include/linux/qed/qed_nvmetcp_if.h b/include/linux/qed/qed_nvmetcp_if.h
+index 1d51df347560..bbfbfba51f37 100644
+--- a/include/linux/qed/qed_nvmetcp_if.h
++++ b/include/linux/qed/qed_nvmetcp_if.h
+@@ -132,7 +132,7 @@ struct nvmetcp_task_params {
+  *				connection.
+  *			@param p_doorbell - qed will fill the address of the
+  *				doorbell.
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @release_conn:	release a previously acquired nvmetcp connection
+  *			@param cdev
+  *			@param handle - the connection handle.
 
