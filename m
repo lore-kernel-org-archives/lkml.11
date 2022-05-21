@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC81C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC262C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354979AbiEULNy (ORCPT
+        id S1354998AbiEULOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
+        Sat, 21 May 2022 07:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242272AbiEULMB (ORCPT
+        with ESMTP id S241400AbiEULMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 07:12:01 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E66528E33;
-        Sat, 21 May 2022 04:12:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE192980B;
+        Sat, 21 May 2022 04:11:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=xvf42Wq/qiT5QgcMM2HMSHpMZcoeDbMnj9kopc37qO8=;
-  b=tB63a4m/lVFWXVNz4HNaTZtH+vvs5yeot9jAtqY6cZR3lfIit87u8oKq
-   5Pzf//atJd21Spnipjxu7TgGT/gbHD7SpTuUTh0F4APZxLTo80E+j16ug
-   P9lPLu68sN00zzxso1DGOSYjLNe0Xo+GLBXvtyIuwZoPZ+ElY8UOI9YNf
-   k=;
+  bh=KmIV/3ghYTyKQheC6tXwJG/ENcBeirNooDVVS2YYG0w=;
+  b=j8Li1hmCObiJw3BDel5bGGfwPhSNO1QRIkQrMyj2x260WI23OfPKcyi4
+   ii3TltmEqulqN2iE7P8EMsgm3LCAZpNLVs6Sm+I/9ywaZp/90Xoz7peEM
+   ciI/euU+mxiSGwz7J6TLQ2yc8uDch0zIC+Y8DJhRrBdQKyApS3LBlXioh
+   8=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727908"
+   d="scan'208";a="14727899"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:54 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:53 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     kernel-janitors@vger.kernel.org, linux-spi@vger.kernel.org,
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] spi: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:23 +0200
-Message-Id: <20220521111145.81697-13-Julia.Lawall@inria.fr>
+Subject: [PATCH] virt_wifi: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:18 +0200
+Message-Id: <20220521111145.81697-8-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,20 +55,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- include/linux/spi/spi.h |    2 +-
+ drivers/net/wireless/virt_wifi.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index d361ba26203b..eadfd3ba3cbc 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -1127,7 +1127,7 @@ spi_max_transfer_size(struct spi_device *spi)
- 	if (ctlr->max_transfer_size)
- 		tr_max = ctlr->max_transfer_size(spi);
+diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
+index 514f2c1124b6..ba14d83353a4 100644
+--- a/drivers/net/wireless/virt_wifi.c
++++ b/drivers/net/wireless/virt_wifi.c
+@@ -654,7 +654,7 @@ static int __init virt_wifi_init_module(void)
+ {
+ 	int err;
  
--	/* transfer size limit must not be greater than messsage size limit */
-+	/* transfer size limit must not be greater than message size limit */
- 	return min(tr_max, msg_max);
- }
+-	/* Guaranteed to be locallly-administered and not multicast. */
++	/* Guaranteed to be locally-administered and not multicast. */
+ 	eth_random_addr(fake_router_bssid);
  
+ 	err = register_netdevice_notifier(&virt_wifi_notifier);
 
