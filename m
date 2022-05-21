@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C6BC3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEEAC352AA
 	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356121AbiEULWs (ORCPT
+        id S1356304AbiEULXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51054 "EHLO
+        Sat, 21 May 2022 07:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354936AbiEULM7 (ORCPT
+        with ESMTP id S1354944AbiEULM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 07:12:59 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B7E2AE22;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD44CEBB4;
         Sat, 21 May 2022 04:12:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=rMKMMl4ihKpnbEEt18X3rlVUd1mf+9F9wh4MmnsL4og=;
-  b=S5D4ZzoqiDR1hKQ8lyF25jk02dyp9KlyesV4iAmLzuQO7QQKbeE6PtZR
-   ml4eiOQwnq6dmtjybm/XuWywHezEaZ2orGYHSpJMhb3Wirxh9nEDhbjDQ
-   G/B0xrqoW+fVWupcuEtijX3q55qBSmeZZW77m8U4koA1SSURzpvifLtWF
+  bh=RtTVxN54Lq7Viw5TbSNoFtvVJKPyGUhQEKorRvAW9F8=;
+  b=Vv1VpNaCKetaH7ZWe3M1Zv4Ip7C3x4hjG0RZBygAEE+/Y21I4bEpNjCh
+   VCar0IiSchmoBBE0dSo0WC09SH1MkJd7e2dsc94x1qqErTbvrfDxA25Ei
+   4A/MNE6+Et+pyzBV0ownfHspyiNlwSGMB3UZj+agenv4lnriMv3CoUD8G
    0=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727985"
+   d="scan'208";a="14727982"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:05 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     kernel-janitors@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] nl80211: fix typo in comment
-Date:   Sat, 21 May 2022 13:11:27 +0200
-Message-Id: <20220521111145.81697-77-Julia.Lawall@inria.fr>
+To:     Felix Kuehling <Felix.Kuehling@amd.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/amdkfd: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:24 +0200
+Message-Id: <20220521111145.81697-74-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,20 +55,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- include/uapi/linux/nl80211.h |    2 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/nl80211.h b/include/uapi/linux/nl80211.h
-index d9490e3062a7..98f905f16411 100644
---- a/include/uapi/linux/nl80211.h
-+++ b/include/uapi/linux/nl80211.h
-@@ -5874,7 +5874,7 @@ enum nl80211_ap_sme_features {
-  * @NL80211_FEATURE_INACTIVITY_TIMER: This driver takes care of freeing up
-  *	the connected inactive stations in AP mode.
-  * @NL80211_FEATURE_CELL_BASE_REG_HINTS: This driver has been tested
-- *	to work properly to suppport receiving regulatory hints from
-+ *	to work properly to support receiving regulatory hints from
-  *	cellular base stations.
-  * @NL80211_FEATURE_P2P_DEVICE_NEEDS_CHANNEL: (no longer available, only
-  *	here to reserve the value for API/ABI compatibility)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+index 8b5452a8d330..67abf8dcd30a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+@@ -1621,7 +1621,7 @@ int amdgpu_amdkfd_gpuvm_free_memory_of_gpu(
+ 
+ 	mutex_lock(&mem->lock);
+ 
+-	/* Unpin MMIO/DOORBELL BO's that were pinnned during allocation */
++	/* Unpin MMIO/DOORBELL BO's that were pinned during allocation */
+ 	if (mem->alloc_flags &
+ 	    (KFD_IOC_ALLOC_MEM_FLAGS_DOORBELL |
+ 	     KFD_IOC_ALLOC_MEM_FLAGS_MMIO_REMAP)) {
 
