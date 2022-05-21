@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52764C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 237DDC43217
 	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355566AbiEULVw (ORCPT
+        id S1355435AbiEULVn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:21:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47350 "EHLO
+        Sat, 21 May 2022 07:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242608AbiEULMF (ORCPT
+        with ESMTP id S242689AbiEULMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:05 -0400
+        Sat, 21 May 2022 07:12:06 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8832980F;
-        Sat, 21 May 2022 04:12:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3730F2980B;
+        Sat, 21 May 2022 04:12:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=JAuEBwBjootxQxF6UtXiUBEG+RxbVp/hL6zSHDFdT3w=;
-  b=ms4YbeIaiFrb3eQ/g2HfvwwURehZdVXF+YljrS3TW1iIt/j1OLg9hv9E
-   t0PyRxXwq9KTBhyJLv9q1op4U8POddGd6+bygbzbe09uWFkhDf4jLtkVF
-   C6aqHBUoudPgy5+pXRCUc3cv9Yo16zaIb2MdrOLDa0fKTmw9IrBid4kna
-   Q=;
+  bh=ysSCHxYUYI2fnvbvjl19r0L14v2vd2rA12vVrwVzVi0=;
+  b=UqK5kh2EBbAGZipXfNg9E2KfKuDxjrFxb0oz0Ho0tGLgmOEKYhG4lkwD
+   3M3Zc7SdrIYY8eKOLYmjLyUQp1i6YDnmV8YgSIZfqGlCdSIYPZAlxuq2k
+   6Kun0ZXJw0CRqeGDpOM8Qhe3U+AsddizZOk4z1RJIQQfo4i2UoVO6GwGj
+   4=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727917"
+   d="scan'208";a="14727919"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:56 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Thierry Reding <thierry.reding@gmail.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>
 Cc:     kernel-janitors@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] pwm: atmel-tcb: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:32 +0200
-Message-Id: <20220521111145.81697-22-Julia.Lawall@inria.fr>
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] can: peak_usb: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:34 +0200
+Message-Id: <20220521111145.81697-24-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -56,20 +55,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/pwm/pwm-atmel-tcb.c |    2 +-
+ drivers/net/can/usb/peak_usb/pcan_usb.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index 3977a0f9d132..2837b4ce8053 100644
---- a/drivers/pwm/pwm-atmel-tcb.c
-+++ b/drivers/pwm/pwm-atmel-tcb.c
-@@ -304,7 +304,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/*
- 	 * Find best clk divisor:
- 	 * the smallest divisor which can fulfill the period_ns requirements.
--	 * If there is a gclk, the first divisor is actuallly the gclk selector
-+	 * If there is a gclk, the first divisor is actually the gclk selector
- 	 */
- 	if (tcbpwmc->gclk)
- 		i = 1;
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
+index 17dc178f555b..091c631ebe23 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
+@@ -533,7 +533,7 @@ static int pcan_usb_handle_bus_evt(struct pcan_usb_msg_context *mc, u8 ir)
+ {
+ 	struct pcan_usb *pdev = mc->pdev;
+ 
+-	/* acccording to the content of the packet */
++	/* according to the content of the packet */
+ 	switch (ir) {
+ 	case PCAN_USB_ERR_CNT_DEC:
+ 	case PCAN_USB_ERR_CNT_INC:
 
