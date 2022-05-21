@@ -2,137 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3912C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 10:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B32C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 10:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242180AbiEUKYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 06:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
+        id S1350941AbiEUKZP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 06:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231536AbiEUKY0 (ORCPT
+        with ESMTP id S231536AbiEUKZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 06:24:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C0E53B58;
-        Sat, 21 May 2022 03:24:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1EA6B81B22;
-        Sat, 21 May 2022 10:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 937A4C385A9;
-        Sat, 21 May 2022 10:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653128660;
-        bh=aQ66ppQ61E71sBFPrUxFfvV2qUpYZYEcuTJAKUG3/QU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AY+09pKT65P2pPSdS3VAfGddTMbpF/wFn9/KqlXrneEKNqbFZRY44lI5pUmqmleY5
-         UYgKcKRWWgorhTduIw0Ol3Tey50HhqiJUm9HL71TkFgMORRbjwgjDd2d1JJobHGl5w
-         9nXOzj4KWnDEKldhqtBBgF6X+fFaZ2PruRuwkRoH1gg6AgNv//w1f2Iay8ftg8TLdc
-         gsijrQdMiZnoM34Y+I80MSYd3FiXQE/8ht7+heIARr1wOJXMt27EUmQh17ayCCRF7B
-         zUWZAeZS7JXjSSpIQw4/z18rP0tEpFcDEVBbseWiC5Am0eV645QLdRSFoWRPP/LLrr
-         5h9/fj/k+w0gA==
-Date:   Sat, 21 May 2022 12:24:16 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Alifer Moraes <alifer.m@variscite.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        eran.m@variscite.com, festevam@gmail.com, kernel@pengutronix.de,
-        linux-imx@nxp.com, linux-i2c@vger.kernel.org,
-        linux@rempel-privat.de, pierluigi.p@variscite.com,
-        s.hauer@pengutronix.de, shawnguo@kernel.org,
-        gaopan <b54642@freescale.com>,
-        Fugang Duan <B38611@freescale.com>,
-        Vipul Kumar <vipul_kumar@mentor.com>
-Subject: Re: (EXT) [PATCH] i2c: imx: add irqf_no_suspend
-Message-ID: <Yoi90G5cphagcxpp@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Alifer Moraes <alifer.m@variscite.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        eran.m@variscite.com, festevam@gmail.com, kernel@pengutronix.de,
-        linux-imx@nxp.com, linux-i2c@vger.kernel.org,
-        linux@rempel-privat.de, pierluigi.p@variscite.com,
-        s.hauer@pengutronix.de, shawnguo@kernel.org,
-        gaopan <b54642@freescale.com>, Fugang Duan <B38611@freescale.com>,
-        Vipul Kumar <vipul_kumar@mentor.com>
-References: <20220307143630.28697-1-alifer.m@variscite.com>
- <3676803.kQq0lBPeGt@steina-w>
+        Sat, 21 May 2022 06:25:10 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113B654032;
+        Sat, 21 May 2022 03:25:09 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id CFE571F46413
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653128707;
+        bh=lBOnXIC7rDI/XGVOI25lydeYhAWS63MlMY/nx5UGlLI=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=GkT6VGFso/wL6JhQo1/m7n2V+8gVKfvw5W0OgrXT76T7QVQmHpDTwOcb44zavI/QJ
+         PWBMDkcVjAxMH0VyLou7Kz+dQ6lMdHBL83AgFO2KfLX84ZYZdfPhIt4s47ZiHgXZAy
+         AMRnl9hLLfnO8pVa+uiZAosCmNIvu61yMgGkDmxXvAbFKseL09c9OMyeBSica2i2fC
+         z7OucM+WeBD4zQPxkwuBrTibedhPZl8tkvPwW9mrw/t4DuAasHb4qfy5zti2Hex0q9
+         nDsiDOOHd4xgYQiaIT5i3sSovhAxKSpd1HemtYndb75Evx/5Z7QBIYlYt43nsfIfXN
+         jfVw0HiauCLLw==
+Message-ID: <0ede5fe6-89c8-5e63-0c0c-265b57ea5ca6@collabora.com>
+Date:   Sat, 21 May 2022 15:24:59 +0500
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bW5lVs4zqF9WjfiD"
-Content-Disposition: inline
-In-Reply-To: <3676803.kQq0lBPeGt@steina-w>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Cc:     usama.anjum@collabora.com, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Subject: Re: [PATCH v11 8/8] kselftest/cgroup: Add cpuset v2 partition root
+ state test
+Content-Language: en-US
+To:     Waiman Long <longman@redhat.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>, Shuah Khan <shuah@kernel.org>
+References: <20220510153413.400020-1-longman@redhat.com>
+ <20220510153413.400020-9-longman@redhat.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20220510153413.400020-9-longman@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 5/10/22 8:34 PM, Waiman Long wrote:
+> diff --git a/tools/testing/selftests/cgroup/Makefile b/tools/testing/selftests/cgroup/Makefile
+> index 745fe25fa0b9..01687418b92f 100644
+> --- a/tools/testing/selftests/cgroup/Makefile
+> +++ b/tools/testing/selftests/cgroup/Makefile
+> @@ -1,10 +1,11 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  CFLAGS += -Wall -pthread
+>  
+> -all:
+> +all: ${HELPER_PROGS}
+>  
+>  TEST_FILES     := with_stress.sh
+> -TEST_PROGS     := test_stress.sh
+> +TEST_PROGS     := test_stress.sh test_cpuset_prs.sh
+> +TEST_GEN_FILES := wait_inotify
+Please add wait_inotify to .gitignore file.
 
---bW5lVs4zqF9WjfiD
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>  TEST_GEN_PROGS = test_memcontrol
+>  TEST_GEN_PROGS += test_kmem
+>  TEST_GEN_PROGS += test_core
 
-Hi everyone,
-
-> > The i2c irq is masked when pcie starts a i2c transfer process
-> > during noirq suspend stage. As a result, i2c transfer fails.
-> > To solve the problem, IRQF_NO_SUSPEND is added to i2c bus.
-> >=20
-> > Signed-off-by: Gao Pan <b54642@freescale.com>
-> > Signed-off-by: Fugang Duan <B38611@freescale.com>
-> > Signed-off-by: Vipul Kumar <vipul_kumar@mentor.com>
-
-The SoB from Alifer Moraes is missing, too.
-
-> > goto rpm_disable;
-> >=20
-> >  	/* Request IRQ */
-> > -	ret =3D request_threaded_irq(irq, i2c_imx_isr, NULL, IRQF_SHARED,
-> > +	ret =3D request_threaded_irq(irq, i2c_imx_isr, NULL,
-> > +				   IRQF_SHARED | IRQF_NO_SUSPEND,
-> >  				   pdev->name, i2c_imx);
-> >  	if (ret) {
-> >  		dev_err(&pdev->dev, "can't claim irq %d\n", irq);
->=20
->=20
-> I stumbled across Documentation/power/suspend-and-interrupts.rst which st=
-ates:
-> > For this reason, using IRQF_NO_SUSPEND and IRQF_SHARED at the
-> > same time should be avoided.
-> Given this IMHO at least a comment should be inserted why this is fine. I=
- dont=20
-> have a full picture about the situation, but to me it seems there is a=20
-> reference missing, or why/how does some PCIe start some I2C transfer when=
- the
-> controller is suspended already? Do I miss something?
-
-Thank you for this comment, Alexander. I second you, this needs
-explanation.
-
-Happy hacking,
-
-   Wolfram
-
-
---bW5lVs4zqF9WjfiD
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKIvcwACgkQFA3kzBSg
-KbYBVw//eUEuyxhP5NHyCEWeN7/A9Rbd45Wch8anz2ZxTHwrQ/d5jocPR0ZZjb7H
-pGhesAIMaw+LH88Bhw49U8TpbjKNRUwB8J9uaREwtI8X7rlmx8iHLqMadis83HPM
-RZblDYVbe+69+EAKHfKu3WrzMWhGc+tO+hinRPaxCY26h1isuQPaELPBfTyuqiJ5
-NHYfDhVV/qZtMYZI8xfEf8UAN/wGYaVL4Zhputw/XL5ZjCAuczavsInFdwzkzRyX
-JlRb+VXvJAqI5CAz6AYGuaWlMO7hZB81fpGm4+5B6UVPQA6jWl9e9s/L7sVZ1Zjs
-cJYjL3BD3/j0XQArEoMhySZAfs2KNeoXHWnc0zVas1lHHh4HwbEWLFRrK/sv5Wkz
-KkR1mMiLjlFsmxHwFIh+eWN0KDM8pTWCYEaiiCuYaQfeQH6RTE9Ju1l/+tb03mu7
-dPOK6S9Vl+nJ6qYGAS/HDj9nq6GQIX1i3T/bkYvLYE1/lK81AJt/7TuQdV7ulmwF
-jQHd5hpFjh8Bx25oyaK3kqQeCV6PUVtqdxoNCPffqH9BJwRWPdy275ucpZR9+7p9
-ysOhQQ+HDc3kXAVgpWE1AJgj95w/O7WVSpf7D5zwfpjiRyHaNp8qTB1IbcSC6Ty4
-frxbSqyQa4wbGBJfcsiuAe8linmZkmoZfCa3+Sh0vggMmpBM9Pg=
-=CxIu
------END PGP SIGNATURE-----
-
---bW5lVs4zqF9WjfiD--
+-- 
+Muhammad Usama Anjum
