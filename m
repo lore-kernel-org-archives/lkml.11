@@ -2,72 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2009AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354505AbiEUDvX (ORCPT
+        id S1354495AbiEUDva (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 23:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
+        Fri, 20 May 2022 23:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239084AbiEUDvP (ORCPT
+        with ESMTP id S1354490AbiEUDvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 23:51:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5A1DF66;
-        Fri, 20 May 2022 20:51:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00D87B82F13;
-        Sat, 21 May 2022 03:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A94B7C385A9;
-        Sat, 21 May 2022 03:51:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653105071;
-        bh=Xco6TDsstzeb8QGFaDEm94Qv+grXMuUeEmeIJgPyqeI=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=XmnKdCDY+i5JbiJ7qwyW3AcnBgAPXj/NulbjpXx/DirO+9Ydh10sAZWGHjyqDFWWM
-         5iLwEa7EkIDJ6sApIFkIQHmGIdwrTjuDWxG6k5/gxSNjYpiIhknqCoGnoHmW42Z66m
-         IRKLrGcHUAxrldEb+rs4lF/EK0PoREAHy9MJ84CDSO+qOyAEOp5V9+kToA26dEtRTU
-         0AJJDEhTlWIHwC5bmmItwb+bvIoYneJ2r4XtXe9VRsAm8wxKjzuGu4HMM1ANzTG74D
-         VPVmvDwMyc2p+b+d7PNPUzFSo6eRmtSyGu/oKZjKzg/Ax7U9N92uw70NSscSQkxLzD
-         ZEg0btM72ly7g==
-Content-Type: text/plain; charset="utf-8"
+        Fri, 20 May 2022 23:51:19 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5A0DF41;
+        Fri, 20 May 2022 20:51:15 -0700 (PDT)
+Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L4qNX0XZszgY8y;
+        Sat, 21 May 2022 11:49:48 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 21 May 2022 11:51:13 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 21 May 2022 11:51:12 +0800
+Subject: Re: [PATCH -next v3 2/2] blk-throttle: fix io hung due to
+ configuration updates
+To:     Tejun Heo <tj@kernel.org>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+CC:     <axboe@kernel.dk>, <ming.lei@redhat.com>, <geert@linux-m68k.org>,
+        <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220519085811.879097-1-yukuai3@huawei.com>
+ <20220519085811.879097-3-yukuai3@huawei.com>
+ <20220519095857.GE16096@blackbody.suse.cz>
+ <a8953189-af42-0225-3031-daf61347524a@huawei.com>
+ <20220519161026.GG16096@blackbody.suse.cz>
+ <73464ca6-9412-cc55-d9c0-f2e8a10f0607@huawei.com>
+ <fe3c03f7-9b52-7948-075d-cbdf431363e1@huawei.com>
+ <20220520160305.GA17335@blackbody.suse.cz> <Yoe/1BRYzSRI0JBd@slm.duckdns.org>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <97be6af0-ea94-f4ee-5ab2-02b6fc02cbff@huawei.com>
+Date:   Sat, 21 May 2022 11:51:11 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220520100948.19622-1-johan+linaro@kernel.org>
-References: <20220520100948.19622-1-johan+linaro@kernel.org>
-Subject: Re: [PATCH 0/3] clk: qcom: gdsc: add support for collapse-vote registers
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>, quic_tdas@quicinc.com,
-        quic_rnayak@quicinc.com
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Johan Hovold <johan+linaro@kernel.org>
-Date:   Fri, 20 May 2022 20:51:09 -0700
-User-Agent: alot/0.10
-Message-Id: <20220521035111.A94B7C385A9@smtp.kernel.org>
+In-Reply-To: <Yoe/1BRYzSRI0JBd@slm.duckdns.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please add Qualcomm on code for their hardware :)
+在 2022/05/21 0:20, Tejun Heo 写道:
+> Hello,
+> 
+> On Fri, May 20, 2022 at 06:03:05PM +0200, Michal Koutný wrote:
+>>> Then io hung can be triggered by always submmiting new configuration
+>>> before the throttled bio is dispatched.
+>>
+>> How big is this a problem actually? Is it only shooting oneself in the leg
+>> or can there be a user who's privileged enough to modify throttling
+>> configuration yet not privileged enough to justify the hung's
+>> consequences (like some global FS locks).
+> 
+> So, the problem in itself is of the self-inflicted type and I'd prefer to
+> ignore it. Unfortunately, the kernel doesn't have the kind of isolation
+> where stalling out some aribtrary tasks is generally safe, especially not
+> blk-throtl as it doesn't handle bio_issue_as_root() and thus can have a
+> pretty severe priority inversions where IOs which can block system-wide
+> operations (e.g. memory reclaim) get trapped in a random cgroup.
+Hi, Tejun
 
-I did a translation from codeaurora but I don't know if Rajendra's will
-work.
+It's right the problem is self-inflicted. However, I do think with
+Michal's suggestion, how throttled bios are handled while new config is
+submitted really make sense from the functional poinit of view.
 
-Quoting Johan Hovold (2022-05-20 03:09:45)
-> Recent Qualcomm platforms have APCS collapse-vote registers that allow
-> for sharing GDSCs with other masters (e.g. LPASS).
+Do you think the solution is OK?
 
-How is it different from the voting logic that already exists in the
-gdsc file? Now every subsystem has to vote for off in addition to voting
-for on?
-
->    =20
-> Add support for using such vote registers instead of the control
-> register when updating the GDSC power state.
+Thnaks,
+Kuai
+> 
+> Even ignoring that, the kernel in general assumes some forward progress from
+> everybody and when a part stalls it's relatively easy to spread to the rest
+> of the system, sometimes gradually, sometimes suddenly - e.g. if the stalled
+> IO was being performed while holding the mmap_sem, which isn't rare, then
+> anything which tries to read its proc cmdline will hang behind it.
+> 
+> So, we wanna avoid a situation where a non-priviledged user can cause
+> indefinite UNINTERRUPTIBLE sleeps to prevent local DoS attacks. I mean,
+> preventing local attacks is almost never fool proof but we don't want to
+> make it too easy at least.
+> 
+> Thanks.
+> 
