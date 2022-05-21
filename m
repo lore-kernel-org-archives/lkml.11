@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23038C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15323C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237226AbiEULZd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        id S1354921AbiEULZo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 07:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355041AbiEULOI (ORCPT
+        with ESMTP id S1355020AbiEULOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:14:08 -0400
+        Sat, 21 May 2022 07:14:05 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0E013326D;
-        Sat, 21 May 2022 04:12:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870731312B0;
+        Sat, 21 May 2022 04:12:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=Md9/6NzAv0jrHFbIgTAsd+38B+aN7Go6jo2y146vOSs=;
-  b=nEkZMStRD5LCP/VtnJZ2rb7SbzoSoQmd6Y7PlbrHS+OlZZVHojupzuFz
-   wOJVUYAhRgiCdK5R0aiA9Sd5V9CdCvgiG97CfVa0Vy7lKiwrgN7152Nui
-   2oq2VhsyrUmBopkMe4/ki4O4qkCTRa2rN1aX8HQNyyqXmnh/yttadOjeD
-   k=;
+  bh=k0xGUi45Pmhckpj1HUc6z8Jrm9BIzWJyP6t9OROWXAU=;
+  b=HFbqzgnxC9KLOvz/wGXvdMbu0Wiw6fJHSQ9vBxZMZ4FALLcn0U645L1U
+   lDkVW3yvDkgUPpYykoMk4w/pAN00Blb47vHAKZOW0XOjjF5z86dmNg3OY
+   oIsCj/eL5jNK+yur/uQ2D4nFhq7BUh4lYWFy/P0U1LuojTB6fNLo1P59k
+   w=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727998"
+   d="scan'208";a="14727993"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:08 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:07 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
+To:     Peter Chen <peter.chen@kernel.org>
 Cc:     kernel-janitors@vger.kernel.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/i915: fix typos in comments
-Date:   Sat, 21 May 2022 13:11:40 +0200
-Message-Id: <20220521111145.81697-90-Julia.Lawall@inria.fr>
+Subject: [PATCH] USB: chipidea: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:35 +0200
+Message-Id: <20220521111145.81697-85-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,68 +51,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Spelling mistakes (triple letters) in comments.
+Spelling mistake (triple letters) in comment.
 Detected with the help of Coccinelle.
 
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/gpu/drm/i915/display/intel_color.c           |    2 +-
- drivers/gpu/drm/i915/display/intel_pps.c             |    2 +-
- drivers/gpu/drm/i915/gt/intel_execlists_submission.c |    2 +-
- drivers/gpu/drm/i915/gt/uc/intel_guc_log.c           |    2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/usb/chipidea/ci_hdrc_imx.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_color.c b/drivers/gpu/drm/i915/display/intel_color.c
-index 34128c9c635c..a27ce874a9e8 100644
---- a/drivers/gpu/drm/i915/display/intel_color.c
-+++ b/drivers/gpu/drm/i915/display/intel_color.c
-@@ -1638,7 +1638,7 @@ static u32 icl_gamma_mode(const struct intel_crtc_state *crtc_state)
- 	/*
- 	 * Enable 10bit gamma for D13
- 	 * ToDo: Extend to Logarithmic Gamma once the new UAPI
--	 * is acccepted and implemented by a userspace consumer
-+	 * is accepted and implemented by a userspace consumer
- 	 */
- 	else if (DISPLAY_VER(i915) >= 13)
- 		gamma_mode |= GAMMA_MODE_MODE_10BIT;
-diff --git a/drivers/gpu/drm/i915/display/intel_pps.c b/drivers/gpu/drm/i915/display/intel_pps.c
-index 5a598dd06039..4bc0563dde92 100644
---- a/drivers/gpu/drm/i915/display/intel_pps.c
-+++ b/drivers/gpu/drm/i915/display/intel_pps.c
-@@ -509,7 +509,7 @@ static void wait_panel_power_cycle(struct intel_dp *intel_dp)
- 
- 	drm_dbg_kms(&i915->drm, "Wait for panel power cycle\n");
- 
--	/* take the difference of currrent time and panel power off time
-+	/* take the difference of current time and panel power off time
- 	 * and then make panel wait for t11_t12 if needed. */
- 	panel_power_on_time = ktime_get_boottime();
- 	panel_power_off_duration = ktime_ms_delta(panel_power_on_time, intel_dp->pps.panel_power_off_time);
-diff --git a/drivers/gpu/drm/i915/gt/intel_execlists_submission.c b/drivers/gpu/drm/i915/gt/intel_execlists_submission.c
-index 86f7a9ac1c39..aa0d2bbbbcc4 100644
---- a/drivers/gpu/drm/i915/gt/intel_execlists_submission.c
-+++ b/drivers/gpu/drm/i915/gt/intel_execlists_submission.c
-@@ -1350,7 +1350,7 @@ static void execlists_dequeue(struct intel_engine_cs *engine)
- 			 * submission. If we don't cancel the timer now,
- 			 * we will see that the timer has expired and
- 			 * reschedule the tasklet; continually until the
--			 * next context switch or other preeemption event.
-+			 * next context switch or other preemption event.
- 			 *
- 			 * Since we have decided to reschedule based on
- 			 * consumption of this timeslice, if we submit the
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c
-index 78d2989fe917..02311ad90264 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_log.c
-@@ -588,7 +588,7 @@ int intel_guc_log_relay_open(struct intel_guc_log *log)
- 	/*
- 	 * We require SSE 4.1 for fast reads from the GuC log buffer and
- 	 * it should be present on the chipsets supporting GuC based
--	 * submisssions.
-+	 * submissions.
- 	 */
- 	if (!i915_has_memcpy_from_wc()) {
- 		ret = -ENXIO;
+diff --git a/drivers/usb/chipidea/ci_hdrc_imx.h b/drivers/usb/chipidea/ci_hdrc_imx.h
+index 999c65390b7f..7daccb9c5006 100644
+--- a/drivers/usb/chipidea/ci_hdrc_imx.h
++++ b/drivers/usb/chipidea/ci_hdrc_imx.h
+@@ -21,7 +21,7 @@ struct imx_usbmisc_data {
+ 	unsigned int pwr_pol:1; /* power polarity */
+ 	unsigned int evdo:1; /* set external vbus divider option */
+ 	unsigned int ulpi:1; /* connected to an ULPI phy */
+-	unsigned int hsic:1; /* HSIC controlller */
++	unsigned int hsic:1; /* HSIC controller */
+ 	unsigned int ext_id:1; /* ID from exteranl event */
+ 	unsigned int ext_vbus:1; /* Vbus from exteranl event */
+ 	struct usb_phy *usb_phy;
 
