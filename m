@@ -2,87 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76839C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 12:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 112C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 12:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352060AbiEUM4W (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 08:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
+        id S236416AbiEUM60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 08:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347721AbiEUM4H (ORCPT
+        with ESMTP id S231732AbiEUM6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 08:56:07 -0400
-Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB34D27CD1
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 05:56:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=0lM9e
-        iSZ/7u4XdrRd7Dl8KyNTTB09y4sc8qrLKiKecY=; b=RpQtyEWP36dJTB33VXagP
-        OdJYZoEmNG6qNqoeQ8YYOCGjW9fzvtf1plOGvSGnrhG2+gwoKViGdRkxuO0ljJA6
-        UNuxiXcH5UuC4raRktyWA8VTgSc40UHa1ejAACdtxFEQW83bHgFlppmGwV5htzBF
-        tJlTY93Lek02LmpV/n5Fl8=
-Received: from localhost (unknown [113.89.246.11])
-        by smtp14 (Coremail) with SMTP id EsCowAAXAe8G4YhiIGwTDg--.58702S2;
-        Sat, 21 May 2022 20:54:31 +0800 (CST)
-From:   Junwen Wu <wudaemon@163.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org, Junwen Wu <wudaemon@163.com>
-Subject: [PATCH v1] sched: Fix a typo in scheduler
-Date:   Sat, 21 May 2022 12:54:20 +0000
-Message-Id: <20220521125420.12683-1-wudaemon@163.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 21 May 2022 08:58:24 -0400
+Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0BF65E770;
+        Sat, 21 May 2022 05:58:22 -0700 (PDT)
+Received: by mail-vk1-xa2b.google.com with SMTP id bc42so5179651vkb.12;
+        Sat, 21 May 2022 05:58:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bykWdl7RkLd7Jog7GhgIWoVbo/GRYcAx6n48qBmXwJQ=;
+        b=gTDImOFg2B6vBdQngixeW/HBPTktxpECBn/wsKGgzGqvIB/rHUt2m6Lx8G2UhwbFR6
+         eFHv+2FUP23EXjhF0JGO7oeZH9VWAWwPx+yH7evdpZuMu8ew1iTVo53uGCD0Ywz03b08
+         1Rb+j7cO8b99jzj5uYdBfnAw08STnAdQ0JQV5lp3sjiKzwyrkMgEkZmkeF+MjKjL0Pgd
+         98uyQnUMYaQrHP02V5PitoHKi6JBPLag0nQyoEJUWuFjRZkklusWihMRj6th0Xx83rKM
+         98UzlkRgsztjyb0ZklsrVWu4+aLKj3XECXsaTMG82pEfx9JO+WIe3Vdil8drO7OKMD4E
+         WW0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bykWdl7RkLd7Jog7GhgIWoVbo/GRYcAx6n48qBmXwJQ=;
+        b=Jc4C5eNg+LgYMVczlpsg+jLja+XAXcodL+SjXRiOqVBXVrfK1r2YmZ49r5/mj+sj2P
+         Jb6XlS+o01K8HTXEGDjDl8ricEh9DRwJ15vCDb04vNlfXMkh9DLFruuex2JZAZwKTLNZ
+         cjjUmr9mnDoDb5mimOLxjLg0qH5OoFQmMWfsJJ9T8Bb7a+14ATFYl2nk8WC/RkmcdQAN
+         wMzuv01KezMzkuYANKibMDagzJpBadrRo/7lqUbXH402ZTPhrt3uCrKNK9g6gUYPR4DB
+         oYxwIErNjba+ynksiYBcPHjsPhcCgWdOY+WJTBc0rHRP/rwagMbL5v0CkFWDQIO+OObL
+         iBTw==
+X-Gm-Message-State: AOAM5316l48yzqpo5degmqGAGBQe4ahe8d+b7VAS2IfoqmdXFu+BiEil
+        +7nHr5n9HI/O/Y8UdkTYm86ubqKuZFR8rEFnQw==
+X-Google-Smtp-Source: ABdhPJw2hjnkCON9vjPf/cymYkRdWh75PM+u9FYDAz5c58fDuAVkVCoVnkqkOCnc/jPPILXIWW5ufceScMZiovqk4Os=
+X-Received: by 2002:a1f:3254:0:b0:34e:b02d:bdd7 with SMTP id
+ y81-20020a1f3254000000b0034eb02dbdd7mr5659802vky.11.1653137902033; Sat, 21
+ May 2022 05:58:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowAAXAe8G4YhiIGwTDg--.58702S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWruw4DWFWrGrW8Xw4DCF47twb_yoW8Jr13pF
-        9ruwn7Ja18G3W0gryUZrWDu343W34kWw1fCFyvka4SyFW5tr409Fn8tr42krn8WrWF93Zx
-        AFsF93yakr1DJ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pMv38UUUUUU=
-X-Originating-IP: [113.89.246.11]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/xtbBxwcIbWB0HlAueAAAsp
+References: <20220517101142.28421-1-warp5tw@gmail.com> <20220517101142.28421-7-warp5tw@gmail.com>
+ <Yoh+RUTtmiQsrCg3@shikoro>
+In-Reply-To: <Yoh+RUTtmiQsrCg3@shikoro>
+From:   Tyrone Ting <warp5tw@gmail.com>
+Date:   Sat, 21 May 2022 20:58:10 +0800
+Message-ID: <CACD3sJb1GOFNeXU3csDWR7mSeUEDqqNkT+JvKVavRL1Epik-zw@mail.gmail.com>
+Subject: Re: [PATCH v5 06/10] i2c: npcm: Correct register access width
+To:     Wolfram Sang <wsa@kernel.org>, Tyrone Ting <warp5tw@gmail.com>,
+        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        andriy.shevchenko@linux.intel.com, jarkko.nikula@linux.intel.com,
+        semen.protsenko@linaro.org, rafal@milecki.pl, sven@svenpeter.dev,
+        jsd@semihalf.com, lukas.bulwahn@gmail.com, arnd@arndb.de,
+        olof@lixom.net, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     jie.deng@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Nice value is MIN_NICE(-20) to MAX_NICE(19), it better uses
-int instead of long.
+Hi Wolfram:
 
-Signed-off-by: Junwen Wu <wudaemon@163.com>
----
- include/linux/sched.h | 2 +-
- kernel/sched/core.c   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Thank you for your help.
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 75ba8aa60248..cffc7cbed987 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1830,7 +1830,7 @@ static inline int dl_task_check_affinity(struct task_struct *p, const struct cpu
- #endif
- 
- extern int yield_to(struct task_struct *p, bool preempt);
--extern void set_user_nice(struct task_struct *p, long nice);
-+extern void set_user_nice(struct task_struct *p, int nice);
- extern int task_prio(const struct task_struct *p);
- 
- /**
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index fcf0c180617c..15c1b63d771b 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6888,7 +6888,7 @@ static inline int rt_effective_prio(struct task_struct *p, int prio)
- }
- #endif
- 
--void set_user_nice(struct task_struct *p, long nice)
-+void set_user_nice(struct task_struct *p, int nice)
- {
- 	bool queued, running;
- 	int old_prio;
--- 
-2.25.1
+Wolfram Sang <wsa@kernel.org> =E6=96=BC 2022=E5=B9=B45=E6=9C=8821=E6=97=A5 =
+=E9=80=B1=E5=85=AD =E4=B8=8B=E5=8D=881:53=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On Tue, May 17, 2022 at 06:11:38PM +0800, Tyrone Ting wrote:
+> > From: Tyrone Ting <kfting@nuvoton.com>
+> >
+> > The SMBnCTL3 register is 8-bit wide and the 32-bit access was always
+> > incorrect, but simply didn't cause a visible error on the 32-bit machin=
+e.
+> >
+> > On the 64-bit machine, the kernel message reports that ESR value is
+> > 0x96000021. Checking Arm Architecture Reference Manual Armv8 suggests t=
+hat
+> > it's the alignment fault.
+> >
+> > SMBnCTL3's address is 0xE.
+> >
+> > Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller dri=
+ver")
+> > Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+> > Reviewed-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+>
+> Applied to for-next, thanks!
+>
 
+Best Regards,
+Tyrone
