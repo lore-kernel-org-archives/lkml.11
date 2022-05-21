@@ -2,115 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B43E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244638AbiEUOZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
+        id S243983AbiEUO1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 10:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbiEUOZM (ORCPT
+        with ESMTP id S230171AbiEUO1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:25:12 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DA1366BF
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:25:10 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id v8so16723274lfd.8
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:25:10 -0700 (PDT)
+        Sat, 21 May 2022 10:27:35 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DCD3AA5E
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:27:33 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id j6so9946609pfe.13
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IbbNsxWO/m2lPWhlsd3aTys0/Azk77kx0rBYcjjzxrw=;
-        b=X7Xpxa/+7lKMnKDnsjZKhJ62fLY3M/Bnlu2oTHf1xVs0aDuL6HaFBRursY1TX571Mz
-         CTTvITI8UTOU0bVIRqJzdeoY9tvL74IRnKuafMd0fKQhr9aSrbySUUUfjoGyIaRQ8Bsd
-         rq1ehvsn+QNWX8JuMg83bVBb141ynroEuXWJ54qYYeJNfrsA7F4ia7U9kRAVJc63vT8S
-         4M8f3yEPO65NtNNJ20uF0+3gHIQXGAHNLaNEEZlWrWLCWQf/zI0YohR609F9v+5+nhJi
-         E9Zz7Cp9Fq5GYIbAveb2cQk/sth5VKAI5afZFuEbTy+sHdwhZvLjaJUyOwfHt6o67Z0q
-         RxgA==
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=Wnmi121K1JVbPRwWXICyVmVgS8S2HmhoyOXYg7NFFL4=;
+        b=ni332OKkuHnZTj1kfvaljAvtoPZQeCglR10T5HNYqOfG3u1aegRjNB2gooie43Y2On
+         A/sB3Dhjti4QPsMKwu9cOcylfEWnW8dZIYHQ6aXyipHOtEPp9bmfA4cWn23Q9J0s/fyF
+         AGTO6c39BKi5zVgNVabno48Kom6UbJlvnZexYowkwBjhZTEEG3gAEE3HPWNzwXnLhFq3
+         PQuE2JcgeBJ1dnAbiaImAMm+6fcBBrNlezgvBm0n+PPGFgffeGTvOtMU0BLW7UwjYn1S
+         3PACxt6PVVuuPior6j263Y8UtMlt0L3BN7TKkk3G5UKOzLGIbLQZnOvUR/iN/IMIdEIr
+         4JtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IbbNsxWO/m2lPWhlsd3aTys0/Azk77kx0rBYcjjzxrw=;
-        b=jLQLPJOeJLb8bCTdoWuZU8D/dnKP9JhQOFYMMT46KrlRAFRUDLFq4Z48oad4+wogRj
-         3u89pU9N+M+D7eRVRhaGVF8vEUmdMbGo5xUeOqjrCnrz6rUKQp6lKNIJubCQiJ8cNM2J
-         IcDdFOkXgsfxGz9FILpeRNffpWLTH7CvcelquhsXiTV4VUyuTEEhBDZ4RS6v8vFjvv1q
-         eQ2sACq+mkUt9zkXepQcUGJEG093tMiXWHpXBb5Jk6JS++HH+4vLVAy+yVeHhauCtW5F
-         A+5mTYYb1tJ0I4A4NmTFZpuyj2anl+HsJLsUdwBv1YFgsQ5V18OaeT0qbErdpvvtr48t
-         /zgQ==
-X-Gm-Message-State: AOAM531KcQ17VCl4hVAjQ4GrLYCuW/8JdUGf7zH9XJk+qjBRqlzAkugk
-        pNgAPAdmVHpwurZcg3tqfji6bQ==
-X-Google-Smtp-Source: ABdhPJxWmFsSb0Vzg1NAnz2GPn7MlkNF023jy6AnGMkyrTd5OmsIHxz8MDigJ2L10kwaol2EYaevwQ==
-X-Received: by 2002:a05:6512:c0e:b0:478:5a91:20bb with SMTP id z14-20020a0565120c0e00b004785a9120bbmr3982177lfu.587.1653143109161;
-        Sat, 21 May 2022 07:25:09 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id r26-20020a2e995a000000b0024f3d1daea0sm724179ljj.40.2022.05.21.07.25.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 May 2022 07:25:08 -0700 (PDT)
-Message-ID: <7fd80a4b-5e60-0117-b790-359f6d94aeef@linaro.org>
-Date:   Sat, 21 May 2022 16:25:07 +0200
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=Wnmi121K1JVbPRwWXICyVmVgS8S2HmhoyOXYg7NFFL4=;
+        b=X9egkONYHp4AlMXhP+Hs5GRtjN1FDe2iJfY7uaLmaVjTIX7/0oyKZsLkIOQho2jNsh
+         8N9iK27UkV1hLkKm12C/zql3kcpd50agdGJfwn+lIIIXWL2/eGJ0V/V3anmCtGtdIPpv
+         BDQtbTS1OfJ7cSVweUdVt3uNy5H7eJzu1qm6g5j3Y9ktb4wBnpVuwzK0+tUWX1B2yVrX
+         XHfd0F66T6mnkU5CqfwFG2z1918mesdyDQRU0MelYNekaxSeqAutQ9u3TkAOgUjV3x/D
+         BY8sl3wOojGl+d/JKC6SeLB4ES026hgBvgYfxOx092JxQ/eFPzoW/HHIo4n9EdbgoAeL
+         Bnkw==
+X-Gm-Message-State: AOAM531TbD6lhen9fJuBgplix3rweb32jSnUyf53r1xBXKUcdV9MVYVS
+        71IcwN2lHvNXfkI/JGmE+793fHa+S9otbH96CA==
+X-Google-Smtp-Source: ABdhPJyzo9Ue0nYMBJo6AaF4i4Pc0LYe5wMZR1u1sg7yoJVHYC1SL70jFt00pjYqZsgKomJ4G+HmAN5cDr7HWyLhnmE=
+X-Received: by 2002:a05:6a00:4486:b0:50d:fc41:a9a with SMTP id
+ cu6-20020a056a00448600b0050dfc410a9amr15166524pfb.71.1653143253416; Sat, 21
+ May 2022 07:27:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] dt-bindings: mips: Convert plain text file to ReST
-Content-Language: en-US
-To:     Soumya Negi <soumya.negi97@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220521015613.6197-1-soumya.negi97@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220521015613.6197-1-soumya.negi97@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Sat, 21 May 2022 22:27:22 +0800
+Message-ID: <CAMhUBj=5jD5AjyaF8UmMXAZGFnMEgTruFM2KYL3GGZt-ABcHBQ@mail.gmail.com>
+Subject: [BUG] vDPA/ifcvf: got a warning when removing the module
+To:     mst@redhat.com, jasowang@redhat.com, lingshan.zhu@intel.com,
+        xieyongji@bytedance.com, elic@nvidia.com, parav@nvidia.com
+Cc:     virtualization@lists.linux-foundation.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/05/2022 03:56, Soumya Negi wrote:
-> Converts .txt documentation file to ReST format(.rst).
-> 
-> Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
-> ---
->  .../devicetree/bindings/mips/cpu_irq.rst      | 56 +++++++++++++++++++
->  1 file changed, 56 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mips/cpu_irq.rst
-> 
-> diff --git a/Documentation/devicetree/bindings/mips/cpu_irq.rst b/Documentation/devicetree/bindings/mips/cpu_irq.rst
-> new file mode 100644
-> index 000000000000..601cc12caa2a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mips/cpu_irq.rst
-> @@ -0,0 +1,56 @@
-> +=============================
-> +MIPS CPU interrupt controller
-> +=============================
-> +
-> +On MIPS the ``mips_cpu_irq_of_init()`` helper can be used to initialize the 8 CPU
-> +IRQs from a devicetree file and create a ``irq_domain`` for IRQ controller.
+Hello,
 
-Bindings is not a place for code. No.
+I found a bug in the ifcvf driver.
+When removing the module, I got the following warning:
 
-> +
-> +With the ``irq_domain`` in place we can describe how the 8 IRQs are wired to the
-> +platforms internal interrupt controller cascade.
-> +
-> +Below is an example of a platform describing the cascade inside the devicetree
-> +and the code used to load it inside ``arch_init_irq()``.
-> +
-> +Required properties
-> +-------------------
-> +* compatible: Should be **"mti,cpu-interrupt-controller"**
+[   14.478123] general protection fault, probably for non-canonical
+address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN PTI
+[   14.478701] KASAN: null-ptr-deref in range
+[0x0000000000000028-0x000000000000002f]
+[   14.479922] RIP: 0010:vdpa_mgmtdev_unregister+0x39/0x150
+[   14.484063] Call Trace:
+[   14.484186]  <TASK>
+[   14.484292]  ? _raw_spin_unlock_irqrestore+0x3d/0x60
+[   14.484536]  ifcvf_remove+0x3a/0x50 [ifcvf]
+[   14.484743]  pci_device_remove+0x92/0x240
 
-If you wanted to add bindings, please use DT schema format (see
-writing-schema, writing-bindings and example-schema files).
+The reason is that the 'ifcvf_mgmt_dev' is zero which means that
+ifcvf_vdpa_dev_add() was not executed.
+Since I am not familiar with the driver, I cannot find a proper solution for it.
 
-
-Best regards,
-Krzysztof
+Zheyu Ma
