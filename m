@@ -2,145 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 471EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 15:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF69C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 15:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355459AbiEUPkE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 11:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
+        id S238462AbiEUPoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 11:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355508AbiEUPjj (ORCPT
+        with ESMTP id S230091AbiEUPn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 11:39:39 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB596351C;
-        Sat, 21 May 2022 08:39:18 -0700 (PDT)
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 24LFcxRn020449;
-        Sun, 22 May 2022 00:38:59 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 24LFcxRn020449
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653147539;
-        bh=E7Am5Nb9a8KomAfL0DWSpMGcRuyvDbO2H0enFw86lac=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Mmss+paMa26fLx30DM4uAjXe+hi1m5UbvsADimGmzr7IWvQyc6/ycCqMbIK6Sn8xm
-         T8VwUVO3Eb1qe8Ct//Bc39+yvk+sWAe9GrN4+miP74KPs7FZWo/AWwG2sSzz8rp6YJ
-         OjAWhOOp6Q7/c1cINOoO8uIqMg3jqxM3Cu8HIlLWrRtdpdT9kS0Z9w3vPlWHVnmuhw
-         vY83rN/VIt3qDm1xePB8sQeGYLmXCE8l6aaeAP3VzyO6rWCc00bN41VzyhIO3SKIwM
-         ROjBLWIkgYW6pr89ytbBmjv53x9OjiLIRYTXGphXiw5fqg4rgR7YU9rK6X5rkZe/dq
-         KwU/UWjM4qW6A==
-X-Nifty-SrcIP: [209.85.210.173]
-Received: by mail-pf1-f173.google.com with SMTP id w200so10053813pfc.10;
-        Sat, 21 May 2022 08:38:59 -0700 (PDT)
-X-Gm-Message-State: AOAM533x//zvxN8lLJ3Zh6SQEJZBrqiYTOR0w3wLftJ5RwjoxCr+zImk
-        W710Y5drRv2OGQ2OhSKti1HqxJZEhkzyhHbydIg=
-X-Google-Smtp-Source: ABdhPJwqVIczKOUbexuJjN8ztbp6Eewxf8TjPCHhzKdG58dczONSDGOjuexLGdkEJyZqRUMX15iTRwYrfw5DZUuNY9A=
-X-Received: by 2002:a63:9043:0:b0:3f9:6c36:3de3 with SMTP id
- a64-20020a639043000000b003f96c363de3mr5866156pge.616.1653147535087; Sat, 21
- May 2022 08:38:55 -0700 (PDT)
+        Sat, 21 May 2022 11:43:57 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C9B5DA7F
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 08:43:56 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id m6so12580623ljb.2
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 08:43:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wJtjegKQirvwB32gH9239SE+3TpnMc7sTBARznemBeA=;
+        b=rHnU0AJfxYSJk4dWu+EQZOT00DrtLky7GJSRI7opNKA72fhNtZWArdLTC2YX1cEZt0
+         qB56Rb2t79QRgrbOsyeg4G3meKOaY6AtdtyNaPLPZJXT7Gr3egY3trprPigWNj+9qZUY
+         Rz1bvezh4ASHEh+Dpou1FTh0uUyoHahD72vUmeqUsg1zXKvDNpYZjk0119+EWX7VuC3a
+         va4y42+07uOVkUgvw7dxnszTTL+2RraiKCJmA2dORYp/VsqXwp65niaIB+QYEtBVtBmN
+         s0EMgB6qv3jQIeL1v/vreYC4pxZTIuQf12i+WIgZ6zqolZtHRfoXzB97Nq1VEhv297e2
+         T1rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wJtjegKQirvwB32gH9239SE+3TpnMc7sTBARznemBeA=;
+        b=2OacHrmYnusvwMYCCLvivWzqV0QhzGBUbZ10SH0AuOmPlRCcMTNHWqQDE0HUyJRT79
+         Lr/N3Y3Jy91RukprkRv/JTx48bBvZm2H6J5TlA5bTEIhJJkFERV1hGUxnhDJirN+JFxY
+         abNjpUd/9hbYxlAk97plL6RuiCoEPthwhtLhzQcRqM7r8gZw827iDHhM0hYRyGwahTpr
+         cBgOV9ZZiK7RpD3Z3xfAnlOoRxZtg8CijDQy/wSKV88mQ4RuJziPJsAEK3qkBSyI6JTk
+         Yd+ez8YiWLu3KQdJ8BBJrW7ov3bDpy7IYfqreeKO7zFBwDiultaNalOUasbXIccwCPF6
+         8A2g==
+X-Gm-Message-State: AOAM530UDtT+k+DGXalExN4dTXBjlwJespgtGPX1dJI4UQ5hhiP/PDD4
+        IQnd//yFWU/rC5h6ENIepLFLLw==
+X-Google-Smtp-Source: ABdhPJyfXeTYFTH2YSm07Q4/SRjtLq6RdF2FJbLzE7a3ieXX5ldwJm5T9cajy78FDGgCkN/KkaIH6g==
+X-Received: by 2002:a05:651c:2120:b0:24f:555d:a2d3 with SMTP id a32-20020a05651c212000b0024f555da2d3mr8302036ljq.157.1653147834421;
+        Sat, 21 May 2022 08:43:54 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id d24-20020a056512369800b0047255d211fbsm1093133lfs.298.2022.05.21.08.43.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 May 2022 08:43:53 -0700 (PDT)
+Message-ID: <5c426fdc-6250-60fe-6c10-109a0ceb3e0c@linaro.org>
+Date:   Sat, 21 May 2022 17:43:52 +0200
 MIME-Version: 1.0
-References: <23e0ba7863d51ab629498762a97d477645aeafea.1653123744.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <23e0ba7863d51ab629498762a97d477645aeafea.1653123744.git.christophe.jaillet@wanadoo.fr>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sun, 22 May 2022 00:38:17 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASHGyzKS-d+S1GYz_L0pBxxSwk05YfvV+LK4ghZ5xx=cA@mail.gmail.com>
-Message-ID: <CAK7LNASHGyzKS-d+S1GYz_L0pBxxSwk05YfvV+LK4ghZ5xx=cA@mail.gmail.com>
-Subject: Re: [RFC PATCH] kbuild: Add an option to enable -O1 and speed-up
- compilation time
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Changbin Du <changbin.du@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next] dt-bindings: net: xilinx: document xilinx
+ emaclite driver binding
+Content-Language: en-US
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, harini.katakam@amd.com,
+        michal.simek@amd.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, git@amd.com
+References: <1653031473-21032-1-git-send-email-radhey.shyam.pandey@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1653031473-21032-1-git-send-email-radhey.shyam.pandey@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(+CC: Arnd, Changbin Du)
-
-
-If -O1 support does not require additional effort,
-I have no objection to this patch.
-
-(but I do not have enough insight about
-the compiler's inlining heuristic)
-
-
-
-BTW, when we attempted to add the -Og support,
-we fixed various parts, and Linus rejected it.
-
-https://lore.kernel.org/linux-kbuild/CAK7LNARQggM3aKEPRKJqa4tunFAfmfErMZuS-rrnRv6UB1VpPQ@mail.gmail.com/
-
-
-
-
-
-
-
-On Sat, May 21, 2022 at 6:04 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> Add a new compilation option which speeds-up compilation time.
-> This can be useful when using static checker such as smatch or build-bots.
-> In such cases, the speed and quality of the generated code is not
-> important.
->
-> Using -O0 would be even better, but unfortunately, building fails with
-> this option.
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On 20/05/2022 09:24, Radhey Shyam Pandey wrote:
+> Add basic description for the xilinx emaclite driver DT bindings.
+> 
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
 > ---
->  Makefile     | 5 ++++-
->  init/Kconfig | 8 ++++++++
->  2 files changed, 12 insertions(+), 1 deletion(-)
->
-> diff --git a/Makefile b/Makefile
-> index 1f8bef92868f..14467386f947 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -817,7 +817,10 @@ KBUILD_CFLAGS      += $(call cc-disable-warning, format-truncation)
->  KBUILD_CFLAGS  += $(call cc-disable-warning, format-overflow)
->  KBUILD_CFLAGS  += $(call cc-disable-warning, address-of-packed-member)
->
-> -ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
-> +ifdef CONFIG_CC_OPTIMIZE_FOR_COMPILATION_SPEED
-> +KBUILD_CFLAGS += -O1
-> +KBUILD_RUSTFLAGS_OPT_LEVEL_MAP := 1
-> +else ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
->  KBUILD_CFLAGS += -O2
->  KBUILD_RUSTFLAGS_OPT_LEVEL_MAP := 2
->  else ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
-> diff --git a/init/Kconfig b/init/Kconfig
-> index a96776a9b080..3177a1830c9a 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -1384,6 +1384,14 @@ choice
->         prompt "Compiler optimization level"
->         default CC_OPTIMIZE_FOR_PERFORMANCE
->
-> +config CC_OPTIMIZE_FOR_COMPILATION_SPEED
-> +       bool "Optimize for compilation speed (-O1)"
-> +       help
-> +         This option can be useful when running a static checker such as smatch
-> +         or a build-bot.
-> +         Compilation time is slighly faster than -O2 and it requires less
-> +         memory.
+> Changes since RFC:
+> - Add ethernet-controller yaml reference.
+> - 4 space indent for DTS example.
+> ---
+>  .../bindings/net/xlnx,emaclite.yaml           | 63 +++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> new file mode 100644
+> index 000000000000..6105122ad583
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> @@ -0,0 +1,63 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/xlnx,emaclite.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  config CC_OPTIMIZE_FOR_PERFORMANCE
->         bool "Optimize for performance (-O2)"
->         help
-> --
-> 2.34.1
->
+> +title: Xilinx Emaclite Ethernet controller
+> +
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
+
+This goes just before properties (so after maintainers).
+
+> +
+> +maintainers:
+> +  - Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+> +  - Harini Katakam <harini.katakam@amd.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - xlnx,opb-ethernetlite-1.01.a
+> +      - xlnx,opb-ethernetlite-1.01.b
+> +      - xlnx,xps-ethernetlite-1.00.a
+> +      - xlnx,xps-ethernetlite-2.00.a
+> +      - xlnx,xps-ethernetlite-2.01.a
+> +      - xlnx,xps-ethernetlite-3.00.a
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  phy-handle: true
+> +
+> +  local-mac-address: true
+> +
+> +  xlnx,tx-ping-pong:
+> +    type: boolean
+> +    description: hardware supports tx ping pong buffer.
+> +
+> +  xlnx,rx-ping-pong:
+> +    type: boolean
+> +    description: hardware supports rx ping pong buffer.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - phy-handle
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    axi_ethernetlite_1: ethernet@40e00000 {
+> +        compatible = "xlnx,xps-ethernetlite-3.00.a";
+> +        interrupt-parent = <&axi_intc_1>;
+> +        interrupts = <1 0>;
+
+Is "0" an interrupt none type? If yes, then this should be rather a
+define and a proper type, not none.
+
+> +        local-mac-address = [00 0a 35 00 00 00];
+
+Each device should get it's own MAC address, right? I understand you
+leave it for bootloader, then just fill it with 0.
+
+> +        phy-handle = <&phy0>;
+> +        reg = <0x40e00000 0x10000>;
+
+Put the reg after compatible in DTS code.
+
+> +        xlnx,rx-ping-pong;
+> +        xlnx,tx-ping-pong;
+> +    };
 
 
--- 
-Best Regards
-Masahiro Yamada
+Best regards,
+Krzysztof
