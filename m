@@ -2,111 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96640C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355373AbiEUOlZ (ORCPT
+        id S1355296AbiEUOlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        Sat, 21 May 2022 10:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355295AbiEUOlD (ORCPT
+        with ESMTP id S244514AbiEUOln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:41:03 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF096101ED
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:40:57 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id o22so12437927ljp.8
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:40:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LxFUgiNVciv/W8ZtHs9d3GAs5Rmd048FQ4zmny+B+pw=;
-        b=AkjMk7cfzFpy/3MkLjibCyOtBl4UKyhVM5iB638FNB0COGIpbyXJ9lmtH1KP0rGLcN
-         cJ4iFUb554Pfq77EW3zguqhNuVJTKOf2OcLg18rMEPuY59WdxNe1Oo9W6YjKGKmGPDve
-         0nh3nx4vunHE5KmquxmiC4tqCARZL24FD/Dz+0SY9wKeujOVvBDX4nDR7IjFNQgDXKBN
-         JS24Yvupjj9oo8AUsbQ0f6x/1UNXDLs+jkymMV25UQOWVP+PGGfNynh6BiyjEnTeSbmY
-         Wqa+PQh8DMbRKgToN+d2NRhNbdH7VTtKPR0lnfVBC2HPMmqjz/A0eamxMKK203kNYJrm
-         6P0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LxFUgiNVciv/W8ZtHs9d3GAs5Rmd048FQ4zmny+B+pw=;
-        b=wuR/K1BYnMzqqmEwfTzPPzV6Ie3M4/c49gEPQ42t9JqYDtVcs8gqwMeh3zOIQHU11F
-         YHyOW2nIDooP5CPsk0+zLYAC0Z3IJ9lsqm26N8cYWpRcj36nFEwzfGuZdBO29G87g9sv
-         prqn5anyOw9dxRbZjlY2nlAMZ+qvBl0Gp15qOKKodKTFnP2BdDkv+LHfuNk6xJ5s2bFA
-         hTlmO33yMuM/a4NTN9qB77gXOqECdQ7gdXssNeCto+GwnS43Pim30NjLuFMB1b8Vcn/+
-         NC5Kq9RjGbE7ohj3eXaaAPF1FjcxYYxPDBbkCZMAKWyiSRcd9kdKTOQf9sj8OM60U3ls
-         GZNA==
-X-Gm-Message-State: AOAM533VznLw8vjnyovKEVVLTb/E9cG1jMEWGVnQzuYzJfW3eIYMPFh0
-        qcuJp1/AE5R2nPIciCuOj3HbCQ==
-X-Google-Smtp-Source: ABdhPJxps9GV+yRWGawxgG+Pz6I2lgGdZiPB+Mj7qyuiM5JY7RRCBXJ6BbqfIh9EzhnSj6om1UUuYg==
-X-Received: by 2002:a2e:97da:0:b0:253:c987:cb43 with SMTP id m26-20020a2e97da000000b00253c987cb43mr8381829ljj.473.1653144056354;
-        Sat, 21 May 2022 07:40:56 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id m4-20020a056512358400b0047255d21137sm1081811lfr.102.2022.05.21.07.40.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 May 2022 07:40:55 -0700 (PDT)
-Message-ID: <f5982143-bca5-79c8-7e0a-f37dd098d481@linaro.org>
-Date:   Sat, 21 May 2022 16:40:54 +0200
+        Sat, 21 May 2022 10:41:43 -0400
+Received: from sender4-pp-o94.zoho.com (sender4-pp-o94.zoho.com [136.143.188.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA10027FCB
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:41:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1653143152; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=KzRBCy6nuN+o2hvX7VXDJYETFntHoCoojNrRM9VSaWwbLoJ9MXDEdlf8JHmEXhDDbxR4NEbm+rfp9B42SUpwXHGFQZkLxuLbtFwdVgEfdmuSuCPQa+DXNHlDFkEHzRDbsuV3MrlpWhSVOfHHR2N9G0aIwz8ibqEb84nLnkJb8Oc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1653143152; h=Content-Type:Content-Transfer-Encoding:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=0o0p0h8Ax2NeemybyRFKBFg4kvyShrFo2MI2nwUZclc=; 
+        b=Re3TrzM22+rPOUwA+O9juEp/XlETyA3TKyqOn/YZLPKPAhl1zFUXLTNiizMsVbDrCCkwyVv3bbxvEGxi3GaK59c6PsVn208gOpSIpi6VgpvX8PVaieeO7d86HYRU1Oqsagcgye+D2+2Fhxe9B5vdu2CnfHKKVbzZgIodGwd3I4s=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=zohomail.com;
+        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
+        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653143152;
+        s=zm2022; d=zohomail.com; i=lchen.firstlove@zohomail.com;
+        h=Date:Date:From:From:To:To:Message-ID:In-Reply-To:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To:Cc;
+        bh=0o0p0h8Ax2NeemybyRFKBFg4kvyShrFo2MI2nwUZclc=;
+        b=FdrzD73CjWTFt+Hm6uB92L3xR+23nGpXxmDcny9Bndgv3qZdnMfCtJJQjhpKy2jI
+        8rfjSjMR6bNcNl3+BlMnB3ERdEzUZkkK3koWlNJUricaT74b1ZuwbB5O+k1VV6Y7fmE
+        fdw/lv4jNHtD20YoNce1xh8g9DlSDhCKXlhN5Qj4=
+Received: from mail.zoho.com by mx.zohomail.com
+        with SMTP id 1653143150983181.57000929052094; Sat, 21 May 2022 07:25:50 -0700 (PDT)
+Received: from  [45.12.140.94] by mail.zoho.com
+        with HTTP;Sat, 21 May 2022 07:25:50 -0700 (PDT)
+Date:   Sat, 21 May 2022 07:25:50 -0700
+From:   Li Chen <lchen.firstlove@zohomail.com>
+To:     "Mark Brown" <broonie@kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "linux-gpio" <linux-gpio@vger.kernel.org>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        "linux-arm-kernel" <linux-arm-kernel@lists.infradead.org>,
+        "Patrice Chotard" <patrice.chotard@foss.st.com>,
+        "linux-sunxi" <linux-sunxi@lists.linux.dev>,
+        "Liam Girdwood" <lgirdwood@gmail.com>,
+        "Jaroslav Kysela" <perex@perex.cz>,
+        "Takashi Iwai" <tiwai@suse.com>, "Chen-Yu Tsai" <wens@csie.org>,
+        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
+        "Samuel Holland" <samuel@sholland.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>
+Message-ID: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
+In-Reply-To: 
+Subject: [PATCH 0/4] Add regmap_field helpers for simple bit operations
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 3/4] dt-bindings: regulator: Add bindings for MT6332
- regulator
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, lgirdwood@gmail.com
-Cc:     broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220520133305.265310-1-angelogioacchino.delregno@collabora.com>
- <20220520133305.265310-4-angelogioacchino.delregno@collabora.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220520133305.265310-4-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
+Feedback-ID: rr08011226a0c92b0a8773c6508a06de8b0000498615caf2de6adef463dc6ad000c21eec5ddab3dbd9b221:zu08011227b19d2d40d37a8becfd63841c000034b6705f54b48ba1b5a2a1cf7cf960982e0544e860dd55949e:rf0801122c239725de1f0a6682d775822a000055882629dd4d26703f9f0ac12d296c5a81d1c3193b491674a3fa194ae69f:ZohoMail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022 15:33, AngeloGioacchino Del Regno wrote:
-> Add devicetree bindings for the regulators found in the MT6332 PMIC.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../bindings/regulator/mt6332-regulator.yaml  | 111 ++++++++++++++++++
->  1 file changed, 111 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/regulator/mt6332-regulator.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/regulator/mt6332-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6332-regulator.yaml
-> new file mode 100644
-> index 000000000000..51077a865dbe
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/regulator/mt6332-regulator.yaml
+From: Li Chen <lchen@ambarella.com>
 
-Same comments as your other patch,
+This series proposes to add simple bit operations for setting, clearing
+and testing specific bits with regmap_field.
 
-> @@ -0,0 +1,111 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/regulator/mt6332-regulator.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MT6332 Regulator from MediaTek Integrated
-> +
-> +maintainers:
-> +  - AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> +
-> +description: |
-> +  List of regulators provided by this controller. It is named
+Li Chen (4):
+  regmap: provide regmap_field helpers for simple bit operations
+  ASoC: sunxi: Use {regmap/regmap_field}_{set/clear}_bits helpers
+  pinctrl: bcm: Use regmap_field_{set/clear}_bits helpers
+  pinctrl: st: Switch to use regmap_field_test_bits
+
+ drivers/base/regmap/regmap.c          | 22 ++++++++
+ drivers/pinctrl/bcm/pinctrl-bcm6358.c |  2 +-
+ drivers/pinctrl/pinctrl-st.c          | 23 ++++----
+ include/linux/regmap.h                | 37 +++++++++++++
+ sound/soc/sunxi/sun4i-codec.c         | 78 +++++++++++----------------
+ 5 files changed, 99 insertions(+), 63 deletions(-)
+
+-- 
+2.36.1
 
 
-Best regards,
-Krzysztof
