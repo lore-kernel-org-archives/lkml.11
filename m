@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:17:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354422AbiEUDRb (ORCPT
+        id S1354432AbiEUDTd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 23:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37334 "EHLO
+        Fri, 20 May 2022 23:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232435AbiEUDR1 (ORCPT
+        with ESMTP id S232435AbiEUDT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 23:17:27 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0289B15F6EB;
-        Fri, 20 May 2022 20:17:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=rCj+2wuo0EKtgYohW5UYvrq91l37l8Auyai5P939bcM=; b=eY916wTpVdbWeSyhgS6/LM/EVg
-        wGG+DJlO2ME20eHlyKZ1rSFbo2UxJFW6ZOJkLo6JTl3S3pMkIFaZJobXGqWrMUJjRHaDNRZp1O72V
-        fgB+i+zMtpth7F6hz9e0BDQOTfprhqTqiHnnm5maU7jXpLBifY5UNBwu61c9kqVFpeCaAy8Idzdwc
-        0Vm1pIhRF63+enTN5uvxg4TWItiGj9GhsEeC8HzEq/PEcTIk5gnVZLd7MrqyBHHAY5Wk4aLJuxCka
-        UIhCprEjcqHp7MpKBnZYA4uCEbL744hKJJrQKoPIHQcOVwFeTL778qWcKUUNAU2l/9WcGZbdXrqRy
-        TIlF1rSw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nsFcI-00EKjX-IH; Sat, 21 May 2022 03:17:22 +0000
-Message-ID: <6671de03-c09c-bfaf-e06c-e45af70d4354@infradead.org>
-Date:   Fri, 20 May 2022 20:17:18 -0700
+        Fri, 20 May 2022 23:19:29 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FAA185421
+        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 20:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653103168; x=1684639168;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9c9L42cRhsFy+sI4JgX4qlagCOalIdDvsTA7PM413oc=;
+  b=FNFyKtDD67uKV1fvPNhPwBz3MiiwcsFbqz+68hg7M13da2IGtg7MIf47
+   INhrzot86KLilI2ANB1LOVAmq/VUtNkord1bR8A9MyW0urGykISDpAxNg
+   EaFdwLcQVbJM2SD935yp183sWYKlrJPpA0+Ivm2/88bCCsl+dcGHz76rF
+   KMd6G2Y3YW51WINHkfvpUbX+FkmwJKQEf7ezf8k6yM2w64to/y5fa+aQY
+   iclmnwSY02xadpzBVSKBF4XOlqd4xQ8Xu+I45OOwbtutIwoAqibeWkt9p
+   BdlgxJZyMZeOKHzBac1t0T1FlkAOrTjU+I5rH2aqUnacCx1t3ujRlEuMi
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="253313055"
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="253313055"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 20:19:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="674907929"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga002.fm.intel.com with ESMTP; 20 May 2022 20:19:27 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nsFeJ-0005rU-3O;
+        Sat, 21 May 2022 03:19:27 +0000
+Date:   Sat, 21 May 2022 11:18:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [congwang:sch_bpf 1/2] skb_map.c:undefined reference to
+ `kfree_skb_reason'
+Message-ID: <202205211111.evh04B2H-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: kbuild problem: ERROR: modpost: missing MODULE_LICENSE() in
- drivers/iio/afe/iio-rescale.o
-Content-Language: en-US
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>
-References: <18500f18-9cd5-a81c-4a55-14e999ed4496@infradead.org>
- <3ae306e0-c6c7-ed12-cacd-62b1c26dba3c@infradead.org>
-In-Reply-To: <3ae306e0-c6c7-ed12-cacd-62b1c26dba3c@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/congwang/linux.git sch_bpf
+head:   b03bbda26c041cf6e7593eadce50ef2fa4853a0c
+commit: eed3a0d4dabd4f8015c5d37232438c3176470a58 [1/2] bpf: introduce skb map
+config: arc-randconfig-r043-20220519 (https://download.01.org/0day-ci/archive/20220521/202205211111.evh04B2H-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/congwang/linux/commit/eed3a0d4dabd4f8015c5d37232438c3176470a58
+        git remote add congwang https://github.com/congwang/linux.git
+        git fetch --no-tags congwang sch_bpf
+        git checkout eed3a0d4dabd4f8015c5d37232438c3176470a58
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-On 5/20/22 20:08, Randy Dunlap wrote:
-> 
-> 
-> On 5/20/22 19:40, Randy Dunlap wrote:
->> Hi,
->>
->> In March I reported that a randconfig build complained:
->>
->> ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
->>
->> (https://lore.kernel.org/all/16509fb6-e40c-e31b-2c80-264c44b0beb9@infradead.org/)
->>
->> I am still seeing this problem so I tried to dig into it a bit.
->> However, I don't see why get_next_modinfo() and friends don't find the
->> MODULE_LICENSE() since it is in the iio-rescale.o file.
->>
->> (BTW, I see this build error on many different $ARCH [around 15 tested]
->> and with 2 different versions of GCC.)
->>
->> Q1: Is modpost checking both vmlinux and iio-rescale.o for modinfo license
->> strings?
->>
->> It looks like it is, because it appears (?) that modpost is looking at
->> drivers/iio/test/iio-test-rescale.o (<<<<< a kunit test, which is builtin
->> in my .config) and at drivers/iio/afe/iio-rescale.o (which is built as a
->> loadable module).
->>
->> Is this confusing modpost?
->> I renamed drivers/iio/afe/iio-rescale.c to afe-rescale.c and changed its
->> Makefile entry accordingly and the MODULE_LICENSE error goes away.
-> 
-> Oh well. This rename causes drivers/iio/test/iio-test-rescale.c to have
-> build errors, so that's not a solution, just some info...
+All errors (new ones prefixed by >>):
 
-and that was due to not updating drivers/iio/test/Makefile.
-When that is done, the missing MODULE_LICENSE() is back in afe-rescale.o.
-
-> 
->> Is this a modpost error or is kunit messing things up?
->>
->> thanks for looking.
-> 
+   arceb-elf-ld: kernel/bpf/skb_map.o: in function `kfree_skb':
+>> skb_map.c:(.text+0x11a): undefined reference to `kfree_skb_reason'
+>> arceb-elf-ld: skb_map.c:(.text+0x11a): undefined reference to `kfree_skb_reason'
+   arceb-elf-ld: kernel/bpf/skb_map.o: in function `skb_map_free':
+>> skb_map.c:(.text+0x2e8): undefined reference to `skb_rbtree_purge'
+>> arceb-elf-ld: skb_map.c:(.text+0x2e8): undefined reference to `skb_rbtree_purge'
+   arceb-elf-ld: kernel/bpf/skb_map.o: in function `skb_map_init':
+>> skb_map.c:(.init.text+0x6): undefined reference to `register_netdevice_notifier'
+>> arceb-elf-ld: skb_map.c:(.init.text+0x6): undefined reference to `register_netdevice_notifier'
 
 -- 
-~Randy
+0-DAY CI Kernel Test Service
+https://01.org/lkp
