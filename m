@@ -2,113 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 621B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 23:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F070C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 23:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346315AbiEUX24 (ORCPT
+        id S1347365AbiEUXh6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 19:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
+        Sat, 21 May 2022 19:37:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiEUX2x (ORCPT
+        with ESMTP id S231722AbiEUXh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 19:28:53 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C562547540;
-        Sat, 21 May 2022 16:28:50 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5aeb40.dynamic.kabel-deutschland.de [95.90.235.64])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 13DD861EA1928;
-        Sun, 22 May 2022 01:28:48 +0200 (CEST)
-Message-ID: <fd14c5e5-9635-7ef5-0bf4-438dfaea5361@molgen.mpg.de>
-Date:   Sun, 22 May 2022 01:28:47 +0200
+        Sat, 21 May 2022 19:37:57 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CE04E3BC
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 16:37:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653176276; x=1684712276;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uNdwsBXZQ3pVlCDw0YosBGzFAfKUwHZXTi+VNrgzFyk=;
+  b=ZppHrnQLdI1WJvMoSRZHjYs5E5n+eHKF5mMKalQPwV3Az0X6MWAZg/fP
+   N7EaCZOKcWm/1tc9NxdQeyLVdOoFrbJhr816sZsvv+nJxm7ZId8uohNol
+   +jb3wpf980lSIIBmQRKPOkTpTiecwzqoZs2s+O73QaAFVk1MXk29jutKV
+   abG06YtDzWwoBUI1u6Ji2DOyFx1XLIqxySkaFA75Dm+hieL2xS78H7ZB9
+   6Xc7sCE8d+TBJOMan/B3vlQr6TH0E07uqq95tnMJ3pdxvuKZ9MA+PrK5O
+   4/TpYZx3ZmqxSiDLRcYkfWWt/9UlBCG/3z/ICuANJQ3EsruGWvlK2ns2R
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="273047395"
+X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
+   d="scan'208";a="273047395"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 16:37:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
+   d="scan'208";a="558041800"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 21 May 2022 16:37:55 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nsYfS-0006iO-LM;
+        Sat, 21 May 2022 23:37:54 +0000
+Date:   Sun, 22 May 2022 07:36:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [congwang:sch_bpf 2/3] filter.c:undefined reference to
+ `bpf_skb_map_pop_proto'
+Message-ID: <202205220744.AyoIDr9q-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 15/20] ACPICA: executer/exsystem: Warn about sleeps
- greater than 10 ms
-Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bob Moore <robert.moore@intel.com>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <5578328.DvuYhMxLoT@kreacher> <4200238.ejJDZkT8p0@kreacher>
- <CAJZ5v0gWYZ_BSonhLGT7L4wPQvXLVyobPptE1Nx6PoNSGn4yXg@mail.gmail.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <CAJZ5v0gWYZ_BSonhLGT7L4wPQvXLVyobPptE1Nx6PoNSGn4yXg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Rafael,
+tree:   https://github.com/congwang/linux.git sch_bpf
+head:   9f6c12a2c218c56af7d37feeaf21c5b62a8192a0
+commit: 87b07af86004ccc8db9ee11e670f947e4178cd89 [2/3] net_sched: introduce eBPF based Qdisc
+config: csky-defconfig (https://download.01.org/0day-ci/archive/20220522/202205220744.AyoIDr9q-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/congwang/linux/commit/87b07af86004ccc8db9ee11e670f947e4178cd89
+        git remote add congwang https://github.com/congwang/linux.git
+        git fetch --no-tags congwang sch_bpf
+        git checkout 87b07af86004ccc8db9ee11e670f947e4178cd89
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Am 21.05.22 um 18:11 schrieb Rafael J. Wysocki:
-> On Mon, Apr 11, 2022 at 9:04 PM Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
->>
->> From: Paul Menzel <pmenzel@molgen.mpg.de>
->>
->> ACPICA commit 2a0d1d475e7ea1c815bee1e0692d81db9a7c909c
->>
->> Quick boottime is important, so warn about sleeps greater than 10 ms.
->>
->> Distribution Linux kernels reach initrd in 350 ms, so excessive delays
->> should be called out. 10 ms is chosen randomly, but three of such delays
->> would already make up ten percent of the boottime.
->>
->> Link: https://github.com/acpica/acpica/commit/2a0d1d47
->> Signed-off-by: Bob Moore <robert.moore@intel.com>
->> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> I have decided to revert this, because it spams logs with unuseful
-> warnings on many production systems.
+All errors (new ones prefixed by >>):
 
-Thank you for the information. Can you please give an example?
+   csky-linux-ld: net/core/filter.o: in function `lwt_xmit_func_proto':
+>> filter.c:(.text+0x896c): undefined reference to `bpf_skb_map_pop_proto'
+>> csky-linux-ld: filter.c:(.text+0x8970): undefined reference to `bpf_skb_map_push_proto'
 
-> Power management AML uses sleeps above 10 ms for PCI spec compliance
-> and polling is not useful in those cases.
-
-Can you please tell me what delays are used? Maybe we can increase the 
-threshold to the one required by the PCI spec?
-
-
-Kind regards,
-
-Paul
-
-
-> I will submit an analogous revert for upstream ACPICA.
-> 
->> ---
->>   exsystem.c |   10 ++++++++++
->>   1 file changed, 10 insertions(+)
->>
->> diff -Nurp linux.before_name/drivers/acpi/acpica/exsystem.c linux.after_name/drivers/acpi/acpica/exsystem.c
->> --- linux.before_name/drivers/acpi/acpica/exsystem.c    2022-04-01 18:26:54.958046947 +0200
->> +++ linux.after_name/drivers/acpi/acpica/exsystem.c     2022-04-01 18:26:51.760086923 +0200
->> @@ -170,6 +170,16 @@ acpi_status acpi_ex_system_do_sleep(u64
->>          acpi_ex_exit_interpreter();
->>
->>          /*
->> +        * Warn users about excessive sleep times, so ASL code can be improved to
->> +        * use polling or similar techniques.
->> +        */
->> +       if (how_long_ms > 10) {
->> +               ACPI_WARNING((AE_INFO,
->> +                             "Firmware issue: Excessive sleep time (%llu ms > 10 ms) in ACPI Control Method",
->> +                             how_long_us));
->> +       }
->> +
->> +       /*
->>           * For compatibility with other ACPI implementations and to prevent
->>           * accidental deep sleeps, limit the sleep time to something reasonable.
->>           */
->>
->>
->>
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
