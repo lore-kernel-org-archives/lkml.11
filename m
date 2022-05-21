@@ -2,149 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA38C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234778AbiEULe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        id S238901AbiEULgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 07:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348363AbiEULdx (ORCPT
+        with ESMTP id S230146AbiEULge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:33:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742462B26F;
-        Sat, 21 May 2022 04:33:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 053FAB81DAC;
-        Sat, 21 May 2022 11:33:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 258BBC385B8;
-        Sat, 21 May 2022 11:33:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653132800;
-        bh=wm9pcMgVu3P9v6Y+m3D8sP6eIQtacSxLPWXGB9NFpp8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CzhjF1B4xqpFKPKPxoXUgMzfeNrtddFy65rt4d/zzd9aifRb3hCUFe+Nl61Gb3p45
-         ZAZsVyGbEJj6g/xOflpWZzquwOiUf1obrMqDFb3tMP4Pl3haACPZXM5vJrb+0fa9TP
-         Ako/SI9aGAvM5KVkF8dfNJSteWKHhZxlCdFG71lyiMtp9l6mGDjcEhS0MI6LWymd+m
-         3YAe7+97Zv4ccESyDHfVBzdbZJGaiX5Mr1wlopld5OEuc9xK333O3oXGfD0j/yLTKK
-         6t+9nv0INskWQVbDtL7YM7n84fI0kMxBNHW9lZcWWiPzR750urqZYO0eA62JqYDH22
-         dXTiBYghMP/Pw==
-From:   Chao Yu <chao@kernel.org>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        chao@kernel.org
-Subject: [RFC PATCH] scsi: support packing multi-segment in UNMAP command
-Date:   Sat, 21 May 2022 19:32:59 +0800
-Message-Id: <20220521113259.3953757-1-chao@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Sat, 21 May 2022 07:36:34 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA85531211;
+        Sat, 21 May 2022 04:36:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=ms6iDCsEC5Jy/8ZWf+DwOUqOYW
+        um3RS/D1p7o6KTtaDnvE7NM+pTA3LjW4bcN64ZvUP7qHe4drGGacioBpAkeEZHZ5m9s4BAbyRsKyU
+        CZvhy+6cxeSR9GTvVHRhreYYGh2a0QW8CKdCnSX5ACtIpyfQaEjMUYmckpPxCuyA6nGnLuGpU9yJl
+        /7LD5PyoU66+lKuPh71ArfCariiW5to9Yxzcc5kMMMV4CYG7AiT8DPi3haXh1QRWvH0c2RBj/q3yw
+        ZqKi+f1dNtbyG6EoAvicZbubJy1vlzRNreBq9rz0u8/6CGl5ni6Fzmai35vngJsNxUv9rpTfNYRci
+        8ePW1pzw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nsNPK-00GP6m-Ie; Sat, 21 May 2022 11:36:30 +0000
+Date:   Sat, 21 May 2022 04:36:30 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Logan Gunthorpe <logang@deltatee.com>
+Cc:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>
+Subject: Re: [PATCH v1 01/15] md/raid5-log: Drop extern decorators for
+ function prototypes
+Message-ID: <YojOvutsFv2+jaBS@infradead.org>
+References: <20220519191311.17119-1-logang@deltatee.com>
+ <20220519191311.17119-2-logang@deltatee.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519191311.17119-2-logang@deltatee.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As SPEC describes that it can support unmapping one or more LBA range
-in single UNMAP command, however, previously we only pack one LBA
-range in UNMAP command by default no matter device gives the block
-limits that says it can support in-batch UNMAP.
+Looks good:
 
-This patch tries to set max_discard_segments config according to block
-limits of device, and supports in-batch UNMAP.
-
-Signed-off-by: Chao Yu <chao@kernel.org>
----
- drivers/scsi/sd.c | 30 +++++++++++++++++++-----------
- drivers/scsi/sd.h |  1 +
- 2 files changed, 20 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index dc6e55761fd1..be070457c78d 100644
---- a/drivers/scsi/sd.c
-+++ b/drivers/scsi/sd.c
-@@ -790,6 +790,7 @@ static void sd_config_discard(struct scsi_disk *sdkp, unsigned int mode)
- 	q->limits.discard_granularity =
- 		max(sdkp->physical_block_size,
- 		    sdkp->unmap_granularity * logical_block_size);
-+	blk_queue_max_discard_segments(q, sdkp->max_block_desc_count);
- 	sdkp->provisioning_mode = mode;
- 
- 	switch (mode) {
-@@ -837,10 +838,10 @@ static blk_status_t sd_setup_unmap_cmnd(struct scsi_cmnd *cmd)
- {
- 	struct scsi_device *sdp = cmd->device;
- 	struct request *rq = scsi_cmd_to_rq(cmd);
-+	struct bio *bio;
- 	struct scsi_disk *sdkp = scsi_disk(rq->q->disk);
--	u64 lba = sectors_to_logical(sdp, blk_rq_pos(rq));
--	u32 nr_blocks = sectors_to_logical(sdp, blk_rq_sectors(rq));
--	unsigned int data_len = 24;
-+	unsigned short segments = blk_rq_nr_discard_segments(rq);
-+	unsigned int data_len = 8 + 16 * segments, i = 0;
- 	char *buf;
- 
- 	rq->special_vec.bv_page = mempool_alloc(sd_page_pool, GFP_ATOMIC);
-@@ -853,13 +854,20 @@ static blk_status_t sd_setup_unmap_cmnd(struct scsi_cmnd *cmd)
- 
- 	cmd->cmd_len = 10;
- 	cmd->cmnd[0] = UNMAP;
--	cmd->cmnd[8] = 24;
-+	cmd->cmnd[8] = data_len;
- 
- 	buf = bvec_virt(&rq->special_vec);
--	put_unaligned_be16(6 + 16, &buf[0]);
--	put_unaligned_be16(16, &buf[2]);
--	put_unaligned_be64(lba, &buf[8]);
--	put_unaligned_be32(nr_blocks, &buf[16]);
-+	put_unaligned_be16(6 + 16 * segments, &buf[0]);
-+	put_unaligned_be16(16 * segments, &buf[2]);
-+
-+	__rq_for_each_bio(bio, rq) {
-+		u64 lba = sectors_to_logical(sdp, bio->bi_iter.bi_sector);
-+		u32 nr_blocks = sectors_to_logical(sdp, bio_sectors(bio));
-+
-+		put_unaligned_be64(lba, &buf[8 + 16 * i]);
-+		put_unaligned_be32(nr_blocks, &buf[8 + 16 * i + 8]);
-+		i++;
-+	}
- 
- 	cmd->allowed = sdkp->max_retries;
- 	cmd->transfersize = data_len;
-@@ -2859,7 +2867,7 @@ static void sd_read_block_limits(struct scsi_disk *sdkp)
- 	sdkp->opt_xfer_blocks = get_unaligned_be32(&buffer[12]);
- 
- 	if (buffer[3] == 0x3c) {
--		unsigned int lba_count, desc_count;
-+		unsigned int lba_count;
- 
- 		sdkp->max_ws_blocks = (u32)get_unaligned_be64(&buffer[36]);
- 
-@@ -2867,9 +2875,9 @@ static void sd_read_block_limits(struct scsi_disk *sdkp)
- 			goto out;
- 
- 		lba_count = get_unaligned_be32(&buffer[20]);
--		desc_count = get_unaligned_be32(&buffer[24]);
-+		sdkp->max_block_desc_count = get_unaligned_be32(&buffer[24]);
- 
--		if (lba_count && desc_count)
-+		if (lba_count && sdkp->max_block_desc_count)
- 			sdkp->max_unmap_blocks = lba_count;
- 
- 		sdkp->unmap_granularity = get_unaligned_be32(&buffer[28]);
-diff --git a/drivers/scsi/sd.h b/drivers/scsi/sd.h
-index 0a33a4b68ffb..e396bcaf76ca 100644
---- a/drivers/scsi/sd.h
-+++ b/drivers/scsi/sd.h
-@@ -99,6 +99,7 @@ struct scsi_disk {
- 	u32		opt_xfer_blocks;
- 	u32		max_ws_blocks;
- 	u32		max_unmap_blocks;
-+	u32		max_block_desc_count;
- 	u32		unmap_granularity;
- 	u32		unmap_alignment;
- 	u32		index;
--- 
-2.25.1
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
