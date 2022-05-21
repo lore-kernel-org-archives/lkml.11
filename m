@@ -2,134 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8148C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 05:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 05:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348056AbiEUFbl (ORCPT
+        id S1353372AbiEUFjo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 01:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        Sat, 21 May 2022 01:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbiEUFbh (ORCPT
+        with ESMTP id S229911AbiEUFjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 01:31:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7229554A7
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 22:31:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653111094; x=1684647094;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pp3WYBxYIXv2CWVlcuu3e3VMZaw3NZhSkcaGgRnzNKM=;
-  b=c8p4X23GYH3kzKJWVNWtvbv1o26LMGlmhVUL4QCRcNIn9Lgwomv7ZM2F
-   BGmKfFxoisEd3HLDZ8+3RosvngVENT4aVf+w/I6oI8ItIEhQ3TXVHKORw
-   4Vo3L4qawJ007iV+k7aO7ik77qJx/c2gnsVOHCTo3ujNnfbeHrhL1usc6
-   beX17McVfLHaRHCB5LcIwFBy2XCXGIGGpfcPO/d3KAxQLVP5byUuPJjH0
-   yXRbFsekF0mKslCvkhy62U0CvyL0JiyG6z9h3RVYU0Qslnj0mFkhyLL8N
-   1YOC/ylGwRJnelU5CmsygaP1gIlAfoRBiHedqljJm6Ocg+8pv3O6oo5oZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="254861577"
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="254861577"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 22:31:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="607337678"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 20 May 2022 22:31:30 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nsHi6-0005yM-1w;
-        Sat, 21 May 2022 05:31:30 +0000
-Date:   Sat, 21 May 2022 13:31:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peng Wu <wupeng58@huawei.com>, maz@kernel.org, james.morse@arm.com,
-        alexandru.elisei@arm.com, catalin.marinas@arm.com, will@kernel.org
-Cc:     kbuild-all@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        liwei391@huawei.com, yuehaibing@huawei.com, wupeng58@huawei.com
-Subject: Re: [PATCH] KVM: arm64: cancel the return value check of
- kvm_arm_init_sve()
-Message-ID: <202205211307.MWDiBNQS-lkp@intel.com>
-References: <20220520084911.44253-1-wupeng58@huawei.com>
+        Sat, 21 May 2022 01:39:42 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F6F17EC28;
+        Fri, 20 May 2022 22:39:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=FLFe3GohEWKBhG78tZp73MhkabMfxSWSPxhcTqaSvE4=; b=YojUZnpfEW7pmWM4ukpYO6Hwxf
+        Bcd2/zNxywrOj/RN4RJLuUfRSQiQBYXZ9UuSQG+bLHmKl2ZugMvxVWXAID0nb3IAIZPdxf8/sGpHr
+        ODMWi25za2Fr8EzabzlZpCoQ0ueKyBBgzbQDSNd5rg4OBp6M7VYr0GsmKri8hwYl4R6mgvUYSvZVG
+        +UFySYLRaDmaqsyOmYr9CLx3++F+PGIYMf60HNu++AX9e/o27JDdxYios5y07LtcoD9iIY26JRH9T
+        jDt8+HPAe4jHrpfbYbnGON1R6G9gqwq5cAUuVaW9VTjoWg7kr9m/vIhDO6gJFHYqJhRtBJEIHUcMf
+        MpwvHWDg==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nsHpw-00EP3i-M8; Sat, 21 May 2022 05:39:36 +0000
+Message-ID: <fbaf6d8e-eb69-8b3e-b2b8-8c50384ac417@infradead.org>
+Date:   Fri, 20 May 2022 22:39:31 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220520084911.44253-1-wupeng58@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: kbuild problem: ERROR: modpost: missing MODULE_LICENSE() in
+ drivers/iio/afe/iio-rescale.o
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Liam Beguin <liambeguin@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>
+References: <18500f18-9cd5-a81c-4a55-14e999ed4496@infradead.org>
+ <3ae306e0-c6c7-ed12-cacd-62b1c26dba3c@infradead.org>
+ <6671de03-c09c-bfaf-e06c-e45af70d4354@infradead.org>
+ <6601a387-de9a-a0d0-11b5-01e0cfa75657@infradead.org>
+ <CAK7LNASMOqfjHsE82ErjeYOJjxHgD_HZcm1VUcESORS6UridWw@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CAK7LNASMOqfjHsE82ErjeYOJjxHgD_HZcm1VUcESORS6UridWw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peng,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on kvmarm/next]
-[also build test ERROR on v5.18-rc7]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Peng-Wu/KVM-arm64-cancel-the-return-value-check-of-kvm_arm_init_sve/20220520-165501
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm.git next
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220521/202205211307.MWDiBNQS-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/4f7983bee8e912289335be279fb1f0a0abd6b31b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Peng-Wu/KVM-arm64-cancel-the-return-value-check-of-kvm_arm_init_sve/20220520-165501
-        git checkout 4f7983bee8e912289335be279fb1f0a0abd6b31b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> arch/arm64/kvm/reset.c:46:6: error: conflicting types for 'kvm_arm_init_sve'; have 'void(void)'
-      46 | void kvm_arm_init_sve(void)
-         |      ^~~~~~~~~~~~~~~~
-   In file included from include/linux/kvm_host.h:45,
-                    from arch/arm64/kvm/reset.c:13:
-   arch/arm64/include/asm/kvm_host.h:70:5: note: previous declaration of 'kvm_arm_init_sve' with type 'int(void)'
-      70 | int kvm_arm_init_sve(void);
-         |     ^~~~~~~~~~~~~~~~
 
 
-vim +46 arch/arm64/kvm/reset.c
+On 5/20/22 21:14, Masahiro Yamada wrote:
+> On Sat, May 21, 2022 at 12:51 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>>
+>> Ok, one more.
+>> [also adding Liam here]
+>>
+>> On 5/20/22 20:17, Randy Dunlap wrote:
+>>>
+>>>
+>>> On 5/20/22 20:08, Randy Dunlap wrote:
+>>>>
+>>>>
+>>>> On 5/20/22 19:40, Randy Dunlap wrote:
+>>>>> Hi,
+>>>>>
+>>>>> In March I reported that a randconfig build complained:
+>>>>>
+>>>>> ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
+>>>>>
+>>>>> (https://lore.kernel.org/all/16509fb6-e40c-e31b-2c80-264c44b0beb9@infradead.org/)
+>>>>>
+>>>>> I am still seeing this problem so I tried to dig into it a bit.
+>>>>> However, I don't see why get_next_modinfo() and friends don't find the
+>>>>> MODULE_LICENSE() since it is in the iio-rescale.o file.
+>>>>>
+>>>>> (BTW, I see this build error on many different $ARCH [around 15 tested]
+>>>>> and with 2 different versions of GCC.)
+>>>>>
+>>>>> Q1: Is modpost checking both vmlinux and iio-rescale.o for modinfo license
+>>>>> strings?
+>>>>>
+>>>>> It looks like it is, because it appears (?) that modpost is looking at
+>>>>> drivers/iio/test/iio-test-rescale.o (<<<<< a kunit test, which is builtin
+>>>>> in my .config) and at drivers/iio/afe/iio-rescale.o (which is built as a
+>>>>> loadable module).
+>>>>>
+>>>>> Is this confusing modpost?
+>>>>> I renamed drivers/iio/afe/iio-rescale.c to afe-rescale.c and changed its
+>>>>> Makefile entry accordingly and the MODULE_LICENSE error goes away.
+>>>>
+>>>> Oh well. This rename causes drivers/iio/test/iio-test-rescale.c to have
+>>>> build errors, so that's not a solution, just some info...
+>>>
+>>> and that was due to not updating drivers/iio/test/Makefile.
+>>> When that is done, the missing MODULE_LICENSE() is back in afe-rescale.o.
+>>>
+>>>>
+>>>>> Is this a modpost error or is kunit messing things up?
+>>>>>
+>>>>> thanks for looking.
+>>
+>> Does this look OK? It allows afe/iio-rescale.o to build XOR
+>> test/iio-rescale.o (not both of them).
+>>
+>> --- a/drivers/iio/test/Kconfig
+>> +++ b/drivers/iio/test/Kconfig
+>> @@ -6,7 +6,7 @@
+>>  # Keep in alphabetical order
+>>  config IIO_RESCALE_KUNIT_TEST
+>>         bool "Test IIO rescale conversion functions"
+>> -       depends on KUNIT=y && !IIO_RESCALE
+>> +       depends on KUNIT=y && IIO_RESCALE=n
+>>         default KUNIT_ALL_TESTS
+>>         help
+>>           If you want to run tests on the iio-rescale code say Y here.
+>>
+>>
+>> --
+>> ~Randy
+> 
+> 
+> 
+> As you may have already noticed,
+> the root cause is drivers/iio/test/Makefile
+> 
+> obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o ../afe/iio-rescale.o
+> 
+> 
+> 
+> For the combination of
+> CONFIG_IIO_RESCALE=m
+> CONFIG_IIO_RESCALE_KUNIT_TEST=y,
+> 
+> drivers/iio/afe/iio-rescale.o is built twice;
+> as modular by drivers/iio/afe/Makefile, and
+> as built-in by drivers/iio/test/Makefile.
+> 
+> That's why MODULE_LICENSE() is lost.
+> 
+> 
+> I think your solution will work
+> although this Makefile is not recommended.
 
-    45	
-  > 46	void kvm_arm_init_sve(void)
-    47	{
-    48		if (system_supports_sve()) {
-    49			kvm_sve_max_vl = sve_max_virtualisable_vl();
-    50	
-    51			/*
-    52			 * The get_sve_reg()/set_sve_reg() ioctl interface will need
-    53			 * to be extended with multiple register slice support in
-    54			 * order to support vector lengths greater than
-    55			 * VL_ARCH_MAX:
-    56			 */
-    57			if (WARN_ON(kvm_sve_max_vl > VL_ARCH_MAX))
-    58				kvm_sve_max_vl = VL_ARCH_MAX;
-    59	
-    60			/*
-    61			 * Don't even try to make use of vector lengths that
-    62			 * aren't available on all CPUs, for now:
-    63			 */
-    64			if (kvm_sve_max_vl < sve_max_vl())
-    65				pr_warn("KVM: SVE vector length for guests limited to %u bytes\n",
-    66					kvm_sve_max_vl);
-    67		}
-    68	}
-    69	
+Yeah, I don't care for how that is done either.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+~Randy
