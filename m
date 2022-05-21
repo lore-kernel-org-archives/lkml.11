@@ -2,54 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F318FC38A05
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68BB2C38A2B
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357012AbiEULYL (ORCPT
+        id S1355931AbiEULWa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
+        Sat, 21 May 2022 07:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354797AbiEULOB (ORCPT
+        with ESMTP id S1354922AbiEULM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:14:01 -0400
+        Sat, 21 May 2022 07:12:57 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743E412B01F;
-        Sat, 21 May 2022 04:12:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF46D5A086;
+        Sat, 21 May 2022 04:12:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=Jt4fa4YJrVj8M3pPplByGC4sCX+AxOeZAa6Dq52fmPQ=;
-  b=mcuS3coBhVGW3U5Ek0P5OMCciiBMFoRJuaa4h0PzR7tKhMKTD6DKTYJA
-   gH2ExqTNaA2kD2qvVyF2ypsQc4bT/AsGTPGvGxrmiq2k3n7K3k0VY6DY3
-   HJ2bkVD6JyKHV29V/9oUk/kSCgfu77g+nkuvxbqsYX81+9mPdPiQfdpAe
-   s=;
+  bh=w7hJktkYy1nPJm1PuXRlTI+vaMUH9n0G0hCiI9rXtb4=;
+  b=XPY41ZCIl9pjXL/9xxvT7DoNQpIU82DFg6/UwKomvLRcXWeKb+9iwftm
+   xBppXj9wesweEz44aVLxLVmM6+lpSHw4gJqQ7kez8fQ67+LJCs4WRE5iE
+   anR5WEImHDCMP4uikqOZPYNUuLsZRIsWScv877cJEqo2qEVoecqoPFZF1
+   U=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727992"
+   d="scan'208";a="14727980"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:07 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:04 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-s390@vger.kernel.org,
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org, linux-xfs@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] s390/bpf: fix typo in comment
-Date:   Sat, 21 May 2022 13:11:34 +0200
-Message-Id: <20220521111145.81697-84-Julia.Lawall@inria.fr>
+Subject: [PATCH] xfs: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:22 +0200
+Message-Id: <20220521111145.81697-72-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,20 +50,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- arch/s390/net/bpf_jit_comp.c |    2 +-
+ fs/xfs/libxfs/xfs_symlink_remote.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/s390/net/bpf_jit_comp.c b/arch/s390/net/bpf_jit_comp.c
-index aede9a3ca3f7..af35052d06ed 100644
---- a/arch/s390/net/bpf_jit_comp.c
-+++ b/arch/s390/net/bpf_jit_comp.c
-@@ -1809,7 +1809,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
+diff --git a/fs/xfs/libxfs/xfs_symlink_remote.c b/fs/xfs/libxfs/xfs_symlink_remote.c
+index f0b38f4aba80..8b9bd178a487 100644
+--- a/fs/xfs/libxfs/xfs_symlink_remote.c
++++ b/fs/xfs/libxfs/xfs_symlink_remote.c
+@@ -213,7 +213,7 @@ xfs_symlink_shortform_verify(
+ 
  	/*
- 	 * Three initial passes:
- 	 *   - 1/2: Determine clobbered registers
--	 *   - 3:   Calculate program size and addrs arrray
-+	 *   - 3:   Calculate program size and addrs array
+ 	 * Zero length symlinks should never occur in memory as they are
+-	 * never alllowed to exist on disk.
++	 * never allowed to exist on disk.
  	 */
- 	for (pass = 1; pass <= 3; pass++) {
- 		if (bpf_jit_prog(&jit, fp, extra_pass, stack_depth)) {
+ 	if (!size)
+ 		return __this_address;
 
