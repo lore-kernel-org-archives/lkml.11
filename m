@@ -2,66 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B511FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354797AbiEUNOa (ORCPT
+        id S1354882AbiEUNOh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 09:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
+        Sat, 21 May 2022 09:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354370AbiEUNOG (ORCPT
+        with ESMTP id S1353316AbiEUNN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 09:14:06 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A60C38D86
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:05 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id y41so9852922pfw.12
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:05 -0700 (PDT)
+        Sat, 21 May 2022 09:13:58 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D735FF3C
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:51 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso13641284pjj.4
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:13:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/YxdBnzui3ni5Jh3oFs5foUUYY4daAUO1PEkpPdCqlo=;
-        b=cK2xhVsGyV8VicAIx7RO1hnU738yQyl0C95qeHyJMhTXaHhYmXRvaUDq7GkJrXHDDU
-         VaD71U3BRjiWyy7w5zQcGOdAVS10yh3fiGzlSCLHdGkGLCdTJjbzcEJKqZ3Jv7eAh1qZ
-         PP6C/YIf5kG4pjSPFWMoCWcD0OwN2/+s1R3DH8DYBuQt5nr44+ElZ80GyCfKmgZ5V6mq
-         /STJXr1jbJcSGOe95mHhXItNuhNKIuNltjLHBv9T/pw90dPdgx5pk/wM3FdEv4C4V0EO
-         in9Q1ZrWW/+JccujTvceUy39LYWT6fb3Tw0l/xcl/q9l7zvWdC84ENEPpcr0kzWfMpPT
-         K+Iw==
+        bh=URPrkUOTksZy0vkIOlXm6I32VTQjSzL208bMcPxmSHk=;
+        b=MxywOSFHz7PZ/XnD//EDP0QUHLfj+as9iHe+yiq4nk06+24WLMwUQcJ27b5V2I/xsL
+         tAISylV4H1lBAdvOk9R41xYs6l5RrJfv5iBxwFXtA7wk7oXbPgB/YdVNQ5p6XaB1bEon
+         gBx8Yj/1ssUEJsUF4W4RBm0g977FZrkapO1+0Xwv+H9drf/J+lB7gCQbxd+zPdWcSlys
+         uClIymNljdApPgJ6zSv2I4GYZP34o1VUqM33Botm50uW4o/7kEH12NsN4fnS4woK3aQI
+         7Mi4Ec8pQWSQwgqWFw7DrCTWhBQI8Lfy6OhoS6O72clVydI7yB4fj5CZFakrtgv8OsoM
+         lq4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/YxdBnzui3ni5Jh3oFs5foUUYY4daAUO1PEkpPdCqlo=;
-        b=f2RGzWIysP8dsOJr9L8LXtKDzLg04lAB1kPFiOS9o4rOiSu/aLS5HaoDRoS3oh0lIl
-         j+9TeM0KKDbG1jQIWN8Q8KpLWqSY/3MhfE8cL1OZwKdYKrKgtCzKtWmGwrGoOQTA2+9H
-         wmFkHuXh+qKPWqxCpN2jf2/dmQ58qaFqCODOeL2cIhc1WBCb2lUNvEKZC/dhkFxptpm2
-         nOBVp8t8XhzWjd8SAe2P8zziIDQ4mQIytgdn8i5SaXUi3xTqP/zNEHD7LAOyDO177/VG
-         9AnE1T187abZOCWLdVQSOR4wqQs3IziVOW0sDEIaalsCmdLrvUU1sQdmCjf+/0UgyXmD
-         QdRQ==
-X-Gm-Message-State: AOAM5322k5XKrvuo31wfp1b+MgNhgoLxRhYcbwkm5FCeswCGESmzL/C/
-        s6UhRE2gWXTDzCp36XMBUfy6VtHFrMmvOA==
-X-Google-Smtp-Source: ABdhPJyLWt4gX8XuEVkhq42WgdF3C0m9EL1l6FbEi/bqSXoDHDApDfOlBx9NvZ64lxpBhABsJYf9BQ==
-X-Received: by 2002:a05:6a00:e8e:b0:518:287c:ce82 with SMTP id bo14-20020a056a000e8e00b00518287cce82mr14806077pfb.4.1653138844368;
-        Sat, 21 May 2022 06:14:04 -0700 (PDT)
+        bh=URPrkUOTksZy0vkIOlXm6I32VTQjSzL208bMcPxmSHk=;
+        b=aokrMdb/H/lyeypS36v9A4TGie7tVbnYjvmyQHAZpDNovyFpbVWAXIPrTKqVGBrn5e
+         V3Y0ioF5RHPhhfI/OwXeqdDnbSkSf79PD8spCATXNs8ikf4vwCmUIDzv76E2kT1V9ZWv
+         l35xDnXmvC4Xvi9NhGxxZNC7L8UXzLnRbsYwYaU7oAdL1Rzufanb9TOVxltBXVZOrPfD
+         rNEmttN21C9pry6DY9zqzuCzfmmzp7JhZzowJH7CPKpvg7AKmUBKx62RXtTx4Pxinm3V
+         SdBhxvFRKFJb77PnbmOlnnojJ8BqCkM0xgTWjku/Hz7OF03FOfJkSQn81N9NflHzsg6Q
+         mq1Q==
+X-Gm-Message-State: AOAM530xnPIzzHMUSHn8nhbs0pGQXamLqYhCHGSfg2lehyFLSvsogfuD
+        1/p56trMiXo0rHr7T/x41U/m/Jz28pnwAw==
+X-Google-Smtp-Source: ABdhPJycrrEqvaylteUpNBdePlGKsQ4p/h0pFbpeM860AzJGdXaRGgOhQLbqf3o8ZIZTX/pn7UvPPQ==
+X-Received: by 2002:a17:902:7c8c:b0:161:f5b4:9aa6 with SMTP id y12-20020a1709027c8c00b00161f5b49aa6mr7028272pll.79.1653138830133;
+        Sat, 21 May 2022 06:13:50 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id h3-20020a170902748300b00161929fb1adsm1573706pll.54.2022.05.21.06.14.03
+        by smtp.gmail.com with ESMTPSA id m5-20020a654385000000b003c14af5062csm1470295pgp.68.2022.05.21.06.13.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 06:14:03 -0700 (PDT)
+        Sat, 21 May 2022 06:13:49 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Openrisc <openrisc@lists.librecores.org>,
         Stafford Horne <shorne@gmail.com>,
+        Andrey Bacherov <bandvig@mail.ru>,
         Jonas Bonn <jonas@southpole.se>,
         Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH v3 08/13] openrisc/traps: Remove die_if_kernel function
-Date:   Sat, 21 May 2022 22:13:18 +0900
-Message-Id: <20220521131323.631209-9-shorne@gmail.com>
+        Randy Dunlap <rdunlap@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Chris Down <chris@chrisdown.name>
+Subject: [PATCH v3 04/13] openrisc: Add syscall details to emergency syscall debugging
+Date:   Sat, 21 May 2022 22:13:14 +0900
+Message-Id: <20220521131323.631209-5-shorne@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220521131323.631209-1-shorne@gmail.com>
 References: <20220521131323.631209-1-shorne@gmail.com>
@@ -71,40 +73,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This was noticed when I saw this warning:
+When bringing linux on the or1k Marocchino we ran into issues starting
+init.  This patch adds the syscall number and return address to
+assist tracing syscalls even before strace is able to be used.
 
-    arch/openrisc/kernel/traps.c:234:6: warning: no previous prototype for 'die_if_kernel' [-Wmissing-prototypes]
-      234 | void die_if_kernel(const char *str, struct pt_regs *regs, long err)
-	  |      ^~~~~~~~~~~~~
+By default this is all disabled but a developer could adjust the ifdef
+to enable debugging.
 
-The die_if_kernel function is not used in the OpenRISC port so remove
-it.
-
+Cc: Andrey Bacherov <bandvig@mail.ru>
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/openrisc/kernel/traps.c | 9 ---------
- 1 file changed, 9 deletions(-)
+ arch/openrisc/kernel/entry.S | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/arch/openrisc/kernel/traps.c b/arch/openrisc/kernel/traps.c
-index 9e0937eb31ca..99cd2e6f8873 100644
---- a/arch/openrisc/kernel/traps.c
-+++ b/arch/openrisc/kernel/traps.c
-@@ -235,15 +235,6 @@ void __noreturn die(const char *str, struct pt_regs *regs, long err)
- 	make_task_dead(SIGSEGV);
- }
+diff --git a/arch/openrisc/kernel/entry.S b/arch/openrisc/kernel/entry.S
+index 3ca1b1f490b9..54a87bba35ca 100644
+--- a/arch/openrisc/kernel/entry.S
++++ b/arch/openrisc/kernel/entry.S
+@@ -601,7 +601,7 @@ UNHANDLED_EXCEPTION(_vector_0xb00,0xb00)
+  */
  
--/* This is normally the 'Oops' routine */
--void die_if_kernel(const char *str, struct pt_regs *regs, long err)
--{
--	if (user_mode(regs))
--		return;
--
--	die(str, regs, err);
--}
--
- void unhandled_exception(struct pt_regs *regs, int ea, int vector)
- {
- 	printk("Unable to handle exception at EA =0x%x, vector 0x%x",
+ _string_syscall_return:
+-	.string "syscall return %ld \n\r\0"
++	.string "syscall r9:0x%08x -> syscall(%ld) return %ld\0"
+ 	.align 4
+ 
+ ENTRY(_sys_call_handler)
+@@ -679,15 +679,25 @@ _syscall_return:
+ _syscall_debug:
+ 	l.movhi r3,hi(_string_syscall_return)
+ 	l.ori   r3,r3,lo(_string_syscall_return)
+-	l.ori   r27,r0,1
++	l.ori   r27,r0,2
+ 	l.sw    -4(r1),r27
+ 	l.sw    -8(r1),r11
+-	l.addi  r1,r1,-8
++	l.lwz	r29,PT_ORIG_GPR11(r1)
++	l.sw    -12(r1),r29
++	l.lwz	r29,PT_GPR9(r1)
++	l.sw    -16(r1),r29
+ 	l.movhi r27,hi(_printk)
+ 	l.ori   r27,r27,lo(_printk)
+ 	l.jalr  r27
+-	 l.nop
+-	l.addi  r1,r1,8
++	 l.addi  r1,r1,-16
++	l.addi  r1,r1,16
++#endif
++#if 0
++_syscall_show_regs:
++	l.movhi r27,hi(show_registers)
++	l.ori   r27,r27,lo(show_registers)
++	l.jalr  r27
++	 l.or	r3,r1,r1
+ #endif
+ 
+ _syscall_check_trace_leave:
 -- 
 2.31.1
 
