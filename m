@@ -2,94 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F718C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 03:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354425AbiEUDI6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 23:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
+        id S239538AbiEUDLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 20 May 2022 23:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbiEUDIy (ORCPT
+        with ESMTP id S239550AbiEUDLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 23:08:54 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D185815E61A;
-        Fri, 20 May 2022 20:08:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=GxNkNtUv6N3Tj2YSbc6Q95yX7yWRN2SSYpLlOny+k3w=; b=LvCw6ToyXw4MKse/VNChJdugHE
-        2BNemmkXG/9p9KPM3Je0Q4KPOtpd5VEby5fDaWrr8Jf3adgdRGEbQlzoGPPJH7RDKfYDPC5PCKonr
-        Zef6/lHQKmgSBZduaaq/ROYLdNJNDznXMWTy/CaXUNzmVlPvOBkuR23LFBItdOFxE2ZhBrprjddCI
-        WSflXL3NQb0O5CdQWeuEQt6G9O2113/wvJ7/K7L0MJeRU+C1GjqRGKnk/2/S5RDWNCKeVebt1dfWJ
-        5VkmfGFwmiOmyBIDQA8hfb+f6p0F+vdgElDJG7k0uBE3Hs0BNOV1cArHs8sadeiy+cqNw/eLvuc6Q
-        CBJQMCQw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nsFU1-00EKVz-7v; Sat, 21 May 2022 03:08:49 +0000
-Message-ID: <3ae306e0-c6c7-ed12-cacd-62b1c26dba3c@infradead.org>
-Date:   Fri, 20 May 2022 20:08:43 -0700
+        Fri, 20 May 2022 23:11:01 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5EB1583B;
+        Fri, 20 May 2022 20:10:59 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L4pVz44DVzhYx0;
+        Sat, 21 May 2022 11:10:19 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 21 May
+ 2022 11:10:57 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <Pierre.Gondois@arm.com>, <linux-pm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
+Subject: [PATCH -next] cpufreq: CPPC: Fix build error without CONFIG_ACPI_CPPC_CPUFREQ_FIE
+Date:   Sat, 21 May 2022 11:24:38 +0800
+Message-ID: <20220521032438.2504155-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: kbuild problem: ERROR: modpost: missing MODULE_LICENSE() in
- drivers/iio/afe/iio-rescale.o
-Content-Language: en-US
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>
-References: <18500f18-9cd5-a81c-4a55-14e999ed4496@infradead.org>
-In-Reply-To: <18500f18-9cd5-a81c-4a55-14e999ed4496@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+If CONFIG_ACPI_CPPC_CPUFREQ_FIE is not set, building fails:
 
+drivers/cpufreq/cppc_cpufreq.c: In function ‘populate_efficiency_class’:
+drivers/cpufreq/cppc_cpufreq.c:584:2: error: ‘cppc_cpufreq_driver’ undeclared (first use in this function); did you mean ‘cpufreq_driver’?
+  cppc_cpufreq_driver.register_em = cppc_cpufreq_register_em;
+  ^~~~~~~~~~~~~~~~~~~
+  cpufreq_driver
 
-On 5/20/22 19:40, Randy Dunlap wrote:
-> Hi,
-> 
-> In March I reported that a randconfig build complained:
-> 
-> ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
-> 
-> (https://lore.kernel.org/all/16509fb6-e40c-e31b-2c80-264c44b0beb9@infradead.org/)
-> 
-> I am still seeing this problem so I tried to dig into it a bit.
-> However, I don't see why get_next_modinfo() and friends don't find the
-> MODULE_LICENSE() since it is in the iio-rescale.o file.
-> 
-> (BTW, I see this build error on many different $ARCH [around 15 tested]
-> and with 2 different versions of GCC.)
-> 
-> Q1: Is modpost checking both vmlinux and iio-rescale.o for modinfo license
-> strings?
-> 
-> It looks like it is, because it appears (?) that modpost is looking at
-> drivers/iio/test/iio-test-rescale.o (<<<<< a kunit test, which is builtin
-> in my .config) and at drivers/iio/afe/iio-rescale.o (which is built as a
-> loadable module).
-> 
-> Is this confusing modpost?
-> I renamed drivers/iio/afe/iio-rescale.c to afe-rescale.c and changed its
-> Makefile entry accordingly and the MODULE_LICENSE error goes away.
+Make declare of cppc_cpufreq_driver out of CONFIG_ACPI_CPPC_CPUFREQ_FIE
+to fix this.
 
-Oh well. This rename causes drivers/iio/test/iio-test-rescale.c to have
-build errors, so that's not a solution, just some info...
+Fixes: 740fcdc2c20e ("cpufreq: CPPC: Register EM based on efficiency class information")
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+ drivers/cpufreq/cppc_cpufreq.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+index 3eaa23d1aaf5..1837f2ce8243 100644
+--- a/drivers/cpufreq/cppc_cpufreq.c
++++ b/drivers/cpufreq/cppc_cpufreq.c
+@@ -61,6 +61,8 @@ static struct cppc_workaround_oem_info wa_info[] = {
+ 	}
+ };
 
-> Is this a modpost error or is kunit messing things up?
-> 
-> thanks for looking.
++static struct cpufreq_driver cppc_cpufreq_driver;
++
+ #ifdef CONFIG_ACPI_CPPC_CPUFREQ_FIE
 
--- 
-~Randy
+ /* Frequency invariance support */
+@@ -75,7 +77,6 @@ struct cppc_freq_invariance {
+ static DEFINE_PER_CPU(struct cppc_freq_invariance, cppc_freq_inv);
+ static struct kthread_worker *kworker_fie;
+
+-static struct cpufreq_driver cppc_cpufreq_driver;
+ static unsigned int hisi_cppc_cpufreq_get_rate(unsigned int cpu);
+ static int cppc_perf_from_fbctrs(struct cppc_cpudata *cpu_data,
+ 				 struct cppc_perf_fb_ctrs *fb_ctrs_t0,
+--
+2.31.1
+
