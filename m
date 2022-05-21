@@ -2,86 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67144C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353762AbiEUOr2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55190 "EHLO
+        id S230039AbiEUOtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 10:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237704AbiEUOr0 (ORCPT
+        with ESMTP id S233791AbiEUOtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:47:26 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392A021A4
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:47:24 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id v9so3199555lja.12
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:47:24 -0700 (PDT)
+        Sat, 21 May 2022 10:49:05 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917C66C57D
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:49:04 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id nr2-20020a17090b240200b001df2b1bfc40so13767320pjb.5
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:49:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=GA9mH3WMjJ81/KtiwkTGrl8ViPGWKsxe+KmmYU4d55c=;
-        b=iI3a2SiDH/iSRcCbU5DZSdvnCE4aXHkpw1R4259OfFl83UOz43+MiiVxfX79FXB5S+
-         ZV3jeFVLIQSuOacpFTWb/Te+pfqkBIjmgYj1sQ2qWHsvW6aSxvTO/YHoYor1dw5GbWSP
-         7SwZ2KZ7da6fBn4j1aRYntoulkLXuPD5aGDVDDLqyz38EZqW5OqfU+a6QnN/AsLd0bcD
-         brhRxS8y7n7KcoAAqEzuvRteyqJc+KXY4o/Ch6s0ZwvZHgjeXM/ORd2vwI6CjY310C0F
-         YosbvJcblorpPS0UDGUxXE0okaILSYgcKnnF7fhmYMo+WfCKl1vFV6Z16xczqFLEPlI8
-         BMvQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aEDSE1m+N2pYJdPG78Lh5a6q6esXpeyoa6uPZvrclFc=;
+        b=kb9ZmcDvj5VJ4lpdrtpjOvjhyAPEsiwHmOCR2kpfa+vsxplXPgjOoutoI/rjKVNCPI
+         KjcuKVWcB7a5bx2IsWpZAgRccdl9hlXyd4KiWlDkQQFrDWQ6qMbsP6kyckc20/R3pl6k
+         xG/as0Q0yWJPpSNOv3DOchIHTJKgOJky9HM+ky9R7OHfyDjGMELp2OAWlj6mleMd8nvf
+         7oyeVqweqCAKuWjXMwiLF9R/u9v3L73AokJnkWJLCAoMSPIghQcH8OtknirTtdDOz+IW
+         H3EGKIXfm7zDx4PYPID7ajjiPdtWQNmUGZ8jBNcCZEPWP1Svn92DCcABxqKEHiYl8FpN
+         N1zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=GA9mH3WMjJ81/KtiwkTGrl8ViPGWKsxe+KmmYU4d55c=;
-        b=52yUeMcicuspcZt0PL9bkFQUs4bBj1iREWZJ4LVJhGfW9iJBheBwcVkwZk8YT7APpe
-         WFzCl5Jg1w/N+8SC+2q6mpH3OjRFj6BvLW5ZM3420Eyy7aG8rwhcuLJMcWdWEA5UD8MX
-         SAUDj1Npnh7qLg90gCZZBGu6qZ5bDclUq9CCd6oN6Z1l7XNQlVc1KuXcO3jnwF5DJEwL
-         oGhsLgwEcW1XSXKrZM0ZL83HZ/NAZMyudQGxjYVImQdS0cztaVLlcne8AWYtkzNC/Par
-         sJLVcK4dgduDkpuTNfHjNWei8UL1E5Q7h07Y4sKNqPUGbTyI6Et1xymlTpCRrt/yPQZ0
-         Vb0g==
-X-Gm-Message-State: AOAM533Hxwmy0z0TEkAzApoHde6U3LfyV4EdGPKuiBwgO4JZyB2TQvZI
-        LEwsOQ62Mntb84K9mrmHFKKzZ8+8rcTHLuBw
-X-Google-Smtp-Source: ABdhPJxKxT0rGNcjo687Mv1XSend6B1Z3ulp/F5QTfbTr9XxXWmKcdIUtY6i5aFwu8TEVOY6WHQ1eg==
-X-Received: by 2002:a2e:b60a:0:b0:253:d4a0:7b31 with SMTP id r10-20020a2eb60a000000b00253d4a07b31mr7400184ljn.20.1653144442583;
-        Sat, 21 May 2022 07:47:22 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id h20-20020a197014000000b0047855972515sm609253lfc.72.2022.05.21.07.47.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 May 2022 07:47:22 -0700 (PDT)
-Message-ID: <f82571e7-566e-6d72-415b-deb73187d1cf@linaro.org>
-Date:   Sat, 21 May 2022 16:47:20 +0200
+        bh=aEDSE1m+N2pYJdPG78Lh5a6q6esXpeyoa6uPZvrclFc=;
+        b=rymITZVqsXPEnTk1tbThLqIeyG9Wq+wkZkbI8B9542OEZlewyTyaOikJFn3OxQJeFn
+         /iVnvXfv1ZufbHjZdJVuJRJsJ143GTBj6dk3zB5z9YkcGxaP4qA3GhKzdrIGeXEv6+/D
+         ho6uzXJzZlhclpWGsJTx8sJSLreasBlf6TVYy2rzubj8K+KCgQS78vnYwEJl4OdFSTiW
+         uRfKaoE0eAZTyVyJGQ1QlqwAj8dwBfIIWmNpwJmb88w6mBFnlg/FtFW6rYgJ7Z+IjpDs
+         KEMJ+OAvoW7q7rgl6M8WEAQNlR5TunfMp8yyJ8k0rnKlMaD303WunVDTbraft9Pe4xY0
+         eI1A==
+X-Gm-Message-State: AOAM532YPOcd6zz+LeR3vwejvmlOttrKYaBeUM0yVIe84URBiE2Gchdg
+        JmCVYIYbO1w0HoSp/uQ2OkU=
+X-Google-Smtp-Source: ABdhPJweIG1odMEjxkG19mhDsemgTmxJXjxh0vDN9QHxD5/5kjm6SG9klmp/njsu9QE2v3z4H44UXg==
+X-Received: by 2002:a17:90a:a384:b0:1dc:a407:b5ac with SMTP id x4-20020a17090aa38400b001dca407b5acmr16585135pjp.11.1653144544094;
+        Sat, 21 May 2022 07:49:04 -0700 (PDT)
+Received: from localhost.localdomain ([103.230.104.50])
+        by smtp.gmail.com with ESMTPSA id g8-20020a17090a290800b001dc4d22c0a7sm3709572pjd.10.2022.05.21.07.49.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 May 2022 07:49:03 -0700 (PDT)
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+To:     linux-kernel-mentees@lists.linuxfoundation.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
+        linux-kernel@vger.kernel.org,
+        Khalid Masum <khalid.masum.92@gmail.com>
+Subject: [PATCH] fscache: fix misdocumented parameter name
+Date:   Sat, 21 May 2022 20:24:46 +0600
+Message-Id: <20220521142446.4746-1-khalid.masum.92@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/2] dt-bindings: arm: Convert CoreSight CPU debug to DT
- schema
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220520214416.302127-1-robh@kernel.org>
- <20220520214416.302127-3-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220520214416.302127-3-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022 23:44, Rob Herring wrote:
-> Convert the CoreSight CPU debug binding to DT schema format.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+To fix warning generated by make docs in the file fscache.h:
+The functions fscache_use_cookie and fscache_unuse_cookie have a
+parameter named cookie. But they are documented with the name "object".
+Which generates warning when creating docs. This commit will replace
+the documentation with a better one named "cookie". This new
+documentation
+line is taken from the function fscache_update_cookie in the same
+file.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+---
+ include/linux/fscache.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/include/linux/fscache.h b/include/linux/fscache.h
+index e25539072..32cf593b8 100644
+--- a/include/linux/fscache.h
++++ b/include/linux/fscache.h
+@@ -256,7 +256,7 @@ struct fscache_cookie *fscache_acquire_cookie(struct fscache_volume *volume,
+ 
+ /**
+  * fscache_use_cookie - Request usage of cookie attached to an object
+- * @object: Object description
++ * @cookie: The cookie representing the cache object
+  * @will_modify: If cache is expected to be modified locally
+  *
+  * Request usage of the cookie attached to an object.  The caller should tell
+@@ -272,7 +272,7 @@ static inline void fscache_use_cookie(struct fscache_cookie *cookie,
+ 
+ /**
+  * fscache_unuse_cookie - Cease usage of cookie attached to an object
+- * @object: Object description
++ * @cookie: The cookie representing the cache object
+  * @aux_data: Updated auxiliary data (or NULL)
+  * @object_size: Revised size of the object (or NULL)
+  *
+-- 
+2.25.1
+
