@@ -2,62 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED81AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C62C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 13:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354851AbiEUNPL (ORCPT
+        id S1355087AbiEUNPQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 09:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
+        Sat, 21 May 2022 09:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354909AbiEUNO2 (ORCPT
+        with ESMTP id S1355015AbiEUNO3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 09:14:28 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8F8EBA8A
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:16 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id v10so9894433pgl.11
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:15 -0700 (PDT)
+        Sat, 21 May 2022 09:14:29 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF778F1367
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:22 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id i24so9865204pfa.7
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 06:14:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GLuZhVjtGK5TbXwgi8Odrp2p8Tu7QkWjhdCCk7ovaas=;
-        b=nmgM+6vuXjpX8KiwaDgzVgiYN2BD9hnKoi1p6MXLnRPMVGudkXgQk5rpmk2WEZeSfD
-         TUU4GF4qa3c0hBliZhaoUoLCI3n5c/bqAS0RPC4swau3lhMzh+cE1IvOrbl6zy5r6MLX
-         W2n+UbMqKQIZpgneQz4e6zjiLZu7FTYwfuekLnyGUc+SLYShDDHe04VjYSuiwqxuv8U5
-         0PdvQsz/j42plRlSL7E6VxsATCEdO3cC0OcQ3eDyYhFlFA+QZROMVz0MIImXVQiwfamN
-         OkACTC2CzmtHqvTadDkcfUy1nYLliiFahuyjCbV0lpLPOlZNHjrT3cTM7AsF3uCCGDGP
-         /CxQ==
+        bh=YyxbfrF93QriCFR9e9/Ieq2jTtQBkK6LoG1jr7zyJxk=;
+        b=L+FJhvKFhaWqIiE1WWps2YzkTNakQuR1Mcr9C1FbVikQjz3MT7BzsmHi70IwH0t0Mn
+         MvG9fJI9u77CAQ2MVtyUqKNTaqtvE48KnG+ukTf1KaiEkmhWTfJ3bEZFqVojAXikM0cV
+         i+g3YDrrCCwmrxORC5C1lroikF74fpJOJ6RigbhPJbXZrxXFE+dfOOL+PyaY2ePhRiIY
+         RJ0TKICOkoztEvnVKlpmh2ux1/vszSg6z7iZVbDAqpnbUsghYz1lj85eY1W4o9Lz4NxS
+         94dzGxA9FhVt/mrQZF1EkiZTBgiWl2nt/EHFuSqYSsieTMSmRRUOqRtzc4pRTa5S2AuX
+         kAIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GLuZhVjtGK5TbXwgi8Odrp2p8Tu7QkWjhdCCk7ovaas=;
-        b=j6fx2aJ//sMlK+nfsPr9KsNnPYbOfpqGwwSQsIcdEtCg8vWBdJGUJC589FULAXB2Ic
-         QmQ6ZgvurXL+8Wj/6XsJ/51BF7xOQb7e8FstdSuY3WSglfPGGDfKj8wMeYzJ5R7ZbcQf
-         Qt4ef2LUs5cCLtPoZ3nxjodPJxs+eaJnAHnW2h3e03cFBpUPBRdpjdYIEJPGQZ+lXhDp
-         lg5qYG8uUJzMopiTsdD0kgop6uBkz4C8rwQFszS/K05X2K3SVSWLfXyhU4GN+3Z4rCs5
-         ohLBMj62GYTf+Y5dElYAB8NhZuph8yCBWVxPb/NACNnMc6gpS2uWwza+j0n0EWMRVNfx
-         B+Gg==
-X-Gm-Message-State: AOAM530JsASv0xCw9rFl8T7NNJ5cSz/INqQVnWonnxXKH21QnvEPafFA
-        ZEIPUIE8MlkkH4CPQHtDK2yju/pWl3E=
-X-Google-Smtp-Source: ABdhPJzSXnY7snJEhqn+uj+twSGinI9pDclYPisFikM4HmtEYq3hRdpqXVRiekvfzyKo1ySKSWhiog==
-X-Received: by 2002:a05:6a00:21c6:b0:4fa:914c:2c2b with SMTP id t6-20020a056a0021c600b004fa914c2c2bmr14746058pfj.56.1653138854479;
-        Sat, 21 May 2022 06:14:14 -0700 (PDT)
+        bh=YyxbfrF93QriCFR9e9/Ieq2jTtQBkK6LoG1jr7zyJxk=;
+        b=L0xh+kGc5PMvKj3fSN2J/kxn/tgyN8xl+XsR3RHQ6fh+C6UObb5W/njWl9J3HOeTd8
+         RzG3zlj2WhuglVCwaBR2EkgZjBuiT5hW+CPBOPbawI0zyzG09hw/T2gZ1oi0N2TCF9FH
+         RFLeH3OrFbJBeaReMYzb0D/xhTBOp2chc+Mhkz+pCEB9SfYUeOyJvINsSnd6t2DUlb3Y
+         19hKZF+Q6Ygt9Xj2GBibjrrUClcQd808WUIj07fPaAPHiMo/JRZhzaHIzSKHumnC+0X+
+         JN9zPteTbIdYM7Zy4aRKo+o99Fex6jhiY6+1M5RNNFK0Oy4uwP/xtZITwh0YT47C58MX
+         jYkw==
+X-Gm-Message-State: AOAM533MnjNZKoMWC3LQ2mib2pxRMLZHGMDmEjB12GTzQfcsm9hlDRTA
+        Eos50NzFFe06pwUTWjonHtlGHaE3LcjUcg==
+X-Google-Smtp-Source: ABdhPJxLqb7CJFIz/ClcybmMMZS6eFmmU69eC19tG4rL2MMqWXC+N/q9QTunnuFV9pSgwJmET+BNfw==
+X-Received: by 2002:aa7:908e:0:b0:518:8fc8:f502 with SMTP id i14-20020aa7908e000000b005188fc8f502mr257115pfa.10.1653138861650;
+        Sat, 21 May 2022 06:14:21 -0700 (PDT)
 Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id a31-20020a056a001d1f00b00517c84fd24asm3577253pfx.172.2022.05.21.06.14.13
+        by smtp.gmail.com with ESMTPSA id o17-20020a170903301100b0015e8d4eb1e5sm1563775pla.47.2022.05.21.06.14.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 06:14:13 -0700 (PDT)
+        Sat, 21 May 2022 06:14:21 -0700 (PDT)
 From:   Stafford Horne <shorne@gmail.com>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Openrisc <openrisc@lists.librecores.org>,
         Stafford Horne <shorne@gmail.com>,
         Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Subject: [PATCH v3 11/13] openrisc/delay: Add include to fix symbol not declared warning
-Date:   Sat, 21 May 2022 22:13:21 +0900
-Message-Id: <20220521131323.631209-12-shorne@gmail.com>
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH v3 13/13] openrisc: Remove unused IMMU tlb workardound
+Date:   Sat, 21 May 2022 22:13:23 +0900
+Message-Id: <20220521131323.631209-14-shorne@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220521131323.631209-1-shorne@gmail.com>
 References: <20220521131323.631209-1-shorne@gmail.com>
@@ -67,29 +68,236 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add asm/timex.h include for read_current_timer prototype.
-
-Sparse reporting the following warning:
-
-    arch/openrisc/lib/delay.c:23:5: warning: symbol 'read_current_timer' was not declared. Should it be static?
+This looks to be some historical code that was used to convert TLB
+misses on branches from l.bf, l.jal, l.j etc all to a trampoline
+using l.jr (jump register).  I don't see this being used and I don't
+know the history of it so remove it.
 
 Signed-off-by: Stafford Horne <shorne@gmail.com>
 ---
- arch/openrisc/lib/delay.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/openrisc/kernel/head.S | 209 ------------------------------------
+ 1 file changed, 209 deletions(-)
 
-diff --git a/arch/openrisc/lib/delay.c b/arch/openrisc/lib/delay.c
-index 036ae57180ef..5e89e4131304 100644
---- a/arch/openrisc/lib/delay.c
-+++ b/arch/openrisc/lib/delay.c
-@@ -15,6 +15,7 @@
- #include <linux/kernel.h>
- #include <linux/export.h>
- #include <linux/init.h>
-+#include <linux/timex.h>
- #include <asm/param.h>
- #include <asm/delay.h>
- #include <asm/timex.h>
+diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
+index 21db50563f97..9b59d0ca665c 100644
+--- a/arch/openrisc/kernel/head.S
++++ b/arch/openrisc/kernel/head.S
+@@ -1325,215 +1325,6 @@ i_pte_not_present:
+ 
+ /* =================================================[ debugging aids ]=== */
+ 
+-	.align 64
+-_immu_trampoline:
+-	.space 64
+-_immu_trampoline_top:
+-
+-#define TRAMP_SLOT_0		(0x0)
+-#define TRAMP_SLOT_1		(0x4)
+-#define TRAMP_SLOT_2		(0x8)
+-#define TRAMP_SLOT_3		(0xc)
+-#define TRAMP_SLOT_4		(0x10)
+-#define TRAMP_SLOT_5		(0x14)
+-#define TRAMP_FRAME_SIZE	(0x18)
+-
+-ENTRY(_immu_trampoline_workaround)
+-	// r2 EEA
+-	// r6 is physical EEA
+-	tophys(r6,r2)
+-
+-	LOAD_SYMBOL_2_GPR(r5,_immu_trampoline)
+-	tophys	(r3,r5)			// r3 is trampoline (physical)
+-
+-	LOAD_SYMBOL_2_GPR(r4,0x15000000)
+-	l.sw	TRAMP_SLOT_0(r3),r4
+-	l.sw	TRAMP_SLOT_1(r3),r4
+-	l.sw	TRAMP_SLOT_4(r3),r4
+-	l.sw	TRAMP_SLOT_5(r3),r4
+-
+-					// EPC = EEA - 0x4
+-	l.lwz	r4,0x0(r6)		// load op @ EEA + 0x0 (fc address)
+-	l.sw	TRAMP_SLOT_3(r3),r4	// store it to _immu_trampoline_data
+-	l.lwz	r4,-0x4(r6)		// load op @ EEA - 0x4 (f8 address)
+-	l.sw	TRAMP_SLOT_2(r3),r4	// store it to _immu_trampoline_data
+-
+-	l.srli  r5,r4,26                // check opcode for write access
+-	l.sfeqi r5,0                    // l.j
+-	l.bf    0f
+-	l.sfeqi r5,0x11                 // l.jr
+-	l.bf    1f
+-	l.sfeqi r5,1                    // l.jal
+-	l.bf    2f
+-	l.sfeqi r5,0x12                 // l.jalr
+-	l.bf    3f
+-	l.sfeqi r5,3                    // l.bnf
+-	l.bf    4f
+-	l.sfeqi r5,4                    // l.bf
+-	l.bf    5f
+-99:
+-	l.nop
+-	l.j	99b			// should never happen
+-	l.nop	1
+-
+-	// r2 is EEA
+-	// r3 is trampoline address (physical)
+-	// r4 is instruction
+-	// r6 is physical(EEA)
+-	//
+-	// r5
+-
+-2:	// l.jal
+-
+-	/* 19 20 aa aa	l.movhi r9,0xaaaa
+-	 * a9 29 bb bb  l.ori	r9,0xbbbb
+-	 *
+-	 * where 0xaaaabbbb is EEA + 0x4 shifted right 2
+-	 */
+-
+-	l.addi	r6,r2,0x4		// this is 0xaaaabbbb
+-
+-					// l.movhi r9,0xaaaa
+-	l.ori	r5,r0,0x1920		// 0x1920 == l.movhi r9
+-	l.sh	(TRAMP_SLOT_0+0x0)(r3),r5
+-	l.srli	r5,r6,16
+-	l.sh	(TRAMP_SLOT_0+0x2)(r3),r5
+-
+-					// l.ori   r9,0xbbbb
+-	l.ori	r5,r0,0xa929		// 0xa929 == l.ori r9
+-	l.sh	(TRAMP_SLOT_1+0x0)(r3),r5
+-	l.andi	r5,r6,0xffff
+-	l.sh	(TRAMP_SLOT_1+0x2)(r3),r5
+-
+-	/* falthrough, need to set up new jump offset */
+-
+-
+-0:	// l.j
+-	l.slli	r6,r4,6			// original offset shifted left 6 - 2
+-//	l.srli	r6,r6,6			// original offset shifted right 2
+-
+-	l.slli	r4,r2,4			// old jump position: EEA shifted left 4
+-//	l.srli	r4,r4,6			// old jump position: shifted right 2
+-
+-	l.addi	r5,r3,0xc		// new jump position (physical)
+-	l.slli	r5,r5,4			// new jump position: shifted left 4
+-
+-	// calculate new jump offset
+-	// new_off = old_off + (old_jump - new_jump)
+-
+-	l.sub	r5,r4,r5		// old_jump - new_jump
+-	l.add	r5,r6,r5		// orig_off + (old_jump - new_jump)
+-	l.srli	r5,r5,6			// new offset shifted right 2
+-
+-	// r5 is new jump offset
+-					// l.j has opcode 0x0...
+-	l.sw	TRAMP_SLOT_2(r3),r5	// write it back
+-
+-	l.j	trampoline_out
+-	l.nop
+-
+-/* ----------------------------- */
+-
+-3:	// l.jalr
+-
+-	/* 19 20 aa aa	l.movhi r9,0xaaaa
+-	 * a9 29 bb bb  l.ori	r9,0xbbbb
+-	 *
+-	 * where 0xaaaabbbb is EEA + 0x4 shifted right 2
+-	 */
+-
+-	l.addi	r6,r2,0x4		// this is 0xaaaabbbb
+-
+-					// l.movhi r9,0xaaaa
+-	l.ori	r5,r0,0x1920		// 0x1920 == l.movhi r9
+-	l.sh	(TRAMP_SLOT_0+0x0)(r3),r5
+-	l.srli	r5,r6,16
+-	l.sh	(TRAMP_SLOT_0+0x2)(r3),r5
+-
+-					// l.ori   r9,0xbbbb
+-	l.ori	r5,r0,0xa929		// 0xa929 == l.ori r9
+-	l.sh	(TRAMP_SLOT_1+0x0)(r3),r5
+-	l.andi	r5,r6,0xffff
+-	l.sh	(TRAMP_SLOT_1+0x2)(r3),r5
+-
+-	l.lhz	r5,(TRAMP_SLOT_2+0x0)(r3)	// load hi part of jump instruction
+-	l.andi	r5,r5,0x3ff		// clear out opcode part
+-	l.ori	r5,r5,0x4400		// opcode changed from l.jalr -> l.jr
+-	l.sh	(TRAMP_SLOT_2+0x0)(r3),r5 // write it back
+-
+-	/* falthrough */
+-
+-1:	// l.jr
+-	l.j	trampoline_out
+-	l.nop
+-
+-/* ----------------------------- */
+-
+-4:	// l.bnf
+-5:	// l.bf
+-	l.slli	r6,r4,6			// original offset shifted left 6 - 2
+-//	l.srli	r6,r6,6			// original offset shifted right 2
+-
+-	l.slli	r4,r2,4			// old jump position: EEA shifted left 4
+-//	l.srli	r4,r4,6			// old jump position: shifted right 2
+-
+-	l.addi	r5,r3,0xc		// new jump position (physical)
+-	l.slli	r5,r5,4			// new jump position: shifted left 4
+-
+-	// calculate new jump offset
+-	// new_off = old_off + (old_jump - new_jump)
+-
+-	l.add	r6,r6,r4		// (orig_off + old_jump)
+-	l.sub	r6,r6,r5		// (orig_off + old_jump) - new_jump
+-	l.srli	r6,r6,6			// new offset shifted right 2
+-
+-	// r6 is new jump offset
+-	l.lwz	r4,(TRAMP_SLOT_2+0x0)(r3)	// load jump instruction
+-	l.srli	r4,r4,16
+-	l.andi	r4,r4,0xfc00		// get opcode part
+-	l.slli	r4,r4,16
+-	l.or	r6,r4,r6		// l.b(n)f new offset
+-	l.sw	TRAMP_SLOT_2(r3),r6	// write it back
+-
+-	/* we need to add l.j to EEA + 0x8 */
+-	tophys	(r4,r2)			// may not be needed (due to shifts down_
+-	l.addi	r4,r4,(0x8 - 0x8)	// jump target = r2 + 0x8 (compensate for 0x8)
+-					// jump position = r5 + 0x8 (0x8 compensated)
+-	l.sub	r4,r4,r5		// jump offset = target - new_position + 0x8
+-
+-	l.slli	r4,r4,4			// the amount of info in imediate of jump
+-	l.srli	r4,r4,6			// jump instruction with offset
+-	l.sw	TRAMP_SLOT_4(r3),r4	// write it to 4th slot
+-
+-	/* fallthrough */
+-
+-trampoline_out:
+-	// set up new EPC to point to our trampoline code
+-	LOAD_SYMBOL_2_GPR(r5,_immu_trampoline)
+-	l.mtspr	r0,r5,SPR_EPCR_BASE
+-
+-	// immu_trampoline is (4x) CACHE_LINE aligned
+-	// and only 6 instructions long,
+-	// so we need to invalidate only 2 lines
+-
+-	/* Establish cache block size
+-	   If BS=0, 16;
+-	   If BS=1, 32;
+-	   r14 contain block size
+-	*/
+-	l.mfspr r21,r0,SPR_ICCFGR
+-	l.andi	r21,r21,SPR_ICCFGR_CBS
+-	l.srli	r21,r21,7
+-	l.ori	r23,r0,16
+-	l.sll	r14,r23,r21
+-
+-	l.mtspr	r0,r5,SPR_ICBIR
+-	l.add	r5,r5,r14
+-	l.mtspr	r0,r5,SPR_ICBIR
+-
+-	l.jr	r9
+-	l.nop
+-
+ /*
+  * DESC: Prints ASCII character stored in r7
+  *
 -- 
 2.31.1
 
