@@ -2,135 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16EF6C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:46:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B41C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354835AbiEUHqd (ORCPT
+        id S1354792AbiEUHqn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 03:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
+        Sat, 21 May 2022 03:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354823AbiEUHqN (ORCPT
+        with ESMTP id S1354865AbiEUHqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 03:46:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C790F4B
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 00:45:51 -0700 (PDT)
+        Sat, 21 May 2022 03:46:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B23011143
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 00:46:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653119150;
+        s=mimecast20190719; t=1653119160;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nZT+Pp/rgwJQvb+XnEfZU3tY8Kab2QsTGc7eFhS0bwE=;
-        b=DdchOoN8qpHNemFhYHwShVcswpnVdPV1yyCtCJVVnCvdHUmeRYi0gvk4k8MJPFPY5kvHwq
-        wIV03XH91t7xLjwpAR4X4QOoedUyq6Lf7EozsJ9GCIcF2o4ZdfkQBsYufOIAfplT1IxaRg
-        g4BXWonX6e204XJnNe901DfLaUNWukc=
+        bh=zbihMZvF6i49xmhwwGzV9aEpJE5fX8yajKPGjYCvsNU=;
+        b=iHWzhqp6P8C7F/t41h4tp28XucqKnfGumtIACUOo1nOIstoR86CyDKWjRDojNRteLSdgRD
+        i5SVTPtesIyPCUPtGow00xoKx+35JjBHQT8NXaaWmzNSdbzMJGWky8UE6o/pQDw0v3T6RR
+        e4VNy5lhYmgwQDlc96pxzPVIwu/+GHI=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-VdC0zckvMaOWiIO9YB3LZg-1; Sat, 21 May 2022 03:45:43 -0400
-X-MC-Unique: VdC0zckvMaOWiIO9YB3LZg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+ us-mta-292-phxv4N1OMkaU9cztLBt6vg-1; Sat, 21 May 2022 03:45:56 -0400
+X-MC-Unique: phxv4N1OMkaU9cztLBt6vg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 461DC3803503;
-        Sat, 21 May 2022 07:45:43 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5BD0A3803505;
+        Sat, 21 May 2022 07:45:56 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AADF42026D6A;
-        Sat, 21 May 2022 07:45:42 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A450240E6A47;
+        Sat, 21 May 2022 07:45:55 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 5/7] rxrpc: Return an error to sendmsg if call failed
+Subject: [PATCH net-next 7/7] afs: Adjust ACK interpretation to try and cope
+ with NAT
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Sat, 21 May 2022 08:45:41 +0100
-Message-ID: <165311914196.245906.5402777003985306842.stgit@warthog.procyon.org.uk>
+Date:   Sat, 21 May 2022 08:45:55 +0100
+Message-ID: <165311915499.245906.17834337602759412345.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165311910893.245906.4115532916417333325.stgit@warthog.procyon.org.uk>
 References: <165311910893.245906.4115532916417333325.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
-was being given data was aborted remotely or otherwise failed, return an
-error rather than returning the amount of data buffered for transmission.
+If a client's address changes, say if it is NAT'd, this can disrupt an in
+progress operation.  For most operations, this is not much of a problem,
+but StoreData can be different as some servers modify the target file as
+the data comes in, so if a store request is disrupted, the file can get
+corrupted on the server.
 
-The call (presumably) did not complete, so there's not much point
-continuing with it.  AF_RXRPC considers it "complete" and so will be
-unwilling to do anything else with it - and won't send a notification for
-it, deeming the return from sendmsg sufficient.
+The problem is that the server doesn't recognise packets that come after
+the change of address as belonging to the original client and will bounce
+them, either by sending an OUT_OF_SEQUENCE ACK to the apparent new call if
+the packet number falls within the initial sequence number window of a call
+or by sending an EXCEEDS_WINDOW ACK if it falls outside and then aborting
+it.  In both cases, firstPacket will be 1 and previousPacket will be 0 in
+the ACK information.
 
-Not returning an error causes afs to incorrectly handle a StoreData
-operation that gets interrupted by a change of address due to NAT
-reconfiguration.
+Fix this by the following means:
 
-This doesn't normally affect most operations since their request parameters
-tend to fit into a single UDP packet and afs_make_call() returns before the
-server responds; StoreData is different as it involves transmission of a
-lot of data.
+ (1) If a client call receives an EXCEEDS_WINDOW ACK with firstPacket as 1
+     and previousPacket as 0, assume this indicates that the server saw the
+     incoming packets from a different peer and thus as a different call.
+     Fail the call with error -ENETRESET.
 
-This can be triggered on a client by doing something like:
+ (2) Also fail the call if a similar OUT_OF_SEQUENCE ACK occurs if the
+     first packet has been hard-ACK'd.  If it hasn't been hard-ACK'd, the
+     ACK packet will cause it to get retransmitted, so the call will just
+     be repeated.
 
-	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
+ (3) Make afs_select_fileserver() treat -ENETRESET as a straight fail of
+     the operation.
 
-at one prompt, and then changing the network address at another prompt,
-e.g.:
+ (4) Prioritise the error code over things like -ECONNRESET as the server
+     did actually respond.
 
-	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
+ (5) Make writeback treat -ENETRESET as a retryable error and make it
+     redirty all the pages involved in a write so that the VM will retry.
 
-Tracing packets on an Auristor fileserver looks something like:
+Note that there is still a circumstance that I can't easily deal with: if
+the operation is fully received and processed by the server, but the reply
+is lost due to address change.  There's no way to know if the op happened.
+We can examine the server, but a conflicting change could have been made by
+a third party - and we can't tell the difference.  In such a case, a
+message like:
 
-192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
-192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
-192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-<ARP exchange for 192.168.6.2>
-192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
-192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
-192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
+    kAFS: vnode modified {100058:146266} b7->b8 YFS.StoreData64 (op=2646a)
 
-The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
-code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
-condition and generates an abort first and the unmarshal error is a
-consequence of that at the application layer.
+will be logged to dmesg on the next op to touch the file and the client
+will reset the inode state, including invalidating clean parts of the
+pagecache.
 
 Reported-by: Marc Dionne <marc.dionne@auristor.com>
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004811.html # v1
 ---
 
- net/rxrpc/sendmsg.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/afs/misc.c     |    5 ++++-
+ fs/afs/rotate.c   |    4 ++++
+ fs/afs/write.c    |    1 +
+ net/rxrpc/input.c |   27 +++++++++++++++++++++++++++
+ 4 files changed, 36 insertions(+), 1 deletion(-)
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index af8ad6c30b9f..1d38e279e2ef 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -444,6 +444,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+diff --git a/fs/afs/misc.c b/fs/afs/misc.c
+index 1d1a8debe472..933e67fcdab1 100644
+--- a/fs/afs/misc.c
++++ b/fs/afs/misc.c
+@@ -163,8 +163,11 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
+ 		return;
  
- success:
- 	ret = copied;
-+	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
-+		read_lock_bh(&call->state_lock);
-+		if (call->error < 0)
-+			ret = call->error;
-+		read_unlock_bh(&call->state_lock);
+ 	case -ECONNABORTED:
++		error = afs_abort_to_error(abort_code);
++		fallthrough;
++	case -ENETRESET: /* Responded, but we seem to have changed address */
+ 		e->responded = true;
+-		e->error = afs_abort_to_error(abort_code);
++		e->error = error;
+ 		return;
+ 	}
+ }
+diff --git a/fs/afs/rotate.c b/fs/afs/rotate.c
+index 79e1a5f6701b..a840c3588ebb 100644
+--- a/fs/afs/rotate.c
++++ b/fs/afs/rotate.c
+@@ -292,6 +292,10 @@ bool afs_select_fileserver(struct afs_operation *op)
+ 		op->error = error;
+ 		goto iterate_address;
+ 
++	case -ENETRESET:
++		pr_warn("kAFS: Peer reset %s (op=%x)\n",
++			op->type ? op->type->name : "???", op->debug_id);
++		fallthrough;
+ 	case -ECONNRESET:
+ 		_debug("call reset");
+ 		op->error = error;
+diff --git a/fs/afs/write.c b/fs/afs/write.c
+index 4763132ca57e..c1bc52ac7de1 100644
+--- a/fs/afs/write.c
++++ b/fs/afs/write.c
+@@ -636,6 +636,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
+ 	case -EKEYEXPIRED:
+ 	case -EKEYREJECTED:
+ 	case -EKEYREVOKED:
++	case -ENETRESET:
+ 		afs_redirty_pages(wbc, mapping, start, len);
+ 		mapping_set_error(mapping, ret);
+ 		break;
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 853b869b026a..16c0af41c202 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -903,6 +903,33 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 				  rxrpc_propose_ack_respond_to_ack);
+ 	}
+ 
++	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
++	 * indicates that the client address changed due to NAT.  The server
++	 * lost the call because it switched to a different peer.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
 +	}
- out:
- 	call->tx_pending = skb;
- 	_leave(" = %d", ret);
++
++	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
++	 * indicate a change of address.  However, we can retransmit the call
++	 * if we still have it buffered to the beginning.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    call->tx_hard_ack == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
++	}
++
+ 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
 
 
