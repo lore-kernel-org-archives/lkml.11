@@ -2,92 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:41:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F777C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355296AbiEUOlp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
+        id S244209AbiEUOnk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 10:43:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244514AbiEUOln (ORCPT
+        with ESMTP id S231202AbiEUOnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:41:43 -0400
-Received: from sender4-pp-o94.zoho.com (sender4-pp-o94.zoho.com [136.143.188.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA10027FCB
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:41:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1653143152; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=KzRBCy6nuN+o2hvX7VXDJYETFntHoCoojNrRM9VSaWwbLoJ9MXDEdlf8JHmEXhDDbxR4NEbm+rfp9B42SUpwXHGFQZkLxuLbtFwdVgEfdmuSuCPQa+DXNHlDFkEHzRDbsuV3MrlpWhSVOfHHR2N9G0aIwz8ibqEb84nLnkJb8Oc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1653143152; h=Content-Type:Content-Transfer-Encoding:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=0o0p0h8Ax2NeemybyRFKBFg4kvyShrFo2MI2nwUZclc=; 
-        b=Re3TrzM22+rPOUwA+O9juEp/XlETyA3TKyqOn/YZLPKPAhl1zFUXLTNiizMsVbDrCCkwyVv3bbxvEGxi3GaK59c6PsVn208gOpSIpi6VgpvX8PVaieeO7d86HYRU1Oqsagcgye+D2+2Fhxe9B5vdu2CnfHKKVbzZgIodGwd3I4s=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=zohomail.com;
-        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
-        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653143152;
-        s=zm2022; d=zohomail.com; i=lchen.firstlove@zohomail.com;
-        h=Date:Date:From:From:To:To:Message-ID:In-Reply-To:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To:Cc;
-        bh=0o0p0h8Ax2NeemybyRFKBFg4kvyShrFo2MI2nwUZclc=;
-        b=FdrzD73CjWTFt+Hm6uB92L3xR+23nGpXxmDcny9Bndgv3qZdnMfCtJJQjhpKy2jI
-        8rfjSjMR6bNcNl3+BlMnB3ERdEzUZkkK3koWlNJUricaT74b1ZuwbB5O+k1VV6Y7fmE
-        fdw/lv4jNHtD20YoNce1xh8g9DlSDhCKXlhN5Qj4=
-Received: from mail.zoho.com by mx.zohomail.com
-        with SMTP id 1653143150983181.57000929052094; Sat, 21 May 2022 07:25:50 -0700 (PDT)
-Received: from  [45.12.140.94] by mail.zoho.com
-        with HTTP;Sat, 21 May 2022 07:25:50 -0700 (PDT)
-Date:   Sat, 21 May 2022 07:25:50 -0700
-From:   Li Chen <lchen.firstlove@zohomail.com>
-To:     "Mark Brown" <broonie@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "linux-gpio" <linux-gpio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "linux-arm-kernel" <linux-arm-kernel@lists.infradead.org>,
-        "Patrice Chotard" <patrice.chotard@foss.st.com>,
-        "linux-sunxi" <linux-sunxi@lists.linux.dev>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        "Jaroslav Kysela" <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>, "Chen-Yu Tsai" <wens@csie.org>,
-        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
-        "Samuel Holland" <samuel@sholland.org>,
-        "Philipp Zabel" <p.zabel@pengutronix.de>
-Message-ID: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
-In-Reply-To: 
-Subject: [PATCH 0/4] Add regmap_field helpers for simple bit operations
+        Sat, 21 May 2022 10:43:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DBF69B50
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 07:43:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4273360C20
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 14:43:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6C66C385A5;
+        Sat, 21 May 2022 14:43:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653144214;
+        bh=kp04KzMieJ18XnexXdu5LUhR570BkXGpoAN8ftuQXLE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hxUufeXed/8BibFRMvPVuPNVWZhCW0hg/ec2BAnCRLe8rg/v+CydDZ3sNuJwTNMe8
+         TrW1+88mkRmWmjFCnkzddmXjx5XJxp6xI1rYIfu1VkzJ6KAP5zYjK6vbH/bS1MHgKL
+         uQ++qTMc8bIQ9O1mssvGQPMpLP9fJ0opWXJ9eWxutBE2wYs3SPA5CUKoIKTGW1B3b9
+         aryukQDd1malgAT7jOC5fFvcz+lktKplPzTSGLgXgDwYT6h3m5RS34vmvl5+fsHloV
+         msJojy5klTTRAz6C7BPR9NifW5tfkKh1Qzj/niVVWlHNGmGqDSGa/N8pc2xNM75ixo
+         vdRPd67ynivRw==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@rivosinc.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH v4 0/2] use static key to optimize pgtable_l4_enabled
+Date:   Sat, 21 May 2022 22:34:54 +0800
+Message-Id: <20220521143456.2759-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
-Feedback-ID: rr08011226a0c92b0a8773c6508a06de8b0000498615caf2de6adef463dc6ad000c21eec5ddab3dbd9b221:zu08011227b19d2d40d37a8becfd63841c000034b6705f54b48ba1b5a2a1cf7cf960982e0544e860dd55949e:rf0801122c239725de1f0a6682d775822a000055882629dd4d26703f9f0ac12d296c5a81d1c3193b491674a3fa194ae69f:ZohoMail
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Chen <lchen@ambarella.com>
+The pgtable_l4|[l5]_enabled check sits at hot code path, performance
+is impacted a lot. Since pgtable_l4|[l5]_enabled isn't changed after
+boot, so static key can be used to solve the performance issue[1].
 
-This series proposes to add simple bit operations for setting, clearing
-and testing specific bits with regmap_field.
+An unified way static key was introduced in [2], but it only targets
+riscv isa extension. We dunno whether SV48 and SV57 will be considered
+as isa extension, so the unified solution isn't used for
+pgtable_l4[l5]_enabled now.
 
-Li Chen (4):
-  regmap: provide regmap_field helpers for simple bit operations
-  ASoC: sunxi: Use {regmap/regmap_field}_{set/clear}_bits helpers
-  pinctrl: bcm: Use regmap_field_{set/clear}_bits helpers
-  pinctrl: st: Switch to use regmap_field_test_bits
+patch1 fixes a NULL pointer deference if static key is used a bit earlier.
+patch2 uses the static key to optimize pgtable_l4|[l5]_enabled.
 
- drivers/base/regmap/regmap.c          | 22 ++++++++
- drivers/pinctrl/bcm/pinctrl-bcm6358.c |  2 +-
- drivers/pinctrl/pinctrl-st.c          | 23 ++++----
- include/linux/regmap.h                | 37 +++++++++++++
- sound/soc/sunxi/sun4i-codec.c         | 78 +++++++++++----------------
- 5 files changed, 99 insertions(+), 63 deletions(-)
+[1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
+[2] https://lore.kernel.org/linux-riscv/20220517184453.3558-1-jszhang@kernel.org/T/#t
+
+Since v3:
+ - fix W=1 call to undeclared function 'static_branch_likely' error
+
+Since v2:
+ - move the W=1 warning fix to a separate patch
+ - move the unified way to use static key to a new patch series.
+
+Since v1:
+ - Add a W=1 warning fix
+ - Fix W=1 error
+ - Based on v5.18-rcN, since SV57 support is added, so convert
+   pgtable_l5_enabled as well.
+
+
+
+Jisheng Zhang (2):
+  riscv: move sbi_init() earlier before jump_label_init()
+  riscv: turn pgtable_l4|[l5]_enabled to static key for RV64
+
+ arch/riscv/include/asm/pgalloc.h    | 16 ++++----
+ arch/riscv/include/asm/pgtable-32.h |  3 ++
+ arch/riscv/include/asm/pgtable-64.h | 60 ++++++++++++++++++---------
+ arch/riscv/include/asm/pgtable.h    |  5 +--
+ arch/riscv/kernel/cpu.c             |  4 +-
+ arch/riscv/kernel/setup.c           |  2 +-
+ arch/riscv/mm/init.c                | 64 ++++++++++++++++++-----------
+ arch/riscv/mm/kasan_init.c          | 16 ++++----
+ 8 files changed, 104 insertions(+), 66 deletions(-)
 
 -- 
-2.36.1
-
+2.34.1
 
