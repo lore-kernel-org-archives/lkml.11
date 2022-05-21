@@ -2,256 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B31DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 20:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C410C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 20:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346114AbiEUUqz (ORCPT
+        id S1346172AbiEUUri (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 16:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
+        Sat, 21 May 2022 16:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344206AbiEUUqo (ORCPT
+        with ESMTP id S1345277AbiEUUrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 16:46:44 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF9C3CFFD
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 13:46:43 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id h9so2300484pgl.4
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 13:46:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
-         :from:to;
-        bh=usyhwP/KwRkMAAW3OjtqeLeezQkFXtj2bkw/kE19m5Q=;
-        b=1YyhYIEIaB24tj28Re+FkAgGzvmYJUoPfz+vFi5S2BnvCTcUOa7KBTg4/TZsySrRb7
-         XJs3RGcdcGVEoCnC39Un23ArHdivPh26Ss+unkT28Y5i7eCHbSbLijN/PyTh2pYZoCEo
-         p2stm6cDp0Nw+iEhRYOb4U+x2Qo10Lxkzgdh/mDS8erQB3eLlV1u8Ur6dplcgV8km+oD
-         3XfZ3m8Z/lia6JlGzBIdrr45kTV11Cx3aDnhghFHckspAPX0F/9+gR85ieAl2JrnEqxM
-         faf51/ZmCHV/4VcgBvKNrl3dNVui9NIXH15JHg33cclg3/xDmE9VtWU5CXNxLZGFrcrb
-         FVkQ==
+        Sat, 21 May 2022 16:47:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43E3F41302
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 13:47:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653166053;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Q7KKV9nEc1O8xO71RHJAseDwiXENbXZxnjAzbqBmERg=;
+        b=HRVf4zVvWcIOoiM32MjsSxlronjRM6snQIzPw0mrLLYWZbcfFfAnBwJ6c8fodmA4CLCEXE
+        YTw5yOZyoFW6MRuvHwDAsl9rhdv8AH+zIAzvtVWh7dQuFPmcsNHzKJzzAq/eYXJt95KjhR
+        O4tdq8MmUjybZ9Mb1Koyeqs2GGu+xdY=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-484-8lhy7idoM5OcWvWmUphnyA-1; Sat, 21 May 2022 16:47:29 -0400
+X-MC-Unique: 8lhy7idoM5OcWvWmUphnyA-1
+Received: by mail-ot1-f70.google.com with SMTP id y97-20020a9d22ea000000b0060b0cc66316so180075ota.0
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 13:47:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=usyhwP/KwRkMAAW3OjtqeLeezQkFXtj2bkw/kE19m5Q=;
-        b=XI8Nl5OQlBJKwupgbDi+U5dzf/pvw3PBajbqfO7nXmnnB4qDSmabv9yN29NNJz88GG
-         ThfTcC2kYu/6asOJ/nCr6mFui76XNEfj3A/gWEZjXzDmmxrj1re60Bjj4v+JcR7t3M6D
-         c3aeiTBigStFxBZtqt8FIBPfIoz3+dv9DswalAvwfhn3VsbSjHr5/gAuh394fGCT5Pbl
-         5Cdgq50/LgDos+NfjjLGry3K1mu4Ljflu+8ssbMRR0/U7DoMnCDcmzMPErgUbPEudNFB
-         VQaqeGWwAs6j3TUH5esstTTMAbBxTrhPOViuO2Gg+gG8UYoa7myW1UqbxW9PH76fcGmB
-         sgOg==
-X-Gm-Message-State: AOAM53373QQc5V+2pqdBgsm7XNjAtF5cvJyXazQhkS2d6z/IaiQgXuNV
-        RckRAuvRqT7KjRYiqt9yj/ETcA==
-X-Google-Smtp-Source: ABdhPJxTe/x0IsEod7AHPDynxPnajNHzpIfJC5+mhuOEbsM1Ivf0vj0d66+wgOtLpXZXwq3QnVmMXg==
-X-Received: by 2002:a63:4f1e:0:b0:3f5:cf9b:7b94 with SMTP id d30-20020a634f1e000000b003f5cf9b7b94mr13726257pgb.457.1653166002598;
-        Sat, 21 May 2022 13:46:42 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id k2-20020a17090a62c200b001df3d5a441bsm4013626pjs.53.2022.05.21.13.46.42
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q7KKV9nEc1O8xO71RHJAseDwiXENbXZxnjAzbqBmERg=;
+        b=YR+sjohXbqUDUaYsSPIAam1DM1m2saVS4NTUozP5sAC/xCaOcf5FzMfC/Y8F2ej9RI
+         7lPcq2SmRR82JBpydhON/vzkXjCcT7J0VwzgSDA2BJ/+XrkZpoLKZQ8EYmCZP9sgVFAh
+         UA+BqoTeXfgxeXuLLEJbGbNnHaaE0RqmC6HoEsizY0xdg+QyPKkP8IoHRB3yIgaDWJ37
+         wtEj0XdLzzJA7SoZZPzkXMqyKq6NeOdVAQGMggLYzo9LNSz0ipmtnZ3qSzSTiVhFHzVB
+         SMKpITOuRGaGoFU/5fpo15ob0DR+4Ki11sjFi8JV3ccdE5VGlkrYOUVrHNliNddSo/pm
+         NZ4Q==
+X-Gm-Message-State: AOAM530Ix+0tK+AEQu1yrC9yTOjtpkzOmDyl2SRjkroXe0yVChT3GuDK
+        BKQXPFBIACKHTy2/hD6pnvDeBHi90fesQy8/JOiH2EzuEOl/7SUcUFN1DiyayUqz69U0thKLo6O
+        Q/4b8q4/6byujLhMQD8erb86b
+X-Received: by 2002:a05:6870:5694:b0:f2:2ad8:a0ae with SMTP id p20-20020a056870569400b000f22ad8a0aemr2596743oao.71.1653166049067;
+        Sat, 21 May 2022 13:47:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxXZGmjsHsgboy8HLVJI93WiKGJ0RPTYTp8bJj+9c19UnhE7jTtNQ/lroFEhDPgmTztujXLFg==
+X-Received: by 2002:a05:6870:5694:b0:f2:2ad8:a0ae with SMTP id p20-20020a056870569400b000f22ad8a0aemr2596738oao.71.1653166048917;
+        Sat, 21 May 2022 13:47:28 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id d44-20020a056870d2ac00b000f218150563sm1751520oae.10.2022.05.21.13.47.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 13:46:42 -0700 (PDT)
-Subject: [PATCH v3] RISC-V: Add CONFIG_{NON,}PORTABLE
-Date:   Sat, 21 May 2022 12:33:57 -0700
-Message-Id: <20220521193356.26562-1-palmer@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
+        Sat, 21 May 2022 13:47:28 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     toke@toke.dk, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] ath9k: remove setting of 'is_ext' parameter
+Date:   Sat, 21 May 2022 16:47:25 -0400
+Message-Id: <20220521204725.2539952-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        rdunlap@infradead.org, Arnd Bergmann <arnd@arndb.de>,
-        anup@brainfault.org, alexandre.ghiti@canonical.com,
-        damien.lemoal@opensource.wdc.com,
-        Atish Patra <atishp@rivosinc.com>, axboe@kernel.dk,
-        guoren@kernel.org, mchitale@ventanamicro.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux@rivosinc.com, Palmer Dabbelt <palmer@rivosinc.com>
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:         linux-riscv@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+cppcheck reports
+[drivers/net/wireless/ath/ath9k/dfs.c:93]: (style) Assignment of function parameter has no effect outside the function.
 
-The RISC-V port has collected a handful of options that are
-fundamentally non-portable.  To prevent users from shooting themselves
-in the foot, hide them all behind a config entry that explicitly calls
-out that non-portable binaries may be produced.
+Both the is_ctl and the is_ext parameters are set in the if-else statement.
+But only is_ctl is used later, so setting is_ext is not needed and can be removed.
 
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
-Changes since v2:
+ drivers/net/wireless/ath/ath9k/dfs.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-* Update the nommu and rv32 defconfigs.  I'm still getting some ugliness
-  like
-
-    $ make.riscv rv32_defconfig
-    *** Default configuration is based on 'defconfig'
-    #
-    # configuration written to .config
-    #
-    Using .config as base
-    Merging ./arch/riscv/configs/32-bit.config
-    Value of CONFIG_PORTABLE is redefined by fragment ./arch/riscv/configs/32-bit.config:
-    Previous value: CONFIG_PORTABLE=y
-    New value: # CONFIG_PORTABLE is not set
-    
-    Value of CONFIG_NONPORTABLE is redefined by fragment ./arch/riscv/configs/32-bit.config:
-    Previous value: # CONFIG_NONPORTABLE is not set
-    New value: CONFIG_NONPORTABLE=y
-    
-    #
-    # merged configuration written to .config (needs make)
-    #
-    .config:3831:warning: override: ARCH_RV32I changes choice state
-    #
-    # configuration written to .config
-    #
-
-  not sure if there's a better way to do this.
-
-Changes since v1:
-
-* Fix a bunch of spelling mistakes.
-* Move NONPORTABLE under the "Platform type" sub-heading.
-* Fix the rv32i dependency.
-
----
- arch/riscv/Kconfig                            | 28 +++++++++++++++++--
- arch/riscv/configs/32-bit.config              |  2 ++
- arch/riscv/configs/nommu_k210_defconfig       |  1 +
- .../riscv/configs/nommu_k210_sdcard_defconfig |  1 +
- arch/riscv/configs/nommu_virt_defconfig       |  1 +
- arch/riscv/configs/rv32_defconfig             |  1 +
- 6 files changed, 32 insertions(+), 2 deletions(-)
-
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index f863065b478c..cd67b09a80f5 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -222,6 +222,21 @@ source "arch/riscv/Kconfig.erratas"
- 
- menu "Platform type"
- 
-+config NONPORTABLE
-+	bool "Allow configurations that result in non-portable kernels"
-+	help
-+	  RISC-V kernel binaries are compatible between all known systems
-+	  whenever possible, but there are some use cases that can only be
-+	  satisfied by configurations that result in kernel binaries that are
-+	  not portable between systems.
-+
-+	  Selecting N does not guarantee kernels will be portable to all known
-+	  systems.  Selecting any of the options guarded by NONPORTABLE will
-+	  result in kernel binaries that are unlikely to be portable between
-+	  systems.
-+
-+	  If unsure, say N.
-+
- choice
- 	prompt "Base ISA"
- 	default ARCH_RV64I
-@@ -231,6 +246,7 @@ choice
- 
- config ARCH_RV32I
- 	bool "RV32I"
-+	depends on NONPORTABLE
- 	select 32BIT
- 	select GENERIC_LIB_ASHLDI3
- 	select GENERIC_LIB_ASHRDI3
-@@ -541,6 +557,7 @@ config STACKPROTECTOR_PER_TASK
- 
- config PHYS_RAM_BASE_FIXED
- 	bool "Explicitly specified physical RAM address"
-+	depends on NONPORTABLE
- 	default n
- 
- config PHYS_RAM_BASE
-@@ -554,7 +571,7 @@ config PHYS_RAM_BASE
- 
- config XIP_KERNEL
- 	bool "Kernel Execute-In-Place from ROM"
--	depends on MMU && SPARSEMEM
-+	depends on MMU && SPARSEMEM && NONPORTABLE
- 	# This prevents XIP from being enabled by all{yes,mod}config, which
- 	# fail to build since XIP doesn't support large kernels.
- 	depends on !COMPILE_TEST
-@@ -594,9 +611,16 @@ endmenu
- 
- config BUILTIN_DTB
- 	bool
--	depends on OF
-+	depends on OF && NONPORTABLE
- 	default y if XIP_KERNEL
- 
-+config PORTABLE
-+	bool
-+	default !NONPORTABLE
-+	select EFI
-+	select OF
-+	select MMU
-+
- menu "Power management options"
- 
- source "kernel/power/Kconfig"
-diff --git a/arch/riscv/configs/32-bit.config b/arch/riscv/configs/32-bit.config
-index 43f41323b67e..f6af0f708df4 100644
---- a/arch/riscv/configs/32-bit.config
-+++ b/arch/riscv/configs/32-bit.config
-@@ -1,2 +1,4 @@
- CONFIG_ARCH_RV32I=y
- CONFIG_32BIT=y
-+# CONFIG_PORTABLE is not set
-+CONFIG_NONPORTABLE=y
-diff --git a/arch/riscv/configs/nommu_k210_defconfig b/arch/riscv/configs/nommu_k210_defconfig
-index 2438fa39f8ae..96fe8def644c 100644
---- a/arch/riscv/configs/nommu_k210_defconfig
-+++ b/arch/riscv/configs/nommu_k210_defconfig
-@@ -28,6 +28,7 @@ CONFIG_EMBEDDED=y
- CONFIG_SLOB=y
- # CONFIG_MMU is not set
- CONFIG_SOC_CANAAN=y
-+CONFIG_NONPORTABLE=y
- CONFIG_SMP=y
- CONFIG_NR_CPUS=2
- CONFIG_CMDLINE="earlycon console=ttySIF0"
-diff --git a/arch/riscv/configs/nommu_k210_sdcard_defconfig b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-index 9a133e63ae5b..379740654373 100644
---- a/arch/riscv/configs/nommu_k210_sdcard_defconfig
-+++ b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-@@ -20,6 +20,7 @@ CONFIG_EMBEDDED=y
- CONFIG_SLOB=y
- # CONFIG_MMU is not set
- CONFIG_SOC_CANAAN=y
-+CONFIG_NONPORTABLE=y
- CONFIG_SMP=y
- CONFIG_NR_CPUS=2
- CONFIG_CMDLINE="earlycon console=ttySIF0 root=/dev/mmcblk0p1 rootwait ro"
-diff --git a/arch/riscv/configs/nommu_virt_defconfig b/arch/riscv/configs/nommu_virt_defconfig
-index 5269fbb6b4fc..1a56eda5ce46 100644
---- a/arch/riscv/configs/nommu_virt_defconfig
-+++ b/arch/riscv/configs/nommu_virt_defconfig
-@@ -25,6 +25,7 @@ CONFIG_EXPERT=y
- CONFIG_SLOB=y
- # CONFIG_MMU is not set
- CONFIG_SOC_VIRT=y
-+CONFIG_NONPORTABLE=y
- CONFIG_SMP=y
- CONFIG_CMDLINE="root=/dev/vda rw earlycon=uart8250,mmio,0x10000000,115200n8 console=ttyS0"
- CONFIG_CMDLINE_FORCE=y
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index 7e5efdc3829d..77bdb1d05a88 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -18,6 +18,7 @@ CONFIG_EXPERT=y
- CONFIG_PROFILING=y
- CONFIG_SOC_SIFIVE=y
- CONFIG_SOC_VIRT=y
-+CONFIG_NONPORTABLE=y
- CONFIG_ARCH_RV32I=y
- CONFIG_SMP=y
- CONFIG_HOTPLUG_CPU=y
+diff --git a/drivers/net/wireless/ath/ath9k/dfs.c b/drivers/net/wireless/ath/ath9k/dfs.c
+index acb9602aa464..47cdfb584eb0 100644
+--- a/drivers/net/wireless/ath/ath9k/dfs.c
++++ b/drivers/net/wireless/ath/ath9k/dfs.c
+@@ -89,8 +89,6 @@ static int ath9k_get_max_index_ht40(struct ath9k_dfs_fft_40 *fft,
+ 			int mag_upper = fft_max_magnitude(fft->upper_bins);
+ 			if (mag_upper > mag_lower)
+ 				is_ctl = false;
+-			else
+-				is_ext = false;
+ 		}
+ 	}
+ 	if (is_ctl)
 -- 
-2.34.1
+2.27.0
 
