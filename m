@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEF7C43217
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDEB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356751AbiEULXl (ORCPT
+        id S1356437AbiEULXM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
+        Sat, 21 May 2022 07:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231415AbiEULNn (ORCPT
+        with ESMTP id S1354926AbiEULM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:13:43 -0400
+        Sat, 21 May 2022 07:12:57 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E63BED7BC;
-        Sat, 21 May 2022 04:12:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891A190CCB;
+        Sat, 21 May 2022 04:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=D055PQLkjddNqPyjiz+oZSg3+qohn0RJAVU0RfJ3zO8=;
-  b=D1DYV78fCgx2bJAjVsccQuSTWgCm1Tp8hYqxlyeysjBjvuNrzOWBrRQN
-   vfB/DGNaSQR3mf9pRqHzwrxdD4JSEJs6a8nukC7d/5Xjdw452Zh5dHgXa
-   h2+Y9sax3ICIC38MbzjcBsD9edg9KKz1Rnop57kU1Fn+/BZnGCHvZ5JuP
+  bh=xYRDzENhcBEuFr81DrVcFNYvESNY7pY0uh+ZFfsrubc=;
+  b=mwi8F52nRAJS/SCf5EATUYUfIAI6y/v0GfB0UGgdxVwjI/Kjmo4navwg
+   smYeKb71pADASm2LiGK4wqZCH9huQffnINw//0bTCygwO5wb4sOBs3xw2
+   AWaKaIksjC0ogK0+eELj5y7K0LN1AhaOHdDSA0jdHodqQSoP0aN8jpkjF
    U=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727987"
+   d="scan'208";a="14727981"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:06 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:05 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Liam Girdwood <lgirdwood@gmail.com>
-Cc:     kernel-janitors@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: amd: acp: fix typo in comment
-Date:   Sat, 21 May 2022 13:11:29 +0200
-Message-Id: <20220521111145.81697-79-Julia.Lawall@inria.fr>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     kernel-janitors@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, oss-drivers@corigine.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] nfp: flower: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:23 +0200
+Message-Id: <20220521111145.81697-73-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,20 +53,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- sound/soc/amd/acp/acp-pdm.c |    2 +-
+ drivers/net/ethernet/netronome/nfp/flower/lag_conf.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/amd/acp/acp-pdm.c b/sound/soc/amd/acp/acp-pdm.c
-index 424c6e0bb9d6..7a0b26a30051 100644
---- a/sound/soc/amd/acp/acp-pdm.c
-+++ b/sound/soc/amd/acp/acp-pdm.c
-@@ -174,7 +174,7 @@ static void acp_dmic_dai_shutdown(struct snd_pcm_substream *substream,
- 	struct acp_dev_data *adata = dev_get_drvdata(dev);
- 	u32 ext_int_ctrl;
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
+index 63907aeb3884..ede90e086b28 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/lag_conf.c
+@@ -576,7 +576,7 @@ nfp_fl_lag_changeupper_event(struct nfp_fl_lag *lag,
+ 	group->dirty = true;
+ 	group->slave_cnt = slave_count;
  
--	/* Disable DMIC interrrupts */
-+	/* Disable DMIC interrupts */
- 	ext_int_ctrl = readl(adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
- 	ext_int_ctrl |= ~PDM_DMA_INTR_MASK;
- 	writel(ext_int_ctrl, adata->acp_base + ACP_EXTERNAL_INTR_CNTL);
+-	/* Group may have been on queue for removal but is now offfloable. */
++	/* Group may have been on queue for removal but is now offloable. */
+ 	group->to_remove = false;
+ 	mutex_unlock(&lag->lock);
+ 
 
