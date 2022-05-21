@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351409AbiEULQH (ORCPT
+        id S1346050AbiEULQP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
+        Sat, 21 May 2022 07:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242810AbiEULML (ORCPT
+        with ESMTP id S1350437AbiEULMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:12:11 -0400
+        Sat, 21 May 2022 07:12:16 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C22B2B26F;
-        Sat, 21 May 2022 04:12:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFAA2D1E8;
+        Sat, 21 May 2022 04:12:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=8kYNFUV9Zcxq+xozkt4bW19kyeKPdHmTSaJ76s0D2PY=;
-  b=rBnQigwpigXvemnKVHRMnppReKpXFazeFf/5iX9yAfpVBPclg5jRlHRr
-   WFW5ZPV27eLCogs7SoZZv3mGlrGQZnY65EM0jit46xwR13WNcgT60XFjs
-   WyB+dW77pjMeJ5ajTnp6Uqhp0DI6e0TOVUkSk2hDkBFUQTqyqtB6aAqLv
-   0=;
+  bh=WpJO9IIlhtJIy1ndH3Fx0N2Z7oaqY60RZ15hcaJQnNs=;
+  b=Vn63GHxq2QRE2XbKWE4aFJuqzPpS60Uvab5BIhpzc++CfRHDHulE5Rfg
+   x2hCiC9bRV3g+1rI0g50oAK9nw2xavd+uDKeG6M1GVCanZmhdJHBVEqwT
+   nWxfbbBN7RwZ07e3K2o5Pr720RvBYK5EObqVeluqhDtQK5I+2MvDSAxai
+   4=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727924"
+   d="scan'208";a="14727926"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:57 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     kernel-janitors@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] blk-mq: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:39 +0200
-Message-Id: <20220521111145.81697-29-Julia.Lawall@inria.fr>
+To:     Stefan Richter <stefanr@s5r6.in-berlin.de>
+Cc:     kernel-janitors@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: [PATCH] firewire: ohci: fix typo in comment
+Date:   Sat, 21 May 2022 13:10:41 +0200
+Message-Id: <20220521111145.81697-31-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,20 +50,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- block/blk-mq.c |    2 +-
+ drivers/firewire/ohci.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index ed1869a305c4..ae116b755648 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -1083,7 +1083,7 @@ bool blk_mq_complete_request_remote(struct request *rq)
- 	WRITE_ONCE(rq->state, MQ_RQ_COMPLETE);
+diff --git a/drivers/firewire/ohci.c b/drivers/firewire/ohci.c
+index 17c9d825188b..616ca85a57ad 100644
+--- a/drivers/firewire/ohci.c
++++ b/drivers/firewire/ohci.c
+@@ -1277,7 +1277,7 @@ struct driver_data {
+ };
  
- 	/*
--	 * For a polled request, always complete locallly, it's pointless
-+	 * For a polled request, always complete locally, it's pointless
- 	 * to redirect the completion.
- 	 */
- 	if (rq->cmd_flags & REQ_POLLED)
+ /*
+- * This function apppends a packet to the DMA queue for transmission.
++ * This function appends a packet to the DMA queue for transmission.
+  * Must always be called with the ochi->lock held to ensure proper
+  * generation handling and locking around packet queue manipulation.
+  */
 
