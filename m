@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 16:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355457AbiEUQsB (ORCPT
+        id S1355475AbiEUQsE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 12:48:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
+        Sat, 21 May 2022 12:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355393AbiEUQqE (ORCPT
+        with ESMTP id S1354256AbiEUQqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 12:46:04 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4E21180F
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:00 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id c19so5921297lfv.5
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:46:00 -0700 (PDT)
+        Sat, 21 May 2022 12:46:03 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D0EDF5B
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:45:55 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id q1so2984173ljb.5
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 09:45:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=q4UNyQ9G5Lhwfxa4KuG1fans5FyNR6CezgqxCfOyraY=;
-        b=kVdmAQH7Ib0pcSBs4x2V3Mn85KJPhMxtDYwSXkmWxY272fQqnXV9P0sYe0SfR1UEG7
-         yflCfjfuwU7ZgZsSsepTAewsYbpWUNJ3vCeg0qJgpTHBldpgvW5qeT2elST0stP/yfuG
-         k68nwn1ffF2x7EkS/GOTlHC6+ylPsVFpE304XLnxfZqMKW+sWcJGikC9gBgsC+7VylCS
-         zmiWLEdj8YzvdHrtocFlVxad3di2B1mcKQUx1AH6IxdxkD70ZqsHu/sbhonAfKMet2+v
-         KHKDgMplPc3cgAvSYjC9kbnq4k8uAgOH442o2AwKf3whyhVexsotR8aK4nnZL1Os4rtP
-         U9/g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gddd0fAw+DDHS5UQpyWxRARue36ZoZZ9O5PUo4nnIcU=;
+        b=rRqCRfxqlvdHIxEcE+nigMTIT2JUiHyQtIr3jv9PdDUR4xMzvj/bCgXsm5OKnpZT4+
+         +zC+4exp2z8CFKngJCNXPdY3ygS7Z2BfavarrvRbBE+EllfkdomzXn65OBx80skthS35
+         FVXDMYEWKKdp3dsfL5Q4uKlVWCdus4R5FzOpjvA2se1XcIMYEa6vwooJOxRM/tsTlUHv
+         UC8Dyh9O0dT0+K1RB1iV+RCKL954DcZIu3JqjDVr9cg/aAC3P3KjGfcDAjbChQ5IKKuw
+         XwkUolUthegmReuh+IIG5tsxHYUGenpp7baWz/54gNYBMoRZROb9B4CsDgMfz9MyaGa8
+         dYfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=q4UNyQ9G5Lhwfxa4KuG1fans5FyNR6CezgqxCfOyraY=;
-        b=Pm+yf0IsTa+1R1tQXUjwGInG1zSKvFLyI48+QdnTMU4dQ+yM0rAAHfjoGss5bLUU+5
-         tutlhZKzk+fnjRvgXG3gjlymuTfsVpVLlaPvy+cWkZ23SUZsqcAvWADjm0e1myx+XdcX
-         utKgHM8eCjxeliwdBcO5ebfzJBDgKkSldjv5dnfAifvuKSfHqUXToxP1Z2iyio5+nm/0
-         ZYe/ww03HgHZDbF14dpaBjqLCbmbH575KN9+qDC1Z8NZLY0ZcsKhcOOnhZB6hmEoZuSe
-         qtafI+culX0bA8efYzCUTqZIe/iQ+SeMQiIMN8b6r5+8G2kmrVBCA+b92/FRxnUS2hj/
-         XfhA==
-X-Gm-Message-State: AOAM5310JT7E8FAqdJuhoRei4ENkHSa/rmjrCTyQja7GjA5OJMm+l7Aq
-        N4dXv1Uoz09Efj6TJiDLVD0B3Q==
-X-Google-Smtp-Source: ABdhPJxqyCE9sj2nUajGxMjyhOcE1bzwssbGKHjgnpaZk/Xid4K8TBp8xZQPEvxmO0aSkPMP9S1eoQ==
-X-Received: by 2002:ac2:4e15:0:b0:473:c4c2:dc0f with SMTP id e21-20020ac24e15000000b00473c4c2dc0fmr10502177lfr.13.1653151558095;
-        Sat, 21 May 2022 09:45:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gddd0fAw+DDHS5UQpyWxRARue36ZoZZ9O5PUo4nnIcU=;
+        b=alGv83NTrDRlxMf3e3BGi++zjI8GbG2+AygwEYTZ5J36AnMMGRoQJIxNrURmPROxya
+         NJpmc2cgECgCxLEBfDoiS5MoAk5/DrkaMAkQXnJqU4zW4U9JG4egeMi32iIqJS8G/qL1
+         4c4Hkq5LAUOj6h6L1YDfDvg3kd0Kpf+VJSwtO535WYE9g//SbYuU71jEEbxUJsKXaTIP
+         hO0wzGBuyQpRsF6bhIjh/FuRvFG/KEkrFX4+VF05MNipRTsXmsDekEWt0jEHv4/JcZA4
+         xEYEv8WKK+fnBeyzgd+3TJQYYjKx7eLWHzQDUlkmyYLjMvyeWbB1lHkWRL2y4mA2PlUQ
+         LiGQ==
+X-Gm-Message-State: AOAM5330TOnnt57deKBN7Wi/x+5DppXTpBeNlnoQy1yzkXADwroc9LRH
+        9jAvhe5OTDT2i8+72768G/954A==
+X-Google-Smtp-Source: ABdhPJwJ4v+PxMbSwUzIRXnS3FZidnv/KU4MzdWcShWBU/bE1bew+wzucXOs6iv/xPda8u0RIIDTQQ==
+X-Received: by 2002:a2e:6e02:0:b0:253:d7da:ef27 with SMTP id j2-20020a2e6e02000000b00253d7daef27mr7183920ljc.105.1653151553619;
+        Sat, 21 May 2022 09:45:53 -0700 (PDT)
 Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id f26-20020a19ae1a000000b0047255d211cesm1114282lfc.253.2022.05.21.09.45.57
+        by smtp.gmail.com with ESMTPSA id f26-20020a19ae1a000000b0047255d211cesm1114282lfc.253.2022.05.21.09.45.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 09:45:57 -0700 (PDT)
+        Sat, 21 May 2022 09:45:53 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -57,44 +57,37 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 05/12] dt-bindings: arm: qcom: add missing SDM630 board compatibles
-Date:   Sat, 21 May 2022 18:45:43 +0200
-Message-Id: <20220521164550.91115-5-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 01/12] dt-bindings: vendor-prefixes: add Shift GmbH
+Date:   Sat, 21 May 2022 18:45:39 +0200
+Message-Id: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org>
-References: <20220521164550.91115-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document board compatibles already present in Linux kernel.
+Add prefix for SHIFT GmbH, phone manufacturer
+(https://www.shiftphones.com/en/).
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 888b640cf646..776149a3f628 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -279,6 +279,14 @@ properties:
-               - qcom,sc8280xp-qrd
-           - const: qcom,sc8280xp
- 
-+      - items:
-+          - enum:
-+              - sony,discovery-row
-+              - sony,kirin-row
-+              - sony,pioneer-row
-+              - sony,voyager-row
-+          - const: qcom,sdm630
-+
-       - items:
-           - enum:
-               - fairphone,fp3
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 495a01ced97e..85d52300e588 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1098,6 +1098,8 @@ patternProperties:
+     description: SGX Sensortech
+   "^sharp,.*":
+     description: Sharp Corporation
++  "^shift,.*":
++    description: SHIFT GmbH
+   "^shimafuji,.*":
+     description: Shimafuji Electric, Inc.
+   "^shiratech,.*":
 -- 
 2.32.0
 
