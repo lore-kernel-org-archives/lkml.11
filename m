@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA0AC4707A
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B15C38A06
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:24:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356840AbiEULXq (ORCPT
+        id S1357123AbiEULYX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50518 "EHLO
+        Sat, 21 May 2022 07:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354997AbiEULOB (ORCPT
+        with ESMTP id S1355032AbiEULOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 07:14:01 -0400
+        Sat, 21 May 2022 07:14:07 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20697106346;
-        Sat, 21 May 2022 04:12:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDF334647;
+        Sat, 21 May 2022 04:12:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=y/6NGQjtjKURfO9GuBRgYSn6RmGl/qwDj/5EGpGJGIU=;
-  b=ThRvXcAfzT/pn3SVxqI2qokUtGznDGJ0/7+VBDUrKq2PQstGi/kCKZYj
-   b/Z0Et8kEaL/zRT6MJKn0L+n7ZDSMLnkOYa0/QhbSLTZb8VUNzzS5zNtt
-   Eyr69uuRoWiQoMNwzT3wsri0ZCBrxqPbq0T1YVQd6mWMsby8OlHpDpRue
-   E=;
+  bh=TN/j615y2tkYA0srFihzWLP+GjLIX6UQauDVbNDVzTk=;
+  b=HZcq6RDsXGGZgT2GMpbx+k0znTTWtUngBgdaZC+QskSN2Mo78eDk0kGO
+   bkLsh+chX0bb5x1S6AR0MleYwDGq8paFjnemsLRis0U5lCyJq+eC98XBV
+   zDuWjdQuy4SUH/YHEP4DBN/CVsahWllvWTFuVN0V9DFPmrCY1phwl9JK1
+   4=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727988"
+   d="scan'208";a="14727996"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:06 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:08 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     kernel-janitors@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     kernel-janitors@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests/vm/pkeys: fix typo in comment
-Date:   Sat, 21 May 2022 13:11:30 +0200
-Message-Id: <20220521111145.81697-80-Julia.Lawall@inria.fr>
+Subject: [PATCH] slimbus: messaging: fix typos in comments
+Date:   Sat, 21 May 2022 13:11:38 +0200
+Message-Id: <20220521111145.81697-88-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -45,26 +44,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Spelling mistake (triple letters) in comment.
+Spelling mistakes (triple letters) in comments.
 Detected with the help of Coccinelle.
 
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- tools/testing/selftests/vm/protection_keys.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/slimbus/messaging.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/protection_keys.c b/tools/testing/selftests/vm/protection_keys.c
-index 2d0ae88665db..291bc1e07842 100644
---- a/tools/testing/selftests/vm/protection_keys.c
-+++ b/tools/testing/selftests/vm/protection_keys.c
-@@ -1523,7 +1523,7 @@ void test_implicit_mprotect_exec_only_memory(int *ptr, u16 pkey)
- 	/*
- 	 * Reset the shadow, assuming that the above mprotect()
- 	 * correctly changed PKRU, but to an unknown value since
--	 * the actual alllocated pkey is unknown.
-+	 * the actual allocated pkey is unknown.
- 	 */
- 	shadow_pkey_reg = __read_pkey_reg();
+diff --git a/drivers/slimbus/messaging.c b/drivers/slimbus/messaging.c
+index e5ae26227bdb..4ce0cb61e481 100644
+--- a/drivers/slimbus/messaging.c
++++ b/drivers/slimbus/messaging.c
+@@ -79,7 +79,7 @@ int slim_alloc_txn_tid(struct slim_controller *ctrl, struct slim_msg_txn *txn)
+ EXPORT_SYMBOL_GPL(slim_alloc_txn_tid);
  
+ /**
+- * slim_free_txn_tid() - Freee tid of txn
++ * slim_free_txn_tid() - Free tid of txn
+  *
+  * @ctrl: Controller handle
+  * @txn: transaction whose tid should be freed
+@@ -101,7 +101,7 @@ EXPORT_SYMBOL_GPL(slim_free_txn_tid);
+  * @txn: Transaction to be sent over SLIMbus
+  *
+  * Called by controller to transmit messaging transactions not dealing with
+- * Interface/Value elements. (e.g. transmittting a message to assign logical
++ * Interface/Value elements. (e.g. transmitting a message to assign logical
+  * address to a slave device
+  *
+  * Return: -ETIMEDOUT: If transmission of this message timed out
 
