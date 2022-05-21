@@ -2,31 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E31DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D49BC433EF
 	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 23:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347496AbiEUXvP (ORCPT
+        id S1347412AbiEUXvL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 19:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
+        Sat, 21 May 2022 19:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345028AbiEUXvI (ORCPT
+        with ESMTP id S245043AbiEUXvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 19:51:08 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD9B23150
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 16:51:04 -0700 (PDT)
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD16220D9
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 16:51:03 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1653177063;
+        t=1653177061;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=117xuqHBOdhuOAsmwIJGI3P4mj0w/efp2m2gROWKZlA=;
-        b=Jh+koRmI//BLkM/hoAgYAhNGC+0gspnLZjPA6+o3fL6M9HcD5jkU1bZ7PVoI39soZ+y8O1
-        QkoCAhHSilcjE+5A0ZtPA5RLcfrm853gS8dUZhguqQcYgPVaLa8qHG7yalDGxTAwXmDJsA
-        jOioYqPpMqRFbKhcfQYOuEc9y71UGVs=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Vy7Ak3F0cMwR4NDgJNAiMt1tqQVmnBF5Rj3rg221j68=;
+        b=SUmBT+dywr8KVt4aoiuH2M3+BxG79p6/AO1BHjmyp9Un+owxWRFHH1r+jjFD07QDZp6Z0j
+        5Cgb6h2LszIWU2sHQnDBMbeccu1hbK+JpIeZ/ako3tvtCp9uEDQD4uueS0RUNAYZf3aBb2
+        SrE3U+96Fl+XOnRjt/Q86NqfLZVkmGY=
 From:   andrey.konovalov@linux.dev
 To:     Mark Rutland <mark.rutland@arm.com>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -40,11 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Will Deacon <will@kernel.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 2/2] arm64: stacktrace: use non-atomic __set_bit
-Date:   Sun, 22 May 2022 01:50:59 +0200
-Message-Id: <a584e95f613d59c7ff45686c2805deb63bd61442.1653177005.git.andreyknvl@google.com>
-In-Reply-To: <697e015e22ea78b021c2546f390ad5d773f3af86.1653177005.git.andreyknvl@google.com>
-References: <697e015e22ea78b021c2546f390ad5d773f3af86.1653177005.git.andreyknvl@google.com>
+Subject: [PATCH 1/2] arm64: kasan: do not instrument stacktrace.c
+Date:   Sun, 22 May 2022 01:50:58 +0200
+Message-Id: <697e015e22ea78b021c2546f390ad5d773f3af86.1653177005.git.andreyknvl@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -55,31 +52,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Use the non-atomic version of set_bit() in arch/arm64/kernel/stacktrace.c,
-as there is no concurrent accesses to frame->prev_type.
+Disable KASAN instrumentation of arch/arm64/kernel/stacktrace.c.
 
-This speeds up stack trace collection and improves the boot time of
-Generic KASAN by 2-5%.
+This speeds up Generic KASAN by 5-20%.
+
+As a side-effect, KASAN is now unable to detect bugs in the stack trace
+collection code. This is taken as an acceptable downside.
+
+Also replace READ_ONCE_NOCHECK() with READ_ONCE() in stacktrace.c.
+As the file is now not instrumented, there is no need to use the
+NOCHECK version of READ_ONCE().
 
 Suggested-by: Mark Rutland <mark.rutland@arm.com>
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- arch/arm64/kernel/stacktrace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/Makefile     | 3 +++
+ arch/arm64/kernel/stacktrace.c | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
+diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
+index fa7981d0d917..da8cf6905c76 100644
+--- a/arch/arm64/kernel/Makefile
++++ b/arch/arm64/kernel/Makefile
+@@ -14,6 +14,9 @@ CFLAGS_REMOVE_return_address.o = $(CC_FLAGS_FTRACE)
+ CFLAGS_REMOVE_syscall.o	 = -fstack-protector -fstack-protector-strong
+ CFLAGS_syscall.o	+= -fno-stack-protector
+ 
++# Do not instrument to improve performance.
++KASAN_SANITIZE_stacktrace.o := n
++
+ # It's not safe to invoke KCOV when portions of the kernel environment aren't
+ # available or are out-of-sync with HW state. Since `noinstr` doesn't always
+ # inhibit KCOV instrumentation, disable it for the entire compilation unit.
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 33e96ae4b15f..03593d451b0a 100644
+index e4103e085681..33e96ae4b15f 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -103,7 +103,7 @@ static int notrace unwind_frame(struct task_struct *tsk,
- 		if (fp <= frame->prev_fp)
- 			return -EINVAL;
- 	} else {
--		set_bit(frame->prev_type, frame->stacks_done);
-+		__set_bit(frame->prev_type, frame->stacks_done);
- 	}
+@@ -110,8 +110,8 @@ static int notrace unwind_frame(struct task_struct *tsk,
+ 	 * Record this frame record's values and location. The prev_fp and
+ 	 * prev_type are only meaningful to the next unwind_frame() invocation.
+ 	 */
+-	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
+-	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
++	frame->fp = READ_ONCE(*(unsigned long *)(fp));
++	frame->pc = READ_ONCE(*(unsigned long *)(fp + 8));
+ 	frame->prev_fp = fp;
+ 	frame->prev_type = info.type;
  
- 	/*
 -- 
 2.25.1
 
