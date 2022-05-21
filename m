@@ -2,87 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22DDC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91305C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244071AbiEUOBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60074 "EHLO
+        id S245563AbiEUOFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 10:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237191AbiEUOBu (ORCPT
+        with ESMTP id S231633AbiEUOE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:01:50 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4E237BCF;
-        Sat, 21 May 2022 07:01:48 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 4D5FE1F45985
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653141707;
-        bh=bRgwLFLkiauCbXyihimErrttLo91tws84Q5eVV4ePsQ=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=QMt257LM9O7uhUZ0il2kM2g42JZW0uaFL9+D3OM1Piezy1z3sbUqr1uQIN5D62j5+
-         q2RiSw9kg/vP8US2mmcqXrKJ6byRIR2PvvDFj1w/tJtUglA011Watq8CMh8AHkDuO9
-         GnXVfnftWJCX5zBWQNmAbJv5UTffp7RfOpEZEXGEpAhNVTzHKFcyxVuNHMvWI00Snz
-         jMjA18KPwqvS9Oykj2hZtbYnKyESerX31uo8wRi8f8khVJPsfZQrqq6sKy9ha7phL3
-         MeCZUQAWDzHl78m7VlOcbRzsrT1oCsQOYFYOCnLMiAsfMfode+LFv44wcYYcFJAIfJ
-         s/eoHUfgdmmaA==
-Message-ID: <27062abb-4ca1-b017-448b-f5529232cbdb@collabora.com>
-Date:   Sat, 21 May 2022 19:01:33 +0500
+        Sat, 21 May 2022 10:04:57 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB3B562C8;
+        Sat, 21 May 2022 07:04:56 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id n18so9491869plg.5;
+        Sat, 21 May 2022 07:04:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=XyfqUm4TxX35zElYj0/ucjrKotsj0icoZs/IkZSfKPc=;
+        b=dI5Kz7r7aAUCNEokdevM7rSm88h2tUdJjrmjDnRKZuxHMlwD7py8TFOeAiA9LUaI16
+         dpg96Aw5Gay/YnGtsGRUFQPs147LXVsZJwRbTkVaCuF5/K0xZQEsIcfaaPaL80UJJa1C
+         rfEymgOrEhNMmVvZ/ZpN2qMqqtYQ5xCc/QYNh2+DzDtZhGued/OBsPPb84uTn//z5+Pc
+         S5IQp01SrsYCNgmLVnI6ozxwd+q7jmk7k/2VvKgPZhI3qjtxVz0eKC2sWwlrOBcjZy5n
+         pqCjvfbf4dde0FteK9XNoVVLAwxVhF99a1+NMLK3GabnPvC/c4G1R0+Sn6SSU4sciCI3
+         xUQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=XyfqUm4TxX35zElYj0/ucjrKotsj0icoZs/IkZSfKPc=;
+        b=2BGwT+NmCft1yxoc4EVOFIyb/CXrwC+pe2V1VXDir1pBkleJBPFPkjpsgemtLvTKpG
+         3sMIykGS9+7LVrPy1cNcr2XV5wb/D8DZ1vtcG3GDpo1KNS98wARRJ5aMgiZ82sqK+1e9
+         31vZSha8xm+T3jEEoKkLJ4aWccxbnoz5hSKMOTIHze3a0+HqR9FlPUrkAxDNdSYd3JSt
+         CUK1t6TEYf3LzS0fUIELYe7T2aKJw6NDTBl4uWiN8yg1JC91+HVMRPVuvHAu27wcCdPH
+         nTUanZXqcmyPQl9hZfONwYomTZit2LGfdOBQr8LBr5Pr1BVQ+uj6dmwK4YGRNKE+HnR4
+         ITcg==
+X-Gm-Message-State: AOAM533RlYXqp5DF0d2e8qjCIBdB/17JjpcGW1lJPtt1UcmeGjwxttYx
+        3dcuaeUhfWbfx9RQJ13yYEwUhw3Dba5ACGFeMg==
+X-Google-Smtp-Source: ABdhPJyo0VLMm3vrg7jAXuYZ3TR+z9yqeHFIViSODLl/Hq+rt81gqyPhGXhqsPD6kP5maJjQOVwwB31k5eWzQAlcmzo=
+X-Received: by 2002:a17:902:d711:b0:161:f859:bed7 with SMTP id
+ w17-20020a170902d71100b00161f859bed7mr6616910ply.31.1653141896019; Sat, 21
+ May 2022 07:04:56 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     usama.anjum@collabora.com, mhocko@suse.com, rientjes@google.com,
-        willy@infradead.org, hannes@cmpxchg.org, guro@fb.com,
-        minchan@kernel.org, kirill@shutemov.name, aarcange@redhat.com,
-        brauner@kernel.org, hch@infradead.org, oleg@redhat.com,
-        david@redhat.com, jannh@google.com, shakeelb@google.com,
-        peterx@redhat.com, jhubbard@nvidia.com, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, kernel-team@android.com
-Subject: Re: [PATCH v3 1/1] selftests: vm: add process_mrelease tests
-Content-Language: en-US
-To:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-References: <20220518204316.13131-1-surenb@google.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220518204316.13131-1-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Sat, 21 May 2022 22:04:44 +0800
+Message-ID: <CAMhUBjnDdk7_bBzqgFhZ=xf-obJYMbsJf10wC_bsUeTzxXLK6A@mail.gmail.com>
+Subject: [BUG] scsi: vmw_pvscsi: got a warning when failing at probe
+To:     vbhakta@vmware.com, pv-drivers@vmware.com, jejb@linux.ibm.com,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     linux-scsi <linux-scsi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/19/22 1:43 AM, Suren Baghdasaryan wrote:
-> Introduce process_mrelease syscall sanity tests which include tests
-> which expect to fail:
-> - process_mrelease with invalid pidfd and flags inputs
-> - process_mrelease on a live process with no pending signals
-> and valid process_mrelease usage which is expected to succeed.
-> Because process_mrelease has to be used against a process with a pending
-> SIGKILL, it's possible that the process exits before process_mrelease
-> gets called. In such cases we retry the test with a victim that allocates
-> twice more memory up to 1GB. This would require the victim process to
-> spend more time during exit and process_mrelease has a better chance of
-> catching the process before it exits and succeeding.
-> 
-> On success the test reports the amount of memory the child had to
-> allocate for reaping to succeed. Sample output:
-> 
-> $ mrelease_test
-> Success reaping a child with 1MB of memory allocations
-> 
-> On failure the test reports the failure. Sample outputs:
-> 
-> $ mrelease_test
-> All process_mrelease attempts failed!
-> 
-> $ mrelease_test
-> process_mrelease: Invalid argument
-> 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Hello,
 
-Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+I found a bug in the vmw_pvscsi driver.
+When the driver fails to allocate the host, I get the following warning:
 
--- 
-Muhammad Usama Anjum
+[   22.759652] VMware PVSCSI driver - version 1.0.7.0-k
+[   22.766883] vmw_pvscsi: using 64bit dma
+[   22.767357] vmw_pvscsi 0000:00:05.0: vmw_pvscsi: PVSCSI_CMD_CONFIG
+failed. hostStatus = 0x1a, scsiStatus = 0x2
+[   22.767859] vmw_pvscsi: max_id: 16
+[   22.768029] vmw_pvscsi: setting ring_pages to 8
+[   22.768263] vmw_pvscsi: failed to allocate host
+[   22.768491] ------------[ cut here ]------------
+[   22.768767] Trying to free already-free IRQ 21
+[   22.769001] WARNING: CPU: 0 PID: 336 at kernel/irq/manage.c:1861
+free_irq+0x3a4/0x7c0
+[   22.771363] RIP: 0010:free_irq+0x3a4/0x7c0
+[   22.775533] Call Trace:
+[   22.775662]  <TASK>
+[   22.775780]  pvscsi_shutdown_intr+0x50/0x70 [vmw_pvscsi]
+[   22.776053]  pvscsi_probe+0x2b3/0xe50 [vmw_pvscsi]
+
+The driver's error handling code should be refined.
+
+Zheyu Ma
