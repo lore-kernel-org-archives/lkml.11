@@ -2,130 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE80C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240613AbiEUHSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 03:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
+        id S240771AbiEUHVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 03:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232213AbiEUHSi (ORCPT
+        with ESMTP id S232213AbiEUHVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 03:18:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9A31163F42
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 00:18:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653117516;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1yTCoDRJvqGj7AA5Nj4TtGqeOJVmsCsgoM9y6NAj+ic=;
-        b=e7Ly6qOLzpRFtwyaL8SinlgfXD2hdrPgYzkf/dwsrmROREPGdHGLZMfvFvtkMyWZFoVSES
-        rTQ8d76+/Fp/OJyRvNWI4GbSULeALesjCBJAMi3/GKWt5996eDKvQP/EiYrK/n9tCU6QtO
-        FxNfNdG8X94yiASJJVjC7WTzlknAYbw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-320-uxnVpYHIP5mRzaBOfMBHMw-1; Sat, 21 May 2022 03:18:30 -0400
-X-MC-Unique: uxnVpYHIP5mRzaBOfMBHMw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DA2EB185A79C;
-        Sat, 21 May 2022 07:18:29 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C150C492C3B;
-        Sat, 21 May 2022 07:18:28 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH] afs: Fix afs_getattr() to refetch file status if callback
- break occurred
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     Markus Suvanto <markus.suvanto@gmail.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        Markus Suvanto <markus.suvanto@gmail.com>,
-        kafs-testing+fedora34_64checkkafs-build-496@auristor.com,
-        dhowells@redhat.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sat, 21 May 2022 08:18:28 +0100
-Message-ID: <165311750805.192844.10284715285667771691.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        Sat, 21 May 2022 03:21:47 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2065C4BFED;
+        Sat, 21 May 2022 00:21:46 -0700 (PDT)
+Received: from kwepemi100023.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L4w3Q4bZRzgY81;
+        Sat, 21 May 2022 15:20:18 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100023.china.huawei.com (7.221.188.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 21 May 2022 15:21:43 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 21 May
+ 2022 15:21:43 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <jack@suse.cz>, <axboe@kernel.dk>, <paolo.valente@linaro.org>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next v2 0/6] multiple cleanup patches for bfq
+Date:   Sat, 21 May 2022 15:35:17 +0800
+Message-ID: <20220521073523.3118246-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a callback break occurs (change notification), afs_getattr() needs to
-issue an FS.FetchStatus RPC operation to update the status of the file
-being examined by the stat-family of system calls.
+Changes in v2:
+ - add missing blank line in patch 1.
+ - remove patch 7,8, since they are wrong.
+ - add reviewed-by tag
 
-Fix afs_getattr() to do this if AFS_VNODE_CB_PROMISED has been cleared on a
-vnode by a callback break.  Skip this if AT_STATX_DONT_SYNC is set.
+There are no functional changes in this patchset, just some places
+that I think can be improved during code review.
 
-This can be tested by appending to a file on one AFS client and then using
-"stat -L" to examine its length on a machine running kafs.  This can also
-be watched through tracing on the kafs machine.  The callback break is
-seen:
+This patchset is rebased based on this patchset:
+https://lore.kernel.org/all/20220428120837.3737765-1-yukuai3@huawei.com/
 
-     kworker/1:1-46      [001] .....   978.910812: afs_cb_call: c=0000005f YFSCB.CallBack
-     kworker/1:1-46      [001] ...1.   978.910829: afs_cb_break: 100058:23b4c:242d2c2 b=2 s=1 break-cb
-     kworker/1:1-46      [001] .....   978.911062: afs_call_done:    c=0000005f ret=0 ab=0 [0000000082994ead]
+Previous version:
+v1: https://lore.kernel.org/all/20220514090522.1669270-1-yukuai3@huawei.com/
 
-And then the stat command generated no traffic if unpatched, but with this
-change a call to fetch the status can be observed:
+Yu Kuai (6):
+  block, bfq: cleanup bfq_weights_tree add/remove apis
+  block, bfq: cleanup __bfq_weights_tree_remove()
+  block, bfq: factor out code to update 'active_entities'
+  block, bfq: don't declare 'bfqd' as type 'void *' in bfq_group
+  block, bfq: cleanup bfq_activate_requeue_entity()
+  block, bfq: remove dead code for updating 'rq_in_driver'
 
-            stat-4471    [000] .....   986.744122: afs_make_fs_call: c=000000ab 100058:023b4c:242d2c2 YFS.FetchStatus
-            stat-4471    [000] .....   986.745578: afs_call_done:    c=000000ab ret=0 ab=0 [0000000087fc8c84]
+ block/bfq-cgroup.c  |  2 +-
+ block/bfq-iosched.c | 38 +++----------------
+ block/bfq-iosched.h | 11 ++----
+ block/bfq-wf2q.c    | 91 ++++++++++++++++++++-------------------------
+ 4 files changed, 51 insertions(+), 91 deletions(-)
 
-Fixes: 08e0e7c82eea ("[AF_RXRPC]: Make the in-kernel AFS filesystem use AF_RXRPC.")
-Reported-by: Markus Suvanto <markus.suvanto@gmail.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Tested-by: Markus Suvanto <markus.suvanto@gmail.com>
-Tested-by: kafs-testing+fedora34_64checkkafs-build-496@auristor.com
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216010
-Link: https://lore.kernel.org/r/165308359800.162686.14122417881564420962.stgit@warthog.procyon.org.uk/ # v1
----
-
- fs/afs/inode.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index 2fe402483ad5..30b066299d39 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -740,10 +740,22 @@ int afs_getattr(struct user_namespace *mnt_userns, const struct path *path,
- {
- 	struct inode *inode = d_inode(path->dentry);
- 	struct afs_vnode *vnode = AFS_FS_I(inode);
--	int seq = 0;
-+	struct key *key;
-+	int ret, seq = 0;
- 
- 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
- 
-+	if (!(query_flags & AT_STATX_DONT_SYNC) &&
-+	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
-+		key = afs_request_key(vnode->volume->cell);
-+		if (IS_ERR(key))
-+			return PTR_ERR(key);
-+		ret = afs_validate(vnode, key);
-+		key_put(key);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	do {
- 		read_seqbegin_or_lock(&vnode->cb_lock, &seq);
- 		generic_fillattr(&init_user_ns, inode, stat);
-
+-- 
+2.31.1
 
