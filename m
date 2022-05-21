@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD21C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 14:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244474AbiEUO3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 10:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        id S1348256AbiEUO3x (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 10:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235561AbiEUO3P (ORCPT
+        with ESMTP id S235561AbiEUO3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 10:29:15 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13FE3AA5E;
-        Sat, 21 May 2022 07:29:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=r96J06AA/hx9f6lJVo/su3KBEml3SMC6atekdO73IQM=; b=DA7AJxCsP7mGwECk9LimTyPCeq
-        mGKgm41gxsuHHV7QhgBYxPT8DUmPSCyenxJ71/uLaEg5vufk0igLqeQ+OZFcnaYb6Aq2PRGmnwkq5
-        NN1bQ+lQmxVO8nAmtFk7J0Y/KM7jdI/Q7Nw67nC4GQgYTJUkYAdwWLLSO0ym/EyuljdE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nsPZq-003lku-2S; Sat, 21 May 2022 15:55:30 +0200
-Date:   Sat, 21 May 2022 15:55:30 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        kuba@kernel.org, clement.leger@bootlin.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: ocelot: fix wrong time_after usage
-Message-ID: <YojvUsJ090H/wfEk@lunn.ch>
-References: <YoeMW+/KGk8VpbED@lunn.ch>
- <20220520213115.7832-1-paskripkin@gmail.com>
+        Sat, 21 May 2022 10:29:48 -0400
+Received: from sender4-pp-o94.zoho.com (sender4-pp-o94.zoho.com [136.143.188.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51360986F9;
+        Sat, 21 May 2022 07:29:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1653143316; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=H0WwP6DT5FRxWXZZoHBb2zu15fj5oVAkZWaY7krYxuFPoH33cKff/0pa+Ov3DrNbNDsbM6ija6+FzUjg9B5eqQt/1Ph9cKi7Rlk/2iDANH6BOEHc3H9G7i2GALBDwHbJlhkgU14lvQ/ZB7fifVaFzXNap0sriuREbt80yyM5Ja4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1653143316; h=Content-Type:Content-Transfer-Encoding:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=fvKlICVNUUrLCUJvTxodNTr2NlUW+NUhpKNpJF53DY0=; 
+        b=alaes17ZDjTkex7WiZ/M17Ha7ufsc4onDumzuGLrlPPmeeCwwok8X8qxJ2sR1Zw3RVMU5sOS25pYehkTKepPFdc8LaFD7+1mFxEh8dnUzBe/C4wcAIoKZIQxpadmkFEpUl4kwSHL1pDTfSrYBiOI/5FU7BglhUIeVcig0cPg+4Y=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=zohomail.com;
+        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
+        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653143316;
+        s=zm2022; d=zohomail.com; i=lchen.firstlove@zohomail.com;
+        h=Date:Date:From:From:To:To:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To:Cc;
+        bh=fvKlICVNUUrLCUJvTxodNTr2NlUW+NUhpKNpJF53DY0=;
+        b=PbDLyZIIPk5iiT9nClJsNtMFERjCdQJViOFBT+CPRmv4DfSzmM4cTZCTMyHmaYqd
+        Ohkt8O5ixFtXPszO6dwRx6RHlXTDQc38CkmD9baSxbKv7+Cb5tySB9AMRe6W67g94rd
+        Z4eX6S29mkmGtc+gnMdSxAes6iECbdzbIqRQVvnM=
+Received: from mail.zoho.com by mx.zohomail.com
+        with SMTP id 1653143315853446.0560187060004; Sat, 21 May 2022 07:28:35 -0700 (PDT)
+Received: from  [45.12.140.94] by mail.zoho.com
+        with HTTP;Sat, 21 May 2022 07:28:35 -0700 (PDT)
+Date:   Sat, 21 May 2022 07:28:35 -0700
+From:   Li Chen <lchen.firstlove@zohomail.com>
+To:     "Mark Brown" <broonie@kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "linux-gpio" <linux-gpio@vger.kernel.org>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        "linux-arm-kernel" <linux-arm-kernel@lists.infradead.org>,
+        "Patrice Chotard" <patrice.chotard@foss.st.com>,
+        "linux-sunxi" <linux-sunxi@lists.linux.dev>,
+        "Liam Girdwood" <lgirdwood@gmail.com>,
+        "Jaroslav Kysela" <perex@perex.cz>,
+        "Takashi Iwai" <tiwai@suse.com>, "Chen-Yu Tsai" <wens@csie.org>,
+        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
+        "Samuel Holland" <samuel@sholland.org>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>
+Message-ID: <180e7052574.1144f2ff745882.256639936280011408@zohomail.com>
+In-Reply-To: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
+References: <180e702a15f.e737e37e45859.3135149506136486394@zohomail.com>
+Subject: [PATCH 3/4] pinctrl: bcm: Use regmap_field_{set/clear}_bits helpers
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220520213115.7832-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
+Feedback-ID: rr08011226cce64127a18241e0b697cc370000a880a5bcfbb0056f95fd6a6c9044b7692dad714f4d52b49d:zu080112271849dd534324e028c72397fc0000e49e3d3ef24f687a23260274b906d374f69042e7b13707974e:rf0801122c246438a076f98930abc3b8280000a6b432ce715950e8973f8024087e02d36c4a8c3b14ef69ca6f86194cca7f:ZohoMail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 12:31:15AM +0300, Pavel Skripkin wrote:
-> Accidentally noticed, that this driver is the only user of
-> while (time_after(jiffies...)).
-> 
-> It looks like typo, because likely this while loop will finish after 1st
-> iteration, because time_after() returns true when 1st argument _is after_
-> 2nd one.
-> 
-> There is one possible problem with this poll loop: the scheduler could put
-> the thread to sleep, and it does not get woken up for
-> OCELOT_FDMA_CH_SAFE_TIMEOUT_US. During that time, the hardware has done
-> its thing, but you exit the while loop and return -ETIMEDOUT.
-> 
-> Fix it by using sane poll API that avoids all problems described above
-> 
-> Fixes: 753a026cfec1 ("net: ocelot: add FDMA support")
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
-> 
-> I can't say if 0 is a good choise for 5th readx_poll_timeout() argument,
-> so this patch is build-tested only.
+From: Li Chen <lchen@ambarella.com>
 
-> Testing and suggestions are welcomed!
+Appropriately change calls to regmap_field_update_bits()
+with regmap_field_clear_bits() for improved readability.
 
-If you had the hardware, i would suggest you profile how often it does
-complete on the first iteration. And when it does not complete on the
-first iteration, how many more iterations it needs.
+Signed-off-by: Li Chen <lchen@ambarella.com>
+---
+ drivers/pinctrl/bcm/pinctrl-bcm6358.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Tobias made an interesting observation with the mv88e6xxx switch. He
-found that two tight polls was enough 99% of the time. Putting a sleep
-in there doubles the time it took to setup the switch. So he ended up
-with a hybrid of open coded polling twice, followed by iopoll with a
-timer value set.
-
-That was with a heavily used poll function. How often is this function
-used? No point in overly optimising this if it is not used much.
-
-      Andrew
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm6358.c b/drivers/pinctrl/bcm/pinctrl-bcm6358.c
+index 9f6cd7447887..b03dfcb171d1 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm6358.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm6358.c
+@@ -300,7 +300,7 @@ static int bcm6358_gpio_request_enable(struct pinctrl_dev *pctldev,
+ 		return 0;
  
+ 	/* disable all functions using this pin */
+-	return regmap_field_update_bits(priv->overlays, mask, 0);
++	return regmap_field_clear_bits(priv->overlays, mask);
+ }
+ 
+ static const struct pinctrl_ops bcm6358_pctl_ops = {
+-- 
+2.36.1
+
+
