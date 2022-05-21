@@ -2,122 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A09BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB091C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 07:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232544AbiEUHka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 03:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+        id S1351486AbiEUHlp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 03:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiEUHkZ (ORCPT
+        with ESMTP id S240940AbiEUHlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 03:40:25 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C4917D39F;
-        Sat, 21 May 2022 00:40:19 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id y41so9451809pfw.12;
-        Sat, 21 May 2022 00:40:19 -0700 (PDT)
+        Sat, 21 May 2022 03:41:37 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C621275E0
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 00:41:35 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso13241046pjj.4
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 00:41:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yXgvzw1X7R3HihF3IFI7HYdhqndiCIe6AuxGQb67yKc=;
-        b=ePPKvV82Kbx+Rtc5FoK/l+sEPohtrVvNDLK1QXehdRSaZnX8mpyqocpvwr2QsGdWJ5
-         bLQ4ROLDowWcMCZ7CiGYtGgFFQgEdrFrGAvnoOGeKTLU9SETat+F4eINdzD1AjI1jP6q
-         L/uJCTXtPvvvMc07rxyhgn2630pKyn8P9J5qJpKhJckR/mWyMWwWSogoQOrgxVYFoEPS
-         jO/ucBwvw1bPtsZPzQCUP0q3axJvkQ609soFg7SljsJgNtGfwB9Xo3O43njj4LfEG09X
-         8Pu1N9GP+SDyemv9PhvrmlBpb9r5nYPsWCLzx4roLuXNY318xpfnOeG1LxP44cVTMnqY
-         waBg==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nkC8R3wCXH68D4z7ykE31agm2/PPcd7YK33KMuJAW0=;
+        b=vXFtD6fPc1gHThhUFXmomjEpkhfM6kTHUB5fWVUzUEoPnn5HuqTWlqPolavNlHZvy+
+         0FKri/WoCMBQSGlELJV+KR7fTw4+8tGIsDjaX/RIWlzfbvhpUoz20d7rqP/yrcAHcfeL
+         ZfVIdSuGefvHjanN0MmWEM4FHiFAuVFkzFl4uzRhPUKGC/+nvnmkkQaz1yXfxoo6lPm9
+         sHPR8nmUyncXBVmtfZCWsW/6FfSErHLvfMCUIiEoN9BRY9I3bx+zTZ0aoCCp77b6hF0C
+         ge/WsubSF6bojhzcxGrXkSoFZPulJ24QsQSzmgqx1Vjh3Pi6ntMmwA+hm47wxdfb2FuM
+         t5aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yXgvzw1X7R3HihF3IFI7HYdhqndiCIe6AuxGQb67yKc=;
-        b=lVp4kAF7uDuZ8EiUc1yoLyAydBn4SLJJDa1zV3Sj3i/up2qZkm6/Yr+AghxSkq0hVT
-         8clIEZM9958jY3iQ9W/02SNqtUI8RUeYoZGEB+MFfwI6sAEGTKrLZ/HGLOGhkf8nk8WG
-         BA6M+FBmcuYreO65SUph0BDid7eEgGanH2Ll5aP284176+BLP9KyJ9ioskkQZ7rBGDMu
-         ngyGxxwT18m4x6P86aTv9C9E8Fdyl2fD1d6XXcNWlPeMk9GmafK1+DJYA+ghOq9b10EJ
-         x09hEFvMrY0Axf/sXHc7Jp1ahGddXXZrm7hNdX6gwp2NuEwv2PALSMh7uEgfPzTYwsLi
-         aYSQ==
-X-Gm-Message-State: AOAM532V/EXRachEh3IDIZ5h6vzO+DkXOfYVEMeRldlOwzPm77w8T+J9
-        O40w5UrXTJt0Akg3ywn+m9E=
-X-Google-Smtp-Source: ABdhPJxCSWMw/Pmp/yjU4TSydTB3KBQBSbZqHg12jWGmP+MTxJedaxk5xTCPwXKuglS2CpVMYqfUlQ==
-X-Received: by 2002:a62:8349:0:b0:518:143e:235c with SMTP id h70-20020a628349000000b00518143e235cmr13565092pfe.82.1653118818520;
-        Sat, 21 May 2022 00:40:18 -0700 (PDT)
-Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id e9-20020a654789000000b003ed6b3dc52esm887826pgs.55.2022.05.21.00.40.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2nkC8R3wCXH68D4z7ykE31agm2/PPcd7YK33KMuJAW0=;
+        b=40LKDSFaqimMueqTgj7MZ9prE1ZvcUl+/YZXoOG+tgJi5iwPmO0z+NTpp9/Ttusiaw
+         923UdJDCXY3stDI6mO3CW9ttaP4PyKWccNjKD6DC10mjFq0ukGGbuoBK6bCml7yy32Dl
+         V2zLYOBziS1OxGfmPCC6ITVx46mQDO+AwzcVssBZi8BKBlUB9+vEBhiyaTaZEOvqSw3Y
+         XvsndpjXUYoN3lMtZvtvAcr2kaF7catrLZQGHvbzPobY5P2BfcjxlorZyH61wfZyS16y
+         KeORHXqonboNn9wSGXpuee3hQO1G6lm/l8mmMHRH7/hrAFzJojr9CeoqCdojo89pMXhj
+         Aedw==
+X-Gm-Message-State: AOAM531ohKyCzVDTvdomSLo6lCeYeHuwVyz0d3n/ZCYxmrgO5DSJYzRx
+        nTkdlCGKFsNswHa9tzeg+kvBDw==
+X-Google-Smtp-Source: ABdhPJyE2XaD09jR1f2y5cOWDtifOQaPbd0ax33DAYVfmiywF365Ow2gn8nIuH9JxKuaisEaM8BMEw==
+X-Received: by 2002:a17:902:c752:b0:161:7cb4:78b1 with SMTP id q18-20020a170902c75200b001617cb478b1mr13142696plq.166.1653118895053;
+        Sat, 21 May 2022 00:41:35 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id f64-20020a62db43000000b0050dc7628134sm3148755pfg.14.2022.05.21.00.41.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 00:40:17 -0700 (PDT)
-Date:   Sat, 21 May 2022 00:38:05 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH 3/5] lib/bitmap: add test for bitmap_{from,to}_arr64
-Message-ID: <YoiW3R0nsC71hlFm@yury-laptop>
-References: <20220428205116.861003-1-yury.norov@gmail.com>
- <20220428205116.861003-4-yury.norov@gmail.com>
- <20220519150929.GA3145933@roeck-us.net>
+        Sat, 21 May 2022 00:41:34 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     akpm@linux-foundation.org, mike.kravetz@oracle.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH] MAINTAINERS: add Muchun as co-maintainer for HugeTLB
+Date:   Sat, 21 May 2022 15:41:03 +0800
+Message-Id: <20220521074103.79468-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519150929.GA3145933@roeck-us.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 08:09:29AM -0700, Guenter Roeck wrote:
-> On Thu, Apr 28, 2022 at 01:51:14PM -0700, Yury Norov wrote:
-> > Test newly added bitmap_{from,to}_arr64() functions similarly to
-> > already existing bitmap_{from,to}_arr32() tests.
-> > 
-> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> 
-> With this patch in linux-next (including next-20220519), I see lots of
-> bitmap test errors when booting 32-bit ppc images in qemu. Examples:
-> 
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0", got "0,65"
-> ...
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128"
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128-129"
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65", got "0,65,128-130"
-> ...
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65,128-143", got "0,65,128-143,208-209"
-> test_bitmap: [lib/test_bitmap.c:600] bitmaps contents differ: expected "0,65,128-143", got "0,65,128-143,208-210"
-> 
-> and so on. It only  gets worse from there, and ends with:
-> 
-> test_bitmap: parselist: 14: input is '0-2047:128/256' OK, Time: 4274
-> test_bitmap: bitmap_print_to_pagebuf: input is '0-32767
-> ', Time: 127267
-> test_bitmap: failed 337 out of 3801 tests
-> 
-> Other architectures and 64-bit ppc builds seem to be fine. 
+I have been focusing on mm for the past two years. e.g. developing,
+fixing bugs, reviewing related to HugeTLB system.  I would like to
+help Mike and other people working on HugeTLB by reviewing their
+work.
 
-So, the problem is in previous patch. I'll fold-in the following fix
-into that if no objections.
+When I fist introduced the vmemmmap reduction, I forgot to update
+MAINTAINERS file.  Let's update it as well.  And rename "HUGETLB
+FILESYSTEM" to "HUGETLB SUBSYSTEM" since some files are not only
+related to filesystem but also memory management (the name of
+FILESYSTEM cannot cover this area).
 
-diff --git a/lib/bitmap.c b/lib/bitmap.c
-index 52b9912a71ea..97c14845f452 100644
---- a/lib/bitmap.c
-+++ b/lib/bitmap.c
-@@ -1585,7 +1585,7 @@ void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ MAINTAINERS | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-        /* Clear tail bits in the last element of array beyond nbits. */
-        if (nbits % 64)
--               buf[-1] &= GENMASK_ULL(nbits, 0);
-+               buf[-1] &= GENMASK_ULL(nbits % 64, 0);
- }
- EXPORT_SYMBOL(bitmap_to_arr64);
- #endif
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6516f9c6d28e..904657ffdcd8 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9087,16 +9087,20 @@ S:	Orphan
+ F:	Documentation/networking/device_drivers/ethernet/huawei/hinic.rst
+ F:	drivers/net/ethernet/huawei/hinic/
+ 
+-HUGETLB FILESYSTEM
++HUGETLB SUBSYSTEM
+ M:	Mike Kravetz <mike.kravetz@oracle.com>
++M:	Muchun Song <songmuchun@bytedance.com>
+ L:	linux-mm@kvack.org
+ S:	Maintained
+ F:	Documentation/ABI/testing/sysfs-kernel-mm-hugepages
+ F:	Documentation/admin-guide/mm/hugetlbpage.rst
+ F:	Documentation/vm/hugetlbfs_reserv.rst
++F:	Documentation/vm/vmemmap_dedup.rst
+ F:	fs/hugetlbfs/
+ F:	include/linux/hugetlb.h
+ F:	mm/hugetlb.c
++F:	mm/hugetlb_vmemmap.c
++F:	mm/hugetlb_vmemmap.h
+ 
+ HVA ST MEDIA DRIVER
+ M:	Jean-Christophe Trotin <jean-christophe.trotin@foss.st.com>
+-- 
+2.11.0
 
