@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 122A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 11:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355159AbiEULS7 (ORCPT
+        id S1354263AbiEULTG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 07:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        Sat, 21 May 2022 07:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354851AbiEULMp (ORCPT
+        with ESMTP id S1354860AbiEULMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 07:12:45 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CF840A26;
-        Sat, 21 May 2022 04:12:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AC92AE24;
+        Sat, 21 May 2022 04:12:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=XLgCN8Yh7yxhlMDt3xIIkmr+KqEgc6deFZgdqMU2dck=;
-  b=I1/g/SGrOqlYAFWUIoADNfRvCO1Xa8xhnNhL5loAnWHEUyi2buQpkHSe
-   UvnMEschS5N06I/cuyzuOu3vr5THR7tgLsLS05JYuJM+3LgbqRd3AFeBh
-   TBZI80eprlh9kekDdkz1SQTDOylo8D3o7yHqsaH5ZWU0ZHDFP2a4TIJSN
-   s=;
+  bh=UX86kqzxt9SnOMIadq/iiAiQLXfK5Xylhc0sXYKGfbE=;
+  b=facg9zEz9S9z6Lez6slU+xhqKN3rNeDfBoxPc40YuHm5UMMDiRxw2uxq
+   dilsoi5GQCVHG/e9TWxaQ8F5CVXc/7enoReDOz3A2fyz9fUM/P6sPcelj
+   MJDvGWiE31rVAkvfVmTMJZQXw48iv5m3wWCXy6hu2Boh0FKL82ZsvB28d
+   4=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727958"
+   d="scan'208";a="14727964"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:01 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:12:02 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>
 Cc:     kernel-janitors@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] media: staging: atomisp: fix typo in comment
-Date:   Sat, 21 May 2022 13:11:05 +0200
-Message-Id: <20220521111145.81697-55-Julia.Lawall@inria.fr>
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] of/irq: fix typo in comment
+Date:   Sat, 21 May 2022 13:11:09 +0200
+Message-Id: <20220521111145.81697-59-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -53,20 +51,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/staging/media/atomisp/i2c/ov5693/ov5693.h |    2 +-
+ drivers/of/irq.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/atomisp/i2c/ov5693/ov5693.h b/drivers/staging/media/atomisp/i2c/ov5693/ov5693.h
-index 79df07bd69b6..a1366666f49c 100644
---- a/drivers/staging/media/atomisp/i2c/ov5693/ov5693.h
-+++ b/drivers/staging/media/atomisp/i2c/ov5693/ov5693.h
-@@ -855,7 +855,7 @@ static struct ov5693_reg const ov5693_1616x1216_30fps[] = {
- 	{OV5693_8BIT, 0x3813, 0x06},	/*{3812,3813} windowing Y offset*/
- 	{OV5693_8BIT, 0x3814, 0x11},	/*X subsample control*/
- 	{OV5693_8BIT, 0x3815, 0x11},	/*Y subsample control*/
--	{OV5693_8BIT, 0x3820, 0x00},	/*FLIP/Binnning control*/
-+	{OV5693_8BIT, 0x3820, 0x00},	/*FLIP/Binning control*/
- 	{OV5693_8BIT, 0x3821, 0x1e},	/*MIRROR control*/
- 	{OV5693_8BIT, 0x5002, 0x00},
- 	{OV5693_8BIT, 0x5041, 0x84},
+diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+index aa485eb312ac..d22f605fa7ee 100644
+--- a/drivers/of/irq.c
++++ b/drivers/of/irq.c
+@@ -284,7 +284,7 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
+ 		}
+ 
+ 		/*
+-		 * Successfully parsed an interrrupt-map translation; copy new
++		 * Successfully parsed an interrupt-map translation; copy new
+ 		 * interrupt specifier into the out_irq structure
+ 		 */
+ 		match_array = imap - newaddrsize - newintsize;
 
