@@ -2,186 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE374C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 00:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26483C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 00:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354239AbiEUAc7 (ORCPT
+        id S1354265AbiEUAgb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 20 May 2022 20:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        Fri, 20 May 2022 20:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241274AbiEUAc6 (ORCPT
+        with ESMTP id S1354263AbiEUAgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 20 May 2022 20:32:58 -0400
-Received: from mail-oi1-x263.google.com (mail-oi1-x263.google.com [IPv6:2607:f8b0:4864:20::263])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10301966A0
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 17:32:56 -0700 (PDT)
-Received: by mail-oi1-x263.google.com with SMTP id q10so11728077oia.9
-        for <linux-kernel@vger.kernel.org>; Fri, 20 May 2022 17:32:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:dkim-signature:date:from:to:cc:subject
-         :message-id:references:content-disposition:in-reply-to;
-        bh=uKGN50vu+4GfXG0sgHNA4qzCjapPU1Kse30oS1F+Mz0=;
-        b=D5N/gruivvpBY0gal1LF7+lhODicuKwpSIc5ALP/rKYVjqQlXxFnNDNVMA2K38YY+T
-         cpBsqBLmI3xzpv6BjLNnBkoq0/nNOcdI9P3ya7bkkv6yYu4GDaO+iqyHf8vnatoSnA9S
-         z8cGfbLnsxZu0XOPLtMpXjlDYS7QhED3fo8twFixLBqgrahADfrml8FEF41MTqhxEYkQ
-         6Rhejp72FTjCblMbHc870xIALC5DmLF7xaYJzR7FTH9ev3/GZ6BlEsbPk0wneefNwdbA
-         /eU5DGtUqbIMXQHIhCj78BljbiOr/Wc5h+4Uijn7FU9Ofw9LMhi7c3ur6+rp+Uw8rjyX
-         vuhw==
-X-Gm-Message-State: AOAM531iK8O+/iGnYI9HXUApefsdkZxjcxxyEV78n7MLWp+RIiyxycZQ
-        8JmUF1mIQ8Ec3cKq7mdWpl134yPVUgvW5zaMx2ocOlXIBmFD
-X-Google-Smtp-Source: ABdhPJx5Tde5W9mWXWJv9R/IlJRR5cVmbZkn08TLXsh8C2TlLikx0u1fk85XfVyZOK7sa3+S/ewkQqnUitbo
-X-Received: by 2002:a05:6808:3021:b0:2f7:4c5b:2783 with SMTP id ay33-20020a056808302100b002f74c5b2783mr6926937oib.53.1653093176066;
-        Fri, 20 May 2022 17:32:56 -0700 (PDT)
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [54.193.82.35])
-        by smtp-relay.gmail.com with ESMTPS id x19-20020a4a4113000000b0035ecc74f8b3sm296899ooa.3.2022.05.20.17.32.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 20 May 2022 17:32:56 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from chmeee (unknown [10.95.70.242])
-        by smtp.aristanetworks.com (Postfix) with ESMTPS id 1EC2E3047DE0;
-        Fri, 20 May 2022 17:32:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1653093175;
-        bh=uKGN50vu+4GfXG0sgHNA4qzCjapPU1Kse30oS1F+Mz0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0DyVyJXJt4FYoH8Kv0cX4olYdnqzSuA4lBBROmFHad3DGAhawAeQkq3DanjUAyYyv
-         ImkqFFtFUHvijhmZuNkN3DNSfJBhmRNbi6GWHwNRoYBUs6VpTIqIs5c4g9spoAAMqL
-         /ex/H6i0JBWv2wnR1xrrfbcf8t2ILB6T7P4H5QN1t4m6QbxhTJtqvXZYZZA9QKgPgd
-         t+f6Z8xIQNFb44GPzld79gtzN67mS+Q5cqwBcH4lg4co5S8Q4KKc/i7jOjzU8KM7bI
-         DUoOc4kk1/+H0lg1e5FgyCZbnREHrklWrgqVlUF8mP1ug0j/mjLgC5KPaFUDir95EQ
-         almPQRMxyu44w==
-Received: from kevmitch by chmeee with local (Exim 4.95)
-        (envelope-from <kevmitch@arista.com>)
-        id 1nsD37-001pZX-EI;
-        Fri, 20 May 2022 17:32:53 -0700
-Date:   Fri, 20 May 2022 17:32:52 -0700
-From:   Kevin Mitchell <kevmitch@arista.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     HATAYAMA Daisuke <d.hatayama@jp.fujitsu.com>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        David Rientjes <rientjes@google.com>,
-        Dou Liyang <douly.fnst@cn.fujitsu.com>,
+        Fri, 20 May 2022 20:36:14 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C598BD14;
+        Fri, 20 May 2022 17:36:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653093373; x=1684629373;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=aSIVxOqYU0VsWH3zUrnA7SEDwlthRp8yx4PqLUIgrvA=;
+  b=B+5b9iP4vN9tdDycvNnNcSFZNiO7NhNKwNAGQgRCehuBEJob9BFOHYuH
+   g/VM7Ji61/XsEyLu8lzF9rpSeF/HxMLgxfGDjGRafxZHBTjn5HsxC033V
+   W/EXpaI5EbW7jxROWu2WT/CO0MMPuz37ZtT/MJeJqD9xlO0KY8TdZhE6O
+   KhrKOB3/fuKhNC+NW225wLmmtpdhyJZb80gaAq+ZA8vtUIT1efj0tvXGX
+   dV5KFf4uc1ModPZOSNZIUDfWaKtmIksV5PtsceMlZTXFDQAkqRE0ocaFD
+   lp72MySB+OuGQfs7pBEqTJbUBBnQ+o8GAXxtIwNTOqQyf3n8CSQyVwG/o
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="260365719"
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="260365719"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 17:36:12 -0700
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="628430958"
+Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.251.21.47])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 17:36:11 -0700
+From:   Russ Weight <russell.h.weight@intel.com>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        lee.jones@linaro.org, linux-fpga@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] x86/mpparse: avoid overwriting
- boot_cpu_physical_apicid
-Message-ID: <YogzNIs7uBSaX1gE@chmeee>
-References: <20200609004451.1296880-1-kevmitch@arista.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200609004451.1296880-1-kevmitch@arista.com>
+Cc:     trix@redhat.com, marpagan@redhat.com, lgoncalv@redhat.com,
+        matthew.gerlach@linux.intel.com,
+        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
+        Russ Weight <russell.h.weight@intel.com>
+Subject: [PATCH v21 1/5] mfd: intel-m10-bmc: Rename n3000bmc-secure driver
+Date:   Fri, 20 May 2022 17:36:03 -0700
+Message-Id: <20220521003607.737734-2-russell.h.weight@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220521003607.737734-1-russell.h.weight@intel.com>
+References: <20220521003607.737734-1-russell.h.weight@intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 08, 2020 at 05:44:48PM -0700, Kevin Mitchell wrote:
-> When booting with ACPI unavailable or disabled, get_smp_config() ends up
-> calling MP_processor_info() for each CPU found in the MPS
-> table. Previously, this resulted in boot_cpu_physical_apicid getting
-> unconditionally overwritten by the apicid of whatever processor had the
-> CPU_BOOTPROCESSOR flag. This occurred even if boot_cpu_physical_apicid
-> had already been more reliably determined in register_lapic_address() by
-> calling read_apic_id() from the actual boot processor.
-> 
-> Ordinariliy, this is not a problem because the boot processor really is
-> the one with the CPU_BOOTPROCESSOR flag. However, kexec is an exception
-> in which the kernel may be booted from any processor regardless of the
-> MPS table contents. In this case, boot_cpu_physical_apicid may not
-> indicate the actual boot processor.
-> 
-> This was particularly problematic when the second kernel was booted with
-> NR_CPUS fewer than the number of physical processors. It's the job of
-> generic_processor_info() to decide which CPUs to bring up in this case.
-> That obviously must include the real boot processor which it takes care
-> to save a slot for. It relies upon the contents of
-> boot_cpu_physical_apicid to do this, which if incorrect, may result in
-> the boot processor getting left out.
-> 
-> This condition can be discovered by smp_sanity_check() and rectified by
-> adding the boot processor to the phys_cpu_present_map with the warning
-> "weird, boot CPU (#%d) not listed by the BIOS". However, commit
-> 3e730dad3b6da ("x86/apic: Unify interrupt mode setup for SMP-capable
-> system") caused setup_local_APIC() to be called before this could happen
-> resulting in a BUG_ON(!apic->apic_id_registered()):
-> 
-> [    0.655452] ------------[ cut here ]------------
-> [    0.660610] Kernel BUG at setup_local_APIC+0x74/0x280 [verbose debug info unavailable]
-> [    0.669466] invalid opcode: 0000 [#1] SMP
-> [    0.673948] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 4.19.109.Ar-16509018.eostrunkkernel419 #1
-> [    0.683670] Hardware name: Quanta Quanta LY6 (1LY6UZZ0FBC), BIOS 1.0.6.0-e7d6a55 11/26/2015
-> [    0.693007] RIP: 0010:setup_local_APIC+0x74/0x280
-> [    0.698264] Code: 80 e4 fe bf f0 00 00 00 89 c6 48 8b 05 0f 1a 8e 00 ff 50 10 e8 12 53 fd ff 48 8b 05 00 1a 8e 00 ff 90 a0 00 00 00 85 c0 75 02 <0f> 0b 48 8b 05 ed 19 8e 00 41 be 00 02 00 00 ff 90 b0 00 00 00 48
-> [    0.719251] RSP: 0000:ffffffff81a03e20 EFLAGS: 00010246
-> [    0.725091] RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
-> [    0.733066] RDX: 0000000000000000 RSI: 000000000000000f RDI: 0000000000000020
-> [    0.741041] RBP: ffffffff81a03e98 R08: 0000000000000002 R09: 0000000000000000
-> [    0.749014] R10: ffffffff81a204e0 R11: ffffffff81b50ea7 R12: 0000000000000000
-> [    0.756989] R13: ffffffff81aef920 R14: ffffffff81af60a0 R15: 0000000000000000
-> [    0.764965] FS:  0000000000000000(0000) GS:ffff888036800000(0000) knlGS:0000000000000000
-> [    0.774007] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    0.780427] CR2: ffff888035c01000 CR3: 0000000035a08000 CR4: 00000000000006b0
-> [    0.788401] Call Trace:
-> [    0.791137]  ? amd_iommu_prepare+0x15/0x2a
-> [    0.795717]  apic_bsp_setup+0x55/0x75
-> [    0.799808]  apic_intr_mode_init+0x169/0x16e
-> [    0.804579]  x86_late_time_init+0x10/0x17
-> [    0.809062]  start_kernel+0x37e/0x3fe
-> [    0.813154]  x86_64_start_reservations+0x2a/0x2c
-> [    0.818316]  x86_64_start_kernel+0x72/0x75
-> [    0.822886]  secondary_startup_64+0xa4/0xb0
-> [    0.827564] ---[ end trace 237b64da0fd9b22e ]---
-> 
-> This change avoids these issues by only setting boot_cpu_physical_apicid
-> from the MPS table if it is not already set, which can occur in the
-> construct_default_ISA_mptable() path. Otherwise,
-> boot_cpu_physical_apicid will already have been set in
-> register_lapic_address() and should therefore remain untouched.
-> 
-> Looking through all the places where boot_cpu_physical_apicid is
-> accessed, nearly all of them assume that boot_cpu_physical_apicid should
-> match read_apic_id() on the booting processor. The only place that might
-> intend to use the BSP apicid listed in the MPS table is amd_numa_init(),
-> which explicitly requires boot_cpu_physical_apicid to be the lowest
-> apicid of all processors. Ironically, due to the early exit short
-> circuit in early_get_smp_config(), it instead gets
-> boot_cpu_physical_apicid = read_apic_id() rather than the MPS table
-> BSP. The behaviour of amd_numa_init() is therefore unaffected by this
-> change.
-> 
-> Fixes: 3e730dad3b6da ("x86/apic: Unify interrupt mode setup for SMP-capable system")
-> Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
-> Cc: <stable@vger.kernel.org>
-> ---
->  arch/x86/kernel/mpparse.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
-> index afac7ccce72f..6f22f09bfe11 100644
-> --- a/arch/x86/kernel/mpparse.c
-> +++ b/arch/x86/kernel/mpparse.c
-> @@ -64,7 +64,8 @@ static void __init MP_processor_info(struct mpc_cpu *m)
->  
->  	if (m->cpuflag & CPU_BOOTPROCESSOR) {
->  		bootup_cpu = " (Bootup-CPU)";
-> -		boot_cpu_physical_apicid = m->apicid;
-> +		if (boot_cpu_physical_apicid == -1U)
-> +			boot_cpu_physical_apicid = m->apicid;
->  	}
->  
->  	pr_info("Processor #%d%s\n", m->apicid, bootup_cpu);
-> -- 
-> 2.26.2
-> 
+The n3000bmc-secure driver has changed to n3000bmc-sec-update. Update
+the name in the list of the intel-m10-bmc sub-drivers.
 
-We've moved on to our next kernel upgrade to linux-5.10 and are still seeing
-this same issue with the upstream kernel. We will therefore be porting this
-patch forward, but still wondering if there is any interest in getting this into
-the mainline kernel so more people get (more) correct code? Both patches still
-apply to the mainline (linux-5.18-rc7 right now). Are there any
-alternative suggestions for avoiding this BUG_ON on kexec?
+Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+---
+v21:
+  - No change
+v20:
+  - No change
+v19:
+  - No change
+v18:
+  - No change
+v17:
+  - This is a new patch to change in the name of the secure update
+    driver.
+---
+ drivers/mfd/intel-m10-bmc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mfd/intel-m10-bmc.c b/drivers/mfd/intel-m10-bmc.c
+index 8db3bcf5fccc..f4d0d72573c8 100644
+--- a/drivers/mfd/intel-m10-bmc.c
++++ b/drivers/mfd/intel-m10-bmc.c
+@@ -26,7 +26,7 @@ static struct mfd_cell m10bmc_d5005_subdevs[] = {
+ static struct mfd_cell m10bmc_pacn3000_subdevs[] = {
+ 	{ .name = "n3000bmc-hwmon" },
+ 	{ .name = "n3000bmc-retimer" },
+-	{ .name = "n3000bmc-secure" },
++	{ .name = "n3000bmc-sec-update" },
+ };
+ 
+ static struct mfd_cell m10bmc_n5010_subdevs[] = {
+-- 
+2.25.1
+
