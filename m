@@ -2,24 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CABEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 15:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A673C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 21 May 2022 15:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245329AbiEUPix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 11:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
+        id S1355411AbiEUPi5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 11:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245121AbiEUPig (ORCPT
+        with ESMTP id S245142AbiEUPig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 11:38:36 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3FE62CE5
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5C262CEF
         for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 08:38:34 -0700 (PDT)
 Received: from dslb-188-096-138-194.188.096.pools.vodafone-ip.de ([188.96.138.194] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nsRBV-0007XY-FV; Sat, 21 May 2022 17:38:29 +0200
+        id 1nsRBX-0007XY-5N; Sat, 21 May 2022 17:38:31 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +29,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 01/12] staging: r8188eu: remove unnecessary category check
-Date:   Sat, 21 May 2022 17:38:13 +0200
-Message-Id: <20220521153824.218196-2-martin@kaiser.cx>
+Subject: [PATCH 03/12] staging: r8188eu: use ieee80211_mgmt in issue_action_BA
+Date:   Sat, 21 May 2022 17:38:15 +0200
+Message-Id: <20220521153824.218196-4-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220521153824.218196-1-martin@kaiser.cx>
 References: <20220521153824.218196-1-martin@kaiser.cx>
@@ -40,128 +41,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the unnecessary category check in issue_action_BA. category is
-initialised to 3 (WLAN_CATEGORY_BACK) and never updated.
+Define a struct ieee80211_mgmt variable in issue_action_BA, this will make
+it much simpler to populate the fields of the outoing frame.
 
-The rtw_set_fixed_ie call gets a pointer to category but it doesn't update
-the value.
+Use the new mgmt variable to set the type and subtype of the frame.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 94 ++++++++++-----------
- 1 file changed, 46 insertions(+), 48 deletions(-)
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index faf23fc950c5..f47cf3e7316c 100644
+index 0265784368e2..eec716fea41c 100644
 --- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
 +++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -5415,60 +5415,58 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
- 	pframe = rtw_set_fixed_ie(pframe, 1, &(category), &pattrib->pktlen);
- 	pframe = rtw_set_fixed_ie(pframe, 1, &(action), &pattrib->pktlen);
+@@ -5376,13 +5376,13 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
+ 	struct pkt_attrib *pattrib;
+ 	u8 *pframe;
+ 	struct ieee80211_hdr *pwlanhdr;
+-	__le16 *fctrl;
+ 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+ 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+ 	struct mlme_ext_info *pmlmeinfo = &pmlmeext->mlmext_info;
+ 	struct sta_info *psta;
+ 	struct sta_priv *pstapriv = &padapter->stapriv;
+ 	struct registry_priv *pregpriv = &padapter->registrypriv;
++	struct ieee80211_mgmt *mgmt;
  
--	if (category == 3) {
--		switch (action) {
--		case 0: /* ADDBA req */
--			do {
--				pmlmeinfo->dialogToken++;
--			} while (pmlmeinfo->dialogToken == 0);
--			pframe = rtw_set_fixed_ie(pframe, 1, &pmlmeinfo->dialogToken, &pattrib->pktlen);
-+	switch (action) {
-+	case 0: /* ADDBA req */
-+		do {
-+			pmlmeinfo->dialogToken++;
-+		} while (pmlmeinfo->dialogToken == 0);
-+		pframe = rtw_set_fixed_ie(pframe, 1, &pmlmeinfo->dialogToken, &pattrib->pktlen);
+ 	pmgntframe = alloc_mgtxmitframe(pxmitpriv);
+ 	if (!pmgntframe)
+@@ -5396,9 +5396,9 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
  
--			BA_para_set = (0x1002 | ((status & 0xf) << 2)); /* immediate ack & 64 buffer size */
--			le_tmp = cpu_to_le16(BA_para_set);
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
-+		BA_para_set = (0x1002 | ((status & 0xf) << 2)); /* immediate ack & 64 buffer size */
-+		le_tmp = cpu_to_le16(BA_para_set);
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
+ 	pframe = (u8 *)(pmgntframe->buf_addr) + TXDESC_OFFSET;
+ 	pwlanhdr = (struct ieee80211_hdr *)pframe;
++	mgmt = (struct ieee80211_mgmt *)pframe;
  
--			BA_timeout_value = 5000;/*  5ms */
--			le_tmp = cpu_to_le16(BA_timeout_value);
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
-+		BA_timeout_value = 5000;/*  5ms */
-+		le_tmp = cpu_to_le16(BA_timeout_value);
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
+-	fctrl = &pwlanhdr->frame_control;
+-	*(fctrl) = 0;
++	mgmt->frame_control = cpu_to_le16(IEEE80211_STYPE_ACTION | IEEE80211_FTYPE_MGMT);
  
--			psta = rtw_get_stainfo(pstapriv, raddr);
--			if (psta) {
--				start_seq = (psta->sta_xmitpriv.txseq_tid[status & 0x07] & 0xfff) + 1;
-+		psta = rtw_get_stainfo(pstapriv, raddr);
-+		if (psta) {
-+			start_seq = (psta->sta_xmitpriv.txseq_tid[status & 0x07] & 0xfff) + 1;
+ 	/* memcpy(pwlanhdr->addr1, get_my_bssid(&(pmlmeinfo->network)), ETH_ALEN); */
+ 	memcpy(pwlanhdr->addr1, raddr, ETH_ALEN);
+@@ -5407,7 +5407,6 @@ void issue_action_BA(struct adapter *padapter, unsigned char *raddr, unsigned ch
  
--				psta->BA_starting_seqctrl[status & 0x07] = start_seq;
-+			psta->BA_starting_seqctrl[status & 0x07] = start_seq;
+ 	SetSeqNum(pwlanhdr, pmlmeext->mgnt_seq);
+ 	pmlmeext->mgnt_seq++;
+-	SetFrameSubType(pframe, WIFI_ACTION);
  
--				BA_starting_seqctrl = start_seq << 4;
--			}
--			le_tmp = cpu_to_le16(BA_starting_seqctrl);
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
--			break;
--		case 1: /* ADDBA rsp */
--			pframe = rtw_set_fixed_ie(pframe, 1, &pmlmeinfo->ADDBA_req.dialog_token, &pattrib->pktlen);
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&status, &pattrib->pktlen);
--			BA_para_set = le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f;
--			BA_para_set |= 0x1000; /* 64 buffer size */
--
--			if (pregpriv->ampdu_amsdu == 0)/* disabled */
--				BA_para_set = BA_para_set & ~BIT(0);
--			else if (pregpriv->ampdu_amsdu == 1)/* enabled */
--				BA_para_set = BA_para_set | BIT(0);
--			le_tmp = cpu_to_le16(BA_para_set);
--
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&pmlmeinfo->ADDBA_req.BA_timeout_value, &pattrib->pktlen);
--			break;
--		case 2:/* DELBA */
--			BA_para_set = (status & 0x1F) << 3;
--			le_tmp = cpu_to_le16(BA_para_set);
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
--
--			reason_code = 37;/* Requested from peer STA as it does not want to use the mechanism */
--			le_tmp = cpu_to_le16(reason_code);
--			pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
--			break;
--		default:
--			break;
-+			BA_starting_seqctrl = start_seq << 4;
- 		}
-+		le_tmp = cpu_to_le16(BA_starting_seqctrl);
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
-+		break;
-+	case 1: /* ADDBA rsp */
-+		pframe = rtw_set_fixed_ie(pframe, 1, &pmlmeinfo->ADDBA_req.dialog_token, &pattrib->pktlen);
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&status, &pattrib->pktlen);
-+		BA_para_set = le16_to_cpu(pmlmeinfo->ADDBA_req.BA_para_set) & 0x3f;
-+		BA_para_set |= 0x1000; /* 64 buffer size */
-+
-+		if (pregpriv->ampdu_amsdu == 0)/* disabled */
-+			BA_para_set = BA_para_set & ~BIT(0);
-+		else if (pregpriv->ampdu_amsdu == 1)/* enabled */
-+			BA_para_set = BA_para_set | BIT(0);
-+		le_tmp = cpu_to_le16(BA_para_set);
-+
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&pmlmeinfo->ADDBA_req.BA_timeout_value, &pattrib->pktlen);
-+		break;
-+	case 2:/* DELBA */
-+		BA_para_set = (status & 0x1F) << 3;
-+		le_tmp = cpu_to_le16(BA_para_set);
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
-+
-+		reason_code = 37;/* Requested from peer STA as it does not want to use the mechanism */
-+		le_tmp = cpu_to_le16(reason_code);
-+		pframe = rtw_set_fixed_ie(pframe, 2, (unsigned char *)&le_tmp, &pattrib->pktlen);
-+		break;
-+	default:
-+		break;
- 	}
- 
- 	pattrib->last_txcmdsz = pattrib->pktlen;
+ 	pframe += sizeof(struct ieee80211_hdr_3addr);
+ 	pattrib->pktlen = sizeof(struct ieee80211_hdr_3addr);
 -- 
 2.30.2
 
