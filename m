@@ -2,148 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A855CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 12:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB37C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 12:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241214AbiEVMNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 08:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36568 "EHLO
+        id S241888AbiEVMWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 08:22:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiEVMNM (ORCPT
+        with ESMTP id S229928AbiEVMWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 08:13:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0F8B38DBA
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 05:13:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653221589;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MgC5JNYrsgqgs2qTUiLYfjxLufYrNUR4cj0BHzuGBF0=;
-        b=Z8ehBnUl6iyqiOFS4dmxVXQxJnK39Zy8m8mIveMbABaTACUFdRM3Zy+4qx62D5zrJ4G/xr
-        DPyO2UeqZBCtwChzS4G4DWpNKB25j1p3O9h7zOPcMo3CCT430SjhbWDhD0sd6MJJoNLdwl
-        GOy/Z78QzubDJL1Ij7xSenv/+sbp6fU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-381-iLoXoZYkOo6_1bgTYeSohw-1; Sun, 22 May 2022 08:13:05 -0400
-X-MC-Unique: iLoXoZYkOo6_1bgTYeSohw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6A6EF801210;
-        Sun, 22 May 2022 12:13:04 +0000 (UTC)
-Received: from starship (unknown [10.40.192.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F17F40D2821;
-        Sun, 22 May 2022 12:12:57 +0000 (UTC)
-Message-ID: <f7ef15598cf350f8c5ec8d58c8e2eb51b48c48df.camel@redhat.com>
-Subject: Re: [RFC PATCH v3 06/19] KVM: x86: mmu: add gfn_in_memslot helper
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Date:   Sun, 22 May 2022 15:12:56 +0300
-In-Reply-To: <YoZzx6f1XBWL3i8F@google.com>
-References: <20220427200314.276673-1-mlevitsk@redhat.com>
-         <20220427200314.276673-7-mlevitsk@redhat.com> <YoZzx6f1XBWL3i8F@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Sun, 22 May 2022 08:22:19 -0400
+Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A143BBD8
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 05:22:16 -0700 (PDT)
+Received: from pop-os.home ([86.243.180.246])
+        by smtp.orange.fr with ESMTPA
+        id skb3n6umQV0xUskb3n9oTi; Sun, 22 May 2022 14:22:14 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 22 May 2022 14:22:14 +0200
+X-ME-IP: 86.243.180.246
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     dan.carpenter@oracle.com, Qii Wang <qii.wang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Wolfram Sang <wsa@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH] i2c: mediatek: Fix an error handling path in mtk_i2c_probe()
+Date:   Sun, 22 May 2022 14:22:07 +0200
+Message-Id: <8001bcdbee9f8afc85118c99b8166eb6473dcba5.1653222111.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-19 at 16:43 +0000, Sean Christopherson wrote:
-> On Wed, Apr 27, 2022, Maxim Levitsky wrote:
-> > This is a tiny refactoring, and can be useful to check
-> > if a GPA/GFN is within a memslot a bit more cleanly.
-> 
-> This doesn't explain the actual motivation, which is to use the new helper from
-> arch code.
-I'll add this in the next version
-> 
-> > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > ---
-> >  include/linux/kvm_host.h | 10 +++++++++-
-> >  1 file changed, 9 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> > index 252ee4a61b58b..12e261559070b 100644
-> > --- a/include/linux/kvm_host.h
-> > +++ b/include/linux/kvm_host.h
-> > @@ -1580,6 +1580,13 @@ int kvm_request_irq_source_id(struct kvm *kvm);
-> >  void kvm_free_irq_source_id(struct kvm *kvm, int irq_source_id);
-> >  bool kvm_arch_irqfd_allowed(struct kvm *kvm, struct kvm_irqfd *args);
-> >  
-> > +
-> > +static inline bool gfn_in_memslot(struct kvm_memory_slot *slot, gfn_t gfn)
-> > +{
-> > +	return (gfn >= slot->base_gfn && gfn < slot->base_gfn + slot->npages);
-> > +}
-> > +
-> 
-> Spurious newline.
-> 
-> > +
-> >  /*
-> >   * Returns a pointer to the memslot if it contains gfn.
-> >   * Otherwise returns NULL.
-> > @@ -1590,12 +1597,13 @@ try_get_memslot(struct kvm_memory_slot *slot, gfn_t gfn)
-> >  	if (!slot)
-> >  		return NULL;
-> >  
-> > -	if (gfn >= slot->base_gfn && gfn < slot->base_gfn + slot->npages)
-> > +	if (gfn_in_memslot(slot, gfn))
-> >  		return slot;
-> >  	else
-> >  		return NULL;
-> 
-> At this point, maybe:
+The clsk are prepared, enabled, then disabled. So if an error occurs after
+the disable step, they are still prepared.
 
-No objections.
+Add an error handling path to unprepare the clks in such a case, as already
+done in the .remove function.
 
-Thanks for the review.
+Fixes: 8b4fc246c3ff ("i2c: mediatek: Optimize master_xfer() and avoid circular locking")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/i2c/busses/i2c-mt65xx.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Best regards,
-	Maxim Levitsky
-
-> 
-> 	if (!slot || !gfn_in_memslot(slot, gfn))
-> 		return NULL;
-> 
-> 	return slot;
-> 
-> >  }
-> >  
-> > +
-> >  /*
-> >   * Returns a pointer to the memslot that contains gfn. Otherwise returns NULL.
-> >   *
-> > -- 
-> > 2.26.3
-> > 
-
+diff --git a/drivers/i2c/busses/i2c-mt65xx.c b/drivers/i2c/busses/i2c-mt65xx.c
+index bdecb78bfc26..8e6985354fd5 100644
+--- a/drivers/i2c/busses/i2c-mt65xx.c
++++ b/drivers/i2c/busses/i2c-mt65xx.c
+@@ -1420,17 +1420,22 @@ static int mtk_i2c_probe(struct platform_device *pdev)
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev,
+ 			"Request I2C IRQ %d fail\n", irq);
+-		return ret;
++		goto err_bulk_unprepare;
+ 	}
+ 
+ 	i2c_set_adapdata(&i2c->adap, i2c);
+ 	ret = i2c_add_adapter(&i2c->adap);
+ 	if (ret)
+-		return ret;
++		goto err_bulk_unprepare;
+ 
+ 	platform_set_drvdata(pdev, i2c);
+ 
+ 	return 0;
++
++err_bulk_unprepare:
++	clk_bulk_unprepare(I2C_MT65XX_CLK_MAX, i2c->clocks);
++
++	return ret;
+ }
+ 
+ static int mtk_i2c_remove(struct platform_device *pdev)
+-- 
+2.34.1
 
