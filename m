@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 19:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E22C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 19:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350525AbiEVTtk (ORCPT
+        id S1350365AbiEVTto (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 15:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        Sun, 22 May 2022 15:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350435AbiEVTtg (ORCPT
+        with ESMTP id S1350485AbiEVTti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 15:49:36 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A6E38BFF
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 12:49:14 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id gi33so16268785ejc.3
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 12:49:14 -0700 (PDT)
+        Sun, 22 May 2022 15:49:38 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4664839BAB
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 12:49:22 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id i27so24739876ejd.9
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 12:49:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=tW0vbsqNyBqWB8eLL+zLqE/3yrno5YNaQTHqzB2WNng=;
-        b=CanW3o/0o7Jp9mq96FqklsTPi1uCmU/qtWV7warAwwNfuZSx/IOX9GSUQaCh/OXvbT
-         LjhpL4jqooFmFpYAzSfB4DJd7xPItmL7RPPx98S3DZTIfLYeT2aZ5G22D7K6n+27JPsq
-         LIl2vqmI7gi3cGs/ZMaW0WTlY4SV4l0xG+MQIwTLnQdTu7Tn6Hbof2ePagFwaJZgNaE7
-         n4HVCs87I+vwn3bJc3a0IKugkSHdaPN2p7fDk5O9fds47e49cCWwxQpaC87ZV5kQhR0o
-         xSNvCK0bzfR35kLXASDo9x8MRsBKpu+Axw44yxEPC7Pm+4aM/eUNAlfsU8hOD5vphvJK
-         ZhFg==
+        bh=rlKCcc3Cfz4SOeHsE7kOSMH+pFkJNujvAhxMEYVEh9Q=;
+        b=q5kfaCelUWQv/xUP6MeweT3/24WiJmRTKt/7UVHBd/KoXUBH0lWbJyL3MhV5okLzvt
+         1/zuRxuqRBzMhckB/NVMQtoKsSygQW4edvm9kWQDpGIKCaUIZB9LxV7kf4jVARhgYYm9
+         IzTHX0SrZ+9VA4OushDVjyo2egmUUiGX4aaTM9U8lD3T7V3LjrNXmPJSi3oB/LnUdmEE
+         BVhI7M3yZSWlnXEtRLPWIC5D8AGu7suf1wLhnyEdUuKS9qAi6kWjcbfDNxqCJRcDTalk
+         EAko7lf8V3MktQ0v2Q7KXmXF6LdnTCrBd7GnZlOmwmiHCdx6oHbXTwg7XuUGCKrvJMRU
+         iodg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=tW0vbsqNyBqWB8eLL+zLqE/3yrno5YNaQTHqzB2WNng=;
-        b=FW9FruMKPnp/hIF9WQqzeNg/xeCpghIO53VvomdfpNOlo2cF5S2xwEv6bEpc8JKGxa
-         jKGtJTE+tYcPo2zWR7OEgDL56TGJv8xVfArXnI4frGhdiy9Myp0++qPfKVaoumpe7Jjz
-         u+IYm//kY2ilFi53XO4MtuSn32S/DKafawxEcA8yIPjcnZ1zX9AyX7Gmr8G854DSn+w+
-         Vw5Y9BMDMYj7dZdXeU371bBFFq6fQNLiAsQUg31OvWk5xhvP6kwVcKelW8mIYKPIMQkJ
-         4MkfSvtzlAGeQ/OuvAIkzzEbDSpkwLV+ZSBYL9LAGzFIY3SLjrvCxJxTJ1mCMIXvdolm
-         yYjw==
-X-Gm-Message-State: AOAM533Fe3oD4KN1HvtCdUgaXTf+NJC38u6LfUqSDLyo4XYng2dUD5jv
-        K/bBAPIgKjTjLyZ8nadOxewRmJEwWIs=
-X-Google-Smtp-Source: ABdhPJwF+yD1jv0wGZgcBf3rKgRIMvhBNXlvV3liHMIFonghMV8p+lKTdUB9PPOFuwfSLSKwW9IiyA==
-X-Received: by 2002:a17:907:8c8c:b0:6fe:ecbf:3412 with SMTP id td12-20020a1709078c8c00b006feecbf3412mr495869ejc.377.1653248953106;
-        Sun, 22 May 2022 12:49:13 -0700 (PDT)
+        bh=rlKCcc3Cfz4SOeHsE7kOSMH+pFkJNujvAhxMEYVEh9Q=;
+        b=i949qjWvSgTgSDJhsPUwQRV5xAdX2KZWm2ZVe9aT5uL5T6Er5DXgUWVgWibu+lld0Q
+         Uy7VAPExV3R29Q/WOZFCbXZ0alGHARo2oCMRgyGPkqKdadBxJgQ072Cp/aaHtq1wj98w
+         fp8/gb1eVd1M8PlII7Jd6A0Wfpmti0oxIl3qEkc9Y780gZDlQo/0GQBlV6RVZmjo9EPX
+         uNjllRVLCRqeggy+CKl0uBWBtmIVWQcYlAA5PZfYlTZnUc6f28j2bYZqjTXPwcvgSu86
+         i9yoIWqaxjPOvb4fumThrOzyoVIpcJCvwdaiGDFdb0oNYW7cmjE3nQX5qAqVTleZxOKZ
+         wzHQ==
+X-Gm-Message-State: AOAM530HnaZjaMkydNU3x0oDMZBhpzyLQHctkDKi8Y7f4ZqzkfaEjs/Z
+        6MTyxJE3+uQxaBaMzziicgo=
+X-Google-Smtp-Source: ABdhPJwolWOlDnZJcYlv0xEnTvnCXYVex1x24AP9SRExVk/EPWOzIPbGvT2MSXjWhrfsrLZBLHQUxA==
+X-Received: by 2002:a17:907:3e0f:b0:6f4:5cfd:e6bb with SMTP id hp15-20020a1709073e0f00b006f45cfde6bbmr17338557ejc.38.1653248961901;
+        Sun, 22 May 2022 12:49:21 -0700 (PDT)
 Received: from matrix-ESPRIMO-P710 (p57935774.dip0.t-ipconnect.de. [87.147.87.116])
-        by smtp.gmail.com with ESMTPSA id sa24-20020a170906edb800b006fe8ac6bc69sm2782191ejb.140.2022.05.22.12.49.11
+        by smtp.gmail.com with ESMTPSA id my9-20020a1709065a4900b006fe8d8c54a7sm4984540ejc.87.2022.05.22.12.49.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 12:49:12 -0700 (PDT)
-Date:   Sun, 22 May 2022 21:49:10 +0200
+        Sun, 22 May 2022 12:49:21 -0700 (PDT)
+Date:   Sun, 22 May 2022 21:49:19 +0200
 From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
 To:     Forest Bond <forest@alittletooquiet.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH 06/11] staging: vt6655: Replace MACvSetCurrBCNTxDescAddr with
+Subject: [PATCH 08/11] staging: vt6655: Replace MACvRx1PerPktMode with
  VNSvOutPortD
-Message-ID: <1db079979f7e0e3535463d9f31204aa708c6f680.1653203927.git.philipp.g.hortmann@gmail.com>
+Message-ID: <9cb643b9554e33f5be7a2babefbed5eccca14625.1653203927.git.philipp.g.hortmann@gmail.com>
 References: <cover.1653203927.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -66,63 +66,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace macro MACvSetCurrBCNTxDescAddr with VNSvOutPortD and as it
-was only used twice, it can now be removed.
+Replace macro MACvRx1PerPktMode with VNSvOutPortD and as it
+was the only user, it can now be removed.
 
 Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
 ---
-The name of macro and the arguments use CamelCase which
-is not accepted by checkpatch.pl
-VNSvOutPortD will be replaced in this patch series.
----
- drivers/staging/vt6655/card.c | 3 +--
- drivers/staging/vt6655/mac.h  | 5 -----
- drivers/staging/vt6655/rxtx.c | 2 +-
- 3 files changed, 2 insertions(+), 8 deletions(-)
+ drivers/staging/vt6655/card.c | 2 +-
+ drivers/staging/vt6655/mac.h  | 3 ---
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/staging/vt6655/card.c b/drivers/staging/vt6655/card.c
-index 72043a29b543..23804cd72477 100644
+index e907dfd58d1f..57ed2120dbc1 100644
 --- a/drivers/staging/vt6655/card.c
 +++ b/drivers/staging/vt6655/card.c
-@@ -411,8 +411,7 @@ void CARDvSafeResetTx(struct vnt_private *priv)
- 	MACvSetCurrTXDescAddr(TYPE_AC0DMA, priv, priv->td1_pool_dma);
+@@ -453,7 +453,7 @@ void CARDvSafeResetRx(struct vnt_private *priv)
  
- 	/* set MAC Beacon TX pointer */
--	MACvSetCurrBCNTxDescAddr(priv->port_offset,
--				 (priv->tx_beacon_dma));
-+	VNSvOutPortD(priv->port_offset + MAC_REG_BCNDMAPTR, priv->tx_beacon_dma);
- }
+ 	/* set perPkt mode */
+ 	VNSvOutPortD(priv->port_offset + MAC_REG_RXDMACTL0, RX_PERPKT);
+-	MACvRx1PerPktMode(priv->port_offset);
++	VNSvOutPortD(priv->port_offset + MAC_REG_RXDMACTL1, RX_PERPKT);
+ 	/* set MAC RD pointer */
+ 	MACvSetCurrRx0DescAddr(priv, priv->rd0_pool_dma);
  
- /*
 diff --git a/drivers/staging/vt6655/mac.h b/drivers/staging/vt6655/mac.h
-index a1d5eb52ddc4..89a3979aeb10 100644
+index 161130084936..b68e21c62d2b 100644
 --- a/drivers/staging/vt6655/mac.h
 +++ b/drivers/staging/vt6655/mac.h
-@@ -565,11 +565,6 @@ do {									\
- 	iowrite16(wData & ~(wBits), iobase + byRegOfs);			\
+@@ -589,9 +589,6 @@ do {								\
+ 	iowrite8(0, iobase + MAC_REG_PAGE1SEL);			\
  } while (0)
  
--/* set the chip with current BCN tx descriptor address */
--#define MACvSetCurrBCNTxDescAddr(iobase, dwCurrDescAddr)	\
--	VNSvOutPortD(iobase + MAC_REG_BCNDMAPTR,		\
--		     dwCurrDescAddr)
+-#define MACvRx1PerPktMode(iobase)					\
+-	VNSvOutPortD(iobase + MAC_REG_RXDMACTL1, RX_PERPKT)
 -
- #define MACvWriteBSSIDAddress(iobase, pbyEtherAddr)		\
- do {								\
- 	iowrite8(1, iobase + MAC_REG_PAGE1SEL);			\
-diff --git a/drivers/staging/vt6655/rxtx.c b/drivers/staging/vt6655/rxtx.c
-index 390b27b02562..03c2ab8489fa 100644
---- a/drivers/staging/vt6655/rxtx.c
-+++ b/drivers/staging/vt6655/rxtx.c
-@@ -1420,7 +1420,7 @@ static int vnt_beacon_xmit(struct vnt_private *priv,
- 
- 	priv->wBCNBufLen = sizeof(*short_head) + skb->len;
- 
--	MACvSetCurrBCNTxDescAddr(priv->port_offset, priv->tx_beacon_dma);
-+	VNSvOutPortD(priv->port_offset + MAC_REG_BCNDMAPTR, priv->tx_beacon_dma);
- 
- 	iowrite16(priv->wBCNBufLen, priv->port_offset + MAC_REG_BCNDMACTL + 2);
- 	/* Set auto Transmit on */
+ #define MACvReceive0(iobase)						\
+ do {									\
+ 	unsigned long dwData;						\
 -- 
 2.25.1
 
