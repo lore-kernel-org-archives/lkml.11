@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F05BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60AE7C433F5
 	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 20:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351143AbiEVUkX (ORCPT
+        id S1350799AbiEVUkS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 16:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
+        Sun, 22 May 2022 16:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235481AbiEVUkQ (ORCPT
+        with ESMTP id S235342AbiEVUkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 22 May 2022 16:40:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4187F39160;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F3E39162;
         Sun, 22 May 2022 13:40:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF6F960BB1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32572B80DA0;
         Sun, 22 May 2022 20:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 38920C34119;
-        Sun, 22 May 2022 20:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CF47DC385B8;
+        Sun, 22 May 2022 20:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653252014;
-        bh=pD6xEom4/FmHU0/kdHLrVWPmnU98ehKtE17Xkq11YpI=;
+        s=k20201202; t=1653252012;
+        bh=qwu6QFgpf3uhezmjUBR6YG3VYrsaOduEdD+7InCCvRs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jO4RZYLECFCUBVxxVEbkhfdIzuT9AoK/9M7BtdqV1eDta5jfRhE934TT841RBuQn1
-         l0Y601BmvRncOtS+Y0kPNZBuiOrnwgZtAaiMdOZO+k+PO6cBNCmT5jbzMqGJChFwEk
-         DoRFGMO+WMT3/0cZHgy8X3dK9oj9c2tIouRr6kb57OBHPf78Gwuya3raN4OW7JWJBQ
-         5YHKzRme615sH80QmR3N6DPJUp9J8rrgG0+7t+kJEKFOQyKf0x3b4xK/yOan2TwP6i
-         GVLk/oOgW6LJA60+O+8yCbZ+hIvebQjJqGjZ61kBBQ4ciX/dSGDgqN3Tl3mON9Wtku
-         KCGe5HMexoboQ==
+        b=GLmjltubq7+k1v35+aJhF04SP6as24f7IDfsjJuGWQswkNdlkl24AflfDXedrMn/k
+         umlZ6AVxlVNuAZccFIJdFLReE5U7tbYTbjnAB+MfhBDN7R8D0FSHdy7QPIoNaj2n8i
+         769QSTEYZw/lnfOGXnnUhvPydpRfLMczxs1/BAfHl85m8mFTtFzCopFfSBxPI49j+S
+         twpwuycHcnCn+XE6NBzfF3b5/Px7//UZzERb/5Kx9k5w6UalpvRA+A0OhkwO5SA8TH
+         OfrVuJlPM6Ky5NUunWVA/11Ez6Blpl7xJ52ATHhrkqy6GboTg4PsbULfoUXH4/0DSp
+         R+yMrJhA+6sWg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2563AF03943;
-        Sun, 22 May 2022 20:40:14 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B29BAF03943;
+        Sun, 22 May 2022 20:40:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/7] rxrpc: Miscellaneous changes
+Subject: Re: [PATCH net 0/5] rxrpc: Miscellaneous fixes
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165325201415.15566.283158235872361657.git-patchwork-notify@kernel.org>
-Date:   Sun, 22 May 2022 20:40:14 +0000
-References: <165311910893.245906.4115532916417333325.stgit@warthog.procyon.org.uk>
-In-Reply-To: <165311910893.245906.4115532916417333325.stgit@warthog.procyon.org.uk>
+Message-Id: <165325201272.15566.8643789679841919228.git-patchwork-notify@kernel.org>
+Date:   Sun, 22 May 2022 20:40:12 +0000
+References: <165312017819.246773.14440495192028707532.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165312017819.246773.14440495192028707532.stgit@warthog.procyon.org.uk>
 To:     David Howells <dhowells@redhat.com>
 Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
+        jaltman@auristor.com, marc.dionne@auristor.com,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -54,35 +55,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This series was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat, 21 May 2022 08:45:08 +0100 you wrote:
-> Here are some miscellaneous changes for AF_RXRPC:
+On Sat, 21 May 2022 09:02:58 +0100 you wrote:
+> Here are some fixes for AF_RXRPC:
 > 
->  (1) Allow the list of local endpoints to be viewed through /proc.
+>  (1) Fix listen() allowing preallocation to overrun the prealloc buffer.
 > 
->  (2) Switch to using refcount_t for refcounting.
-> 
->  (3) Fix a locking issue found by lockdep.
+>  (2) Prevent resending the request if we've seen the reply starting to
+>      arrive.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/7] rxrpc: Allow list of in-use local UDP endpoints to be viewed in /proc
-    https://git.kernel.org/netdev/net-next/c/33912c2639ad
-  - [net-next,2/7] rxrpc: Use refcount_t rather than atomic_t
-    https://git.kernel.org/netdev/net-next/c/a05754295e01
-  - [net-next,3/7] rxrpc: Fix locking issue
-    https://git.kernel.org/netdev/net-next/c/ad25f5cb3987
-  - [net-next,4/7] rxrpc: Automatically generate trace tag enums
-    https://git.kernel.org/netdev/net-next/c/dc9fd093b2eb
-  - [net-next,5/7] rxrpc: Return an error to sendmsg if call failed
-    https://git.kernel.org/netdev/net-next/c/4ba68c519255
-  - [net-next,6/7] rxrpc, afs: Fix selection of abort codes
-    https://git.kernel.org/netdev/net-next/c/de696c4784f0
-  - [net-next,7/7] afs: Adjust ACK interpretation to try and cope with NAT
-    https://git.kernel.org/netdev/net-next/c/adc9613ff66c
+  - [net,1/5] rxrpc: Fix listen() setting the bar too high for the prealloc rings
+    https://git.kernel.org/netdev/net/c/88e22159750b
+  - [net,2/5] rxrpc: Don't try to resend the request if we're receiving the reply
+    https://git.kernel.org/netdev/net/c/114af61f88fb
+  - [net,3/5] rxrpc: Fix overlapping ACK accounting
+    https://git.kernel.org/netdev/net/c/8940ba3cfe48
+  - [net,4/5] rxrpc: Don't let ack.previousPacket regress
+    https://git.kernel.org/netdev/net/c/81524b631253
+  - [net,5/5] rxrpc: Fix decision on when to generate an IDLE ACK
+    https://git.kernel.org/netdev/net/c/9a3dedcf1809
 
 You are awesome, thank you!
 -- 
