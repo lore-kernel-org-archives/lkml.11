@@ -2,486 +2,337 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD06C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 03:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6560EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 03:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231844AbiEVDwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 23:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38084 "EHLO
+        id S233589AbiEVD7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 23:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbiEVDwE (ORCPT
+        with ESMTP id S230109AbiEVD7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 23:52:04 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096A128732
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 20:52:03 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id d198so7276630iof.12
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 20:52:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XFGJ8+ZOGoCCjRptDXLTDFctW5H69oldfJjY0FV894E=;
-        b=kBJZlZYW/LQD+FYiH97fwr6vhunsWoUA6DUG81WNSsxaYw+eISzlcFUJM7GEvr8jxR
-         vkJ3vB/47Smqx2E6fgBuc1xp9Pt1m9mjah5tbqbsNfyTfb6/crf01d5sCnR1wn4jlJNp
-         ZDisKg4kRvD58eyymroR9QuG2LGnuq0dnEY9ryToItUmglka4UyK2hrV5yqjn0tpNhCn
-         Vj2jpkuEAsYrd2XRsrqjmnttNVPEtP3HYEYfP+zURgQM2V2nH13R+iOKK/j6r0qhmgnR
-         LRDwcn1h3vTdpC+Z5KPhKlXbxit1zlPYnvENElkt2F4GQLePb6XDyT424Tmaiwsv/EmJ
-         fiVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XFGJ8+ZOGoCCjRptDXLTDFctW5H69oldfJjY0FV894E=;
-        b=UhESdZAz0tKFeqjXyFMByrfLlFoa8S25ZxwnOgoD8naC/YY3lcRjlKufj2J/kokP9x
-         wcnPHyZfs7FXvSZt5XkMlG2yU1aP0vQiHYGw0kQoi3Mxl6odngTuF0IFfIcwrw4HpKkb
-         Hd889sM+DnoZZv4dWKDtzrt2o4hhJZ0SM8Z+etLyvyhyWp1ku0sIpGThT8Go/RAe5+ZS
-         ypxAAB00k0pgThlAd9YdAf7/FZAkpdrKc19CU4yv630Nbumh4/BsHBBohRoIcrz5frT6
-         aVDfpwkrBKvhHgksi/GJScQOM774miI4S1T1hmB5/NzXtaXwX19OL2NnrEpTyo5TDyqb
-         lDbg==
-X-Gm-Message-State: AOAM5329g5Tkk1sMNLKRBfwdacm6EgqDqvBMOhlTM7Kk0Iyu+luhSaVn
-        m/zU8gd8L1MEnY5U/YZbu+Q=
-X-Google-Smtp-Source: ABdhPJz963nsdnT903eRYTKP4mPtt2uCg4VzYemmE11wf0NHijrj80XQhxL3Cc3zbN6gfZGHBWZZBA==
-X-Received: by 2002:a05:6602:2d52:b0:65a:dc1f:932c with SMTP id d18-20020a0566022d5200b0065adc1f932cmr7421762iow.3.1653191522260;
-        Sat, 21 May 2022 20:52:02 -0700 (PDT)
-Received: from n2.us-central1-a.c.spheric-algebra-350919.internal (151.16.70.34.bc.googleusercontent.com. [34.70.16.151])
-        by smtp.gmail.com with ESMTPSA id q46-20020a027b2e000000b0032e43cb7344sm1808364jac.146.2022.05.21.20.52.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 20:52:01 -0700 (PDT)
-Date:   Sun, 22 May 2022 03:51:59 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Matthew Wilcox <willy@infradead.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v4] tracing: add 'accounted' entry into output of
- allocation tracepoints
-Message-ID: <YomzXwN9rvCGAZJ0@n2.us-central1-a.c.spheric-algebra-350919.internal>
-References: <0c73ce5c-3625-6187-820e-1277e168b3bc@openvz.org>
- <a1e54672-d824-3ee1-cb68-9ceaa46fc70f@openvz.org>
+        Sat, 21 May 2022 23:59:03 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7594A3BF84
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 20:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653191942; x=1684727942;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2QjdotgwKQKorZJOzawJahNioB6bjgbNZgTkCR94oQc=;
+  b=ULmha+sm27wHknxv3BgOAHUWW75j44/tEe9a+rA4CcqtWvt38rMgs5wb
+   DeLVGHQUDo3+T/Le/nvPiBWRSjyRy+FyWbNnlhNPL4sY7W8U12VrXQd3G
+   FjoP9bQnFOrFjg2Ruu1fMPMkrmLaV3j5du6aNWFLitVkgAxN1WkvSt4bc
+   7Bv/i2Iija/yCTQVTmBA4ktL2ThYu/HwOpHM4H7PIJNKg93WLAqolWxSg
+   ayNirecrfIVLtJ9TNUOSAGn6JLfLiiVdZW84s8fgOcMZ1n9DLXEV+iLcM
+   arC1aYHYa3Y/lMcRB8CArXPx5hTd0jULyePQa7JngSvbVHpO7S/LnoQFc
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="359344325"
+X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
+   d="scan'208";a="359344325"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 20:59:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
+   d="scan'208";a="675285690"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by fmsmga002.fm.intel.com with ESMTP; 21 May 2022 20:59:00 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nsck7-0006u6-Dn;
+        Sun, 22 May 2022 03:58:59 +0000
+Date:   Sun, 22 May 2022 11:58:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/asm] BUILD SUCCESS
+ 036c07c0c3b8a57d5c96e1f2aab62da0056f8f21
+Message-ID: <6289b4ff.KSFt9sRMiauIklTe%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a1e54672-d824-3ee1-cb68-9ceaa46fc70f@openvz.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 09:36:54PM +0300, Vasily Averin wrote:
-> Slab caches marked with SLAB_ACCOUNT force accounting for every
-> allocation from this cache even if __GFP_ACCOUNT flag is not passed.
-> Unfortunately, at the moment this flag is not visible in ftrace output,
-> and this makes it difficult to analyze the accounted allocations.
-> 
-> This patch adds boolean "accounted" entry into trace output,
-> and set it to 'true' for calls used __GFP_ACCOUNT flag and
-> for allocations from caches marked with SLAB_ACCOUNT.
-> 
-> Signed-off-by: Vasily Averin <vvs@openvz.org>
-> Acked-by: Shakeel Butt <shakeelb@google.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/asm
+branch HEAD: 036c07c0c3b8a57d5c96e1f2aab62da0056f8f21  x86/entry: Fix register corruption in compat syscall
 
-May I ask what information do you want to collect
-using this patch?
+elapsed time: 3211m
 
-I pointed it in another thread but I'm not sure
-printing SLAB_* flags in these tracepoint is good :(
+configs tested: 255
+configs skipped: 5
 
-If we decide to do that, it would be better to print
-something like:
-slab_flags=SLAB_RECLAIM_ACCOUNT|SLAB_ACCOUNT|SLAB_STORE_USER
-instead of just printing 'accounted=true/false'. This patch is too
-specific to SLAB_ACCOUNT.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-And if what you want to know is just total slab memory that is accounted,
-what about adding something like  SlabAccounted in /proc/meminfo?
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+powerpc64                           defconfig
+arc                                 defconfig
+powerpc                     asp8347_defconfig
+m68k                            mac_defconfig
+ia64                            zx1_defconfig
+ia64                      gensparse_defconfig
+arm                            pleb_defconfig
+sh                            titan_defconfig
+sh                            migor_defconfig
+arm                      footbridge_defconfig
+s390                          debug_defconfig
+xtensa                    xip_kc705_defconfig
+sh                               j2_defconfig
+um                                  defconfig
+um                               alldefconfig
+arm                        shmobile_defconfig
+mips                      maltasmvp_defconfig
+powerpc                    sam440ep_defconfig
+powerpc                      cm5200_defconfig
+arm                        cerfcube_defconfig
+mips                         db1xxx_defconfig
+sh                          rsk7269_defconfig
+powerpc                     pq2fads_defconfig
+parisc                           allyesconfig
+mips                           ci20_defconfig
+s390                             allyesconfig
+xtensa                          iss_defconfig
+ia64                        generic_defconfig
+powerpc                      chrp32_defconfig
+mips                  maltasmvp_eva_defconfig
+riscv                            allyesconfig
+powerpc                      pcm030_defconfig
+sh                   sh7770_generic_defconfig
+h8300                    h8300h-sim_defconfig
+arm                        mini2440_defconfig
+xtensa                           allyesconfig
+m68k                            q40_defconfig
+sh                           se7721_defconfig
+arm                           tegra_defconfig
+ia64                          tiger_defconfig
+sh                           se7750_defconfig
+mips                  decstation_64_defconfig
+arm                            zeus_defconfig
+h8300                            allyesconfig
+arm                          badge4_defconfig
+arm                           corgi_defconfig
+xtensa                  audio_kc705_defconfig
+arm                            lart_defconfig
+sh                          r7785rp_defconfig
+sh                        sh7763rdp_defconfig
+sh                         microdev_defconfig
+arm                      jornada720_defconfig
+powerpc                     sequoia_defconfig
+powerpc                        cell_defconfig
+sh                                  defconfig
+powerpc                    klondike_defconfig
+arm                       imx_v6_v7_defconfig
+sh                           se7206_defconfig
+powerpc                        warp_defconfig
+mips                       capcella_defconfig
+powerpc                 linkstation_defconfig
+arm                           h3600_defconfig
+parisc                generic-64bit_defconfig
+sh                           se7619_defconfig
+alpha                               defconfig
+arm                           h5000_defconfig
+arm                        multi_v7_defconfig
+ia64                         bigsur_defconfig
+sh                          landisk_defconfig
+alpha                            allyesconfig
+arm                        realview_defconfig
+arm                            qcom_defconfig
+sh                           se7343_defconfig
+nios2                            alldefconfig
+arc                        nsimosci_defconfig
+powerpc                     stx_gp3_defconfig
+sparc64                          alldefconfig
+i386                                defconfig
+powerpc                      ep88xc_defconfig
+h8300                       h8s-sim_defconfig
+powerpc                     mpc83xx_defconfig
+powerpc                 mpc834x_mds_defconfig
+sh                          urquell_defconfig
+m68k                       m5208evb_defconfig
+m68k                       bvme6000_defconfig
+mips                             allyesconfig
+x86_64                           alldefconfig
+powerpc                 canyonlands_defconfig
+powerpc                       eiger_defconfig
+sh                   rts7751r2dplus_defconfig
+powerpc                   motionpro_defconfig
+arc                          axs103_defconfig
+sh                          sdk7786_defconfig
+mips                 decstation_r4k_defconfig
+um                             i386_defconfig
+s390                       zfcpdump_defconfig
+arm                           sama5_defconfig
+m68k                          hp300_defconfig
+mips                         mpc30x_defconfig
+m68k                             allyesconfig
+powerpc                 mpc837x_mds_defconfig
+arm                           viper_defconfig
+powerpc                 mpc837x_rdb_defconfig
+h8300                     edosk2674_defconfig
+arc                           tb10x_defconfig
+m68k                          multi_defconfig
+arm                             pxa_defconfig
+m68k                        mvme147_defconfig
+arm                        keystone_defconfig
+openrisc                 simple_smp_defconfig
+xtensa                generic_kc705_defconfig
+powerpc                       holly_defconfig
+arc                          axs101_defconfig
+powerpc                     rainier_defconfig
+powerpc                      mgcoge_defconfig
+mips                     loongson1b_defconfig
+arc                         haps_hs_defconfig
+sh                               allmodconfig
+sh                   secureedge5410_defconfig
+m68k                           sun3_defconfig
+sparc64                             defconfig
+arm                            xcep_defconfig
+arc                 nsimosci_hs_smp_defconfig
+powerpc                mpc7448_hpc2_defconfig
+nios2                         3c120_defconfig
+sh                        sh7757lcr_defconfig
+m68k                          sun3x_defconfig
+powerpc                      ppc6xx_defconfig
+m68k                          amiga_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220519
+arm                  randconfig-c002-20220522
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+riscv                             allnoconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220522
+s390                 randconfig-r044-20220522
+riscv                randconfig-r042-20220522
+arc                  randconfig-r043-20220519
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
 
-Thanks.
+clang tested configs:
+powerpc              randconfig-c003-20220519
+x86_64                        randconfig-c007
+riscv                randconfig-c006-20220519
+mips                 randconfig-c004-20220519
+i386                          randconfig-c001
+arm                  randconfig-c002-20220519
+s390                 randconfig-c005-20220519
+arm                  randconfig-c002-20220522
+s390                 randconfig-c005-20220522
+powerpc              randconfig-c003-20220522
+riscv                randconfig-c006-20220522
+mips                 randconfig-c004-20220522
+powerpc                          g5_defconfig
+hexagon                             defconfig
+mips                      pic32mzda_defconfig
+arm                          ep93xx_defconfig
+mips                     loongson2k_defconfig
+powerpc                     tqm8560_defconfig
+hexagon                          alldefconfig
+powerpc                       ebony_defconfig
+mips                      malta_kvm_defconfig
+arm                              alldefconfig
+arm                          ixp4xx_defconfig
+powerpc                      pmac32_defconfig
+powerpc                     tqm5200_defconfig
+i386                             allyesconfig
+powerpc                    socrates_defconfig
+powerpc                   microwatt_defconfig
+powerpc                      acadia_defconfig
+riscv                          rv32_defconfig
+mips                           ip22_defconfig
+arm                     davinci_all_defconfig
+arm                         mv78xx0_defconfig
+powerpc                    ge_imp3a_defconfig
+arm                         s5pv210_defconfig
+powerpc                 mpc8560_ads_defconfig
+powerpc                   bluestone_defconfig
+powerpc                      katmai_defconfig
+powerpc                        icon_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                 mpc836x_rdk_defconfig
+arm                       spear13xx_defconfig
+mips                           rs90_defconfig
+powerpc                          allmodconfig
+powerpc                 mpc8272_ads_defconfig
+powerpc                     tqm8540_defconfig
+arm                         palmz72_defconfig
+mips                            e55_defconfig
+arm                        mvebu_v5_defconfig
+powerpc                  mpc885_ads_defconfig
+powerpc                    gamecube_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220519
+hexagon              randconfig-r041-20220519
+hexagon              randconfig-r045-20220522
+hexagon              randconfig-r041-20220522
+riscv                randconfig-r042-20220519
+s390                 randconfig-r044-20220519
+hexagon              randconfig-r045-20220521
+hexagon              randconfig-r041-20220521
+s390                 randconfig-r044-20220521
+riscv                randconfig-r042-20220521
 
-> ---
-> v4:
->  1) replaced in patch descripion: "accounted" instead of "allocated"
->  2) added "Acked-by" from Shakeel,
->  3) re-addressed to akpm@
-> 
-> v3:
->  1) rework kmem_cache_alloc* tracepoints once again,
->     added struct kmem_cache argument into existing templates,
-> 	thanks to Matthew Wilcox
->  2) updated according trace_* calls
->  3) added boolean "allocated" entry into trace output,
-> 	thanks to Roman
->  4) updated patch subject and description
-> 
-> v2:
->  1) handle kmem_cache_alloc_node(), thanks to Shakeel
->  2) rework kmem_cache_alloc* tracepoints to use cachep instead
->     of current cachep->*size parameters.
->     NB: kmem_cache_alloc_node tracepoint in SLOB cannot use cachep,
->         and therefore it was replaced by kmalloc_node.
-> ---
->  include/trace/events/kmem.h | 38 +++++++++++++++++++++++--------------
->  mm/slab.c                   | 10 +++++-----
->  mm/slab_common.c            |  9 ++++-----
->  mm/slob.c                   |  8 ++++----
->  mm/slub.c                   | 20 +++++++++----------
->  5 files changed, 47 insertions(+), 38 deletions(-)
-> 
-> diff --git a/include/trace/events/kmem.h b/include/trace/events/kmem.h
-> index 71c141804222..5bfeb6f276f1 100644
-> --- a/include/trace/events/kmem.h
-> +++ b/include/trace/events/kmem.h
-> @@ -13,11 +13,12 @@ DECLARE_EVENT_CLASS(kmem_alloc,
->  
->  	TP_PROTO(unsigned long call_site,
->  		 const void *ptr,
-> +		 struct kmem_cache *s,
->  		 size_t bytes_req,
->  		 size_t bytes_alloc,
->  		 gfp_t gfp_flags),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags),
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags),
->  
->  	TP_STRUCT__entry(
->  		__field(	unsigned long,	call_site	)
-> @@ -25,6 +26,7 @@ DECLARE_EVENT_CLASS(kmem_alloc,
->  		__field(	size_t,		bytes_req	)
->  		__field(	size_t,		bytes_alloc	)
->  		__field(	unsigned long,	gfp_flags	)
-> +		__field(	bool,		accounted	)
->  	),
->  
->  	TP_fast_assign(
-> @@ -33,42 +35,46 @@ DECLARE_EVENT_CLASS(kmem_alloc,
->  		__entry->bytes_req	= bytes_req;
->  		__entry->bytes_alloc	= bytes_alloc;
->  		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
-> +		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
-
-I doubt someone will pass __GFP_ACCOUNT in gfpflags
-when calling kmem_cache_alloc*().
-
-
-> +					  (s && s->flags & SLAB_ACCOUNT);
->  	),
->  
-> -	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s",
-> +	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s accounted=%s",
->  		(void *)__entry->call_site,
->  		__entry->ptr,
->  		__entry->bytes_req,
->  		__entry->bytes_alloc,
-> -		show_gfp_flags(__entry->gfp_flags))
-> +		show_gfp_flags(__entry->gfp_flags),
-> +		__entry->accounted ? "true" : "false")
->  );
->  
->  DEFINE_EVENT(kmem_alloc, kmalloc,
->  
-> -	TP_PROTO(unsigned long call_site, const void *ptr,
-> +	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
->  		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
->  );
->  
->  DEFINE_EVENT(kmem_alloc, kmem_cache_alloc,
->  
-> -	TP_PROTO(unsigned long call_site, const void *ptr,
-> +	TP_PROTO(unsigned long call_site, const void *ptr, struct kmem_cache *s,
->  		 size_t bytes_req, size_t bytes_alloc, gfp_t gfp_flags),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags)
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags)
->  );
->  
->  DECLARE_EVENT_CLASS(kmem_alloc_node,
->  
->  	TP_PROTO(unsigned long call_site,
->  		 const void *ptr,
-> +		 struct kmem_cache *s,
->  		 size_t bytes_req,
->  		 size_t bytes_alloc,
->  		 gfp_t gfp_flags,
->  		 int node),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node),
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node),
->  
->  	TP_STRUCT__entry(
->  		__field(	unsigned long,	call_site	)
-> @@ -77,6 +83,7 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
->  		__field(	size_t,		bytes_alloc	)
->  		__field(	unsigned long,	gfp_flags	)
->  		__field(	int,		node		)
-> +		__field(	bool,		accounted	)
->  	),
->  
->  	TP_fast_assign(
-> @@ -86,33 +93,36 @@ DECLARE_EVENT_CLASS(kmem_alloc_node,
->  		__entry->bytes_alloc	= bytes_alloc;
->  		__entry->gfp_flags	= (__force unsigned long)gfp_flags;
->  		__entry->node		= node;
-> +		__entry->accounted	= (gfp_flags & __GFP_ACCOUNT) ||
-> +					  (s && s->flags & SLAB_ACCOUNT);
->  	),
->  
-> -	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s node=%d",
-> +	TP_printk("call_site=%pS ptr=%p bytes_req=%zu bytes_alloc=%zu gfp_flags=%s node=%d accounted=%s",
->  		(void *)__entry->call_site,
->  		__entry->ptr,
->  		__entry->bytes_req,
->  		__entry->bytes_alloc,
->  		show_gfp_flags(__entry->gfp_flags),
-> -		__entry->node)
-> +		__entry->node,
-> +		__entry->accounted ? "true" : "false")
->  );
->  
->  DEFINE_EVENT(kmem_alloc_node, kmalloc_node,
->  
->  	TP_PROTO(unsigned long call_site, const void *ptr,
-> -		 size_t bytes_req, size_t bytes_alloc,
-> +		 struct kmem_cache *s, size_t bytes_req, size_t bytes_alloc,
->  		 gfp_t gfp_flags, int node),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node)
->  );
->  
->  DEFINE_EVENT(kmem_alloc_node, kmem_cache_alloc_node,
->  
->  	TP_PROTO(unsigned long call_site, const void *ptr,
-> -		 size_t bytes_req, size_t bytes_alloc,
-> +		 struct kmem_cache *s, size_t bytes_req, size_t bytes_alloc,
->  		 gfp_t gfp_flags, int node),
->  
-> -	TP_ARGS(call_site, ptr, bytes_req, bytes_alloc, gfp_flags, node)
-> +	TP_ARGS(call_site, ptr, s, bytes_req, bytes_alloc, gfp_flags, node)
->  );
->  
->  TRACE_EVENT(kfree,
-> diff --git a/mm/slab.c b/mm/slab.c
-> index 0edb474edef1..e5802445c7d6 100644
-> --- a/mm/slab.c
-> +++ b/mm/slab.c
-> @@ -3492,7 +3492,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *lru,
->  {
->  	void *ret = slab_alloc(cachep, lru, flags, cachep->object_size, _RET_IP_);
->  
-> -	trace_kmem_cache_alloc(_RET_IP_, ret,
-> +	trace_kmem_cache_alloc(_RET_IP_, ret, cachep,
->  			       cachep->object_size, cachep->size, flags);
->  
->  	return ret;
-> @@ -3581,7 +3581,7 @@ kmem_cache_alloc_trace(struct kmem_cache *cachep, gfp_t flags, size_t size)
->  	ret = slab_alloc(cachep, NULL, flags, size, _RET_IP_);
->  
->  	ret = kasan_kmalloc(cachep, ret, size, flags);
-> -	trace_kmalloc(_RET_IP_, ret,
-> +	trace_kmalloc(_RET_IP_, ret, cachep,
->  		      size, cachep->size, flags);
->  	return ret;
->  }
-> @@ -3606,7 +3606,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid)
->  {
->  	void *ret = slab_alloc_node(cachep, flags, nodeid, cachep->object_size, _RET_IP_);
->  
-> -	trace_kmem_cache_alloc_node(_RET_IP_, ret,
-> +	trace_kmem_cache_alloc_node(_RET_IP_, ret, cachep,
->  				    cachep->object_size, cachep->size,
->  				    flags, nodeid);
->  
-> @@ -3625,7 +3625,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *cachep,
->  	ret = slab_alloc_node(cachep, flags, nodeid, size, _RET_IP_);
->  
->  	ret = kasan_kmalloc(cachep, ret, size, flags);
-> -	trace_kmalloc_node(_RET_IP_, ret,
-> +	trace_kmalloc_node(_RET_IP_, ret, cachep,
->  			   size, cachep->size,
->  			   flags, nodeid);
->  	return ret;
-> @@ -3708,7 +3708,7 @@ static __always_inline void *__do_kmalloc(size_t size, gfp_t flags,
->  	ret = slab_alloc(cachep, NULL, flags, size, caller);
->  
->  	ret = kasan_kmalloc(cachep, ret, size, flags);
-> -	trace_kmalloc(caller, ret,
-> +	trace_kmalloc(caller, ret, cachep,
->  		      size, cachep->size, flags);
->  
->  	return ret;
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 2b3206a2c3b5..a345e8600e00 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -25,13 +25,12 @@
->  #include <asm/page.h>
->  #include <linux/memcontrol.h>
->  
-> -#define CREATE_TRACE_POINTS
-> -#include <trace/events/kmem.h>
-> -
->  #include "internal.h"
-> -
->  #include "slab.h"
->  
-> +#define CREATE_TRACE_POINTS
-> +#include <trace/events/kmem.h>
-> +
->  enum slab_state slab_state;
->  LIST_HEAD(slab_caches);
->  DEFINE_MUTEX(slab_mutex);
-> @@ -967,7 +966,7 @@ EXPORT_SYMBOL(kmalloc_order);
->  void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
->  {
->  	void *ret = kmalloc_order(size, flags, order);
-> -	trace_kmalloc(_RET_IP_, ret, size, PAGE_SIZE << order, flags);
-> +	trace_kmalloc(_RET_IP_, ret, NULL, size, PAGE_SIZE << order, flags);
->  	return ret;
->  }
->  EXPORT_SYMBOL(kmalloc_order_trace);
-> diff --git a/mm/slob.c b/mm/slob.c
-> index 40ea6e2d4ccd..dbefa0da0dfc 100644
-> --- a/mm/slob.c
-> +++ b/mm/slob.c
-> @@ -505,7 +505,7 @@ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
->  		*m = size;
->  		ret = (void *)m + minalign;
->  
-> -		trace_kmalloc_node(caller, ret,
-> +		trace_kmalloc_node(caller, ret, NULL,
->  				   size, size + minalign, gfp, node);
->  	} else {
->  		unsigned int order = get_order(size);
-> @@ -514,7 +514,7 @@ __do_kmalloc_node(size_t size, gfp_t gfp, int node, unsigned long caller)
->  			gfp |= __GFP_COMP;
->  		ret = slob_new_pages(gfp, order, node);
->  
-> -		trace_kmalloc_node(caller, ret,
-> +		trace_kmalloc_node(caller, ret, NULL,
->  				   size, PAGE_SIZE << order, gfp, node);
->  	}
->  
-> @@ -610,12 +610,12 @@ static void *slob_alloc_node(struct kmem_cache *c, gfp_t flags, int node)
->  
->  	if (c->size < PAGE_SIZE) {
->  		b = slob_alloc(c->size, flags, c->align, node, 0);
-> -		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
-> +		trace_kmem_cache_alloc_node(_RET_IP_, b, NULL, c->object_size,
->  					    SLOB_UNITS(c->size) * SLOB_UNIT,
->  					    flags, node);
->  	} else {
->  		b = slob_new_pages(flags, get_order(c->size), node);
-> -		trace_kmem_cache_alloc_node(_RET_IP_, b, c->object_size,
-> +		trace_kmem_cache_alloc_node(_RET_IP_, b, NULL, c->object_size,
->  					    PAGE_SIZE << get_order(c->size),
->  					    flags, node);
->  	}
-> diff --git a/mm/slub.c b/mm/slub.c
-> index ed5c2c03a47a..9b10591646dd 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -3231,7 +3231,7 @@ void *__kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
->  {
->  	void *ret = slab_alloc(s, lru, gfpflags, _RET_IP_, s->object_size);
->  
-> -	trace_kmem_cache_alloc(_RET_IP_, ret, s->object_size,
-> +	trace_kmem_cache_alloc(_RET_IP_, ret, s, s->object_size,
->  				s->size, gfpflags);
->  
->  	return ret;
-> @@ -3254,7 +3254,7 @@ EXPORT_SYMBOL(kmem_cache_alloc_lru);
->  void *kmem_cache_alloc_trace(struct kmem_cache *s, gfp_t gfpflags, size_t size)
->  {
->  	void *ret = slab_alloc(s, NULL, gfpflags, _RET_IP_, size);
-> -	trace_kmalloc(_RET_IP_, ret, size, s->size, gfpflags);
-> +	trace_kmalloc(_RET_IP_, ret, s, size, s->size, gfpflags);
->  	ret = kasan_kmalloc(s, ret, size, gfpflags);
->  	return ret;
->  }
-> @@ -3266,7 +3266,7 @@ void *kmem_cache_alloc_node(struct kmem_cache *s, gfp_t gfpflags, int node)
->  {
->  	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, s->object_size);
->  
-> -	trace_kmem_cache_alloc_node(_RET_IP_, ret,
-> +	trace_kmem_cache_alloc_node(_RET_IP_, ret, s,
->  				    s->object_size, s->size, gfpflags, node);
->  
->  	return ret;
-> @@ -3280,7 +3280,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *s,
->  {
->  	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, size);
->  
-> -	trace_kmalloc_node(_RET_IP_, ret,
-> +	trace_kmalloc_node(_RET_IP_, ret, s,
->  			   size, s->size, gfpflags, node);
->  
->  	ret = kasan_kmalloc(s, ret, size, gfpflags);
-> @@ -4409,7 +4409,7 @@ void *__kmalloc(size_t size, gfp_t flags)
->  
->  	ret = slab_alloc(s, NULL, flags, _RET_IP_, size);
->  
-> -	trace_kmalloc(_RET_IP_, ret, size, s->size, flags);
-> +	trace_kmalloc(_RET_IP_, ret, s, size, s->size, flags);
->  
->  	ret = kasan_kmalloc(s, ret, size, flags);
->  
-> @@ -4443,7 +4443,7 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
->  	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
->  		ret = kmalloc_large_node(size, flags, node);
->  
-> -		trace_kmalloc_node(_RET_IP_, ret,
-> +		trace_kmalloc_node(_RET_IP_, ret, NULL,
->  				   size, PAGE_SIZE << get_order(size),
->  				   flags, node);
->  
-> @@ -4457,7 +4457,7 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
->  
->  	ret = slab_alloc_node(s, NULL, flags, node, _RET_IP_, size);
->  
-> -	trace_kmalloc_node(_RET_IP_, ret, size, s->size, flags, node);
-> +	trace_kmalloc_node(_RET_IP_, ret, s, size, s->size, flags, node);
->  
->  	ret = kasan_kmalloc(s, ret, size, flags);
->  
-> @@ -4916,7 +4916,7 @@ void *__kmalloc_track_caller(size_t size, gfp_t gfpflags, unsigned long caller)
->  	ret = slab_alloc(s, NULL, gfpflags, caller, size);
->  
->  	/* Honor the call site pointer we received. */
-> -	trace_kmalloc(caller, ret, size, s->size, gfpflags);
-> +	trace_kmalloc(caller, ret, s, size, s->size, gfpflags);
->  
->  	return ret;
->  }
-> @@ -4932,7 +4932,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
->  	if (unlikely(size > KMALLOC_MAX_CACHE_SIZE)) {
->  		ret = kmalloc_large_node(size, gfpflags, node);
->  
-> -		trace_kmalloc_node(caller, ret,
-> +		trace_kmalloc_node(caller, ret, NULL,
->  				   size, PAGE_SIZE << get_order(size),
->  				   gfpflags, node);
->  
-> @@ -4947,7 +4947,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
->  	ret = slab_alloc_node(s, NULL, gfpflags, node, caller, size);
->  
->  	/* Honor the call site pointer we received. */
-> -	trace_kmalloc_node(caller, ret, size, s->size, gfpflags, node);
-> +	trace_kmalloc_node(caller, ret, s, size, s->size, gfpflags, node);
->  
->  	return ret;
->  }
-> -- 
-> 2.31.1
-> 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
