@@ -2,112 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E3BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 15:44:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E3AC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 15:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348364AbiEVPol (ORCPT
+        id S1348247AbiEVP5J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 11:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
+        Sun, 22 May 2022 11:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348200AbiEVPob (ORCPT
+        with ESMTP id S235124AbiEVP5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 11:44:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD3336B4B
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 08:44:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98FA661003
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 15:44:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F418DC34113;
-        Sun, 22 May 2022 15:44:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653234270;
-        bh=lCSXZUmp2XpJTlxqmcLhDoFxLAVPQOfR1UxKkPK1zio=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iOlqu/xxnnOsLiSZ0Z2RlhhRSow89I7Q/7Rj9UuV3DJ5yC9hwu5OxfZck5IMVqYZh
-         7LVeCtb1iMGpkmSAUm9WRbUp5/wZCI6+bDPk5XCMUHoD5i+wE2VbWfZKcJEbzvl8u0
-         ctUrihTcckQDZLHkgZogdVFlBRKRBkpsJQVGTAcsBdfs0+ZjxB4pg97bASmweRrRqk
-         0O1somznEwwm0jU7a52++5Yh4RQpjLhu91a8MN/luOlfnJSbvPOAFpno+gelA+1yyY
-         czDss6+ZiYWfZiP3QVjlbPYLPPxteeWcqlvklTBVVxzYd2hyjTCm6Q8/F+7LyqXZRn
-         I9928bfxSZWTw==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] riscv: switch has_fpu() to the unified static key mechanism
-Date:   Sun, 22 May 2022 23:35:43 +0800
-Message-Id: <20220522153543.2656-3-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220522153543.2656-1-jszhang@kernel.org>
-References: <20220522153543.2656-1-jszhang@kernel.org>
+        Sun, 22 May 2022 11:57:05 -0400
+X-Greylist: delayed 249 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 22 May 2022 08:56:59 PDT
+Received: from herzl.nuvoton.co.il (unknown [212.199.177.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD503B28A;
+        Sun, 22 May 2022 08:56:59 -0700 (PDT)
+Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
+        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp3CW031625;
+        Sun, 22 May 2022 18:51:03 +0300
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id A377463A50; Sun, 22 May 2022 18:51:02 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
+        bjorn.andersson@linaro.org, geert+renesas@glider.be,
+        marcel.ziswiler@toradex.com, vkoul@kernel.org,
+        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
+Cc:     soc@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v1 06/19] watchdog: npcm_wdt: Add NPCM845 watchdog support
+Date:   Sun, 22 May 2022 18:50:33 +0300
+Message-Id: <20220522155046.260146-7-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220522155046.260146-1-tmaimon77@gmail.com>
+References: <20220522155046.260146-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is to use the unified static key mechanism instead of putting
-static key related here and there.
+Add Nuvoton BMC NPCM845 watchdog support.
+The NPCM845 uses the same watchdog as the NPCM750.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 ---
- arch/riscv/include/asm/switch_to.h | 4 ++--
- arch/riscv/kernel/cpufeature.c     | 7 -------
- 2 files changed, 2 insertions(+), 9 deletions(-)
+ drivers/watchdog/npcm_wdt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/include/asm/switch_to.h b/arch/riscv/include/asm/switch_to.h
-index 0a3f4f95c555..11463489fec6 100644
---- a/arch/riscv/include/asm/switch_to.h
-+++ b/arch/riscv/include/asm/switch_to.h
-@@ -8,6 +8,7 @@
- 
- #include <linux/jump_label.h>
- #include <linux/sched/task_stack.h>
-+#include <asm/hwcap.h>
- #include <asm/processor.h>
- #include <asm/ptrace.h>
- #include <asm/csr.h>
-@@ -56,10 +57,9 @@ static inline void __switch_to_aux(struct task_struct *prev,
- 	fstate_restore(next, task_pt_regs(next));
- }
- 
--extern struct static_key_false cpu_hwcap_fpu;
- static __always_inline bool has_fpu(void)
- {
--	return static_branch_likely(&cpu_hwcap_fpu);
-+	return static_branch_likely(&riscv_isa_ext_keys[RISCV_ISA_EXT_KEY_FPU]);
- }
- #else
- static __always_inline bool has_fpu(void) { return false; }
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index 89f886b35357..0235391be84b 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -21,9 +21,6 @@ unsigned long elf_hwcap __read_mostly;
- /* Host ISA bitmap */
- static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
- 
--#ifdef CONFIG_FPU
--__ro_after_init DEFINE_STATIC_KEY_FALSE(cpu_hwcap_fpu);
--#endif
- __ro_after_init DEFINE_STATIC_KEY_ARRAY_FALSE(riscv_isa_ext_keys, RISCV_ISA_EXT_KEY_MAX);
- EXPORT_SYMBOL(riscv_isa_ext_keys);
- 
-@@ -239,8 +236,4 @@ void __init riscv_fill_hwcap(void)
- 		if (j >= 0)
- 			static_branch_enable(&riscv_isa_ext_keys[j]);
- 	}
--#ifdef CONFIG_FPU
--	if (elf_hwcap & (COMPAT_HWCAP_ISA_F | COMPAT_HWCAP_ISA_D))
--		static_branch_enable(&cpu_hwcap_fpu);
--#endif
- }
+diff --git a/drivers/watchdog/npcm_wdt.c b/drivers/watchdog/npcm_wdt.c
+index 28a24caa2627..0b91a3fbec09 100644
+--- a/drivers/watchdog/npcm_wdt.c
++++ b/drivers/watchdog/npcm_wdt.c
+@@ -231,6 +231,7 @@ static int npcm_wdt_probe(struct platform_device *pdev)
+ static const struct of_device_id npcm_wdt_match[] = {
+ 	{.compatible = "nuvoton,wpcm450-wdt"},
+ 	{.compatible = "nuvoton,npcm750-wdt"},
++	{.compatible = "nuvoton,npcm845-wdt"},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, npcm_wdt_match);
 -- 
-2.34.1
+2.33.0
 
