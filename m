@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5720C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 14:22:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81309C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 14:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346832AbiEVOWb (ORCPT
+        id S1347052AbiEVOfW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 10:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
+        Sun, 22 May 2022 10:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239031AbiEVOWZ (ORCPT
+        with ESMTP id S234015AbiEVOfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 10:22:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD09A3968C
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 07:22:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80462B80AE9
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 14:22:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE5DC385AA;
-        Sun, 22 May 2022 14:22:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653229341;
-        bh=5jwl99JxBIUjh3Qh5dWJ3BCJiWyb5trvHhe0CaZLHdo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r8DCVZq+h53FFG2HiBhtx6fqFfPoWp9FQpIEVSnY1xL1bCwYER3Gg3PI3DsnioD3T
-         debkWl9utxa5WSxuyCgoLVAVEop78dj95Cgn23Dg60wKypGmWxFLTPqZoawfLnAa4o
-         5knxwUZVEKv4BG5uqbFN23+se71IsgnPfQRwDGbwapWWFJyR+dshfvKhFChAWqL5IT
-         17lHuQ0RD8TceaqJz2a6Qlz+hZBtqZ5Ns27AWr8webq75EIaYpiNXBA5f56MBQWIYz
-         6CexGKbnp8TzkhbHJqSzUF2SD7eDZQrAE3GicNZyUHnWEWV7Ij2MU2NPBV0Zkgdlk1
-         sGefprsLXYr3Q==
-Date:   Sun, 22 May 2022 23:22:16 +0900
-From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To:     Jeff Xie <xiehuan09@gmail.com>
-Cc:     rostedt@goodmis.org, mingo@redhat.com, mhiramat@kernel.org,
-        zanussi@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v10 2/4] trace/objtrace: Get the value of the object
-Message-Id: <20220522232216.bb1451fb6efc18c2bccc8d09@kernel.org>
-In-Reply-To: <20220512170008.1301613-3-xiehuan09@gmail.com>
-References: <20220512170008.1301613-1-xiehuan09@gmail.com>
-        <20220512170008.1301613-3-xiehuan09@gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Sun, 22 May 2022 10:35:19 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED99836E39;
+        Sun, 22 May 2022 07:35:17 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id e189so15174031oia.8;
+        Sun, 22 May 2022 07:35:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RjBoRtJ9rZ9SbhlMIrKNDfXCMj6QJFpi/1uxRxKT1L4=;
+        b=LFb/2bSwFk3msFQ+ogdHWsYHKKSoWvo50E8hISdryt0WB93qAs4QD7Ta8h/0lNiliu
+         34JUG7iAKd0jTg5vxovpAvstRGRkyioP5kwlfqdY4Wxp1uLx4ENBa1YRhMAd3CzuRb/r
+         UJNqplFufD9JahRcuJFp3tmRRYJxiy7CJ2YpIQcdLLK+OgCsSIoRqqN90eJ65W4irjfG
+         f2ZtcNOdntZk9r+iyF5MYCFOgItmUQy9O2cXTCDWvQFDUdO24j6FzJGVhnaldzAJHUbO
+         s3VXivECykXvwbuX1rFMtkFEen8Y2oj8g0ajfN71d0XLZD4xiNewE+jvlhmLIdXn+S1E
+         nkGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=RjBoRtJ9rZ9SbhlMIrKNDfXCMj6QJFpi/1uxRxKT1L4=;
+        b=lmdQipZrYmmCe3yRHmUeb2UASyb1P+gsiqUiE8uzHr0MvNvMNIcROyRdC+G7bqfXWo
+         KQ5EI6OUaXOkaDpoByDVhOoueUrwiveYtTML/TWZuZBFz2bGiEL0rQ9d2qCwN08P4v0O
+         OvWoqOyXBNCu9LDRpt2tUmH80GqkPWeFcd4jf4tEkFkuKSet7chIUfc9zMkpIY8J6KFq
+         lB7JgPd+HdH2HrLiMhQLKBdyWboAgZeXor1jCGiAoVd6bWXU4hNF0q6L3ibYpa4fuJje
+         zkHE4uIV+H+ai3/DgLaK08qzaDNgkF4ZKdtgChrv1vmVS5AjU+QNlzi6cC5GmNLwpi12
+         BdEQ==
+X-Gm-Message-State: AOAM531eQgf1VY9a3R6zjJSNlXE6moodyBQXkszpCE3tBKJGaZRqvrA/
+        Ynd7wT85+ueK+I5S/twc7B8=
+X-Google-Smtp-Source: ABdhPJxX/OicGiJYvv+5ye8kHB9PVw6GLAdI9PMjrzinXZSKcqHN1/Os8HeWuA0IvT6iEUg/nk7OYg==
+X-Received: by 2002:a05:6808:1287:b0:326:d23f:f251 with SMTP id a7-20020a056808128700b00326d23ff251mr9636155oiw.155.1653230117198;
+        Sun, 22 May 2022 07:35:17 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id q196-20020a4a33cd000000b0035eb4e5a6d2sm3332387ooq.40.2022.05.22.07.35.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 07:35:16 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Sun, 22 May 2022 07:35:14 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     dan.carpenter@oracle.com, Aleksa Savic <savicaleksa83@gmail.com>,
+        Jack Doan <me@jackdoan.com>, Jean Delvare <jdelvare@suse.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH] hwmon: (aquacomputer_d5next) Fix an error handling path
+ in aqc_probe()
+Message-ID: <20220522143514.GA242830@roeck-us.net>
+References: <be6b955d50de140fcc96bd116150b435021bf567.1653225250.git.christophe.jaillet@wanadoo.fr>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be6b955d50de140fcc96bd116150b435021bf567.1653225250.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jeff,
+On Sun, May 22, 2022 at 03:14:23PM +0200, Christophe JAILLET wrote:
+> If no memory can be allocated, some resources still need to be released as
+> already done in the other error handling paths.
+> 
+> Fixes: 752b927951ea ("hwmon: (aquacomputer_d5next) Add support for Aquacomputer Octo")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-On Fri, 13 May 2022 01:00:06 +0800
-Jeff Xie <xiehuan09@gmail.com> wrote:
+Applied.
 
-[...]
-> @@ -175,9 +271,27 @@ trace_object_trigger(struct event_trigger_data *data,
+Thanks,
+Guenter
+
+> ---
+>  drivers/hwmon/aquacomputer_d5next.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/hwmon/aquacomputer_d5next.c b/drivers/hwmon/aquacomputer_d5next.c
+> index 7d2e7279abfb..a0e69f7ece36 100644
+> --- a/drivers/hwmon/aquacomputer_d5next.c
+> +++ b/drivers/hwmon/aquacomputer_d5next.c
+> @@ -783,8 +783,10 @@ static int aqc_probe(struct hid_device *hdev, const struct hid_device_id *id)
+>  	priv->name = aqc_device_names[priv->kind];
 >  
->  	field = obj_data->field;
->  	memcpy(&obj, rec + field->offset, sizeof(obj));
-> -	set_trace_object(obj, tr);
-> +	/* set the offset from the special object and the type size of the value*/
-> +	set_trace_object(obj, obj_data->obj_offset,
-> +			obj_data->obj_value_type_size, tr);
->  }
+>  	priv->buffer = devm_kzalloc(&hdev->dev, priv->buffer_size, GFP_KERNEL);
+> -	if (!priv->buffer)
+> -		return -ENOMEM;
+> +	if (!priv->buffer) {
+> +		ret = -ENOMEM;
+> +		goto fail_and_close;
+> +	}
 >  
-> +static const struct objtrace_fetch_type objtrace_fetch_types[] = {
-> +	{"u8", 1},
-> +	{"s8", 1},
-> +	{"x8", 1},
-> +	{"u16", 2},
-> +	{"s16", 2},
-> +	{"x16", 2},
-> +	{"u32", 4},
-> +	{"s32", 4},
-> +	{"x32", 4},
-> +	{"u64", 8},
-> +	{"s64", 8},
-> +	{"x64", 8},
-
-Hmm, as far as I can see, you don't distinguish the prefix 'u','s','x'.
-If so, please support only 'x' at this moment. kprobe events supports
-those types, and it distinguishes the types when printing the logged
-data. E.g. 's16' shows '-1' for 0xffff, but 'x16' shows '0xffff'.
-You can add another patch to support such different types afterwards.
-
-> +	{}
-
-If this array is null terminated, please explictly do that, like
-
-	{NULL, 0},
-
-for readability.
-
-Thank you,
-
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
+>  	mutex_init(&priv->mutex);
+>  
