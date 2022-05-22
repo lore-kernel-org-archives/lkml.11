@@ -2,25 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF21C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 15:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25129C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 15:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348848AbiEVP5V (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 11:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
+        id S239749AbiEVP51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 11:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348426AbiEVP5L (ORCPT
+        with ESMTP id S1348486AbiEVP5N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 11:57:11 -0400
+        Sun, 22 May 2022 11:57:13 -0400
 Received: from herzl.nuvoton.co.il (unknown [212.199.177.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCE13B295;
-        Sun, 22 May 2022 08:57:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F6F3B28A;
+        Sun, 22 May 2022 08:57:11 -0700 (PDT)
 Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFovI4031611;
-        Sun, 22 May 2022 18:50:58 +0300
+        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9Yc031650;
+        Sun, 22 May 2022 18:51:09 +0300
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id E754663A4C; Sun, 22 May 2022 18:50:57 +0300 (IDT)
+        id 8524863A4B; Sun, 22 May 2022 18:51:09 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
         venture@google.com, yuenn@google.com, benjaminfair@google.com,
@@ -39,9 +38,9 @@ Cc:     soc@kernel.org, devicetree@vger.kernel.org,
         linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 02/19] clocksource: timer-npcm7xx: Add NPCM845 timer support
-Date:   Sun, 22 May 2022 18:50:29 +0300
-Message-Id: <20220522155046.260146-3-tmaimon77@gmail.com>
+Subject: [PATCH v1 15/19] dt-bindings: arm: npcm: Add nuvoton,npcm845 GCR compatible string
+Date:   Sun, 22 May 2022 18:50:42 +0300
+Message-Id: <20220522155046.260146-16-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220522155046.260146-1-tmaimon77@gmail.com>
 References: <20220522155046.260146-1-tmaimon77@gmail.com>
@@ -51,23 +50,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Nuvoton BMC NPCM845 timer support.
-The NPCM845 uses the same timer controller as the NPCM750.
+Add a compatible string for Nuvoton BMC NPCM845
+global control registers (GCR).
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 ---
- drivers/clocksource/timer-npcm7xx.c | 1 +
+ Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clocksource/timer-npcm7xx.c b/drivers/clocksource/timer-npcm7xx.c
-index a00520cbb660..1630daad4df5 100644
---- a/drivers/clocksource/timer-npcm7xx.c
-+++ b/drivers/clocksource/timer-npcm7xx.c
-@@ -210,4 +210,5 @@ static int __init npcm7xx_timer_init(struct device_node *np)
- 
- TIMER_OF_DECLARE(wpcm450, "nuvoton,wpcm450-timer", npcm7xx_timer_init);
- TIMER_OF_DECLARE(npcm7xx, "nuvoton,npcm750-timer", npcm7xx_timer_init);
-+TIMER_OF_DECLARE(npcm8xx, "nuvoton,npcm845-timer", npcm7xx_timer_init);
+diff --git a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+index aad7c85e787f..94e72f25b331 100644
+--- a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
++++ b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+@@ -21,6 +21,7 @@ properties:
+       - enum:
+           - nuvoton,wpcm450-gcr
+           - nuvoton,npcm750-gcr
++          - nuvoton,npcm845-gcr
+       - const: syscon
+       - const: simple-mfd
  
 -- 
 2.33.0
