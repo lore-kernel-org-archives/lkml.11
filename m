@@ -2,323 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 04:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 04:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236200AbiEVETM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 00:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
+        id S235993AbiEVEdX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 00:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235499AbiEVETD (ORCPT
+        with ESMTP id S233151AbiEVEdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 00:19:03 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BF742EFA
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 21:19:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653193142; x=1684729142;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jgxyp3P1BZIEsmqaIdg/en5fOMuBzFB5JWjxu0Taa7c=;
-  b=kK49CE0RPWP2i9xHk91WK9QzmANgCpVL5prQc+PKVDnuU7R0YA6FsAKY
-   LcfP3884SNj+ZiHvXtsr+zv6zS5ZBDlflHH9iJt7GPfbGGxmMm956qAeV
-   yXyhhJNsfAE4nI6mXY4eEGXOu/raA3lDBqoMKYJlWWNAuHOypUCWtNpHx
-   Sx2OWI1xGsxt/6i6ZVmjVtEEamISQCZ/yeS1nRhnAEKK6YF6x3QlyQBZI
-   rdeirmnR2Bc0OUiGPwQ4k9+qYp5qhIy3uOuuuvqjToduUKQSdkRFVRUl9
-   WKTq7UiNPQZptf1ZTrzZ15+Gd6XlR30wRBCpozxsYlsjnQbLQ0G/AvVhA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="335993725"
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="335993725"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 21:19:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="662904303"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 21 May 2022 21:19:00 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nsd3T-0006uq-Mi;
-        Sun, 22 May 2022 04:18:59 +0000
-Date:   Sun, 22 May 2022 12:18:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/cleanups] BUILD SUCCESS
- d936411dc9caeb3edb992e39c33d4d1d81ca8c08
-Message-ID: <6289b980.Q9ry3QJaOMdR79mK%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sun, 22 May 2022 00:33:14 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B6E3A5E0
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 21:33:12 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id r3so6789225ljd.7
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 21:33:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yCD06XVtIkpJKoi9CQKW+gdhYqTSRbN4wl/ZDZ8BgNE=;
+        b=H4dSE3eNOXcrAi0YFzxEGRbDqkQwiBUSDobhm/nnz5/BYQ9GaUceHMkXCr04+Aujmd
+         MS7GKoOz/s6c4ZIXh2kptGnQq/3o28njqYqsUdgQBtBpIDGbdx40nOBovSiuTHmpf1ry
+         IJELEEo9HcIWdegkF7jEGGeIWooZLtkkXKUxsglmYM2whoj0mP+RnbD9mPE0Lg7uemfc
+         FY7Nql9+XP1ZZcdStJi8W+bHMYG8+d1fI8+B0epVIlex77FyeQcj7aEuNcaoGgLGbwy4
+         yLUPEYTDNwnASi7tXZBAW6iGzs4AJ9oWLbkB4hc35mFOOwhAg8LX8xu9PMWyUeIndE/+
+         ar9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yCD06XVtIkpJKoi9CQKW+gdhYqTSRbN4wl/ZDZ8BgNE=;
+        b=6Q/Kyk6rzTDX439xErmA7z7XLvJoULNHzMuxI+V8/h4QX13meXLxTqNFzNZP5GaRro
+         phEZ8OH8f9Hk3ImELc16gCF722RBntZBuOclX8KVfT/bMKe0FN9YtEdJRQVc3yyejZl+
+         zuYT8f7PFFElxRwzsLRc7/3/mu1s5wJxNtQHrpEh8WL8Uu7uudxaOMZvAa3ScHzZHx0A
+         fIGODrZPn82Sj7V4vdSGh8MdA+y7awoikKYSrAP0KKISNQNn6sA1de9Jn1EH/u3DBXZW
+         oyXLhnusEaP8YXghcnIV3wRAzMZ5D69AUldwhaaQM+X+8R8EebLWUSi0n52iGnA5BrAM
+         lyjA==
+X-Gm-Message-State: AOAM5300TNBusMQUW4rLlHKz69v5msw1f6cVQ3anAJGFEj/s6IqKCSzY
+        9F0hTYJBdP3qnpuIFLZPIt5a5A==
+X-Google-Smtp-Source: ABdhPJwhUWVVKZhh9D4AI5iySEbCseAEfI/eBYhvDo8aVT15ST8pKT/3uNA30wOs5jwQ2C/NSSUMLQ==
+X-Received: by 2002:a2e:9d09:0:b0:253:e189:5a44 with SMTP id t9-20020a2e9d09000000b00253e1895a44mr3587978lji.225.1653193990759;
+        Sat, 21 May 2022 21:33:10 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.185])
+        by smtp.gmail.com with ESMTPSA id y3-20020a2e9d43000000b00253dde4720esm963470ljj.90.2022.05.21.21.33.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 May 2022 21:33:10 -0700 (PDT)
+Message-ID: <1621d82a-439d-0657-2b7e-5e90c42c2087@openvz.org>
+Date:   Sun, 22 May 2022 07:33:08 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4] tracing: add 'accounted' entry into output of
+ allocation tracepoints
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, linux-mm@kvack.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Matthew Wilcox <willy@infradead.org>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Muchun Song <songmuchun@bytedance.com>
+References: <0c73ce5c-3625-6187-820e-1277e168b3bc@openvz.org>
+ <a1e54672-d824-3ee1-cb68-9ceaa46fc70f@openvz.org>
+ <YomzXwN9rvCGAZJ0@n2.us-central1-a.c.spheric-algebra-350919.internal>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <YomzXwN9rvCGAZJ0@n2.us-central1-a.c.spheric-algebra-350919.internal>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cleanups
-branch HEAD: d936411dc9caeb3edb992e39c33d4d1d81ca8c08  x86: Remove empty files
+On 5/22/22 06:51, Hyeonggon Yoo wrote:
+> On Sat, May 21, 2022 at 09:36:54PM +0300, Vasily Averin wrote:
+>> Slab caches marked with SLAB_ACCOUNT force accounting for every
+>> allocation from this cache even if __GFP_ACCOUNT flag is not passed.
+>> Unfortunately, at the moment this flag is not visible in ftrace output,
+>> and this makes it difficult to analyze the accounted allocations.
+>>
+>> This patch adds boolean "accounted" entry into trace output,
+>> and set it to 'true' for calls used __GFP_ACCOUNT flag and
+>> for allocations from caches marked with SLAB_ACCOUNT.
+>>
+>> Signed-off-by: Vasily Averin <vvs@openvz.org>
+>> Acked-by: Shakeel Butt <shakeelb@google.com>
+> 
+> May I ask what information do you want to collect
+> using this patch?
 
-elapsed time: 2470m
+I analyze ftrace output to understand which allocations are accounted.
+When some userspace operation consume memory, it's important to account
+most part of memory (>2/3 of all) to avoid misuse inside memcg-limited
+contianers. Otherwise memcg-limited container can consume significant 
+portion of host memory, trigger global OOM, wake up OOM-killer and kill
+random processes on host.
+If memory consumers are accounted, it leads to memcg-OOM only. 
 
-configs tested: 242
-configs skipped: 4
+Now kmem tracing output looks like this:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+kmem_cache_alloc:     (getname_flags.part.0+0x2c) call_site=getname_flags.part.0+0x2c ptr=0xffff8fff022e9000 bytes_req=4096 bytes_alloc=4096 gfp_flags=GFP_KERNEL accounted=false
+kmalloc:              (alloc_bprm+0x32) call_site=alloc_bprm+0x32 ptr=0xffff8fff2b408a00 bytes_req=416 bytes_alloc=512 gfp_flags=GFP_KERNEL|__GFP_ZERO accounted=false
+kmem_cache_alloc:     (mm_alloc+0x16) call_site=mm_alloc+0x16 ptr=0xffff8fff0894d500 bytes_req=1048 bytes_alloc=1088 gfp_flags=GFP_KERNEL accounted=true
+mm_page_alloc:        page=0xffffffffa4ab8d42 pfn=0x12ad72 order=1 migratetype=0 gfp_flags=GFP_USER|__GFP_ZERO|__GFP_ACCOUNT
+kmem_cache_alloc:     (vm_area_alloc+0x1a) call_site=vm_area_alloc+0x1a ptr=0xffff8fff2af27000 bytes_req=200 bytes_alloc=200 gfp_flags=GFP_KERNEL accounted=true
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-powerpc64                           defconfig
-arc                                 defconfig
-powerpc                     asp8347_defconfig
-m68k                            mac_defconfig
-ia64                            zx1_defconfig
-ia64                      gensparse_defconfig
-arm                            pleb_defconfig
-sh                            titan_defconfig
-sh                            migor_defconfig
-sh                               j2_defconfig
-um                                  defconfig
-um                               alldefconfig
-arm                        shmobile_defconfig
-mips                      maltasmvp_defconfig
-powerpc                    sam440ep_defconfig
-powerpc                      cm5200_defconfig
-arm                        cerfcube_defconfig
-mips                         db1xxx_defconfig
-sh                          rsk7269_defconfig
-powerpc                     pq2fads_defconfig
-parisc                           allyesconfig
-mips                           ci20_defconfig
-xtensa                          iss_defconfig
-s390                             allyesconfig
-ia64                        generic_defconfig
-powerpc                      chrp32_defconfig
-s390                          debug_defconfig
-mips                  maltasmvp_eva_defconfig
-riscv                            allyesconfig
-powerpc                      pcm030_defconfig
-sh                   sh7770_generic_defconfig
-h8300                    h8300h-sim_defconfig
-arm                        mini2440_defconfig
-xtensa                           allyesconfig
-m68k                            q40_defconfig
-sh                           se7721_defconfig
-arm                           tegra_defconfig
-ia64                          tiger_defconfig
-sh                           se7750_defconfig
-mips                  decstation_64_defconfig
-arm                            zeus_defconfig
-h8300                            allyesconfig
-arm                          badge4_defconfig
-arm                           corgi_defconfig
-xtensa                  audio_kc705_defconfig
-arm                            lart_defconfig
-sh                          r7785rp_defconfig
-sh                        sh7763rdp_defconfig
-sh                         microdev_defconfig
-arm                      jornada720_defconfig
-powerpc                        cell_defconfig
-sh                                  defconfig
-powerpc                    klondike_defconfig
-arm                       imx_v6_v7_defconfig
-sh                           se7206_defconfig
-powerpc                         wii_defconfig
-mips                        bcm47xx_defconfig
-um                           x86_64_defconfig
-powerpc                        warp_defconfig
-mips                       capcella_defconfig
-powerpc                 linkstation_defconfig
-arm                           h3600_defconfig
-parisc                generic-64bit_defconfig
-sh                           se7619_defconfig
-alpha                               defconfig
-arm                           h5000_defconfig
-arm                        multi_v7_defconfig
-ia64                         bigsur_defconfig
-sh                          landisk_defconfig
-alpha                            allyesconfig
-arm                        realview_defconfig
-powerpc                     sequoia_defconfig
-arm                            qcom_defconfig
-arc                        nsimosci_defconfig
-powerpc                     stx_gp3_defconfig
-sparc64                          alldefconfig
-i386                                defconfig
-powerpc                      ep88xc_defconfig
-h8300                       h8s-sim_defconfig
-powerpc                     mpc83xx_defconfig
-powerpc                 mpc834x_mds_defconfig
-sh                          urquell_defconfig
-m68k                       m5208evb_defconfig
-mips                             allyesconfig
-m68k                       bvme6000_defconfig
-x86_64                           alldefconfig
-powerpc                 canyonlands_defconfig
-powerpc                       eiger_defconfig
-sh                   rts7751r2dplus_defconfig
-powerpc                   motionpro_defconfig
-arc                          axs103_defconfig
-s390                       zfcpdump_defconfig
-arm                           sama5_defconfig
-m68k                          hp300_defconfig
-mips                         mpc30x_defconfig
-powerpc                 mpc837x_mds_defconfig
-arm                           viper_defconfig
-sh                          sdk7786_defconfig
-powerpc                 mpc837x_rdb_defconfig
-h8300                     edosk2674_defconfig
-arc                           tb10x_defconfig
-m68k                          multi_defconfig
-nios2                            alldefconfig
-arm                             pxa_defconfig
-m68k                        mvme147_defconfig
-arm                        keystone_defconfig
-openrisc                 simple_smp_defconfig
-xtensa                generic_kc705_defconfig
-powerpc                       holly_defconfig
-arc                          axs101_defconfig
-powerpc                      mgcoge_defconfig
-mips                     loongson1b_defconfig
-arc                         haps_hs_defconfig
-sh                               allmodconfig
-m68k                           sun3_defconfig
-powerpc                     rainier_defconfig
-m68k                             allmodconfig
-sparc64                             defconfig
-arm                            xcep_defconfig
-arc                 nsimosci_hs_smp_defconfig
-powerpc                mpc7448_hpc2_defconfig
-nios2                         3c120_defconfig
-m68k                          sun3x_defconfig
-sh                        sh7757lcr_defconfig
-powerpc                      ppc6xx_defconfig
-m68k                          amiga_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220519
-arm                  randconfig-c002-20220522
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-riscv                             allnoconfig
-m68k                             allyesconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220522
-s390                 randconfig-r044-20220522
-riscv                randconfig-r042-20220522
-arc                  randconfig-r043-20220519
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
+As you can see, without new field it is quite hard to understand, 
+is last allocation accounted.
 
-clang tested configs:
-s390                 randconfig-c005-20220519
-powerpc              randconfig-c003-20220519
-x86_64                        randconfig-c007
-riscv                randconfig-c006-20220519
-mips                 randconfig-c004-20220519
-i386                          randconfig-c001
-arm                  randconfig-c002-20220519
-arm                  randconfig-c002-20220522
-s390                 randconfig-c005-20220522
-powerpc              randconfig-c003-20220522
-riscv                randconfig-c006-20220522
-mips                 randconfig-c004-20220522
-powerpc                          g5_defconfig
-hexagon                             defconfig
-mips                      pic32mzda_defconfig
-arm                          ep93xx_defconfig
-mips                     loongson2k_defconfig
-mips                      malta_kvm_defconfig
-arm                              alldefconfig
-arm                          ixp4xx_defconfig
-powerpc                     tqm5200_defconfig
-i386                             allyesconfig
-powerpc                    socrates_defconfig
-arm                     davinci_all_defconfig
-arm                         mv78xx0_defconfig
-powerpc                    ge_imp3a_defconfig
-arm                         s5pv210_defconfig
-powerpc                 mpc8560_ads_defconfig
-powerpc                   bluestone_defconfig
-powerpc                      katmai_defconfig
-powerpc                        icon_defconfig
-powerpc                      ppc44x_defconfig
-arm                       spear13xx_defconfig
-mips                           rs90_defconfig
-powerpc                          allmodconfig
-arm                         palmz72_defconfig
-mips                            e55_defconfig
-arm                        mvebu_v5_defconfig
-powerpc                  mpc885_ads_defconfig
-powerpc                    gamecube_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220522
-hexagon              randconfig-r041-20220522
-s390                 randconfig-r044-20220519
-hexagon              randconfig-r045-20220519
-riscv                randconfig-r042-20220519
-hexagon              randconfig-r041-20220519
-hexagon              randconfig-r045-20220521
-hexagon              randconfig-r041-20220521
-s390                 randconfig-r044-20220521
-riscv                randconfig-r042-20220521
+This analyze helps me to identify most important allocations for given scenario
+and enable accounting for selected allocations.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+An example of this analyze you can found here:
+https://lore.kernel.org/all/d28233ee-bccb-7bc3-c2ec-461fd7f95e6a@openvz.org/
+
+> I pointed it in another thread but I'm not sure
+> printing SLAB_* flags in these tracepoint is good :(
+
+I'm not sure I understand your arguments correctly. Could you please
+explain your position in more details?
+
+> If we decide to do that, it would be better to print
+> something like:
+> slab_flags=SLAB_RECLAIM_ACCOUNT|SLAB_ACCOUNT|SLAB_STORE_USER
+> instead of just printing 'accounted=true/false'. This patch is too
+> specific to SLAB_ACCOUNT.
+
+Any extra output degrades performance.
+For my task it's not important to know SLAB flags, I just need to understand,
+is current allocation accounted or not.
+
+> And if what you want to know is just total slab memory that is accounted,
+> what about adding something like  SlabAccounted in /proc/meminfo?
+
+It is not enough for me. I need to have per-process allocation information.
+
+Thank you,
+	Vasily Averin
