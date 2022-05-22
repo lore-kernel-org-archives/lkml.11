@@ -2,127 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D111C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23805C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348457AbiEVAtH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 20:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
+        id S234796AbiEVAtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 20:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344016AbiEVAtA (ORCPT
+        with ESMTP id S1348667AbiEVAtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 20:49:00 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F544A3F5
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:48:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653180539; x=1684716539;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=VWm2wfsdQ4dIqEDo+Rqj2dg5Q+vUveN53C1XvpOumpo=;
-  b=e4iJycHpmLIvDoN5SzfKqeK7SMjOHrzSatrkkUVP0FvXUIVb2uzvG9To
-   doqhv31BkTj3BIX3xxEKAvRDKYj1WGEhMBQ12W+UYhCMCrBG8HAqo1pdP
-   ffliqctUcJ+xs8Rb4kuu4OHS60RhKHNsJccW5UKAdxWl8Q7MCdH0cSO1/
-   dUnp7OF0Ao+ogKd6Hz2ZsoYKgrCPUYx+BV1FoPVnMXCQGAuzMU0GYYjSE
-   lQQqgMO//QzPg/eKU9TnOxw/7NlK9GQwNO/Lx7LCTQQWPEc7rrKm7ZyRp
-   PqHbW9ylnaCHlAjSZQqgpkur7KfkxLeQdyvroaZ9UXkzwvhHSmY4tys3c
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="270503439"
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="270503439"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 17:48:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="571448091"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 21 May 2022 17:48:57 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nsZmC-0006nM-MJ;
-        Sun, 22 May 2022 00:48:56 +0000
-Date:   Sun, 22 May 2022 08:48:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Koba Ko <koba.ko@canonical.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:18:
- error: invalid use of undefined type 'struct cpuinfo_x86'
-Message-ID: <202205220819.oeCFzZ1A-lkp@intel.com>
+        Sat, 21 May 2022 20:49:15 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A684AE29;
+        Sat, 21 May 2022 17:49:11 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L5MKb39Qlz4xYX;
+        Sun, 22 May 2022 10:49:07 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1653180547;
+        bh=6GBGQUNfenayWdG4wh7MBp6v8WRidvRkLBy3XrNfZ60=;
+        h=Date:From:To:Cc:Subject:From;
+        b=tqZfawZXWar8odKzH0NaVBTc6kdmbYm9rFgRcoXiLUhc4h7pFx6q5w8oyb+4T2NlW
+         a0ZvYY17Y4CGC3fI+1Jn++Hyvy2Ysgle6EUlRmbRa5yy+IOV8V5e/Mmuw5MaG0HOHs
+         qK49bbkfw7Zf3MZbPJDa6c0ge+AC5nVd4k8EUjaiRZ2D/hKueN4VKjnD6qN3PJS53M
+         w9VnTHWQ+RKccY1pi9L721yNzAxt01lHRrRf4pNARBDxdTUSwd6LhyYLAyFcEGj6/V
+         EzCsGPuVFJeLnG0/zMTV2xZ2I0nbZ6TNpymMvOb7dVNVjKTIeyoYmKF83lMm1xgiQI
+         lVtvRFvwjCoog==
+Date:   Sun, 22 May 2022 10:49:06 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Paolo Bonzini <pbonzini@redhat.com>, KVM <kvm@vger.kernel.org>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the kvm tree
+Message-ID: <20220522104906.6d905d11@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: multipart/signed; boundary="Sig_/cLSV4iuw14whB3Xv2gynlzz";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Koba,
+--Sig_/cLSV4iuw14whB3Xv2gynlzz
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-FYI, the error/warning still remains.
+Hi all,
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   6c3f5bec9b40b9437410abb08eccd5cdd1598a3c
-commit: b3dc549986eb7b38eba4a144e979dc93f386751f drm/amdgpu: Disable PCIE_DPM on Intel RKL Platform
-date:   9 months ago
-config: um-allyesconfig (https://download.01.org/0day-ci/archive/20220522/202205220819.oeCFzZ1A-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b3dc549986eb7b38eba4a144e979dc93f386751f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b3dc549986eb7b38eba4a144e979dc93f386751f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SHELL=/bin/bash
+In commit
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+  abaaf90e1cb9 ("KVM: LAPIC: Drop pending LAPIC timer injection when cancel=
+ing the timer")
 
-All errors (new ones prefixed by >>):
+Fixes tag
 
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:92,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/slab.h:15,
-                    from drivers/gpu/drm/amd/amdgpu/../pm/inc/pp_debug.h:35,
-                    from drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:23:
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c: In function 'intel_core_rkl_chk':
-   arch/um/include/asm/processor-generic.h:104:19: error: called object is not a function or function pointer
-     104 | #define cpu_data (&boot_cpu_data)
-         |                  ~^~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1742:34: note: in expansion of macro 'cpu_data'
-    1742 |         struct cpuinfo_x86 *c = &cpu_data(0);
-         |                                  ^~~~~~~~
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:18: error: invalid use of undefined type 'struct cpuinfo_x86'
-    1744 |         return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-         |                  ^~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:33: error: invalid use of undefined type 'struct cpuinfo_x86'
-    1744 |         return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-         |                                 ^~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1748:1: error: control reaches end of non-void function [-Werror=return-type]
-    1748 | }
-         | ^
-   cc1: some warnings being treated as errors
+  Fixes: 4427593258 (KVM: x86: thoroughly disarm LAPIC timer around TSC dea=
+dline switch)
 
+has these problem(s):
 
-vim +1744 drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c
+  - SHA1 should be at least 12 digits long
+    This can be fixed for the future by setting core.abbrev to 12 (or
+    more) or (for git v2.11 or later) just making sure it is not set
+    (or set to "auto").
 
-  1738	
-  1739	static bool intel_core_rkl_chk(void)
-  1740	{
-  1741	#if IS_ENABLED(CONFIG_X86_64)
-  1742		struct cpuinfo_x86 *c = &cpu_data(0);
-  1743	
-> 1744		return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-  1745	#else
-  1746		return false;
-  1747	#endif
-  1748	}
-  1749	
+--=20
+Cheers,
+Stephen Rothwell
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--Sig_/cLSV4iuw14whB3Xv2gynlzz
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKJiIIACgkQAVBC80lX
+0GykiAf9E7tHEsjAxemxzP+zoGiThH9xQ4ulDS3y9+Vn2ar9lDGCUXAicD8wBdPB
+C17a0OQ79rcARUtUXseDOxXtzeVBDjLmifI2YJuGMOSJXsu7e+vkHMXCDF6owLm3
+ZOqU86eunLfvaJN86jjIe2hsdb1983RJvufl52QysE1chbGI69D/nkDHrTl9zm+h
+8RwhuadUahIb5ryGdF76SVi8t+AIa7365ECAPz3pXvdzDMToTVLdYZLTnRZxQlQq
+2PadSpa+fDFMB6Bq8zrmKRj5aqVOzm2vFBGPhtbRG8XjTT/12DRzIdCiV3RS56BS
+PFhRv1zjsimRFc2mnLZGpTEZadHEcQ==
+=rEO3
+-----END PGP SIGNATURE-----
+
+--Sig_/cLSV4iuw14whB3Xv2gynlzz--
