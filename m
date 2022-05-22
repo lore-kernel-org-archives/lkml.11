@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF73DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00266C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346704AbiEVAc7 (ORCPT
+        id S1348436AbiEVAdF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 20:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        Sat, 21 May 2022 20:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347932AbiEVAcd (ORCPT
+        with ESMTP id S1348098AbiEVAcj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 20:32:33 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E96140930
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:32:32 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id e3so12117968ios.6
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:32:32 -0700 (PDT)
+        Sat, 21 May 2022 20:32:39 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFF94160B
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:32:34 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id p74so8497406iod.8
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:32:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=w1h7lzBoTRhyrnPIVZrDCLdy25xtg4IsChqOgLd2WKk=;
-        b=PTPwtLovhOsE11ooX/9DB0FEdX+sJIpSa7FNxpe2MzRMAc29BQRY/87J/gghpZlaHR
-         Gu4/vFxwFtAZrsqoRHSxenYN2XSRM8laXMahnoLARsVn0clT3nRmTn2eF2bEb3quQ34e
-         MezpcjuRVABCCgWSSgqfyw9rIZ+GpUqG6uLOKW39fGLpUNXLWCm2xEuqqQkMGh033lWF
-         HReLueNOm/jQhwOGW/qAqCUtc0Q/BTa9lnG12eItT/q+C2UkVU0Tyz8jqsgfM00ncXF2
-         ic8PiPUA4L2u0fqcrEv+jgQv6r2Gr8NXjfp3JRV0gmSbc6lYo8U131FvDkTXCWCPXO+t
-         8D8Q==
+        bh=ym9OYI6aJ18dYi6ySu0CCwN+bayr/dGSVhve9l8ISjg=;
+        b=KuZEmJbmTHrLdBEmn5boklpye3PNVq3z35R6zKUmXg0RlkAzsG4CyYTiCnzxkhkqGD
+         GB6w7g6sV4ZBxzS2DwB5mWHtHfOfY3iJ2KZO/qf1VT7nwta5JOduxZD839yew9ZyoORR
+         DzQCoF/MYvAolWkUap0ikBmrWT56h5dm8pYfeY9c7RBdfAc8Tf55y/Ycu5+PQAUw3Nq6
+         Q41ljgvVNVdYiFZDvTZUxylfjFw5xqSuu//w2dXtPKdpYzNVMBVoqXqDHxFhYekZbwjT
+         0DlXaZ1rS5+PQUnNyPwdMH82GK3S8xnMcewmPUqzc8H397VOluhoAxYhaOPcfGMMai1q
+         aWpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=w1h7lzBoTRhyrnPIVZrDCLdy25xtg4IsChqOgLd2WKk=;
-        b=LXm3qDJA1wO22EVxYP+Gythw6DYK8qIr0XexSran2kv/dhsO73pSndEfMGiKpEy0y4
-         B6RWEwynMHxs7cRSyAdA1+wkwlYYcfYFRl+ee8oN8l/4QpBNJ97RhV0HI7b6/1PQTb8p
-         skrsNuoWzn2lNVarNscuJ5mmu8Ux+IGZgX68TUgJ6JwrKHsc3wqz0JpF9ZgHfSBwrLBE
-         /bN8l+eukpT3ud37VpnzU6wZ83vsRyvGN+546LQ7yI22PgpO5TeSLIWQ+ltp9Ptz7pED
-         7Myk5aB5It6rdXGmQTXpHFeaqwUWEsWHdQdIXuGR8+KE4rvq7p5AtOckjhkBzODVSN/O
-         IcaQ==
-X-Gm-Message-State: AOAM533y2J+0w1unz8Lp/qMRkiQG5fiuBC0GVokymBNo3E6acJhwNytY
-        9TJZyrSSSdLMY+AdfpV/vORCdw==
-X-Google-Smtp-Source: ABdhPJw2rchZw30QgObmn4lR9kWP2wPXd/KGSAKRpLux2f8JtTrVAukiW/XFW5bnYvuNHfPPq9cccA==
-X-Received: by 2002:a6b:3e41:0:b0:65a:4456:90b8 with SMTP id l62-20020a6b3e41000000b0065a445690b8mr7491000ioa.57.1653179551901;
-        Sat, 21 May 2022 17:32:31 -0700 (PDT)
+        bh=ym9OYI6aJ18dYi6ySu0CCwN+bayr/dGSVhve9l8ISjg=;
+        b=39E5jM7ccHyUV2mtM+MMvblV9jnuqFP1ak3LX1sCjc49jxN1lh0CE27P/Q+TcFtFeI
+         4oCjjgF+wbLP6WPzfysF3xqs7V/SBvXmt3UV/m/oE0jKFBJhwXlfz6pyhwgL1ACdLawW
+         K3+4HGQ/by4mNXyIpOEIDLFpB96gETS5f5cbR8xP6wcV9yrhDM+DjLQtjmwIe/rkEJYn
+         kz3OLPEOVWjv6jIlMoDBgm1tkUZw6Ud3hUIXtya1PQbtpVaF7S5mM7QoIKyAU7VJ+liF
+         v2vqhJEp6NWit5EeSjps1tOICTh3vxsGtFCHGick1+dGnOb5L9dL2zS+CAnP0uXPrOkf
+         2U7w==
+X-Gm-Message-State: AOAM533O6O+GXILA9xs2UT4yDQ6SulZEpB+ZacEyWr1r3+UYsF3jUd8X
+        1+v5eXEOMosN+Tz89kNpTJBybw==
+X-Google-Smtp-Source: ABdhPJwsYrD8/1poPZZ1cPHP4HJ2D5y/ecdDDDexSDvrGYSpusV9+UR1gE5e4fKnjHr/t7A7IZEo5A==
+X-Received: by 2002:a05:6638:1486:b0:32b:e870:b2a7 with SMTP id j6-20020a056638148600b0032be870b2a7mr8571202jak.200.1653179553820;
+        Sat, 21 May 2022 17:32:33 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id g8-20020a02c548000000b0032b5e78bfcbsm1757115jaj.135.2022.05.21.17.32.31
+        by smtp.gmail.com with ESMTPSA id g8-20020a02c548000000b0032b5e78bfcbsm1757115jaj.135.2022.05.21.17.32.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 17:32:31 -0700 (PDT)
+        Sat, 21 May 2022 17:32:33 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 5/9] net: ipa: count the number of modem TX endpoints
-Date:   Sat, 21 May 2022 19:32:19 -0500
-Message-Id: <20220522003223.1123705-6-elder@linaro.org>
+Subject: [PATCH net-next v2 7/9] net: ipa: remove command direction argument
+Date:   Sat, 21 May 2022 19:32:21 -0500
+Message-Id: <20220522003223.1123705-8-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220522003223.1123705-1-elder@linaro.org>
 References: <20220522003223.1123705-1-elder@linaro.org>
@@ -69,73 +69,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ipa_endpoint_modem_exception_reset_all(), a high estimate was
-made of the number of endpoints that need their status register
-updated.  We only used what was needed, so the high estimate didn't
-matter much.
-
-However the next few patches are going to limit the number of
-commands in a single transaction, and the overestimate would exceed
-that.  So count the number of modem TX endpoints at initialization
-time, and use it in ipa_endpoint_modem_exception_reset_all().
+We no longer use the direction argument for gsi_trans_cmd_add(), so
+get rid of it in its definition, and in its seven callers.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
-v2:  This is a new patch added to the series.
+ drivers/net/ipa/gsi_trans.c |  3 +--
+ drivers/net/ipa/gsi_trans.h |  4 +---
+ drivers/net/ipa/ipa_cmd.c   | 22 +++++++---------------
+ 3 files changed, 9 insertions(+), 20 deletions(-)
 
- drivers/net/ipa/ipa.h          |  2 ++
- drivers/net/ipa/ipa_endpoint.c | 10 +++++-----
- 2 files changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
-index 9fc880eb7e3a6..4fc3c72359f5e 100644
---- a/drivers/net/ipa/ipa.h
-+++ b/drivers/net/ipa/ipa.h
-@@ -62,6 +62,7 @@ struct ipa_interrupt;
-  * @initialized:	Bit mask indicating endpoints initialized
-  * @set_up:		Bit mask indicating endpoints set up
-  * @enabled:		Bit mask indicating endpoints enabled
-+ * @modem_tx_count:	Number of defined modem TX endoints
-  * @endpoint:		Array of endpoint information
-  * @channel_map:	Mapping of GSI channel to IPA endpoint
-  * @name_map:		Mapping of IPA endpoint name to IPA endpoint
-@@ -114,6 +115,7 @@ struct ipa {
- 	u32 set_up;
- 	u32 enabled;
+diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
+index cf8ee42373547..472792992f866 100644
+--- a/drivers/net/ipa/gsi_trans.c
++++ b/drivers/net/ipa/gsi_trans.c
+@@ -410,8 +410,7 @@ void gsi_trans_free(struct gsi_trans *trans)
  
-+	u32 modem_tx_count;
- 	struct ipa_endpoint endpoint[IPA_ENDPOINT_MAX];
- 	struct ipa_endpoint *channel_map[GSI_CHANNEL_COUNT_MAX];
- 	struct ipa_endpoint *name_map[IPA_ENDPOINT_COUNT];
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 5ed5b8fd3ea36..385aa63ab4bbc 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -442,12 +442,10 @@ int ipa_endpoint_modem_exception_reset_all(struct ipa *ipa)
- 	struct gsi_trans *trans;
- 	u32 count;
+ /* Add an immediate command to a transaction */
+ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
+-		       dma_addr_t addr, enum dma_data_direction direction,
+-		       enum ipa_cmd_opcode opcode)
++		       dma_addr_t addr, enum ipa_cmd_opcode opcode)
+ {
+ 	u32 which = trans->used++;
+ 	struct scatterlist *sg;
+diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
+index 387ea50dd039e..9a39909915ef5 100644
+--- a/drivers/net/ipa/gsi_trans.h
++++ b/drivers/net/ipa/gsi_trans.h
+@@ -165,12 +165,10 @@ void gsi_trans_free(struct gsi_trans *trans);
+  * @buf:	Buffer pointer for command payload
+  * @size:	Number of bytes in buffer
+  * @addr:	DMA address for payload
+- * @direction:	Direction of DMA transfer (or DMA_NONE if none required)
+  * @opcode:	IPA immediate command opcode
+  */
+ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
+-		       dma_addr_t addr, enum dma_data_direction direction,
+-		       enum ipa_cmd_opcode opcode);
++		       dma_addr_t addr, enum ipa_cmd_opcode opcode);
  
--	/* We need one command per modem TX endpoint.  We can get an upper
--	 * bound on that by assuming all initialized endpoints are modem->IPA.
--	 * That won't happen, and we could be more precise, but this is fine
--	 * for now.  End the transaction with commands to clear the pipeline.
-+	/* We need one command per modem TX endpoint, plus the commands
-+	 * that clear the pipeline.
- 	 */
--	count = hweight32(initialized) + ipa_cmd_pipeline_clear_count();
-+	count = ipa->modem_tx_count + ipa_cmd_pipeline_clear_count();
- 	trans = ipa_cmd_trans_alloc(ipa, count);
- 	if (!trans) {
- 		dev_err(&ipa->pdev->dev,
-@@ -1924,6 +1922,8 @@ u32 ipa_endpoint_init(struct ipa *ipa, u32 count,
+ /**
+  * gsi_trans_page_add() - Add a page transfer to a transaction
+diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+index 77b84cea6e68f..5fd74d7007044 100644
+--- a/drivers/net/ipa/ipa_cmd.c
++++ b/drivers/net/ipa/ipa_cmd.c
+@@ -402,7 +402,6 @@ void ipa_cmd_table_init_add(struct gsi_trans *trans,
+ 			    dma_addr_t hash_addr)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_hw_ip_fltrt_init *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -433,7 +432,7 @@ void ipa_cmd_table_init_add(struct gsi_trans *trans,
+ 	payload->nhash_rules_addr = cpu_to_le64(addr);
  
- 		if (data->endpoint.filter_support)
- 			filter_map |= BIT(data->endpoint_id);
-+		if (data->ee_id == GSI_EE_MODEM && data->toward_ipa)
-+			ipa->modem_tx_count++;
- 	}
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
  
- 	if (!ipa_filter_map_valid(ipa, filter_map))
+ /* Initialize header space in IPA-local memory */
+@@ -442,7 +441,6 @@ void ipa_cmd_hdr_init_local_add(struct gsi_trans *trans, u32 offset, u16 size,
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_HDR_INIT_LOCAL;
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_hw_hdr_init_local *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -464,7 +462,7 @@ void ipa_cmd_hdr_init_local_add(struct gsi_trans *trans, u32 offset, u16 size,
+ 	payload->flags = cpu_to_le32(flags);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ void ipa_cmd_register_write_add(struct gsi_trans *trans, u32 offset, u32 value,
+@@ -521,7 +519,7 @@ void ipa_cmd_register_write_add(struct gsi_trans *trans, u32 offset, u32 value,
+ 	payload->clear_options = cpu_to_le32(options);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  DMA_NONE, opcode);
++			  opcode);
+ }
+ 
+ /* Skip IP packet processing on the next data transfer on a TX channel */
+@@ -529,7 +527,6 @@ static void ipa_cmd_ip_packet_init_add(struct gsi_trans *trans, u8 endpoint_id)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_IP_PACKET_INIT;
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_ip_packet_init *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -541,7 +538,7 @@ static void ipa_cmd_ip_packet_init_add(struct gsi_trans *trans, u8 endpoint_id)
+ 					IPA_PACKET_INIT_DEST_ENDPOINT_FMASK);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ /* Use a DMA command to read or write a block of IPA-resident memory */
+@@ -552,7 +549,6 @@ void ipa_cmd_dma_shared_mem_add(struct gsi_trans *trans, u32 offset, u16 size,
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_DMA_SHARED_MEM;
+ 	struct ipa_cmd_hw_dma_mem_mem *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+-	enum dma_data_direction direction;
+ 	dma_addr_t payload_addr;
+ 	u16 flags;
+ 
+@@ -583,17 +579,14 @@ void ipa_cmd_dma_shared_mem_add(struct gsi_trans *trans, u32 offset, u16 size,
+ 	payload->flags = cpu_to_le16(flags);
+ 	payload->system_addr = cpu_to_le64(addr);
+ 
+-	direction = toward_ipa ? DMA_TO_DEVICE : DMA_FROM_DEVICE;
+-
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ static void ipa_cmd_ip_tag_status_add(struct gsi_trans *trans)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_IP_PACKET_TAG_STATUS;
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	struct ipa_cmd_ip_packet_tag_status *payload;
+ 	union ipa_cmd_payload *cmd_payload;
+ 	dma_addr_t payload_addr;
+@@ -604,14 +597,13 @@ static void ipa_cmd_ip_tag_status_add(struct gsi_trans *trans)
+ 	payload->tag = le64_encode_bits(0, IP_PACKET_TAG_STATUS_TAG_FMASK);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ /* Issue a small command TX data transfer */
+ static void ipa_cmd_transfer_add(struct gsi_trans *trans)
+ {
+ 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
+-	enum dma_data_direction direction = DMA_TO_DEVICE;
+ 	enum ipa_cmd_opcode opcode = IPA_CMD_NONE;
+ 	union ipa_cmd_payload *payload;
+ 	dma_addr_t payload_addr;
+@@ -620,7 +612,7 @@ static void ipa_cmd_transfer_add(struct gsi_trans *trans)
+ 	payload = ipa_cmd_payload_alloc(ipa, &payload_addr);
+ 
+ 	gsi_trans_cmd_add(trans, payload, sizeof(*payload), payload_addr,
+-			  direction, opcode);
++			  opcode);
+ }
+ 
+ /* Add immediate commands to a transaction to clear the hardware pipeline */
 -- 
 2.32.0
 
