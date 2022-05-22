@@ -2,87 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 10:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D47DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 10:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243292AbiEVKJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 06:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
+        id S243451AbiEVKWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 06:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbiEVKIz (ORCPT
+        with ESMTP id S243791AbiEVKWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 06:08:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063683EB86;
-        Sun, 22 May 2022 03:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653214135; x=1684750135;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+ldVfAkI63e7T9H9+Tu6rkR3XDiV/+stA3qHNtz8ShU=;
-  b=fqMcbs48cA3u/tkSq0h0hOc/tsat7AIBWsHThBL2I3/Mte54HeMaXpXe
-   K+ovU99hntEQEHj50yvPvfSryz40huKAtsNRrSlbyT4HkfP3w1PLVpmTu
-   8FDIFop5Bltlh9FI2lSRA9djUsfzq7K3W2QfLrZNQRzUEZe5Uygm+W+P0
-   9IqRpo6uPsvSM+fcr5opM8HtiMD9XVknclTxM7/zDyyqFbgyC3elICCFZ
-   wjxLx59jCQKtaQw1bndoDnQsXqB6gbv/NBnsMe95aplRu6JL3U/yhCumX
-   EFzbb+B/yyzfZV8JiVzmqGiH4BOMSeHb6Z7zvNpJpPecfg1Cf+/58R6bh
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="272956338"
-X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
-   d="scan'208";a="272956338"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2022 03:08:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
-   d="scan'208";a="628872786"
-Received: from q.bj.intel.com ([10.238.154.102])
-  by fmsmga008.fm.intel.com with ESMTP; 22 May 2022 03:08:50 -0700
-From:   shaoqin.huang@intel.com
-To:     pbonzini@redhat.com
-Cc:     Shaoqin Huang <shaoqin.huang@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
+        Sun, 22 May 2022 06:22:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1001F36B55
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 03:22:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653214937;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b/PRTGgzJSajLmASm1ImWykhYRAoLKce07yOgwd/E/o=;
+        b=IH0X6jqtlg4aOOaWaSkgVaGjYNZinM6AZuLW8bQyte9qQtpCSGvLiUkzMFOyWiTp2MCON6
+        ET4mZs2dIRV5st3Yy4Pz/zsmX6wmS4Eo2s3GDitVIa3uxN+ofKT+Tb6YR3UdXzKWU/0RdO
+        s9PhEBjHpnwECDdgfozJqsv719VhHEM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-292-78527TvaMxCx363TuhOEMA-1; Sun, 22 May 2022 06:22:13 -0400
+X-MC-Unique: 78527TvaMxCx363TuhOEMA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0ADC71C05AEF;
+        Sun, 22 May 2022 10:22:12 +0000 (UTC)
+Received: from starship (unknown [10.40.192.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7845340CFD00;
+        Sun, 22 May 2022 10:22:06 +0000 (UTC)
+Message-ID: <5ed0d0e5a88bbee2f95d794dbbeb1ad16789f319.camel@redhat.com>
+Subject: Re: [RFC PATCH v3 04/19] KVM: x86: mmu: allow to enable write
+ tracking externally
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Airlie <airlied@linux.ie>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: x86/mmu: Check every prev_roots in __kvm_mmu_free_obsolete_roots()
-Date:   Sun, 22 May 2022 19:09:48 -0600
-Message-Id: <20220523010948.2018342-1-shaoqin.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
+        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Date:   Sun, 22 May 2022 13:22:05 +0300
+In-Reply-To: <YoZyWOh4NPA0uN5J@google.com>
+References: <20220427200314.276673-1-mlevitsk@redhat.com>
+         <20220427200314.276673-5-mlevitsk@redhat.com> <YoZyWOh4NPA0uN5J@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaoqin Huang <shaoqin.huang@intel.com>
+On Thu, 2022-05-19 at 16:37 +0000, Sean Christopherson wrote:
+> On Wed, Apr 27, 2022, Maxim Levitsky wrote:
+> > @@ -5753,6 +5752,10 @@ int kvm_mmu_init_vm(struct kvm *kvm)
+> >  	node->track_write = kvm_mmu_pte_write;
+> >  	node->track_flush_slot = kvm_mmu_invalidate_zap_pages_in_memslot;
+> >  	kvm_page_track_register_notifier(kvm, node);
+> 
+> Can you add a patch to move this call to kvm_page_track_register_notifier() into
+> mmu_enable_write_tracking(), and simultaneously add a WARN in the register path
+> that page tracking is enabled?
+> 
+> Oh, actually, a better idea. Add an inner __kvm_page_track_register_notifier()
+> that is not exported and thus used only by KVM, invoke mmu_enable_write_tracking()
+> from the exported kvm_page_track_register_notifier(), and then do the above.
+> That will require modifying KVMGT and KVM in a single patch, but that's ok.
+> 
+> That will avoid any possibility of an external user failing to enabling tracking
+> before registering its notifier, and also avoids bikeshedding over what to do with
+> the one-line wrapper to enable tracking.
+> 
 
-Iterate every prev_roots and only zap obsoleted roots.
+This is a good idea as well, especially looking at kvmgt and seeing that
+it registers the page track notifier, when the vGPU is opened.
 
-Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
----
- arch/x86/kvm/mmu/mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'll do this in the next series.
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 45e1573f8f1d..22803916a609 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5168,7 +5168,7 @@ static void __kvm_mmu_free_obsolete_roots(struct kvm *kvm, struct kvm_mmu *mmu)
- 		roots_to_free |= KVM_MMU_ROOT_CURRENT;
- 
- 	for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++) {
--		if (is_obsolete_root(kvm, mmu->root.hpa))
-+		if (is_obsolete_root(kvm, mmu->prev_roots.hpa))
- 			roots_to_free |= KVM_MMU_ROOT_PREVIOUS(i);
- 	}
- 
--- 
-2.30.2
+Thanks for the review!
+
+Best regards,
+	Maxim Levitsky
 
