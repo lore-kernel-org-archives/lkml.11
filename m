@@ -2,82 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF34C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:22:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238810AbiEVASA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 20:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
+        id S1347893AbiEVAWh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 20:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiEVAR6 (ORCPT
+        with ESMTP id S1347501AbiEVAWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 20:17:58 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A803F8BE
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:17:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653178677; x=1684714677;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UFGskL+eS8xPSlZ84GUBDgnXZ977kPt49KhEnWAKE4k=;
-  b=h5R2GyYLbZB4PUVRJtxBl1+ba9aiyOKruisC0TNrtuf+X3ioGWXQzbFw
-   a4G7Ime1gHh4k8tZkmDess3RRTGkzWw0lGiYEs2MRQm7MxzBn3NuYedtf
-   /fcN/J+Q3ryW7XwbFGVP93D33Ui5jwPs4BditXgPTnzkkUSyyaADh68sk
-   HSEy2fG+O+YLwFYwuaTaoCw9bB4qbKrUvG52zwXhCk5K0auxAE4HMA+jI
-   LXtrfYA6OTJhZvYBeLzE3pBhjU3fv1CkqMPl7nYjAS1QbPSHw0TbCVyrh
-   vFT67mMS3n1AFak1prLm6Ei3C9AvMy8hm1t5XhP36zNT2YWNOQ+SwdbN0
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="270501390"
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="270501390"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 17:17:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="607590377"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 21 May 2022 17:17:56 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nsZIB-0006lD-NM;
-        Sun, 22 May 2022 00:17:55 +0000
-Date:   Sun, 22 May 2022 08:17:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [congwang:sch_bpf 1/3] m68k-linux-ld: kernel/bpf/syscall.o:undefined
- reference to `skb_map_ops'
-Message-ID: <202205220841.yXC3cJWK-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Sat, 21 May 2022 20:22:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA08F3FBC1;
+        Sat, 21 May 2022 17:22:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62DBA60EF8;
+        Sun, 22 May 2022 00:22:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C5B4EC385B8;
+        Sun, 22 May 2022 00:22:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653178951;
+        bh=Cvc0TCsFYfrtsDOto8w+o7+IC1twPbLpFDRQpCQ0iuI=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=PR5FsHIUfOhCx01eG+RwbDAyS79lbtxvT4VlmR6JdrQI1G0KwBnf48mtMipnfYXdv
+         +mzErIuChSdA00G5iePqTcgbZvUu5FECyiFwM+vBpI/n+i6te17upy5WlEcJWKdxGg
+         UDlSd/ffIgTufldG2T2HdA2jheZJNrfYHTzdA/zD1kSlslWS6iMIiBXx67QYEyw+8S
+         brgzJGTIYa8T6BrgMG4fZZjo81y21qtTd7uUbiurQ+Cpx0p7Kw38wySheFtI+/Xi3a
+         Ct6srvCJ+z/dXqK71h/tMPNZNMk5/nsi2zyYMlVoVXK2Ur4u31+c2eIazrN6Wb0jcY
+         DG/n6Z9XxXVAA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B3B30E7BA5A;
+        Sun, 22 May 2022 00:22:31 +0000 (UTC)
+Subject: Re: [GIT PULL] SCSI fixes for 5.18-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <333254c5b864c9c8bf50b895d99309b27065a487.camel@HansenPartnership.com>
+References: <333254c5b864c9c8bf50b895d99309b27065a487.camel@HansenPartnership.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <333254c5b864c9c8bf50b895d99309b27065a487.camel@HansenPartnership.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-fixes
+X-PR-Tracked-Commit-Id: d5d92b64408443e113b9742f8f1c35278910dd4d
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 36ed2da76b181200ecdee4a8bf84f698138f290a
+Message-Id: <165317895173.14812.15638882572260549793.pr-tracker-bot@kernel.org>
+Date:   Sun, 22 May 2022 00:22:31 +0000
+To:     James Bottomley <James.Bottomley@HansenPartnership.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/congwang/linux.git sch_bpf
-head:   9f6c12a2c218c56af7d37feeaf21c5b62a8192a0
-commit: ef56eb898b1d5c229db544d5933e9c686132ef28 [1/3] bpf: introduce skb map
-config: m68k-randconfig-r022-20220522 (https://download.01.org/0day-ci/archive/20220522/202205220841.yXC3cJWK-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/congwang/linux/commit/ef56eb898b1d5c229db544d5933e9c686132ef28
-        git remote add congwang https://github.com/congwang/linux.git
-        git fetch --no-tags congwang sch_bpf
-        git checkout ef56eb898b1d5c229db544d5933e9c686132ef28
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+The pull request you sent on Sat, 21 May 2022 13:09:43 -0400:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-fixes
 
-All errors (new ones prefixed by >>):
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/36ed2da76b181200ecdee4a8bf84f698138f290a
 
->> m68k-linux-ld: kernel/bpf/syscall.o:(.rodata+0x54a): undefined reference to `skb_map_ops'
+Thank you!
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
