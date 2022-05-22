@@ -2,101 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 12:46:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D366C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 13:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345322AbiEVMqR (ORCPT
+        id S1345590AbiEVNHb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 08:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
+        Sun, 22 May 2022 09:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345258AbiEVMqM (ORCPT
+        with ESMTP id S240818AbiEVNHY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 08:46:12 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F5D2F012
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 05:46:10 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id y15so6666918qtx.4
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 05:46:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=z9V1W249zALQzWHiAtZPoaL65EZlj/9URHZe/haLICQ=;
-        b=GLtfwI+lhlzd1uVR2zN59m3yhU/Krnfw4ZVaEeTAX0yEIwZ0qmY2LNEGQMN1An+fe6
-         VX56+Fz/lvlsqyI95zH9LFDsSyBRlzKn3acrCIErD8igtr1XEjgeuR5JTFj6uYKobtgp
-         RbdwdcZYl0H0H1GCBLzM7W84EdVGdBrTnxSj1OzwkK/P9+Dm37+SXSxXM+DmMM1//tC/
-         QRuWYmxiudtjnIIUMdOygFnmxt/Bsq+x7ij6XzCTXUvY/LZsgV42/M7wlXiL/BAAkhv9
-         Oze46thssYFPQ272e8I5cIgbE5Okmh6aLRk4BCKnQuqt0Aexo5i2c+H4/HDfGpig3UC7
-         b3lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=z9V1W249zALQzWHiAtZPoaL65EZlj/9URHZe/haLICQ=;
-        b=07PUhkGewwQ+D+kQr/w8912MNRPX/3o6ahUY4+APq+UEF3zu4CYWTpzF3IV5yIiuk4
-         avu4DgM9nYk8PraRFpus9o4L5hsUWMstge57XcX6YFvgMPP7RBqxHmEjap3W4a/MdX5q
-         K/HhJ8HREyx7UoJFdkRPWgrk4fQeAU1T1ZkQsEdz6o+eaRTaIClYCNiS9r4XpN1vNqBa
-         HBxYWxjQBhdoEInySPK2pX0pRSBelUA987iBCOrKtzXjSo9G+e3C9y7Ugpi0dpw2hwqo
-         Aka/eKYZ1cWvnyux0ZC0H06AIuCLRImmT+ssBtKX+1a5SsQ5f2HuRM2gf+7yphuXloQq
-         4/jw==
-X-Gm-Message-State: AOAM530NGhJPvCzJE+xHeuFYRjmcYCtuZkfLNN+9VwshsumRZTdC7MEk
-        FyZPcnVfyZ9pr4drTDza4q+57Q==
-X-Google-Smtp-Source: ABdhPJzGQXO+DHntP6x4u2fTddzWClTANimOTcQYK++DehFlNl8xjJgjLFDfcwG/tsnkD/M4yVGjgg==
-X-Received: by 2002:a05:622a:3c8:b0:2f3:ef89:fa28 with SMTP id k8-20020a05622a03c800b002f3ef89fa28mr13604105qtx.136.1653223569197;
-        Sun, 22 May 2022 05:46:09 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id q24-20020a05620a0c9800b006a04256022bsm2710166qki.107.2022.05.22.05.46.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 May 2022 05:46:08 -0700 (PDT)
-Message-ID: <59c6347c-2689-24bf-47b8-b635fef2e530@linaro.org>
-Date:   Sun, 22 May 2022 07:46:07 -0500
+        Sun, 22 May 2022 09:07:24 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7D137BC1
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 06:07:20 -0700 (PDT)
+Received: from pop-os.home ([86.243.180.246])
+        by smtp.orange.fr with ESMTPA
+        id slIdnekxaEMbDslIenUSQP; Sun, 22 May 2022 15:07:19 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 22 May 2022 15:07:19 +0200
+X-ME-IP: 86.243.180.246
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     dan.carpenter@oracle.com, Gonglei <arei.gonglei@huawei.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        zhenwei pi <pizhenwei@bytedance.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        virtualization@lists.linux-foundation.org,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH] virtio-crypto: Fix an error handling path in virtio_crypto_alg_skcipher_close_session()
+Date:   Sun, 22 May 2022 15:07:10 +0200
+Message-Id: <068d2824cf592748cbd9b75cf4cb6c29600e213c.1653224817.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net 0/2] net: ipa: fix page free in two spots
-Content-Language: en-US
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220522005959.1175181-1-elder@linaro.org>
-In-Reply-To: <20220522005959.1175181-1-elder@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/21/22 7:59 PM, Alex Elder wrote:
-> When a receive buffer is not wrapped in an SKB and passed to the
-> network stack, the (compound) page gets freed within the IPA driver.
-> This is currently quite rare.
-> 
-> The pages are freed using __free_pages(), but they should instead be
-> freed using page_put().  This series fixes this, in two spots.
-> 
-> These patches work for Linux v5.18-rc7 and v5.17.y, but won't apply
-> cleanly to earlier stable branches.  (Nevertheless, the fix is
-> trivial.)
-> 
-> 					-Alex
+Now that a private buffer is allocated (see commit in the Fixes tag),
+it must be released in all error handling paths.
 
-I accidentally based this on net-next/master rather than net/master.
-Sorry about that.  I'll send version 2 in a few days.
+Add the missing goto to avoid a leak in the error handling path.
 
-					-Alex
+Fixes: 42e6ac99e417 ("virtio-crypto: use private buffer for control request")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/crypto/virtio/virtio_crypto_skcipher_algs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> Alex Elder (2):
->    net: ipa: fix page free in ipa_endpoint_trans_release()
->    net: ipa: fix page free in ipa_endpoint_replenish_one()
-> 
->   drivers/net/ipa/ipa_endpoint.c | 9 +++------
->   1 file changed, 3 insertions(+), 6 deletions(-)
-> 
+diff --git a/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c b/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
+index e553ccadbcbc..e5876286828b 100644
+--- a/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
++++ b/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
+@@ -239,7 +239,8 @@ static int virtio_crypto_alg_skcipher_close_session(
+ 		pr_err("virtio_crypto: Close session failed status: %u, session_id: 0x%llx\n",
+ 			ctrl_status->status, destroy_session->session_id);
+ 
+-		return -EINVAL;
++		err = -EINVAL;
++		goto out;
+ 	}
+ 
+ 	err = 0;
+-- 
+2.34.1
 
