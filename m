@@ -2,84 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B44C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347856AbiEVAWl (ORCPT
+        id S1347942AbiEVAWp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 20:22:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
+        Sat, 21 May 2022 20:22:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347815AbiEVAWe (ORCPT
+        with ESMTP id S1347812AbiEVAWe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 21 May 2022 20:22:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006003FBC5;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0052B3FBC2;
         Sat, 21 May 2022 17:22:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 819C660EE8;
-        Sun, 22 May 2022 00:22:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D4231C385A5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB655B80ACD;
         Sun, 22 May 2022 00:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 69BA9C385A9;
+        Sun, 22 May 2022 00:22:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653178951;
-        bh=uksIx+9OT377IDsqIceomLhankvWe+BJo6pkgd1joDI=;
+        s=k20201202; t=1653178950;
+        bh=S7aWvg0W8yGCjlz05fJEcXjRJKVxbyiFhAoewJ4N7UQ=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=IkFCD9NWxpmbJQXU8HNo1IsaunZeUaz+r+khnt2hVfckqrftJOd9TMN/iKKsltxFF
-         fwiYmLldmcQ9qeNnUfa5Fp+KUMxKEbFVxIkC/EiTs68rIypfNTvyc9b43IojhRIm8j
-         IlaYbXyYmzPZd2gtTGzgzMLcf9cD42FwUIk3YSOcMszs2lXvKquvkXxtP5Js07WlGi
-         5E15mdkMSLIhcOy7eOx+Vo6re++MEolksx0KKHjjSvtc1RhFigo0OyntqvFN48TSod
-         ujZug13726d2gr41ijwYHquGSOXtOuC1V13goHCn5wS4lMZkh/Ov/vSuYyAqFrcyoM
-         4UFxgQ2OTCpkQ==
+        b=XXxePaPyNL59MEd0UktLo2zLruViwk53NynG8LvQOPm26AuQzV+qYf5Yw2FxqOd3b
+         sMj5RO9uAB4RKb2XmjrjdG798tWBnpLsrPFqjCFa/3TgriVebyEsTOm1St9QUoBllv
+         1M/tLfNBLcp+4QO9+TeW2ARPc1uMpXkKP+at5LdCgP21AqYTtRo8t5B6z8/ekcZm4v
+         +7pWdfkmi7UUKMQ2CAuBBfH+oT9HIx0tJ6rUKcPsYIqlSSp+7JvOMPCr++f7waTcMV
+         +XO2A3xRY2wXHPUMhtq6JRLgbSvtengeEBSZiUUG4Mr+qDrdTiyVGa+Hzq9VuWa+Gr
+         WP779py9q0Dhw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BD414F0393B;
-        Sun, 22 May 2022 00:22:31 +0000 (UTC)
-Subject: Re: [GIT PULL] perf tools fixes for v5.18: 6th batch
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 55FD2F03935;
+        Sun, 22 May 2022 00:22:30 +0000 (UTC)
+Subject: Re: [git pull] Input updates for v5.18-rc7
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220521212722.964514-1-acme@kernel.org>
-References: <20220521212722.964514-1-acme@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220521212722.964514-1-acme@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.18-2022-05-21
-X-PR-Tracked-Commit-Id: 51d0bf99b8342be82369aa63eff343bf5df586dd
+In-Reply-To: <YolI/0sPArJSnlIZ@google.com>
+References: <YolI/0sPArJSnlIZ@google.com>
+X-PR-Tracked-List-Id: <linux-input.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YolI/0sPArJSnlIZ@google.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.18-rc7
+X-PR-Tracked-Commit-Id: b26ff9137183309c18cdfe931e1cafcf3c1a980d
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: eaea45fc0e7b6ae439526b4a41d91230c8517336
-Message-Id: <165317895177.14812.3617530872504754503.pr-tracker-bot@kernel.org>
-Date:   Sun, 22 May 2022 00:22:31 +0000
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+X-PR-Merge-Commit-Id: 4c493b1a41274c3f9b754036cd8431903306cdf3
+Message-Id: <165317895034.14812.10838795355484600283.pr-tracker-bot@kernel.org>
+Date:   Sun, 22 May 2022 00:22:30 +0000
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        Kate Carcia <kcarcia@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ammy Yi <ammy.yi@intel.com>,
-        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
-        Avi Kivity <avi@scylladb.com>,
-        Chengdong Li <chengdongli@tencent.com>,
-        Disha Goel <disgoel@linux.vnet.ibm.com>,
-        Ian Rogers <irogers@google.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@gmail.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 21 May 2022 18:27:22 -0300:
+The pull request you sent on Sat, 21 May 2022 13:18:07 -0700:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.18-2022-05-21
+> git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.18-rc7
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/eaea45fc0e7b6ae439526b4a41d91230c8517336
+https://git.kernel.org/torvalds/c/4c493b1a41274c3f9b754036cd8431903306cdf3
 
 Thank you!
 
