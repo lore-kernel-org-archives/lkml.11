@@ -2,117 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 10:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE11C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 10:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244412AbiEVKu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 06:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48932 "EHLO
+        id S244499AbiEVKwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 06:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244237AbiEVKuW (ORCPT
+        with ESMTP id S231797AbiEVKw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 06:50:22 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EFB3AA53
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 03:50:20 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id b9so4648160qtx.11
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 03:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rMSZBpH/H/FacBKevZwHpHrOVAuB9nAU7tsT6+kwvqc=;
-        b=BHhQhEKiqcWHuM0HR89BY+qJPcolFZNLLh03Ka5HN2m7kZu6lydvfwQ6O71CKOeLSk
-         LxBDb+LyT3bIOqKn/d9Lxx2uGj3p+9y/Knl+ZN3xKpSzvo4YLpbX9Msc69gr1jP3SiUV
-         h2AhIENOkR5dOXBQEElaz5rCRPToLw0vwvnBo1XHARudU7ApuJGe5FIeCWxu294giFw/
-         EZLyANJmErGToQVMeLjKKxIPdmrMY3c9z0xJYFd8N6KnCk6xfdsn560mVwhVa504JPP5
-         CAiXvWFuZ/9/0fUhNsBulDU4a0hzv7xYMTDwwe5qIzkYqYqCLDPFQo9sE0/EFS8HH06V
-         Z7qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rMSZBpH/H/FacBKevZwHpHrOVAuB9nAU7tsT6+kwvqc=;
-        b=uIi8ZWBTIHJb3o/vw5Jsk3mTDP0fKtShPRhsx7bqemErE67ek26izEIG+GwZXYRI4x
-         f8HkMAe5onGRi+73VjZ5QDCUvJdi0tNsCfbMjwaOtOAsS/CYsaYxn3ploeWgIHSaUOyJ
-         Kp7iRv1a683FNRSjjf8fanJg0wylyV6E223216/M59hmB6ixdGxxm3x3n4gWqGLQ6eTN
-         ZzEM0nA4seG69N4zWnnGej9DPTqrEgeBNbipd33D91qhDQkySz4IJtnVMELwsYkc4uEP
-         GgY4ob/8Z60Hk8k+Yr2bhLnH3DMCLmNm6L6D6hRQGpEqlRCfMyFs2RTQ8ZlMOAhgJgOK
-         eBEA==
-X-Gm-Message-State: AOAM533kg3DIxcpFprz99Twfl9bwuYu+nQPFZvvTv49WPqjuSvdpkdK4
-        h7wY2svD1WUTz4zwPzQCneR/s05TQVmHHxKlbGOr3A==
-X-Google-Smtp-Source: ABdhPJzhxA/gSzGAxK5AYEKbcYHlFItto9Bg2bFbvhV3RKrnTCkqWnWhyvSldCQkqjUm0Rl9VTrKiR99DWVvUztZt4Y=
-X-Received: by 2002:a05:622a:188e:b0:2f3:dc9f:946 with SMTP id
- v14-20020a05622a188e00b002f3dc9f0946mr13258860qtc.682.1653216619074; Sun, 22
- May 2022 03:50:19 -0700 (PDT)
+        Sun, 22 May 2022 06:52:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE10513DC8;
+        Sun, 22 May 2022 03:52:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6658F60F89;
+        Sun, 22 May 2022 10:52:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 615E1C385AA;
+        Sun, 22 May 2022 10:52:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653216744;
+        bh=XkjzRJOvGbnB6EuU1d328KQW9nW7oibHRbiluKzJMms=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ekg6Lmowqi6XMY4Fr/+jw/DJ6EF7j+joDBwDNtGU3vjZezb7uBfIT+VDORZ/HYceB
+         eGJV2FJWqmbcolnDdqhvTHxcPXrVsMvmRdY64/O7jwb5B4vTVC/4fdb+uVfS9A1MZ+
+         RVvcNGrTZKRaMS1tD+sPdfU1lJkf7KXwsI6VTaUFPvLLtD8BtkHga0X/xV3c1g25kj
+         CV2HL6suuC1A1+ce6/BwV604FPvkhqx/iakaNjTcmVONZXVT5Tb7jA2MuFl88U/SEy
+         yxPK+oY+6pD9+nqJvS/Z7N0MgIU2gj7r7wkfO4hM/MBKm6HkiTwss8d+OtO3wWFdjn
+         cqBqxjNCTVgFA==
+Date:   Sun, 22 May 2022 12:01:09 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Yongzhi Liu <lyz_cs@pku.edu.cn>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, lars@metafoo.de,
+        svarbanov@mm-sol.com, iivanov@mm-sol.com,
+        jonathan.cameron@huawei.com, linux-arm-msm@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        fuyq@stu.pku.edu.cn
+Subject: Re: [PATCH v3] iio: vadc: Fix potential dereference of NULL pointer
+Message-ID: <20220522120109.7ead18a7@jic23-huawei>
+In-Reply-To: <1653104135-36259-1-git-send-email-lyz_cs@pku.edu.cn>
+References: <20220520181323.00002892@huawei.com>
+        <1653104135-36259-1-git-send-email-lyz_cs@pku.edu.cn>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
- <35051bec-98ea-b4c5-f734-06b3f22f3562@linaro.org> <8a90ffbc-b376-9115-fb91-0b46d98873b7@linaro.org>
- <40f29157-52c0-001f-6c14-fb90b351756a@linaro.org> <20220519221227.B66D3C385AA@smtp.kernel.org>
- <CAA8EJpqjcAcoooaZ6iTSCy4B1x4=HTUgvJ4VqX_Fr_hSMEbfDA@mail.gmail.com> <eb915633-4d88-ec9a-d51a-7d5f5ecc0843@linaro.org>
-In-Reply-To: <eb915633-4d88-ec9a-d51a-7d5f5ecc0843@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Sun, 22 May 2022 13:50:08 +0300
-Message-ID: <CAA8EJprOg3ZTonrCSbd1a233247G182=VvX4sNeKcGPbmJME3g@mail.gmail.com>
-Subject: Re: Removal of qcom,board-id and qcom,msm-id
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Amit Pundir <amit.pundir@linaro.org>
-Cc:     Stephen Boyd <sboyd@kernel.org>, Andy Gross <agross@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding Amit to the CC list.
+On Fri, 20 May 2022 20:35:35 -0700
+Yongzhi Liu <lyz_cs@pku.edu.cn> wrote:
 
-On Sun, 22 May 2022 at 13:27, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 20/05/2022 03:39, Dmitry Baryshkov wrote:
-> >
-> >>
-> >> I vaguely recall that the properties had to be extracted during the
-> >> boot.img creation process to create a table of contents header. But
-> >> after some time the bootloader started scanning the DTBs directly for
-> >> the vendor properties and thus the header was deprecated/removed. If the
-> >> bootloader is doing the scanning then I'm not sure what is preventing
-> >> the properties from being documented and allowed. I think the main
-> >> rejection was that the properties were added purely to be extracted
-> >> during post processing and placed into the table of contents header,
-> >> i.e. they weren't actually used by the kernel or the bootloader. If they
-> >> are now used by the bootloader it sounds OK to me if they're kept
-> >> around.
-> >
-> > Yes, as far as I understand, they are used by the bootloader directly.
-> >
->
-> I entirely missed one part - Stephen's patches from 2015 were actually
-> applied and since 2015 we expect all boards to follow convention:
->
-> compatible =
-> "qcom,<SoC>[-<soc_version>][-<foundry_id>]-<board>[/<subtype>][-<board_version>]"
->
-> The patchset was accepted, although in the thread I do not see "Applied"
-> message.
->
-> Stephen,
-> can you or anyone else confirm that the dtbTool Qualcomm uses (and/or
-> bootloader) are adjusted as well to these new compatibles?
->
-> If yes, we can simply remove board-id and msm-id properties from new
-> boards, because 7 years was enough to switch to these new tools...
+> The return value of vadc_get_channel() needs to be checked to
+> avoid use of NULL pointer. Fix this by adding the null pointer
+> check on prop and dropping general error prints.
+> 
+> Fixes: 0917de94c02f ("iio: vadc: Qualcomm SPMI PMIC voltage ADC driver")
+> Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Hi, 
 
-Amit, can you please comment on the AOSP image build process and the
-possibility to drop the board-id/msm-id from the dts files in favour
-of using the dtbTool.
+Heading in the right direction. A few comments inline.
 
+Thanks,
 
--- 
-With best wishes
-Dmitry
+Jonathan
+
+> ---
+>  drivers/iio/adc/qcom-spmi-vadc.c | 38 ++++++++++++++++++++++++++++----------
+>  1 file changed, 28 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+> index 34202ba..43a52b1 100644
+> --- a/drivers/iio/adc/qcom-spmi-vadc.c
+> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+> @@ -358,22 +358,33 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+>  
+>  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define 1.25V channel\n");
+> +		ret = -ENODEV;
+> +		return ret;
+
+		return -ENODEV;
+
+Same for the other case below.
+
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_1);
+>  	if (ret)
+> -		goto err;
+
+Good to add a note to the patch description that
+vadc_do_conversion() already provides error prints in at least
+some of it's error paths.  Thus it is reasonable to drop the
+extra reporting in this function.
+
+> +		return ret;
+>  
+>  	/* Try with buffered 625mV channel first */
+>  	prop = vadc_get_channel(vadc, VADC_SPARE1);
+> -	if (!prop)
+> +	if (!prop) {
+>  		prop = vadc_get_channel(vadc, VADC_REF_625MV);
+> +		if (!prop) {
+> +			dev_err(vadc->dev, "Please define 0.625V channel\n");
+> +			ret = -ENODEV;
+> +			return ret;
+> +		}
+> +	}
+>  
+>  	ret = vadc_do_conversion(vadc, prop, &read_2);
+>  	if (ret)
+> -		goto err;
+> +		return ret;
+>  
+>  	if (read_1 == read_2) {
+>  		ret = -EINVAL;
+> -		goto err;
+> +		return ret;
+>  	}
+>  
+>  	vadc->graph[VADC_CALIB_ABSOLUTE].dy = read_1 - read_2;
+> @@ -381,25 +392,32 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>  
+>  	/* Ratiometric calibration */
+>  	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define VDD channel\n");
+> +		ret = -ENODEV;
+> +		return ret;
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_1);
+>  	if (ret)
+> -		goto err;
+> +		return ret;
+>  
+>  	prop = vadc_get_channel(vadc, VADC_GND_REF);
+> +	if (!prop) {
+> +		dev_err(vadc->dev, "Please define GND channel\n");
+> +		ret = -ENODEV;
+> +		return ret;
+> +	}
+>  	ret = vadc_do_conversion(vadc, prop, &read_2);
+>  	if (ret)
+> -		goto err;
+> +		return ret;
+>  
+>  	if (read_1 == read_2) {
+>  		ret = -EINVAL;
+> -		goto err;
+> +		return ret;
+>  	}
+>  
+>  	vadc->graph[VADC_CALIB_RATIOMETRIC].dy = read_1 - read_2;
+>  	vadc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_2;
+> -err:
+> -	if (ret)
+> -		dev_err(vadc->dev, "measure reference points failed\n");
+>  
+>  	return ret;
+>  }
+
