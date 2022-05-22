@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0987BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 16:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 230AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 16:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349713AbiEVQ3C (ORCPT
+        id S1347221AbiEVQ31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 12:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37614 "EHLO
+        Sun, 22 May 2022 12:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343882AbiEVQ20 (ORCPT
+        with ESMTP id S1349493AbiEVQ3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 12:28:26 -0400
+        Sun, 22 May 2022 12:29:11 -0400
 Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E4F14087;
-        Sun, 22 May 2022 09:28:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12813BA52;
+        Sun, 22 May 2022 09:28:54 -0700 (PDT)
 Received: from g550jk.arnhem.chello.nl (a246182.upc-a.chello.nl [62.163.246.182])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id C34B1CCD45;
-        Sun, 22 May 2022 16:28:17 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id ABE17CCD48;
+        Sun, 22 May 2022 16:28:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1653236898; bh=Ja6UJLLoY69ioz4GOQEi4TAltPn6idOtLA6g2qiKj2s=;
+        t=1653236898; bh=NwhpmevNUU2gq+eDnD+yz+ZmjE9TKPUK+80uSILSa24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=nQoPo+kWMh0sTGmyO7oSZmqILT/AjkkuNi3n2lxcFAXIu3edlnOSlZT5pubOWZd7p
-         7lL8ud7CFI9ZEmbZE36V8dYniEY7beFcqkw7tU4VKzdd/Cz6v5khZmgI8yeOT1CImk
-         AeWU1y4ZbKSvjOPtlOh3oCg9uCLyqM1c2SzdEfpk=
+        b=EtlqUowxpcRSB7A+wmr/ig8CW8R3ymUErisirN1xMvfb2w+UIfk6zIaQozo3mXtu5
+         HKGpfvkhdKw7yy1omR93Nt88DpyAUX3dGPeDcYGVdvcd8wxuJC83fjmYVe6pM8xNB1
+         aK4eqqiPIHPIQdYbR9QNi9HPMsC6w5vVGa6kXtBE=
 From:   Luca Weiss <luca@z3ntu.xyz>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -39,9 +39,9 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
         matti.lehtimaki@gmail.com, Luca Weiss <luca@z3ntu.xyz>
-Subject: [RFC PATCH 07/14] media: camss: csiphy: Add support for 8x74
-Date:   Sun, 22 May 2022 18:27:55 +0200
-Message-Id: <20220522162802.208275-8-luca@z3ntu.xyz>
+Subject: [RFC PATCH 10/14] i2c: qcom-cci: add msm8974 compatible
+Date:   Sun, 22 May 2022 18:27:58 +0200
+Message-Id: <20220522162802.208275-11-luca@z3ntu.xyz>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220522162802.208275-1-luca@z3ntu.xyz>
 References: <20220522162802.208275-1-luca@z3ntu.xyz>
@@ -54,36 +54,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Matti Lehtimäki <matti.lehtimaki@gmail.com>
 
-CSIPHY hardware modules in 8x74 and 8x16 are similar.
+MSM8974 CCI is the same as MSM8916 except it has two masters.
 
 Signed-off-by: Matti Lehtimäki <matti.lehtimaki@gmail.com>
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- drivers/media/platform/qcom/camss/camss-csiphy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+To note, the cci_v1_5_data variable name is just a bit arbitrary and
+isn't meant to reflect IP version "1.5". I'd be happy to change the
+variable name to something else.
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csiphy.c b/drivers/media/platform/qcom/camss/camss-csiphy.c
-index 75fcfc627400..a0122705a874 100644
---- a/drivers/media/platform/qcom/camss/camss-csiphy.c
-+++ b/drivers/media/platform/qcom/camss/camss-csiphy.c
-@@ -557,7 +557,8 @@ int msm_csiphy_subdev_init(struct camss *camss,
- 	csiphy->id = id;
- 	csiphy->cfg.combo_mode = 0;
+ drivers/i2c/busses/i2c-qcom-cci.c | 35 +++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/drivers/i2c/busses/i2c-qcom-cci.c b/drivers/i2c/busses/i2c-qcom-cci.c
+index 5c7cc862f08f..a68f17eb9dd0 100644
+--- a/drivers/i2c/busses/i2c-qcom-cci.c
++++ b/drivers/i2c/busses/i2c-qcom-cci.c
+@@ -725,6 +725,40 @@ static const struct cci_data cci_v1_data = {
+ 	},
+ };
  
--	if (camss->version == CAMSS_8x16) {
-+	if (camss->version == CAMSS_8x16 ||
-+		   camss->version == CAMSS_8x74) {
- 		csiphy->ops = &csiphy_ops_2ph_1_0;
- 		csiphy->formats = csiphy_formats_8x16;
- 		csiphy->nformats = ARRAY_SIZE(csiphy_formats_8x16);
-@@ -582,6 +583,7 @@ int msm_csiphy_subdev_init(struct camss *camss,
- 		return PTR_ERR(csiphy->base);
++static const struct cci_data cci_v1_5_data = {
++	.num_masters = 2,
++	.queue_size = { 64, 16 },
++	.quirks = {
++		.max_write_len = 10,
++		.max_read_len = 12,
++	},
++	.cci_clk_rate =  19200000,
++	.params[I2C_MODE_STANDARD] = {
++		.thigh = 78,
++		.tlow = 114,
++		.tsu_sto = 28,
++		.tsu_sta = 28,
++		.thd_dat = 10,
++		.thd_sta = 77,
++		.tbuf = 118,
++		.scl_stretch_en = 0,
++		.trdhld = 6,
++		.tsp = 1
++	},
++	.params[I2C_MODE_FAST] = {
++		.thigh = 20,
++		.tlow = 28,
++		.tsu_sto = 21,
++		.tsu_sta = 21,
++		.thd_dat = 13,
++		.thd_sta = 18,
++		.tbuf = 32,
++		.scl_stretch_en = 0,
++		.trdhld = 6,
++		.tsp = 3
++	},
++};
++
+ static const struct cci_data cci_v2_data = {
+ 	.num_masters = 2,
+ 	.queue_size = { 64, 16 },
+@@ -773,6 +807,7 @@ static const struct cci_data cci_v2_data = {
  
- 	if (camss->version == CAMSS_8x16 ||
-+	    camss->version == CAMSS_8x74 ||
- 	    camss->version == CAMSS_8x96) {
- 		csiphy->base_clk_mux =
- 			devm_platform_ioremap_resource_byname(pdev, res->reg[1]);
+ static const struct of_device_id cci_dt_match[] = {
+ 	{ .compatible = "qcom,msm8916-cci", .data = &cci_v1_data},
++	{ .compatible = "qcom,msm8974-cci", .data = &cci_v1_5_data},
+ 	{ .compatible = "qcom,msm8996-cci", .data = &cci_v2_data},
+ 	{ .compatible = "qcom,sdm845-cci", .data = &cci_v2_data},
+ 	{ .compatible = "qcom,sm8250-cci", .data = &cci_v2_data},
 -- 
 2.36.0
 
