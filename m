@@ -2,127 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90104C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 00:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345261AbiEVAdZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 20:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
+        id S240082AbiEVArC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 20:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348030AbiEVAci (ORCPT
+        with ESMTP id S229498AbiEVArA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 20:32:38 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB7D41334
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:32:33 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id y12so12136156ior.7
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 17:32:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vSHRCF1zLoP2q/+UJGoTXeLZBLEijQ7Yq4ob+ptO93g=;
-        b=iB7k+gP/BYojiNiJGmsLTKWyLiYiZe4T/k9oRUOCYCdxlbsD4IneL0be9ghqu1hItr
-         co8BwQFyZd3oNiZh647qlXR1Mo00IGm+V/oSu568oNy8yKWNUl0KMKM9tUMuxquEsgLx
-         JNip0o8vWKTHYlZdtCwsf8+REuPAGObOG5E6twpZOdnsPTk2tNv24SbSu1d+kRHBbr+R
-         IHSULEYDDd8Ouq9cPU7JkPxWCsz9GbrmiV02NYV0gqpIYd20Qk9UpP8rCJf+5CRei7UY
-         SR+hRizcba8KB8U2EqhPkUizrNfqwZnBCEDHqc4LnfJVCu5IYAZLX9A2i3sojTchWutS
-         3p1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vSHRCF1zLoP2q/+UJGoTXeLZBLEijQ7Yq4ob+ptO93g=;
-        b=DwiYYvVWBn2ufm+HWmORZ67S8wEepFCbGwTFnwKECFrpv29d4suP955C/cSSR40UWc
-         7156GvJxwaa1JBn9vUwI1hTA/RPsyy5qDhxQFhjxTWFe2MB/dWqXXN7Xsik7Ma8hkNTY
-         BjJm2l1NjNRaPHt+y1Q0mfbiXXMx+aNAhZgBrHotup9w8PJK2Q/AqXbLPfpFMXJ3Fcsk
-         mIouNZidgRR0UDEzBriqQzYXCzIvF6l5GDj4PQZAQG6Stn/wVNsCv734pxwRwpFEXhQ8
-         YvC9b8zxPu2wxTgTUuedft7DU7wRSyxtaZptrp6PE1IsgtlJ9lfitiDz9jwyKrkOXmm8
-         W72Q==
-X-Gm-Message-State: AOAM530Yz74Lmuvj1sdAnLggYZgu7P2G8ocflBezFzuii2VVK3If5GYV
-        qBr9Z0ewRjntHlbW5UvrTPXTww==
-X-Google-Smtp-Source: ABdhPJzD0BYBNArdMKVqWQ6eigVMGbyZEWe6N3RLCKQ4XXDUato0ebby29kpFim3TkXxl9zBUX4NyA==
-X-Received: by 2002:a02:234a:0:b0:32a:f07c:e8 with SMTP id u71-20020a02234a000000b0032af07c00e8mr8363690jau.87.1653179552867;
-        Sat, 21 May 2022 17:32:32 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id g8-20020a02c548000000b0032b5e78bfcbsm1757115jaj.135.2022.05.21.17.32.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 17:32:32 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 6/9] net: ipa: get rid of ipa_cmd_info->direction
-Date:   Sat, 21 May 2022 19:32:20 -0500
-Message-Id: <20220522003223.1123705-7-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220522003223.1123705-1-elder@linaro.org>
-References: <20220522003223.1123705-1-elder@linaro.org>
+        Sat, 21 May 2022 20:47:00 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7A04A3D3;
+        Sat, 21 May 2022 17:46:55 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L5MGx4dHpz4xYY;
+        Sun, 22 May 2022 10:46:49 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1653180410;
+        bh=PzWpbljlaU30cowHirg0r+udzrSFYNJMiFwu1EJW0f4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=XeJ5hg52Io9Ce6Fkx/WPG0zVX12hSjTMjCpmcephKyHut3ctZdrge1YCtGz/FHO5n
+         hRtFD2i6Mck0wiJ79DcXNyPgKfunJsw1LeK6+MxQVS+U/GkOzLShzFERxLGFcLAuVs
+         XrvyMUUtmbDWEWUS4cwD+9JJ7z2tFcO+K4UzUYeDXEHIcc2Y/8yw/N3XqFdcNAy7gY
+         +EyvWsHzxG2RlkWEZjKj31+EN1PNWvrMfLcw/y/8ESwe7EsOLSPl7Ao2cJ/Jy6MWAt
+         qbOV8WwweSdQodo2AZKvaUSkcunaenpgByUuCtxRVEVEKx5sMe0BvtBALwurAEQoV5
+         E44/XZs5dQhLQ==
+Date:   Sun, 22 May 2022 10:46:43 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the tip tree
+Message-ID: <20220522104643.21248cd7@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/7dDniTGeYNy4rw_fDLdD93x";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The direction field of the ipa_cmd_info structure is set, but never
-used.  It seems it might have been used for the DMA_SHARED_MEM
-immediate command, but the DIRECTION flag is set based on the value
-of the passed-in direction flag there.
+--Sig_/7dDniTGeYNy4rw_fDLdD93x
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Anyway, remove this unused field from the ipa_cmd_info structure.
-This is done as a separate patch to make it very obvious that it's
-not required.
+Hi all,
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi_trans.c | 5 +----
- drivers/net/ipa/ipa_cmd.h   | 2 --
- 2 files changed, 1 insertion(+), 6 deletions(-)
+In commit
 
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index bf31ef3d56adc..cf8ee42373547 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -413,7 +413,6 @@ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
- 		       dma_addr_t addr, enum dma_data_direction direction,
- 		       enum ipa_cmd_opcode opcode)
- {
--	struct ipa_cmd_info *info;
- 	u32 which = trans->used++;
- 	struct scatterlist *sg;
- 
-@@ -438,9 +437,7 @@ void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
- 	sg_dma_address(sg) = addr;
- 	sg_dma_len(sg) = size;
- 
--	info = &trans->info[which];
--	info->opcode = opcode;
--	info->direction = direction;
-+	trans->info[which].opcode = opcode;
- }
- 
- /* Add a page transfer to a transaction.  It will fill the only TRE. */
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index 05ed7e42e1842..d4dbe2ce96dcd 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -50,11 +50,9 @@ enum ipa_cmd_opcode {
-  * struct ipa_cmd_info - information needed for an IPA immediate command
-  *
-  * @opcode:	The command opcode.
-- * @direction:	Direction of data transfer for DMA commands
-  */
- struct ipa_cmd_info {
- 	enum ipa_cmd_opcode opcode;
--	enum dma_data_direction direction;
- };
- 
- /**
--- 
-2.32.0
+  991d8d8142ca ("topology: Remove unused cpu_cluster_mask()")
 
+Fixes tag
+
+  Fixes: 778c558f49a2c ("sched: Add cluster scheduler level in core and
+
+has these problem(s):
+
+  - Subject has leading but no trailing parentheses
+  - Subject has leading but no trailing quotes
+
+Please do not split Fixes tags over more than one line.  Also, please keep
+all the commit message tags together at the end of the commit message.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/7dDniTGeYNy4rw_fDLdD93x
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKJh/QACgkQAVBC80lX
+0GxMPAgAisu9nNjyDGjhLrXWn6WgMoQP4n6n/HqQOV+JYOaLoNdgh6sldm8VrIyF
+uo5T9rwobTASlIz+ijUn4nbBv2fEDplKB2mHg7G9ltPJeWGVCF0wMt4qo00l/5Eg
+LAYaqItMUniqIS/lKuCv6du7KnCGHabWoSD3ekb8DMvqHifL3e3i8knHWIuLTyim
+9i3w250wZR47NZd7uFPKG6y/IIzhhm/W3D/axkVM5AyzQm1+DPTr33xEhpxvrt3Q
+ph4UHrgB1yobfcpRf1E8Q65ltEyqSyC4RtAz7LjsRJ7M5xu0wMZHtvya9JqOdCyN
+9AeobqyjoX7d5QfgwJ3Lu0nHlWjGdg==
+=bfpq
+-----END PGP SIGNATURE-----
+
+--Sig_/7dDniTGeYNy4rw_fDLdD93x--
