@@ -2,90 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 15:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D23C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 16:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231602AbiEVP7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 11:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
+        id S235953AbiEVQEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 12:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349301AbiEVP5q (ORCPT
+        with ESMTP id S229561AbiEVQEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 11:57:46 -0400
-Received: from herzl.nuvoton.co.il (unknown [212.199.177.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958D83BA60;
-        Sun, 22 May 2022 08:57:37 -0700 (PDT)
-Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id 24MFp9aw031646;
-        Sun, 22 May 2022 18:51:09 +0300
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id C47B663A4B; Sun, 22 May 2022 18:51:09 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
-Cc:     soc@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 19/19] arm64: defconfig: Add Nuvoton NPCM family support
-Date:   Sun, 22 May 2022 18:50:46 +0300
-Message-Id: <20220522155046.260146-20-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220522155046.260146-1-tmaimon77@gmail.com>
-References: <20220522155046.260146-1-tmaimon77@gmail.com>
+        Sun, 22 May 2022 12:04:33 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2E9167EA;
+        Sun, 22 May 2022 09:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653235471; x=1684771471;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sM/fEM1Cz4Fu5jERVYNMoQaN0mOPoZxzUJZYlTqChOc=;
+  b=Bzn3zo8cq89Y7WaVkBpMPrRxHFKuMBWE4eN30wg16Cfq0mIMl8YAjWli
+   4HayimuEsueQRolejo0+zj45R/1TgyvT133rVHuLUge8rPxooqwsdFt2Q
+   6hqQVrHdFiL67OQY7bAH555PzIHTZmxZsN3aAT5EBBNRz0IrxDwqIjSC5
+   lPe/v3RyHNDPikoXflUNfBtqr1+pvjkcQn1MCx5xurO1F8FTv096A5Ldm
+   mdqxoMf0Uv19lcuyjpwNNIL0fRhQIkxQtL7+g6WRO0eSgYRHaFuoUR9F1
+   RRCWmESoQE2BH2v8JxFh/6EINVUT9ETCgV49c6ndGTu73si4cmg5ufSJQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="359412477"
+X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
+   d="scan'208";a="359412477"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2022 09:04:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
+   d="scan'208";a="558265341"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 22 May 2022 09:04:26 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nso49-0000Ru-WA;
+        Sun, 22 May 2022 16:04:25 +0000
+Date:   Mon, 23 May 2022 00:03:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Li Chen <lchen.firstlove@zohomail.com>,
+        Mark Brown <broonie@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-gpio <linux-gpio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        linux-sunxi <linux-sunxi@lists.linux.dev>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     kbuild-all@lists.01.org
+Subject: Re: [PATCH 4/4] pinctrl: st: Switch to use regmap_field_test_bits
+Message-ID: <202205222359.yQ35dVuB-lkp@intel.com>
+References: <180e705f8de.1012cdc8c45890.1645144071309904245@zohomail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <180e705f8de.1012cdc8c45890.1645144071309904245@zohomail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable basic drivers for NPCM8XX booting up support:
-Architecture, Clock, and WD.
+Hi Li,
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 50aa3d75ab4f..42ad8ac85b99 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -49,6 +49,7 @@ CONFIG_ARCH_MEDIATEK=y
- CONFIG_ARCH_MESON=y
- CONFIG_ARCH_MVEBU=y
- CONFIG_ARCH_MXC=y
-+CONFIG_ARCH_NPCM=y
- CONFIG_ARCH_QCOM=y
- CONFIG_ARCH_RENESAS=y
- CONFIG_ARCH_ROCKCHIP=y
-@@ -617,6 +618,7 @@ CONFIG_RENESAS_WDT=y
- CONFIG_RENESAS_RZG2LWDT=y
- CONFIG_UNIPHIER_WATCHDOG=y
- CONFIG_BCM2835_WDT=y
-+CONFIG_NPCM7XX_WATCHDOG=y
- CONFIG_MFD_ALTERA_SYSMGR=y
- CONFIG_MFD_BD9571MWV=y
- CONFIG_MFD_AXP20X_I2C=y
-@@ -997,6 +999,7 @@ CONFIG_COMMON_CLK_FSL_SAI=y
- CONFIG_COMMON_CLK_S2MPS11=y
- CONFIG_COMMON_CLK_PWM=y
- CONFIG_COMMON_CLK_VC5=y
-+CONFIG_COMMON_CLK_NPCM8XX=y
- CONFIG_COMMON_CLK_BD718XX=m
- CONFIG_CLK_RASPBERRYPI=m
- CONFIG_CLK_IMX8MM=y
+[auto build test ERROR on broonie-regmap/for-next]
+[also build test ERROR on linusw-pinctrl/devel broonie-sound/for-next v5.18-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Li-Chen/Add-regmap_field-helpers-for-simple-bit-operations/20220521-224352
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
+config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220522/202205222359.yQ35dVuB-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/73189e14ed111777ac60a95ae3008337c69589da
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Li-Chen/Add-regmap_field-helpers-for-simple-bit-operations/20220521-224352
+        git checkout 73189e14ed111777ac60a95ae3008337c69589da
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/pinctrl/pinctrl-st.c: In function 'st_pinconf_get_direction':
+>> drivers/pinctrl/pinctrl-st.c:587:53: error: 'od_value' undeclared (first use in this function); did you mean 'si_value'?
+     587 |                 if (regmap_field_test_bits(pc->od, &od_value, BIT(pin)))
+         |                                                     ^~~~~~~~
+         |                                                     si_value
+   drivers/pinctrl/pinctrl-st.c:587:53: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/pinctrl/pinctrl-st.c:587:21: error: too many arguments to function 'regmap_field_test_bits'
+     587 |                 if (regmap_field_test_bits(pc->od, &od_value, BIT(pin)))
+         |                     ^~~~~~~~~~~~~~~~~~~~~~
+   In file included from drivers/pinctrl/pinctrl-st.c:18:
+   include/linux/regmap.h:1353:5: note: declared here
+    1353 | int regmap_field_test_bits(struct regmap_field *field, unsigned int bits);
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +587 drivers/pinctrl/pinctrl-st.c
+
+   572	
+   573	static void st_pinconf_get_direction(struct st_pio_control *pc,
+   574		int pin, unsigned long *config)
+   575	{
+   576		if (pc->oe) {
+   577			if (regmap_field_test_bits(pc->oe, BIT(pin)))
+   578				ST_PINCONF_PACK_OE(*config);
+   579		}
+   580	
+   581		if (pc->pu) {
+   582			if (regmap_field_test_bits(pc->pu, BIT(pin)))
+   583				ST_PINCONF_PACK_PU(*config);
+   584		}
+   585	
+   586		if (pc->od) {
+ > 587			if (regmap_field_test_bits(pc->od, &od_value, BIT(pin)))
+   588				ST_PINCONF_PACK_OD(*config);
+   589		}
+   590	}
+   591	
+
 -- 
-2.33.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
