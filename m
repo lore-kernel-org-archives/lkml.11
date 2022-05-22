@@ -2,95 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 07:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D3E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 07:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347397AbiEVHkn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 03:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
+        id S234973AbiEVHs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 03:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238123AbiEVHki (ORCPT
+        with ESMTP id S232559AbiEVHs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 03:40:38 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8084C3ED3B
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 00:40:36 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id g16so13892287lja.3
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 00:40:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MqYU9S7JkHqQG35qsg1cXHBVp6joleLMgpUOh0cBEdc=;
-        b=KWg35Bsff0IHTOK8jUYC5I+zCna5NpKHGnQDEQKGejmNPCt26wKiC36x8NKy8iwKPi
-         Tjdnhix4QOzEZflQy81Bd3f3QYcRhgDUjsMJe2cE+gnpw//IP3VpgyXRGVvUH1DLQ3ML
-         s6knDLCVmBuc8teN5vOK7+J/91AInk/5AJuyb6xnBk86qsqKIMMZ/vZTLIaSU2UyrqQr
-         2F4dpBkmykZB3Oo8peNvTFFLDo9WOn85ah+lEEBnBN/XJHI/6PjC39DYGFLY6Ogd2ZLg
-         znS5tIrA1ysu7g/iRXjTEZCCoyImk5KQyD7NVbxW1oQX3SDtH/JBUcwB3wlU6YL2Gvym
-         hFtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MqYU9S7JkHqQG35qsg1cXHBVp6joleLMgpUOh0cBEdc=;
-        b=N3OgsF4+eIGfbknImjJbGPbMLYFpSj0OI+JZT1Tf/vhr+YTv5IGoenGsgNtzWHN9Bf
-         ghFvdkNuK8fhanY4sMXN5F0yKEJaF8drib//78Mnt0sNaepTUG4MOpsVdlQitWElOrqn
-         rS9KJzyAh8+C//O6ZhmJ6/Dnfsya1wlaeKjcwSO9PePtnA6h6okNQ5C4QLDYD4yZyt7X
-         XPlDtBde6GHFKPNiwBn+TvMv2z1kVKgCFQ0S5R/DJr6kxRkKI2K35fcrHNmzgeAHGY6/
-         dijHoUsCDKp7tJ0iYzAufAHaiG6LDb7Ymg/V1vaSTzS9KwZ/hjSrfnA5b1Y92v7462hf
-         9xRw==
-X-Gm-Message-State: AOAM531fKMt1Qfl6whqtuJzqYqj/YU5YsQ2O5P1TdDWb2BrkUm7Tckub
-        KHJkfAMQaEIniA2nTXiCxIQeuw==
-X-Google-Smtp-Source: ABdhPJx8nmCytCMhi7OeQpFqjd8RKUyUG9or/MT2HM2HZF0iO/oyaMpw5VRKMPUFrjRM8cVoXHy38g==
-X-Received: by 2002:a2e:9e95:0:b0:253:e17f:4037 with SMTP id f21-20020a2e9e95000000b00253e17f4037mr3884922ljk.523.1653205234708;
-        Sun, 22 May 2022 00:40:34 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id u17-20020a05651220d100b0047255d2119csm1353054lfr.203.2022.05.22.00.40.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 May 2022 00:40:34 -0700 (PDT)
-Message-ID: <d08f12b0-d3fa-07ed-ea29-27a70a78a545@linaro.org>
-Date:   Sun, 22 May 2022 09:40:32 +0200
+        Sun, 22 May 2022 03:48:27 -0400
+Received: from smtp.smtpout.orange.fr (smtp07.smtpout.orange.fr [80.12.242.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3B740E50
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 00:48:25 -0700 (PDT)
+Received: from [192.168.1.18] ([86.243.180.246])
+        by smtp.orange.fr with ESMTPA
+        id sgK6nMsvlvNzHsgK6nK1rI; Sun, 22 May 2022 09:48:23 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 22 May 2022 09:48:23 +0200
+X-ME-IP: 86.243.180.246
+Message-ID: <88ec0bd3-234c-a5ae-8a1a-a7a90e66e87c@wanadoo.fr>
+Date:   Sun, 22 May 2022 09:48:22 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT
- binding
+Subject: Re: [PATCH V7 4/5] iio: accel: sca3300: Add support for SCL3300
 Content-Language: en-US
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        netdev@vger.kernel.org
-References: <20220521200734.421223-1-a.fatoum@pengutronix.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220521200734.421223-1-a.fatoum@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Qing-wu.Li@leica-geosystems.com.cn
+Cc:     linux-iio <linux-iio@vger.kernel.org>
+References: <20220522070419.409556-1-Qing-wu.Li@leica-geosystems.com.cn>
+ <20220522070419.409556-5-Qing-wu.Li@leica-geosystems.com.cn>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220522070419.409556-5-Qing-wu.Li@leica-geosystems.com.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/05/2022 22:07, Ahmad Fatoum wrote:
-> The BCM4349B1 chip is a single-chip Bluetooth 5.0 controller and
-> Transceiver. It is contained in the CYW/BCM89359 WiFi+BT package.
-> Extend the binding with its DT compatible.
+Le 22/05/2022 à 09:04, LI Qingwu a écrit :
+> Add support for Murata SCL3300, a 3-axis MEMS accelerometer.
+> Same as SCA3300, it has the accelerometer and temperature output.
 > 
-> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+> Datasheet: www.murata.com/en-us/products/sensor/inclinometer/overview/lineup/scl3300
+> Signed-off-by: LI Qingwu <Qing-wu.Li-t1cy0uBObHa2smIkw38IFAiE/XJ0vlP8@public.gmane.org>
+> ---
+>   drivers/iio/accel/sca3300.c | 28 ++++++++++++++++++++++++++--
+>   1 file changed, 26 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+> index e57aba79c32b..10bedb14d4f0 100644
+> --- a/drivers/iio/accel/sca3300.c
+> +++ b/drivers/iio/accel/sca3300.c
+> @@ -38,6 +38,7 @@
+>   /* Device ID */
+>   #define SCA3300_REG_WHOAMI	0x10
+>   #define SCA3300_WHOAMI_ID	0x51
+> +#define SCL3300_WHOAMI_ID	0xC1
+>   
+>   /* Device return status and mask */
+>   #define SCA3300_VALUE_RS_ERROR	0x3
+> @@ -96,10 +97,18 @@ static const struct iio_chan_spec sca3300_channels[] = {
+>   static const int sca3300_lp_freq[] = {70, 10};
+>   static const int sca3300_lp_freq_map[] = {0, 0, 0, 1};
+>   
+> +static const int scl3300_lp_freq[] = {40, 70, 10};
+> +static const int scl3300_lp_freq_map[] = {0, 1, 2};
+> +
+>   static const int sca3300_accel_scale[][2] = {{0, 370}, {0, 741}, {0, 185}};
+>   static const int sca3300_accel_scale_map[] = {0, 1, 2, 2};
+>   
+> +static const int scl3300_accel_scale[][2] = {{0, 167}, {0, 333}, {0, 83}};
+> +static const int scl3300_accel_scale_map[] = {0, 1, 2};
+> +
+>   static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
+> +static const int scl3300_avail_modes_map[] = {0, 1, 3};
+> +
+>   static const unsigned long sca3300_scan_masks[] = {
+>   	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+>   	BIT(SCA3300_TEMP),
+> @@ -159,6 +168,20 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
+>   		.num_avail_modes = 4,
+>   		.chip_id = SCA3300_WHOAMI_ID,
+>   	},
+> +	{	.scan_masks = sca3300_scan_masks,
+> +		.channels = sca3300_channels,
+> +		.num_channels = ARRAY_SIZE(sca3300_channels),
+> +		.num_accel_scales = ARRAY_SIZE(scl3300_accel_scale)*2,
+> +		.accel_scale = scl3300_accel_scale,
+> +		.accel_scale_map = scl3300_accel_scale_map,
+> +		.num_freqs = ARRAY_SIZE(scl3300_lp_freq),
+> +		.freq_table = scl3300_lp_freq,
+> +		.freq_map = scl3300_lp_freq_map,
+> +		.name = "scl3300",
+> +		.avail_modes_table = scl3300_avail_modes_map,
+> +		.num_avail_modes = 3,
+> +		.chip_id = SCL3300_WHOAMI_ID,
+> +	},
+>   };
+>   
+>   DECLARE_CRC8_TABLE(sca3300_crc_table);
+> @@ -444,9 +467,9 @@ static int sca3300_init(struct sca3300_data *sca_data,
+>   
+>   	/*
+>   	 * Wait 1ms after SW-reset command.
+> -	 * Wait 15ms for settling of signal paths.
+> +	 * Wait 25ms for settling of signal paths.
+
+Hi,
+maybe the comment (IIUC) should say that the timing depends of sca3300 
+(15 ms) or scl3300 (25 ms) and that the max of the 2 values is taken.
+Or have this delay depends of the chip in the code below.
+
+CJ
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+>   	 */
+> -	usleep_range(16e3, 50e3);
+> +	usleep_range(26e3, 50e3);
+>   
+>   	ret = sca3300_read_reg(sca_data, SCA3300_REG_WHOAMI, &value);
+>   	if (ret)
+> @@ -573,6 +596,7 @@ static int sca3300_probe(struct spi_device *spi)
+>   
+>   static const struct of_device_id sca3300_dt_ids[] = {
+>   	{ .compatible = "murata,sca3300"},
+> +	{ .compatible = "murata,scl3300"},
+>   	{}
+>   };
+>   MODULE_DEVICE_TABLE(of, sca3300_dt_ids);
 
-Best regards,
-Krzysztof
