@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 01:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A38C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 01:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348130AbiEVBAL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 21:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        id S241690AbiEVBAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 21:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232208AbiEVBAG (ORCPT
+        with ESMTP id S1343829AbiEVBAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 21:00:06 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF27639832
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 18:00:03 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id 3so7734387ily.2
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 18:00:03 -0700 (PDT)
+        Sat, 21 May 2022 21:00:07 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5003239820
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 18:00:06 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id b11so7720715ilr.4
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 18:00:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3DYtEGQTzZvi1A4S1uBZ9fxUeN5xjNbN/cQ8OVKWFZo=;
-        b=Xv87cvPO2H2UNr3ucH+UOLEI/XDgeZ0NFghtFlxZw0gFhnfMP3jE5opSVhewtEssRr
-         5cr0ZY6us8S9HMzcPk7DcoTNEG+70my2Ri/bGgn9meyFB1/P1noWQhAZuJiegCd8POfx
-         7wxlW4Ix4PgrJodQvJ3ZUI6cgpOhNAf8aS0xqyElmb1/DByTQQcaNvWImc2dLAuZEhfq
-         ZAZfLnQNoCg4We7dUvyOm2sX9T0V+xMCrXzIXRBySkfoT9Ae0yh0aAolQjXzmBcx5Wos
-         qpD3Qph9/5uku47hhx/xp305xTuW51xaXaCf15Rk8zJHfICEVCERFSTIsYCxE9A0lyzU
-         IZjw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9nHOW+mnraB1XiSAtyqCqOmXRY0ima8MXF2hLYPrgyI=;
+        b=tpNTJG3yM9Wz/y9QSl4vuGOCtsfjCxWgtWGDVssv2nSWwap6tnYkjE8HfUean1dleN
+         xao8+lCvbkVBReXqb1FDVdzUz8N+P7BF8zrKfOipG7X45gGqumqVdxZUNhFSQd+yk1Uf
+         zodhLnVEiarAswjBaNTIezlIOtclDKLgXqCgycRjD8887HkF5YKXNvZ1qCipPZe8/2Xj
+         SsxuH4CBqBeUW1Fg6c5bX2u/Q5HQIcJiDuvd+mYET2DKDkN1GjIbxX7jPa1r3R5sb3xr
+         2EtxKFFVq38XsoVqRhd/t91Mb1It69uN6czQ8Euhj7pM/Duc3jEKTq9J7uwNiLntEukn
+         1g7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3DYtEGQTzZvi1A4S1uBZ9fxUeN5xjNbN/cQ8OVKWFZo=;
-        b=HICP8odBJVzj3ylsH2vgBlUg5x5yfz+wE+Kgdz3mFT1AHVh77xdOL0cwrR6LwkiodR
-         4abdPuyCeNL2TRdIUnNsX2EJjTCXl5cp6QPJ4Tka+9i0E7ZawbPB7U0ulk7lWEJ0DqMq
-         8v6wPJr4gjYyHjBnbX+nL2bluj+B/MtF+ZZLySQvZsQCwfS/zwsmrNARZxwqPvNzV1bF
-         QV0qy0Pv8i5kHvwxGo9ajL3EgpZq6UAJgalDgrpyN0bq0am3uZH9O0tVVrqjubp2nCzL
-         bqKjH2nraDtRK3ZatbfEd0qsSEHk/Xyf12RMj0zacsLVztd/8ayqYHGefmVvxj2OGHs5
-         cFyQ==
-X-Gm-Message-State: AOAM530i9dGE5a9xfSZfwQ0R6nk9BaiwRuTWNmrWUmJUIgT81BvNW21E
-        9J2W8nmtyzXuCbliOStBUDCnfw==
-X-Google-Smtp-Source: ABdhPJxlApPYWy/uTHm10OGIiNGTelkTBlw8UxIizWZv44ke5ccT70BBYSUtRxrCLUNxUUnwNsNkLw==
-X-Received: by 2002:a05:6e02:194e:b0:2cf:9d32:fefc with SMTP id x14-20020a056e02194e00b002cf9d32fefcmr8980615ilu.217.1653181203189;
-        Sat, 21 May 2022 18:00:03 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9nHOW+mnraB1XiSAtyqCqOmXRY0ima8MXF2hLYPrgyI=;
+        b=FhGU3h8TaUyNcZPyghOchZ/bS5W1zdvOg91jwhZQi7icUsWt/IL18yJ1fzEWhuBUWp
+         gyEhDwd6p4Yf7saVI0jgZVNbOvptxF8OiPeR+DhZFdLaOGjd1CvKa1qr498fY/20uHqm
+         srpLfvYcIJprm6S4xbGCbaqAbzaGktLi7z1GB8W6TgG7QBSwfROrByVsyXxBgc3AwMjo
+         MLX/FTNj6cPN8+JuPN8fmD3dDHsJT1TBLNykUQ7Gv1yQ00hDkL/Ddi/UfONZOK8SVghQ
+         hbkW0BKfmvHXAXLDDlaAvcarO5KEtfJTOhmAus6sdYwmDwDBqp8eK8BJOfkrGJ13kwDT
+         /wyw==
+X-Gm-Message-State: AOAM531B2CwBll2WCEI5opCBGuxQ6iSSWBTDxz2XltBtKPfSQVqNAuI6
+        08095Qc5gi1G2dDvfC0h0IoFgw==
+X-Google-Smtp-Source: ABdhPJyjzHZPVoBDJOxEv9fzA9x6b3lvvd+2e2BtVOlQacms8+7X1Chb1aTuAc+8iH11Eim6GoHrwA==
+X-Received: by 2002:a92:d486:0:b0:2d1:19cb:9eba with SMTP id p6-20020a92d486000000b002d119cb9ebamr8075908ilg.29.1653181205689;
+        Sat, 21 May 2022 18:00:05 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id t21-20020a02c495000000b0032eacab7e07sm939366jam.93.2022.05.21.18.00.01
+        by smtp.gmail.com with ESMTPSA id t21-20020a02c495000000b0032eacab7e07sm939366jam.93.2022.05.21.18.00.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 18:00:02 -0700 (PDT)
+        Sat, 21 May 2022 18:00:05 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,36 +56,47 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 0/2] net: ipa: fix page free in two spots
-Date:   Sat, 21 May 2022 19:59:57 -0500
-Message-Id: <20220522005959.1175181-1-elder@linaro.org>
+Subject: [PATCH net 2/2] net: ipa: fix page free in ipa_endpoint_replenish_one()
+Date:   Sat, 21 May 2022 19:59:59 -0500
+Message-Id: <20220522005959.1175181-3-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220522005959.1175181-1-elder@linaro.org>
+References: <20220522005959.1175181-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a receive buffer is not wrapped in an SKB and passed to the
-network stack, the (compound) page gets freed within the IPA driver.
-This is currently quite rare.
+Currently the (possibly compound) pages used for receive buffers are
+freed using __free_pages().  But according to this comment above the
+definition of that function, that's wrong:
+    If you want to use the page's reference count to decide
+    when to free the allocation, you should allocate a compound
+    page, and use put_page() instead of __free_pages().
 
-The pages are freed using __free_pages(), but they should instead be
-freed using page_put().  This series fixes this, in two spots.
+Convert the call to __free_pages() in ipa_endpoint_replenish_one()
+to use put_page() instead.
 
-These patches work for Linux v5.18-rc7 and v5.17.y, but won't apply
-cleanly to earlier stable branches.  (Nevertheless, the fix is
-trivial.)
+Fixes: 6a606b90153b8 ("net: ipa: allocate transaction in replenish loop")
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_endpoint.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-					-Alex
-
-Alex Elder (2):
-  net: ipa: fix page free in ipa_endpoint_trans_release()
-  net: ipa: fix page free in ipa_endpoint_replenish_one()
-
- drivers/net/ipa/ipa_endpoint.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 675b7135644b8..dac4845cf596c 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1062,7 +1062,7 @@ static int ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint,
+ 
+ 	ret = gsi_trans_page_add(trans, page, len, offset);
+ 	if (ret)
+-		__free_pages(page, get_order(buffer_size));
++		put_page(page);
+ 	else
+ 		trans->data = page;	/* transaction owns page now */
+ 
 -- 
 2.32.0
 
