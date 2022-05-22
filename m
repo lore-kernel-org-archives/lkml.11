@@ -2,138 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 606B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 03:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61BD9C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 03:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232218AbiEVDcF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 21 May 2022 23:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
+        id S233060AbiEVD5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 21 May 2022 23:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbiEVDcC (ORCPT
+        with ESMTP id S230109AbiEVD5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 21 May 2022 23:32:02 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248F020BE0
-        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 20:32:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653190321; x=1684726321;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sh2zeBTKC5/YRBsSek+vwiZ0w8ej3J5CM3Wqohlb8ZU=;
-  b=T8k0m6+dym9iL2Kd8UKTfpCvmcZL3C6Ti+Y41FHDQ7RFcAJj4lb5MGhx
-   hG7bIAd29GR9IMRV9bGkm/R564NuLybxemhFy/LkMiMjf0wiRqWQfhNUs
-   2I6kUJAKrAKAKFiSNiDEZNb6zC/4fTZME8wW4q8Uds9zBqofEWEN/i7lO
-   K+d6rUTqpOFSTYBkLV5jPiXDarEQHw/d4xfLy8V4CNXBwhNLZQ0mplu0v
-   GluzW1K67KB0MicFuXFgBcO6Vo5hYUy3VuesgxQ6YLQY0N/eSqaPrk6Zp
-   7Ob9Y5wI2a5qqH6eOjrAOtIw4YbZgVc4aSZR4lHHUL2o7HU2/2X4KOef8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="252819877"
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="252819877"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 20:32:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,243,1647327600"; 
-   d="scan'208";a="819208798"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 21 May 2022 20:31:59 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nscJy-0006t6-VE;
-        Sun, 22 May 2022 03:31:58 +0000
-Date:   Sun, 22 May 2022 11:31:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [arm-integrator:kernel-in-vmalloc-v5.18-rc1 8/16]
- drivers/infiniband/sw/siw/siw_qp_tx.c:32:23: warning: incompatible integer
- to pointer conversion passing 'dma_addr_t' (aka 'unsigned int') to parameter
- of type 'const void *'
-Message-ID: <202205221113.qnlaLJKi-lkp@intel.com>
+        Sat, 21 May 2022 23:57:00 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EEF3466F
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 20:56:57 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id i5so7879584ilv.0
+        for <linux-kernel@vger.kernel.org>; Sat, 21 May 2022 20:56:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WD+OIKZpSTJyD5Vd4IIbMe/iBHfwL25mMqv6khTOaQc=;
+        b=pfN4pPEeY9LYegHJheV6brjF5IhI9WGaVam03hHJvQ45QTGNF+vrM2IC9RhsClS8oP
+         ixAPLv0NJgoRuoPloqF+4j55f1fEuVVWQv46D8DXTahs0bftZvpWZOcK3d7yQXpT5kC0
+         rtDRcDPi7xUQH3EtXLkKYnOHKilzRci6W66tPcPffgtxHt8OX+HN5Q0r6sTeff0bqHLQ
+         TfXca2REfKX9shwxKV5KIRbBb8k/hKBjF54qBxwdfS7cxmqUGVHvL5/yg5GZ2crvVNoD
+         oVYrRiqiAd4lEptLPKaHNa9rg4M+4LsLKIIuGlj724HV2fOUd8iUhPtNnAj3Jju8QHrK
+         RYpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WD+OIKZpSTJyD5Vd4IIbMe/iBHfwL25mMqv6khTOaQc=;
+        b=mChbYxIZ2qNV3zQdimjnVCfYpBXEGsMK/Tzw4v4rRact1sbN44rjH20evZgWeZQVDe
+         5swhoAWJdoSnc7KQ3Mi45nktbrygP7NINOVYRzWAcnEbyqJKHKZ0+FZJqKdJnQEA36DC
+         1wO1OsIdM78ZBoxYf2ZdkY7EA8qqrQ+Vg5Cj71vZLXam/WUs/l4I+oFWuyXfAOAad9WY
+         SkAcPxDr+KugdnLveKVs7Jwaq5IxRPMJ9g3AaXoixzKbriz85QE3QnnVFaSR3hKSXzC5
+         SDPCnOK2nJznvV6VdG8HJDpEtB8brOqpyJ3zz+BsY2iBjyFvFf6JLnCCbe/N7oQ+UjZ7
+         VyVA==
+X-Gm-Message-State: AOAM5335t6OtUnBVCWOBlMb79/oAh9grMdhvqaxanX5DmecEaoOOEW86
+        InlgtQE1+ik6oUpDJaNaLGo=
+X-Google-Smtp-Source: ABdhPJyRBpAs9QXdK3UcexEhJHfxO8KKO3LQ830mo1fzt+XW+RBn5su2d0kvUMJS6s/h202Aygl5Dg==
+X-Received: by 2002:a05:6e02:1c87:b0:2cf:2d3d:dd89 with SMTP id w7-20020a056e021c8700b002cf2d3ddd89mr9182543ill.36.1653191816560;
+        Sat, 21 May 2022 20:56:56 -0700 (PDT)
+Received: from n2.us-central1-a.c.spheric-algebra-350919.internal (151.16.70.34.bc.googleusercontent.com. [34.70.16.151])
+        by smtp.gmail.com with ESMTPSA id b101-20020a0295ee000000b0032e13e37940sm1806124jai.140.2022.05.21.20.56.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 May 2022 20:56:55 -0700 (PDT)
+Date:   Sun, 22 May 2022 03:56:54 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Mel Gorman <mgorman@techsingularity.net>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, vbabka@suse.cz,
+        akpm@linux-foundation.org, willy@infradead.org
+Subject: Re: Is _PAGE_PROTNONE set only for user mappings?
+Message-ID: <Yom0hiDXuCuY4OUP@n2.us-central1-a.c.spheric-algebra-350919.internal>
+References: <20220506051940.156952-1-42.hyeyoo@gmail.com>
+ <56f89895-601e-44c9-bda4-5fae6782e27e@amd.com>
+ <YnpTHMvOO/pLJQ+l@hyeyoo>
+ <5fe161cb-6c55-6c4d-c208-16c77e115d3f@amd.com>
+ <8c2735ac-0335-6e2a-8341-8266d5d13c30@intel.com>
+ <YntHrTX12TGp35aF@hyeyoo>
+ <20220512103748.GH3441@techsingularity.net>
+ <Yn3tssUR8w8mC1DJ@hyeyoo>
+ <3f2f7c09-ddf3-6052-9860-8554a4ff2798@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <3f2f7c09-ddf3-6052-9860-8554a4ff2798@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.18-rc1
-head:   b9b1d325d83c15b2e27bfa8635f99a7d20811457
-commit: 16d1427dc6f44107571afbf96254956716c9ad1f [8/16] ARM: Compile the kernel into VMALLOC
-config: arm-randconfig-c002-20220522 (https://download.01.org/0day-ci/archive/20220522/202205221113.qnlaLJKi-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1443dbaba6f0e57be066995db9164f89fb57b413)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=16d1427dc6f44107571afbf96254956716c9ad1f
-        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
-        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.18-rc1
-        git checkout 16d1427dc6f44107571afbf96254956716c9ad1f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/infiniband/sw/siw/
+On Mon, May 16, 2022 at 07:04:32AM -0700, Dave Hansen wrote:
+> On 5/12/22 22:33, Hyeonggon Yoo wrote:
+> > Thanks Mel, and IIUC nor does do_kern_addr_fault() in arch/x86/mm/fault.c
+> > expect _PAGE_PROTNONE instead of _PAGE_GLOBAL. I want to make it clear
+> > in the code that _PAGE_PROTNONE is only used for user mappings.
+> > 
+> > How does below look?
+> > 
+> > diff --git a/arch/x86/include/asm/pgtable_types.h b/arch/x86/include/asm/pgtable_types.h
+> > index 40497a9020c6..f8d02b91a90c 100644
+> > --- a/arch/x86/include/asm/pgtable_types.h
+> > +++ b/arch/x86/include/asm/pgtable_types.h
+> > @@ -35,7 +35,10 @@
+> >  #define _PAGE_BIT_DEVMAP	_PAGE_BIT_SOFTW4
+> >  
+> >  /* If _PAGE_BIT_PRESENT is clear, we use these: */
+> > -/* - if the user mapped it with PROT_NONE; pte_present gives true */
+> > +/*
+> > + * if the user mapped it with PROT_NONE; pte_present gives true
+> > + * this is only used for user mappings (with _PAGE_BIT_USER)
+> > + */
+> >  #define _PAGE_BIT_PROTNONE	_PAGE_BIT_GLOBAL
+> >  
+> >  #define _PAGE_PRESENT	(_AT(pteval_t, 1) << _PAGE_BIT_PRESENT)
+> > @@ -115,7 +118,8 @@
+> >  #define _PAGE_DEVMAP	(_AT(pteval_t, 0))
+> >  #endif
+> >  
+> > -#define _PAGE_PROTNONE	(_AT(pteval_t, 1) << _PAGE_BIT_PROTNONE)
+> > +#define _PAGE_PROTNONE	((_AT(pteval_t, 1) << _PAGE_BIT_USER) | \
+> > +			 (_AT(pteval_t, 1) << _PAGE_BIT_PROTNONE))
+> >  
+> >  /*
+> >   * Set of bits not changed in pte_modify.  The pte's
+> 
+> I don't like the idea of _PAGE_BIT_USER being so implicit.  It is
+> something kernel users should know explicitly that they are messing with.
+>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Sounds reasonable. Better explicit than implicit.
 
-All warnings (new ones prefixed by >>):
+> I was thinking of something more along the lines of taking the
+> set_memory.c code and ensuring that it never sets (or even observes)
+> _PAGE_BIT_GLOBAL on a _PAGE_USER mapping.
 
->> drivers/infiniband/sw/siw/siw_qp_tx.c:32:23: warning: incompatible integer to pointer conversion passing 'dma_addr_t' (aka 'unsigned int') to parameter of type 'const void *' [-Wint-conversion]
-                   return virt_to_page(paddr);
-                                       ^~~~~
-   arch/arm/include/asm/memory.h:442:53: note: expanded from macro 'virt_to_page'
-   #define virt_to_page(kaddr)     pfn_to_page(virt_to_pfn(kaddr))
-                                                           ^~~~~
-   include/asm-generic/memory_model.h:18:41: note: expanded from macro '__pfn_to_page'
-   #define __pfn_to_page(pfn)      (mem_map + ((pfn) - ARCH_PFN_OFFSET))
-                                                ^~~
-   arch/arm/include/asm/memory.h:323:53: note: passing argument to parameter 'p' here
-   static inline unsigned long virt_to_pfn(const void *p)
-                                                       ^
->> drivers/infiniband/sw/siw/siw_qp_tx.c:538:36: warning: incompatible integer to pointer conversion passing 'unsigned long long' to parameter of type 'const void *' [-Wint-conversion]
-                                   page_array[seg] = virt_to_page(va & PAGE_MASK);
-                                                     ~~~~~~~~~~~~~^~~~~~~~~~~~~~~
-   arch/arm/include/asm/memory.h:442:53: note: expanded from macro 'virt_to_page'
-   #define virt_to_page(kaddr)     pfn_to_page(virt_to_pfn(kaddr))
-                                   ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   include/asm-generic/memory_model.h:18:41: note: expanded from macro '__pfn_to_page'
-   #define __pfn_to_page(pfn)      (mem_map + ((pfn) - ARCH_PFN_OFFSET))
-                                                ^~~
-   arch/arm/include/asm/memory.h:323:53: note: passing argument to parameter 'p' here
-   static inline unsigned long virt_to_pfn(const void *p)
-                                                       ^
-   2 warnings generated.
+Yeah that would be a bit more explicit solution.
 
+> There was also a question of
+> if set_memory.c is ever used on userspace mappings.  It would be good to
+> validate whether it's possible in-tree today and if not, enforce that
+> _PAGE_USER PTEs should never even be observed with set_memory.c.
 
-vim +32 drivers/infiniband/sw/siw/siw_qp_tx.c
+Simply adding dump_stack() tells me my kernel on my machine does not use
+set_memory.c for userspace mappings but Hmm I'll take a look.
 
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  20  
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  21  #define MAX_HDR_INLINE					\
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  22  	(((uint32_t)(sizeof(struct siw_rreq_pkt) -	\
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  23  		     sizeof(struct iwarp_send))) & 0xF8)
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  24  
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  25  static struct page *siw_get_pblpage(struct siw_mem *mem, u64 addr, int *idx)
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  26  {
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  27  	struct siw_pbl *pbl = mem->pbl;
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  28  	u64 offset = addr - mem->va;
-c536277e0db1ad Bernard Metzler 2019-08-22  29  	dma_addr_t paddr = siw_pbl_get_buffer(pbl, offset, NULL, idx);
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  30  
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  31  	if (paddr)
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20 @32  		return virt_to_page(paddr);
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  33  
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  34  	return NULL;
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  35  }
-b9be6f18cf9ed0 Bernard Metzler 2019-06-20  36  
+> The arch/x86/mm/dump_pagetables.c code is also a reasonable place to put
+> assumptions about the page tables since it walks *everything* when asked.
 
-:::::: The code at line 32 was first introduced by commit
-:::::: b9be6f18cf9ed04dd8087cb9d69de6e90d8ceb08 rdma/siw: transmit path
+Thanks for that information!
 
-:::::: TO: Bernard Metzler <bmt@zurich.ibm.com>
-:::::: CC: Jason Gunthorpe <jgg@mellanox.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Hyeonggon
