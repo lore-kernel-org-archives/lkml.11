@@ -2,403 +2,362 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 13:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0814C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 13:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346019AbiEVNJb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 09:09:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39136 "EHLO
+        id S234903AbiEVNNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 09:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230407AbiEVNJ1 (ORCPT
+        with ESMTP id S229937AbiEVNNO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 09:09:27 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE0A39834;
-        Sun, 22 May 2022 06:09:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653224965; x=1684760965;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JNi1rr7UsmJNPBUE1nqgoupvf0VeEmGT3KhKnKDQ6YI=;
-  b=gZPvaeZsFKojYJ8lk2Nk7+5UiIFYzIxPtf0lyxiQqEIaWK84Uf6qf+5N
-   pI9vViyJq1d8Y7g1yNx1T5UN9AINPcBPWXi1vCbS2nLmoeSEyBD1IM/ju
-   qDYwvpFSV+1/dDyF9AxHDN4L06+KYprATDXqCn9hRWccVkPrAOYlX6mdC
-   n60Q6pducvMvOKjrHHzVEXTtHyWykmW+hzANMtYMb5Mztawzcsja63UZR
-   MDZJcQYzbsNdNGgcGUiCYsP2OAQvTbQxGALThTF/EQf84NQsadPKnldXS
-   3xU2NQvdfcvS5rboFTUVZmzRVqW1Q9W3Fd5yIkA2CZyU2bVo/1tx+p4yR
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10354"; a="336046152"
-X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
-   d="scan'208";a="336046152"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2022 06:09:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
-   d="scan'208";a="571622193"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga007.jf.intel.com with ESMTP; 22 May 2022 06:09:22 -0700
-Date:   Sun, 22 May 2022 21:01:45 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        Conor.Dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH v12 1/3] fpga: fpga-mgr: support bitstream offset in
- image buffer
-Message-ID: <20220522130145.GA89204@yilunxu-OptiPlex-7050>
-References: <20220513162755.16201-1-i.bornyakov@metrotek.ru>
- <20220513162755.16201-2-i.bornyakov@metrotek.ru>
+        Sun, 22 May 2022 09:13:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3780839B84;
+        Sun, 22 May 2022 06:13:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A063DB80BE9;
+        Sun, 22 May 2022 13:13:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BC29C385AA;
+        Sun, 22 May 2022 13:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653225189;
+        bh=8Ni5c6Xwwig839tx+SLYNI2uAV2C3Tn7rzb0ubCC4rA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=karEZOrVgKgEytAenz7Bf/6RrIZZPB+4IcNTvWZy1mdVVrGHIuuJwmPXjhUJ7C4wm
+         qUaq+Gd1g9DH7Kh7I5ZCmlt5NY9NbZYd/GZXLt37EQxGjM8wfkk9ud1ppizlvDfJ05
+         RkXq6vAPZYas2zOWziYSXJbX9y9mduKjbmfG/9JOz00HMAhbw8uk+hajuElu/gOvng
+         OPYbQUtBWNW7d/EBZ/JebhCIsHUYQl19awBnkje0hgNzjg2hKEeD7zODUOHlC9TAm5
+         nDaHDLaRlMZJYZBFaHn4JWTx0nypXKAtkkcnkoDV7EAkRB2zyGqgvoaHYLqTDMfOCi
+         /L3dYo5GXzk3g==
+Received: by mail-vs1-f53.google.com with SMTP id h4so1481196vsr.13;
+        Sun, 22 May 2022 06:13:09 -0700 (PDT)
+X-Gm-Message-State: AOAM5337BM7pH879Dyhsw/cMK3wRswbKQy/uiksj3if0OG25rl+hARIe
+        /n5eC4B6KdW6vSxbUIBjzQrCU9Z9yPFP5L/WH1I=
+X-Google-Smtp-Source: ABdhPJy8HI9+Y/4fRcZH066Zzcs0KxedHbq4UohdbaMcNOyoW86HIIdxARLxC4+Gktwa/Ikrj7UYTjod22nPGczBNwI=
+X-Received: by 2002:a67:e046:0:b0:335:d1a2:6192 with SMTP id
+ n6-20020a67e046000000b00335d1a26192mr7142077vsl.8.1653225188112; Sun, 22 May
+ 2022 06:13:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513162755.16201-2-i.bornyakov@metrotek.ru>
+References: <20220505035526.2974382-6-guoren@kernel.org> <mhng-7ebff936-b0d8-4f65-bd51-46bcd7e0d5c8@palmer-ri-x1c9>
+In-Reply-To: <mhng-7ebff936-b0d8-4f65-bd51-46bcd7e0d5c8@palmer-ri-x1c9>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Sun, 22 May 2022 21:12:56 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQoSQq_S4UvAiXgMviT040Ls8+VkDszQSke1a0zbXZ82A@mail.gmail.com>
+Message-ID: <CAJF2gTQoSQq_S4UvAiXgMviT040Ls8+VkDszQSke1a0zbXZ82A@mail.gmail.com>
+Subject: Re: [PATCH V4 5/5] riscv: atomic: Optimize LRSC-pairs atomic ops with
+ .aqrl annotation
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     Andrea Parri <parri.andrea@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 13, 2022 at 07:27:53PM +0300, Ivan Bornyakov wrote:
-> At the moment FPGA manager core loads to the device entire image
-> provided to fpga_mgr_load(). But it is not always whole FPGA image
-> buffer meant to be written to the device. In particular, .dat formatted
-> image for Microchip MPF contains meta info in the header that is not
-> meant to be written to the device. This is issue for those low level
-> drivers that loads data to the device with write() fpga_manager_ops
-> callback, since write() can be called in iterator over scatter-gather
-> table, not only linear image buffer. On the other hand, write_sg()
-> callback is provided with whole image in scatter-gather form and can
-> decide itself which part should be sent to the device.
-> 
-> Add header_size and data_size to the fpga_image_info struct and adjust
-> fpga_mgr_write() callers with respect to them.
-> 
->   * info->header_size indicates part at the beginning of image buffer
->     that is *not* meant to be written to the device. It is optional and
->     can be 0.
-> 
->   * info->data_size is the size of actual bitstream data that *is* meant
->     to be written to the device, starting at info->header_size from the
->     beginning of image buffer. It is also optional and can be 0, which
->     means bitstream data is up to the end of image buffer.
-> 
-> Also add parse_header() callback to fpga_manager_ops, which purpose is
-> to set info->header_size and info->data_size. At least
-> initial_header_size bytes of image buffer will be passed into
-> parse_header() first time. If it is not enough, parse_header() should
-> set desired size into info->header_size and return -EAGAIN, than it will
-> be called again with greater part of image buffer on the input.
-> 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> ---
->  drivers/fpga/fpga-mgr.c       | 150 ++++++++++++++++++++++++++--------
->  include/linux/fpga/fpga-mgr.h |  13 ++-
->  2 files changed, 127 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-> index a3595ecc3f79..c6ca395909a0 100644
-> --- a/drivers/fpga/fpga-mgr.c
-> +++ b/drivers/fpga/fpga-mgr.c
-> @@ -74,6 +74,15 @@ static inline int fpga_mgr_write_complete(struct fpga_manager *mgr,
->  	return 0;
->  }
->  
-> +static inline int fpga_mgr_parse_header(struct fpga_manager *mgr,
-> +					struct fpga_image_info *info,
-> +					const char *buf, size_t count)
-> +{
-> +	if (buf && mgr->mops->parse_header)
-> +		return mgr->mops->parse_header(mgr, info, buf, count);
-> +	return 0;
-> +}
-> +
->  static inline int fpga_mgr_write_init(struct fpga_manager *mgr,
->  				      struct fpga_image_info *info,
->  				      const char *buf, size_t count)
-> @@ -136,32 +145,61 @@ void fpga_image_info_free(struct fpga_image_info *info)
->  EXPORT_SYMBOL_GPL(fpga_image_info_free);
->  
->  /*
-> - * Call the low level driver's write_init function.  This will do the
-> - * device-specific things to get the FPGA into the state where it is ready to
-> - * receive an FPGA image. The low level driver only gets to see the first
-> - * initial_header_size bytes in the buffer.
-> + * Call the low level driver's parse_header then write_init functions.
-> + * This will do the device-specific things to get the FPGA into the state
-> + * where it is ready to receive an FPGA image. If parse_header sets
-> + * info->header_size, the low level driver's write_init only gets to see the
-> + * first info->header_size bytes in the buffer, mgr->mops->initial_header_size
-> + * otherwise. If neither initial_header_size nor header_size are not set,
-> + * write_init will not get any bytes of image buffer.
+On Sun, May 22, 2022 at 4:46 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
+>
+> On Wed, 04 May 2022 20:55:26 PDT (-0700), guoren@kernel.org wrote:
+> > From: Guo Ren <guoren@linux.alibaba.com>
+> >
+> > The current implementation is the same with 8e86f0b409a4
+> > ("arm64: atomics: fix use of acquire + release for full barrier
+> > semantics"). RISC-V could combine acquire and release into the SC
+> > instructions and it could reduce a fence instruction to gain better
+> > performance. Here is related descriptio from RISC-V ISA 10.2
+> > Load-Reserved/Store-Conditional Instructions:
+> >
+> >  - .aq:   The LR/SC sequence can be given acquire semantics by
+> >           setting the aq bit on the LR instruction.
+> >  - .rl:   The LR/SC sequence can be given release semantics by
+> >           setting the rl bit on the SC instruction.
+> >  - .aqrl: Setting the aq bit on the LR instruction, and setting
+> >           both the aq and the rl bit on the SC instruction makes
+> >           the LR/SC sequence sequentially consistent, meaning that
+> >           it cannot be reordered with earlier or later memory
+> >           operations from the same hart.
+> >
+> >  Software should not set the rl bit on an LR instruction unless
+> >  the aq bit is also set, nor should software set the aq bit on an
+> >  SC instruction unless the rl bit is also set. LR.rl and SC.aq
+> >  instructions are not guaranteed to provide any stronger ordering
+> >  than those with both bits clear, but may result in lower
+> >  performance.
+> >
+> > The only difference is when sc.w/d.aqrl failed, it would cause .aq
+> > effect than before. But it's okay for sematic because overlap
+> > address LR couldn't beyond relating SC.
+>
+> IIUC that's not accurate, or at least wasn't in 2018.  The ISA tends to
+> drift around a bit, so it's possible things have changed since then.
+> 5ce6c1f3535f ("riscv/atomic: Strengthen implementations with fences")
+Thx for explaining, that why I suspected with the sentence in the comment:
+"which do not give full-ordering with .aqrl"
 
-Could we always initialize the info->header_size = initial_header_size
-at early stage, maybe in fpga_mgr_load(), and only query
-info->header_size afterward. This is to make the logic for header size
-simpler.
+> describes the issue more specifically, that's when we added these
+> fences.  There have certainly been complains that these fences are too
+> heavyweight for the HW to go fast, but IIUC it's the best option we have
+Yeah, it would reduce the performance on D1 and our next-generation
+processor has optimized fence performance a lot.
 
->   */
->  static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
->  				   struct fpga_image_info *info,
->  				   const char *buf, size_t count)
->  {
-> +	size_t header_size;
->  	int ret;
->  
->  	mgr->state = FPGA_MGR_STATE_WRITE_INIT;
-> -	if (!mgr->mops->initial_header_size) {
-> -		ret = fpga_mgr_write_init(mgr, info, NULL, 0);
-> -	} else {
-> -		count = min(mgr->mops->initial_header_size, count);
-> -		ret = fpga_mgr_write_init(mgr, info, buf, count);
-> +	ret = fpga_mgr_parse_header(mgr, info, buf, count);
-> +	if (ret) {
-> +		if (ret != -EAGAIN)
-> +			dev_err(&mgr->dev,
-> +				"Error while parsing FPGA image header\n");
-> +
-> +		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
+> given the current set of memory model primitives we implement in the
+> ISA (ie, there's more in RVWMO but no way to encode that).
+>
+> The others all look good, though, and as these are really all
+> independent cleanups I'm going to go ahead and put those three on
+> for-next.
+>
+> There's also a bunch of checkpatch errors.  The ones about "*" seem
+> spurious, but the alignment ones aren't.  Here's my fixups:
+Thx for the fixup.
 
-Could we move the header parsing out of fpga_mgr_write_init_buf()
-and introduce a dedicated function fpga_mgr_parse_head_buf().
-We could also define dedicated FPGA_MGR_STATE_PARSE_HEAD &
-FPGA_MGR_STATE_PARSE_HEAD_ERR states. This is to makes the flow
-more clear to developers. The sg_buf flow won't try several times
-on write_init() actually.
+>
+>     diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
+>     index 34f757dfc8f2..0bde499fa8bc 100644
+>     --- a/arch/riscv/include/asm/atomic.h
+>     +++ b/arch/riscv/include/asm/atomic.h
+>     @@ -86,9 +86,9 @@ ATOMIC_OPS(xor, xor,  i)
+>       * versions, while the logical ops only have fetch versions.
+>       */
+>      #define ATOMIC_FETCH_OP(op, asm_op, I, asm_type, c_type, prefix)   \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,                \
+>     -                                        atomic##prefix##_t *v)     \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,                       \
+>     +                                      atomic##prefix##_t *v)       \
+>      {                                                                  \
+>         register c_type ret;                                            \
+>         __asm__ __volatile__ (                                          \
+>     @@ -98,9 +98,9 @@ c_type arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,               \
+>                 : "memory");                                            \
+>         return ret;                                                     \
+>      }                                                                  \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_fetch_##op##_acquire(c_type i,                \
+>     -                                        atomic##prefix##_t *v)     \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_fetch_##op##_acquire(c_type i,                       \
+>     +                                      atomic##prefix##_t *v)       \
+>      {                                                                  \
+>         register c_type ret;                                            \
+>         __asm__ __volatile__ (                                          \
+>     @@ -110,9 +110,9 @@ c_type arch_atomic##prefix##_fetch_##op##_acquire(c_type i,             \
+>                 : "memory");                                            \
+>         return ret;                                                     \
+>      }                                                                  \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_fetch_##op##_release(c_type i,                \
+>     -                                        atomic##prefix##_t *v)     \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_fetch_##op##_release(c_type i,                       \
+>     +                                      atomic##prefix##_t *v)       \
+>      {                                                                  \
+>         register c_type ret;                                            \
+>         __asm__ __volatile__ (                                          \
+>     @@ -122,8 +122,8 @@ c_type arch_atomic##prefix##_fetch_##op##_release(c_type i,             \
+>                 : "memory");                                            \
+>         return ret;                                                     \
+>      }                                                                  \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)   \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)  \
+>      {                                                                  \
+>         register c_type ret;                                            \
+>         __asm__ __volatile__ (                                          \
+>     @@ -135,28 +135,28 @@ c_type arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)      \
+>      }
+>
+>      #define ATOMIC_OP_RETURN(op, asm_op, c_op, I, asm_type, c_type, prefix)    \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_##op##_return_relaxed(c_type i,               \
+>     -                                         atomic##prefix##_t *v)    \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_##op##_return_relaxed(c_type i,                      \
+>     +                                       atomic##prefix##_t *v)      \
+>      {                                                                  \
+>     -        return arch_atomic##prefix##_fetch_##op##_relaxed(i, v) c_op I;    \
+>     +   return arch_atomic##prefix##_fetch_##op##_relaxed(i, v) c_op I; \
+>      }                                                                  \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_##op##_return_acquire(c_type i,               \
+>     -                                         atomic##prefix##_t *v)    \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_##op##_return_acquire(c_type i,                      \
+>     +                                       atomic##prefix##_t *v)      \
+>      {                                                                  \
+>     -        return arch_atomic##prefix##_fetch_##op##_acquire(i, v) c_op I;    \
+>     +   return arch_atomic##prefix##_fetch_##op##_acquire(i, v) c_op I; \
+>      }                                                                  \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_##op##_return_release(c_type i,               \
+>     -                                         atomic##prefix##_t *v)    \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_##op##_return_release(c_type i,                      \
+>     +                                       atomic##prefix##_t *v)      \
+>      {                                                                  \
+>     -        return arch_atomic##prefix##_fetch_##op##_release(i, v) c_op I;    \
+>     +   return arch_atomic##prefix##_fetch_##op##_release(i, v) c_op I; \
+>      }                                                                  \
+>     -static __always_inline                                                     \
+>     -c_type arch_atomic##prefix##_##op##_return(c_type i, atomic##prefix##_t *v)        \
+>     +static __always_inline c_type                                              \
+>     +arch_atomic##prefix##_##op##_return(c_type i, atomic##prefix##_t *v)       \
+>      {                                                                  \
+>     -        return arch_atomic##prefix##_fetch_##op(i, v) c_op I;              \
+>     +   return arch_atomic##prefix##_fetch_##op(i, v) c_op I;           \
+>      }
+>
+>      #ifdef CONFIG_GENERIC_ATOMIC64
+>
+>
+> >
+> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> > Signed-off-by: Guo Ren <guoren@kernel.org>
+> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
+> > Cc: Mark Rutland <mark.rutland@arm.com>
+> > Cc: Dan Lustig <dlustig@nvidia.com>
+> > Cc: Andrea Parri <parri.andrea@gmail.com>
+> > ---
+> >  arch/riscv/include/asm/atomic.h  | 24 ++++++++----------------
+> >  arch/riscv/include/asm/cmpxchg.h |  6 ++----
+> >  2 files changed, 10 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
+> > index 34f757dfc8f2..aef8aa9ac4f4 100644
+> > --- a/arch/riscv/include/asm/atomic.h
+> > +++ b/arch/riscv/include/asm/atomic.h
+> > @@ -269,9 +269,8 @@ static __always_inline int arch_atomic_fetch_add_unless(atomic_t *v, int a, int
+> >               "0:     lr.w     %[p],  %[c]\n"
+> >               "       beq      %[p],  %[u], 1f\n"
+> >               "       add      %[rc], %[p], %[a]\n"
+> > -             "       sc.w.rl  %[rc], %[rc], %[c]\n"
+> > +             "       sc.w.aqrl  %[rc], %[rc], %[c]\n"
+> >               "       bnez     %[rc], 0b\n"
+> > -             "       fence    rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               : [a]"r" (a), [u]"r" (u)
+> > @@ -290,9 +289,8 @@ static __always_inline s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a,
+> >               "0:     lr.d     %[p],  %[c]\n"
+> >               "       beq      %[p],  %[u], 1f\n"
+> >               "       add      %[rc], %[p], %[a]\n"
+> > -             "       sc.d.rl  %[rc], %[rc], %[c]\n"
+> > +             "       sc.d.aqrl  %[rc], %[rc], %[c]\n"
+> >               "       bnez     %[rc], 0b\n"
+> > -             "       fence    rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               : [a]"r" (a), [u]"r" (u)
+> > @@ -382,9 +380,8 @@ static __always_inline bool arch_atomic_inc_unless_negative(atomic_t *v)
+> >               "0:     lr.w      %[p],  %[c]\n"
+> >               "       bltz      %[p],  1f\n"
+> >               "       addi      %[rc], %[p], 1\n"
+> > -             "       sc.w.rl   %[rc], %[rc], %[c]\n"
+> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+> >               "       bnez      %[rc], 0b\n"
+> > -             "       fence     rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               :
+> > @@ -402,9 +399,8 @@ static __always_inline bool arch_atomic_dec_unless_positive(atomic_t *v)
+> >               "0:     lr.w      %[p],  %[c]\n"
+> >               "       bgtz      %[p],  1f\n"
+> >               "       addi      %[rc], %[p], -1\n"
+> > -             "       sc.w.rl   %[rc], %[rc], %[c]\n"
+> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+> >               "       bnez      %[rc], 0b\n"
+> > -             "       fence     rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               :
+> > @@ -422,9 +418,8 @@ static __always_inline int arch_atomic_dec_if_positive(atomic_t *v)
+> >               "0:     lr.w     %[p],  %[c]\n"
+> >               "       addi     %[rc], %[p], -1\n"
+> >               "       bltz     %[rc], 1f\n"
+> > -             "       sc.w.rl  %[rc], %[rc], %[c]\n"
+> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+> >               "       bnez     %[rc], 0b\n"
+> > -             "       fence    rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               :
+> > @@ -444,9 +439,8 @@ static __always_inline bool arch_atomic64_inc_unless_negative(atomic64_t *v)
+> >               "0:     lr.d      %[p],  %[c]\n"
+> >               "       bltz      %[p],  1f\n"
+> >               "       addi      %[rc], %[p], 1\n"
+> > -             "       sc.d.rl   %[rc], %[rc], %[c]\n"
+> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
+> >               "       bnez      %[rc], 0b\n"
+> > -             "       fence     rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               :
+> > @@ -465,9 +459,8 @@ static __always_inline bool arch_atomic64_dec_unless_positive(atomic64_t *v)
+> >               "0:     lr.d      %[p],  %[c]\n"
+> >               "       bgtz      %[p],  1f\n"
+> >               "       addi      %[rc], %[p], -1\n"
+> > -             "       sc.d.rl   %[rc], %[rc], %[c]\n"
+> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
+> >               "       bnez      %[rc], 0b\n"
+> > -             "       fence     rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               :
+> > @@ -486,9 +479,8 @@ static __always_inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
+> >               "0:     lr.d     %[p],  %[c]\n"
+> >               "       addi      %[rc], %[p], -1\n"
+> >               "       bltz     %[rc], 1f\n"
+> > -             "       sc.d.rl  %[rc], %[rc], %[c]\n"
+> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
+> >               "       bnez     %[rc], 0b\n"
+> > -             "       fence    rw, rw\n"
+> >               "1:\n"
+> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
+> >               :
+> > diff --git a/arch/riscv/include/asm/cmpxchg.h b/arch/riscv/include/asm/cmpxchg.h
+> > index 1af8db92250b..9269fceb86e0 100644
+> > --- a/arch/riscv/include/asm/cmpxchg.h
+> > +++ b/arch/riscv/include/asm/cmpxchg.h
+> > @@ -307,9 +307,8 @@
+> >               __asm__ __volatile__ (                                  \
+> >                       "0:     lr.w %0, %2\n"                          \
+> >                       "       bne  %0, %z3, 1f\n"                     \
+> > -                     "       sc.w.rl %1, %z4, %2\n"                  \
+> > +                     "       sc.w.aqrl %1, %z4, %2\n"                \
+> >                       "       bnez %1, 0b\n"                          \
+> > -                     "       fence rw, rw\n"                         \
+> >                       "1:\n"                                          \
+> >                       : "=&r" (__ret), "=&r" (__rc), "+A" (*__ptr)    \
+> >                       : "rJ" ((long)__old), "rJ" (__new)              \
+> > @@ -319,9 +318,8 @@
+> >               __asm__ __volatile__ (                                  \
+> >                       "0:     lr.d %0, %2\n"                          \
+> >                       "       bne %0, %z3, 1f\n"                      \
+> > -                     "       sc.d.rl %1, %z4, %2\n"                  \
+> > +                     "       sc.d.aqrl %1, %z4, %2\n"                \
+> >                       "       bnez %1, 0b\n"                          \
+> > -                     "       fence rw, rw\n"                         \
+> >                       "1:\n"                                          \
+> >                       : "=&r" (__ret), "=&r" (__rc), "+A" (*__ptr)    \
+> >                       : "rJ" (__old), "rJ" (__new)                    \
 
-> +		return ret;
->  	}
->  
-> +	header_size = mgr->mops->initial_header_size;
-> +	if (info->header_size)
-> +		header_size = info->header_size;
-> +
-> +	ret = fpga_mgr_write_init(mgr, info, header_size ? buf : NULL, header_size);
 
-We still need to check the count vs header_size, to ensure the low level
-driver won't access buf out of bounds.
 
->  	if (ret) {
->  		dev_err(&mgr->dev, "Error preparing FPGA for writing\n");
->  		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-> -		return ret;
->  	}
->  
-> -	return 0;
-> +	return ret;
-> +}
-> +
-> +static void *fpga_mgr_sgt_bounce_buf(struct sg_table *sgt, size_t count)
-> +{
-> +	size_t len;
-> +	void *buf;
-> +
-> +	buf = kmalloc(count, GFP_KERNEL);
-> +	if (!buf)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	len = sg_copy_to_buffer(sgt->sgl, sgt->nents, buf, count);
-> +	if (len != count) {
-> +		kfree(buf);
-> +		return ERR_PTR(-EFAULT);
-> +	}
-> +
-> +	return buf;
->  }
->  
->  static int fpga_mgr_write_init_sg(struct fpga_manager *mgr,
-> @@ -169,37 +207,46 @@ static int fpga_mgr_write_init_sg(struct fpga_manager *mgr,
+-- 
+Best Regards
+ Guo Ren
 
-Maybe we change the function name, I assume we should deal with
-parse_image and write_init here. How about fpga_mgr_prepare_sg()?
-
->  				  struct sg_table *sgt)
->  {
->  	struct sg_mapping_iter miter;
-> -	size_t len;
-> +	size_t header_size;
->  	char *buf;
-> -	int ret;
-> +	int ret = -EAGAIN;
->  
-> -	if (!mgr->mops->initial_header_size)
-> +	header_size = mgr->mops->initial_header_size;
-> +	if (!header_size)
->  		return fpga_mgr_write_init_buf(mgr, info, NULL, 0);
->  
-> -	/*
-> -	 * First try to use miter to map the first fragment to access the
-> -	 * header, this is the typical path.
-> -	 */
->  	sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
-> -	if (sg_miter_next(&miter) &&
-> -	    miter.length >= mgr->mops->initial_header_size) {
-> -		ret = fpga_mgr_write_init_buf(mgr, info, miter.addr,
-> -					      miter.length);
-> -		sg_miter_stop(&miter);
-> -		return ret;
-> +	if (!sg_miter_next(&miter)) {
-> +		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-> +		ret = -EFAULT;
->  	}
-> -	sg_miter_stop(&miter);
->  
-> -	/* Otherwise copy the fragments into temporary memory. */
-> -	buf = kmalloc(mgr->mops->initial_header_size, GFP_KERNEL);
-> -	if (!buf)
-> -		return -ENOMEM;
-> +	while (ret == -EAGAIN) {
-
-Is do ... while() better, then we don't have to initialize the ret = -EAGAIN.
-
-> +		/*
-> +		 * First try to use miter to map the first fragment to access
-> +		 * the header, this is the typical path.
-> +		 */
-> +		if (miter.length >= header_size) {
-> +			ret = fpga_mgr_write_init_buf(mgr, info, miter.addr,
-> +						      miter.length);
-> +		} else {
-> +			/*
-> +			 * Otherwise copy the fragments into temporary memory.
-> +			 */
-> +			buf = fpga_mgr_sgt_bounce_buf(sgt, header_size);
-> +			if (IS_ERR(buf)) {
-> +				mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-> +				ret = PTR_ERR(buf);
-> +				break;
-> +			}
->  
-> -	len = sg_copy_to_buffer(sgt->sgl, sgt->nents, buf,
-> -				mgr->mops->initial_header_size);
-> -	ret = fpga_mgr_write_init_buf(mgr, info, buf, len);
-> +			ret = fpga_mgr_write_init_buf(mgr, info, buf, header_size);
-> +			kfree(buf);
-> +		}
->  
-> -	kfree(buf);
-> +		header_size = info->header_size;
-> +	}
-> +	sg_miter_stop(&miter);
->  
->  	return ret;
->  }
-> @@ -236,13 +283,33 @@ static int fpga_mgr_buf_load_sg(struct fpga_manager *mgr,
->  	if (mgr->mops->write_sg) {
->  		ret = fpga_mgr_write_sg(mgr, sgt);
->  	} else {
-> +		size_t offset, count, length, data_size;
->  		struct sg_mapping_iter miter;
->  
-> +		offset = info->header_size;
-> +		data_size = info->data_size;
-> +		count = 0;
-> +
->  		sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
->  		while (sg_miter_next(&miter)) {
-> -			ret = fpga_mgr_write(mgr, miter.addr, miter.length);
-> -			if (ret)
-> +			if (offset >= miter.length) {
-> +				offset -= miter.length;
-> +				continue;
-> +			}
-> +
-> +			if (data_size)
-> +				length = min(miter.length - offset,
-> +					     data_size - count);
-> +			else
-> +				length = miter.length - offset;
-> +
-> +			count += length;
-> +
-> +			ret = fpga_mgr_write(mgr, miter.addr + offset, length);
-> +			if (ret || count == data_size)
->  				break;
-> +
-> +			offset = 0;
-
-The logic for 'offset' is quite complex here.
-
-Could we define a 'ssize count' and initialize as -(info->header_size)?
-When 'count' becomes positive, we could start writing.
-
->  		}
->  		sg_miter_stop(&miter);
->  	}
-> @@ -266,6 +333,19 @@ static int fpga_mgr_buf_load_mapped(struct fpga_manager *mgr,
->  	if (ret)
->  		return ret;
->  
-> +	if (info->header_size + info->data_size > count) {
-> +		dev_err(&mgr->dev, "Bitsream data outruns FPGA image\n");
-> +		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (info->data_size)
-> +		count = info->data_size;
-> +	else
-> +		count -= info->header_size;
-> +
-> +	buf += info->header_size;
-> +
->  	/*
->  	 * Write the FPGA image to the FPGA.
->  	 */
-> diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
-> index 0f9468771bb9..a49b97bccfa2 100644
-> --- a/include/linux/fpga/fpga-mgr.h
-> +++ b/include/linux/fpga/fpga-mgr.h
-> @@ -85,6 +85,8 @@ enum fpga_mgr_states {
->   * @sgt: scatter/gather table containing FPGA image
->   * @buf: contiguous buffer containing FPGA image
->   * @count: size of buf
-> + * @header_size: offset in image buffer where bitstream data starts
-> + * @data_size: size of bitstream. If 0, (count - header_size) will be used.
->   * @region_id: id of target region
->   * @dev: device that owns this
->   * @overlay: Device Tree overlay
-> @@ -98,6 +100,8 @@ struct fpga_image_info {
->  	struct sg_table *sgt;
->  	const char *buf;
->  	size_t count;
-> +	size_t header_size;
-> +	size_t data_size;
->  	int region_id;
->  	struct device *dev;
->  #ifdef CONFIG_OF
-> @@ -137,9 +141,13 @@ struct fpga_manager_info {
->  
->  /**
->   * struct fpga_manager_ops - ops for low level fpga manager drivers
-> - * @initial_header_size: Maximum number of bytes that should be passed into write_init
-> + * @initial_header_size: minimum number of bytes that should be passed into
-> + *	parse_header and write_init.
->   * @state: returns an enum value of the FPGA's state
->   * @status: returns status of the FPGA, including reconfiguration error code
-> + * @parse_header: parse FPGA image header to set info->header_size and
-> + *	info->data_size. In case the input buffer is not large enough, set
-> + *	requierd size to info->header_size and return -EAGAIN.
-
-	required
-
-Thanks,
-Yilun
-
->   * @write_init: prepare the FPGA to receive configuration data
->   * @write: write count bytes of configuration data to the FPGA
->   * @write_sg: write the scatter list of configuration data to the FPGA
-> @@ -155,6 +163,9 @@ struct fpga_manager_ops {
->  	size_t initial_header_size;
->  	enum fpga_mgr_states (*state)(struct fpga_manager *mgr);
->  	u64 (*status)(struct fpga_manager *mgr);
-> +	int (*parse_header)(struct fpga_manager *mgr,
-> +			    struct fpga_image_info *info,
-> +			    const char *buf, size_t count);
->  	int (*write_init)(struct fpga_manager *mgr,
->  			  struct fpga_image_info *info,
->  			  const char *buf, size_t count);
-> -- 
-> 2.35.1
-> 
+ML: https://lore.kernel.org/linux-csky/
