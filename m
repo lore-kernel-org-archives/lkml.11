@@ -2,90 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 477D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 12:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B51F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 12:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243138AbiEVMW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 08:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
+        id S1344809AbiEVMW5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 08:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229928AbiEVMWX (ORCPT
+        with ESMTP id S229928AbiEVMWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 08:22:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99DB3BBDD;
-        Sun, 22 May 2022 05:22:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80FFDB80B05;
-        Sun, 22 May 2022 12:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8980EC385AA;
-        Sun, 22 May 2022 12:22:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653222139;
-        bh=Mfo0m4hywKPiCkbJC9Y94IuwEqZd7gBdjqZR9nR3ImA=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=oPLBRLUW8NAnzWitefrHXNP5m6s6TJXvVI1/cuJft5+KabX5BlIvZFC/mDwceWP8A
-         0goICNZ0uEiVd3NfLswcqUTIq2ULS3Oo/xooWVY3o1vt1YTTE0PDpXOmAeGX0+aJSl
-         KQdOL8aS6ET76aTf37oHSht1TaJwQxD2Ctj/zF2has+e5rO176lGOsBbSwTUAnFWjj
-         wBWdYFTHD2pgiuku6A2o34SbwqFyfqB8BdNRujiTgR4nCMgoe9NoK3WsdO78Wqnchs
-         /Ljpmm+wLyl0c64oFtbMHCTmW1GiQOqKofxvjMRplMefk0h/iJsvRwfdF9A1n4EVwn
-         eUD62H5gc4eUA==
-Content-Type: text/plain; charset="utf-8"
+        Sun, 22 May 2022 08:22:55 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3403BBE2;
+        Sun, 22 May 2022 05:22:54 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id f4so21246349lfu.12;
+        Sun, 22 May 2022 05:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XRfWg+fADolIfuSMnQcCvTeo8WWZuP6coPsptzZ15Zo=;
+        b=Jpp1WVJfjpx5sfKi9o0xU6v3+1cYklN0lbfX1+fgn3g0YQTDxYYOoP6NBWMSS0dFu+
+         2nzm9LtcFeeJ7V0j7uhZhPjbqPjuhZpjmVKrK4uDqJk512oRkZvPNMAdI0/XUQNassHS
+         pvkjdnYzgquEDDAk401q3Ib0kVDCFL7c4ezJmBWPrpgQH3qwUhjl8MHfhfzOeXFp2Nkk
+         hsrhD9xFiGf3k2fzOxOry37dBAhxrIu4gmMFTddXPjucx+iJvdowatGuLov9OpSTf5ow
+         +geqp32YJQoaGiyn1j3a2sRLlExRv5Ci+Gf0K62dA3rrpaSz4lZR15goaPcRPp3TD9c0
+         Ja8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XRfWg+fADolIfuSMnQcCvTeo8WWZuP6coPsptzZ15Zo=;
+        b=QkqTO+eDfwbtRApVslmPQUTWyVJ/NKs+/VgbdkmkZItrckhw51SYkU0KD1u3Dv4b4f
+         VT3IuARFcx13Bg5unAdkfjNSXvwZuro4xBQBeYnUmpyfxUVjRwDGkMs2hbdFIIySiLSv
+         ye8sowuPT9YJbYD6cGUohG8zNL0q9iEf6R7wDCdNbxpmbJGS67CkTDPrMNg/YPX5nCF0
+         QROtBQQK/HvmX7n0IsgVIL00GXqsscUNZvSw4dyEsWNV49d0D02baWHGX/KhZoxnBc0j
+         i+Ns95OTQ4gJVcRdIuqxvmWZ2qD4xRMkdP8keX6gBM8KdlUTNVUtz2xM3dEDEwqtdHuo
+         Uk2Q==
+X-Gm-Message-State: AOAM530lkPZhVebWZBdHULiWWEEhrzGVWQMoBqK0anTEMzT44/DzR3dL
+        M5H43A93V+Idzopgd1nd1Apd21wnDzc2e8Ps
+X-Google-Smtp-Source: ABdhPJyIYoNmUuNJRBbm7baPesHb98dp37/DtqE6vy81O13lZnqSeVO/k84JfU2g0zrTo8QVm4ACXA==
+X-Received: by 2002:a05:6512:33c3:b0:473:d099:919 with SMTP id d3-20020a05651233c300b00473d0990919mr13755971lfg.430.1653222172718;
+        Sun, 22 May 2022 05:22:52 -0700 (PDT)
+Received: from fedora.. ([93.100.99.176])
+        by smtp.gmail.com with ESMTPSA id q16-20020ac25a10000000b0047255d2112esm1434245lfn.93.2022.05.22.05.22.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 05:22:52 -0700 (PDT)
+From:   Dmitry Klochkov <kdmitry556@gmail.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Dmitry Klochkov <kdmitry556@gmail.com>
+Subject: [PATCH] tools/kvm_stat: fix display of error when multiple processes are found
+Date:   Sun, 22 May 2022 15:21:41 +0300
+Message-Id: <20220522122141.11640-1-kdmitry556@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath10k: do not enforce interrupt trigger type
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220513151516.357549-1-krzysztof.kozlowski@linaro.org>
-References: <20220513151516.357549-1-krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Govind Singh <govinds@codeaurora.org>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165322213441.774.12044822958989724904.kvalo@kernel.org>
-Date:   Sun, 22 May 2022 12:22:16 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+Instead of printing an error message, kvm_stat script fails when we
+restrict statistics to a guest by its name and there are multiple guests
+with such name:
 
-> Interrupt line can be configured on different hardware in different way,
-> even inverted.  Therefore driver should not enforce specific trigger
-> type - edge rising - but instead rely on Devicetree to configure it.
-> 
-> All Qualcomm DTSI with WCN3990 define the interrupt type as level high,
-> so the mismatch between DTSI and driver causes rebind issues:
-> 
->   $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/unbind
->   $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/bind
->   [   44.763114] irq: type mismatch, failed to map hwirq-446 for interrupt-controller@17a00000!
->   [   44.763130] ath10k_snoc 18800000.wifi: error -ENXIO: IRQ index 0 not found
->   [   44.763140] ath10k_snoc 18800000.wifi: failed to initialize resource: -6
-> 
-> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.0.c8-00009-QCAHLSWSC8180XMTPLZ-1
-> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.2.0-01387-QCAHLSWMTPLZ-1
-> 
-> Fixes: c963a683e701 ("ath10k: add resource init and deinit for WCN3990")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Tested-by: Steev Klimaszewski <steev@kali.org>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+  # kvm_stat -g my_vm
+  Traceback (most recent call last):
+    File "/usr/bin/kvm_stat", line 1819, in <module>
+      main()
+    File "/usr/bin/kvm_stat", line 1779, in main
+      options = get_options()
+    File "/usr/bin/kvm_stat", line 1718, in get_options
+      options = argparser.parse_args()
+    File "/usr/lib64/python3.10/argparse.py", line 1825, in parse_args
+      args, argv = self.parse_known_args(args, namespace)
+    File "/usr/lib64/python3.10/argparse.py", line 1858, in parse_known_args
+      namespace, args = self._parse_known_args(args, namespace)
+    File "/usr/lib64/python3.10/argparse.py", line 2067, in _parse_known_args
+      start_index = consume_optional(start_index)
+    File "/usr/lib64/python3.10/argparse.py", line 2007, in consume_optional
+      take_action(action, args, option_string)
+    File "/usr/lib64/python3.10/argparse.py", line 1935, in take_action
+      action(self, namespace, argument_values, option_string)
+    File "/usr/bin/kvm_stat", line 1649, in __call__
+      ' to specify the desired pid'.format(" ".join(pids)))
+  TypeError: sequence item 0: expected str instance, int found
 
-Patch applied to ath-next branch of ath.git, thanks.
+To avoid this, it's needed to convert pids int values to strings before
+pass them to join().
 
-1ee6c5abebd3 ath10k: do not enforce interrupt trigger type
+Signed-off-by: Dmitry Klochkov <kdmitry556@gmail.com>
+---
+ tools/kvm/kvm_stat/kvm_stat | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/tools/kvm/kvm_stat/kvm_stat b/tools/kvm/kvm_stat/kvm_stat
+index 5a5bd74f55bd..9c366b3a676d 100755
+--- a/tools/kvm/kvm_stat/kvm_stat
++++ b/tools/kvm/kvm_stat/kvm_stat
+@@ -1646,7 +1646,8 @@ Press any other key to refresh statistics immediately.
+                          .format(values))
+             if len(pids) > 1:
+                 sys.exit('Error: Multiple processes found (pids: {}). Use "-p"'
+-                         ' to specify the desired pid'.format(" ".join(pids)))
++                         ' to specify the desired pid'
++                         .format(" ".join(map(str, pids))))
+             namespace.pid = pids[0]
+ 
+     argparser = argparse.ArgumentParser(description=description_text,
+
+base-commit: 9f46c187e2e680ecd9de7983e4d081c3391acc76
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220513151516.357549-1-krzysztof.kozlowski@linaro.org/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.32.0
 
