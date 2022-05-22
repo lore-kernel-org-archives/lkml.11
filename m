@@ -2,70 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42052C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 07:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E84DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 07:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237458AbiEVHwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 03:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
+        id S239039AbiEVHyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 03:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236250AbiEVHwA (ORCPT
+        with ESMTP id S236250AbiEVHyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 03:52:00 -0400
-Received: from jari.cn (unknown [218.92.28.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48AEE167F8;
-        Sun, 22 May 2022 00:51:54 -0700 (PDT)
-Received: by ajax-webmail-localhost.localdomain (Coremail) ; Sun, 22 May
- 2022 15:46:18 +0800 (GMT+08:00)
-X-Originating-IP: [182.148.12.156]
-Date:   Sun, 22 May 2022 15:46:18 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?6ZmI5a2m5YW1?= <chenxuebing@jari.cn>
-To:     tsbogend@alpha.franken.de
-Cc:     catalin.marinas@arm.com, rdunlap@infradead.org, rppt@kernel.org,
-        rafael.j.wysocki@intel.com, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] mips: setup: use strscpy to replace strlcpy
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT6.0.1 build 20210329(c53f3fee)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-4e503810-ca60-4ec8-a188-7102c18937cf-zhkzyfz.cn
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Sun, 22 May 2022 03:54:40 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192231EAC2
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 00:54:39 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id 27so8953306ljw.0
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 00:54:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zMBWfLQ7VImibIUBNFQNVRlWsCmwgRNDbMx0Ehor3dY=;
+        b=srmBhmrTRJ7fZsq0Y4dU7NYMGkfv9n5fNKhtlUHcyUWJAuFeJ3G89DN1ab/uwLf6i4
+         fLLCYIUTxs7sOgmmjRJxunlYC1iDF94NN4WY+DpJerD8jRkZ46p+oNf37cQ4k9hqR5BB
+         OQPBJnfnN5RTaIELY5ty/XntFGZMF0K2ajkf+fL8dnB8fhlVrqga4UZNHch9l+20fGGL
+         zfWIDeyW1QE6ISsjjddCPARId+rjKLLEoJoE/xpKc3uq7cPo/ODcJ9dBq/LWKLAzMLms
+         Evc26zLELI5qwO/jc4+5c2EdYe7Klz25CIQ7l9rrFKBLN0gCa+UvqF6T00ESAjQo6Lh3
+         guAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zMBWfLQ7VImibIUBNFQNVRlWsCmwgRNDbMx0Ehor3dY=;
+        b=eK7mFVfMgIeLn6DvEAoYVtTKMsYGMmndc8DhiMEU8Uxl2uVnxLX/NqRWOvKsoG0tb3
+         vZ/rgHU2SSYTpoNWnV83p/XJt456uyLho2WJcCO2EExrkZFSmfrxW1iI7JN1Ms6rRDlq
+         L38Ygf9EuEa4mJegoJ2q1XhSnq14BI4FQFt83l0FvOoaczxbd3nG8IUZ214bve3tIb1z
+         CTksn6OmVoqKPzu8/y3wEbniELIQ/haSsPi2SJ5v5TEvGqF5KcP7I0FHKC7104v+sS2V
+         1Ss/5vj+OlVqG9sVC6IFvRUCnaWKCFX/DVcUg3qFX2Oerh+bTExmrSR2wCHox+O566rN
+         BswA==
+X-Gm-Message-State: AOAM53184COSImh5bWInCLX7Sf5KjDvflHxuTaP0GGKMjiashE+8LnyM
+        h/aQVrXUG+gO0lUxWMfOYbO9Xw==
+X-Google-Smtp-Source: ABdhPJzYIUnOGXUEgsBP/qmKc1VkeCf2Mkm+8uXJ9Od4YU8W/4O+2cg7SkkcBV5kjin31GbZGZUKfw==
+X-Received: by 2002:a2e:9350:0:b0:250:6a11:ff24 with SMTP id m16-20020a2e9350000000b002506a11ff24mr683753ljh.31.1653206077441;
+        Sun, 22 May 2022 00:54:37 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id q26-20020ac25a1a000000b0047255d210e0sm1357111lfn.15.2022.05.22.00.54.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 May 2022 00:54:37 -0700 (PDT)
+Message-ID: <17456770-78fb-7c27-06e5-9102179239fb@linaro.org>
+Date:   Sun, 22 May 2022 09:54:35 +0200
 MIME-Version: 1.0
-Message-ID: <533ed227.9dd.180eabb3189.Coremail.chenxuebing@jari.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: AQAAfwA3QW9K6oliBek2AA--.600W
-X-CM-SenderInfo: hfkh05pxhex0nj6mt2flof0/1tbiAQAKCmFEYxsjpwAJsR
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 2/5] dt-bindings: arm: qcom: Mention that Chromebooks
+ use a different scheme
+Content-Language: en-US
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        patches@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        Julius Werner <jwerner@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        devicetree@vger.kernel.org, Stephen Boyd <sboyd@codeaurora.org>,
+        linux-kernel@vger.kernel.org
+References: <20220520143502.v4.1.I71e42c6174f1cec17da3024c9f73ba373263b9b6@changeid>
+ <20220520143502.v4.2.I6418884d8bab6956c7016304f45adc7df808face@changeid>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220520143502.v4.2.I6418884d8bab6956c7016304f45adc7df808face@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ClRoZSBzdHJsY3B5IHNob3VsZCBub3QgYmUgdXNlZCBiZWNhdXNlIGl0IGRvZXNuJ3QgbGltaXQg
-dGhlIHNvdXJjZQpsZW5ndGguIFByZWZlcnJlZCBpcyBzdHJzY3B5LgoKU2lnbmVkLW9mZi1ieTog
-WHVlQmluZyBDaGVuIDxjaGVueHVlYmluZ0BqYXJpLmNuPgotLS0KIGFyY2gvbWlwcy9rZXJuZWwv
-c2V0dXAuYyB8IDYgKysrLS0tCiAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRl
-bGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2FyY2gvbWlwcy9rZXJuZWwvc2V0dXAuYyBiL2FyY2gv
-bWlwcy9rZXJuZWwvc2V0dXAuYwppbmRleCBlZjczYmExZTBlYzEuLmFkM2FlYTgxZDBlMiAxMDA2
-NDQKLS0tIGEvYXJjaC9taXBzL2tlcm5lbC9zZXR1cC5jCisrKyBiL2FyY2gvbWlwcy9rZXJuZWwv
-c2V0dXAuYwpAQCAtNTU0LDcgKzU1NCw3IEBAIHN0YXRpYyB2b2lkIF9faW5pdCBib290Y21kbGlu
-ZV9pbml0KHZvaWQpCiAJICogdW5tb2RpZmllZC4KIAkgKi8KIAlpZiAoSVNfRU5BQkxFRChDT05G
-SUdfQ01ETElORV9PVkVSUklERSkpIHsKLQkJc3RybGNweShib290X2NvbW1hbmRfbGluZSwgYnVp
-bHRpbl9jbWRsaW5lLCBDT01NQU5EX0xJTkVfU0laRSk7CisJCXN0cnNjcHkoYm9vdF9jb21tYW5k
-X2xpbmUsIGJ1aWx0aW5fY21kbGluZSwgQ09NTUFORF9MSU5FX1NJWkUpOwogCQlyZXR1cm47CiAJ
-fQogCkBAIC01NjYsNyArNTY2LDcgQEAgc3RhdGljIHZvaWQgX19pbml0IGJvb3RjbWRsaW5lX2lu
-aXQodm9pZCkKIAkgKiBib290X2NvbW1hbmRfbGluZSB0byB1bmRvIGFueXRoaW5nIGVhcmx5X2lu
-aXRfZHRfc2Nhbl9jaG9zZW4oKSBkaWQuCiAJICovCiAJaWYgKElTX0VOQUJMRUQoQ09ORklHX01J
-UFNfQ01ETElORV9CVUlMVElOX0VYVEVORCkpCi0JCXN0cmxjcHkoYm9vdF9jb21tYW5kX2xpbmUs
-IGJ1aWx0aW5fY21kbGluZSwgQ09NTUFORF9MSU5FX1NJWkUpOworCQlzdHJzY3B5KGJvb3RfY29t
-bWFuZF9saW5lLCBidWlsdGluX2NtZGxpbmUsIENPTU1BTkRfTElORV9TSVpFKTsKIAllbHNlCiAJ
-CWJvb3RfY29tbWFuZF9saW5lWzBdID0gMDsKIApAQCAtNjI4LDcgKzYyOCw3IEBAIHN0YXRpYyB2
-b2lkIF9faW5pdCBhcmNoX21lbV9pbml0KGNoYXIgKipjbWRsaW5lX3ApCiAJbWVtYmxvY2tfc2V0
-X2JvdHRvbV91cCh0cnVlKTsKIAogCWJvb3RjbWRsaW5lX2luaXQoKTsKLQlzdHJsY3B5KGNvbW1h
-bmRfbGluZSwgYm9vdF9jb21tYW5kX2xpbmUsIENPTU1BTkRfTElORV9TSVpFKTsKKwlzdHJzY3B5
-KGNvbW1hbmRfbGluZSwgYm9vdF9jb21tYW5kX2xpbmUsIENPTU1BTkRfTElORV9TSVpFKTsKIAkq
-Y21kbGluZV9wID0gY29tbWFuZF9saW5lOwogCiAJcGFyc2VfZWFybHlfcGFyYW0oKTsKLS0gCjIu
-MzYuMQoKCg==
+On 20/05/2022 23:38, Douglas Anderson wrote:
+> The qcom.yaml bindings file has a whole description of what the
+> top-level compatible should look like for Qualcomm devices. It doesn't
+> match what Chromebooks do, so add a link to the Chromebook docs.
+> 
+> Reported-by: Stephen Boyd <swboyd@chromium.org>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
