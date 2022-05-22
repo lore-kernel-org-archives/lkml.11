@@ -2,81 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 763F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 19:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF47C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 19:51:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350541AbiEVTvG (ORCPT
+        id S1351061AbiEVTvc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 15:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
+        Sun, 22 May 2022 15:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348159AbiEVTuT (ORCPT
+        with ESMTP id S1351232AbiEVTvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 15:50:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326CE3A18C;
-        Sun, 22 May 2022 12:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3B97B80D25;
-        Sun, 22 May 2022 19:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6DD85C385B8;
-        Sun, 22 May 2022 19:50:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653249012;
-        bh=NMie+zMjgUFb9xem6aAKU2aPrYNhijlFAIdYLUDVvfs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Pgc5v3WQ3mBMiTqZHt2rGzMY5QOIcO/m3b978zudjP1fzG/QxSMoK/ScELm2WBFXi
-         u5d4hvGhnwL6VUNwB1s52byYH5++7Bi3a6D4cz1APGGGfU2N6kJ6M+o4JWR/vuquVQ
-         zgHpOv7ptFTAgrl3Jfhi7aH2IG0rZW/lny2kEOikfVAkA1YT1kuTvBL0cwl04RCNRj
-         Zkudr1COp2lwBbg70dNbWiR6XoP4qxyFe7jzKLxZvtoWdDXlSQl7ZlS3ASFsjlm0sQ
-         Po0gT4SQXh8X0MlsD7Nnx+Gp85buhBnSjOEgliUM5+tPrtnrCuXxyEA22T1Deuqty3
-         lnLNXOd7HYfrg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5344AF03941;
-        Sun, 22 May 2022 19:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Sun, 22 May 2022 15:51:12 -0400
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5FA3A5C7;
+        Sun, 22 May 2022 12:50:46 -0700 (PDT)
+Date:   Sun, 22 May 2022 19:50:38 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1653249044; x=1653508244;
+        bh=ezBQ8JYOZeSPzQRYI8sNEvLFSFA0gqUVqyugk66GrR4=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:
+         Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=WiD+IzqNyXBeHy+D0ktqFqdtWupjHckyK2nsD6QgH9UpajKFW8PQNqxsb4wNFxX/g
+         M2tzLSwU5hvCe3plF78c8nBT+o1BDRnIY/syObHxZtUa1t0TzQxBmmljy5CQ5uNDIs
+         IP6ieDH9zRVGUys1/jbKK4mZgCz6LtMNxfRXyTAVv2S5Vv4fBJc52x6jEFbCUdczqw
+         /YIuOQAk8v7YJa8RW+6wYFks3I+Qz+UBc9OZ4zl3Rw4uxXQXY73XTvEK7EYYxkOhQF
+         mVQ5W02SWJBPWn67/BcwPn6E1cQv8fzBVykudLpDv/plVMpquLQjxcxfMQLV18kVEg
+         eHhMgJmj5IGGA==
+To:     Jonathan Corbet <corbet@lwn.net>
+From:   Nelson Penn <nelsonapenn@protonmail.com>
+Cc:     linux-doc@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nelson Penn <nelsonapenn@protonmail.com>
+Reply-To: Nelson Penn <nelsonapenn@protonmail.com>
+Subject: [PATCH] documentation: Format button_dev as a pointer.
+Message-ID: <20220522194953.12097-1-nelsonapenn@protonmail.com>
+Feedback-ID: 19766786:user:proton
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] qed: fix typos in comments
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165324901233.28407.5447916136960718691.git-patchwork-notify@kernel.org>
-Date:   Sun, 22 May 2022 19:50:12 +0000
-References: <20220521111145.81697-78-Julia.Lawall@inria.fr>
-In-Reply-To: <20220521111145.81697-78-Julia.Lawall@inria.fr>
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     aelior@marvell.com, kernel-janitors@vger.kernel.org,
-        manishc@marvell.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+The docs on creating an input device driver have an example in which
+button_dev is a pointer to an input_dev struct. However, in two code
+snippets below, button_dev is used as if it is not a pointer. Make these
+occurrences of button_dev reflect that it is a pointer.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: Nelson Penn <nelsonapenn@protonmail.com>
+---
+ Documentation/input/input-programming.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-On Sat, 21 May 2022 13:11:28 +0200 you wrote:
-> Spelling mistakes (triple letters) in comments.
-> Detected with the help of Coccinelle.
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-> 
-> ---
->  drivers/net/ethernet/qlogic/qed/qed_dbg_hsi.h |    2 +-
->  drivers/net/ethernet/qlogic/qed/qed_vf.h      |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+diff --git a/Documentation/input/input-programming.rst b/Documentation/inpu=
+t/input-programming.rst
+index 2638dce69764..c9264814c7aa 100644
+--- a/Documentation/input/input-programming.rst
++++ b/Documentation/input/input-programming.rst
+@@ -85,15 +85,15 @@ accepted by this input device. Our example device can o=
+nly generate EV_KEY
+ type events, and from those only BTN_0 event code. Thus we only set these
+ two bits. We could have used::
 
-Here is the summary with links:
-  - qed: fix typos in comments
-    https://git.kernel.org/netdev/net-next/c/60f243ad1426
+-=09set_bit(EV_KEY, button_dev.evbit);
+-=09set_bit(BTN_0, button_dev.keybit);
++=09set_bit(EV_KEY, button_dev->evbit);
++=09set_bit(BTN_0, button_dev->keybit);
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ as well, but with more than single bits the first approach tends to be
+ shorter.
+
+ Then the example driver registers the input device structure by calling::
+
+-=09input_register_device(&button_dev);
++=09input_register_device(button_dev);
+
+ This adds the button_dev structure to linked lists of the input driver and
+ calls device handler modules _connect functions to tell them a new input
+--
+2.25.1
 
 
