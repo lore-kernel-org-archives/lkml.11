@@ -2,115 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 10:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 10:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236175AbiEVK1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 06:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
+        id S240260AbiEVK2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 06:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230336AbiEVK1E (ORCPT
+        with ESMTP id S230336AbiEVK2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 06:27:04 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A806381A4
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 03:27:01 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id t25so21068340lfg.7
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 03:27:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fMNwqXeV2uBe+evUoLZgmTmVyGADR/eLkrGswoXQxA4=;
-        b=aiibXUoW6fGLAoY6m08x9kmFx17Wpj3QAahbMWPFXr7lHKX9J/dIS0qEnZTETp7pR6
-         BXljZldyjeA/sEDbPTZZxFqRfCKzBghbv9+jA3nEv6XiAyYart5kdSwfL5uFBQFCW+4T
-         SYYqBsbg6Zt+sYdVpHpUgJwkGnCl2FTaM3RyUOdqqd8Rk6MYRRvGgwtkng73huayt0mz
-         3fL2gI41mb+624m0aYB4Tavh50F77LNgianztzQs8PT4RvbA3dsYUgdeqTagB4s3pZSz
-         IbcZGQDhTM0R8D0rSQa16x9DxmFB1/cyNMzcZZusyBUQChqAB1DH0BtZD6QBAvRtwZZ7
-         CaxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fMNwqXeV2uBe+evUoLZgmTmVyGADR/eLkrGswoXQxA4=;
-        b=hHGHXMEDDOFbXGu5v1my9ptnq9W2wz15+WyGxW0QDHuIu3fqmS5zKsLveWk+zFEh5X
-         GMlkwmB+JZLR3cyq1IU2xpEWVm8gJ3YOpcCnel6YiLIlMxPoj4pNFzP4wE5oxmHTOPRU
-         mupLNB2aagfOulIL6+H72SVo4HtgLK+FPE85kamQUo+MR9Sk7zqFh+sakmc7ErPWm/5S
-         KCHcRk2xES5uKqct2CagdkNO3ZZRx52ctsCiDZTf9GeikYT85kSVPac68gItvjhlb7Mb
-         3XSA/VW1yUGbFmJMyfcnltNAlZq3R4TOg/NdSAlEjWau9uLHwdvRlaIVAmnin+fMDSje
-         5L4w==
-X-Gm-Message-State: AOAM532qosv1rOpfJ4cucJo+cyOsHU7reTgsunvNOmJIqxx9y8vQaHJ0
-        esNmwrwvMjQAIwwModfJGEQPPA==
-X-Google-Smtp-Source: ABdhPJyOR4yZnga56TAbIe1Pgby+ggk+HW859Rb54J83gtSMzvrVoXi6kzlOGEy8W5sTI3Ees33A8Q==
-X-Received: by 2002:a05:6512:1585:b0:445:908b:ad71 with SMTP id bp5-20020a056512158500b00445908bad71mr12439284lfb.200.1653215219755;
-        Sun, 22 May 2022 03:26:59 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id f17-20020a056512093100b0047255d21162sm1403396lft.145.2022.05.22.03.26.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 May 2022 03:26:59 -0700 (PDT)
-Message-ID: <eb915633-4d88-ec9a-d51a-7d5f5ecc0843@linaro.org>
-Date:   Sun, 22 May 2022 12:26:57 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Removal of qcom,board-id and qcom,msm-id
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>,
+        Sun, 22 May 2022 06:28:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59D039838;
+        Sun, 22 May 2022 03:28:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82CCFB80B00;
+        Sun, 22 May 2022 10:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A85AC385AA;
+        Sun, 22 May 2022 10:28:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653215291;
+        bh=78L9xq8+jayZIp2ngKH0d9f+WN+dtJ0EX80ikGjIYVk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IDtRu+QK7A9Ryg6Ai2i06P8ZcyfR2npgP2nPRrw1Cq3y27U85Q3KnNf9SJPPPRPGm
+         QvDb/Vc7KPqjvJi5Bxc+7CccDClcHq+lnS21WsyoH8I3IRfNaxR2vwHibteAFfuXwJ
+         EflVofSoRmKoE2d77snCCHsIk+mgTXXfTte8NjgqlC9k2PtbAKX1yy5k0AB8fOAJvv
+         ecIXxLLabXgZOWuAca0BRbGuOEK+ktHmrWOiaNtlwXqrrw0sMAu+9KI8Uq4wpCIBT2
+         p5sjEqwBxzOh0nJftNtD7NMlX37Dx5DAqZXWoSOYb2+32SSVR/yxxrfpMTkXd8vfjS
+         kJheQoEl9e15w==
+Date:   Sun, 22 May 2022 11:36:54 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
- <35051bec-98ea-b4c5-f734-06b3f22f3562@linaro.org>
- <8a90ffbc-b376-9115-fb91-0b46d98873b7@linaro.org>
- <40f29157-52c0-001f-6c14-fb90b351756a@linaro.org>
- <20220519221227.B66D3C385AA@smtp.kernel.org>
- <CAA8EJpqjcAcoooaZ6iTSCy4B1x4=HTUgvJ4VqX_Fr_hSMEbfDA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAA8EJpqjcAcoooaZ6iTSCy4B1x4=HTUgvJ4VqX_Fr_hSMEbfDA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Message-ID: <20220522113654.0e3c0023@jic23-huawei>
+In-Reply-To: <20220518122515.aby5lbb4xusr6pdt@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
+        <20220419154555.24191-3-ddrokosov@sberdevices.ru>
+        <20220420115023.00006a25@Huawei.com>
+        <20220426172406.s4h6g7nrpytaq263@CAB-WSD-L081021.sigma.sbrf.ru>
+        <20220518122515.aby5lbb4xusr6pdt@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022 03:39, Dmitry Baryshkov wrote:
+On Wed, 18 May 2022 12:25:59 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+
+> Hi Jonathan,
 > 
->>
->> I vaguely recall that the properties had to be extracted during the
->> boot.img creation process to create a table of contents header. But
->> after some time the bootloader started scanning the DTBs directly for
->> the vendor properties and thus the header was deprecated/removed. If the
->> bootloader is doing the scanning then I'm not sure what is preventing
->> the properties from being documented and allowed. I think the main
->> rejection was that the properties were added purely to be extracted
->> during post processing and placed into the table of contents header,
->> i.e. they weren't actually used by the kernel or the bootloader. If they
->> are now used by the bootloader it sounds OK to me if they're kept
->> around.
+> I have two items to be discussed about iio_trigger_get().
+> Please see my questions below and correct me if I'm wrong.
 > 
-> Yes, as far as I understand, they are used by the bootloader directly.
+> On Tue, Apr 26, 2022 at 08:24:10PM +0300, Dmitry Rokosov wrote:
+> > > > +							       "%s-new-data",
+> > > > +							       indio_dev->name);
+> > > > +		if (!msa311->new_data_trig) {
+> > > > +			dev_err(&i2c->dev, "cannot allocate new data trig\n");
+> > > > +			err = -ENOMEM;
+> > > > +			goto err_lock_destroy;
+> > > > +		}
+> > > > +
+> > > > +		msa311->new_data_trig->dev.parent = &i2c->dev;
+> > > > +		msa311->new_data_trig->ops = &msa311_new_data_trig_ops;
+> > > > +		iio_trigger_set_drvdata(msa311->new_data_trig, indio_dev);
+> > > > +		indio_dev->trig = msa311->new_data_trig;  
+> > > 
+> > > This will create a double free if you were to change the trigger.
+> > > 		indio_dev->trig = iio_trigger_get(trig);
+> > >   
+> > 
+> > I didn't take into account other trigger usage.
+> > I'll rework this place for the v2.
+> >   
+> 
+> The first one problem is module_get() calling for trigger get()
+> semantic.
+> I've applied iio_trigger_get() function to acquire module refcnt,
+> but I've faced with rmmod busy problem. IIO driver module doesn't want to
+> stop and unload due to not having zero module refcnt.
+
+One option is to remove the trigger from sysfs - write an empty string
+current_trigger, but you are right this is a bit of a mess.
+
+Probably the best option is just don't assign the trigger automatically at all.
+
+This was what we almost always went with in the past.  If a driver
+supports multiple triggers (and if it doesn't why expose the trigger at allm
+there is no obligation to do so?)
+then it's a policy decision to associate a trigger in the first place
+so shouldn't really happen in kernel.
+
+There is a corner case for drivers which can only use a particular trigger,
+but that trigger can be more generally used (validate_trigger provided, but
+not validate_device).  Another corner case is drivers that didn't expose
+a trigger, but later gain support for other triggers then we need to set
+the default value.
+
+
+> Syscall delete_module() tries to stop module first and after calls
+> driver exit() function (which executes devm_* handlers inside, including IIO
+> trigger unregister). It means we have the chicken or the egg dilemma here.
+> Module can't be unloaded until module refcnt is not zero and we can't
+> execute IIO trigger unregister (decrease module refcnt) only when module
+> refcnt is zero.
+> I suppose the possible solution to such a problem is a different semantic
+> for internal triggers (inside driver itself) and external drivers (like
+> hwtimer trigger). What do you think?
+
+Potentially though it's going to be tricky as a driver doesn't generally
+have any way to know they are internal and we need to be careful not to
+underflow the reference counts.  We could hid a flag somewhere and
+add an iio_trigger_get_same_owner() or something that sets that flag allowing
+us to decide not to drop the reference count it if is automatically unassociated.
+In the path where you get:
+1) iio_trigger_get_same_owner() on probe
+2) sysfs write changes to another trigger.
+3) sysfs write back to original trigger
+it is reasonable to assume the need to clear the trigger
+before driver removal is possible, whereas clearing the trigger association
+if only step 1 happened is no intuitive.
+
+> 
+> The second one issue is located in the different IIO drivers. Some modules
+> call iio_trigger_get() before iio_trigger_register(), trig->owner is not
+> initialized to the right value (THIS_MODULE) and we don't acquire refcnt
+> for proper driver object.
+
+Ah. Good point. I guess we missed that when we were moving over to
+automated setting of the module.
+
+> I'm going to send patchset to problem driver set, but I can test only
+> buildable status for such modules, are you okay with that?
+That should be fine.  I can't immediately think of a case where it would
+be a problem as the iio_device_register() should be later and until that happens
+nothing can turn on the trigger - so there shouldn't be any other races.
+
+Jonathan
+
 > 
 
-I entirely missed one part - Stephen's patches from 2015 were actually
-applied and since 2015 we expect all boards to follow convention:
-
-compatible =
-"qcom,<SoC>[-<soc_version>][-<foundry_id>]-<board>[/<subtype>][-<board_version>]"
-
-The patchset was accepted, although in the thread I do not see "Applied"
-message.
-
-Stephen,
-can you or anyone else confirm that the dtbTool Qualcomm uses (and/or
-bootloader) are adjusted as well to these new compatibles?
-
-If yes, we can simply remove board-id and msm-id properties from new
-boards, because 7 years was enough to switch to these new tools...
-
-Best regards,
-Krzysztof
