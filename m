@@ -2,124 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 18:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 19:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350187AbiEVSxs (ORCPT
+        id S1350035AbiEVTJm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 14:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
+        Sun, 22 May 2022 15:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiEVSxq (ORCPT
+        with ESMTP id S229542AbiEVTJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 14:53:46 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FA5289B5
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 11:53:45 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id u7so14184493ljd.11
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 11:53:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qiTcRO7nL7Dq/EQDHaCSaoJhy3aBMGNT4Ao5jaLqsYQ=;
-        b=PtG/lD+eaGYLmB0i71DS3iRW6thye6f7x1e3TTLbvqjp3hvxDrGJZkJsG4NIHUrWGw
-         D1xWD8JMqbPo9I7y+KhizGV0+adl4jRtkjgwn/gHSMgo/+fWVOae9dKo9i18VWTrXcJI
-         f3EacFrezNUDNmhlKbjhczD6DgUBPbS4azY5urxjjS3+hCTlapVzjQB+myJCRHIvPxLb
-         FSK0VwrbcrFMqe+wEneOhYR6nQGeYjR2PYmiT5hRRHdgHAgYM6ubekpWFZFzZnw8qKOO
-         p917vbhC0VxxXCOF4k8XJiNSinYCWDcxOGrP18ScX2xa8Hip+5kXs/XPBEeh2Bj+5/xW
-         b/Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qiTcRO7nL7Dq/EQDHaCSaoJhy3aBMGNT4Ao5jaLqsYQ=;
-        b=T1XvVsUFtsfH2UEalNUm0SKoVL6IamBYmp+2CxwJqonaQglT4X/4eQEJPfCY5uZFlU
-         jV6Zze330YmwdMhxW6jiP6GB8188bmwtPrPZeOMGul8iWMUsDp6gwl7NJNF3GQtPknRL
-         mcRSQY1lLiIjbAtef12vymGLPNUVvTIkAO2D7j1ToaXWmo/cIeAOHvNYofLBPlqXN2ZH
-         Z9q+1GRVF5BaLLECEa9pJ4Hnk2KTKSDVNVXPT0R0kyM+vky6x99MV3TTVH2ZUrA5a6lD
-         Um+9UIseXndzSA0XoxjB8hklbmqtEx6IGaN4wxUkcsD474CbPVLKPLg71y1g2y+jhUdc
-         t92w==
-X-Gm-Message-State: AOAM532Z6PGdRbq4KRjTxZLJzlWWHma9DeC//CZ1u3s/Phz+ckeWl910
-        cMAXatzLzsREQyVjFvNjNDsHbA==
-X-Google-Smtp-Source: ABdhPJwxNOtPqTI6Fas2NJ1+4Ly7ZHUkToVXGs0hWUDUDh2obA9o5Rd81KGiJjFtsLj+BFtkKU6jNw==
-X-Received: by 2002:a2e:954f:0:b0:24f:4457:950d with SMTP id t15-20020a2e954f000000b0024f4457950dmr11236715ljh.35.1653245623523;
-        Sun, 22 May 2022 11:53:43 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.185])
-        by smtp.gmail.com with ESMTPSA id j9-20020ac25509000000b00477a7c8a0f0sm1550135lfk.295.2022.05.22.11.53.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 May 2022 11:53:43 -0700 (PDT)
-Message-ID: <be8d4fec-9719-10ec-1299-691e498c2f7c@openvz.org>
-Date:   Sun, 22 May 2022 21:53:41 +0300
+        Sun, 22 May 2022 15:09:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4DD366B0
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 12:09:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E747861113
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 19:09:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3ED3C385AA;
+        Sun, 22 May 2022 19:09:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653246578;
+        bh=r/YX1RZgV6OcefyMLDsp+Xp0Ahn3M6HHxHpt6mJJv38=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vBiHUVVy9gXkFmBXIvNCRmDYORm8eNqUca+DlBaEJ/EvyS9y8+KyJrWxDkfZ0qEdt
+         0ev7LqoUuRuZPbRt0mDjCLwseuchQMygMcGSxSkZx37u/M3vpWJgz9FJYfbjwE2cSJ
+         KIKTmhc6AJq0nrECP+jws/wKTh0GnZ5TqQSVHHCE=
+Date:   Sun, 22 May 2022 21:09:34 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
+Subject: Re: [git pull] habanalabs pull request for kernel 5.19
+Message-ID: <YoqKbm3goZOrhZdS@kroah.com>
+References: <20220521115325.GA1965670@ogabbay-vm-u20.habana-labs.com>
+ <Yojnof1ekJg3yjwu@kroah.com>
+ <CAFCwf13w+-nORUKePUbJJXPkgW+Pn+83BZMvAEonp185KxeJkw@mail.gmail.com>
+ <YoktmqrJXFQLi1yM@kroah.com>
+ <CAFCwf12iMY18BSLj7Cu1Q0SQnCg+1d4hyCLoBe8oJrBv5=ByVQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4] tracing: add 'accounted' entry into output of
- allocation tracepoints
-Content-Language: en-US
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-mm@kvack.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Matthew Wilcox <willy@infradead.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Muchun Song <songmuchun@bytedance.com>
-References: <0c73ce5c-3625-6187-820e-1277e168b3bc@openvz.org>
- <a1e54672-d824-3ee1-cb68-9ceaa46fc70f@openvz.org>
- <YomzXwN9rvCGAZJ0@n2.us-central1-a.c.spheric-algebra-350919.internal>
- <1621d82a-439d-0657-2b7e-5e90c42c2087@openvz.org>
- <YonH2AqfEFYKrUV2@n2.us-central1-a.c.spheric-algebra-350919.internal>
-From:   Vasily Averin <vvs@openvz.org>
-In-Reply-To: <YonH2AqfEFYKrUV2@n2.us-central1-a.c.spheric-algebra-350919.internal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFCwf12iMY18BSLj7Cu1Q0SQnCg+1d4hyCLoBe8oJrBv5=ByVQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/22/22 08:19, Hyeonggon Yoo wrote:
-> On Sun, May 22, 2022 at 07:33:08AM +0300, Vasily Averin wrote:
->> On 5/22/22 06:51, Hyeonggon Yoo wrote:
->>> If we decide to do that, it would be better to print
->>> something like:
->>> slab_flags=SLAB_RECLAIM_ACCOUNT|SLAB_ACCOUNT|SLAB_STORE_USER
->>> instead of just printing 'accounted=true/false'. This patch is too
->>> specific to SLAB_ACCOUNT.
->>
->> Any extra output degrades performance.
+On Sun, May 22, 2022 at 12:07:03AM +0300, Oded Gabbay wrote:
+> On Sat, May 21, 2022 at 9:21 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Sat, May 21, 2022 at 05:53:52PM +0300, Oded Gabbay wrote:
+> > > On Sat, May 21, 2022 at 4:22 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > >
+> > > > On Sat, May 21, 2022 at 02:53:25PM +0300, Oded Gabbay wrote:
+> > > > > Hi Greg,
+> > > > >
+> > > > > This is habanalabs pull request for the merge window of kernel 5.19.
+> > > > > We added a few minor features, such as support eventfd registration
+> > > > > for device events, and the ability to scrub the device memory
+> > > > > through debugfs.
+> > > > >
+> > > > > We did some refactoring such as adding a centralized memory
+> > > > > manager inside the driver for allocating mmapable memory and tracking
+> > > > > it, so we can remove different code paths that basically duplicated
+> > > > > that functionality.
+> > > > >
+> > > > > And, as usual, there are multiple bug fixes.
+> > > > >
+> > > > > Full details are in the tag.
+> > > > >
+> > > > > Thanks,
+> > > > > Oded
+> > > > >
+> > > > > The following changes since commit cafada1fe932ce761d6c0bc1d56967e27abe4cff:
+> > > > >
+> > > > >   Revert "speakup: Generate speakupmap.h automatically" (2022-05-20 21:07:05 +0200)
+> > > > >
+> > > > > are available in the Git repository at:
+> > > > >
+> > > > >   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git tags/misc-habanalabs-next-2022-05-21
+> > > > >
+> > > > > for you to fetch changes up to 93f742b13260b070a695f44d6b6ff696cb5cbcd8:
+> > > > >
+> > > > >   habanalabs: use separate structure info for each error collect data (2022-05-21 14:42:17 +0300)
+> > > >
+> > > > Has this been in linux-next already?  It's _really_ late to be adding
+> > > > new commits to my trees as 5.17 is about to come out in a few hours :(
+> > > >
+> > > > greg k-h
+> > >
+> > > Yeah, sorry about that, I got to a computer only yesterday as my wife
+> > > and I had a new baby boy last week :)
+> >
+> > Congratulations!
+> >
+> > And totally understandable about the delay.
+> >
+> > > To your question, no, my branch isn't taken to linux-next. Our driver
+> > > commits are added to linux-next only through your -next.
+> >
+> > Ok, as these are only touching your driver, I'll take them.
+> >
+> > Oops, odd, I get this warning with my scripts:
+> > Commit: ad05bb784ca2 ("habanalabs: hl_ts_behavior can be static")
+> >         Fixes tag: Fixes: 079c2434d6e8 ("habanalabs: convert ts to use unified memory manager")
+> >         Has these problem(s):
+> >                 - Target SHA1 does not exist
+> >
+> > Where did you get that SHA1 from?
+> >
+> > Sorry, I can't take this as is, invalid sha1 shouldn't be in the tree.
+> >
+> > I can export these as patches and fix up the sha1 by hand, want me to do
+> > that?  I'll have some time on Monday.
+> >
+> > thanks,
+> >
+> > greg k-h
 > 
-> No strong opinion but just a concern that maybe later someone want add
-> something similar like 'reclaimable=true/false', 'dma=true/false', ...
-> and I would prefer more general solution. (especially if we'll not
-> change tracepoints after release because of backward compatibility)
+> Yes, that will be a great help. I'm pretty occupied right now as you
+> probably imagine ;)
 
-I would like to quote Steven Rostedt:
-https://lore.kernel.org/all/20220515180640.0ae2ead5@gandalf.local.home/
-"
-> Trace events are not ABI, but if we don't have a strong reason to break it,
-> I'd preserve the old order.
-
-Ideally everyone should be using libtraceevent which will parse the format
-file for the needed entries.
-
-Nothing (important) should be parsing the raw ascii from the trace files.
-It's slow and unreliable. The raw format (trace_pipe_raw) files, along with
-libtraceevent will handle fining the fields you are looking for, even if
-the fields move around (internally or externally).
-
-Then there's trace-cruncher (a python script that uses libtracefs and
-libtraceevent) that will work too.
-
-  https://github.com/vmware/trace-cruncher
-"
-
-Thank you,
-	Vasily Averin
+Now done, go get some rest!
