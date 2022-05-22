@@ -2,105 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D0B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 21:09:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D77BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 22 May 2022 21:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351575AbiEVVJj (ORCPT
+        id S1351640AbiEVVJo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 17:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
+        Sun, 22 May 2022 17:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230346AbiEVVJg (ORCPT
+        with ESMTP id S1351577AbiEVVJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 17:09:36 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227C31C13F
+        Sun, 22 May 2022 17:09:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F14620F62
         for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 14:09:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1653253776; x=1684789776;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9Rys72NAgR/L2p9xBhb3I/IYJryzEyPTZnPcT19+hPU=;
-  b=YZ7pn1JSStjvT5i6POdMzqzwNiI3iI010bmKum20I1YFJU6LNZfobk1+
-   T0sPBp63IJ7kl9tUTPx31EW4DW8kyuOGKiuFzB7ZaLcYgY1U4TPXrdTeH
-   y+1dETpdHVw7VTpVGFzd8bH+cfoXuBwyCaTNZL2j/nmQHHGrpKr86UZ2M
-   LHoN0cJpjLy5S50szzpUV635Xrt8ye27FFTg9RkBoqu5PrNpwPEgZSa50
-   tQMcqh6lt519+mLSe5b5Cdb8Fz2330emJEGr3RPQFAljh+p5ThS8/xkNt
-   sGlWbEQ+APLYP6MrRKcHMGhyBwD+XtTbtfsu7CAWo5RIxOg5po5Z0U22/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="359441293"
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ymfe2j4/90qg/XClVZpOFzhBNHPRZm6QkfC0Gx5p1V0=;
+  b=UE9nBdtLmWcvYzn2x/STlH8EDpBaH1XlZdjCk6u5mSrE6MXhY5ZiRPDG
+   OxPMhgnhgoTiiG/dgNkujn43FUCAcs7vhRLLFOImpv00kZqZVl9B5kCjR
+   i92tfmzYIcJl6SKNMsby3McNMpBApz/aG6ESz8+wY0mw2N6W9EnyQrUHC
+   Er9a0BQTDWbbX1ipu7GXKtXhZUxm9l31j5bDkOZCt8BGsTtiaB/BvopVr
+   RupnTeJDQq0IL2LzXqxVMAzn9xkpOoKkAkTlYs+6N5FzWO5USxvPhMqJx
+   xxdnDPRjp6aoD6sBkP6VxBeelqd+6jIVkrOgW4/ZLtZyq9kPn/mEDvfr4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="270617252"
 X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
-   d="scan'208";a="359441293"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2022 14:09:35 -0700
+   d="scan'208";a="270617252"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2022 14:09:36 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,244,1647327600"; 
-   d="scan'208";a="547567093"
+   d="scan'208";a="702668323"
 Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 22 May 2022 14:09:34 -0700
+  by orsmga004.jf.intel.com with ESMTP; 22 May 2022 14:09:34 -0700
 Received: from kbuild by db63a1be7222 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nsspS-0000cL-2e;
+        id 1nsspS-0000cO-3o;
         Sun, 22 May 2022 21:09:34 +0000
-Date:   Mon, 23 May 2022 05:08:36 +0800
+Date:   Mon, 23 May 2022 05:09:31 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [madvenka786:orc_v2 17/20] scripts/sorttable.h:96:10: fatal error:
- asm/orc_types.h: No such file or directory
-Message-ID: <202205230455.UjhVDL7U-lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:master] BUILD SUCCESS
+ 67ea4cbd91297998a34ba4c511ce6b9a8d80b999
+Message-ID: <628aa68b.qREZjg/CmMBFTBsU%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/madvenka786/linux orc_v2
-head:   ed9a1d5c036130a53c639eb712485e3d13ab4372
-commit: 9da8b45b52cb2268200c44977bc7482d3bea70dc [17/20] arm64: Build the kernel with ORC information
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220523/202205230455.UjhVDL7U-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/madvenka786/linux/commit/9da8b45b52cb2268200c44977bc7482d3bea70dc
-        git remote add madvenka786 https://github.com/madvenka786/linux
-        git fetch --no-tags madvenka786 orc_v2
-        git checkout 9da8b45b52cb2268200c44977bc7482d3bea70dc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 prepare
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+branch HEAD: 67ea4cbd91297998a34ba4c511ce6b9a8d80b999  Merge branch into tip/master: 'x86/vdso'
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+elapsed time: 724m
 
-All errors (new ones prefixed by >>):
+configs tested: 113
+configs skipped: 3
 
-   In file included from scripts/sorttable.c:197:
->> scripts/sorttable.h:96:10: fatal error: asm/orc_types.h: No such file or directory
-      96 | #include <asm/orc_types.h>
-         |          ^~~~~~~~~~~~~~~~~
-   compilation terminated.
-   make[2]: *** [scripts/Makefile.host:95: scripts/sorttable] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1178: scripts] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
+gcc tested configs:
+arm                              allmodconfig
+arm                                 defconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm64                            allyesconfig
+arm                       imx_v6_v7_defconfig
+parisc                           alldefconfig
+arm                           imxrt_defconfig
+mips                     loongson1b_defconfig
+arm                           stm32_defconfig
+sparc                       sparc64_defconfig
+sh                         ecovec24_defconfig
+sh                               allmodconfig
+ia64                          tiger_defconfig
+sh                           se7750_defconfig
+mips                  decstation_64_defconfig
+arm                            zeus_defconfig
+sparc                               defconfig
+csky                             alldefconfig
+um                             i386_defconfig
+arm                            qcom_defconfig
+arm                        realview_defconfig
+powerpc                     sequoia_defconfig
+um                                  defconfig
+arm                            lart_defconfig
+um                           x86_64_defconfig
+mips                            ar7_defconfig
+m68k                                defconfig
+ia64                                defconfig
+sh                         microdev_defconfig
+h8300                            allyesconfig
+powerpc                      ppc6xx_defconfig
+m68k                          amiga_defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+nios2                               defconfig
+arc                              allyesconfig
+alpha                               defconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                            allyesconfig
+arc                                 defconfig
+xtensa                           allyesconfig
+parisc                              defconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+s390                             allyesconfig
+parisc64                            defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+i386                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+powerpc                          allyesconfig
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+x86_64                        randconfig-a015
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+x86_64                        randconfig-a002
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+arc                  randconfig-r043-20220522
+s390                 randconfig-r044-20220522
+riscv                randconfig-r042-20220522
+riscv                             allnoconfig
+riscv                            allyesconfig
+riscv                            allmodconfig
+riscv                    nommu_k210_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+x86_64                              defconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
 
-vim +96 scripts/sorttable.h
-
-a79f248b9b309e scripts/sortextable.h David Daney 2012-04-19  93  
-57fa1899428538 scripts/sorttable.h   Shile Zhang 2019-12-04  94  #if defined(SORTTABLE_64) && defined(UNWINDER_ORC_ENABLED)
-57fa1899428538 scripts/sorttable.h   Shile Zhang 2019-12-04  95  /* ORC unwinder only support X86_64 */
-57fa1899428538 scripts/sorttable.h   Shile Zhang 2019-12-04 @96  #include <asm/orc_types.h>
-57fa1899428538 scripts/sorttable.h   Shile Zhang 2019-12-04  97  
-
-:::::: The code at line 96 was first introduced by commit
-:::::: 57fa1899428538e314a7e0d52a5b617af082389a scripts/sorttable: Implement build-time ORC unwind table sorting
-
-:::::: TO: Shile Zhang <shile.zhang@linux.alibaba.com>
-:::::: CC: Ingo Molnar <mingo@kernel.org>
+clang tested configs:
+arm                          ep93xx_defconfig
+powerpc                          allyesconfig
+powerpc                     mpc512x_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                   lite5200b_defconfig
+powerpc                 mpc8560_ads_defconfig
+arm                        mvebu_v5_defconfig
+powerpc                     kmeter1_defconfig
+arm                         orion5x_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+x86_64                        randconfig-a016
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+hexagon              randconfig-r041-20220522
+hexagon              randconfig-r045-20220522
 
 -- 
 0-DAY CI Kernel Test Service
