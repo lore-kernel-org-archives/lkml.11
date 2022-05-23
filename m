@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D101C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E8DC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243865AbiEWR5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
+        id S244030AbiEWR5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241854AbiEWRb1 (ORCPT
+        with ESMTP id S241899AbiEWRbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:31:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8240644D8;
-        Mon, 23 May 2022 10:26:57 -0700 (PDT)
+        Mon, 23 May 2022 13:31:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF436CAB8;
+        Mon, 23 May 2022 10:26:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 028E660916;
-        Mon, 23 May 2022 17:26:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0564EC385A9;
-        Mon, 23 May 2022 17:26:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C45EA611E6;
+        Mon, 23 May 2022 17:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C19E8C385A9;
+        Mon, 23 May 2022 17:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326815;
-        bh=bJzOwjF3X17Jgfd2o6J6v0+niskXRCoLjBovkKW+Lx8=;
+        s=korg; t=1653326796;
+        bh=KRlYvPWMEKkubzqIFj6i84D49RI0Jy5hTL0Q+gTJ6io=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZOtMTRDK6Pbp0GT1ttvQZ4el8UJYAFQGTW5tx2DL4lvqnccXnPK0SVLZ4KiDqM4Ij
-         aztPVB7wO3pEs8r30ThTHDjyhSu/ao0GaKaQo9kZqRxvf22dTjF52w6GO8T4EZeN65
-         cWzi1WiBAkzo4tZ9EGf0nx33cwhABb2oauFqjxwU=
+        b=Eye72EqhGPYYiJAASWrhkvZoHLSEmyjDTuzxkek+uosQJohnIlesWAkLZO3uoEdeC
+         4Mtb1COjZZNiDO3Rrh9rElCHmOxx/2FOLdUn+S+SA5QpMqrO7IV66GpzGl9fRpTre/
+         Bkp0YyGH/ozoMCnGAfKnLzZwFIZRtT1zFazy22ks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
-        Brian Masney <bmasney@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.17 060/158] crypto: qcom-rng - fix infinite loop on requests not multiple of WORD_SZ
-Date:   Mon, 23 May 2022 19:03:37 +0200
-Message-Id: <20220523165840.778467821@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 034/158] tools/virtio: compile with -pthread
+Date:   Mon, 23 May 2022 19:03:11 +0200
+Message-Id: <20220523165836.159659672@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,40 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Mosnacek <omosnace@redhat.com>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit 16287397ec5c08aa58db6acf7dbc55470d78087d upstream.
+[ Upstream commit f03560a57c1f60db6ac23ffd9714e1c69e2f95c7 ]
 
-The commit referenced in the Fixes tag removed the 'break' from the else
-branch in qcom_rng_read(), causing an infinite loop whenever 'max' is
-not a multiple of WORD_SZ. This can be reproduced e.g. by running:
+When using pthreads, one has to compile and link with -lpthread,
+otherwise e.g. glibc is not guaranteed to be reentrant.
 
-    kcapi-rng -b 67 >/dev/null
+This replaces -lpthread.
 
-There are many ways to fix this without adding back the 'break', but
-they all seem more awkward than simply adding it back, so do just that.
-
-Tested on a machine with Qualcomm Amberwing processor.
-
-Fixes: a680b1832ced ("crypto: qcom-rng - ensure buffer for generate is completely filled")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-Reviewed-by: Brian Masney <bmasney@redhat.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qcom-rng.c |    1 +
- 1 file changed, 1 insertion(+)
+ tools/virtio/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/crypto/qcom-rng.c
-+++ b/drivers/crypto/qcom-rng.c
-@@ -65,6 +65,7 @@ static int qcom_rng_read(struct qcom_rng
- 		} else {
- 			/* copy only remaining bytes */
- 			memcpy(data, &val, max - currsize);
-+			break;
- 		}
- 	} while (currsize < max);
+diff --git a/tools/virtio/Makefile b/tools/virtio/Makefile
+index 0d7bbe49359d..1b25cc7c64bb 100644
+--- a/tools/virtio/Makefile
++++ b/tools/virtio/Makefile
+@@ -5,7 +5,8 @@ virtio_test: virtio_ring.o virtio_test.o
+ vringh_test: vringh_test.o vringh.o virtio_ring.o
  
+ CFLAGS += -g -O2 -Werror -Wno-maybe-uninitialized -Wall -I. -I../include/ -I ../../usr/include/ -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -include ../../include/linux/kconfig.h
+-LDFLAGS += -lpthread
++CFLAGS += -pthread
++LDFLAGS += -pthread
+ vpath %.c ../../drivers/virtio ../../drivers/vhost
+ mod:
+ 	${MAKE} -C `pwd`/../.. M=`pwd`/vhost_test V=${V}
+-- 
+2.35.1
+
 
 
