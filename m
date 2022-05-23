@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1296CC47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C87C38A2C
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244032AbiEWRik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        id S244070AbiEWRiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241755AbiEWR1G (ORCPT
+        with ESMTP id S241863AbiEWR1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFFE7628D;
-        Mon, 23 May 2022 10:22:14 -0700 (PDT)
+        Mon, 23 May 2022 13:27:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401DB71A10;
+        Mon, 23 May 2022 10:22:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B003B811FB;
-        Mon, 23 May 2022 17:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80420C385A9;
-        Mon, 23 May 2022 17:21:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1E866090C;
+        Mon, 23 May 2022 17:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D54C3C385AA;
+        Mon, 23 May 2022 17:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326514;
-        bh=YZE+m7ONmE5iuJpKWbbbuCCWQu4aPJghpauoTYok9a8=;
+        s=korg; t=1653326542;
+        bh=3jqX2tNzlGdh6B6LW6vTGiMiL3pLN+9ZoUniItJymII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fxYddLiix41UMmpOeqB5Ctkybu0wbyQLUxPwWWeXkwbl1C/v52xxOUZzMQZwFJnit
-         5B261oyua3fKARzq51sHUM9j9ke4H/WUyNRp4uKcQ/fFUAW+I20tDohsKgMQMY2GHy
-         Fv5JegohiEcsIgVUKC1zsHoDbku+BBLb6DnyNZrg=
+        b=wHyiNWMf8yWfCAk9WoNZUjlb+JhzNNPVDIIKMBHTZypG/mVX+CtJYFMr/HVA7TymW
+         o+gUZ98DRiG5jjAUCnGjHr3Ac7m6xNI6HnG6gTz33bYGPnE2BqcV23mIl1iIAWFRU2
+         5Ofetwk6VKGc0RzsunH6vEOjE+/smo0/Jz5vxPl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 077/132] net: fix dev_fill_forward_path with pppoe + bridge
-Date:   Mon, 23 May 2022 19:04:46 +0200
-Message-Id: <20220523165835.897101335@linuxfoundation.org>
+Subject: [PATCH 5.15 114/132] mac80211: fix rx reordering with non explicit / psmp ack policy
+Date:   Mon, 23 May 2022 19:05:23 +0200
+Message-Id: <20220523165842.429966109@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -51,65 +51,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit cf2df74e202d81b09f09d84c2d8903e0e87e9274 ]
+[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
 
-When calling dev_fill_forward_path on a pppoe device, the provided destination
-address is invalid. In order for the bridge fdb lookup to succeed, the pppoe
-code needs to update ctx->daddr to the correct value.
-Fix this by storing the address inside struct net_device_path_ctx
+When the QoS ack policy was set to non explicit / psmp ack, frames are treated
+as not being part of a BA session, which causes extra latency on reordering.
+Fix this by only bypassing reordering for packets with no-ack policy
 
-Fixes: f6efc675c9dd ("net: ppp: resolve forwarding path for bridge pppoe devices")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ppp/pppoe.c   | 1 +
- include/linux/netdevice.h | 2 +-
- net/core/dev.c            | 2 +-
- 3 files changed, 3 insertions(+), 2 deletions(-)
+ net/mac80211/rx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
-index 3619520340b7..e172743948ed 100644
---- a/drivers/net/ppp/pppoe.c
-+++ b/drivers/net/ppp/pppoe.c
-@@ -988,6 +988,7 @@ static int pppoe_fill_forward_path(struct net_device_path_ctx *ctx,
- 	path->encap.proto = htons(ETH_P_PPP_SES);
- 	path->encap.id = be16_to_cpu(po->num);
- 	memcpy(path->encap.h_dest, po->pppoe_pa.remote, ETH_ALEN);
-+	memcpy(ctx->daddr, po->pppoe_pa.remote, ETH_ALEN);
- 	path->dev = ctx->dev;
- 	ctx->dev = dev;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index eab6283b3479..743e97ba352c 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1400,8 +1400,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
+ 		goto dont_reorder;
  
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 62ff09467776..39f1893ecac0 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -887,7 +887,7 @@ struct net_device_path_stack {
+ 	/* not part of a BA session */
+-	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
+-	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
++	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
+ 		goto dont_reorder;
  
- struct net_device_path_ctx {
- 	const struct net_device *dev;
--	const u8		*daddr;
-+	u8			daddr[ETH_ALEN];
- 
- 	int			num_vlans;
- 	struct {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 804aba2228c2..5907212c00f3 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -741,11 +741,11 @@ int dev_fill_forward_path(const struct net_device *dev, const u8 *daddr,
- 	const struct net_device *last_dev;
- 	struct net_device_path_ctx ctx = {
- 		.dev	= dev,
--		.daddr	= daddr,
- 	};
- 	struct net_device_path *path;
- 	int ret = 0;
- 
-+	memcpy(ctx.daddr, daddr, sizeof(ctx.daddr));
- 	stack->num_paths = 0;
- 	while (ctx.dev && ctx.dev->netdev_ops->ndo_fill_forward_path) {
- 		last_dev = ctx.dev;
+ 	/* new, potentially un-ordered, ampdu frame - process it */
 -- 
 2.35.1
 
