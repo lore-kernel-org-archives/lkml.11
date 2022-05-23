@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6960BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 439C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239286AbiEWREt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S239306AbiEWREy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239247AbiEWREZ (ORCPT
+        with ESMTP id S239207AbiEWRE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB2154F80;
-        Mon, 23 May 2022 10:04:24 -0700 (PDT)
+        Mon, 23 May 2022 13:04:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 883885AA75;
+        Mon, 23 May 2022 10:04:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FD36B811ED;
-        Mon, 23 May 2022 17:04:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA524C385A9;
-        Mon, 23 May 2022 17:04:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D5D3614C5;
+        Mon, 23 May 2022 17:04:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 082DEC385AA;
+        Mon, 23 May 2022 17:04:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325461;
-        bh=IjHjZKGjwLvPiD+iIO/uDEmcKN/6d7RzLUJBVizQgSo=;
+        s=korg; t=1653325464;
+        bh=lTdW7lb3zEyhISNlSN4jt98GKD7778Q4bGawEDXk098=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BTUZ8VaXNZuo96geB2RasYCSgIl7sEGIcdMx9uwGIpelhIE6vk1tOKkiYNmneubug
-         hXJOhXEhLQ0M/wPJGMf0s/SsKFZiHXJfyoyEQikQDRw01qRXnLaUkNEUX8kyp6FBEC
-         USlSNmBL3D0bjrz3nOVf9BPj/knLdULjYwf33wmY=
+        b=PDO1mCH5aoaEl9OeEvod/MUT13sXJtwyJNz5OpEBk/7ZPtxMOB6VQog/FV8hboUKR
+         pX0xv5W4P7vfVMC6PEGwjE5Lj8xN+ZgQmA+QU5dxf058zjvPQ/zk/WYIWtO5y2EdwB
+         tPja9zJEshEbTs+UtgG1NyHVIm3NTGDX52RnKWh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 19/25] ARM: 9197/1: spectre-bhb: fix loop8 sequence for Thumb2
-Date:   Mon, 23 May 2022 19:03:37 +0200
-Message-Id: <20220523165748.114174640@linuxfoundation.org>
+        stable@vger.kernel.org, Kevin Mitchell <kevmitch@arista.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 4.9 20/25] igb: skip phy status check where unavailable
+Date:   Mon, 23 May 2022 19:03:38 +0200
+Message-Id: <20220523165748.366311349@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 References: <20220523165743.398280407@linuxfoundation.org>
@@ -49,35 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Kevin Mitchell <kevmitch@arista.com>
 
-[ Upstream commit 3cfb3019979666bdf33a1010147363cf05e0f17b ]
+[ Upstream commit 942d2ad5d2e0df758a645ddfadffde2795322728 ]
 
-In Thumb2, 'b . + 4' produces a branch instruction that uses a narrow
-encoding, and so it does not jump to the following instruction as
-expected. So use W(b) instead.
+igb_read_phy_reg() will silently return, leaving phy_data untouched, if
+hw->ops.read_reg isn't set. Depending on the uninitialized value of
+phy_data, this led to the phy status check either succeeding immediately
+or looping continuously for 2 seconds before emitting a noisy err-level
+timeout. This message went out to the console even though there was no
+actual problem.
 
-Fixes: 6c7cb60bff7a ("ARM: fix Thumb2 regression with Spectre BHB")
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Instead, first check if there is read_reg function pointer. If not,
+proceed without trying to check the phy status register.
+
+Fixes: b72f3f72005d ("igb: When GbE link up, wait for Remote receiver status condition")
+Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-armv.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index 77ec669fd5ee..247229e69322 100644
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1074,7 +1074,7 @@ vector_bhb_loop8_\name:
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 6bede6774486..d825e527ec1a 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -4546,7 +4546,8 @@ static void igb_watchdog_task(struct work_struct *work)
+ 				break;
+ 			}
  
- 	@ bhb workaround
- 	mov	r0, #8
--3:	b	. + 4
-+3:	W(b)	. + 4
- 	subs	r0, r0, #1
- 	bne	3b
- 	dsb
+-			if (adapter->link_speed != SPEED_1000)
++			if (adapter->link_speed != SPEED_1000 ||
++			    !hw->phy.ops.read_reg)
+ 				goto no_wait;
+ 
+ 			/* wait for Remote receiver status OK */
 -- 
 2.35.1
 
