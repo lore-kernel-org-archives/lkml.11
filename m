@@ -2,252 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 138A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D15DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbiEWHhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
+        id S230145AbiEWHhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231222AbiEWHgX (ORCPT
+        with ESMTP id S229957AbiEWHgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:36:23 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D092175B3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:36:03 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id m6so16185733ljb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:36:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qmrYGzbTeRg5FU7A/ql9JWJcJRbcLIxw9Fcrnsg+ns8=;
-        b=Fl7f2PZH8OhJHy8f17bmryFs5fsjlDhnBa3ivK24I6TBCQhc8GhKXVdzxqucVqzfN5
-         7A1r5ykV1QXG8c0agNo0C4Ec61YqtR6hLin7VmFsmVrQdn+XrgV6BejklmNbU4BD/cWu
-         GGcwMqomyEtuHLfe0hGop+cc+4YKnQiNS02Z8SReHRlLkACfkdEeCvdp+MuRIv4PHe+v
-         JZ4S5qYTbyrN5EqdE8Bj0qzrHDa1emDKHD//aLUuB27ncV37GOHPYCINpH3sARw/gNge
-         CfNrXB1NH+VGrU+lWyBYoLo1v8z/1XOUTQx+Gb7Iv5JVDDLffDX7aQDC/MQFLB5RrZcQ
-         F3Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qmrYGzbTeRg5FU7A/ql9JWJcJRbcLIxw9Fcrnsg+ns8=;
-        b=l9Z5JJTOpi2sgdRpS9u5wAqM3J5EGS7cUAf9TtiwLa9kdvkyFFrzxUy01pDPYss/PW
-         Nd0dDLGEpMryOujx31sSHTGIri7mOpzL2eTr17ulot/LivRWSVbbcHH1zRR8q5fwdAwF
-         98YRD5Cv5lTVBoszYND9x92KiLmQxiUwnV18EPoTLHHg5gFGDunwXQ6TeX2tgmCxfjQe
-         u8OjROAQjJYtc/Ue2t9B2/PQhT6/WZ4SgPaAzmjU4q+sAKxCgMDCepVZA7uscbwZ1wfH
-         fad2DKWp6J9h39bxIujgtaEBsPsGpiNuFZqPHzwvnbpwq6U4e2qdw0VYq/7L5QIYdtLA
-         f9zA==
-X-Gm-Message-State: AOAM532lfFb5inMmVGd15DlduZ/lkkC1oQXRfXk/4wASc9YNK0kMCWLE
-        khQF1ZlE6lyQhkS71JiSW2R3/A==
-X-Google-Smtp-Source: ABdhPJz9EPJXuOVRuS5VdPVoeY78CEYAgVvIWJjPvdL+tR38wwBV34jcxYcysL8nx4bNecTwcODNuA==
-X-Received: by 2002:a2e:bba2:0:b0:253:cccf:a967 with SMTP id y34-20020a2ebba2000000b00253cccfa967mr12570352lje.298.1653291361632;
-        Mon, 23 May 2022 00:36:01 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id v19-20020a05651203b300b00477c583e757sm1809868lfp.275.2022.05.23.00.35.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 00:36:01 -0700 (PDT)
-Message-ID: <edf1faf3-178c-bc89-148d-892f41492d26@linaro.org>
-Date:   Mon, 23 May 2022 09:35:58 +0200
+        Mon, 23 May 2022 03:36:41 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E8964D3
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:36:36 -0700 (PDT)
+Received: from [192.168.1.107] ([37.4.249.139]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MlbPO-1nSArI0Q0w-00iluk; Mon, 23 May 2022 08:19:46 +0200
+Message-ID: <e0503433-615d-3834-4392-d0868caf47cf@i2se.com>
+Date:   Mon, 23 May 2022 08:19:41 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v1 07/19] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
+ Thunderbird/91.9.1
+Subject: Re: vchiq: Performance regression since 5.18-rc1
 Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
-Cc:     soc@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220522155046.260146-1-tmaimon77@gmail.com>
- <20220522155046.260146-8-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220522155046.260146-8-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     paulmck@kernel.org, Phil Elwell <phil@raspberrypi.com>
+Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Minchan Kim <minchan@kernel.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        regressions@lists.linux.dev, riel@surriel.com,
+        viro@zeniv.linux.org.uk
+References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
+ <20220521234616.GO1790663@paulmck-ThinkPad-P17-Gen-1>
+ <bfad3d08-3268-5528-17c1-c17ef3949d96@i2se.com>
+ <20220523044818.GS1790663@paulmck-ThinkPad-P17-Gen-1>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <20220523044818.GS1790663@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:TSDqooD2qpB0H55oseeE5i/UKDv81lLRHUSkMpF+f6pSH2efkxU
+ EU1yOKtb2vv2XBeZV3Z7rj2N+rYHqjAVfDIQZINjoMrt2oFSMCeDKZzYpZMzO4+eh1XlMCL
+ EbgZilH5dplMtxW9j4NPfAfbUvgy9HZiKPFs3sP5lpcGKSJ266604KhH7wxBK4GbrFDJNpd
+ zOc/AR8e3w/D9hnZ80PLw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:DOH6rhxMbGg=:SbR34AbzDQsY1Vt0oPmlko
+ e1LAFIMgaQ4gVDMsppuotOnUCHQPZP8a0U0HzpCzAtwmrBJe9+FpLRYz6MrnojkxlsDgHYn4M
+ lUYmJ7XBKnC+kBIfdXsqNHNn3XBBIsVCESAtMi0djj/+cTY77P3tgyEcGXRlMJDXu7toRHqy8
+ 8BxlDClEEFVRgMt+KHRClfIEnEEMK2rsC9WSjEgKFyoAgxZvaUHxGsAEZf2ZU8P8sTKOJGmqA
+ 7VGgRmXqlBCXYVaUabVpg0Nc4Pp4HijUZOsScZiXwDLdoUWZsUUkVOwqUp+dLDYoy4yNJlgvT
+ y5+XadRMHQhA0Jwg2MX5PufTa3mnDYNZ8E5bgW3sSrEg4GXpZSbL9osVR16nesvW3xzdUw6z5
+ lrjoUPDMq+nkzScVusJgtPuvhYQN8uG19vJBH6se7CONc+L0h/tYPm8uuaeRE7rPDqDfb0TTR
+ oENGc8pWqr8J3Vk98S4+LjNZj8ylLF/Y6Wi/4wMXsBmXyGoiMn2GKpcRygnVop2+xveh3+ThB
+ dFrhw9ii3bQKQ5Zntbd8mUEADrREj3hsiV3eIpmWmkF6HVAHTkX/8VzcSPuKwZd2PaSVKJK3/
+ o8OHN40F3dqAJSD6RyqaNMk3m3OwlRuxjgHbCoP07+pTodtiTRfe+miAkH1GlzFAHviUu8vug
+ UFgjL8bQcSKeLhcFy07WCwvqh5xhKL+M7HXSr29U62F6q8FzHO3wuGeRpj83YkB/Ut/BQcCkM
+ s9Ef0yOBs3Rhzg6R1aD4FIvIz+eCcXMOjjWnnYd2XzPLkAllP2P8PVO1OXc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/05/2022 17:50, Tomer Maimon wrote:
-> Nuvoton Arbel BMC NPCM7XX contains an integrated clock controller, which
-> generates and supplies clocks to all modules within the BMC.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 68 +++++++++++++++++++
->  .../dt-bindings/clock/nuvoton,npcm8xx-clock.h | 50 ++++++++++++++
->  2 files changed, 118 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
->  create mode 100644 include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> new file mode 100644
-> index 000000000000..f305c7c7eaf0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> @@ -0,0 +1,68 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Nuvoton NPCM8XX Clock Controller Binding
-> +
-> +maintainers:
-> +  - Tomer Maimon <tmaimon77@gmail.com>
-> +
-> +description: |
-> +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
-> +  generates and supplies clocks to all modules within the BMC.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - nuvoton,npcm845-clk
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description:
-> +      specify the external clocks used by the NPCM8XX clock module.
+Hi Paul,
 
-Skip description, it's obvious.
+Am 23.05.22 um 06:48 schrieb Paul E. McKenney:
+> On Sun, May 22, 2022 at 05:11:36PM +0200, Stefan Wahren wrote:
+>> Hi Paul,
+>>
+>> Am 22.05.22 um 01:46 schrieb Paul E. McKenney:
+>>> On Sun, May 22, 2022 at 01:22:00AM +0200, Stefan Wahren wrote:
+>>>> Hi,
+>>>>
+>>>> while testing the staging/vc04_services/interface/vchiq_arm driver with my
+>>>> Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
+>>>> regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
+>>>> lru_cache_disable: replace work queue synchronization with synchronize_rcu
+>>>>
+>>>> Usually i run "vchiq_test -f 1" to see the driver is still working [1].
+>>>>
+>>>> Before commit:
+>>>>
+>>>> real    0m1,500s
+>>>> user    0m0,068s
+>>>> sys    0m0,846s
+>>>>
+>>>> After commit:
+>>>>
+>>>> real    7m11,449s
+>>>> user    0m2,049s
+>>>> sys    0m0,023s
+>>>>
+>>>> Best regards
+>>>>
+>>>> [1] - https://github.com/raspberrypi/userland
+>>> Please feel free to try the patch shown below.  Or the pair of patches
+>>> from Rik here:
+>>>
+>>> https://lore.kernel.org/lkml/20220218183114.2867528-2-riel@surriel.com/
+>>> https://lore.kernel.org/lkml/20220218183114.2867528-3-riel@surriel.com/
+>> I tried your patch and Rik's patches but in both cases vchiq_test runs 7
+>> minutes instead of ~ 1 second.
+> That is surprising.  Do you boot with rcupdate.rcu_normal=1?
+No, not explicit.
+>    That would
+> nullify my patch, but I would expect that Rik's patch would still provide
+> increased performance even in that case.
+I will retest with a fresh SD card image.
+>
+> Could you please characterize where the slowdown is occurring?
 
-> +    items:
-> +      - description: 25M reference clock
-> +      - description: CPU reference clock
-> +      - description: MC reference clock
-> +
-> +  clock-names:
-> +    description:
-> +      specify the external clocks names used by the NPCM8XX clock module.
+Unfortunately i don't have a deep insight into driver and vchiq_test 
+tool. Just a user view.
 
-Skip description, it's obvious.
+Do you think an strace would be a good starting point?
 
-> +    items:
-> +      - const: refclk
+@Phil Any advices to analyse this issue?
 
-Just "ref"
-
-> +      - const: sysbypck
-> +      - const: mcbypck
-
-Is "ck" short for "clk"? If yes, then just skip the suffix.
-
-> +
-> +  '#clock-cells':
-> +    const: 1
-> +    description:
-> +      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
-> +      list of NPCM8XX clock IDs.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#clock-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  # Clock Control Module node:
-> +  - |
-> +
-
-No need for blank line.
-
-> +    ahb {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        clk: clock-controller@f0801000 {
-> +            compatible = "nuvoton,npcm845-clk";
-> +            reg = <0x0 0xf0801000 0x0 0x1000>;
-> +            #clock-cells = <1>;
-> +        };
-> +    };
-> +
-> +...
-> diff --git a/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-> new file mode 100644
-> index 000000000000..d76f606bf88b
-> --- /dev/null
-> +++ b/include/dt-bindings/clock/nuvoton,npcm8xx-clock.h
-
-Filename - same as bindings, so nuvoton,npcm845-clk.h
-
-> @@ -0,0 +1,50 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-
-Dual license, same as bindings.
-
-> +/*
-> + * Nuvoton NPCM8xx Clock Generator binding
-> + * clock binding number for all clocks supportted by nuvoton,npcm8xx-clk
-> + *
-> + * Copyright (C) 2021 Nuvoton Technologies tomer.maimon@nuvoton.com
-> + *
-> + */
-> +
-> +#ifndef __DT_BINDINGS_CLOCK_NPCM8XX_H
-> +#define __DT_BINDINGS_CLOCK_NPCM8XX_H
-> +
-> +#define NPCM8XX_CLK_CPU		0
-> +#define NPCM8XX_CLK_GFX_PIXEL	1
-> +#define NPCM8XX_CLK_MC		2
-> +#define NPCM8XX_CLK_ADC		3
-> +#define NPCM8XX_CLK_AHB		4
-> +#define NPCM8XX_CLK_TIMER	5
-> +#define NPCM8XX_CLK_UART	6
-> +#define NPCM8XX_CLK_UART2	7
-> +#define NPCM8XX_CLK_MMC		8
-> +#define NPCM8XX_CLK_SPI3	9
-> +#define NPCM8XX_CLK_PCI		10
-> +#define NPCM8XX_CLK_AXI		11
-> +#define NPCM8XX_CLK_APB4	12
-> +#define NPCM8XX_CLK_APB3	13
-> +#define NPCM8XX_CLK_APB2	14
-> +#define NPCM8XX_CLK_APB1	15
-> +#define NPCM8XX_CLK_APB5	16
-> +#define NPCM8XX_CLK_CLKOUT	17
-> +#define NPCM8XX_CLK_GFX		18
-> +#define NPCM8XX_CLK_SU		19
-> +#define NPCM8XX_CLK_SU48	20
-> +#define NPCM8XX_CLK_SDHC	21
-> +#define NPCM8XX_CLK_SPI0	22
-> +#define NPCM8XX_CLK_SPI1	23
-> +#define NPCM8XX_CLK_SPIX	24
-> +#define NPCM8XX_CLK_RG		25
-> +#define NPCM8XX_CLK_RCP		26
-> +#define NPCM8XX_CLK_PRE_ADC	27
-> +#define NPCM8XX_CLK_ATB		28
-> +#define NPCM8XX_CLK_PRE_CLK	29
-> +#define NPCM8XX_CLK_TH		30
-> +#define NPCM8XX_CLK_REFCLK	31
-> +#define NPCM8XX_CLK_SYSBYPCK	32
-> +#define NPCM8XX_CLK_MCBYPCK	33
-> +
-> +#define NPCM8XX_NUM_CLOCKS	(NPCM8XX_CLK_MCBYPCK + 1)
-> +
-> +#endif
-
-
-Best regards,
-Krzysztof
+>
+> 							Thanx, Paul
+>
+>> Best regards
+>>
+>>> There is work ongoing to produce something better, but ongoing slowly.
+>>> Especially my part of that work.
+>>>
+>>> 							Thanx, Paul
+>>>
+>>> ------------------------------------------------------------------------
+>>>
+>>>   From paulmck@kernel.org Mon Feb 14 11:05:49 2022
+>>> Date: Mon, 14 Feb 2022 11:05:49 -0800
+>>> From: "Paul E. McKenney" <paulmck@kernel.org>
+>>> To: clm@fb.com
+>>> Cc: riel@surriel.com, viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org,
+>>> 	linux-fsdevel@vger.kernel.org, kernel-team@fb.com
+>>> Subject: [PATCH RFC fs/namespace] Make kern_unmount() use
+>>>    synchronize_rcu_expedited()
+>>> Message-ID: <20220214190549.GA2815154@paulmck-ThinkPad-P17-Gen-1>
+>>> Reply-To: paulmck@kernel.org
+>>> MIME-Version: 1.0
+>>> Content-Type: text/plain; charset=us-ascii
+>>> Content-Disposition: inline
+>>> Status: RO
+>>> Content-Length: 1036
+>>> Lines: 32
+>>>
+>>> Experimental.  Not for inclusion.  Yet, anyway.
+>>>
+>>> Freeing large numbers of namespaces in quick succession can result in
+>>> a bottleneck on the synchronize_rcu() invoked from kern_unmount().
+>>> This patch applies the synchronize_rcu_expedited() hammer to allow
+>>> further testing and fault isolation.
+>>>
+>>> Hey, at least there was no need to change the comment!  ;-)
+>>>
+>>> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+>>> Cc: <linux-fsdevel@vger.kernel.org>
+>>> Cc: <linux-kernel@vger.kernel.org>
+>>> Not-yet-signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+>>>
+>>> ---
+>>>
+>>>    namespace.c |    2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/fs/namespace.c b/fs/namespace.c
+>>> index 40b994a29e90d..79c50ad0ade5b 100644
+>>> --- a/fs/namespace.c
+>>> +++ b/fs/namespace.c
+>>> @@ -4389,7 +4389,7 @@ void kern_unmount(struct vfsmount *mnt)
+>>>    	/* release long term mount so mount point can be released */
+>>>    	if (!IS_ERR_OR_NULL(mnt)) {
+>>>    		real_mount(mnt)->mnt_ns = NULL;
+>>> -		synchronize_rcu();	/* yecchhh... */
+>>> +		synchronize_rcu_expedited();	/* yecchhh... */
+>>>    		mntput(mnt);
+>>>    	}
+>>>    }
+>>>
