@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25827C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C19CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239346AbiEWRFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
+        id S239318AbiEWRFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239260AbiEWREo (ORCPT
+        with ESMTP id S239249AbiEWREq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6679262BC5;
-        Mon, 23 May 2022 10:04:43 -0700 (PDT)
+        Mon, 23 May 2022 13:04:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671116007B;
+        Mon, 23 May 2022 10:04:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FBCDB811E9;
-        Mon, 23 May 2022 17:04:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70933C385A9;
-        Mon, 23 May 2022 17:04:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D27C614BC;
+        Mon, 23 May 2022 17:04:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1289C34116;
+        Mon, 23 May 2022 17:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325480;
-        bh=KK64IlH3w9eeVXqXAmJOrVOhdQ3ukjaBlyzBvMQ66Vc=;
+        s=korg; t=1653325484;
+        bh=9r1To4cmU5c4mec6rBMYQpdcINHgYGrxktesEOKlJhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PMlYIsf2mLr9+jZUE/Bohx45SOZuSlPqPkuwcfxzN8PxD+zwC+rSnpFf6MaDvF+nX
-         CO24Bj4uKLUnvhsZZmHpxFay21bmFeomOBlyqwt8DJV8HlGDnucb4jvPcMosnAxj7K
-         i7cjjMwh3Fyn8of4hr6I+l+7StMkFLwfAXl4Ro5o=
+        b=oNvo0bJXVau787T/JczhFof+Dbzm40FnQ8D/hvkOFndgWi2pBaazBmJSxyEGoekSg
+         3HIzPmAe1AtmLnFKStGph8TJ8ltJEXSQpBpexyS08JDyFhvmqGYMINlWnLMLMylpki
+         9SeHAahBoQvQb0EYkNuvognGbwoGyeDbfMNDl5YA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 4.9 07/25] mmc: core: Specify timeouts for BKOPS and CACHE_FLUSH for eMMC
-Date:   Mon, 23 May 2022 19:03:25 +0200
-Message-Id: <20220523165745.966956440@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 25/25] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
+Date:   Mon, 23 May 2022 19:03:43 +0200
+Message-Id: <20220523165750.505021218@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 References: <20220523165743.398280407@linuxfoundation.org>
@@ -49,46 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 24ed3bd01d6a844fd5e8a75f48d0a3d10ed71bf9 upstream
+[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
 
-The timeout values used while waiting for a CMD6 for BKOPS or a CACHE_FLUSH
-to complete, are not defined by the eMMC spec. However, a timeout of 10
-minutes as is currently being used, is just silly for both of these cases.
-Instead, let's specify more reasonable timeouts, 120s for BKOPS and 30s for
-CACHE_FLUSH.
+Switch to using pcim_enable_device() to avoid missing pci_disable_device().
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-2-ulf.hansson@linaro.org
-Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
-[kamal: Drop mmc_run_bkops hunk, non-existent]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/core.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/mmc/core/core.c
-+++ b/drivers/mmc/core/core.c
-@@ -61,6 +61,8 @@
- /* The max erase timeout, used when host->max_busy_timeout isn't specified */
- #define MMC_ERASE_TIMEOUT_MS	(60 * 1000) /* 60 s */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index 49eaede34eea..9beb93479e28 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -183,7 +183,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
+ 		return -ENOMEM;
  
-+#define MMC_CACHE_FLUSH_TIMEOUT_MS     (30 * 1000) /* 30s */
-+
- static const unsigned freqs[] = { 400000, 300000, 200000, 100000 };
+ 	/* Enable pci device */
+-	ret = pci_enable_device(pdev);
++	ret = pcim_enable_device(pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
+ 			__func__);
+@@ -241,8 +241,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
+ 		pcim_iounmap_regions(pdev, BIT(i));
+ 		break;
+ 	}
+-
+-	pci_disable_device(pdev);
+ }
  
- /*
-@@ -2936,7 +2938,8 @@ int mmc_flush_cache(struct mmc_card *car
- 			(card->ext_csd.cache_size > 0) &&
- 			(card->ext_csd.cache_ctrl & 1)) {
- 		err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
--				EXT_CSD_FLUSH_CACHE, 1, 0);
-+				EXT_CSD_FLUSH_CACHE, 1,
-+				 MMC_CACHE_FLUSH_TIMEOUT_MS);
- 		if (err)
- 			pr_err("%s: cache flush error %d\n",
- 					mmc_hostname(card->host), err);
+ static int stmmac_pci_suspend(struct device *dev)
+-- 
+2.35.1
+
 
 
