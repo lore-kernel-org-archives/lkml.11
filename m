@@ -2,99 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2426C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E89C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343604AbiEWSI0 (ORCPT
+        id S1343676AbiEWSIa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
+        Mon, 23 May 2022 14:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243645AbiEWRiW (ORCPT
+        with ESMTP id S243627AbiEWRiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910BF939B9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:32:36 -0700 (PDT)
+        Mon, 23 May 2022 13:38:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD37939CA;
+        Mon, 23 May 2022 10:32:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC3F3B8121A
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C17AC385A9;
-        Mon, 23 May 2022 17:32:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1369C61272;
+        Mon, 23 May 2022 17:31:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 151CDC385A9;
+        Mon, 23 May 2022 17:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327137;
-        bh=sjJ34GcqhXoKGZ5Q8UWMhx1olSPo7NFZtw3Y5PKxEh4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dlJAw0+fvw7YYSd+9g7GsfEddRb3tWM3fIU7cl7Z0lStSu+8/iF8BamcptK+vO6jX
-         eq75ZsX91MLz9G/uDOUndCCxQyU1EAQ1ib3pQMSNXuI89tfXSm5zvUmc6/vSfKk08L
-         VMOkb9EbsuG4WAT8RRh3+WGdU7DkjAKumAcSjWJI=
-Date:   Mon, 23 May 2022 19:15:39 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Eli Billauer <eli.billauer@gmail.com>
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, arnd@arndb.de,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] char: xillybus: Check endpoint type before allocing
-Message-ID: <YovBOwJs/A/5Ua7I@kroah.com>
-References: <Yn9XwHxWsLIJXlHu@kroah.com>
- <20220514114819.2773691-1-zheyuma97@gmail.com>
- <Yn+va5fTsuaFTxVR@kroah.com>
- <CAMhUBj=RMJwn2K+rQC9rQ=QEe5QkiJ29rMd8KzEC8B7vtXo+ug@mail.gmail.com>
- <Yocp+WZ0On9/wObu@kroah.com>
- <CAMhUBj=J5-V_D_kucpiWz6ZdOSSR1N9nRXQxOKgmwRA+LxW17Q@mail.gmail.com>
- <YouxHY48daZt7J/O@kroah.com>
- <628BBEEB.9010306@gmail.com>
+        s=korg; t=1653327108;
+        bh=Dg8kFihg+woz8ZwiZbcbNhSN4KZAfNYqZI9p+T4462Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LPdXMmO94W8CaphX4Oek9BsefECFE58u1riuRddIVOx3TT3gWvN+OkGfjcRBslU5x
+         +rJO2oeCp7fvZBrHyDzqzu2ewnqZqga3i5ZUePwJ0hGfMdq0ll3SuNwgNApkT1RkRX
+         xN18ZAGmLk9kaIDilxQcf0+WJ3ZCOKHTCfcQB+q0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Markus Suvanto <markus.suvanto@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        kafs-testing+fedora34_64checkkafs-build-496@auristor.com,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 158/158] afs: Fix afs_getattr() to refetch file status if callback break occurred
+Date:   Mon, 23 May 2022 19:05:15 +0200
+Message-Id: <20220523165856.364774177@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <628BBEEB.9010306@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 08:05:47PM +0300, Eli Billauer wrote:
-> On 23/05/22 19:06, Greg KH wrote:
-> > If the device does not have the EXACT USB endpoints that you are
-> > expecting (size, address, direction, type, etc.) at probe time reject
-> > the device.
-> This is probably a good time to add some information about XillyUSB.
-> 
-> All XillyUSB devices have EP 1 IN and EP 1 OUT as bulk endpoints.
-> 
-> On top of that, they *may* have up to 14 additional bulk OUT endpoints,
-> having the addresses EP 2 OUT to EP 15 OUT. The population of endpoint
-> addresses is not necessarily continuous. Any set of OUT endpoint addresses
-> is allowed. The driver doesn't know which of these endpoints are available
-> initially.
-> 
-> Rather, it works like this: The driver uses the EP 1 IN and OUT endpoints to
-> query the device for a data structure, which contains information on the
-> device's communication channels. The driver sets up device files
-> accordingly, and it also gets informed on which bulk OUT endpoints are
-> present.
-> 
-> For what it's worth, I think it's fairly safe to assume that if a device
-> returns a legal data structure (which passes a CRC test), it's a XillyUSB
-> device.
+From: David Howells <dhowells@redhat.com>
 
-Why?  You still need to verify that the requested endpoints match up
-with what the device really has.
+[ Upstream commit 2aeb8c86d49967552394d5e723f87454cb53f501 ]
 
-Again, we are talking about "fake" devices that are being used to find
-problems in the kernel drivers, this is not a "real" device, yet can
-look a lot like one.  Look at the fuzzing tools that are running for
-examples of this.
+If a callback break occurs (change notification), afs_getattr() needs to
+issue an FS.FetchStatus RPC operation to update the status of the file
+being examined by the stat-family of system calls.
 
-> Either way, it's impossible to verify that all of the device's bulk
-> OUT endpoints are correct before obtaining the data structure from the
-> device. The fact that each device has a different set of communication
-> channels, and that the driver learns about them in run-time is the whole
-> trick with Xillybus and XillyUSB.
+Fix afs_getattr() to do this if AFS_VNODE_CB_PROMISED has been cleared
+on a vnode by a callback break.  Skip this if AT_STATX_DONT_SYNC is set.
 
-That's fine, but that can still be done a probe() time, not open() time,
-like the current patch was attempting.  That's much too late.
+This can be tested by appending to a file on one AFS client and then
+using "stat -L" to examine its length on a machine running kafs.  This
+can also be watched through tracing on the kafs machine.  The callback
+break is seen:
 
-thanks,
+     kworker/1:1-46      [001] .....   978.910812: afs_cb_call: c=0000005f YFSCB.CallBack
+     kworker/1:1-46      [001] ...1.   978.910829: afs_cb_break: 100058:23b4c:242d2c2 b=2 s=1 break-cb
+     kworker/1:1-46      [001] .....   978.911062: afs_call_done:    c=0000005f ret=0 ab=0 [0000000082994ead]
 
-greg k-h
+And then the stat command generated no traffic if unpatched, but with
+this change a call to fetch the status can be observed:
+
+            stat-4471    [000] .....   986.744122: afs_make_fs_call: c=000000ab 100058:023b4c:242d2c2 YFS.FetchStatus
+            stat-4471    [000] .....   986.745578: afs_call_done:    c=000000ab ret=0 ab=0 [0000000087fc8c84]
+
+Fixes: 08e0e7c82eea ("[AF_RXRPC]: Make the in-kernel AFS filesystem use AF_RXRPC.")
+Reported-by: Markus Suvanto <markus.suvanto@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Tested-by: Markus Suvanto <markus.suvanto@gmail.com>
+Tested-by: kafs-testing+fedora34_64checkkafs-build-496@auristor.com
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216010
+Link: https://lore.kernel.org/r/165308359800.162686.14122417881564420962.stgit@warthog.procyon.org.uk/ # v1
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/afs/inode.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/fs/afs/inode.c b/fs/afs/inode.c
+index 5964f8aee090..0d6c0885b2d7 100644
+--- a/fs/afs/inode.c
++++ b/fs/afs/inode.c
+@@ -727,10 +727,22 @@ int afs_getattr(struct user_namespace *mnt_userns, const struct path *path,
+ {
+ 	struct inode *inode = d_inode(path->dentry);
+ 	struct afs_vnode *vnode = AFS_FS_I(inode);
+-	int seq = 0;
++	struct key *key;
++	int ret, seq = 0;
+ 
+ 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
+ 
++	if (!(query_flags & AT_STATX_DONT_SYNC) &&
++	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
++		key = afs_request_key(vnode->volume->cell);
++		if (IS_ERR(key))
++			return PTR_ERR(key);
++		ret = afs_validate(vnode, key);
++		key_put(key);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	do {
+ 		read_seqbegin_or_lock(&vnode->cb_lock, &seq);
+ 		generic_fillattr(&init_user_ns, inode, stat);
+-- 
+2.35.1
+
+
+
