@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F249C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240531AbiEWRYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
+        id S239857AbiEWRYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240562AbiEWRQ3 (ORCPT
+        with ESMTP id S240561AbiEWRQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:16:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C109171D92;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C162571D95;
         Mon, 23 May 2022 10:15:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D955B81210;
-        Mon, 23 May 2022 17:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E28ADC385AA;
-        Mon, 23 May 2022 17:13:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AE8CB811CC;
+        Mon, 23 May 2022 17:13:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9B86C36AE7;
+        Mon, 23 May 2022 17:13:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325992;
-        bh=JPZQFf+Z10UugVERxncmE+0Y4M/PuyKVWD8ZnKhZ/7c=;
+        s=korg; t=1653325989;
+        bh=V4ztirCZvI7TkmIHEYzWcBUTEshg8t47dAxHMOJ2Es8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gtSisNXbXP+Ybh9zYC8swmQhzdj7pTjKT+ktisAN5bcHfbweL4qia0FDlBcK+We3R
-         4QE/pRq9yphcyn2ynnSfMHQ0ShZvK3R1gzioA2yh6GzAOV5BffYLfDFjRnkWHQWmsJ
-         qDcEboebZYJG+AG56L3gqOS6Cd+ns5YE4vq1yTgY=
+        b=G9oaFD2f+Cc7ioqIJmk4XVTSpCelnQze+jbpkAkPDUkU5Uje8kjvza7lNQL3njHmi
+         VyNIib60gK5RlqMIntkTX75MiB/FqGpHfrxNcxSWLvwrxWe5u6IMitS+pDtlsri2pI
+         GGuPANI43pa3zv0hoQJfYGC7NhXmhWLGek5BANPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 34/68] ARM: dts: aspeed-g6: remove FWQSPID group in pinctrl dtsi
-Date:   Mon, 23 May 2022 19:05:01 +0200
-Message-Id: <20220523165808.266598660@linuxfoundation.org>
+        Felix Fu <foyjog@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Meena Shanmugam <meenashanmugam@google.com>
+Subject: [PATCH 5.4 25/68] SUNRPC: Ensure we flush any closed sockets before xs_xprt_free()
+Date:   Mon, 23 May 2022 19:04:52 +0200
+Message-Id: <20220523165806.781218013@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -49,43 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+From: Meena Shanmugam <meenashanmugam@google.com>
 
-[ Upstream commit efddaa397cceefb61476e383c26fafd1f8ab6356 ]
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-FWSPIDQ2 and FWSPIDQ3 are not part of FWSPI18 interface so remove
-FWQSPID group in pinctrl dtsi. These pins must be used with the
-FWSPI pins that are dedicated for boot SPI interface which provides
-same 3.3v logic level.
+commit f00432063db1a0db484e85193eccc6845435b80e upstream.
 
-Fixes: 2f6edb6bcb2f ("ARM: dts: aspeed: Fix AST2600 quad spi group")
-Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-Link: https://lore.kernel.org/r/20220329173932.2588289-2-quic_jaehyoo@quicinc.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+We must ensure that all sockets are closed before we call xprt_free()
+and release the reference to the net namespace. The problem is that
+calling fput() will defer closing the socket until delayed_fput() gets
+called.
+Let's fix the situation by allowing rpciod and the transport teardown
+code (which runs on the system wq) to call __fput_sync(), and directly
+close the socket.
+
+Reported-by: Felix Fu <foyjog@gmail.com>
+Acked-by: Al Viro <viro@zeniv.linux.org.uk>
+Fixes: a73881c96d73 ("SUNRPC: Fix an Oops in udp_poll()")
+Cc: stable@vger.kernel.org # 5.1.x: 3be232f11a3c: SUNRPC: Prevent immediate close+reconnect
+Cc: stable@vger.kernel.org # 5.1.x: 89f42494f92f: SUNRPC: Don't call connect() more than once on a TCP socket
+Cc: stable@vger.kernel.org # 5.1.x
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+[meenashanmugam: Fix merge conflict in xprt_connect]
+Signed-off-by: Meena Shanmugam <meenashanmugam@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi | 5 -----
- 1 file changed, 5 deletions(-)
+ fs/file_table.c       |    1 +
+ net/sunrpc/xprt.c     |    5 +----
+ net/sunrpc/xprtsock.c |   16 +++++++++++++---
+ 3 files changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
-index f310f4d3bcc7..4792b3d9459d 100644
---- a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
-@@ -117,11 +117,6 @@ pinctrl_fwspid_default: fwspid_default {
- 		groups = "FWSPID";
- 	};
+--- a/fs/file_table.c
++++ b/fs/file_table.c
+@@ -375,6 +375,7 @@ void __fput_sync(struct file *file)
+ }
  
--	pinctrl_fwqspid_default: fwqspid_default {
--		function = "FWSPID";
--		groups = "FWQSPID";
--	};
+ EXPORT_SYMBOL(fput);
++EXPORT_SYMBOL(__fput_sync);
+ 
+ void __init files_init(void)
+ {
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -868,10 +868,7 @@ void xprt_connect(struct rpc_task *task)
+ 	if (!xprt_lock_write(xprt, task))
+ 		return;
+ 
+-	if (test_and_clear_bit(XPRT_CLOSE_WAIT, &xprt->state))
+-		xprt->ops->close(xprt);
 -
- 	pinctrl_fwspiwp_default: fwspiwp_default {
- 		function = "FWSPIWP";
- 		groups = "FWSPIWP";
--- 
-2.35.1
-
+-	if (!xprt_connected(xprt)) {
++	if (!xprt_connected(xprt) && !test_bit(XPRT_CLOSE_WAIT, &xprt->state)) {
+ 		task->tk_rqstp->rq_connect_cookie = xprt->connect_cookie;
+ 		rpc_sleep_on_timeout(&xprt->pending, task, NULL,
+ 				xprt_request_timeout(task->tk_rqstp));
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -989,7 +989,7 @@ static int xs_local_send_request(struct
+ 
+ 	/* Close the stream if the previous transmission was incomplete */
+ 	if (xs_send_request_was_aborted(transport, req)) {
+-		xs_close(xprt);
++		xprt_force_disconnect(xprt);
+ 		return -ENOTCONN;
+ 	}
+ 
+@@ -1027,7 +1027,7 @@ static int xs_local_send_request(struct
+ 			-status);
+ 		/* fall through */
+ 	case -EPIPE:
+-		xs_close(xprt);
++		xprt_force_disconnect(xprt);
+ 		status = -ENOTCONN;
+ 	}
+ 
+@@ -1303,6 +1303,16 @@ static void xs_reset_transport(struct so
+ 
+ 	if (sk == NULL)
+ 		return;
++	/*
++	 * Make sure we're calling this in a context from which it is safe
++	 * to call __fput_sync(). In practice that means rpciod and the
++	 * system workqueue.
++	 */
++	if (!(current->flags & PF_WQ_WORKER)) {
++		WARN_ON_ONCE(1);
++		set_bit(XPRT_CLOSE_WAIT, &xprt->state);
++		return;
++	}
+ 
+ 	if (atomic_read(&transport->xprt.swapper))
+ 		sk_clear_memalloc(sk);
+@@ -1326,7 +1336,7 @@ static void xs_reset_transport(struct so
+ 	mutex_unlock(&transport->recv_mutex);
+ 
+ 	trace_rpc_socket_close(xprt, sock);
+-	fput(filp);
++	__fput_sync(filp);
+ 
+ 	xprt_disconnect_done(xprt);
+ }
 
 
