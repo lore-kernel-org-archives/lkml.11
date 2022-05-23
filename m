@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F32C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C2AC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242889AbiEWR2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
+        id S242324AbiEWR1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239982AbiEWRSH (ORCPT
+        with ESMTP id S239994AbiEWRPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:18:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781686B66B;
-        Mon, 23 May 2022 10:17:36 -0700 (PDT)
+        Mon, 23 May 2022 13:15:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5BCFD2F;
+        Mon, 23 May 2022 10:12:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F86C60AB8;
-        Mon, 23 May 2022 17:16:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E725C385AA;
-        Mon, 23 May 2022 17:16:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF141614E9;
+        Mon, 23 May 2022 17:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8129C385A9;
+        Mon, 23 May 2022 17:11:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326207;
-        bh=s/wM9yw1sAuIFJAp3+xxsTnu7j5+IlJj2gurHg09ouM=;
+        s=korg; t=1653325908;
+        bh=EWPceXRr9n6C5+usxhB70r1p1I7AsLGL6Q2JN/tDL8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cam8vyqqkOCJV493SkGG2hbUjjduymzfXxrIW6euYSOfHbwbsCl22jMYQp/p7BHSt
-         9cBVrqSCGJ9ZK3begpt2cAMGxIGQMfCGqDe7X8iwVAZda04j6U2wtlfN9HoruRGxAa
-         QHGAVYUcgjx4toVx9z71bavJd9OOEfY6g7a/zlMA=
+        b=e1nXA3QxBwrOfVuwX6aGm50A9DN5Yrwi3ZtIYjeVJ4mpbfDS/iYkEbBasg0d3w8+H
+         rqKJhlycpodnjm/9O7Xm/puy3R3Bqxq3ZKETdasG6vyE0E2lx2xFWjt8h0swO319k1
+         RqdEBADeOqep7+rcDx8YPFdaozGnbz75s66xtJRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 20/97] vhost_vdpa: dont setup irq offloading when irq_num < 0
-Date:   Mon, 23 May 2022 19:05:24 +0200
-Message-Id: <20220523165815.482489476@linuxfoundation.org>
+Subject: [PATCH 5.4 08/68] crypto: stm32 - fix reference leak in stm32_crc_remove
+Date:   Mon, 23 May 2022 19:04:35 +0200
+Message-Id: <20220523165803.930545313@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,39 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhu Lingshan <lingshan.zhu@intel.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit cce0ab2b2a39072d81f98017f7b076f3410ef740 ]
+[ Upstream commit e9a36feecee0ee5845f2e0656f50f9942dd0bed3 ]
 
-When irq number is negative(e.g., -EINVAL), the virtqueue
-may be disabled or the virtqueues are sharing a device irq.
-In such case, we should not setup irq offloading for a virtqueue.
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stm32_crc_remove, so we should fix it.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-Link: https://lore.kernel.org/r/20220222115428.998334-3-lingshan.zhu@intel.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vdpa.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/crypto/stm32/stm32-crc32.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index e4d60009d908..04578aa87e4d 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -97,8 +97,11 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
- 		return;
+diff --git a/drivers/crypto/stm32/stm32-crc32.c b/drivers/crypto/stm32/stm32-crc32.c
+index fb640e0ea614..2ecc970f5cae 100644
+--- a/drivers/crypto/stm32/stm32-crc32.c
++++ b/drivers/crypto/stm32/stm32-crc32.c
+@@ -332,8 +332,10 @@ static int stm32_crc_remove(struct platform_device *pdev)
+ 	struct stm32_crc *crc = platform_get_drvdata(pdev);
+ 	int ret = pm_runtime_get_sync(crc->dev);
  
- 	irq = ops->get_vq_irq(vdpa, qid);
-+	if (irq < 0)
-+		return;
-+
- 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
--	if (!vq->call_ctx.ctx || irq < 0)
-+	if (!vq->call_ctx.ctx)
- 		return;
+-	if (ret < 0)
++	if (ret < 0) {
++		pm_runtime_put_noidle(crc->dev);
+ 		return ret;
++	}
  
- 	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+ 	spin_lock(&crc_list.lock);
+ 	list_del(&crc->list);
 -- 
 2.35.1
 
