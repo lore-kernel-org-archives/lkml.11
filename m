@@ -2,98 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241108AbiEWSDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        id S241646AbiEWSDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241388AbiEWRfX (ORCPT
+        with ESMTP id S241450AbiEWRfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:35:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A4E8215E;
-        Mon, 23 May 2022 10:28:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D76660BFA;
-        Mon, 23 May 2022 17:18:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D29FC34115;
-        Mon, 23 May 2022 17:18:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326336;
-        bh=ltwWJu5XvWserwEW179uExcw3T3t42uJaNOIFLn0ep4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CV8BJD1uoVQiLnl2iWQm9VvmnIx7OZeUcvOuVEfLz9yV08lbjjunxgn2AlYRc4383
-         YdVGKf6V5kgEpU+V23WX1A+g138FTE1UgkLu70BGlWorryjQ1noU1QxvC1j+cOcqq6
-         E/5QZL7l9kf/SLVrh/ASnnTKRNapDI6c7t1Zvzug=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 030/132] s390/traps: improve panic message for translation-specification exception
-Date:   Mon, 23 May 2022 19:03:59 +0200
-Message-Id: <20220523165828.506194611@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 23 May 2022 13:35:52 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B14E87236;
+        Mon, 23 May 2022 10:29:00 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2f83983782fso156035727b3.6;
+        Mon, 23 May 2022 10:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Pu7kA7BiPR6LthJjBkUziE8M6jqnojq51OxPzrVcphU=;
+        b=URSiuUGoGO3JCqofa503NBbXZCppX+kd0jyfNgid7GavBJnWTdYTll2AnIYKUZIIDw
+         KlRJJxpw0jBP/l/nHc6km/NpvKaj31rx3CIWVaIUcCnmJnSsW9ugJASugudhz6UtdQ28
+         +ye8S6RXSMH4S8Ojht13kQhUHt9WSFBDHqvgTti/7ZH4BQPYPpcSlv10wAOGQj19SQVj
+         YoApnskHYU5hLpXstzqraqJ432RyS976BFs5KoCIuCQZtaII/1KzgUq4dMhvhfb79RDW
+         H2B9SdCPToyIZn83gQBwRK1W8640K96RxgNaeIkF8VPlq4AaLeXIgoCthfJw2/YOVYZT
+         Keuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Pu7kA7BiPR6LthJjBkUziE8M6jqnojq51OxPzrVcphU=;
+        b=REPt84xbAu3UzZWdQBufMoHFlkuov0BTXpYA1gGOpn5UEt6kjdR8XQL4MA8H+w5DRO
+         fz+zoSOkCXlEOwGMhAGGt4juxq20/qS6qST0YgazG18kdoNlCvsXy4lgqyUPozVTcztX
+         VuoQQT17Wso07G8QzhhIELhcrKLy7U5n0n4pWBABR6Hicistc2uKP2nNSOrIQpXY7Nwj
+         hfjp/xKJIjGtbbdHFWDwWEuKU158s+1v2T6nojc1J65e30Y9x1X7L5AT+0cNEBL/Nsiz
+         O1mgcRKIQ0OWkoc90rZo6c86Phz9vYycZzX2Q4H+I4Wol5Doae85j07I4z9ePR7wbM9j
+         69dA==
+X-Gm-Message-State: AOAM533zDlNE0MxhXDCdvZmgo/xa9z/h8JSVoST395aA5CWlXOG1t/DH
+        BUJDjzTHAEtbLw6w+pIm9IjbQD7WpMyQTbr5Cvk=
+X-Google-Smtp-Source: ABdhPJxDs+59pRGXFmcBcQcFS44LBGAfsQ6rdmIsiuTkv64/aRcW5tYZpKs/8vzNVZV/FX9+JakJXhsg9J3VLCScjeg=
+X-Received: by 2002:a0d:c101:0:b0:2ff:5824:e8a8 with SMTP id
+ c1-20020a0dc101000000b002ff5824e8a8mr24483755ywd.413.1653326910187; Mon, 23
+ May 2022 10:28:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220518192924.20948-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAHp75VeyU4Ox76wz9VfT8qEKHsE1eAo2iw27Lro1tmjJB0npMg@mail.gmail.com>
+ <CA+V-a8tp0T=ojr3hB-QacOvV5sCZ29YXspPzKSSpGHUA8_1XDA@mail.gmail.com> <OS0PR01MB5922A0C8F58C5A4221A57F1F86D09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB5922A0C8F58C5A4221A57F1F86D09@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Mon, 23 May 2022 18:28:04 +0100
+Message-ID: <CA+V-a8vKNBf78mLzu_RJjj-vWMvw7fAdZ=oA1V--UYYcL2FdnA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/7] Renesas RZ/G2L IRQC support
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+Hi Biju,
 
-[ Upstream commit f09354ffd84eef3c88efa8ba6df05efe50cfd16a ]
+On Thu, May 19, 2022 at 7:58 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+>
+> Hi Prabhakar,
+>
+> > Subject: Re: [PATCH v4 0/7] Renesas RZ/G2L IRQC support
+> >
+> > On Wed, May 18, 2022 at 10:10 PM Andy Shevchenko
+> > <andy.shevchenko@gmail.com> wrote:
+> > >
+> > > On Wed, May 18, 2022 at 9:29 PM Lad Prabhakar
+> > > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > > >
+> > > > Hi All,
+> > > >
+> > > > The RZ/G2L Interrupt Controller is a front-end for the GIC found on
+> > > > Renesas RZ/G2L SoC's with below pins:
+> > > > - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI
+> > > >   interrupts
+> > > > - GPIO pins used as external interrupt input pins out of GPIOINT0-122 a
+> > > >   maximum of only 32 can be mapped to 32 GIC SPI interrupts,
+> > > > - NMI edge select.
+> > > >
+> > > >
+> > _____________
+> > > >                                                              |    GIC
+> > |
+> > > >                                                              |
+> > ________  |
+> > > >                                       ____________           | |
+> > | |
+> > > > NMI --------------------------------->|          |  SPI0-479 | | GIC-
+> > 600| |
+> > > >              _______                  |          |------------>|
+> > | |
+> > > >              |      |                 |          |  PPI16-31 | |
+> > | |
+> > > >              |      | IRQ0-IRQ7       |   IRQC   |------------>|
+> > | |
+> > > > P0_P48_4 --->| GPIO |---------------->|          |           |
+> > |________| |
+> > > >              |      |GPIOINT0-122     |          |           |
+> > |
+> > > >              |      |---------------->| TINT0-31 |           |
+> > |
+> > > >              |______|                 |__________|
+> > |____________|
+> > > >
+> > > > The proposed patches add hierarchical IRQ domain, one in IRQC driver
+> > > > and another in pinctrl driver. Upon interrupt requests map the
+> > > > interrupt to GIC. Out of GPIOINT0-122 only 32 can be mapped to GIC
+> > > > SPI, this mapping is handled by the pinctrl and IRQC driver.
+> > >
+> > > Where is the explanation on why valid_mask can't be used instead?
+> > >
+> > The .valid_mask option is one time setting
+>
+> One question, if it is one time setting, Is it possible to use .valid mask to invalidate
+> invalid gpio lines?(ie, currently gpio range is 392, but there is only 123 GPIOs
+> present in the SoC, not sure this call back can be used to invalidate the non-supported GPIOS??).
+>
+Yes can be added, I will include it in the next version.
 
-There are many different types of translation exceptions but only a
-translation-specification exception leads to a kernel panic since it
-indicates corrupted page tables, which must never happen.
-
-Improve the panic message so it is a bit more obvious what this is about.
-
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/s390/kernel/traps.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/s390/kernel/traps.c b/arch/s390/kernel/traps.c
-index 12d28ff5281f..4044826d72ae 100644
---- a/arch/s390/kernel/traps.c
-+++ b/arch/s390/kernel/traps.c
-@@ -142,10 +142,10 @@ static inline void do_fp_trap(struct pt_regs *regs, __u32 fpc)
- 	do_trap(regs, SIGFPE, si_code, "floating point exception");
- }
- 
--static void translation_exception(struct pt_regs *regs)
-+static void translation_specification_exception(struct pt_regs *regs)
- {
- 	/* May never happen. */
--	panic("Translation exception");
-+	panic("Translation-Specification Exception");
- }
- 
- static void illegal_op(struct pt_regs *regs)
-@@ -374,7 +374,7 @@ static void (*pgm_check_table[128])(struct pt_regs *regs) = {
- 	[0x0f]		= hfp_divide_exception,
- 	[0x10]		= do_dat_exception,
- 	[0x11]		= do_dat_exception,
--	[0x12]		= translation_exception,
-+	[0x12]		= translation_specification_exception,
- 	[0x13]		= special_op_exception,
- 	[0x14]		= default_trap_handler,
- 	[0x15]		= operand_exception,
--- 
-2.35.1
-
-
-
+Cheers,
+Prabhakar
