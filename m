@@ -2,120 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2468EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241391AbiEWRf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
+        id S240576AbiEWRfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240624AbiEWRZw (ORCPT
+        with ESMTP id S240772AbiEWR0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:25:52 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6107413FBC
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:21:03 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n18so13693675plg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:21:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VcVFk3FcEgzfyMwYD0aU10qnYcHMUzYlGb8aE1VELAQ=;
-        b=sq3P/fw7RUx9aBXoSaVhkvBFulT5vCvnYlKSTPsTothpsy2pNOKALFyKKhn9W44OlL
-         +cZjRjNgRJKzURqhNHFr0bUheleEFwIHlJUOjHe6+8/H6czcQuaTKrXLrynQfLXa1OF7
-         yUB2nwoJ+3wh0pucpP+eqxwtGsKcnBiHhM/w+W1JdgmtzaTY+2NwOkQaG6/PtzHj0GWT
-         bVT25LrcpTLBknZo92GNsZz5UoQm3/XU+3fhcdLnlT4+qGXOXOpf5/bXgmbXK5zaHcwr
-         jCsXk2nSI0snXcDdnj6SEgHzF+u1KK7yHVrsA2Gf0yoGU3gPFccu7ykntQLChDo2pHOe
-         QTRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VcVFk3FcEgzfyMwYD0aU10qnYcHMUzYlGb8aE1VELAQ=;
-        b=dU/Ktf2cdsoIzv9eIwV+4gq7MFyumemMG+g2ErLXK0ODX0P0KC/Ab6slhGE2J7/N1J
-         N7lbzMesNJNIRSXQVJCWgDQIMCSKlr9Zqp6cemx5h6CbXfhL8C2pITBgW08LJD2v2JKp
-         uUScclGbDRg4KY8qCVfpEH+upAE3Hviv7iXVPwOxK1+DmzlnR5hp+xlgfui5mylI4vCW
-         PhhmUIi23sJuTAZlzP5ID+FPIosRlJKlp6L6dmoV/z//m6pobwwu3N9UOCV5CrayIgDZ
-         9vjs9vhn70undkUIUeT/DkKXA8WSxVRAHROMy2ohiZ3ME04F54jXdDzJ9PIKB3xYmJQb
-         8bew==
-X-Gm-Message-State: AOAM531J9R13KnMs3GrwMjmu6rm6dbKjb8linL9bZa7jzuNuFESgwLbs
-        jqMsYohRAZJvop6m1xlkm1dv2A==
-X-Google-Smtp-Source: ABdhPJz0WtrjOJCip7mt3F57oMADC6YJYPp4ap9cajQlDw45E7nedRqS2OqtCHvUvpJcdnhIjwCnKw==
-X-Received: by 2002:a17:902:8501:b0:15f:173:40e1 with SMTP id bj1-20020a170902850100b0015f017340e1mr23539994plb.74.1653326361089;
-        Mon, 23 May 2022 10:19:21 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id t2-20020a170902e84200b0015e8d4eb273sm5392051plg.189.2022.05.23.10.19.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 10:19:20 -0700 (PDT)
-Date:   Mon, 23 May 2022 17:19:16 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [RFC PATCH v3 03/19] KVM: x86: SVM: remove avic's broken code
- that updated APIC ID
-Message-ID: <YovCFBn5cKcv3iwD@google.com>
-References: <20220427200314.276673-1-mlevitsk@redhat.com>
- <20220427200314.276673-4-mlevitsk@redhat.com>
- <YoZr9wC2KjTFHrQ7@google.com>
- <d1df82a17e6e89ab58d5f6aa911ee2d532efee31.camel@redhat.com>
+        Mon, 23 May 2022 13:26:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABB4E22;
+        Mon, 23 May 2022 10:21:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD192B81219;
+        Mon, 23 May 2022 17:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6C0C3411C;
+        Mon, 23 May 2022 17:18:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326316;
+        bh=DNfz1o6qKb6qIfL/FrsqbiDZgTcZ8zxQ00E+YIOP5tI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YcPC848wAF+4Mr0Qb0o3z9X9I2mjQh03DT78NLpjzzQSf1mxkWDtskV/OLrrwyxVd
+         7DUaP4Hn2t0FiLzs5ICC8XgA8qo2hwtVcT7A0ym0nHL3Buxo4GqH+8gRk3WL99SpNz
+         kCLXxWpUI1RNCTU65vmBMmFDrYb+MAexZGgNOcJs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 044/132] ALSA: usb-audio: Restore Rane SL-1 quirk
+Date:   Mon, 23 May 2022 19:04:13 +0200
+Message-Id: <20220523165830.606361258@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d1df82a17e6e89ab58d5f6aa911ee2d532efee31.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022, Maxim Levitsky wrote:
-> On Thu, 2022-05-19 at 16:10 +0000, Sean Christopherson wrote:
-> > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
-> > > AVIC is now inhibited if the guest changes apic id, thus remove
-> > > that broken code.
-> > 
-> > Can you explicitly call out what's broken?  Just something short on the code not
-> > handling the scenario where APIC ID is changed back to vcpu_id to help future
-> > archaeologists.  I forget if there are other bugs...
-> > 
-> 
-> 
-> Well, the avic_handle_apic_id_update is called each time the AVIC is uninhibited,
-> because while it is inhibited, the AVIC code doesn't track changes to APIC ID and such.
-> 
-> Also there are many ways it is broken for example
-> 
-> 1. a CPU can't move its APIC ID to a free slot due to (!new) check
-> 
-> 2. If APIC ID is moved to a used slot, then the CPU that used that overwritten
-> slot can't correctly move it, since its now not its slot, not to mention races.
+From: Takashi Iwai <tiwai@suse.de>
 
-The more the merrier :-)  Any/all of those examples are great, just so long as it's
-obvious to future readers that the code truly is busted.
+commit 5c62383c06837b5719cd5447a5758b791279e653 upstream.
 
-> BTW, if you see a value in it, I can fix this code instead - a lock + going over all the apic ids,
-> should be quite easy to implement. In case of two vCPUs using the same APIC ID,
-> I can write non present entry to the table, so none will be able to be addressed,
-> hoping that the situation is only temporary.
+At cleaning up and moving the device rename from the quirk table to
+its own table, we removed the entry for Rane SL-1 as we thought it's
+only for renaming.  It turned out, however, that the quirk is required
+for matching with the device that declares itself as no standard
+audio but only as vendor-specific.
 
-Very strong "no", let's keep this as simple as possible without outright killing
-the guest or breaking ABI.  Disabling APICv/AVIC is perfect.
+Restore the quirk entry for Rane SL-1 to fix the regression.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215887
+Fixes: 5436f59bc5bc ("ALSA: usb-audio: Move device rename and profile quirks to an internal table")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220516103112.12950-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/usb/quirks-table.h |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -3235,6 +3235,15 @@ YAMAHA_DEVICE(0x7010, "UB99"),
+ 	}
+ },
+ 
++/* Rane SL-1 */
++{
++	USB_DEVICE(0x13e5, 0x0001),
++	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
++		.ifnum = QUIRK_ANY_INTERFACE,
++		.type = QUIRK_AUDIO_STANDARD_INTERFACE
++        }
++},
++
+ /* disabled due to regression for other devices;
+  * see https://bugzilla.kernel.org/show_bug.cgi?id=199905
+  */
+
+
