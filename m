@@ -2,99 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD577C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4241EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233715AbiEWJkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
+        id S233553AbiEWJk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiEWJkZ (ORCPT
+        with ESMTP id S233475AbiEWJkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:40:25 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B0F21E38;
-        Mon, 23 May 2022 02:40:25 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D30F921A0C;
-        Mon, 23 May 2022 09:40:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653298823; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OqPhQgD39nH9jn1vWntr2AG2dGogHj/8W1Qt0RQY900=;
-        b=RfqLLS1v44hQwb7YiwnKp5vE+kfJZdBNQwNmaF0gpEKyqyA+vW09tQrkor3A2j1SMkeXxd
-        Ins9UwPNYvCeH+9w7WOHg0obMlKOXNkvm4AqOeB0EJ5nIEb7BCyZUwCt2uQq5iIANLHtsL
-        dv/4+tkgYvxzPae8ce5q96MjPFGMgyo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653298823;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OqPhQgD39nH9jn1vWntr2AG2dGogHj/8W1Qt0RQY900=;
-        b=hKcyRDSq+Pml8cw64L+F1oI7n3fWsv4K6fl2GLrxFukrR8LRvclg0obUmJxusW/9Pmu/Sn
-        OJ9/4K7s+iOjO8Cw==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id B99472C141;
-        Mon, 23 May 2022 09:40:23 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 56D1FA0632; Mon, 23 May 2022 11:40:23 +0200 (CEST)
-Date:   Mon, 23 May 2022 11:40:23 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Baokun Li <libaokun1@huawei.com>
-Cc:     linux-ext4@vger.kernel.org, tytso@mit.edu,
-        adilger.kernel@dilger.ca, jack@suse.cz, ritesh.list@gmail.com,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        yebin10@huawei.com, yukuai3@huawei.com
-Subject: Re: [PATCH 2/2] ext4: correct the judgment of BUG in
- ext4_mb_normalize_request
-Message-ID: <20220523094023.e3rnile4wh7uiich@quack3.lan>
-References: <20220521134217.312071-1-libaokun1@huawei.com>
- <20220521134217.312071-3-libaokun1@huawei.com>
+        Mon, 23 May 2022 05:40:22 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC421EED9;
+        Mon, 23 May 2022 02:40:19 -0700 (PDT)
+Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MCayD-1o152Q2tDn-009keD; Mon, 23 May 2022 11:40:17 +0200
+Received: by mail-yb1-f179.google.com with SMTP id x2so24035398ybi.8;
+        Mon, 23 May 2022 02:40:17 -0700 (PDT)
+X-Gm-Message-State: AOAM533jYsDxsPXRyDKVdyfflbydYmIwRi4A/bU3dlBPnBtiArvpWuWn
+        PT6IYiRzFL4Slp6ai/6YYmEjSael8VOAdtFhr9w=
+X-Google-Smtp-Source: ABdhPJwPSWjf0+4YNJaSIgYV3+A8L+w17pCRPMTjSGU6t40/PC+JSliP4KqFNtyVOp/6cKrGh1RaU8G2YIBlaJLXrPQ=
+X-Received: by 2002:a25:c747:0:b0:64f:62fb:f55e with SMTP id
+ w68-20020a25c747000000b0064f62fbf55emr13651825ybe.106.1653298805675; Mon, 23
+ May 2022 02:40:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220521134217.312071-3-libaokun1@huawei.com>
+References: <20220522155046.260146-1-tmaimon77@gmail.com> <20220522155046.260146-19-tmaimon77@gmail.com>
+In-Reply-To: <20220522155046.260146-19-tmaimon77@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 23 May 2022 11:39:48 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1LCkM-w_Oi2qUqgq_Qxsg64uoGg5aaz=X8pBENHBhj0A@mail.gmail.com>
+Message-ID: <CAK8P3a1LCkM-w_Oi2qUqgq_Qxsg64uoGg5aaz=X8pBENHBhj0A@mail.gmail.com>
+Subject: Re: [PATCH v1 18/19] arm64: dts: nuvoton: Add initial NPCM845 EVB
+ device tree
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        robert.hancock@calian.com,
+        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>, SoC Team <soc@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:n7zvqzJoyeIQrt0t+bbdn3QVYisX2S5bXfz3u0VUhVzjsm2+x+o
+ 659/sfSLnFqNBG7X7VtbYSKUHJCRzLZl40EszBTEYhCu20ZCEsrGsEmNe7Ab7THLuGp+tMJ
+ grFXdUbW4oucpYzpzItMge4A6IxrrQMX94YKma6DD8XWZYfzC70RbHiunite5+fqf89+eXN
+ LIbl0pJkO4UAdKfAmCifw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2Z5BTVOu2s8=:cPSYfOv2MjhdvbMxTorHlS
+ rLOLv/JIQN8ZNLEEprUL4opOISkNGyOHPLhQKpnatFNPTFFK02SGwqdbwGA0rASndK3H8NgsF
+ LZN/NZTFC3UWBK9dYkR+3nhaYyNEBsujW6GSyVgBo4qjC3thY8Y7VHbAbIq4yKL5TFmEejH/c
+ rxSVFWZNU9ayduqPmLC0YauJf9eSOUEumcaGtfToKFbiLxH3PpzVdPP+mNqVH627ZJPcLyH1/
+ pZWGY73x5YfhQOG8wH2pRENhz2XhpJGDtPYQdOPRI0qEQy9B3feuoXtBT8nk4vs0RthkhUjVG
+ YTMcCHeG+PGuvjeq1PW7hCCppuC56oraAaein7sADyfAA/hkici9fEeglyVbU73OHFNqNrQqC
+ o3QzyBh6ySmIZoIMOt0GNUm8i4QF+zHvhlYKDQb/Bs1WnMv7NIj36tNEJQx6SJ/x7kGE+/+oq
+ n/QUiVPXGaEfRoxpLDRDxk6IYWCAVX0ZTbIryM7UUsH7ZWCpYlPXDmpGUBLDVxXRIMm59HZ1z
+ Pt4zHYKLBv6RwUu/+ybaRsPbj+WCF8QeUz8E+57JEvpuHEuB8dhV3GX6tlUQr4WPzKecDqqz4
+ T32am9CBSUCwexZ1cSPdYtC5Q/Trv951eX9cSIIaoujwBZAOQcvFLVj7djbC/M6ZNUgSm0WMe
+ CRMLZxuiIRLiSk990cWjlHcSxnpkVyf3vjbUChAduqG+XGP2T3WYkoUq0APyG5N4yq1GQr6Tb
+ mq6s0kHhLW6onkYm489d0lZtKdHS3W3AkyjFaMovTV7mqs5ywNjC/fIsp17D1OtR9M6boXjPy
+ OO1nH20/LhOtiqXq99IR9CUpxNLN1GkRgqFVx9OQsVJWROkdKXtTn+ST8u8/5SCfR+l+8/pJs
+ Rgkjp4U1VhoUWZ7g6s3dnRWuluTCjnnmNDLILdiVg=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 21-05-22 21:42:17, Baokun Li wrote:
-> When either of the "start + size <= ac->ac_o_ex.fe_logical" or
-> "start > ac->ac_o_ex.fe_logical" conditions is met, it indicates
-> that the fe_logical is not in the allocated range.
-> In this case, it should be bug_ON.
-> 
-> Fixes: dfe076c106f6 ("ext4: get rid of code duplication")
-> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+On Sun, May 22, 2022 at 5:50 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
+> +/ {
+> +       model = "Nuvoton npcm845 Development Board (Device Tree)";
+> +       compatible = "nuvoton,npcm845";
+> +
+> +       aliases {
+> +               serial0 = &serial0;
+> +               serial1 = &serial1;
+> +               serial2 = &serial2;
+> +               serial3 = &serial3;
+> +       };
 
-I think this is actually wrong. The original condition checks whether
-start + size does not overflow the used integer type. Your condition is
-much stronger and I don't think it always has to be true. E.g. allocation
-goal block (start variable) can be pushed to larger values by existing
-preallocation or so.
+> +               apb {
+> +                       serial0: serial@0 {
+> +                               status = "okay";
+> +                       };
+> +
+> +                       serial1: serial@1000 {
+> +                               status = "disabled";
+> +                       };
+> +
+> +                       serial2: serial@2000 {
+> +                               status = "disabled";
+> +                       };
+> +
+> +                       serial3: serial@3000 {
+> +                               status = "disabled";
+> +                       };
 
-								Honza 
+Please drop the aliases for disabled uarts. It probably also makes
+sense to have the status="disabled" properties in the .dtsi file and
+only override them when you explicitly want to enable a uart for a
+board.
 
-
-> diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-> index 32410b79b664..d0fb57970648 100644
-> --- a/fs/ext4/mballoc.c
-> +++ b/fs/ext4/mballoc.c
-> @@ -4190,7 +4190,7 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
->  	}
->  	rcu_read_unlock();
->  
-> -	if (start + size <= ac->ac_o_ex.fe_logical &&
-> +	if (start + size <= ac->ac_o_ex.fe_logical ||
->  			start > ac->ac_o_ex.fe_logical) {
->  		ext4_msg(ac->ac_sb, KERN_ERR,
->  			 "start %lu, size %lu, fe_logical %lu",
-> -- 
-> 2.31.1
-> 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+       Arnd
