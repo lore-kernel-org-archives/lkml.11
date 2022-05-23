@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 577E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243681AbiEWSKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
+        id S243721AbiEWSKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242953AbiEWRhv (ORCPT
+        with ESMTP id S242812AbiEWRhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CC562CF4;
-        Mon, 23 May 2022 10:31:56 -0700 (PDT)
+        Mon, 23 May 2022 13:37:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1762E5D64F;
+        Mon, 23 May 2022 10:31:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8C9E611E3;
-        Mon, 23 May 2022 17:30:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B22BAC385AA;
-        Mon, 23 May 2022 17:30:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ADF5B811F6;
+        Mon, 23 May 2022 17:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1E9C385A9;
+        Mon, 23 May 2022 17:29:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327037;
-        bh=rfzafBr+vzy5/aFKXEY01e5txPHPWYUG+w4QZ6RalU8=;
+        s=korg; t=1653326979;
+        bh=jMIzHqt1QTdiyQEd3y75sOxgA5an0wZmedRi1HIY8/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=izblxOUiTMJ4FXz3+YlINJ8fC9u5hFoRsbpemCPIK3EXzcXzk3CYJzts8L19tVZtV
-         +VyaGcfsY8UiueNMGrcAduyg2nDiRMqBLPQGBm1UT1aBatqfUOWzwbD3Mfc36DkRig
-         3SzD8mmNGtkkjMleWOJ2ua4kMDD5xnshMzZQ4w+w=
+        b=tk5d1bpdVlIm63C+Mu9T+hO84mn/u1N/jvlGL0c10vebak2efFxQT+hSRXVKtV4pi
+         AjGFg0G7wdHF4k2lujESn86bZYIlOKb9QE8FgQb+5PwkKia9wfiuKsS5bHXTtdpVS7
+         B3gOQCPS2KJ7HfVNuKf85PyAYK8ACbEdojUKPJME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 101/158] NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
-Date:   Mon, 23 May 2022 19:04:18 +0200
-Message-Id: <20220523165848.103053909@linuxfoundation.org>
+Subject: [PATCH 5.17 118/158] netfilter: flowtable: pass flowtable to nf_flow_table_iterate()
+Date:   Mon, 23 May 2022 19:04:35 +0200
+Message-Id: <20220523165850.431058428@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,79 +48,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 23dd4581350d4ffa23d58976ec46408f8f4c1e16 ]
+[ Upstream commit 217cff36e885627c41a14e803fc44f9cbc945767 ]
 
-There are sleep in atomic context bugs when the request to secure
-element of st-nci is timeout. The root cause is that nci_skb_alloc
-with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
-a timer handler. The call paths that could trigger bugs are shown below:
+The flowtable object is already passed as argument to
+nf_flow_table_iterate(), do use not data pointer to pass flowtable.
 
-    (interrupt context 1)
-st_nci_se_wt_timeout
-  nci_hci_send_event
-    nci_hci_send_data
-      nci_skb_alloc(..., GFP_KERNEL) //may sleep
-
-   (interrupt context 2)
-st_nci_se_wt_timeout
-  nci_hci_send_event
-    nci_hci_send_data
-      nci_send_data
-        nci_queue_tx_data_frags
-          nci_skb_alloc(..., GFP_KERNEL) //may sleep
-
-This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
-GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
-flag makes memory allocation operation could be used in atomic context.
-
-Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220517012530.75714-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/nfc/nci/data.c | 2 +-
- net/nfc/nci/hci.c  | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/netfilter/nf_flow_table_core.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
-index 6055dc9a82aa..aa5e712adf07 100644
---- a/net/nfc/nci/data.c
-+++ b/net/nfc/nci/data.c
-@@ -118,7 +118,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 58f3f77b3eb2..de783c9094d7 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -382,7 +382,8 @@ EXPORT_SYMBOL_GPL(flow_offload_lookup);
  
- 		skb_frag = nci_skb_alloc(ndev,
- 					 (NCI_DATA_HDR_SIZE + frag_len),
--					 GFP_KERNEL);
-+					 GFP_ATOMIC);
- 		if (skb_frag == NULL) {
- 			rc = -ENOMEM;
- 			goto free_exit;
-diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
-index 19703a649b5a..78c4b6addf15 100644
---- a/net/nfc/nci/hci.c
-+++ b/net/nfc/nci/hci.c
-@@ -153,7 +153,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ static int
+ nf_flow_table_iterate(struct nf_flowtable *flow_table,
+-		      void (*iter)(struct flow_offload *flow, void *data),
++		      void (*iter)(struct nf_flowtable *flowtable,
++				   struct flow_offload *flow, void *data),
+ 		      void *data)
+ {
+ 	struct flow_offload_tuple_rhash *tuplehash;
+@@ -406,7 +407,7 @@ nf_flow_table_iterate(struct nf_flowtable *flow_table,
  
- 	i = 0;
- 	skb = nci_skb_alloc(ndev, conn_info->max_pkt_payload_len +
--			    NCI_DATA_HDR_SIZE, GFP_KERNEL);
-+			    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
- 	if (!skb)
- 		return -ENOMEM;
+ 		flow = container_of(tuplehash, struct flow_offload, tuplehash[0]);
  
-@@ -184,7 +184,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
- 		if (i < data_len) {
- 			skb = nci_skb_alloc(ndev,
- 					    conn_info->max_pkt_payload_len +
--					    NCI_DATA_HDR_SIZE, GFP_KERNEL);
-+					    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
- 			if (!skb)
- 				return -ENOMEM;
+-		iter(flow, data);
++		iter(flow_table, flow, data);
+ 	}
+ 	rhashtable_walk_stop(&hti);
+ 	rhashtable_walk_exit(&hti);
+@@ -434,10 +435,9 @@ static bool nf_flow_has_stale_dst(struct flow_offload *flow)
+ 	       flow_offload_stale_dst(&flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple);
+ }
  
+-static void nf_flow_offload_gc_step(struct flow_offload *flow, void *data)
++static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
++				    struct flow_offload *flow, void *data)
+ {
+-	struct nf_flowtable *flow_table = data;
+-
+ 	if (nf_flow_has_expired(flow) ||
+ 	    nf_ct_is_dying(flow->ct) ||
+ 	    nf_flow_has_stale_dst(flow))
+@@ -462,7 +462,7 @@ static void nf_flow_offload_work_gc(struct work_struct *work)
+ 	struct nf_flowtable *flow_table;
+ 
+ 	flow_table = container_of(work, struct nf_flowtable, gc_work.work);
+-	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
++	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
+ 	queue_delayed_work(system_power_efficient_wq, &flow_table->gc_work, HZ);
+ }
+ 
+@@ -578,7 +578,8 @@ int nf_flow_table_init(struct nf_flowtable *flowtable)
+ }
+ EXPORT_SYMBOL_GPL(nf_flow_table_init);
+ 
+-static void nf_flow_table_do_cleanup(struct flow_offload *flow, void *data)
++static void nf_flow_table_do_cleanup(struct nf_flowtable *flow_table,
++				     struct flow_offload *flow, void *data)
+ {
+ 	struct net_device *dev = data;
+ 
+@@ -620,11 +621,10 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
+ 
+ 	cancel_delayed_work_sync(&flow_table->gc_work);
+ 	nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, NULL);
+-	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
++	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
+ 	nf_flow_table_offload_flush(flow_table);
+ 	if (nf_flowtable_hw_offload(flow_table))
+-		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step,
+-				      flow_table);
++		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
+ 	rhashtable_destroy(&flow_table->rhashtable);
+ }
+ EXPORT_SYMBOL_GPL(nf_flow_table_free);
 -- 
 2.35.1
 
