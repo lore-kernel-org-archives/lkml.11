@@ -2,271 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E46C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6417C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237692AbiEWPUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
+        id S237730AbiEWPUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237573AbiEWPUI (ORCPT
+        with ESMTP id S237681AbiEWPUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:20:08 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAA75DA69;
-        Mon, 23 May 2022 08:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653319207; x=1684855207;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PbNyLowZXXyeR9OxM1xpX367cO5XzR8kGQzWfh6uwwU=;
-  b=W/YY8/PECOJKL7iU21kDnCHLTzwA63tY8w9AnEEjlvuOlfPksgCzTXkS
-   A9BSyrpx8E5VyYsRhzBNmEyJ90Xd60hb7wMz5RfxTFsGwH4q9AeyGPCLH
-   7IsGxLK7wSH+vgwhXDhD2chjE2CNiFT7Ht5syXExJetPtdmOfh/eGvwg+
-   RHs4eJN8cxBqBWHOixVXWNHww+lG3EbIuxOLclqAnoSoMf3lj862hI94y
-   FtDhCTA7MvWbs8jbWR3YOUkrSMKUnSe7PqAxVHhk8LP6VkOODiZ7Z916m
-   O0nSZHIWqDbTlGp02xYcP486prLneYcj+KH/E5M4sXUr280miuS5uqH57
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="333897855"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="333897855"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 08:20:07 -0700
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="548021388"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 08:20:07 -0700
-Date:   Mon, 23 May 2022 08:23:59 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 4/6] iommu: Add PASID support for DMA mapping API
- users
-Message-ID: <20220523082359.74fb435b@jacob-builder>
-In-Reply-To: <BL1PR11MB5271E995E160E0C6A6C0C89A8CD49@BL1PR11MB5271.namprd11.prod.outlook.com>
-References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
-        <20220518182120.1136715-5-jacob.jun.pan@linux.intel.com>
-        <BL1PR11MB5271E995E160E0C6A6C0C89A8CD49@BL1PR11MB5271.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 23 May 2022 11:20:48 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515085DA79;
+        Mon, 23 May 2022 08:20:47 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id w200so13983169pfc.10;
+        Mon, 23 May 2022 08:20:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/Inwr04zz5evYrUoXhEX7FCvYRzx8i5GqA3k3ATkNs=;
+        b=U8EA5fTmJXhERlLZ4BOZWIAaMdCQQGa+myhcNaM9kllBj7/CnKkKIObXyKQa1PNiG7
+         1jnE/Eqygwm8GayKACdjKiZtfFvEZCFuyRFgwEFkQFPJpDGxOV8zPkBb111RAmZC65mV
+         CHQWaLGPLrlX0PGEhi8Gyy21gtZwS+Cb/FVq1htf2/jfpFyYO9BVO2GiGQkypWiQMIcF
+         tkq+JgF0Lc90WOUsv0moDrs9jzyZJfA2WAtsaufMT6c5HJ1bhNWBOMWT/M6xUhwO6rK0
+         xDBXKrX5a6XvlEDPD3ZWCR5V+1wy0fx5N2r4omxifvSgDnk4eidRGni6h1b2ROaAQKbg
+         AP3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/Inwr04zz5evYrUoXhEX7FCvYRzx8i5GqA3k3ATkNs=;
+        b=xmN8DbGNSmuW9NpUQwEn631PF7j6CerdcHXm91oS4A/4mQlHC3WuJrIMdq8FnbgevN
+         FXktgT7RLMYWdu8zZKjuJAxrLfp779K/lRpHUc8at6l1UNx0IK2eVu0V6PLkeRanVR22
+         BlK3QGpGgyNzHEr6ScdhxAmLvTyTo6YX75ClRUN5n0n1MM369S884fn/VjaNodwyiq9S
+         4tJybJPE21G3BdqhAgzS99G3kP8TpCM1c8NvXFqkQRjjTyrQCrEDV6HN15BkJ8zJbnh/
+         2VrjlrkhoKi9Mq0XUbikbrnLvAvdMA1yBcJ8TrIcicuhpAm4pdB+u7y9hyVR5eHRmRiD
+         Gy/Q==
+X-Gm-Message-State: AOAM532UizrzVgiAIg8MH9mH0pZXo2CYBd+lSiFwHXEpyuCDVCfNLIl6
+        psRRkoWbDIqYpP44pWnXWjZotbTyVdOYwQ==
+X-Google-Smtp-Source: ABdhPJxvvXJG0l5AKxskSnSV89HBpYiemGVnoAQea8WztiAzfZ/nSLNRoxvgYc0KgSejg1XFfxGELw==
+X-Received: by 2002:a05:6a00:1826:b0:518:4c8b:c5db with SMTP id y38-20020a056a00182600b005184c8bc5dbmr19660600pfa.22.1653319246872;
+        Mon, 23 May 2022 08:20:46 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id a2-20020a1709027e4200b001620db30cd6sm4714465pln.201.2022.05.23.08.20.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 08:20:46 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Joseph Lo <josephl@nvidia.com>,
+        Stephen Warren <swarren@nvidia.com>,
+        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ARM: tegra: Fix refcount leak in tegra114_gic_cpu_pm_registration
+Date:   Mon, 23 May 2022 19:20:36 +0400
+Message-Id: <20220523152037.16078-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kevin,
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-On Mon, 23 May 2022 08:25:33 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+Fixes: 7e8b15dbc392 ("ARM: tegra114: Reprogram GIC CPU interface to bypass IRQ on CPU PM entry")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ arch/arm/mach-tegra/irq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Thursday, May 19, 2022 2:21 AM
-> > 
-> > DMA mapping API is the de facto standard for in-kernel DMA. It operates
-> > on a per device/RID basis which is not PASID-aware.
-> > 
-> > Some modern devices such as Intel Data Streaming Accelerator, PASID is
-> > required for certain work submissions. To allow such devices use DMA
-> > mapping API, we need the following functionalities:
-> > 1. Provide device a way to retrieve a PASID for work submission within
-> > the kernel
-> > 2. Enable the kernel PASID on the IOMMU for the device
-> > 3. Attach the kernel PASID to the device's default DMA domain, let it
-> > be IOVA or physical address in case of pass-through.
-> > 
-> > This patch introduces a driver facing API that enables DMA API
-> > PASID usage. Once enabled, device drivers can continue to use DMA APIs
-> > as is. There is no difference in dma_handle between without PASID and
-> > with PASID.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/dma-iommu.c | 114
-> > ++++++++++++++++++++++++++++++++++++++
-> >  include/linux/dma-iommu.h |   3 +
-> >  2 files changed, 117 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > index 1ca85d37eeab..6ad7ba619ef0 100644
-> > --- a/drivers/iommu/dma-iommu.c
-> > +++ b/drivers/iommu/dma-iommu.c
-> > @@ -34,6 +34,8 @@ struct iommu_dma_msi_page {
-> >  	phys_addr_t		phys;
-> >  };
-> > 
-> > +static DECLARE_IOASID_SET(iommu_dma_pasid);
-> > +
-> >  enum iommu_dma_cookie_type {
-> >  	IOMMU_DMA_IOVA_COOKIE,
-> >  	IOMMU_DMA_MSI_COOKIE,
-> > @@ -370,6 +372,118 @@ void iommu_put_dma_cookie(struct
-> > iommu_domain *domain)
-> >  	domain->iova_cookie = NULL;
-> >  }
-> > 
-> > +/* Protect iommu_domain DMA PASID data */
-> > +static DEFINE_MUTEX(dma_pasid_lock);
-> > +/**
-> > + * iommu_attach_dma_pasid --Attach a PASID for in-kernel DMA. Use the
-> > device's
-> > + * DMA domain.
-> > + * @dev: Device to be enabled
-> > + * @pasid: The returned kernel PASID to be used for DMA
-> > + *
-> > + * DMA request with PASID will be mapped the same way as the legacy
-> > DMA.
-> > + * If the device is in pass-through, PASID will also pass-through. If
-> > the
-> > + * device is in IOVA, the PASID will point to the same IOVA page table.
-> > + *
-> > + * @return err code or 0 on success
-> > + */
-> > +int iommu_attach_dma_pasid(struct device *dev, ioasid_t *pasid)  
-> 
-> iommu_attach_dma_domain_pasid? 'dma_pasid' is too broad from
-> a API p.o.v.
-> 
-I agree dma_pasid is too broad, technically it is dma_api_pasid but seems
-too long.
-My concern with dma_domain_pasid is that the pasid can also be used for
-identity domain.
+diff --git a/arch/arm/mach-tegra/irq.c b/arch/arm/mach-tegra/irq.c
+index 4e1ee70b2a3f..d51bdd46219e 100644
+--- a/arch/arm/mach-tegra/irq.c
++++ b/arch/arm/mach-tegra/irq.c
+@@ -73,7 +73,7 @@ static void __init tegra114_gic_cpu_pm_registration(void)
+ 		return;
+ 
+ 	tegra_gic_cpu_base = of_iomap(dn, 1);
+-
++	of_node_put(dn);
+ 	cpu_pm_register_notifier(&tegra_gic_notifier_block);
+ }
+ #else
+-- 
+2.25.1
 
-> > +{
-> > +	struct iommu_domain *dom;
-> > +	ioasid_t id, max;
-> > +	int ret = 0;
-> > +
-> > +	dom = iommu_get_domain_for_dev(dev);
-> > +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
-> > +		return -ENODEV;
-> > +
-> > +	/* Only support domain types that DMA API can be used */
-> > +	if (dom->type == IOMMU_DOMAIN_UNMANAGED ||
-> > +	    dom->type == IOMMU_DOMAIN_BLOCKED) {
-> > +		dev_warn(dev, "Invalid domain type %d", dom->type);
-> > +		return -EPERM;
-> > +	}  
-> 
-> WARN_ON.
-> 
-> and probably we can just check whether domain is default domain here.
-> 
-good point, I will just use
-struct iommu_domain *def_domain = iommu_get_dma_domain(dev);
-
-> > +
-> > +	mutex_lock(&dma_pasid_lock);
-> > +	id = dom->dma_pasid;
-> > +	if (!id) {
-> > +		/*
-> > +		 * First device to use PASID in its DMA domain,
-> > allocate
-> > +		 * a single PASID per DMA domain is all we need, it is
-> > also
-> > +		 * good for performance when it comes down to IOTLB
-> > flush.
-> > +		 */
-> > +		max = 1U << dev->iommu->pasid_bits;
-> > +		if (!max) {
-> > +			ret = -EINVAL;
-> > +			goto done_unlock;
-> > +		}
-> > +
-> > +		id = ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
-> > +		if (id == INVALID_IOASID) {
-> > +			ret = -ENOMEM;
-> > +			goto done_unlock;
-> > +		}
-> > +
-> > +		dom->dma_pasid = id;
-> > +		atomic_set(&dom->dma_pasid_users, 1);  
-> 
-> this is always accessed with lock held hence no need to be atomic.
-> 
-good catch, will fix
-
-> > +	}
-> > +
-> > +	ret = iommu_attach_device_pasid(dom, dev, id);
-> > +	if (!ret) {
-> > +		*pasid = id;
-> > +		atomic_inc(&dom->dma_pasid_users);
-> > +		goto done_unlock;
-> > +	}
-> > +
-> > +	if (atomic_dec_and_test(&dom->dma_pasid_users)) {
-> > +		ioasid_free(id);
-> > +		dom->dma_pasid = 0;
-> > +	}
-> > +done_unlock:
-> > +	mutex_unlock(&dma_pasid_lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL(iommu_attach_dma_pasid);
-> > +
-> > +/**
-> > + * iommu_detach_dma_pasid --Disable in-kernel DMA request with PASID
-> > + * @dev:	Device's PASID DMA to be disabled
-> > + *
-> > + * It is the device driver's responsibility to ensure no more incoming
-> > DMA
-> > + * requests with the kernel PASID before calling this function. IOMMU
-> > driver
-> > + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared
-> > and
-> > + * drained.
-> > + *
-> > + */
-> > +void iommu_detach_dma_pasid(struct device *dev)
-> > +{
-> > +	struct iommu_domain *dom;
-> > +	ioasid_t pasid;
-> > +
-> > +	dom = iommu_get_domain_for_dev(dev);
-> > +	if (WARN_ON(!dom || !dom->ops || !dom->ops->detach_dev_pasid))
-> > +		return;
-> > +
-> > +	/* Only support DMA API managed domain type */
-> > +	if (WARN_ON(dom->type == IOMMU_DOMAIN_UNMANAGED ||
-> > +		    dom->type == IOMMU_DOMAIN_BLOCKED))
-> > +		return;
-> > +
-> > +	mutex_lock(&dma_pasid_lock);
-> > +	pasid = iommu_get_pasid_from_domain(dev, dom);
-> > +	if (!pasid || pasid == INVALID_IOASID) {
-> > +		dev_err(dev, "No valid DMA PASID attached\n");
-> > +		mutex_unlock(&dma_pasid_lock);
-> > +		return;
-> > +	}  
-> 
-> here just use dom->dma_pasid and let iommu driver to figure out
-> underlying whether this device has been attached to the domain
-> with the said pasid.
-> 
-Yeah, I am checking the pasid matching in the iommu driver. My thinking is
-that here is a quick sanity check in the common code to rule out invalid value.
-
-
-Thanks a lot!
-
-
-Jacob
