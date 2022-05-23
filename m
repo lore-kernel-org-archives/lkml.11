@@ -2,183 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A754AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 22:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3719C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 22:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbiEWWQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 18:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57066 "EHLO
+        id S229728AbiEWWSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 18:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiEWWQ5 (ORCPT
+        with ESMTP id S229522AbiEWWSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 18:16:57 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B313978929;
-        Mon, 23 May 2022 15:16:56 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id s14so14283397plk.8;
-        Mon, 23 May 2022 15:16:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=pJTRgXjYxPKGivC1ddsBnyqDyotE4GS4vzjjb/S5WBE=;
-        b=ESCC6/40VtCzAGtorsLZn0r0V2dBdWiAOt/cG6gTdpQvsDw+mGlgVg7Rk53aHsoQQp
-         0+uIQkSr3+LV3ofNC3mJgx8gX9WwjMSSnmnZddXeQKgw56PdhYP6Dpkq7qNvcqOfJqdv
-         T7SdjCVb57q7FlX/b0P0C7c5IJDFGC2tczw4YqAlFOIc7KvyWtLLtVdSccSr234CejTZ
-         /zPS5dQ3UeU2+8yW1jlkkiuqf4goS0Lz/gAX8rZ5QdmW7/pF94+serdUK5wna9OzJ/gb
-         /RRupefhXyaSG4Ep9gxcObKqnFHrT/5dS5XIwIukTLs3fzer6b5uHSKFz2pWYneFUqUa
-         Wp8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=pJTRgXjYxPKGivC1ddsBnyqDyotE4GS4vzjjb/S5WBE=;
-        b=eDTwiql2C2rmUmBwa0s7bqfoMku8ACch4yFs5Sp1AUhLan/UmGLxAFP/9OuGrcs8GH
-         qcvqvhlZymf91fnMKyVmUUlB6Vzy3E7DgXOuKHwWmDM/ORA4QPTTdtgJEdZhM97iSs+X
-         DvdDCh5D5erYYpSZRhBS9HaKiNHo6yZF2AXVaoqNXZCC3MOJdZKr1Y3Zbql8cL73R1WL
-         PSVOJC2YLrl2pJ1boNZtEo7MpftX6VPKxTqyYaN8MaoVtZL21UVY2cZpTrVllAC9bT2D
-         rSAFmZlgalH3/oIcmDi+7XzNBgm4pFcgnjH1faevvJu1Vv0h7p/ciCFw/YNYStoGmzDT
-         EoNQ==
-X-Gm-Message-State: AOAM5306L2Xzbx2nvymB0JSwbcYqi6V/Th2xZGiRdQh8cixuQI8r/G2b
-        04ucGWPm4DkTDwkAL6nXPhyTrhHyUeo=
-X-Google-Smtp-Source: ABdhPJzOKCF/I42KUqWTL8cfnDA/0/qAdvt/GNLcSeZ9wgnwBO24anbaidWzuyLvAGG0ZvkiJfSv4A==
-X-Received: by 2002:a17:90a:aa8c:b0:1df:359a:1452 with SMTP id l12-20020a17090aaa8c00b001df359a1452mr1170029pjq.75.1653344213190;
-        Mon, 23 May 2022 15:16:53 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:ce25:f34f:c90d:61fa])
-        by smtp.gmail.com with ESMTPSA id ck18-20020a17090afe1200b001cb6527ca39sm214063pjb.0.2022.05.23.15.16.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 15:16:52 -0700 (PDT)
-Date:   Mon, 23 May 2022 15:16:49 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     linux-input@vger.kernel.org
-Cc:     Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Input: mtk-pmic-keys - use single update when configuring
- long press behavior
-Message-ID: <YowH0Q5HAGU7Grx2@google.com>
+        Mon, 23 May 2022 18:18:08 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A977980A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 15:18:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653344287; x=1684880287;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=op0Iwek8NGbwkxNZpnj8NsKU2hi/WA+IMvCT2cWJKuU=;
+  b=ff2x3bwsSogAuGu1P1K2Bb+Mwchu0Qyqp09NWjzmYANu5yZtQcb8sbdv
+   HMPs1kHd5BU06E4WuGvQ/+HTBZGfTrJhaYc5lMCJI12JuaD5fl+ysIUWJ
+   LyAqtPUIRL+SL9DIrwvYU6Pns7dvO4XL6NDN7uYMXrwex5JT80selD87r
+   mf5frSxd4Fu/g+bz7+qUrIOu32+4EWFofiY2FevE9g4aImEtY6RBkUjhk
+   HzAjcHPqysphccrEbKMlL51BEjNxXfUhaVYDI01en0Li7T2FiphRvdlkG
+   8bpYlgKYwCELct4f5xbYGrSbxanh+kfpOccYgUe1NOPCVsfQPfq1NNme4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="359769660"
+X-IronPort-AV: E=Sophos;i="5.91,247,1647327600"; 
+   d="scan'208";a="359769660"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 15:18:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,247,1647327600"; 
+   d="scan'208";a="716917439"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 23 May 2022 15:18:04 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntGNH-0001U8-OY;
+        Mon, 23 May 2022 22:18:03 +0000
+Date:   Tue, 24 May 2022 06:17:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>, catalin.marinas@arm.com,
+        will@kernel.org, akpm@linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, linux-mm@kvack.org, hch@infradead.org,
+        arnd@arndb.de, anshuman.khandual@arm.com,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
+Message-ID: <202205240657.BXxrhbgp-lkp@intel.com>
+References: <20220519082552.117736-5-wangkefeng.wang@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220519082552.117736-5-wangkefeng.wang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of doing 3 read-modify-write operations when configuring behavior
-of long-press, consolidate everything into one.
+Hi Kefeng,
 
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
----
- drivers/input/keyboard/mtk-pmic-keys.c | 71 ++++++++++----------------
- 1 file changed, 28 insertions(+), 43 deletions(-)
+Thank you for the patch! Perhaps something to improve:
 
-diff --git a/drivers/input/keyboard/mtk-pmic-keys.c b/drivers/input/keyboard/mtk-pmic-keys.c
-index c31ab4368388..d2f0db245ff6 100644
---- a/drivers/input/keyboard/mtk-pmic-keys.c
-+++ b/drivers/input/keyboard/mtk-pmic-keys.c
-@@ -18,17 +18,11 @@
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
- 
--#define MTK_PMIC_PWRKEY_RST_EN_MASK	0x1
--#define MTK_PMIC_PWRKEY_RST_EN_SHIFT	6
--#define MTK_PMIC_HOMEKEY_RST_EN_MASK	0x1
--#define MTK_PMIC_HOMEKEY_RST_EN_SHIFT	5
--#define MTK_PMIC_RST_DU_MASK		0x3
--#define MTK_PMIC_RST_DU_SHIFT		8
--
--#define MTK_PMIC_PWRKEY_RST		\
--	(MTK_PMIC_PWRKEY_RST_EN_MASK << MTK_PMIC_PWRKEY_RST_EN_SHIFT)
--#define MTK_PMIC_HOMEKEY_RST		\
--	(MTK_PMIC_HOMEKEY_RST_EN_MASK << MTK_PMIC_HOMEKEY_RST_EN_SHIFT)
-+#define MTK_PMIC_RST_DU_MASK	GENMASK(9, 8)
-+#define MTK_PMIC_RST_DU_SHIFT	8
-+#define MTK_PMIC_RST_KEY_MASK	GENMASK(6, 5)
-+#define MTK_PMIC_PWRKEY_RST	BIT(6)
-+#define MTK_PMIC_HOMEKEY_RST	BIT(5)
- 
- #define MTK_PMIC_PWRKEY_INDEX	0
- #define MTK_PMIC_HOMEKEY_INDEX	1
-@@ -108,53 +102,44 @@ enum mtk_pmic_keys_lp_mode {
- };
- 
- static void mtk_pmic_keys_lp_reset_setup(struct mtk_pmic_keys *keys,
--		u32 pmic_rst_reg)
-+					 u32 pmic_rst_reg)
- {
--	int ret;
- 	u32 long_press_mode, long_press_debounce;
-+	u32 value, mask;
-+	int error;
- 
--	ret = of_property_read_u32(keys->dev->of_node,
--		"power-off-time-sec", &long_press_debounce);
--	if (ret)
-+	error = of_property_read_u32(keys->dev->of_node, "power-off-time-sec",
-+				     &long_press_debounce);
-+	if (error)
- 		long_press_debounce = 0;
- 
--	regmap_update_bits(keys->regmap, pmic_rst_reg,
--			   MTK_PMIC_RST_DU_MASK << MTK_PMIC_RST_DU_SHIFT,
--			   long_press_debounce << MTK_PMIC_RST_DU_SHIFT);
-+	mask = MTK_PMIC_RST_DU_MASK;
-+	value = long_press_debounce << MTK_PMIC_RST_DU_SHIFT;
- 
--	ret = of_property_read_u32(keys->dev->of_node,
--		"mediatek,long-press-mode", &long_press_mode);
--	if (ret)
-+	error  = of_property_read_u32(keys->dev->of_node,
-+				      "mediatek,long-press-mode",
-+				      &long_press_mode);
-+	if (error)
- 		long_press_mode = LP_DISABLE;
- 
- 	switch (long_press_mode) {
--	case LP_ONEKEY:
--		regmap_update_bits(keys->regmap, pmic_rst_reg,
--				   MTK_PMIC_PWRKEY_RST,
--				   MTK_PMIC_PWRKEY_RST);
--		regmap_update_bits(keys->regmap, pmic_rst_reg,
--				   MTK_PMIC_HOMEKEY_RST,
--				   0);
--		break;
- 	case LP_TWOKEY:
--		regmap_update_bits(keys->regmap, pmic_rst_reg,
--				   MTK_PMIC_PWRKEY_RST,
--				   MTK_PMIC_PWRKEY_RST);
--		regmap_update_bits(keys->regmap, pmic_rst_reg,
--				   MTK_PMIC_HOMEKEY_RST,
--				   MTK_PMIC_HOMEKEY_RST);
--		break;
-+		value |= MTK_PMIC_HOMEKEY_RST;
-+		fallthrough;
-+
-+	case LP_ONEKEY:
-+		value |= MTK_PMIC_PWRKEY_RST;
-+		fallthrough;
-+
- 	case LP_DISABLE:
--		regmap_update_bits(keys->regmap, pmic_rst_reg,
--				   MTK_PMIC_PWRKEY_RST,
--				   0);
--		regmap_update_bits(keys->regmap, pmic_rst_reg,
--				   MTK_PMIC_HOMEKEY_RST,
--				   0);
-+		mask |= MTK_PMIC_RST_KEY_MASK;
- 		break;
-+
- 	default:
- 		break;
- 	}
-+
-+	regmap_update_bits(keys->regmap, pmic_rst_reg, mask, value);
- }
- 
- static irqreturn_t mtk_pmic_keys_irq_handler_thread(int irq, void *data)
--- 
-2.36.1.124.g0e6072fb45-goog
+[auto build test WARNING on arm64/for-next/core]
+[also build test WARNING on arnd-asm-generic/master akpm-mm/mm-everything linus/master v5.18 next-20220523]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Kefeng-Wang/arm64-Cleanup-ioremap-and-support-ioremap_prot/20220519-161853
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
+config: csky-randconfig-s032-20220522 (https://download.01.org/0day-ci/archive/20220524/202205240657.BXxrhbgp-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/eb83d30756d3b279ca58791d343dc821291818d0
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Kefeng-Wang/arm64-Cleanup-ioremap-and-support-ioremap_prot/20220519-161853
+        git checkout eb83d30756d3b279ca58791d343dc821291818d0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=csky SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> mm/ioremap.c:59:16: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const *addr @@     got void [noderef] __iomem *vaddr @@
+   mm/ioremap.c:59:16: sparse:     expected void const *addr
+   mm/ioremap.c:59:16: sparse:     got void [noderef] __iomem *vaddr
+
+vim +59 mm/ioremap.c
+
+    51	
+    52	void iounmap(volatile void __iomem *addr)
+    53	{
+    54		void __iomem *vaddr = (void __iomem *)((unsigned long)addr & PAGE_MASK);
+    55	
+    56		if (arch_iounmap(vaddr))
+    57			return;
+    58	
+  > 59		vunmap(vaddr);
 
 -- 
-Dmitry
+0-DAY CI Kernel Test Service
+https://01.org/lkp
