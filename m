@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A7EC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6229C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239927AbiEWRL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
+        id S239708AbiEWRMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239778AbiEWRJc (ORCPT
+        with ESMTP id S239705AbiEWRKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:09:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A2D6B7FB;
-        Mon, 23 May 2022 10:09:18 -0700 (PDT)
+        Mon, 23 May 2022 13:10:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35826B674;
+        Mon, 23 May 2022 10:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58E20614CA;
-        Mon, 23 May 2022 17:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8ABC385A9;
-        Mon, 23 May 2022 17:09:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83109B81203;
+        Mon, 23 May 2022 17:09:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D99A6C385A9;
+        Mon, 23 May 2022 17:09:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325756;
-        bh=LkA17hzzJijQ7CVFwahTC4LG/nHwLX3KyfRr/bmHCW0=;
+        s=korg; t=1653325796;
+        bh=k25EnSYBuBHACKjBV50Gd+fEfovRN5hpv6egPbQrWPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1dpONGBA7JXOaTjSVMEnS4oekwc5udcVvQPYuSMkSECCR9DlZsB6SyegewpTOw5+a
-         vTklF/btcwSuSB7/Iu/YCiKNhW2MrRqULbX8ELLVzpCKye56yMQK8+y3Ja9D8agnxA
-         RC2hUIedWhfC4hBxM82ngWo4KkyBVc6vda7dSxS8=
+        b=017YhRiQEkA5vhv+0Sgl/mPZk3cXFa7zPrfuw4Zz67R+JAQ41Ffvx1dE+QBlrcMqK
+         bi2MeqV6h9Xz17gz0y33/ZREflGUWjCAKthZx8NsSKygo/w9WnEQ5FDTfihMR2ANUG
+         1qLBRjhseq5fCmwu4ummT9ujY71c1PwzEaLqP/S0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 32/33] swiotlb: fix info leak with DMA_FROM_DEVICE
-Date:   Mon, 23 May 2022 19:05:21 +0200
-Message-Id: <20220523165753.549536320@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 06/44] MIPS: lantiq: check the return value of kzalloc()
+Date:   Mon, 23 May 2022 19:04:50 +0200
+Message-Id: <20220523165754.589700916@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
-References: <20220523165746.957506211@linuxfoundation.org>
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+References: <20220523165752.797318097@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,106 +49,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Halil Pasic <pasic@linux.ibm.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-commit ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e upstream.
+[ Upstream commit 34123208bbcc8c884a0489f543a23fe9eebb5514 ]
 
-The problem I'm addressing was discovered by the LTP test covering
-cve-2018-1000204.
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check the
+return value of it to prevent potential wrong memory access or
+memory leak.
 
-A short description of what happens follows:
-1) The test case issues a command code 00 (TEST UNIT READY) via the SG_IO
-   interface with: dxfer_len == 524288, dxdfer_dir == SG_DXFER_FROM_DEV
-   and a corresponding dxferp. The peculiar thing about this is that TUR
-   is not reading from the device.
-2) In sg_start_req() the invocation of blk_rq_map_user() effectively
-   bounces the user-space buffer. As if the device was to transfer into
-   it. Since commit a45b599ad808 ("scsi: sg: allocate with __GFP_ZERO in
-   sg_build_indirect()") we make sure this first bounce buffer is
-   allocated with GFP_ZERO.
-3) For the rest of the story we keep ignoring that we have a TUR, so the
-   device won't touch the buffer we prepare as if the we had a
-   DMA_FROM_DEVICE type of situation. My setup uses a virtio-scsi device
-   and the  buffer allocated by SG is mapped by the function
-   virtqueue_add_split() which uses DMA_FROM_DEVICE for the "in" sgs (here
-   scatter-gather and not scsi generics). This mapping involves bouncing
-   via the swiotlb (we need swiotlb to do virtio in protected guest like
-   s390 Secure Execution, or AMD SEV).
-4) When the SCSI TUR is done, we first copy back the content of the second
-   (that is swiotlb) bounce buffer (which most likely contains some
-   previous IO data), to the first bounce buffer, which contains all
-   zeros.  Then we copy back the content of the first bounce buffer to
-   the user-space buffer.
-5) The test case detects that the buffer, which it zero-initialized,
-  ain't all zeros and fails.
-
-One can argue that this is an swiotlb problem, because without swiotlb
-we leak all zeros, and the swiotlb should be transparent in a sense that
-it does not affect the outcome (if all other participants are well
-behaved).
-
-Copying the content of the original buffer into the swiotlb buffer is
-the only way I can think of to make swiotlb transparent in such
-scenarios. So let's do just that if in doubt, but allow the driver
-to tell us that the whole mapped buffer is going to be overwritten,
-in which case we can preserve the old behavior and avoid the performance
-impact of the extra bounce.
-
-Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-[OP: backport to 4.14: apply swiotlb_tbl_map_single() changes in lib/swiotlb.c]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/DMA-attributes.txt |   10 ++++++++++
- include/linux/dma-mapping.h      |    8 ++++++++
- lib/swiotlb.c                    |    3 ++-
- 3 files changed, 20 insertions(+), 1 deletion(-)
+ arch/mips/lantiq/falcon/sysctrl.c |  2 ++
+ arch/mips/lantiq/xway/gptu.c      |  2 ++
+ arch/mips/lantiq/xway/sysctrl.c   | 46 ++++++++++++++++++++-----------
+ 3 files changed, 34 insertions(+), 16 deletions(-)
 
---- a/Documentation/DMA-attributes.txt
-+++ b/Documentation/DMA-attributes.txt
-@@ -156,3 +156,13 @@ accesses to DMA buffers in both privileg
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
-+
-+DMA_ATTR_PRIVILEGED
-+-------------------
-+
-+Some advanced peripherals such as remote processors and GPUs perform
-+accesses to DMA buffers in both privileged "supervisor" and unprivileged
-+"user" modes.  This attribute is used to indicate to the DMA-mapping
-+subsystem that the buffer is fully accessible at the elevated privilege
-+level (and ideally inaccessible or at least read-only at the
-+lesser-privileged levels).
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -71,6 +71,14 @@
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
+index 82bbd0e2e298..714d92659489 100644
+--- a/arch/mips/lantiq/falcon/sysctrl.c
++++ b/arch/mips/lantiq/falcon/sysctrl.c
+@@ -169,6 +169,8 @@ static inline void clkdev_add_sys(const char *dev, unsigned int module,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
- /*
-+ * This is a hint to the DMA-mapping subsystem that the device is expected
-+ * to overwrite the entire mapped size, thus the caller does not require any
-+ * of the previous buffer contents to be preserved. This allows
-+ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-+ */
-+#define DMA_ATTR_OVERWRITE		(1UL << 10)
-+
-+/*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.
-  * It can be given to a device to use as a DMA source or target.  A CPU cannot
-  * reference a dma_addr_t directly because there may be translation between
---- a/lib/swiotlb.c
-+++ b/lib/swiotlb.c
-@@ -601,7 +601,8 @@ found:
- 	for (i = 0; i < nslots; i++)
- 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
-+	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
-+	    dir == DMA_BIDIRECTIONAL))
- 		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = NULL;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/gptu.c b/arch/mips/lantiq/xway/gptu.c
+index e304aabd6678..7d4081d67d61 100644
+--- a/arch/mips/lantiq/xway/gptu.c
++++ b/arch/mips/lantiq/xway/gptu.c
+@@ -124,6 +124,8 @@ static inline void clkdev_add_gptu(struct device *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
- 	return tlb_addr;
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev_name(dev);
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+index e0af39b33e28..293ebb833659 100644
+--- a/arch/mips/lantiq/xway/sysctrl.c
++++ b/arch/mips/lantiq/xway/sysctrl.c
+@@ -313,6 +313,8 @@ static void clkdev_add_pmu(const char *dev, const char *con, bool deactivate,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -336,6 +338,8 @@ static void clkdev_add_cgu(const char *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -354,24 +358,28 @@ static void clkdev_add_pci(void)
+ 	struct clk *clk_ext = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
+ 	/* main pci clock */
+-	clk->cl.dev_id = "17000000.pci";
+-	clk->cl.con_id = NULL;
+-	clk->cl.clk = clk;
+-	clk->rate = CLOCK_33M;
+-	clk->rates = valid_pci_rates;
+-	clk->enable = pci_enable;
+-	clk->disable = pmu_disable;
+-	clk->module = 0;
+-	clk->bits = PMU_PCI;
+-	clkdev_add(&clk->cl);
++	if (clk) {
++		clk->cl.dev_id = "17000000.pci";
++		clk->cl.con_id = NULL;
++		clk->cl.clk = clk;
++		clk->rate = CLOCK_33M;
++		clk->rates = valid_pci_rates;
++		clk->enable = pci_enable;
++		clk->disable = pmu_disable;
++		clk->module = 0;
++		clk->bits = PMU_PCI;
++		clkdev_add(&clk->cl);
++	}
+ 
+ 	/* use internal/external bus clock */
+-	clk_ext->cl.dev_id = "17000000.pci";
+-	clk_ext->cl.con_id = "external";
+-	clk_ext->cl.clk = clk_ext;
+-	clk_ext->enable = pci_ext_enable;
+-	clk_ext->disable = pci_ext_disable;
+-	clkdev_add(&clk_ext->cl);
++	if (clk_ext) {
++		clk_ext->cl.dev_id = "17000000.pci";
++		clk_ext->cl.con_id = "external";
++		clk_ext->cl.clk = clk_ext;
++		clk_ext->enable = pci_ext_enable;
++		clk_ext->disable = pci_ext_disable;
++		clkdev_add(&clk_ext->cl);
++	}
+ }
+ 
+ /* xway socs can generate clocks on gpio pins */
+@@ -391,9 +399,15 @@ static void clkdev_add_clkout(void)
+ 		char *name;
+ 
+ 		name = kzalloc(sizeof("clkout0"), GFP_KERNEL);
++		if (!name)
++			continue;
+ 		sprintf(name, "clkout%d", i);
+ 
+ 		clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
++		if (!clk) {
++			kfree(name);
++			continue;
++		}
+ 		clk->cl.dev_id = "1f103000.cgu";
+ 		clk->cl.con_id = name;
+ 		clk->cl.clk = clk;
+-- 
+2.35.1
+
 
 
