@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66257C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C5CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239860AbiEWRR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
+        id S239460AbiEWRSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239910AbiEWRNI (ORCPT
+        with ESMTP id S240085AbiEWROn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:13:08 -0400
+        Mon, 23 May 2022 13:14:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132106D186;
-        Mon, 23 May 2022 10:12:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF20DEBF;
+        Mon, 23 May 2022 10:12:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2720FB81200;
-        Mon, 23 May 2022 17:11:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 797D6C385A9;
-        Mon, 23 May 2022 17:11:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DC63B811F6;
+        Mon, 23 May 2022 17:12:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9820C385AA;
+        Mon, 23 May 2022 17:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325917;
-        bh=8LPEfYxQenpH9D4InrKCnPBnl7PAFBo+jj2AGNeJ0tc=;
+        s=korg; t=1653325953;
+        bh=0bHuKlaZyD4pTHB6Ty/v9KNYAtL/A59eG8fgVGdQav4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0GAilnGC4hhL1pAgNvKqN7FVPDz7xOc4jLVhqcQ0kSfTkyPrUOeyx5fkPQ3gwwwLl
-         tul1tDpHNgm7R/yvK0thpce2BW6GusoVx5kIHIrMIRMf5mguv37i9XAIQPNlNJdjeQ
-         /iSUgZmhXy7Lh12TFkV6gCJsnXIyNSVDxddgvQtA=
+        b=H67gd2QqLOy/zoVHP6UqEWGPKGFTY3XZmzR+Aq3MOWofr+Q6+ELEhVaoBM4yhgum6
+         BTPoNPORnAmsNBvJKYJvfkbCJaFtY+dx8gFIo812eUr0YjvoMHVmxf6RNJovSh/7b1
+         vefUFlcnZWB8Wft+4JnHy9+FzTcxMM2Os9yVFjd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anton Eidelman <anton@lightbitslabs.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/68] nvme-multipath: fix hang when disk goes live over reconnect
-Date:   Mon, 23 May 2022 19:04:38 +0200
-Message-Id: <20220523165804.401178525@linuxfoundation.org>
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 5.4 21/68] mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
+Date:   Mon, 23 May 2022 19:04:48 +0200
+Message-Id: <20220523165806.139716938@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -49,165 +48,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Eidelman <anton.eidelman@gmail.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit a4a6f3c8f61c3cfbda4998ad94596059ad7e4332 ]
+commit 533a6cfe08f96a7b5c65e06d20916d552c11b256 upstream
 
-nvme_mpath_init_identify() invoked from nvme_init_identify() fetches a
-fresh ANA log from the ctrl.  This is essential to have an up to date
-path states for both existing namespaces and for those scan_work may
-discover once the ctrl is up.
+All callers of __mmc_switch() should now be specifying a valid timeout for
+the CMD6 command. However, just to be sure, let's print a warning and
+default to use the generic_cmd6_time in case the provided timeout_ms
+argument is zero.
 
-This happens in the following cases:
-  1) A new ctrl is being connected.
-  2) An existing ctrl is successfully reconnected.
-  3) An existing ctrl is being reset.
+In this context, let's also simplify some of the corresponding code and
+clarify some related comments.
 
-While in (1) ctrl->namespaces is empty, (2 & 3) may have namespaces, and
-nvme_read_ana_log() may call nvme_update_ns_ana_state().
-
-This result in a hang when the ANA state of an existing namespace changes
-and makes the disk live: nvme_mpath_set_live() issues IO to the namespace
-through the ctrl, which does NOT have IO queues yet.
-
-See sample hang below.
-
-Solution:
-- nvme_update_ns_ana_state() to call set_live only if ctrl is live
-- nvme_read_ana_log() call from nvme_mpath_init_identify()
-  therefore only fetches and parses the ANA log;
-  any erros in this process will fail the ctrl setup as appropriate;
-- a separate function nvme_mpath_update()
-  is called in nvme_start_ctrl();
-  this parses the ANA log without fetching it.
-  At this point the ctrl is live,
-  therefore, disks can be set live normally.
-
-Sample failure:
-    nvme nvme0: starting error recovery
-    nvme nvme0: Reconnecting in 10 seconds...
-    block nvme0n6: no usable path - requeuing I/O
-    INFO: task kworker/u8:3:312 blocked for more than 122 seconds.
-          Tainted: G            E     5.14.5-1.el7.elrepo.x86_64 #1
-    Workqueue: nvme-wq nvme_tcp_reconnect_ctrl_work [nvme_tcp]
-    Call Trace:
-     __schedule+0x2a2/0x7e0
-     schedule+0x4e/0xb0
-     io_schedule+0x16/0x40
-     wait_on_page_bit_common+0x15c/0x3e0
-     do_read_cache_page+0x1e0/0x410
-     read_cache_page+0x12/0x20
-     read_part_sector+0x46/0x100
-     read_lba+0x121/0x240
-     efi_partition+0x1d2/0x6a0
-     bdev_disk_changed.part.0+0x1df/0x430
-     bdev_disk_changed+0x18/0x20
-     blkdev_get_whole+0x77/0xe0
-     blkdev_get_by_dev+0xd2/0x3a0
-     __device_add_disk+0x1ed/0x310
-     device_add_disk+0x13/0x20
-     nvme_mpath_set_live+0x138/0x1b0 [nvme_core]
-     nvme_update_ns_ana_state+0x2b/0x30 [nvme_core]
-     nvme_update_ana_state+0xca/0xe0 [nvme_core]
-     nvme_parse_ana_log+0xac/0x170 [nvme_core]
-     nvme_read_ana_log+0x7d/0xe0 [nvme_core]
-     nvme_mpath_init_identify+0x105/0x150 [nvme_core]
-     nvme_init_identify+0x2df/0x4d0 [nvme_core]
-     nvme_init_ctrl_finish+0x8d/0x3b0 [nvme_core]
-     nvme_tcp_setup_ctrl+0x337/0x390 [nvme_tcp]
-     nvme_tcp_reconnect_ctrl_work+0x24/0x40 [nvme_tcp]
-     process_one_work+0x1bd/0x360
-     worker_thread+0x50/0x3d0
-
-Signed-off-by: Anton Eidelman <anton@lightbitslabs.com>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20200122142747.5690-4-ulf.hansson@linaro.org
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c      |  1 +
- drivers/nvme/host/multipath.c | 25 +++++++++++++++++++++++--
- drivers/nvme/host/nvme.h      |  4 ++++
- 3 files changed, 28 insertions(+), 2 deletions(-)
+ drivers/mmc/core/mmc_ops.c |   16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 6a9a42809f97..79e22618817d 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -4047,6 +4047,7 @@ void nvme_start_ctrl(struct nvme_ctrl *ctrl)
- 	if (ctrl->queue_count > 1) {
- 		nvme_queue_scan(ctrl);
- 		nvme_start_queues(ctrl);
-+		nvme_mpath_update(ctrl);
- 	}
- 	ctrl->created = true;
- }
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 4d615337e6e2..811f7b96b551 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -501,8 +501,17 @@ static void nvme_update_ns_ana_state(struct nvme_ana_group_desc *desc,
- 	ns->ana_grpid = le32_to_cpu(desc->grpid);
- 	ns->ana_state = desc->state;
- 	clear_bit(NVME_NS_ANA_PENDING, &ns->flags);
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -460,10 +460,6 @@ static int mmc_poll_for_busy(struct mmc_
+ 	bool expired = false;
+ 	bool busy = false;
+ 
+-	/* We have an unspecified cmd timeout, use the fallback value. */
+-	if (!timeout_ms)
+-		timeout_ms = MMC_OPS_TIMEOUT_MS;
 -
--	if (nvme_state_is_live(ns->ana_state))
-+	/*
-+	 * nvme_mpath_set_live() will trigger I/O to the multipath path device
-+	 * and in turn to this path device.  However we cannot accept this I/O
-+	 * if the controller is not live.  This may deadlock if called from
-+	 * nvme_mpath_init_identify() and the ctrl will never complete
-+	 * initialization, preventing I/O from completing.  For this case we
-+	 * will reprocess the ANA log page in nvme_mpath_update() once the
-+	 * controller is ready.
-+	 */
-+	if (nvme_state_is_live(ns->ana_state) &&
-+	    ns->ctrl->state == NVME_CTRL_LIVE)
- 		nvme_mpath_set_live(ns);
- }
+ 	/*
+ 	 * In cases when not allowed to poll by using CMD13 or because we aren't
+ 	 * capable of polling by using ->card_busy(), then rely on waiting the
+@@ -536,6 +532,12 @@ int __mmc_switch(struct mmc_card *card,
  
-@@ -586,6 +595,18 @@ static void nvme_ana_work(struct work_struct *work)
- 	nvme_read_ana_log(ctrl);
- }
+ 	mmc_retune_hold(host);
  
-+void nvme_mpath_update(struct nvme_ctrl *ctrl)
-+{
-+	u32 nr_change_groups = 0;
++	if (!timeout_ms) {
++		pr_warn("%s: unspecified timeout for CMD6 - use generic\n",
++			mmc_hostname(host));
++		timeout_ms = card->ext_csd.generic_cmd6_time;
++	}
 +
-+	if (!ctrl->ana_log_buf)
-+		return;
-+
-+	mutex_lock(&ctrl->ana_lock);
-+	nvme_parse_ana_log(ctrl, &nr_change_groups, nvme_update_ana_state);
-+	mutex_unlock(&ctrl->ana_lock);
-+}
-+
- static void nvme_anatt_timeout(struct timer_list *t)
- {
- 	struct nvme_ctrl *ctrl = from_timer(ctrl, t, anatt_timer);
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 2df90d4355b9..1d1431dd4f9e 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -551,6 +551,7 @@ void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
- void nvme_mpath_remove_disk(struct nvme_ns_head *head);
- int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id);
- void nvme_mpath_init_ctrl(struct nvme_ctrl *ctrl);
-+void nvme_mpath_update(struct nvme_ctrl *ctrl);
- void nvme_mpath_uninit(struct nvme_ctrl *ctrl);
- void nvme_mpath_stop(struct nvme_ctrl *ctrl);
- bool nvme_mpath_clear_current_path(struct nvme_ns *ns);
-@@ -648,6 +649,9 @@ static inline int nvme_mpath_init_identify(struct nvme_ctrl *ctrl,
- "Please enable CONFIG_NVME_MULTIPATH for full support of multi-port devices.\n");
- 	return 0;
- }
-+static inline void nvme_mpath_update(struct nvme_ctrl *ctrl)
-+{
-+}
- static inline void nvme_mpath_uninit(struct nvme_ctrl *ctrl)
- {
- }
--- 
-2.35.1
-
+ 	/*
+ 	 * If the cmd timeout and the max_busy_timeout of the host are both
+ 	 * specified, let's validate them. A failure means we need to prevent
+@@ -544,7 +546,7 @@ int __mmc_switch(struct mmc_card *card,
+ 	 * which also means they are on their own when it comes to deal with the
+ 	 * busy timeout.
+ 	 */
+-	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) && timeout_ms &&
++	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) &&
+ 	    host->max_busy_timeout && (timeout_ms > host->max_busy_timeout))
+ 		use_r1b_resp = false;
+ 
+@@ -556,10 +558,6 @@ int __mmc_switch(struct mmc_card *card,
+ 	cmd.flags = MMC_CMD_AC;
+ 	if (use_r1b_resp) {
+ 		cmd.flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
+-		/*
+-		 * A busy_timeout of zero means the host can decide to use
+-		 * whatever value it finds suitable.
+-		 */
+ 		cmd.busy_timeout = timeout_ms;
+ 	} else {
+ 		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
 
 
