@@ -2,179 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2208C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235893AbiEWNFJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:05:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        id S235891AbiEWNFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235876AbiEWNFB (ORCPT
+        with ESMTP id S235856AbiEWNFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:05:01 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F1449931;
-        Mon, 23 May 2022 06:04:59 -0700 (PDT)
-Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L6HZB1l6Pz1JCF7;
-        Mon, 23 May 2022 21:03:14 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 21:04:42 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
- 2022 21:04:41 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <jack@suse.cz>, <tj@kernel.org>, <axboe@kernel.dk>,
-        <paolo.valente@linaro.org>
-CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next v6 0/3] support concurrent sync io for bfq on a specail occasion
-Date:   Mon, 23 May 2022 21:18:15 +0800
-Message-ID: <20220523131818.2798712-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 23 May 2022 09:05:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135DF4992D;
+        Mon, 23 May 2022 06:05:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A108361349;
+        Mon, 23 May 2022 13:05:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBB6DC385A9;
+        Mon, 23 May 2022 13:05:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653311141;
+        bh=bWrL+p+gwqZvG50H6tpkpi47lD1PdQOmcrKzmQSZeBU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AWu9228BkTIzNTsWBSiHPPYtNXOhYhpo/D98nFYLThrLxBvWxCMfQwNpndNN3m7KR
+         HA+q61wF+dJrYwr3/9eyH1ooD6+HEgfi7dtjS7BJPzcS2pJeZs8FyYkEazWmYcPgKh
+         CCI00uz8N1c7dGCDuw9+vjkDByD1ybgzzhn89RgzZxksQzJ449Q2P95G8GK4vFGnmM
+         wAj4h0xF7iQ/LHHAy/dcm6aJQgzXGdYOW24hwBTARFUeiE6uBI+sHf+B3qH48c1yK3
+         WpzVvtTrnK9glwiFOHg1Tu8Pi/zLzsb9mWZAZAoEClOPENxV/6j4VKtjBx2VKSBY4H
+         Ae3USidvIzS6g==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id E4DCC400B1; Mon, 23 May 2022 10:05:37 -0300 (-03)
+Date:   Mon, 23 May 2022 10:05:37 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        Carsten Haitzler <carsten.haitzler@arm.com>,
+        Marco Elver <elver@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Michael Petlan <mpetlan@redhat.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 0/8] Make more tests skip rather than fail
+Message-ID: <YouGoc9elnPwV5IM@kernel.org>
+References: <20220518042027.836799-1-irogers@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518042027.836799-1-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Resend these patches just in case v5 end up in spam (for Paolo).
-Changes in v6:
- - add reviewed-by tag for patch 1
+Em Tue, May 17, 2022 at 09:20:19PM -0700, Ian Rogers escreveu:
+> A long standing niggle has been that tests that cannot pass are marked
+> as failing rather than skip.  John Garry mentioned a similar concern
+> in [1]. These changes fix this behavior so that as root, or not, at
+> least the first 10 tests are passing or skipping.
+> 
+> [1] https://lore.kernel.org/lkml/d32376b5-5538-ff00-6620-e74ad4b4abf2@huawei.com/
+> 
+> v2. Updates reviewed-by and acked-by. It addresses review comments
+>     from Namhyung Kim <namhyung@kernel.org>. An extra fix is now
+>     included for PERF_RECORD_* which can fail as a user because of
+>     perf_event_paranoid.
 
-Changes in v5:
- - rename bfq_add_busy_queues() to bfq_inc_busy_queues() in patch 1
- - fix wrong definition in patch 1
- - fix spelling mistake in patch 2: leaset -> least
- - update comments in patch 3
- - add reviewed-by tag in patch 2,3
+Thanks, applied.
 
-Changes in v4:
- - split bfq_update_busy_queues() to bfq_add/dec_busy_queues(),
-   suggested by Jan Kara.
- - remove unused 'in_groups_with_pending_reqs',
+- Arnaldo
 
-Changes in v3:
- - remove the cleanup patch that is irrelevant now(I'll post it
-   separately).
- - instead of hacking wr queues and using weights tree insertion/removal,
-   using bfq_add/del_bfqq_busy() to count the number of groups
-   (suggested by Jan Kara).
-
-Changes in v2:
- - Use a different approch to count root group, which is much simple.
-
-Currently, bfq can't handle sync io concurrently as long as they
-are not issued from root group. This is because
-'bfqd->num_groups_with_pending_reqs > 0' is always true in
-bfq_asymmetric_scenario().
-
-The way that bfqg is counted into 'num_groups_with_pending_reqs':
-
-Before this patchset:
- 1) root group will never be counted.
- 2) Count if bfqg or it's child bfqgs have pending requests.
- 3) Don't count if bfqg and it's child bfqgs complete all the requests.
-
-After this patchset:
- 1) root group is counted.
- 2) Count if bfqg have at least one bfqq that is marked busy.
- 3) Don't count if bfqg doesn't have any busy bfqqs.
-
-The main reason to use busy state of bfqq instead of 'pending requests'
-is that bfqq can stay busy after dispatching the last request if idling
-is needed for service guarantees.
-
-With the above changes, concurrent sync io can be supported if only
-one group is activated.
-
-fio test script(startdelay is used to avoid queue merging):
-[global]
-filename=/dev/nvme0n1
-allow_mounted_write=0
-ioengine=psync
-direct=1
-ioscheduler=bfq
-offset_increment=10g
-group_reporting
-rw=randwrite
-bs=4k
-
-[test1]
-numjobs=1
-
-[test2]
-startdelay=1
-numjobs=1
-
-[test3]
-startdelay=2
-numjobs=1
-
-[test4]
-startdelay=3
-numjobs=1
-
-[test5]
-startdelay=4
-numjobs=1
-
-[test6]
-startdelay=5
-numjobs=1
-
-[test7]
-startdelay=6
-numjobs=1
-
-[test8]
-startdelay=7
-numjobs=1
-
-test result:
-running fio on root cgroup
-v5.18-rc1:	   550 Mib/s
-v5.18-rc1-patched: 550 Mib/s
-
-running fio on non-root cgroup
-v5.18-rc1:	   349 Mib/s
-v5.18-rc1-patched: 550 Mib/s
-
-Note that I also test null_blk with "irqmode=2
-completion_nsec=100000000(100ms) hw_queue_depth=1", and tests show
-that service guarantees are still preserved.
-
-Follow-up cleanup:
-https://lore.kernel.org/all/20220521073523.3118246-1-yukuai3@huawei.com/
-
-Previous versions:
-RFC: https://lore.kernel.org/all/20211127101132.486806-1-yukuai3@huawei.com/
-v1: https://lore.kernel.org/all/20220305091205.4188398-1-yukuai3@huawei.com/
-v2: https://lore.kernel.org/all/20220416093753.3054696-1-yukuai3@huawei.com/
-v3: https://lore.kernel.org/all/20220427124722.48465-1-yukuai3@huawei.com/
-v4: https://lore.kernel.org/all/20220428111907.3635820-1-yukuai3@huawei.com/
-v5: https://lore.kernel.org/all/20220428120837.3737765-1-yukuai3@huawei.com/
-
-Yu Kuai (3):
-  block, bfq: record how many queues are busy in bfq_group
-  block, bfq: refactor the counting of 'num_groups_with_pending_reqs'
-  block, bfq: do not idle if only one group is activated
-
- block/bfq-cgroup.c  |  1 +
- block/bfq-iosched.c | 48 +++-----------------------------------
- block/bfq-iosched.h | 57 +++++++--------------------------------------
- block/bfq-wf2q.c    | 35 +++++++++++++++++-----------
- 4 files changed, 35 insertions(+), 106 deletions(-)
+ 
+> Ian Rogers (8):
+>   perf test: Skip reason for suites with 1 test
+>   perf test: Use skip in vmlinux kallsyms
+>   perf test: Use skip in openat syscall
+>   perf test: Basic mmap use skip
+>   perf test: Parse events tidy terms_test
+>   perf test: Parse events tidy evlist_test
+>   perf test: Parse events break apart tests
+>   perf test: Use skip in PERF_RECORD_*
+> 
+>  tools/perf/tests/builtin-test.c            |   6 +-
+>  tools/perf/tests/mmap-basic.c              |  18 +-
+>  tools/perf/tests/openat-syscall-all-cpus.c |  23 +-
+>  tools/perf/tests/openat-syscall.c          |  20 +-
+>  tools/perf/tests/parse-events.c            | 492 +++++++++++----------
+>  tools/perf/tests/perf-record.c             |  18 +-
+>  tools/perf/tests/vmlinux-kallsyms.c        |  12 +-
+>  7 files changed, 341 insertions(+), 248 deletions(-)
+> 
+> -- 
+> 2.36.0.550.gb090851708-goog
 
 -- 
-2.31.1
 
+- Arnaldo
