@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1589C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC13EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240349AbiEWRZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48468 "EHLO
+        id S240715AbiEWRZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239691AbiEWRR3 (ORCPT
+        with ESMTP id S240666AbiEWRQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:17:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C448B6D968;
-        Mon, 23 May 2022 10:17:16 -0700 (PDT)
+        Mon, 23 May 2022 13:16:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6B013DE2;
+        Mon, 23 May 2022 10:16:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D9DC60EE2;
-        Mon, 23 May 2022 17:17:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A304C385AA;
-        Mon, 23 May 2022 17:17:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32C3D61538;
+        Mon, 23 May 2022 17:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41361C385A9;
+        Mon, 23 May 2022 17:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326233;
-        bh=o5YtqxkUYupf5MqFxlK83h7HgWm6uI/kZfcY6w2ynMI=;
+        s=korg; t=1653326133;
+        bh=hfN64kEhFU/FzzVPdDp9ONjzRmOgpNHI4qtV1X1y8BE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cd0y1+UUcE5iXMVs9usZc0odsstHKbzrrWxrKiPGmjewPHAOPygVPsl+HI/Lgq/K6
-         7i6pmewtJEC2Nu1XTlY1flA0bYnzVMzheE2kYAAsstpcfnQeyYwY1G3ZTwRrgM5lB/
-         8W3avawU+BJPpheocclL0J3uzXQnawVnUAZfn/xo=
+        b=FZXNlYqt4rhlrrRAzVPUy+va1l3B4KKhl5TJZ3+j5IFIXacltEdeXskG28sKBvJ2s
+         mSlLG6KeiduVhfmP01CEV13nUHQMwVJ9NJ+5oqIWkXh5CodGcezyOH/ecO/S6cArOL
+         SzQdQ+pwNLRMUBC9M/3996IakM5cIEYzKO192UhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Greg Thelen <gthelen@google.com>, Yu Liao <liaoyu15@huawei.com>
-Subject: [PATCH 5.15 018/132] Revert "drm/i915/opregion: check port number bounds for SWSCI display power state"
-Date:   Mon, 23 May 2022 19:03:47 +0200
-Message-Id: <20220523165826.585851687@linuxfoundation.org>
+        Enrico Scholz <enrico.scholz@sigma-chemnitz.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Meena Shanmugam <meenashanmugam@google.com>
+Subject: [PATCH 5.4 24/68] SUNRPC: Dont call connect() more than once on a TCP socket
+Date:   Mon, 23 May 2022 19:04:51 +0200
+Message-Id: <20220523165806.630090168@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,47 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Thelen <gthelen@google.com>
+From: Meena Shanmugam <meenashanmugam@google.com>
 
-This reverts commit b84857c06ef9e72d09fadafdbb3ce9af64af954f.
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-5.10 stable contains 2 identical commits:
-1. commit eb7bf11e8ef1 ("drm/i915/opregion: check port number bounds for SWSCI display power state")
-2. commit b84857c06ef9 ("drm/i915/opregion: check port number bounds for SWSCI display power state")
+commit 89f42494f92f448747bd8a7ab1ae8b5d5520577d upstream.
 
-Both commits add separate checks for the same condition. Revert the 2nd
-redundant check to match upstream, which only has one check.
+Avoid socket state races due to repeated calls to ->connect() using the
+same socket. If connect() returns 0 due to the connection having
+completed, but we are in fact in a closing state, then we may leave the
+XPRT_CONNECTING flag set on the transport.
 
-Signed-off-by: Greg Thelen <gthelen@google.com>
-Signed-off-by: Yu Liao <liaoyu15@huawei.com>
+Reported-by: Enrico Scholz <enrico.scholz@sigma-chemnitz.de>
+Fixes: 3be232f11a3c ("SUNRPC: Prevent immediate close+reconnect")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+[meenashanmugam: Fix merge conflict in xs_tcp_setup_socket]
+Signed-off-by: Meena Shanmugam <meenashanmugam@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_opregion.c |   15 ---------------
- 1 file changed, 15 deletions(-)
+ Added fallthrough which I missed in 5.10 patch.
 
---- a/drivers/gpu/drm/i915/display/intel_opregion.c
-+++ b/drivers/gpu/drm/i915/display/intel_opregion.c
-@@ -376,21 +376,6 @@ int intel_opregion_notify_encoder(struct
- 		return -EINVAL;
- 	}
+ include/linux/sunrpc/xprtsock.h |    1 +
+ net/sunrpc/xprtsock.c           |   22 ++++++++++++----------
+ 2 files changed, 13 insertions(+), 10 deletions(-)
+
+--- a/include/linux/sunrpc/xprtsock.h
++++ b/include/linux/sunrpc/xprtsock.h
+@@ -90,6 +90,7 @@ struct sock_xprt {
+ #define XPRT_SOCK_WAKE_WRITE	(5)
+ #define XPRT_SOCK_WAKE_PENDING	(6)
+ #define XPRT_SOCK_WAKE_DISCONNECT	(7)
++#define XPRT_SOCK_CONNECT_SENT	(8)
  
--	/*
--	 * The port numbering and mapping here is bizarre. The now-obsolete
--	 * swsci spec supports ports numbered [0..4]. Port E is handled as a
--	 * special case, but port F and beyond are not. The functionality is
--	 * supposed to be obsolete for new platforms. Just bail out if the port
--	 * number is out of bounds after mapping.
--	 */
--	if (port > 4) {
--		drm_dbg_kms(&dev_priv->drm,
--			    "[ENCODER:%d:%s] port %c (index %u) out of bounds for display power state notification\n",
--			    intel_encoder->base.base.id, intel_encoder->base.name,
--			    port_name(intel_encoder->port), port);
--		return -EINVAL;
--	}
+ #endif /* __KERNEL__ */
+ 
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2384,10 +2384,14 @@ static void xs_tcp_setup_socket(struct w
+ 	struct rpc_xprt *xprt = &transport->xprt;
+ 	int status = -EIO;
+ 
+-	if (!sock) {
+-		sock = xs_create_sock(xprt, transport,
+-				xs_addr(xprt)->sa_family, SOCK_STREAM,
+-				IPPROTO_TCP, true);
++	if (xprt_connected(xprt))
++		goto out;
++	if (test_and_clear_bit(XPRT_SOCK_CONNECT_SENT,
++			       &transport->sock_state) ||
++	    !sock) {
++		xs_reset_transport(transport);
++		sock = xs_create_sock(xprt, transport, xs_addr(xprt)->sa_family,
++				      SOCK_STREAM, IPPROTO_TCP, true);
+ 		if (IS_ERR(sock)) {
+ 			status = PTR_ERR(sock);
+ 			goto out;
+@@ -2418,6 +2422,8 @@ static void xs_tcp_setup_socket(struct w
+ 		break;
+ 	case 0:
+ 	case -EINPROGRESS:
++		set_bit(XPRT_SOCK_CONNECT_SENT, &transport->sock_state);
++		fallthrough;
+ 	case -EALREADY:
+ 		xprt_unlock_connect(xprt, transport);
+ 		return;
+@@ -2469,13 +2475,9 @@ static void xs_connect(struct rpc_xprt *
+ 
+ 	WARN_ON_ONCE(!xprt_lock_connect(xprt, task, transport));
+ 
+-	if (transport->sock != NULL && !xprt_connecting(xprt)) {
++	if (transport->sock != NULL) {
+ 		dprintk("RPC:       xs_connect delayed xprt %p for %lu "
+-				"seconds\n",
+-				xprt, xprt->reestablish_timeout / HZ);
 -
- 	if (!enable)
- 		parm |= 4 << 8;
+-		/* Start by resetting any existing state */
+-		xs_reset_transport(transport);
++			"seconds\n", xprt, xprt->reestablish_timeout / HZ);
  
+ 		delay = xprt_reconnect_delay(xprt);
+ 		xprt_reconnect_backoff(xprt, XS_TCP_INIT_REEST_TO);
 
 
