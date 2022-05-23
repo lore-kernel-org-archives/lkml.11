@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAD2C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A7EC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240471AbiEWRM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
+        id S239927AbiEWRL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239794AbiEWRKb (ORCPT
+        with ESMTP id S239778AbiEWRJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:10:31 -0400
+        Mon, 23 May 2022 13:09:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFBD61600;
-        Mon, 23 May 2022 10:10:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A2D6B7FB;
+        Mon, 23 May 2022 10:09:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E92C614D9;
-        Mon, 23 May 2022 17:09:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7B82C385A9;
-        Mon, 23 May 2022 17:09:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58E20614CA;
+        Mon, 23 May 2022 17:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8ABC385A9;
+        Mon, 23 May 2022 17:09:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325763;
-        bh=PiyTTuzk8BvQlETdCG7Un53eCs4s+6MlIdFkvzF4AuU=;
+        s=korg; t=1653325756;
+        bh=LkA17hzzJijQ7CVFwahTC4LG/nHwLX3KyfRr/bmHCW0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wFoG8l9b96ePgc7weohTKdqGVkPrzFFCkZMei7WcXGKX47xdhBkivL9dmF3oBamhm
-         lg4uidMABsJzp32G26lBqNaaw9uqg2lfR6KN+uJmzoACV8Bvv3bp4r5Spcantjdukt
-         hh1bb7ZGrZWvimBWXYG7x13XLa3cCFsTLFgqUxN4=
+        b=1dpONGBA7JXOaTjSVMEnS4oekwc5udcVvQPYuSMkSECCR9DlZsB6SyegewpTOw5+a
+         vTklF/btcwSuSB7/Iu/YCiKNhW2MrRqULbX8ELLVzpCKye56yMQK8+y3Ja9D8agnxA
+         RC2hUIedWhfC4hBxM82ngWo4KkyBVc6vda7dSxS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 15/33] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-Date:   Mon, 23 May 2022 19:05:04 +0200
-Message-Id: <20220523165750.507613897@linuxfoundation.org>
+        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.14 32/33] swiotlb: fix info leak with DMA_FROM_DEVICE
+Date:   Mon, 23 May 2022 19:05:21 +0200
+Message-Id: <20220523165753.549536320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
 References: <20220523165746.957506211@linuxfoundation.org>
@@ -49,67 +49,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Halil Pasic <pasic@linux.ibm.com>
 
-[ Upstream commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd ]
+commit ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e upstream.
 
-In vmxnet3_rq_create(), when dma_alloc_coherent() fails,
-vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
--> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls
-vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
--> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(),
-rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-a NULL pointer dereference.
+The problem I'm addressing was discovered by the LTP test covering
+cve-2018-1000204.
 
-To fix this possible bug, an if statement is added to check whether
-rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
+A short description of what happens follows:
+1) The test case issues a command code 00 (TEST UNIT READY) via the SG_IO
+   interface with: dxfer_len == 524288, dxdfer_dir == SG_DXFER_FROM_DEV
+   and a corresponding dxferp. The peculiar thing about this is that TUR
+   is not reading from the device.
+2) In sg_start_req() the invocation of blk_rq_map_user() effectively
+   bounces the user-space buffer. As if the device was to transfer into
+   it. Since commit a45b599ad808 ("scsi: sg: allocate with __GFP_ZERO in
+   sg_build_indirect()") we make sure this first bounce buffer is
+   allocated with GFP_ZERO.
+3) For the rest of the story we keep ignoring that we have a TUR, so the
+   device won't touch the buffer we prepare as if the we had a
+   DMA_FROM_DEVICE type of situation. My setup uses a virtio-scsi device
+   and the  buffer allocated by SG is mapped by the function
+   virtqueue_add_split() which uses DMA_FROM_DEVICE for the "in" sgs (here
+   scatter-gather and not scsi generics). This mapping involves bouncing
+   via the swiotlb (we need swiotlb to do virtio in protected guest like
+   s390 Secure Execution, or AMD SEV).
+4) When the SCSI TUR is done, we first copy back the content of the second
+   (that is swiotlb) bounce buffer (which most likely contains some
+   previous IO data), to the first bounce buffer, which contains all
+   zeros.  Then we copy back the content of the first bounce buffer to
+   the user-space buffer.
+5) The test case detects that the buffer, which it zero-initialized,
+  ain't all zeros and fails.
 
-The error log in our fault-injection testing is shown as follows:
+One can argue that this is an swiotlb problem, because without swiotlb
+we leak all zeros, and the swiotlb should be transparent in a sense that
+it does not affect the outcome (if all other participants are well
+behaved).
 
-[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-...
-[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-...
-[   65.227977] Call Trace:
-...
-[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-[   65.228866]  __dev_close_many+0x288/0x350
-[   65.229607]  dev_close_many+0xa4/0x480
-[   65.231124]  dev_close+0x138/0x230
-[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-...
+Copying the content of the original buffer into the swiotlb buffer is
+the only way I can think of to make swiotlb transparent in such
+scenarios. So let's do just that if in doubt, but allow the driver
+to tell us that the whole mapped buffer is going to be overwritten,
+in which case we can preserve the old behavior and avoid the performance
+impact of the extra bounce.
 
-Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050711.2636709-1-r33s3n6@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+[OP: backport to 4.14: apply swiotlb_tbl_map_single() changes in lib/swiotlb.c]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/DMA-attributes.txt |   10 ++++++++++
+ include/linux/dma-mapping.h      |    8 ++++++++
+ lib/swiotlb.c                    |    3 ++-
+ 3 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 8f536bc2aed8..c6feb7459be6 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1573,6 +1573,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 	u32 i, ring_idx;
- 	struct Vmxnet3_RxDesc *rxd;
- 
-+	/* ring has already been cleaned up */
-+	if (!rq->rx_ring[0].base)
-+		return;
+--- a/Documentation/DMA-attributes.txt
++++ b/Documentation/DMA-attributes.txt
+@@ -156,3 +156,13 @@ accesses to DMA buffers in both privileg
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
 +
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
- 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
- #ifdef __BIG_ENDIAN_BITFIELD
--- 
-2.35.1
-
++DMA_ATTR_PRIVILEGED
++-------------------
++
++Some advanced peripherals such as remote processors and GPUs perform
++accesses to DMA buffers in both privileged "supervisor" and unprivileged
++"user" modes.  This attribute is used to indicate to the DMA-mapping
++subsystem that the buffer is fully accessible at the elevated privilege
++level (and ideally inaccessible or at least read-only at the
++lesser-privileged levels).
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -71,6 +71,14 @@
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+ 
+ /*
++ * This is a hint to the DMA-mapping subsystem that the device is expected
++ * to overwrite the entire mapped size, thus the caller does not require any
++ * of the previous buffer contents to be preserved. This allows
++ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
++ */
++#define DMA_ATTR_OVERWRITE		(1UL << 10)
++
++/*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.
+  * It can be given to a device to use as a DMA source or target.  A CPU cannot
+  * reference a dma_addr_t directly because there may be translation between
+--- a/lib/swiotlb.c
++++ b/lib/swiotlb.c
+@@ -601,7 +601,8 @@ found:
+ 	for (i = 0; i < nslots; i++)
+ 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+-	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
++	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
++	    dir == DMA_BIDIRECTIONAL))
+ 		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
+ 
+ 	return tlb_addr;
 
 
