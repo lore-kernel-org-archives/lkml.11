@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D88DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240538AbiEWRVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
+        id S233473AbiEWRX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239886AbiEWRRQ (ORCPT
+        with ESMTP id S240054AbiEWRRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:17:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7091363525;
-        Mon, 23 May 2022 10:17:06 -0700 (PDT)
+        Mon, 23 May 2022 13:17:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F27CB484;
+        Mon, 23 May 2022 10:17:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8A7160916;
-        Mon, 23 May 2022 17:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C389BC385A9;
-        Mon, 23 May 2022 17:15:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FAF8B81217;
+        Mon, 23 May 2022 17:16:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8730C385AA;
+        Mon, 23 May 2022 17:16:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326146;
-        bh=Suj0qgbA1cL7GbMkLai5H2A7Ktk/OdIQ9OEfQRVttWw=;
+        s=korg; t=1653326185;
+        bh=ZhMgrIXZYC4JQG9l/5ruEUYXQWr7fvPDe4CE4x66zIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oM4DNt29IvrLJHsr2WSGOiFKlkTZaSoxV03Sam7Xis5M8NKEbRT/R+SaYRQcIdySP
-         cwqU7PlF+XR/XWarOplTBwunbu8GDZ9i80JZITCaYJZpyruboiWqlPia9KsngAF+tR
-         C0C+W/Ix7Hl9IBDBKvAkXrP1Bv3R9i9E0nY5iFd8=
+        b=DNtFB86ZJb8OTKKbuhpHpVqxD8+JMKQi5aku8Jl/bH8sR4Iaoq6BmbTztVfNGls6/
+         YSZjtBQUEG4/CNCAeqt/VozmjrDJ8KMZoXXXU83ysJ1ZQv1o2M5XVMpLF66zTvDdd4
+         AcFA7Yzkp4ruSnqHs6VM6nW0lgg9W5VYQHEalJNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abel Vesa <abel.vesa@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH 5.4 63/68] ARM: dts: imx7: Use audio_mclk_post_div instead audio_mclk_root_clk
-Date:   Mon, 23 May 2022 19:05:30 +0200
-Message-Id: <20220523165812.903709333@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 002/132] io_uring: arm poll for non-nowait files
+Date:   Mon, 23 May 2022 19:03:31 +0200
+Message-Id: <20220523165823.889475480@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,143 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-commit 4cb7df64c732b2b9918424095c11660c2a8c4a33 upstream.
+commit e74ead135bc4459f7d40b1f8edab1333a28b54e8 upstream.
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. Moreover,
-the consumer driver of the mentioned clock might gate it and leave
-the ECSPI2 (the true owner of that gate) hanging. So lets use the
-audio_mclk_post_div, which is the parent.
+Don't check if we can do nowait before arming apoll, there are several
+reasons for that. First, we don't care much about files that don't
+support nowait. Second, it may be useful -- we don't want to be taking
+away extra workers from io-wq when it can go in some async. Even if it
+will go through io-wq eventually, it make difference in the numbers of
+workers actually used. And the last one, it's needed to clean nowait in
+future commits.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-[ps: backport to 5.4]
-Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+[kernel test robot: fix unused-var]
+
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/9d06f3cb2c8b686d970269a87986f154edb83043.1634425438.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx7-colibri.dtsi     |    4 ++--
- arch/arm/boot/dts/imx7-mba7.dtsi        |    2 +-
- arch/arm/boot/dts/imx7d-nitrogen7.dts   |    2 +-
- arch/arm/boot/dts/imx7d-pico-hobbit.dts |    4 ++--
- arch/arm/boot/dts/imx7d-pico-pi.dts     |    4 ++--
- arch/arm/boot/dts/imx7d-sdb.dts         |    2 +-
- arch/arm/boot/dts/imx7s-warp.dts        |    4 ++--
- 7 files changed, 11 insertions(+), 11 deletions(-)
+ fs/io_uring.c |    7 -------
+ 1 file changed, 7 deletions(-)
 
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -77,7 +77,7 @@
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5662,7 +5662,6 @@ static int io_arm_poll_handler(struct io
+ 	struct async_poll *apoll;
+ 	struct io_poll_table ipt;
+ 	__poll_t ret, mask = EPOLLONESHOT | POLLERR | POLLPRI;
+-	int rw;
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -152,7 +152,7 @@
- 		compatible = "fsl,sgtl5000";
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&reg_module_3v3_avdd>;
---- a/arch/arm/boot/dts/imx7-mba7.dtsi
-+++ b/arch/arm/boot/dts/imx7-mba7.dtsi
-@@ -250,7 +250,7 @@
- 	tlv320aic32x4: audio-codec@18 {
- 		compatible = "ti,tlv320aic32x4";
- 		reg = <0x18>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		ldoin-supply = <&reg_audio_3v3>;
- 		iov-supply = <&reg_audio_3v3>;
---- a/arch/arm/boot/dts/imx7d-nitrogen7.dts
-+++ b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-@@ -284,7 +284,7 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 	};
---- a/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-@@ -31,7 +31,7 @@
+ 	if (!req->file || !file_can_poll(req->file))
+ 		return IO_APOLL_ABORTED;
+@@ -5672,7 +5671,6 @@ static int io_arm_poll_handler(struct io
+ 		return IO_APOLL_ABORTED;
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
---- a/arch/arm/boot/dts/imx7d-pico-pi.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-pi.dts
-@@ -31,7 +31,7 @@
+ 	if (def->pollin) {
+-		rw = READ;
+ 		mask |= POLLIN | POLLRDNORM;
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
---- a/arch/arm/boot/dts/imx7d-sdb.dts
-+++ b/arch/arm/boot/dts/imx7d-sdb.dts
-@@ -356,7 +356,7 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 	};
---- a/arch/arm/boot/dts/imx7s-warp.dts
-+++ b/arch/arm/boot/dts/imx7s-warp.dts
-@@ -75,7 +75,7 @@
+ 		/* If reading from MSG_ERRQUEUE using recvmsg, ignore POLLIN */
+@@ -5680,14 +5678,9 @@ static int io_arm_poll_handler(struct io
+ 		    (req->sr_msg.msg_flags & MSG_ERRQUEUE))
+ 			mask &= ~POLLIN;
+ 	} else {
+-		rw = WRITE;
+ 		mask |= POLLOUT | POLLWRNORM;
+ 	}
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -232,7 +232,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&vgen4_reg>;
+-	/* if we can't nonblock try, then no point in arming a poll handler */
+-	if (!io_file_supports_nowait(req, rw))
+-		return IO_APOLL_ABORTED;
+-
+ 	apoll = kmalloc(sizeof(*apoll), GFP_ATOMIC);
+ 	if (unlikely(!apoll))
+ 		return IO_APOLL_ABORTED;
 
 
