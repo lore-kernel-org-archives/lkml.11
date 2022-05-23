@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C5CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF2EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239460AbiEWRSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S240496AbiEWRST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240085AbiEWROn (ORCPT
+        with ESMTP id S240142AbiEWRP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:14:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF20DEBF;
-        Mon, 23 May 2022 10:12:34 -0700 (PDT)
+        Mon, 23 May 2022 13:15:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF3211A03;
+        Mon, 23 May 2022 10:12:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DC63B811F6;
-        Mon, 23 May 2022 17:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9820C385AA;
-        Mon, 23 May 2022 17:12:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E340614E5;
+        Mon, 23 May 2022 17:12:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35BB8C385A9;
+        Mon, 23 May 2022 17:12:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325953;
-        bh=0bHuKlaZyD4pTHB6Ty/v9KNYAtL/A59eG8fgVGdQav4=;
+        s=korg; t=1653325959;
+        bh=lIwMAvvut7ndMdEen037betf53Ozq/OmMdPtw0ev+Jg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H67gd2QqLOy/zoVHP6UqEWGPKGFTY3XZmzR+Aq3MOWofr+Q6+ELEhVaoBM4yhgum6
-         BTPoNPORnAmsNBvJKYJvfkbCJaFtY+dx8gFIo812eUr0YjvoMHVmxf6RNJovSh/7b1
-         vefUFlcnZWB8Wft+4JnHy9+FzTcxMM2Os9yVFjd0=
+        b=01FWANk4q/ewHhX4GVQ21cpxh/aGwhFTmR3F+q8Uup4Iv9yaBfDwNnvkIIjUmoeWa
+         wzb993GJVgBlFej8AbMuYmeS9qmcgyV0FsIQt/om/YAdnBGFkfyk4IjGbHuyRyIH6m
+         GUbDCYErkmgdE+skEVwEPWltd3sR6FzF6+MWBj3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 5.4 21/68] mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
-Date:   Mon, 23 May 2022 19:04:48 +0200
-Message-Id: <20220523165806.139716938@linuxfoundation.org>
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Meena Shanmugam <meenashanmugam@google.com>
+Subject: [PATCH 5.4 22/68] SUNRPC: Clean up scheduling of autoclose
+Date:   Mon, 23 May 2022 19:04:49 +0200
+Message-Id: <20220523165806.308236890@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -48,71 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Meena Shanmugam <meenashanmugam@google.com>
 
-commit 533a6cfe08f96a7b5c65e06d20916d552c11b256 upstream
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-All callers of __mmc_switch() should now be specifying a valid timeout for
-the CMD6 command. However, just to be sure, let's print a warning and
-default to use the generic_cmd6_time in case the provided timeout_ms
-argument is zero.
+commit e26d9972720e2484f44cdd94ca4e31cc372ed2ed upstream.
 
-In this context, let's also simplify some of the corresponding code and
-clarify some related comments.
+Consolidate duplicated code in xprt_force_disconnect() and
+xprt_conditional_disconnect().
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-4-ulf.hansson@linaro.org
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Meena Shanmugam <meenashanmugam@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/mmc_ops.c |   16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ net/sunrpc/xprt.c |   26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
 
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -460,10 +460,6 @@ static int mmc_poll_for_busy(struct mmc_
- 	bool expired = false;
- 	bool busy = false;
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -717,21 +717,29 @@ void xprt_disconnect_done(struct rpc_xpr
+ EXPORT_SYMBOL_GPL(xprt_disconnect_done);
  
--	/* We have an unspecified cmd timeout, use the fallback value. */
--	if (!timeout_ms)
--		timeout_ms = MMC_OPS_TIMEOUT_MS;
--
- 	/*
- 	 * In cases when not allowed to poll by using CMD13 or because we aren't
- 	 * capable of polling by using ->card_busy(), then rely on waiting the
-@@ -536,6 +532,12 @@ int __mmc_switch(struct mmc_card *card,
- 
- 	mmc_retune_hold(host);
- 
-+	if (!timeout_ms) {
-+		pr_warn("%s: unspecified timeout for CMD6 - use generic\n",
-+			mmc_hostname(host));
-+		timeout_ms = card->ext_csd.generic_cmd6_time;
-+	}
+ /**
+- * xprt_force_disconnect - force a transport to disconnect
++ * xprt_schedule_autoclose_locked - Try to schedule an autoclose RPC call
+  * @xprt: transport to disconnect
+- *
+  */
+-void xprt_force_disconnect(struct rpc_xprt *xprt)
++static void xprt_schedule_autoclose_locked(struct rpc_xprt *xprt)
+ {
+-	/* Don't race with the test_bit() in xprt_clear_locked() */
+-	spin_lock(&xprt->transport_lock);
+ 	set_bit(XPRT_CLOSE_WAIT, &xprt->state);
+-	/* Try to schedule an autoclose RPC call */
+ 	if (test_and_set_bit(XPRT_LOCKED, &xprt->state) == 0)
+ 		queue_work(xprtiod_workqueue, &xprt->task_cleanup);
+ 	else if (xprt->snd_task && !test_bit(XPRT_SND_IS_COOKIE, &xprt->state))
+ 		rpc_wake_up_queued_task_set_status(&xprt->pending,
+ 						   xprt->snd_task, -ENOTCONN);
++}
 +
- 	/*
- 	 * If the cmd timeout and the max_busy_timeout of the host are both
- 	 * specified, let's validate them. A failure means we need to prevent
-@@ -544,7 +546,7 @@ int __mmc_switch(struct mmc_card *card,
- 	 * which also means they are on their own when it comes to deal with the
- 	 * busy timeout.
- 	 */
--	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) && timeout_ms &&
-+	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) &&
- 	    host->max_busy_timeout && (timeout_ms > host->max_busy_timeout))
- 		use_r1b_resp = false;
- 
-@@ -556,10 +558,6 @@ int __mmc_switch(struct mmc_card *card,
- 	cmd.flags = MMC_CMD_AC;
- 	if (use_r1b_resp) {
- 		cmd.flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
--		/*
--		 * A busy_timeout of zero means the host can decide to use
--		 * whatever value it finds suitable.
--		 */
- 		cmd.busy_timeout = timeout_ms;
- 	} else {
- 		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
++/**
++ * xprt_force_disconnect - force a transport to disconnect
++ * @xprt: transport to disconnect
++ *
++ */
++void xprt_force_disconnect(struct rpc_xprt *xprt)
++{
++	/* Don't race with the test_bit() in xprt_clear_locked() */
++	spin_lock(&xprt->transport_lock);
++	xprt_schedule_autoclose_locked(xprt);
+ 	spin_unlock(&xprt->transport_lock);
+ }
+ EXPORT_SYMBOL_GPL(xprt_force_disconnect);
+@@ -771,11 +779,7 @@ void xprt_conditional_disconnect(struct
+ 		goto out;
+ 	if (test_bit(XPRT_CLOSING, &xprt->state))
+ 		goto out;
+-	set_bit(XPRT_CLOSE_WAIT, &xprt->state);
+-	/* Try to schedule an autoclose RPC call */
+-	if (test_and_set_bit(XPRT_LOCKED, &xprt->state) == 0)
+-		queue_work(xprtiod_workqueue, &xprt->task_cleanup);
+-	xprt_wake_pending_tasks(xprt, -EAGAIN);
++	xprt_schedule_autoclose_locked(xprt);
+ out:
+ 	spin_unlock(&xprt->transport_lock);
+ }
 
 
