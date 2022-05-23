@@ -2,77 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C6CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F922C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233086AbiEWUbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35166 "EHLO
+        id S233097AbiEWUcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233041AbiEWUbq (ORCPT
+        with ESMTP id S233079AbiEWUcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:31:46 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5066220C
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:31:45 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id m11so7128947ljc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wBaaj+XJRciWuzeB12Uou/3sT9TB3e1izvK2J/BvnGE=;
-        b=dtDiRK5Zbt91iRXg8l3N/Bq0yx4h9NH0DItyIk9C5xS6kqHq8CLQx+mmxFi0hXgqAL
-         CUICgTrYsIWayHyaEMwt/8nKiRqvWGh6ElUuzikGk/nuJp63SJJGiBkjChNAtKA5gdLB
-         tA0mA8WqTpxsiHeCTA1vE0+VPWLunSHT74gIsw6GXKgqp426nxGAWMdb9TBCYXym4WxT
-         tXUurH+EwydB+SxWnXDVTXLWbZwhHkziQ4ji51+bWD2JgDPoE5XbTlqdy9BQtmz2YTNZ
-         Bj6tTJ3CymcZ6d6o07quXCIkFwBozaA22XGbl9jXu0TCtfY1ie0TdoVndMhFKEYPuWy0
-         O7MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wBaaj+XJRciWuzeB12Uou/3sT9TB3e1izvK2J/BvnGE=;
-        b=EfcCSrcl1+Z1APGUme7ywc4xWCzcluGIZ75WFsTquuILZp6+XPRdXnWev2gaYFPwdq
-         ZQb8ViL2RZ+D8UsnkVi9qHbNXte+9/9meGlc0vf8IE/P/0bag7q4BaqZ7ieWe2qfSubW
-         UtFaP6b0O/DeXnsM4UhCdbLjaxMQY6E1OfzfvB3PIiCpNVKHdjnTEZlQoGIFoL30Q2Ag
-         +FimEv/h4+dealKcJ5elr5m64VD79ERV0OhRCQsDCDY4AtEm+482TsLEMSdLki0fkOKw
-         sL9HYaPmL36bTQ4YNeoSw3FuSRE5z9P9jUEKLb7GvDykVR3k+wPViUvjNq41AIdDUCSr
-         Knbw==
-X-Gm-Message-State: AOAM53127c8sxOy2TYLwriOQyEdgp0K1LWyTfqvTDeaT1PoM00OYl/Z6
-        NauCvd6Jitsy7asM7up6xArrpFsmkp18vNdpd0hUuA==
-X-Google-Smtp-Source: ABdhPJzAEfRy1Ql25Px8odBfL4/7wsYQ6fbK1gT9iKKGTlkCS+cnyVcBWexyK6Mk7k89J7yDzcV723I9mipNjQQxmOM=
-X-Received: by 2002:a2e:98d0:0:b0:253:e3a3:ec6c with SMTP id
- s16-20020a2e98d0000000b00253e3a3ec6cmr7088089ljj.493.1653337903584; Mon, 23
- May 2022 13:31:43 -0700 (PDT)
+        Mon, 23 May 2022 16:32:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C89771A11;
+        Mon, 23 May 2022 13:32:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B0E5B815BA;
+        Mon, 23 May 2022 20:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E891C34115;
+        Mon, 23 May 2022 20:32:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653337921;
+        bh=POIdHLZCL8JWg7SSzx3poIK2a1cQmFod9S3oQWwvGKM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Kjv+/DsiS8pvW8eeG3mSkfBuQ98mB6Ks8R8DjGvJBHGGCx+IwONrywQV5H8QVt3B6
+         ZQa5klLnbzzAA19PKGzholfvuEaKhsztF7cCn9dO+9z51O4G7ZEOZiYt8foJeWqp+6
+         miQ7kZ71TB8PbJKDsqoNc8o0wY3/6bTi54dLRg4V+k3dhIGztk+qxl8Yp2wRE/2sk9
+         etOOriEZQJV9ohfKu/HNW1Y5KhoEvVsH8gd7p3jcON0A/sZB2s3cAO8gcst1F7RgE3
+         oK1rWJnc2YAff3nGxaQj8frnysgcCLeJPx25evjQlceTxch+UfVemVzX7KBwt34L+y
+         OWGwkQjhF8+vw==
+Date:   Mon, 23 May 2022 23:30:20 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Miguel Ojeda <ojeda@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Gary Guo <gary@garyguo.net>, Boqun Feng <boqun.feng@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v7 02/25] kallsyms: support "big" kernel symbols
+Message-ID: <Yovu3As0kmk/l6bX@kernel.org>
+References: <20220523020209.11810-1-ojeda@kernel.org>
+ <20220523020209.11810-3-ojeda@kernel.org>
 MIME-Version: 1.0
-References: <23e0ba7863d51ab629498762a97d477645aeafea.1653123744.git.christophe.jaillet@wanadoo.fr>
- <CAKwvOdneqUvq+Nz_zPmJmuPFfAvWQgnzrw1AJt=WqQF2hThF-A@mail.gmail.com> <00061a71-4d7c-0605-80b5-3d909fc3dfaa@wanadoo.fr>
-In-Reply-To: <00061a71-4d7c-0605-80b5-3d909fc3dfaa@wanadoo.fr>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 23 May 2022 13:31:32 -0700
-Message-ID: <CAKwvOdnDvrYo_PtMa+JW0FhmkZVDp7eVpR_BV9L2Om-jXPbBog@mail.gmail.com>
-Subject: Re: [RFC PATCH] kbuild: Add an option to enable -O1 and speed-up
- compilation time
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     dan.carpenter@oracle.com, Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523020209.11810-3-ojeda@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 1:16 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> Thanks for taking time for a full review, even on something you are not
-> fan on. This is really appreciated.
+On Mon, May 23, 2022 at 04:01:15AM +0200, Miguel Ojeda wrote:
+> Rust symbols can become quite long due to namespacing introduced
+> by modules, types, traits, generics, etc.
+> 
+> Increasing to 255 is not enough in some cases, and therefore
+> we need to introduce longer lengths to the symbol table.
 
-Of course! It's still a question worth asking, and having a lore link
-to refer back to should the question arise again in the future. Thanks
-for asking.
--- 
-Thanks,
-~Nick Desaulniers
+s/we need to//
+
+> 
+> In order to avoid increasing all lengths to 2 bytes (since most
+> of them are small, including many Rust ones), we use ULEB128 to
+
+s/we//
+
+> keep smaller symbols in 1 byte, with the rest in 2 bytes.
+> 
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+> Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+> Co-developed-by: Gary Guo <gary@garyguo.net>
+> Signed-off-by: Gary Guo <gary@garyguo.net>
+> Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Co-developed-by: Matthew Wilcox <willy@infradead.org>
+> Signed-off-by: Matthew Wilcox <willy@infradead.org>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+> ---
+> This is a prerequisite patch, independently submitted at:
+> 
+>     https://lore.kernel.org/lkml/20220506203443.24721-3-ojeda@kernel.org/
+> 
+>  kernel/kallsyms.c  | 26 ++++++++++++++++++++++----
+>  scripts/kallsyms.c | 29 ++++++++++++++++++++++++++---
+>  2 files changed, 48 insertions(+), 7 deletions(-)
+> 
+> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+> index 79f2eb617a62..e8d2262ef2d2 100644
+> --- a/kernel/kallsyms.c
+> +++ b/kernel/kallsyms.c
+> @@ -69,12 +69,20 @@ static unsigned int kallsyms_expand_symbol(unsigned int off,
+>  	data = &kallsyms_names[off];
+>  	len = *data;
+>  	data++;
+> +	off++;
+> +
+> +	/* If MSB is 1, it is a "big" symbol, so needs an additional byte. */
+> +	if ((len & 0x80) != 0) {
+> +		len = (len & 0x7F) | (*data << 7);
+> +		data++;
+> +		off++;
+> +	}
+>  
+>  	/*
+>  	 * Update the offset to return the offset for the next symbol on
+>  	 * the compressed stream.
+>  	 */
+> -	off += len + 1;
+> +	off += len;
+>  
+>  	/*
+>  	 * For every byte on the compressed symbol data, copy the table
+> @@ -127,7 +135,7 @@ static char kallsyms_get_symbol_type(unsigned int off)
+>  static unsigned int get_symbol_offset(unsigned long pos)
+>  {
+>  	const u8 *name;
+> -	int i;
+> +	int i, len;
+>  
+>  	/*
+>  	 * Use the closest marker we have. We have markers every 256 positions,
+> @@ -141,8 +149,18 @@ static unsigned int get_symbol_offset(unsigned long pos)
+>  	 * so we just need to add the len to the current pointer for every
+>  	 * symbol we wish to skip.
+>  	 */
+> -	for (i = 0; i < (pos & 0xFF); i++)
+> -		name = name + (*name) + 1;
+> +	for (i = 0; i < (pos & 0xFF); i++) {
+> +		len = *name;
+> +
+> +		/*
+> +		 * If MSB is 1, it is a "big" symbol, so we need to look into
+> +		 * the next byte (and skip it, too).
+> +		 */
+> +		if ((len & 0x80) != 0)
+> +			len = ((len & 0x7F) | (name[1] << 7)) + 1;
+> +
+> +		name = name + len + 1;
+> +	}
+>  
+>  	return name - kallsyms_names;
+>  }
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index 82d6508bdf29..7e99799aa7b9 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -480,12 +480,35 @@ static void write_src(void)
+>  		if ((i & 0xFF) == 0)
+>  			markers[i >> 8] = off;
+>  
+> -		printf("\t.byte 0x%02x", table[i]->len);
+> +		/* There cannot be any symbol of length zero. */
+> +		if (table[i]->len == 0) {
+> +			fprintf(stderr, "kallsyms failure: "
+> +				"unexpected zero symbol length\n");
+> +			exit(EXIT_FAILURE);
+> +		}
+> +
+> +		/* Only lengths that fit in up-to-two-byte ULEB128 are supported. */
+> +		if (table[i]->len > 0x3FFF) {
+> +			fprintf(stderr, "kallsyms failure: "
+> +				"unexpected huge symbol length\n");
+> +			exit(EXIT_FAILURE);
+> +		}
+> +
+> +		/* Encode length with ULEB128. */
+> +		if (table[i]->len <= 0x7F) {
+> +			/* Most symbols use a single byte for the length. */
+> +			printf("\t.byte 0x%02x", table[i]->len);
+> +			off += table[i]->len + 1;
+> +		} else {
+> +			/* "Big" symbols use two bytes. */
+> +			printf("\t.byte 0x%02x, 0x%02x",
+> +				(table[i]->len & 0x7F) | 0x80,
+> +				(table[i]->len >> 7) & 0x7F);
+> +			off += table[i]->len + 2;
+> +		}
+>  		for (k = 0; k < table[i]->len; k++)
+>  			printf(", 0x%02x", table[i]->sym[k]);
+>  		printf("\n");
+> -
+> -		off += table[i]->len + 1;
+>  	}
+>  	printf("\n");
+>  
+> -- 
+> 2.36.1
+> 
+
+BR, Jarkko
