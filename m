@@ -2,127 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E191FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbiEWGmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51140 "EHLO
+        id S229487AbiEWGnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiEWGmM (ORCPT
+        with ESMTP id S229437AbiEWGnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:42:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296652C675;
-        Sun, 22 May 2022 23:41:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAF57B80EF5;
-        Mon, 23 May 2022 06:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF416C385A9;
-        Mon, 23 May 2022 06:31:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653287509;
-        bh=OENwoRgzLHLcoN90lXWyFeYPCL70W7UVzXr++rGaYzU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1QZ7sxf4fQVdnryaaxAxeoKMzG2cFlbm4EUHft6ORNDyzvN8d3Z0sdOdh1picrPSH
-         Y1wWzsJZOCGnZTfMiMOyj/WB4go0KIn/4BGSI8WRtf+nRrZnWLu6GntqbdoJHf9nTa
-         MqCShC8Lte63pYi8QtgLiWPYEK/dFIPO7WzdUoR0=
-Date:   Mon, 23 May 2022 08:31:46 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-wireless@vger.kernel.org, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rafael@kernel.org
-Subject: Re: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by
- dev_coredumpv
-Message-ID: <YosqUjCYioGh3kBW@kroah.com>
-References: <20220523052810.24767-1-duoming@zju.edu.cn>
+        Mon, 23 May 2022 02:43:32 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5264E3B1
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:41:49 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id p10so1199516wrg.12
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:41:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=8r+4rT0z8Ytfh5JdNqoBX1R1KXZ5ArSe1NSavDgjBLA=;
+        b=FYoiads97LYAz3iMBonmSZL96m57hDOncjNC3fb/1DqJnDfumX4DiDKDzEJyjbDMp9
+         uf3qz16WdfB7Nrd8f6ODtl/Gg8IUxHWhgPAjtOYBziWuV2uPBLLOe2MEVTqZ0QS+YiuQ
+         YGjMS5MH951n28MmBarmUWjEU2BFIN5V0RBpAVq6I+O7R3zCR9Rpw5XMQOCBRSu5hmnk
+         qFxIN6No/eT+Fvati8Mo+GJ66l1n0Uoj65LE9Hq+a1kQey4rlsYjcx1D6Q4e7WNPGSRa
+         VjPuiXkwK6G+YQ7ZA0058lkh3vuwlocw/jytZIgfE653Ks7+uMkBQovUfV6IvNtTsqBy
+         WjQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=8r+4rT0z8Ytfh5JdNqoBX1R1KXZ5ArSe1NSavDgjBLA=;
+        b=QeHWydz5jiAj7VRFeDH7Nc21SjhDPesRzXcyAgPkeU1P0zB9lqH+xkCYKWeOcv+M6r
+         Ji5IDcpwCNzAiYiZHpyX8RPixFSMC5FHkv5VEkj35S9DOvNcHXyO2oBMzr0i6NOeiprC
+         Wo8GT/NzDfGvoVphrHmczpz5KC1vD35Kxdcp/pH4992fFLdSub20/sNfhukV9rg4DJUn
+         Hl/7LagxD95eS4DkZ3uC6+deQTyCGoMWB5yZAlEZwJ4S0ZCReBao20KHZkbpKcCFUvAz
+         Q0ffdC6HHBKORQUS/lNQD3eW/xMRE5x/4UtXMQgAavEgGRyRHDs8EfI3EOrZwYTUqxy6
+         vkww==
+X-Gm-Message-State: AOAM5339ZH9WzGIZqdqL2pkNFCn+PfN+uS5irMRYrj3ULzkGhSfA5P3u
+        NP8DRTYvAHhfUUjZ8rzEfUY=
+X-Google-Smtp-Source: ABdhPJyz531sqHvVQe3igOo+6jZ/+a2ju0Yz+n8QfxHgHVVe3YBoFBj77YwYAsnU1U94kZOUG1p00Q==
+X-Received: by 2002:adf:f6cb:0:b0:20d:4b6:10b4 with SMTP id y11-20020adff6cb000000b0020d04b610b4mr17484584wrp.669.1653288102523;
+        Sun, 22 May 2022 23:41:42 -0700 (PDT)
+Received: from giga-mm.localdomain ([195.245.17.24])
+        by smtp.gmail.com with ESMTPSA id ay28-20020a05600c1e1c00b003973c4bb19bsm6956289wmb.16.2022.05.22.23.41.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 23:41:41 -0700 (PDT)
+Message-ID: <dd7437b9b4da3dfc6ef1b86cdff03d6a048e1c7f.camel@gmail.com>
+Subject: Re: [PATCH] ARM: ep93xx: Kconfig: Fix indentation
+From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
+To:     Juerg Haefliger <juerg.haefliger@canonical.com>,
+        hsweeten@visionengravers.com, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        Juerg Haefliger <juergh@canonical.com>
+Date:   Mon, 23 May 2022 08:41:40 +0200
+In-Reply-To: <20220523061051.8668-1-juergh@canonical.com>
+References: <20220523061051.8668-1-juergh@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220523052810.24767-1-duoming@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 01:28:10PM +0800, Duoming Zhou wrote:
-> There are sleep in atomic context bugs when uploading device dump
-> data in mwifiex. The root cause is that dev_coredumpv could not
-> be used in atomic contexts, because it calls dev_set_name which
-> include operations that may sleep. The call tree shows execution
-> paths that could lead to bugs:
-> 
->    (Interrupt context)
-> fw_dump_timer_fn
->   mwifiex_upload_device_dump
->     dev_coredumpv(..., GFP_KERNEL)
->       dev_coredumpm()
->         kzalloc(sizeof(*devcd), gfp); //may sleep
->         dev_set_name
->           kobject_set_name_vargs
->             kvasprintf_const(GFP_KERNEL, ...); //may sleep
->             kstrdup(s, GFP_KERNEL); //may sleep
-> 
-> In order to let dev_coredumpv support atomic contexts, this patch
-> changes the gfp_t parameter of kvasprintf_const and kstrdup in
-> kobject_set_name_vargs from GFP_KERNEL to GFP_ATOMIC. What's more,
-> In order to mitigate bug, this patch changes the gfp_t parameter
-> of dev_coredumpv from GFP_KERNEL to GFP_ATOMIC.
-> 
-> Fixes: 57670ee882d4 ("mwifiex: device dump support via devcoredump framework")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Hello!
+
+On Mon, 2022-05-23 at 08:10 +0200, Juerg Haefliger wrote:
+> The convention for indentation seems to be a single tab. Help text is
+> further indented by an additional two whitespaces. Fix the lines that
+> violate these rules.
+>=20
+> Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+
+Acked-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+
 > ---
-> Changes in v3:
->   - Let dev_coredumpv support atomic contexts.
-> 
->  drivers/net/wireless/marvell/mwifiex/main.c | 2 +-
->  lib/kobject.c                               | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-> index ace7371c477..258906920a2 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/main.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/main.c
-> @@ -1116,7 +1116,7 @@ void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
->  	mwifiex_dbg(adapter, MSG,
->  		    "== mwifiex dump information to /sys/class/devcoredump start\n");
->  	dev_coredumpv(adapter->dev, adapter->devdump_data, adapter->devdump_len,
-> -		      GFP_KERNEL);
-> +		      GFP_ATOMIC);
->  	mwifiex_dbg(adapter, MSG,
->  		    "== mwifiex dump information to /sys/class/devcoredump end\n");
->  
-> diff --git a/lib/kobject.c b/lib/kobject.c
-> index 5f0e71ab292..7672c54944c 100644
-> --- a/lib/kobject.c
-> +++ b/lib/kobject.c
-> @@ -254,7 +254,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
->  	if (kobj->name && !fmt)
->  		return 0;
->  
-> -	s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
-> +	s = kvasprintf_const(GFP_ATOMIC, fmt, vargs);
->  	if (!s)
->  		return -ENOMEM;
->  
-> @@ -267,7 +267,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
->  	if (strchr(s, '/')) {
->  		char *t;
->  
-> -		t = kstrdup(s, GFP_KERNEL);
-> +		t = kstrdup(s, GFP_ATOMIC);
->  		kfree_const(s);
->  		if (!t)
->  			return -ENOMEM;
+> =C2=A0arch/arm/mach-ep93xx/Kconfig | 8 ++++----
+> =C2=A01 file changed, 4 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/arch/arm/mach-ep93xx/Kconfig b/arch/arm/mach-ep93xx/Kconfig
+> index 15c68a646d51..cd94079ce095 100644
+> --- a/arch/arm/mach-ep93xx/Kconfig
+> +++ b/arch/arm/mach-ep93xx/Kconfig
+> @@ -121,10 +121,10 @@ config MACH_MICRO9S
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Contec Micro9-Slim=
+ board.
+> =C2=A0
+> =C2=A0config MACH_SIM_ONE
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool "Support Simplemachines =
+Sim.One board"
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 help
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say 'Y' here if y=
+ou want your kernel to support the
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Simplemachines Si=
+m.One board.
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bool "Support Simplemachines S=
+im.One board"
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0help
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say 'Y' here if you wan=
+t your kernel to support the
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Simplemachines Sim.One =
+board.
+> =C2=A0
+> =C2=A0config MACH_SNAPPER_CL15
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bool "Support Bluewater S=
+ystems Snapper CL15 Module"
 
-Please no, you are hurting the whole kernel because of one odd user.
-Please do not make these calls under atomic context.
+--=20
+Alexander Sverdlin.
 
-thanks,
-
-greg k-h
