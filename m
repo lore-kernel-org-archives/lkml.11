@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E721C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A74AC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243383AbiEWR4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
+        id S243574AbiEWR5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240700AbiEWRZ3 (ORCPT
+        with ESMTP id S241648AbiEWRbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:25:29 -0400
+        Mon, 23 May 2022 13:31:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8796826CA;
-        Mon, 23 May 2022 10:21:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC50966219;
+        Mon, 23 May 2022 10:26:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A9F960B2C;
-        Mon, 23 May 2022 17:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CC80C385A9;
-        Mon, 23 May 2022 17:19:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE2FE608C0;
+        Mon, 23 May 2022 17:26:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5A0FC385A9;
+        Mon, 23 May 2022 17:26:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326358;
-        bh=kJQnIv0zbQ2WoIW59ZTVhkTxl3Pr7mNNhYzUc4U7vMM=;
+        s=korg; t=1653326812;
+        bh=MhlatHOKjDvAenLsvRoSmy3peqsebSGy0OT2bhO+oQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XlFTOwx1XdwcQ8U4PgAMYc7sIBcS+Y9Vq1M2pBAq8tBbfHca7rO1R/GvnmIZw9RaX
-         O5FsGVSf2LoFoZbRt3vDHLWl8DZprcKX2heXDIuqcSAoy6n7a2/5W5EZ0llj7/z3MR
-         kdJAhRc59RGkxkkX5O1923sHXSMorslJX+V7lJMY=
+        b=Rh2x/WgjDXmlFUgwHHQktp/CVcnz+Tu8EOTHl2FytW5NdFSnBnxZaY+Aj42YlT+eJ
+         JKhBqrO4ReBDMyz6L0Zs4XRh2FVviR/Sv7tvAcrf0cgFLE/MHK0NI6UtBHzutckIzn
+         OVVtIPGSNOF9/QKAZNSzUoa8x0H3sGGdSWlaAcxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH 5.15 057/132] drm/amd: Dont reset dGPUs if the system is going to s2idle
-Date:   Mon, 23 May 2022 19:04:26 +0200
-Message-Id: <20220523165832.711355112@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Martin Willi <martin@strongswan.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 029/158] crypto: x86/chacha20 - Avoid spurious jumps to other functions
+Date:   Mon, 23 May 2022 19:03:06 +0200
+Message-Id: <20220523165835.308023116@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,80 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 7123d39dc24dcd21ff23d75f46f926b15269b9da upstream.
+[ Upstream commit 4327d168515fd8b5b92fa1efdf1d219fb6514460 ]
 
-An A+A configuration on ASUS ROG Strix G513QY proves that the ASIC
-reset for handling aborted suspend can't work with s2idle.
+The chacha_Nblock_xor_avx512vl() functions all have their own,
+identical, .LdoneN label, however in one particular spot {2,4} jump to
+the 8 version instead of their own. Resulting in:
 
-This functionality was introduced in commit daf8de0874ab5b ("drm/amdgpu:
-always reset the asic in suspend (v2)").  A few other commits have
-gone on top of the ASIC reset, but this still doesn't work on the A+A
-configuration in s2idle.
+  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_2block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
+  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_4block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
 
-Avoid doing the reset on dGPUs specifically when using s2idle.
+Make each function consistently use its own done label.
 
-Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2008
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Martin Willi <martin@strongswan.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu.h      |    2 ++
- drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c |   14 ++++++++++++++
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c  |    2 +-
- 3 files changed, 17 insertions(+), 1 deletion(-)
+ arch/x86/crypto/chacha-avx512vl-x86_64.S | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-@@ -1411,9 +1411,11 @@ static inline int amdgpu_acpi_smart_shif
+diff --git a/arch/x86/crypto/chacha-avx512vl-x86_64.S b/arch/x86/crypto/chacha-avx512vl-x86_64.S
+index 946f74dd6fba..259383e1ad44 100644
+--- a/arch/x86/crypto/chacha-avx512vl-x86_64.S
++++ b/arch/x86/crypto/chacha-avx512vl-x86_64.S
+@@ -172,7 +172,7 @@ SYM_FUNC_START(chacha_2block_xor_avx512vl)
+ 	# xor remaining bytes from partial register into output
+ 	mov		%rcx,%rax
+ 	and		$0xf,%rcx
+-	jz		.Ldone8
++	jz		.Ldone2
+ 	mov		%rax,%r9
+ 	and		$~0xf,%r9
  
- #if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
- bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev);
-+bool amdgpu_acpi_should_gpu_reset(struct amdgpu_device *adev);
- bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
- #else
- static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
-+static inline bool amdgpu_acpi_should_gpu_reset(struct amdgpu_device *adev) { return false; }
- static inline bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev) { return false; }
- #endif
+@@ -438,7 +438,7 @@ SYM_FUNC_START(chacha_4block_xor_avx512vl)
+ 	# xor remaining bytes from partial register into output
+ 	mov		%rcx,%rax
+ 	and		$0xf,%rcx
+-	jz		.Ldone8
++	jz		.Ldone4
+ 	mov		%rax,%r9
+ 	and		$~0xf,%r9
  
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-@@ -1046,6 +1046,20 @@ bool amdgpu_acpi_is_s3_active(struct amd
- }
- 
- /**
-+ * amdgpu_acpi_should_gpu_reset
-+ *
-+ * @adev: amdgpu_device_pointer
-+ *
-+ * returns true if should reset GPU, false if not
-+ */
-+bool amdgpu_acpi_should_gpu_reset(struct amdgpu_device *adev)
-+{
-+	if (adev->flags & AMD_IS_APU)
-+		return false;
-+	return pm_suspend_target_state != PM_SUSPEND_TO_IDLE;
-+}
-+
-+/**
-  * amdgpu_acpi_is_s0ix_active
-  *
-  * @adev: amdgpu_device_pointer
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -2259,7 +2259,7 @@ static int amdgpu_pmops_suspend_noirq(st
- 	struct drm_device *drm_dev = dev_get_drvdata(dev);
- 	struct amdgpu_device *adev = drm_to_adev(drm_dev);
- 
--	if (!adev->in_s0ix)
-+	if (amdgpu_acpi_should_gpu_reset(adev))
- 		return amdgpu_asic_reset(adev);
- 
- 	return 0;
+-- 
+2.35.1
+
 
 
