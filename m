@@ -2,125 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2076FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:32:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230405AbiEWTcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41028 "EHLO
+        id S231285AbiEWTc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232174AbiEWTbn (ORCPT
+        with ESMTP id S230202AbiEWTcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:31:43 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C46B1A35B1
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:15:03 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id q18so13938645pln.12
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:15:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=cjRWuQZ93kuxRw6yGmaFXUYJuxX5iPSMUJJ9xKa/vYo=;
-        b=JVK82Ctnwdwz61WxUTfwDOYI3ZVFigTNJQ8LlEDBLTt3cACXrmOKg/qoijzXyli87x
-         9T4uBrM2lRmzwV1gec1ZMSjGViC1ioL6nlMnXMuEyPvbcpQ3S+7iHsFIXS1GCsuXMKMK
-         +K93KzpF3ygjm1GQFC1xq7pCJxv+KKVCzJaSY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=cjRWuQZ93kuxRw6yGmaFXUYJuxX5iPSMUJJ9xKa/vYo=;
-        b=oXB3Bd6aTJBCgkIZ0gWyhOwBtB7gBiVpOggzbZqyAn/s2/3/bdRkBzSo61UuPCBy7R
-         fwp3Hv8L9v6bmHU6V4f/lVsryujTNpJqEc729eXVu2RCosE5H00nYt+eTLv5z0yicBqc
-         +Ci52CmbK0GFs8yR+I82GD34z0wBazFFhMlaufACcFcFIk+Zo4dum015WTIz7vDNbK8b
-         NMDkFJg9Zn9WQSlC+hgtNaSZjWha5mMTkS3AObJFL0TUkfgylbL7msFzDDl/+PrJG3u7
-         O10UQam81qAJeLsVX1k6ZWwl0rO3DlVr3/4t1jHPK5feFbA4HZUUKkPfa7IkoHij50hc
-         79Jg==
-X-Gm-Message-State: AOAM5308RNYr/CbmFbTGUF1hHnHRlKx6RUDNb0fyMN2jnVr2T6LAAwi/
-        lSoYhhHTCpOEhQDqnPTpF1Et0Q==
-X-Google-Smtp-Source: ABdhPJxzOIkdif6JjqjzG4OZ0myjpLUV6IyYJXeSyqcSbsVInXtmky5R6N/yKD6TWbhHqlyDcFWirw==
-X-Received: by 2002:a17:902:e989:b0:15f:1545:326d with SMTP id f9-20020a170902e98900b0015f1545326dmr24252520plb.119.1653333302974;
-        Mon, 23 May 2022 12:15:02 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n6-20020a17090a928600b001df82551cf2sm39174pjo.44.2022.05.23.12.15.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 12:15:02 -0700 (PDT)
-Date:   Mon, 23 May 2022 12:15:01 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Christian Brauner <brauner@kernel.org>,
-        Colin Ian King <colin.i.king@gmail.com>,
-        David Yang <davidcomponentone@gmail.com>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kselftest@vger.kernel.org, Sargun Dhillon <sargun@sargun.me>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Tycho Andersen <tycho@tycho.pizza>,
-        Yang Guang <yang.guang5@zte.com.cn>
-Subject: [GIT PULL] seccomp updates for v5.19-rc1
-Message-ID: <202205231214.ED9D18F@keescook>
+        Mon, 23 May 2022 15:32:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9648811449
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:17:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653333441;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=Xbxt8BO+TWA/1lhu6wUP5Enwc4ZL2WYl2Uuv7Ip4Dto5wpqiPncVImvGhtAKfyrIU0E3n/
+        L9PX7wXKvrwStmZQLoolPK7t8VJAdiT8pD3Uu0BpgyjBtfbbqGxWpcsKoOJUgTKA0liXDK
+        Er/RnepUUQ3u6WpG6M+ZsIGU2qgi5NY=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-492-HNoahCYpP1eiZ6wLD2RvEg-1; Mon, 23 May 2022 15:17:17 -0400
+X-MC-Unique: HNoahCYpP1eiZ6wLD2RvEg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9FE97382ECCE;
+        Mon, 23 May 2022 19:17:16 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 45CBD112131E;
+        Mon, 23 May 2022 19:17:16 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Zdenek Kaspar <zkaspar82@gmail.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH] x86/fpu: KVM: Set the base guest FPU uABI size to sizeof(struct kvm_xsave)
+Date:   Mon, 23 May 2022 15:17:16 -0400
+Message-Id: <20220523191716.149206-1-pbonzini@redhat.com>
+In-Reply-To: <20220504001219.983513-1-seanjc@google.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Queued, thanks.
 
-Please pull these seccomp updates for v5.19-rc1.
+Paolo
 
-Thanks!
 
--Kees
-
-The following changes since commit 2bfed7d2ffa5d86c462d3e2067f2832eaf8c04c7:
-
-  selftests/seccomp: Don't call read() on TTY from background pgrp (2022-04-29 11:28:41 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/seccomp-v5.19-rc1
-
-for you to fetch changes up to 5e91d2a4146946ea0abc984ca957f12b70632901:
-
-  selftests/seccomp: Fix spelling mistake "Coud" -> "Could" (2022-05-04 13:31:21 -0700)
-
-----------------------------------------------------------------
-seccomp updates for v5.19-rc1
-
-- Rework USER_NOTIF notification ordering and kill logic (Sargun Dhillon)
-
-- Improved PTRACE_O_SUSPEND_SECCOMP selftest (Jann Horn)
-
-- Gracefully handle failed unshare() in selftests (Yang Guang)
-
-- Spelling fix (Colin Ian King)
-
-----------------------------------------------------------------
-Colin Ian King (1):
-      selftests/seccomp: Fix spelling mistake "Coud" -> "Could"
-
-Jann Horn (1):
-      selftests/seccomp: Test PTRACE_O_SUSPEND_SECCOMP without CAP_SYS_ADMIN
-
-Sargun Dhillon (5):
-      seccomp: Use FIFO semantics to order notifications
-      selftests/seccomp: Ensure that notifications come in FIFO order
-      seccomp: Add wait_killable semantic to seccomp user notifier
-      selftests/seccomp: Refactor get_proc_stat to split out file reading code
-      selftests/seccomp: Add test for wait killable notifier
-
-Yang Guang (1):
-      selftests/seccomp: Add SKIP for failed unshare()
-
- Documentation/userspace-api/seccomp_filter.rst |  10 +
- include/linux/seccomp.h                        |   3 +-
- include/uapi/linux/seccomp.h                   |   2 +
- kernel/seccomp.c                               |  44 ++-
- tools/testing/selftests/seccomp/Makefile       |   1 +
- tools/testing/selftests/seccomp/seccomp_bpf.c  | 427 ++++++++++++++++++++++++-
- 6 files changed, 482 insertions(+), 5 deletions(-)
-
--- 
-Kees Cook
