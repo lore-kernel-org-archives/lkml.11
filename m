@@ -2,182 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D55C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE35CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234981AbiEWLfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
+        id S234955AbiEWLfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234962AbiEWLe5 (ORCPT
+        with ESMTP id S234894AbiEWLfv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:34:57 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F4250061
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:34:38 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id j10so1584370lfe.12
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=slD5U1ZLnnag5uUVMq6zG3O9jXp6ALF6Xo5AefMCVo0=;
-        b=IuRH6f/Obr2igym8Ti8sMm17ajhPbUTDUiE9pRzlr+h4rTfNFOullaOn8biUcCT8zi
-         3fNxPioOwEhs99nNTnPwlC/c37Z808CFcYI8VQidEbjL5fRtQWlIzrsrH9kEyiagjZwf
-         3x23eUWPptUQ8yjPDkJyxwLluUM9TAaWaJVd4BbX03WKz4/axhvCeoZF45+1mSk86tRT
-         GuZ0NcHgTKsyiXsM6QZHuW9RVx5BDo9nHHbGD6RoVkpyhOSG9m8OZhP6wgN+77BLF1Nr
-         tGcnhNoB2DqFfpVGNlfRKhjH0icCTWQc3jeEMs9sxtRe5Y2Ju5WR0NNx1KwE/sk8R3pZ
-         aTTA==
+        Mon, 23 May 2022 07:35:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B8504FC47
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:35:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653305746;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=esB4CG60KOiYCNvFLfupKrK3na9cJg7bNU5W1vo473k=;
+        b=XdP2wPXLJgo60T1Jw/V1P/JFJ78ZwBVylELNmhPXcIUCCdNlmyOqG2Z1rl2Ke30T8ziY8L
+        bQxnQ/DyC1bYSbCmFv1RTBn9mvj61PD2ty5cV0UP7A+H4cMV6fEsm7D7rqh0bA7aiOlTdc
+        LQr2ky0pKgVEElQYsBZzVcfoka1lx+0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-645-hyWmSWMeNL-y2e6iRNrwNw-1; Mon, 23 May 2022 07:35:45 -0400
+X-MC-Unique: hyWmSWMeNL-y2e6iRNrwNw-1
+Received: by mail-wm1-f69.google.com with SMTP id r11-20020a1c440b000000b00397335edc7dso5855853wma.7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:35:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=slD5U1ZLnnag5uUVMq6zG3O9jXp6ALF6Xo5AefMCVo0=;
-        b=IjwVtXMgolAqdZ4EerH4MvVRX/HqJCm89hgBWDhuN/ZKdWFJg2r+UIqb69yWnR4g2J
-         tukzzxURFuVaTS0CmohgU8s7s7QsGf1pO76t9KnWgfTcZB4bdyvwfG+cJ0triQ4cfUTG
-         1CjmWXi28UvldK24VXvw4ecYt2LxYTuKAqFltU03oaEa9CVjAaR6PnFo/YoqENL+IWqg
-         2Y/wvo47bqou1WEtzXpjRxVcSqENghbEgVBlyf4wRV1ckh8xxqObUWfkWBzqQkOhFN8c
-         RGO9aPhoAEEF53z14QUYb8GlWzyl4rWXPLu0bmSQE6Fv3DGpAaxBMb2R5J0XnFtTNnuS
-         afdA==
-X-Gm-Message-State: AOAM531H+OvHyEJfz1Rr9omkxGLdXnqpyuSvJaMvbpfEsDFj9cZt9/JG
-        fAgS5umUUYWP6Oo6DyK/OvVY1WGhIthrL4roQWwr5A==
-X-Google-Smtp-Source: ABdhPJyufZJzKrPyGHXvClU64clAc39hLWJmhquE5y3mgrP5ttLdjp0w7qfRQXK3RMJusjaqeQt9hMbByNRsDo5gNLQ=
-X-Received: by 2002:a05:6512:1588:b0:477:a556:4ab2 with SMTP id
- bp8-20020a056512158800b00477a5564ab2mr15901781lfb.376.1653305675107; Mon, 23
- May 2022 04:34:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=esB4CG60KOiYCNvFLfupKrK3na9cJg7bNU5W1vo473k=;
+        b=aH5dvL14O3AMr7SJ1AS4K9MUwaSzg3Hpfl9Ia+BJW82uRFSIBmxvztCtK6jQYnYZp8
+         KEfZFSTfLmdKLXrhrAZgTkYEVz80HIcCzOainoGIegxelIpZP2S3j4lWvaPQbF9bUI4M
+         qZoyLqprGv/4LDEdG5wGIQWnMbX3oOBZ2dSe7KbTIO0JAjHYvNNlsEIvXqQuZglmUpdF
+         bBqR9E12QWO+M0NlU8X9hknA9ae9Cv7rZV+uDU5W1CGaYmCBQEv+6T8s78Nr5iU6nmX0
+         WI7j1NIqsC3oNUF3lyuFxnZ2PIUR7X8Xdj1OgPly5db+DapiQXIjKcZHoeUQcjfasM6d
+         Nzeg==
+X-Gm-Message-State: AOAM532q+bOs5IEplg13yT8/aBd5htt576mgR3iJ7qyo8j2X+KPxSG8S
+        I0tJcJNH3GMQhoZ4AUha94XFwRO7ayEom8mq4ZlQz1IgKHdr1P+iXrLu0I4QNFgUDswnz1EaPNE
+        WqWigHE0Sx46m4bzGoO+ofiVtvetTedBD9jzrLCjOmrtwYZG8R7q9HKspO8PbaXyp1T9r8V69k5
+        lS
+X-Received: by 2002:a05:6000:1562:b0:20f:c999:fda7 with SMTP id 2-20020a056000156200b0020fc999fda7mr8843865wrz.65.1653305743948;
+        Mon, 23 May 2022 04:35:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwVT0wpZjAWWuYWqm00EefJbbozZgIflACNx9uqBlH4bB19uD4jcj1iQ0owk08/zmUDeBF02A==
+X-Received: by 2002:a05:6000:1562:b0:20f:c999:fda7 with SMTP id 2-20020a056000156200b0020fc999fda7mr8843843wrz.65.1653305743764;
+        Mon, 23 May 2022 04:35:43 -0700 (PDT)
+Received: from fedora.redhat.com (nat-pool-brq-t.redhat.com. [213.175.37.10])
+        by smtp.gmail.com with ESMTPSA id o16-20020adf8b90000000b0020fc3e24041sm7577841wra.106.2022.05.23.04.35.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 04:35:43 -0700 (PDT)
+From:   Mark Menzynski <mmenzyns@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Mark Menzynski <mmenzyns@redhat.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
+Subject: [PATCH v3] drm/nouveau: clear output poll workers before nouveau_fbcon_destroy()
+Date:   Mon, 23 May 2022 13:35:41 +0200
+Message-Id: <20220523113541.10562-1-mmenzyns@redhat.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <00000000000032992d05d370f75f@google.com> <20211219023540.1638-1-hdanton@sina.com>
- <Yb6zKVoxuD3lQMA/@casper.infradead.org> <20211221090804.1810-1-hdanton@sina.com>
- <20211222022527.1880-1-hdanton@sina.com> <YcKrHc11B/2tcfRS@mit.edu>
- <CACT4Y+YHxkL5aAgd4wXPe-J+RG6_VBcPs=e8QpRM8=3KJe+GCg@mail.gmail.com> <YogL6MCdYVrqGcRf@mit.edu>
-In-Reply-To: <YogL6MCdYVrqGcRf@mit.edu>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 23 May 2022 13:34:23 +0200
-Message-ID: <CACT4Y+ZHCawp__HvJAFPXp+z6XdiVEgwrh8dvDR+cDfQywr20w@mail.gmail.com>
-Subject: Re: [syzbot] INFO: task hung in jbd2_journal_commit_transaction (3)
-To:     "Theodore Ts'o" <tytso@mit.edu>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        syzbot <syzbot+9c3fb12e9128b6e1d7eb@syzkaller.appspotmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        syzkaller <syzkaller@googlegroups.com>,
-        Aleksandr Nogikh <nogikh@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 20 May 2022 at 23:45, Theodore Ts'o <tytso@mit.edu> wrote:
-> > Hi Ted,
-> >
-> > Reviving this old thread re syzkaller using SCHED_FIFO.
-> >
-> > It's a bit hard to restrict what the fuzzer can do if we give it
-> > sched_setattr() and friends syscalls. We could remove them from the
-> > fuzzer entirely, but it's probably suboptimal as well.
-> >
-> > I see that setting up SCHED_FIFO is guarded by CAP_SYS_NICE:
-> > https://elixir.bootlin.com/linux/v5.18-rc7/source/kernel/sched/core.c#L7264
-> >
-> > And I see we drop CAP_SYS_NICE from the fuzzer process since 2019
-> > (after a similar discussion):
-> > https://github.com/google/syzkaller/commit/f3ad68446455a
-> >
-> > The latest C reproducer contains: ....
->
-> For this particular report, there *was* no C reproducer.  There was
-> only a syz reproducer:
+Resources needed for output poll workers are destroyed in
+nouveau_fbcon_fini() before output poll workers are cleared in
+nouveau_display_fini(). This means there is a time between fbcon_fini()
+and display_fini(), where if output poll happens, it crashes.
 
-Yes, but the same logic should have been used. I just showed the
-excerpt from the C reproducer b/c maybe there is something wrong with
-that CAP_SYS_NICE logic.
+This patch introduces another output poll clearing before fbcon
+resources are destroyed.
 
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    5472f14a3742 Merge tag 'for_linus' of git://git.kernel.org..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=11132113b00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=e3bdfd29b408d1b6
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=9c3fb12e9128b6e1d7eb
-> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14559113b00000
->
-> So let me ask a counter question.  I thought syzbot tries to create a
-> minimal reproducer?  So if the sched_setattr is a no-op, and is
-> returning EPERM, why wasn't the sched_setattr line removed from the
-> syz repro?
+BUG: KASAN: use-after-free in
+__drm_fb_helper_initial_config_and_unlock.cold+0x1f3/0x291
+[drm_kms_helper]
 
-Two most common reasons would be (1) flaky reproduction, then each
-minimization step can falsely decide that something is needed to
-reproduce the bug b/c when we remove it, the crash does not reproduce;
-(2) previously order/number of syscalls affected what syscalls are
-executed concurrently to provoke races, so removing one syscall could
-affect how subsequent syscalls are collided (this is not the case
-anymore, but was the case when this bug was reported).
+Cc: Ben Skeggs <bskeggs@redhat.com>
+Cc: Karol Herbst <kherbst@redhat.com>
+Cc: Lyude Paul <lyude@redhat.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+Cc: nouveau@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Mark Menzynski <mmenzyns@redhat.com>
+---
+ drivers/gpu/drm/nouveau/nouveau_fbcon.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/drivers/gpu/drm/nouveau/nouveau_fbcon.c b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+index 4f9b3aa5deda..5226323e55d3 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
++++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+@@ -39,6 +39,7 @@
+ 
+ #include <drm/drm_crtc.h>
+ #include <drm/drm_crtc_helper.h>
++#include <drm/drm_probe_helper.h>
+ #include <drm/drm_fb_helper.h>
+ #include <drm/drm_fourcc.h>
+ #include <drm/drm_atomic.h>
+@@ -605,6 +606,7 @@ nouveau_fbcon_fini(struct drm_device *dev)
+ 	if (!drm->fbcon)
+ 		return;
+ 
++	drm_kms_helper_poll_fini(dev);
+ 	nouveau_fbcon_accel_fini(dev);
+ 	nouveau_fbcon_destroy(dev, drm->fbcon);
+ 	kfree(drm->fbcon);
+-- 
+2.32.0
 
-> As a side note, since in many cases running a reproducer can be
-> painful, would it be possible for the syzkiller dashboard to provide
-> the output of running "strace -f" while the reproducer is running?
->
-> That would also especially help since even when there is a C
-> reproducer, trying to understand what it is doing from reading the
-> syzbot-generated C source code is often non-trivial, and strace does a
-> much better job decoding what the !@#?@ the reproducer.  Another
-> advantage of using strace is that it will also show us the return code
-> from the system call, which would very quickly confirm whether the
-> sched_setattr() was actually returning EPERM or not --- and it will
-> decode the system call arguments in a way that I often wished would be
-> included as comments in the syzbot-generated reproducer.
->
-> Providing the strace output could significantly reduce the amount of
-> upstream developer toil, and might therefore improve upstream
-> developer engagement with syzkaller.
-
-+Aleksandr added this feature recently.
-
-Console output will contain strace output for reproducers (when the
-run under strace reproduced the same kernel crash as w/o strace).
-
-Here is a recently reported bug:
-https://syzkaller.appspot.com/bug?id=53c9bd2ca0e16936e45ff1333a22b838d91da0a2
-
-"log" link for the reproducer crash shows:
-https://syzkaller.appspot.com/text?tag=CrashLog&x=14f791aef00000
-...
-
-[   26.757008][ T3179] 8021q: adding VLAN 0 to HW filter on device bond0
-[   26.766878][ T3179] eql: remember to turn off Van-Jacobson
-compression on your slave devices
-Starting sshd: OK
-Warning: Permanently added '10.128.0.110' (ECDSA) to the list of known hosts.
-execve("./syz-executor1865045535", ["./syz-executor1865045535"],
-0x7ffdc91edf40 /* 10 vars */) = 0
-brk(NULL)                               = 0x555557248000
-brk(0x555557248c40)                     = 0x555557248c40
-arch_prctl(ARCH_SET_FS, 0x555557248300) = 0
-uname({sysname="Linux", nodename="syzkaller", ...}) = 0
-readlink("/proc/self/exe", "/root/syz-executor1865045535", 4096) = 28
-brk(0x555557269c40)                     = 0x555557269c40
-brk(0x55555726a000)                     = 0x55555726a000
-mprotect(0x7f37f8ecc000, 16384, PROT_READ) = 0
-mmap(0x1ffff000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS,
--1, 0) = 0x1ffff000
-mmap(0x20000000, 16777216, PROT_READ|PROT_WRITE|PROT_EXEC,
-MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x20000000
-mmap(0x21000000, 4096, PROT_NONE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS,
--1, 0) = 0x21000000
-socket(AF_NETLINK, SOCK_RAW, NETLINK_NETFILTER) = 3
-syzkaller login: [   58.834018][ T3600] ------------[ cut here ]------------
-[   58.839772][ T3600] WARNING: CPU: 0 PID: 3600 at
-net/netfilter/nfnetlink.c:703 nfnetlink_unbind+0x357/0x3b0
-[   58.849856][ T3600] Modules linked in:
-...
-
-
-The same is available in the report emails, e.g.:
-https://lore.kernel.org/all/000000000000ff239c05df391402@google.com/
-...
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=14f791aef00000
-...
