@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D962C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 882ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:30:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240674AbiEWR3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59674 "EHLO
+        id S240734AbiEWR34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241073AbiEWRV4 (ORCPT
+        with ESMTP id S241122AbiEWRV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:21:56 -0400
+        Mon, 23 May 2022 13:21:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AEC0762BC;
-        Mon, 23 May 2022 10:18:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7290E75200;
+        Mon, 23 May 2022 10:18:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C9060916;
-        Mon, 23 May 2022 17:17:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A840AC385A9;
-        Mon, 23 May 2022 17:17:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D495460B2C;
+        Mon, 23 May 2022 17:16:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A96C385AA;
+        Mon, 23 May 2022 17:16:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326246;
-        bh=fRLcDfQ8QeGFUCx7xxxVuJJhEdpYFjB0Zj5ue9m3HEs=;
+        s=korg; t=1653326217;
+        bh=Jmahjn+knvlSNapX1inMo0lzVlsJsFsC5BvSMtIWq8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2bSRcrIu1+OejPhkNIREuNEfRZDJmA5rjKviGGXDEvPsT8F+f6W/MktNPZjGJfdrd
-         VgtEcqFmisoOPnlZILgkep9zXrGhyTGokVti8x0/SMMwZAxXSQfLX20wj0j67Snq1v
-         5ANOTn/GOJJvESLjnUX5mZ0v3fW1l3tK5vbr/WHM=
+        b=rGfKFBtgFqaknnU8HAjriHUACLov8OuNy5B0P7e+psa8VqSZOh6SRLI1vXcZW4a3Y
+         wKUwdUYZv32E+bj0F7CcJFXgSl/tsqrj/9sR45YSFHYysIiPsM/lI04um5kZqu+nea
+         K3sr4Vup5Jdl4DTQVQQ259h1K06nUxJzXSe+c8Ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Jeff LaBundy <jeff@labundy.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 022/132] Input: add bounds checking to input_set_capability()
-Date:   Mon, 23 May 2022 19:03:51 +0200
-Message-Id: <20220523165827.194211472@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Richter <rrichter@amd.com>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 013/132] Watchdog: sp5100_tco: Move timer initialization into function
+Date:   Mon, 23 May 2022 19:03:42 +0200
+Message-Id: <20220523165825.809764522@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -51,62 +52,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff LaBundy <jeff@labundy.com>
+From: Terry Bowman <terry.bowman@amd.com>
 
-[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
+commit abd71a948f7aab47ca49d3e7fe6afa6c48c8aae0 upstream.
 
-Update input_set_capability() to prevent kernel panic in case the
-event code exceeds the bitmap for the given event type.
+Refactor driver's timer initialization into new function. This is needed
+inorder to support adding new device layouts while using common timer
+initialization.
 
-Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Co-developed-by: Robert Richter <rrichter@amd.com>
+Signed-off-by: Robert Richter <rrichter@amd.com>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Tested-by: Jean Delvare <jdelvare@suse.de>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220202153525.1693378-2-terry.bowman@amd.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/input.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/watchdog/sp5100_tco.c |   65 +++++++++++++++++++++++-------------------
+ 1 file changed, 36 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index ccaeb2426385..ba246fabc6c1 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
+--- a/drivers/watchdog/sp5100_tco.c
++++ b/drivers/watchdog/sp5100_tco.c
+@@ -215,6 +215,41 @@ static u32 sp5100_tco_read_pm_reg32(u8 i
+ 	return val;
+ }
  
- static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
- 
-+static const unsigned int input_max_code[EV_CNT] = {
-+	[EV_KEY] = KEY_MAX,
-+	[EV_REL] = REL_MAX,
-+	[EV_ABS] = ABS_MAX,
-+	[EV_MSC] = MSC_MAX,
-+	[EV_SW] = SW_MAX,
-+	[EV_LED] = LED_MAX,
-+	[EV_SND] = SND_MAX,
-+	[EV_FF] = FF_MAX,
-+};
++static int sp5100_tco_timer_init(struct sp5100_tco *tco)
++{
++	struct watchdog_device *wdd = &tco->wdd;
++	struct device *dev = wdd->parent;
++	u32 val;
 +
- static inline int is_event_supported(unsigned int code,
- 				     unsigned long *bm, unsigned int max)
- {
-@@ -2074,6 +2085,14 @@ EXPORT_SYMBOL(input_get_timestamp);
-  */
- void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
- {
-+	if (type < EV_CNT && input_max_code[type] &&
-+	    code > input_max_code[type]) {
-+		pr_err("%s: invalid code %u for type %u\n", __func__, code,
-+		       type);
-+		dump_stack();
-+		return;
++	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
++	if (val & SP5100_WDT_DISABLED) {
++		dev_err(dev, "Watchdog hardware is disabled\n");
++		return -ENODEV;
 +	}
 +
- 	switch (type) {
- 	case EV_KEY:
- 		__set_bit(code, dev->keybit);
--- 
-2.35.1
-
++	/*
++	 * Save WatchDogFired status, because WatchDogFired flag is
++	 * cleared here.
++	 */
++	if (val & SP5100_WDT_FIRED)
++		wdd->bootstatus = WDIOF_CARDRESET;
++
++	/* Set watchdog action to reset the system */
++	val &= ~SP5100_WDT_ACTION_RESET;
++	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
++
++	/* Set a reasonable heartbeat before we stop the timer */
++	tco_timer_set_timeout(wdd, wdd->timeout);
++
++	/*
++	 * Stop the TCO before we change anything so we don't race with
++	 * a zeroed timer.
++	 */
++	tco_timer_stop(wdd);
++
++	return 0;
++}
++
+ static int sp5100_tco_setupdevice(struct device *dev,
+ 				  struct watchdog_device *wdd)
+ {
+@@ -340,35 +375,7 @@ static int sp5100_tco_setupdevice(struct
+ 	/* Setup the watchdog timer */
+ 	tco_timer_enable(tco);
+ 
+-	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
+-	if (val & SP5100_WDT_DISABLED) {
+-		dev_err(dev, "Watchdog hardware is disabled\n");
+-		ret = -ENODEV;
+-		goto unreg_region;
+-	}
+-
+-	/*
+-	 * Save WatchDogFired status, because WatchDogFired flag is
+-	 * cleared here.
+-	 */
+-	if (val & SP5100_WDT_FIRED)
+-		wdd->bootstatus = WDIOF_CARDRESET;
+-	/* Set watchdog action to reset the system */
+-	val &= ~SP5100_WDT_ACTION_RESET;
+-	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
+-
+-	/* Set a reasonable heartbeat before we stop the timer */
+-	tco_timer_set_timeout(wdd, wdd->timeout);
+-
+-	/*
+-	 * Stop the TCO before we change anything so we don't race with
+-	 * a zeroed timer.
+-	 */
+-	tco_timer_stop(wdd);
+-
+-	release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
+-
+-	return 0;
++	ret = sp5100_tco_timer_init(tco);
+ 
+ unreg_region:
+ 	release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
 
 
