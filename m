@@ -2,107 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 706DAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D39A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235684AbiEWMgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 08:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
+        id S235713AbiEWMg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 08:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235549AbiEWMfz (ORCPT
+        with ESMTP id S235751AbiEWMgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 08:35:55 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA8C4B40B
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:35:32 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id v71so25115125ybi.4
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:35:32 -0700 (PDT)
+        Mon, 23 May 2022 08:36:15 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6287F140FF
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:36:06 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id x12so13543529pgj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:36:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jZl/fl0qeIvUdvyZE0jXdpw2d7CYxFND/Aqlck8hL7Y=;
-        b=g3QNKrPTU1y3Hrxty3WEbBcbkZxQCGaVdrI1t7cV6FoIHEh9ApyTyjigXadNjRuARd
-         WBsyRpJpm6CvGeg1/msOeMA1GJYcN27fAsKFCV4xQO/fRhTP2iDjT8bYzY93h8B+Nkib
-         JBFdE0ll5yFBll//1q9Be7OjXIdJe0O6nC8fDo1eIINQWobSNLsforLswaDJNel/hmwD
-         Xxsc/+qAQBGThqbn8YkDwke51gsJsgLlfeZCIUnuT3kh9WjLDs6WokwERf93TXAelLDt
-         q3Wjw0yC1wU1SCETaIoppFY5Mcn/wYzsfVrKegm6WRuj5DoO4cSBLYLOlXX6z/jtENFg
-         +g7Q==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=INkfgsb8DgkgWmtKMANQ1Vo1QXhIfhnDd/K2kDPrH3Q=;
+        b=1fhqz3+apWfJ+ZsEhTE6mAVaEw1c/7DNg5ozDW0PFTFoPjcNQOq1PewkdDlvrMsykq
+         zYigUM7hOavb8VqDpEuzNufWasevbXmlT6JhI1F/KHvLNxI23r+ANzri4beDnNmNEL13
+         ODquPR328ZY4b40JXwFPQTOnTnwYkbGYWED9ZOV5MeVDmCJrfQPqUoJFL7W7Y48MHVtx
+         BnpWrbGRb4TRH9+dWCJo8TrBOSVnWQ+NMpzcn0l3qKbGeVKPKOffJedFeiBSm8MDr5s6
+         IuVdKGNPEhNpBRS154C67LLzdc0nq4Z/9VZCWPjPwJ9aAKXm0EQahgtm9sGMSkF1DvIm
+         VMnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jZl/fl0qeIvUdvyZE0jXdpw2d7CYxFND/Aqlck8hL7Y=;
-        b=gojsrwQwNAecZjj0DNP2zCElQrYpI6AiXUFmdh6O/WtsYLnuQPdP2V/PqS1e2gYtjE
-         yWmFPYNV8LKoALGR+1tRb5qu7MeeRnKR6g4djC2vf6SdAwmZA3xxtMNBSRcqVADohlPs
-         2kMDS2UUIgOeEl76BcXKPltp+BnHXMQSjdZxKB7MiU/LLN0DWgxNzGHcNKtoeaB+hmxZ
-         QM1+FOoE6mUtzzcGb6OpolL8fMf+EMgaDD4ZRXxqNHWDx4t6ONyTEqxFNUT6+5KeaOGT
-         2/jUtzDzPPSyO2qBTauaKOiVfWDn693NPNk3IFpeph3ZeEmo1GjIea0mtOQ5ewMQm9Q6
-         vjRQ==
-X-Gm-Message-State: AOAM533J7KZUKIKGXLeWHsQPl9wD7Jf+6CrayqmPnSNNE2LQ1YyL/XhP
-        FnKdQ7sUh+4QAAORDKzgb2g+HpZLKvY+LDNBYMdwp3sG8k073A==
-X-Google-Smtp-Source: ABdhPJxe/lvuePKCeGxuB9+ABxg16S0q/9rDILB02Ubcpk7fvZjoqmGGH2zyZ9//gkOuI4bTXW0IMEtSpS2nkzeORqg=
-X-Received: by 2002:a05:6902:2c6:b0:64f:5b77:6869 with SMTP id
- w6-20020a05690202c600b0064f5b776869mr15492879ybh.494.1653309332081; Mon, 23
- May 2022 05:35:32 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=INkfgsb8DgkgWmtKMANQ1Vo1QXhIfhnDd/K2kDPrH3Q=;
+        b=xeDR29hTao4Ikeiw8sB+ovdkzYHSzEcT9Vq90Eogr/WGUy/xp2+vBL/h43Vaq6EHII
+         pe8FbASAAiDvGXLgr1TYT8Jfh1B21ItZtociYK+nMjATv4FPazJCQCZrk75R5DDla1xZ
+         u9f0B/kDtmRf8XY41oBbnaj/vxAJ6tcZJEJ9t5K9Q4PePIStGCE6XZipTFvQ2tLfgtyF
+         0oJ9rzV+dHzL003Zcv98LEG7XUPhC123j7uygrCvRhEPBqqQVgA7h/Wgh6apVCDOg0LE
+         HIZS3CcxsgAo7aUNcFXcsmzYI54/IDKu0MgBD6nqzy5nEPA1HDbAbylDxLV4zPDQvcyD
+         Dk6Q==
+X-Gm-Message-State: AOAM533/zUz4VM/vIJjwEPSBrp5RjZHcX+x6UotCwLjSJrwUvrFPuXFb
+        cJe7MlEkAd1952iiJMUf4UKzVA==
+X-Google-Smtp-Source: ABdhPJxgbS504JkLNi1GG1RBkkzpmYhy4T9e/1i/En0Pu2KHyWvPQjZQaaYP37Mzz2R5Jcq9YxVMNg==
+X-Received: by 2002:a63:cd0b:0:b0:3c6:afc0:32a6 with SMTP id i11-20020a63cd0b000000b003c6afc032a6mr19958954pgg.436.1653309365142;
+        Mon, 23 May 2022 05:36:05 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id b24-20020a056a0002d800b0050dc76281besm7012750pft.152.2022.05.23.05.36.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 05:36:04 -0700 (PDT)
+Message-ID: <dfd2ac0b-74da-85f4-ff66-2eb307578d93@kernel.dk>
+Date:   Mon, 23 May 2022 06:36:03 -0600
 MIME-Version: 1.0
-References: <CA+G9fYt4+47GzfEYT1nV3dqbGa1YCwFm9XwC668D4PkK4BHFgQ@mail.gmail.com>
- <55d49dea-1a67-d857-218e-ef2343251361@i2se.com>
-In-Reply-To: <55d49dea-1a67-d857-218e-ef2343251361@i2se.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 23 May 2022 18:05:20 +0530
-Message-ID: <CA+G9fYvF7HGmJQtk7ktmakwQNjjraK3EoBeiMr+3NuEvsixi6Q@mail.gmail.com>
-Subject: Re: WARNING: CPU: 2 PID: 3331 at drivers/firmware/raspberrypi.c:63 rpi_firmware_property_list
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-rpi-kernel@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        rcu <rcu@vger.kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH -next v5 0/3] support concurrent sync io for bfq on a
+ specail occasion
+Content-Language: en-US
+To:     Yu Kuai <yukuai3@huawei.com>, paolo.valente@linaro.org
+Cc:     jack@suse.cz, tj@kernel.org, linux-block@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+References: <20220428120837.3737765-1-yukuai3@huawei.com>
+ <d50df657-d859-79cf-c292-412eaa383d2c@huawei.com>
+ <61b67d5e-829c-8130-7bda-81615d654829@huawei.com>
+ <81411289-e13c-20f5-df63-c059babca57a@huawei.com>
+ <d5a90a08-1ac6-587a-e900-0436bd45543a@kernel.dk>
+ <55919e29-1f22-e8aa-f3d2-08c57d9e1c22@huawei.com>
+ <b32ed748-a141-862c-ed35-debb474962ed@kernel.dk>
+ <1172d00f-0843-1d7c-721f-fdb60a0945cb@huawei.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <1172d00f-0843-1d7c-721f-fdb60a0945cb@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 23 May 2022 at 16:43, Stefan Wahren <stefan.wahren@i2se.com> wrote:
->
-> Hi Naresh,
->
-> Am 23.05.22 um 11:04 schrieb Naresh Kamboju:
-> > The following kernel warning was noticed on raspberrypi4 device while
-> > running LTP controllers with Linus mainline kernel tree.
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > metadata:
-> >    git_ref: master
-> >    git_repo: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> >    git_sha: 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
-> >    git_describe: v5.18
-> >    kernel_version: 5.18.0
-> >    kernel-config: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/config
-> >    artifact-location: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu
-> >    toolchain: gcc-11
-> >    System.map: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/System.map
-> >    vmlinux.xz: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/vmlinux.xz
->
-> thanks for your report.
->
-> Do you know this worked before (e.g. 5.17)?
+On 5/23/22 2:18 AM, Yu Kuai wrote:
+> ? 2022/05/23 9:24, Jens Axboe ??:
+>> On 5/22/22 7:10 PM, yukuai (C) wrote:
+>>> ? 2022/05/21 20:21, Jens Axboe ??:
+>>>> On 5/21/22 1:22 AM, yukuai (C) wrote:
+>>>>> ? 2022/05/14 17:29, yukuai (C) ??:
+>>>>>> ? 2022/05/05 9:00, yukuai (C) ??:
+>>>>>>> Hi, Paolo
+>>>>>>>
+>>>>>>> Can you take a look at this patchset? It has been quite a long time
+>>>>>>> since we spotted this problem...
+>>>>>>>
+>>>>>>
+>>>>>> friendly ping ...
+>>>>> friendly ping ...
+>>>>
+>>>> I can't speak for Paolo, but I've mentioned before that the majority
+>>>> of your messages end up in my spam. That's still the case, in fact
+>>>> I just marked maybe 10 of them as not spam.
+>>>>
+>>>> You really need to get this issued sorted out, or you will continue
+>>>> to have patches ignore because folks may simply not see them.
+>>>>
+>>> Hi,
+>>>
+>>> Thanks for your notice.
+>>>
+>>> Is it just me or do you see someone else's messages from *huawei.com
+>>> end up in spam? I tried to seek help from our IT support, however, they
+>>> didn't find anything unusual...
+>>
+>> Not sure, I think it's just you. It may be the name as well "yukuai (C)"
+> Hi, Jens
+> 
+> I just change this default name "yukuai (C)" to "Yu Kuai", can you
+> please have a check if following emails still go to spam?
+> 
+> https://lore.kernel.org/all/20220523082633.2324980-1-yukuai3@huawei.com/
 
-Yes. it worked before.
+These did not go into spam, were delivered just fine.
 
-> Am I correct that you are using GPU firmware 2021-02-25T12:10:40?
+-- 
+Jens Axboe
 
-Correct.
-
-- Naresh
