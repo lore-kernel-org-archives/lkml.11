@@ -2,157 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B571CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A613EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236774AbiEWNbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
+        id S236597AbiEWNb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236343AbiEWN32 (ORCPT
+        with ESMTP id S236441AbiEWNaA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:29:28 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46ECEF14;
-        Mon, 23 May 2022 06:29:23 -0700 (PDT)
-X-UUID: effc68d8a72d4a3fa629f07ca2dccc52-20220523
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:ff683319-52f7-4bbe-bfca-44db61b2499d,OB:0,LO
-        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:25
-X-CID-META: VersionHash:2a19b09,CLOUDID:31f24d7a-5ef6-470b-96c9-bdb8ced32786,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: effc68d8a72d4a3fa629f07ca2dccc52-20220523
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1530496690; Mon, 23 May 2022 21:29:20 +0800
-Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 23 May 2022 21:29:19 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 23 May 2022 21:29:18 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 23 May 2022 21:29:17 +0800
-From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <angelogioacchino.delregno@collabora.com>
-CC:     <aaronyu@google.com>, <matthias.bgg@gmail.com>,
-        <trevor.wu@mediatek.com>, <tzungbi@google.com>,
-        <julianbraha@gmail.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>
-Subject: [PATCH v5 18/20] dt-bindings: mediatek: mt8186: add mt8186-mt6366-da7219-max98357 document
-Date:   Mon, 23 May 2022 21:28:56 +0800
-Message-ID: <20220523132858.22166-19-jiaxin.yu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220523132858.22166-1-jiaxin.yu@mediatek.com>
-References: <20220523132858.22166-1-jiaxin.yu@mediatek.com>
+        Mon, 23 May 2022 09:30:00 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321DB5373B
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:29:54 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24N9xdhD006609;
+        Mon, 23 May 2022 15:28:53 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=jJsyl0iPrPGingdrz7S9fW1LlrFUbRPrtfFvWpEpm4E=;
+ b=vd3BSQY30vt99np/gBPbs4uDPCq/6vhh8m4VMA2aLZ08iX3Fmcik/DU4oMUnQBQJMjgd
+ 2Bg8YiH93N20NjkYNFXtgWU5+ctHBEIBde3dDBKq6OvlGS4zQ+7kN5OTKONYasyoBirr
+ /gYSZIUj8GxDPrfCEwHbj/6OCLgumEzVDZpperV+M1/muEoOaq+low8Bjf4tdH0Cif6M
+ 2cIVivXYzuT3rCME4fQMhUB+0meGX57VkzbwVNrY5sAvHviNTyhGNUHzigQYdG+PjZTS
+ q8N+Nc1xP62KxKUxzISyrYYAvrdr/rwjXbfLwrIi0q5ornCN1MtdDojEhH/btSwZC+jQ vA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3g6rv6hbnk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 15:28:53 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 393AF10002A;
+        Mon, 23 May 2022 15:28:50 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E22042248D9;
+        Mon, 23 May 2022 15:28:50 +0200 (CEST)
+Received: from [10.201.20.178] (10.75.127.44) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 23 May
+ 2022 15:28:49 +0200
+Message-ID: <69d5cef3-57c0-9bc7-a83b-a85ef1c4cf29@foss.st.com>
+Date:   Mon, 23 May 2022 15:28:48 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] ASoC: stm32: sai: Use of_device_get_match_data() to
+ simplify code
+Content-Language: en-US
+To:     Tang Bin <tangbin@cmss.chinamobile.com>,
+        <arnaud.pouliquen@foss.st.com>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>
+CC:     <alsa-devel@alsa-project.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220519124235.21100-1-tangbin@cmss.chinamobile.com>
+From:   Olivier MOYSAN <olivier.moysan@foss.st.com>
+In-Reply-To: <20220519124235.21100-1-tangbin@cmss.chinamobile.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-23_06,2022-05-23_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add document for mt8186 board with mt6366, da7219 and max98357.
+Hello Tang,
 
-Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
----
- .../sound/mt8186-mt6366-da7219-max98357.yaml  | 75 +++++++++++++++++++
- 1 file changed, 75 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
+Thanks for the patch. Unfortunately this patch introduces a regression.
 
-diff --git a/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml b/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
-new file mode 100644
-index 000000000000..513cd28b2027
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
-@@ -0,0 +1,75 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/mt8186-mt6366-da7219-max98357.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek MT8186 with MT6366, DA7219 and MAX98357 ASoC sound card driver
-+
-+maintainers:
-+  - Jiaxin Yu <jiaxin.yu@mediatek.com>
-+
-+description:
-+  This binding describes the MT8186 sound card.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mediatek,mt8186-mt6366-da7219-max98357-sound
-+
-+  mediatek,platform:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: The phandle of MT8186 ASoC platform.
-+
-+  headset-codec:
-+    type: object
-+    additionalProperties: false
-+    properties:
-+      sound-dai:
-+        maxItems: 1
-+    required:
-+      - sound-dai
-+
-+  playback-codecs:
-+    type: object
-+    additionalProperties: false
-+    properties:
-+      sound-dai:
-+        items:
-+          - description: phandle of dp codec
-+          - description: phandle of l channel speaker codec
-+          - description: phandle of r channel speaker codec
-+        minItems: 2
-+    required:
-+      - sound-dai
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - mediatek,platform
-+  - headset-codec
-+  - playback-codecs
-+
-+examples:
-+  - |
-+
-+    sound: mt8186-sound {
-+        compatible = "mediatek,mt8186-mt6366-da7219-max98357-sound";
-+        mediatek,platform = <&afe>;
-+        pinctrl-names = "aud_clk_mosi_off",
-+                        "aud_clk_mosi_on";
-+        pinctrl-0 = <&aud_clk_mosi_off>;
-+        pinctrl-1 = <&aud_clk_mosi_on>;
-+
-+        headset-codec {
-+            sound-dai = <&da7219>;
-+        };
-+
-+        playback-codecs {
-+            sound-dai = <&anx_bridge_dp>,
-+                        <&max98357a>;
-+        };
-+    };
-+
-+...
--- 
-2.18.0
+In the SAI driver of_device_id struct the data is a simple enum cast to 
+void* pointer.
+static const struct of_device_id stm32_sai_sub_ids[] = {
+	  .data = (void *)STM_SAI_A_ID},
 
+This data is an ID which can be set to 0x0.
+Here we have no way to know to discriminate between an error returned by 
+of_device_get_match_data() or a data id set to 0x0.
+
+The current patch requires a change in the driver.
+Either changing STM_SAI_x_ID enums, or replacing data by a struct.
+For instance:
+struct stm32_sai_comp_data {
+	unsigned int id;
+}
+struct stm32_sai_comp_data stm32_sai_comp_data_a = {
+	.id = STM_SAI_A_ID;
+}
+struct of_device_id stm32_sai_sub_ids[] = {
+	.data = &stm32_sai_comp_data_a},
+}
+
+Regards
+Olivier
+
+On 5/19/22 14:42, Tang Bin wrote:
+> Retrieve of match data, it's better and cleaner to use
+> 'of_device_get_match_data' over 'of_match_device'.
+> 
+> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> ---
+>   sound/soc/stm/stm32_sai_sub.c | 6 ++----
+>   1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/sound/soc/stm/stm32_sai_sub.c b/sound/soc/stm/stm32_sai_sub.c
+> index dd636af81..d300605a2 100644
+> --- a/sound/soc/stm/stm32_sai_sub.c
+> +++ b/sound/soc/stm/stm32_sai_sub.c
+> @@ -1500,7 +1500,6 @@ static int stm32_sai_sub_parse_of(struct platform_device *pdev,
+>   static int stm32_sai_sub_probe(struct platform_device *pdev)
+>   {
+>   	struct stm32_sai_sub_data *sai;
+> -	const struct of_device_id *of_id;
+>   	const struct snd_dmaengine_pcm_config *conf = &stm32_sai_pcm_config;
+>   	int ret;
+>   
+> @@ -1508,10 +1507,9 @@ static int stm32_sai_sub_probe(struct platform_device *pdev)
+>   	if (!sai)
+>   		return -ENOMEM;
+>   
+> -	of_id = of_match_device(stm32_sai_sub_ids, &pdev->dev);
+> -	if (!of_id)
+> +	sai->id = (uintptr_t)of_device_get_match_data(&pdev->dev);
+> +	if (!sai->id)
+>   		return -EINVAL;
+> -	sai->id = (uintptr_t)of_id->data;
+>   
+>   	sai->pdev = pdev;
+>   	mutex_init(&sai->ctrl_lock);
