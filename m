@@ -2,91 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF519C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B38C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240119AbiEWSbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
+        id S240381AbiEWSb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240205AbiEWSam (ORCPT
+        with ESMTP id S243719AbiEWSbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:30:42 -0400
-X-Greylist: delayed 470 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 23 May 2022 11:05:04 PDT
-Received: from cantor.telenet-ops.be (cantor.telenet-ops.be [IPv6:2a02:1800:120:4::f00:10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C601E64F4
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:05:03 -0700 (PDT)
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by cantor.telenet-ops.be (Postfix) with ESMTPS id 4L6Q4V0G5fz4x0WL
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 19:56:26 +0200 (CEST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:4593:272c:6293:e2cc])
-        by andre.telenet-ops.be with bizsmtp
-        id aHvN2700U2jQL2A01HvNXx; Mon, 23 May 2022 19:55:25 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1ntCH4-001MLx-1F; Mon, 23 May 2022 19:55:22 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1ntCH3-003z4C-A1; Mon, 23 May 2022 19:55:21 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Cc:     Laurent Vivier <laurent@vivier.eu>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        noreply@ellerman.id.au
-Subject: [PATCH next] m68k: virt: Switch to new sys-off handler API
-Date:   Mon, 23 May 2022 19:55:20 +0200
-Message-Id: <20220523175520.949681-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        Mon, 23 May 2022 14:31:35 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B64620F5A;
+        Mon, 23 May 2022 11:06:22 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id v11so13415860qkf.1;
+        Mon, 23 May 2022 11:06:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N4rBBcobCQCpRnDX0N4E6NWTW64w3K1pdJQpMj8qNhc=;
+        b=udpNSUAhyP0FG8UDM1hTD/Pjh6SNQULn1hGtdAPYeDLHUc4PzchUBkFrhQd5rk4IgN
+         kUXrLc9uejFGUyzcZTIyCZ2OksTZRKTfxc1CkuMmtblrmLspSRWOPZG4e+b7l8dtiHjD
+         E7oW9+ss3tMBcn8UH2dpYG47tK19BqyKzW/P4vD3StmxjzMm1mavXFvhPFpXvk82I1UZ
+         Vjq63QGnvRKmjV0vx7Vyrp5yF4DR41bld6QNEudT27Q2oEMyHOnoX6yWLZ6YURSTdFVi
+         wq1nIg2h7mCMxMmwkO/5wc8qwRVUtTF9Hq0UqUDzPxc6yJgTxWuEZnkZiHErEEoYKjei
+         Uwrg==
+X-Gm-Message-State: AOAM533xZQUl2IWoB0x6AQv2JNRZwHN3T1Iu9fOpk1tP18i+6+BrCpq3
+        1yUh8xUnLSBiVz1I93FWpv4yttvzTploOtMzc3E=
+X-Google-Smtp-Source: ABdhPJzWjZYTz0j8MSLd3DxKvbLW/XPtFjrPCplrW/MOl5criBTRv3K3QA0OeDfkMtd0+xXjk3TDeQ==
+X-Received: by 2002:a05:620a:2446:b0:6a0:50e8:2b2f with SMTP id h6-20020a05620a244600b006a050e82b2fmr14661026qkn.261.1653328871953;
+        Mon, 23 May 2022 11:01:11 -0700 (PDT)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id o8-20020a05622a138800b002f93554c009sm2686537qtk.59.2022.05.23.11.01.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 11:01:11 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id p139so26782803ybc.11;
+        Mon, 23 May 2022 11:01:11 -0700 (PDT)
+X-Received: by 2002:a81:ad11:0:b0:2fe:fb00:a759 with SMTP id
+ l17-20020a81ad11000000b002fefb00a759mr24887559ywh.283.1653328860919; Mon, 23
+ May 2022 11:01:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220509233235.995021-1-dmitry.osipenko@collabora.com> <CAJZ5v0jhWs-8ChHddebTZcaH6kA05sLEMsXM9Op7kHWAQDxeYA@mail.gmail.com>
+In-Reply-To: <CAJZ5v0jhWs-8ChHddebTZcaH6kA05sLEMsXM9Op7kHWAQDxeYA@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 23 May 2022 20:00:49 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVbWpgubaA0V_tau3O=czAb3RQV9AwJsoQ+LWjf-wjMkA@mail.gmail.com>
+Message-ID: <CAMuHMdVbWpgubaA0V_tau3O=czAb3RQV9AwJsoQ+LWjf-wjMkA@mail.gmail.com>
+Subject: Re: [PATCH v8 00/27] Introduce power-off+restart call chain API
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Joshua Thompson <funaho@jurai.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-csky@vger.kernel.org,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        xen-devel@lists.xenproject.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On m68k with CONFIG_VIRT=y (e.g. virt_defconfig or allmodconfig):
+Hi Rafael,
 
-    arch/m68k/virt/config.c: In function ‘config_virt’:
-    arch/m68k/virt/config.c:129:2: error: ‘mach_power_off’ undeclared (first use in this function); did you mean ‘pm_power_off’?
-      129 |  mach_power_off = virt_halt;
-	  |  ^~~~~~~~~~~~~~
-	  |  pm_power_off
+On Wed, May 18, 2022 at 4:46 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> On Tue, May 10, 2022 at 1:33 AM Dmitry Osipenko
+> <dmitry.osipenko@collabora.com> wrote:
 
-Commit 05d51e42df06f021 ("m68k: Introduce a virtual m68k machine")
-introduced a new user of mach_power_off.
-Convert it to the new sys-off handler API, too.
+> >   m68k: Switch to new sys-off handler API
 
-Reported-by: noreply@ellerman.id.au
-Fixes: f0f7e5265b3b37b0 ("m68k: Switch to new sys-off handler API")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- arch/m68k/virt/config.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Sorry, I didn't realize this was going to interact with the new m68k
+virtual machine support, which is included in the m68k pull request
+for v5.19.
 
-diff --git a/arch/m68k/virt/config.c b/arch/m68k/virt/config.c
-index 68d29c8b87e18840..632ba200ad425245 100644
---- a/arch/m68k/virt/config.c
-+++ b/arch/m68k/virt/config.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- 
-+#include <linux/reboot.h>
- #include <linux/serial_core.h>
- #include <clocksource/timer-goldfish.h>
- 
-@@ -126,5 +127,6 @@ void __init config_virt(void)
- 	mach_get_model = virt_get_model;
- 	mach_reset = virt_reset;
- 	mach_halt = virt_halt;
--	mach_power_off = virt_halt;
-+
-+	register_platform_power_off(virt_halt);
- }
--- 
-2.25.1
+> However, I'm going to send a pull request with it in the second half
+> of the merge window, after the majority of the other changes in the
+> subsystems touched by it have been integrated.
 
+And presumably you will have to merge in v5.19-rc1, too?
+
+I've sent a fix.  It should appear at
+https://lore.kernel.org/r/20220523175520.949681-1-geert@linux-m68k.org
+soon.
+
+Can you please include that in your PR?
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
