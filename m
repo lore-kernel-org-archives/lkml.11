@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0157C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 655C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiEWRc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35688 "EHLO
+        id S241369AbiEWRdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241636AbiEWRWb (ORCPT
+        with ESMTP id S241805AbiEWRWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9E971D9B;
-        Mon, 23 May 2022 10:19:17 -0700 (PDT)
+        Mon, 23 May 2022 13:22:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A927CB2A;
+        Mon, 23 May 2022 10:19:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B350EB81210;
-        Mon, 23 May 2022 17:19:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09BD3C385A9;
-        Mon, 23 May 2022 17:19:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40BD0608C3;
+        Mon, 23 May 2022 17:18:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E984C34115;
+        Mon, 23 May 2022 17:18:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326355;
-        bh=gSowyZYMS8dn11shAF4owa+iXCWycbfZG+vSKBAfs9A=;
+        s=korg; t=1653326300;
+        bh=ePzOuHkPVWLQO2EdRyPrDPRZvqX6OPlOfhBbEtZh7Z0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obU7eXT6Lm/b73zEpI9oKMX28DrZK8B1qSuvdE/4Hr/3QwRjX7Rxvwalk7g02SXu9
-         ICyYF/CoEPv8qs6PQGstezlFDZTnYBc4p67uWuX/bfleUTnDyf7UfYBwCUUscBxMQc
-         A3Mbgipg3Jn44U/nrA3FG+h2aExdlptu13w9diDE=
+        b=MfrOnTv2gjrFffUw7Bi16ax8SipY7JMN6oajkJBwWyn2cqDsrry9VGPWPmHXMl34V
+         R9BREo65lgO6JWhf3CgdYbfKQFbh2x7r3Aj8UfdttweRziKltotQzrxw4zACYhXw/7
+         lgsoCOliHDs3dO2MWuruH0j/ooCLiHXbYCx7XkDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wander Lairson Costa <wander@redhat.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.15 048/132] selinux: fix bad cleanup on error in hashtab_duplicate()
-Date:   Mon, 23 May 2022 19:04:17 +0200
-Message-Id: <20220523165831.210664378@linuxfoundation.org>
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 039/132] drbd: remove usage of list iterator variable after loop
+Date:   Mon, 23 May 2022 19:04:08 +0200
+Message-Id: <20220523165829.883026196@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,36 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Mosnacek <omosnace@redhat.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit 6254bd3db316c9ccb3b05caa8b438be63245466f upstream.
+[ Upstream commit 901aeda62efa21f2eae937bccb71b49ae531be06 ]
 
-The code attempts to free the 'new' pointer using kmem_cache_free(),
-which is wrong because this function isn't responsible of freeing it.
-Instead, the function should free new->htable and clear the contents of
-*new (to prevent double-free).
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to iterate through the list [1].
 
-Cc: stable@vger.kernel.org
-Fixes: c7c556f1e81b ("selinux: refactor changing booleans")
-Reported-by: Wander Lairson Costa <wander@redhat.com>
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Since that variable should not be used past the loop iteration, a
+separate variable is used to 'remember the current location within the
+loop'.
+
+To either continue iterating from that position or skip the iteration
+(if the previous iteration was complete) list_prepare_entry() is used.
+
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220331220349.885126-1-jakobkoschel@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/ss/hashtab.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/block/drbd/drbd_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/security/selinux/ss/hashtab.c
-+++ b/security/selinux/ss/hashtab.c
-@@ -178,7 +178,8 @@ int hashtab_duplicate(struct hashtab *ne
- 			kmem_cache_free(hashtab_node_cachep, cur);
- 		}
- 	}
--	kmem_cache_free(hashtab_node_cachep, new);
-+	kfree(new->htable);
-+	memset(new, 0, sizeof(*new));
- 	return -ENOMEM;
- }
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index 548e0dd53528..6db0333b5b7a 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -171,7 +171,7 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
+ 		unsigned int set_size)
+ {
+ 	struct drbd_request *r;
+-	struct drbd_request *req = NULL;
++	struct drbd_request *req = NULL, *tmp = NULL;
+ 	int expect_epoch = 0;
+ 	int expect_size = 0;
  
+@@ -225,8 +225,11 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
+ 	 * to catch requests being barrier-acked "unexpectedly".
+ 	 * It usually should find the same req again, or some READ preceding it. */
+ 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
+-		if (req->epoch == expect_epoch)
++		if (req->epoch == expect_epoch) {
++			tmp = req;
+ 			break;
++		}
++	req = list_prepare_entry(tmp, &connection->transfer_log, tl_requests);
+ 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
+ 		if (req->epoch != expect_epoch)
+ 			break;
+-- 
+2.35.1
+
 
 
