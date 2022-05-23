@@ -2,114 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E191FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229487AbiEWGnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57048 "EHLO
+        id S229623AbiEWGzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiEWGnc (ORCPT
+        with ESMTP id S229528AbiEWGyy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:43:32 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5264E3B1
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:41:49 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id p10so1199516wrg.12
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:41:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=8r+4rT0z8Ytfh5JdNqoBX1R1KXZ5ArSe1NSavDgjBLA=;
-        b=FYoiads97LYAz3iMBonmSZL96m57hDOncjNC3fb/1DqJnDfumX4DiDKDzEJyjbDMp9
-         uf3qz16WdfB7Nrd8f6ODtl/Gg8IUxHWhgPAjtOYBziWuV2uPBLLOe2MEVTqZ0QS+YiuQ
-         YGjMS5MH951n28MmBarmUWjEU2BFIN5V0RBpAVq6I+O7R3zCR9Rpw5XMQOCBRSu5hmnk
-         qFxIN6No/eT+Fvati8Mo+GJ66l1n0Uoj65LE9Hq+a1kQey4rlsYjcx1D6Q4e7WNPGSRa
-         VjPuiXkwK6G+YQ7ZA0058lkh3vuwlocw/jytZIgfE653Ks7+uMkBQovUfV6IvNtTsqBy
-         WjQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=8r+4rT0z8Ytfh5JdNqoBX1R1KXZ5ArSe1NSavDgjBLA=;
-        b=QeHWydz5jiAj7VRFeDH7Nc21SjhDPesRzXcyAgPkeU1P0zB9lqH+xkCYKWeOcv+M6r
-         Ji5IDcpwCNzAiYiZHpyX8RPixFSMC5FHkv5VEkj35S9DOvNcHXyO2oBMzr0i6NOeiprC
-         Wo8GT/NzDfGvoVphrHmczpz5KC1vD35Kxdcp/pH4992fFLdSub20/sNfhukV9rg4DJUn
-         Hl/7LagxD95eS4DkZ3uC6+deQTyCGoMWB5yZAlEZwJ4S0ZCReBao20KHZkbpKcCFUvAz
-         Q0ffdC6HHBKORQUS/lNQD3eW/xMRE5x/4UtXMQgAavEgGRyRHDs8EfI3EOrZwYTUqxy6
-         vkww==
-X-Gm-Message-State: AOAM5339ZH9WzGIZqdqL2pkNFCn+PfN+uS5irMRYrj3ULzkGhSfA5P3u
-        NP8DRTYvAHhfUUjZ8rzEfUY=
-X-Google-Smtp-Source: ABdhPJyz531sqHvVQe3igOo+6jZ/+a2ju0Yz+n8QfxHgHVVe3YBoFBj77YwYAsnU1U94kZOUG1p00Q==
-X-Received: by 2002:adf:f6cb:0:b0:20d:4b6:10b4 with SMTP id y11-20020adff6cb000000b0020d04b610b4mr17484584wrp.669.1653288102523;
-        Sun, 22 May 2022 23:41:42 -0700 (PDT)
-Received: from giga-mm.localdomain ([195.245.17.24])
-        by smtp.gmail.com with ESMTPSA id ay28-20020a05600c1e1c00b003973c4bb19bsm6956289wmb.16.2022.05.22.23.41.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:41:41 -0700 (PDT)
-Message-ID: <dd7437b9b4da3dfc6ef1b86cdff03d6a048e1c7f.camel@gmail.com>
-Subject: Re: [PATCH] ARM: ep93xx: Kconfig: Fix indentation
-From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
-To:     Juerg Haefliger <juerg.haefliger@canonical.com>,
-        hsweeten@visionengravers.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Date:   Mon, 23 May 2022 08:41:40 +0200
-In-Reply-To: <20220523061051.8668-1-juergh@canonical.com>
-References: <20220523061051.8668-1-juergh@canonical.com>
+        Mon, 23 May 2022 02:54:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D93CA54BF2
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653288637;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6or0LDEr8+Nq81Rkj47r4fBHy8teKoRGQNGc1avEiUw=;
+        b=I68yrpQY6wYtrKyB1x4shDgHigNQItPovUo/6bFTrUQ9v24K5iO1EVn3k0zioDHWS1P0Vs
+        6CUaDrHMJDSeeYOgx+NVf9n/GNuJ3h2Mi5tWYASinVs/ekHgwYV6JZbe70tB6R3cv2ELFj
+        m2MDYoOocAXG8fmuBfvUXTA+Hro6ifQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-509-eUJsIwmcNCqspPyOcQzEDw-1; Mon, 23 May 2022 02:50:33 -0400
+X-MC-Unique: eUJsIwmcNCqspPyOcQzEDw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43A08801210;
+        Mon, 23 May 2022 06:50:32 +0000 (UTC)
+Received: from starship (unknown [10.40.192.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C58041047E8;
+        Mon, 23 May 2022 06:50:25 +0000 (UTC)
+Message-ID: <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
+Subject: Re: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the
+ guest and/or host changes apic id/base from the defaults.
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Jim Mattson <jmattson@google.com>
+Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Date:   Mon, 23 May 2022 09:50:24 +0300
+In-Reply-To: <CALMp9eSVji2CPW1AjFoSbWZ_b-r3y67HyatgdqXEqSyUaD1_BQ@mail.gmail.com>
+References: <20220427200314.276673-1-mlevitsk@redhat.com>
+         <20220427200314.276673-3-mlevitsk@redhat.com> <YoZrG3n5fgMp4LQl@google.com>
+         <e32f6c904c92e9e9efabcc697917a232f5e88881.camel@redhat.com>
+         <CALMp9eSVji2CPW1AjFoSbWZ_b-r3y67HyatgdqXEqSyUaD1_BQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+On Sun, 2022-05-22 at 07:47 -0700, Jim Mattson wrote:
+> On Sun, May 22, 2022 at 2:03 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
+> > On Thu, 2022-05-19 at 16:06 +0000, Sean Christopherson wrote:
+> > > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
+> > > > Neither of these settings should be changed by the guest and it is
+> > > > a burden to support it in the acceleration code, so just inhibit
+> > > > it instead.
+> > > > 
+> > > > Also add a boolean 'apic_id_changed' to indicate if apic id ever changed.
+> > > > 
+> > > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> > > > ---
+> > > > +           return;
+> > > > +
+> > > > +   pr_warn_once("APIC ID change is unsupported by KVM");
+> > > 
+> > > It's supported (modulo x2APIC shenanigans), otherwise KVM wouldn't need to disable
+> > > APICv.
+> > 
+> > Here, as I said, it would be nice to see that warning if someone complains.
+> > Fact is that AVIC code was totally broken in this regard, and there are probably more,
+> > so it would be nice to see if anybody complains.
+> > 
+> > If you insist, I'll remove this warning.
+> 
+> This may be fine for a hobbyist, but it's a terrible API in an
+> enterprise environment. To be honest, I have no way of propagating
+> this warning from /var/log/messages on a particular host to a
+> potentially impacted customer. Worse, if they're not the first
+> impacted customer since the last host reboot, there's no warning to
+> propagate. I suppose I could just tell every later customer, "Your VM
+> was scheduled to run on a host that previously reported, 'APIC ID
+> change is unsupported by KVM.' If you notice any unusual behavior,
+> that might be the reason for it," but that isn't going to inspire
+> confidence. I could schedule a drain and reboot of the host, but that
+> defeats the whole point of the "_once" suffix.
 
-On Mon, 2022-05-23 at 08:10 +0200, Juerg Haefliger wrote:
-> The convention for indentation seems to be a single tab. Help text is
-> further indented by an additional two whitespaces. Fix the lines that
-> violate these rules.
->=20
-> Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+Mostly agree, and I read alrady few discussions about exactly this,
+those warnings are mostly useless, but they are used in the
+cases where we don't have the courage to just exit with KVM_EXIT_INTERNAL_ERROR.
 
-Acked-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+I do not thing though that the warning is completely useless, 
+as we often have the kernel log of the target machine when things go wrong, 
+so *we* can notice it.
+In other words a kernel warning is mostly useless but better that nothing.
 
-> ---
-> =C2=A0arch/arm/mach-ep93xx/Kconfig | 8 ++++----
-> =C2=A01 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/arch/arm/mach-ep93xx/Kconfig b/arch/arm/mach-ep93xx/Kconfig
-> index 15c68a646d51..cd94079ce095 100644
-> --- a/arch/arm/mach-ep93xx/Kconfig
-> +++ b/arch/arm/mach-ep93xx/Kconfig
-> @@ -121,10 +121,10 @@ config MACH_MICRO9S
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Contec Micro9-Slim=
- board.
-> =C2=A0
-> =C2=A0config MACH_SIM_ONE
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool "Support Simplemachines =
-Sim.One board"
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 help
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say 'Y' here if y=
-ou want your kernel to support the
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Simplemachines Si=
-m.One board.
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bool "Support Simplemachines S=
-im.One board"
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0help
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Say 'Y' here if you wan=
-t your kernel to support the
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Simplemachines Sim.One =
-board.
-> =C2=A0
-> =C2=A0config MACH_SNAPPER_CL15
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0bool "Support Bluewater S=
-ystems Snapper CL15 Module"
+About KVM_EXIT_WARNING, this is IMHO a very good idea, probably combined
+with some form of taint flag, which could be read by qemu and then shown
+over hmp/qmp interfaces.
 
---=20
-Alexander Sverdlin.
+Best regards,
+	Maxim levitsky
+
+
+> 
+> I know that there's a long history of doing this in KVM, but I'd like
+> to ask that we:
+> a) stop piling on
+> b) start fixing the existing uses
+> 
+> If KVM cannot emulate a perfectly valid operation, an exit to
+> userspace with KVM_EXIT_INTERNAL_ERROR is warranted. Perhaps for
+> operations that we suspect KVM might get wrong, we should have a new
+> userspace exit: KVM_EXIT_WARNING?
+> 
+> I'm not saying that you should remove the warning. I'm just asking
+> that it be augmented with a direct signal to userspace that KVM may no
+> longer be reliable.
+> 
+
 
