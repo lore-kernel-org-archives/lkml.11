@@ -2,158 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8842DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2136EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243411AbiEWSF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
+        id S241319AbiEWSFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242992AbiEWRhv (ORCPT
+        with ESMTP id S242971AbiEWRhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:37:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB07362BE5;
-        Mon, 23 May 2022 10:31:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67ABC611C2;
-        Mon, 23 May 2022 17:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 279CCC385AA;
-        Mon, 23 May 2022 17:29:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326963;
-        bh=d6w+5UsSdjDcHDg9m5UaDK+DMi109APCcdCUrmrVj6w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yGBsk6LaboQ+It5oVs4y4RLBv3l61doXrW5nEXdmfgLkDnCUHzAhv00CAtabFKXhd
-         TWoZ92MOx7abFp+PLfXn7zG2vbDEQhgISVrKLB3/NsOn3V3iVaSzvaG9S6uAyy2MKk
-         kRLczDFiyiMz4MYbGn4jy8nT4fyqmDxmjzZ1PuAE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Michal Schmidt <mschmidt@redhat.com>,
-        Dave Cain <dcain@redhat.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.17 096/158] ice: fix crash when writing timestamp on RX rings
-Date:   Mon, 23 May 2022 19:04:13 +0200
-Message-Id: <20220523165847.300118321@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238E85D5E6
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:31:56 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id b135so2562397pfb.12
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:31:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oCNJML7eA2j9L8f72NkyeKZiPIyN20wsxD5r9Tzx9cA=;
+        b=VQuspDaagiDbr8zDGAJevmwHk6IYCwXe0OQNbOee7Tu2IHo33cYxokGiFfbrhTIFD6
+         62hu7cw8t4yvx3aEBc40atCX/ZCXQYPABJD3A7WMv5dpWaPn1sujmMA8KBgCJG/jH4eb
+         Smd147syr5WmIcn7pwELo2ONgSQiNPsmRFuoyQ1Iuk1z/gxUK17CLFKinM4+1W81nEFo
+         hEWLTqC7ODI5yO9MfnJOT+geXR0KYCSJNoxov70DOAkLXuLYrQlTnAq0q3/2sT9qy69d
+         B46Q3eeaiIlELv+ptqM+emBDuE/X1ivWqBecmrCvvRl7jwiPmbCsJ3mCYHkXRYTX9XnL
+         9ZeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oCNJML7eA2j9L8f72NkyeKZiPIyN20wsxD5r9Tzx9cA=;
+        b=058I9JufCLo/z+RcXgadaYPlwXpIIN+mTa9oS4WcPc6qKPgDdEWt+HGRN2wh5K8hg5
+         zCNBkuPZFXjSY1N3Lm3cJYRnRJHEwKgTvbYY+Da7iD9ah9doXRrY4Ph8Hca3HP7ahT2l
+         z2urgEeMbpcodmHXrsLUpmvfRqsDdV+fUO7GOFxoritQGpU/lncFoBJPRBUFS6DtkbzK
+         uUEv943kRxbQqhd5wP6x3O2Ui9uREY8fsO5mC+YyLPQuYJxM8FKtqt1WKjN1HjbB5Wu0
+         ADPQ9uMC2xXhfE3RwwCpYDHFtLmYMK2o1xcuBH9bV3bqNdNMKBo+xKyIbT51k/awq0ah
+         N6Tw==
+X-Gm-Message-State: AOAM530jwPyZI57/EiBV/TVjl+EKTUPhi+5L23IiZi+aFHiTMfbPazXg
+        xr0vh1YhZRY51wcm9Uu8yoV5gg==
+X-Google-Smtp-Source: ABdhPJyVqMoEcjNxptyUgqa9Zdq5WQzejBZ0z6wMNkkE4awFtw8fhM9i8OBMVMolSAtdF+aG4aq6XQ==
+X-Received: by 2002:a05:6a00:140a:b0:4e0:54d5:d01 with SMTP id l10-20020a056a00140a00b004e054d50d01mr24742544pfu.20.1653327068687;
+        Mon, 23 May 2022 10:31:08 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id ru13-20020a17090b2bcd00b001df4a0e9357sm7512221pjb.12.2022.05.23.10.31.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 10:31:08 -0700 (PDT)
+Date:   Mon, 23 May 2022 17:31:04 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the guest
+ and/or host changes apic id/base from the defaults.
+Message-ID: <YovE2A67XobRyHc/@google.com>
+References: <20220427200314.276673-1-mlevitsk@redhat.com>
+ <20220427200314.276673-3-mlevitsk@redhat.com>
+ <YoZrG3n5fgMp4LQl@google.com>
+ <e32f6c904c92e9e9efabcc697917a232f5e88881.camel@redhat.com>
+ <CALMp9eSVji2CPW1AjFoSbWZ_b-r3y67HyatgdqXEqSyUaD1_BQ@mail.gmail.com>
+ <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+On Mon, May 23, 2022, Maxim Levitsky wrote:
+> On Sun, 2022-05-22 at 07:47 -0700, Jim Mattson wrote:
+> > On Sun, May 22, 2022 at 2:03 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
+> > > On Thu, 2022-05-19 at 16:06 +0000, Sean Christopherson wrote:
+> > > > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
+> > > > > Neither of these settings should be changed by the guest and it is
+> > > > > a burden to support it in the acceleration code, so just inhibit
+> > > > > it instead.
+> > > > > 
+> > > > > Also add a boolean 'apic_id_changed' to indicate if apic id ever changed.
+> > > > > 
+> > > > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> > > > > ---
+> > > > > +           return;
+> > > > > +
+> > > > > +   pr_warn_once("APIC ID change is unsupported by KVM");
+> > > > 
+> > > > It's supported (modulo x2APIC shenanigans), otherwise KVM wouldn't need to disable
+> > > > APICv.
+> > > 
+> > > Here, as I said, it would be nice to see that warning if someone complains.
+> > > Fact is that AVIC code was totally broken in this regard, and there are probably more,
+> > > so it would be nice to see if anybody complains.
+> > > 
+> > > If you insist, I'll remove this warning.
+> > 
+> > This may be fine for a hobbyist, but it's a terrible API in an
+> > enterprise environment. To be honest, I have no way of propagating
+> > this warning from /var/log/messages on a particular host to a
+> > potentially impacted customer. Worse, if they're not the first
+> > impacted customer since the last host reboot, there's no warning to
+> > propagate. I suppose I could just tell every later customer, "Your VM
+> > was scheduled to run on a host that previously reported, 'APIC ID
+> > change is unsupported by KVM.' If you notice any unusual behavior,
+> > that might be the reason for it," but that isn't going to inspire
+> > confidence. I could schedule a drain and reboot of the host, but that
+> > defeats the whole point of the "_once" suffix.
+> 
+> Mostly agree, and I read alrady few discussions about exactly this,
+> those warnings are mostly useless, but they are used in the
+> cases where we don't have the courage to just exit with KVM_EXIT_INTERNAL_ERROR.
+> 
+> I do not thing though that the warning is completely useless, 
+> as we often have the kernel log of the target machine when things go wrong, 
+> so *we* can notice it.
+> In other words a kernel warning is mostly useless but better that nothing.
 
-[ Upstream commit 4503cc7fdf9a84cd631b0cb8ecb3c9b1bdbf3594 ]
+IMO, it's worse than doing nothing.  Us developers become desensitized to the
+kernel message due to running tests, the existence of these message propagates
+the notion that they are a good thing (and we keep rehashing these discussions...),
+users may not realize it's a _once() printk and so think they _aren't_ affected
+when re-running a workload, etc...
 
-Do not allow to write timestamps on RX rings if PF is being configured.
-When PF is being configured RX rings can be freed or rebuilt. If at the
-same time timestamps are updated, the kernel will crash by dereferencing
-null RX ring pointer.
+And in this case, "APIC ID change is unsupported by KVM" is partly wrong.  KVM
+fully models Intel's behavior where the ID change isn't carried across x2APIC
+enabling, the only unsupported behavior is that the guest will lose APICv
+acceleration.
 
-PID: 1449   TASK: ff187d28ed658040  CPU: 34  COMMAND: "ice-ptp-0000:51"
- #0 [ff1966a94a713bb0] machine_kexec at ffffffff9d05a0be
- #1 [ff1966a94a713c08] __crash_kexec at ffffffff9d192e9d
- #2 [ff1966a94a713cd0] crash_kexec at ffffffff9d1941bd
- #3 [ff1966a94a713ce8] oops_end at ffffffff9d01bd54
- #4 [ff1966a94a713d08] no_context at ffffffff9d06bda4
- #5 [ff1966a94a713d60] __bad_area_nosemaphore at ffffffff9d06c10c
- #6 [ff1966a94a713da8] do_page_fault at ffffffff9d06cae4
- #7 [ff1966a94a713de0] page_fault at ffffffff9da0107e
-    [exception RIP: ice_ptp_update_cached_phctime+91]
-    RIP: ffffffffc076db8b  RSP: ff1966a94a713e98  RFLAGS: 00010246
-    RAX: 16e3db9c6b7ccae4  RBX: ff187d269dd3c180  RCX: ff187d269cd4d018
-    RDX: 0000000000000000  RSI: 0000000000000000  RDI: 0000000000000000
-    RBP: ff187d269cfcc644   R8: ff187d339b9641b0   R9: 0000000000000000
-    R10: 0000000000000002  R11: 0000000000000000  R12: ff187d269cfcc648
-    R13: ffffffff9f128784  R14: ffffffff9d101b70  R15: ff187d269cfcc640
-    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
- #8 [ff1966a94a713ea0] ice_ptp_periodic_work at ffffffffc076dbef [ice]
- #9 [ff1966a94a713ee0] kthread_worker_fn at ffffffff9d101c1b
- #10 [ff1966a94a713f10] kthread at ffffffff9d101b4d
- #11 [ff1966a94a713f50] ret_from_fork at ffffffff9da0023f
-
-Fixes: 77a781155a65 ("ice: enable receive hardware timestamping")
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Reviewed-by: Michal Schmidt <mschmidt@redhat.com>
-Tested-by: Dave Cain <dcain@redhat.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/ice/ice_ptp.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index 45ae97b8b97d..836c67f1aa46 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -499,12 +499,19 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
-  * This function must be called periodically to ensure that the cached value
-  * is never more than 2 seconds old. It must also be called whenever the PHC
-  * time has been changed.
-+ *
-+ * Return:
-+ * * 0 - OK, successfully updated
-+ * * -EAGAIN - PF was busy, need to reschedule the update
-  */
--static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
-+static int ice_ptp_update_cached_phctime(struct ice_pf *pf)
- {
- 	u64 systime;
- 	int i;
- 
-+	if (test_and_set_bit(ICE_CFG_BUSY, pf->state))
-+		return -EAGAIN;
-+
- 	/* Read the current PHC time */
- 	systime = ice_ptp_read_src_clk_reg(pf, NULL);
- 
-@@ -527,6 +534,9 @@ static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
- 			WRITE_ONCE(vsi->rx_rings[j]->cached_phctime, systime);
- 		}
- 	}
-+	clear_bit(ICE_CFG_BUSY, pf->state);
-+
-+	return 0;
- }
- 
- /**
-@@ -2322,17 +2332,18 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
- {
- 	struct ice_ptp *ptp = container_of(work, struct ice_ptp, work.work);
- 	struct ice_pf *pf = container_of(ptp, struct ice_pf, ptp);
-+	int err;
- 
- 	if (!test_bit(ICE_FLAG_PTP, pf->flags))
- 		return;
- 
--	ice_ptp_update_cached_phctime(pf);
-+	err = ice_ptp_update_cached_phctime(pf);
- 
- 	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
- 
--	/* Run twice a second */
-+	/* Run twice a second or reschedule if phc update failed */
- 	kthread_queue_delayed_work(ptp->kworker, &ptp->work,
--				   msecs_to_jiffies(500));
-+				   msecs_to_jiffies(err ? 10 : 500));
- }
- 
- /**
--- 
-2.35.1
-
-
-
+> About KVM_EXIT_WARNING, this is IMHO a very good idea, probably combined
+> with some form of taint flag, which could be read by qemu and then shown
+> over hmp/qmp interfaces.
