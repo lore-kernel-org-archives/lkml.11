@@ -2,85 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AE5C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 04:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3058C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 04:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiEWEO4 convert rfc822-to-8bit (ORCPT
+        id S1345107AbiEWEYn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 00:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
+        Mon, 23 May 2022 00:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiEWEOx (ORCPT
+        with ESMTP id S229595AbiEWEYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 00:14:53 -0400
-X-Greylist: delayed 447 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 22 May 2022 21:14:49 PDT
-Received: from mailproxy06.manitu.net (mailproxy06.manitu.net [217.11.48.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9087D140BC;
-        Sun, 22 May 2022 21:14:49 -0700 (PDT)
-Received: from [192.168.3.184] (cable-78-34-17-55.nc.de [78.34.17.55])
+        Mon, 23 May 2022 00:24:37 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94486236;
+        Sun, 22 May 2022 21:24:36 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: linux@ulli-kroll.de)
-        by mailproxy06.manitu.net (Postfix) with ESMTPSA id 60DD358011B;
-        Mon, 23 May 2022 06:07:16 +0200 (CEST)
-Message-ID: <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
-Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
-From:   Hans Ulli Kroll <linux@ulli-kroll.de>
-To:     Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-wireless@vger.kernel.org
-Cc:     Neo Jou <neojou@gmail.com>, Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
-Date:   Mon, 23 May 2022 06:07:16 +0200
-In-Reply-To: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1 
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L643j53gWz4xXg;
+        Mon, 23 May 2022 14:24:33 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1653279874;
+        bh=hszSGSEAWYFbEEGQMO1SFV7XS8z86K6y58+ZDF+bDu0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=dcJSr6zm3JToIwAOPBc0mCrU3K7XFQzdmKbEy7CYTfBlx2u2vXXuUwvuMObh3hFuv
+         ByzKZC87h9K9qQtnXppHuay9emJYbgilNO2hubbfEK8iy9QyAcrdQpsDwoRkvoT80P
+         muXV+HJBFy2p+Ni9zTz5PMKt+fZghho0fy9FqnI8yVl/+f4RGwQ+dcazMgI4YJ4vFG
+         DBres6aKVr66Z1jz8rQsVIwvbLVyrVN8BSbnIYUDILXLmbTC5SslEhJPAww3bR6cvo
+         Cro7+v2YAr7YzSPUTJcoG/DSnsHI5LmuB28OQiEZPYIlTTV6hM09y0NRrRELgPuiWd
+         3pqwficJKYx5Q==
+Date:   Mon, 23 May 2022 14:24:31 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: linux-next: manual merge of the tip tree with the kbuild tree
+Message-ID: <20220523142431.10ff2f77@canb.auug.org.au>
 MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/eB6BtpQ0AHS=obKOXHznCjx";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-18 at 10:23 +0200, Sascha Hauer wrote:
-> This series adds support for the USB chip variants to the RTW88 driver.
-> 
+--Sig_/eB6BtpQ0AHS=obKOXHznCjx
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi Sascha
+Hi all,
 
-glad you found some *working* devices for rtw88 !
+Today's linux-next merge of the tip tree got a conflict in:
 
-I spend some of the weekend testing your driver submission.
+  scripts/Makefile.build
 
-for rtl8821cu devices I get following output
+between commit:
 
-some Logilink device
+  0212301af7bb ("kbuild: do not create *.prelink.o for Clang LTO or IBT")
 
-[ 1686.605567] usb 1-5.1.2: New USB device found, idVendor=0bda, idProduct=c811, bcdDevice=
-2.00
-[ 1686.614186] usb 1-5.1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-[ 1686.621721] usb 1-5.1.2: Product: 802.11ac NIC
-[ 1686.626227] usb 1-5.1.2: Manufacturer: Realtek
-[ 1686.630695] usb 1-5.1.2: SerialNumber: 123456
-[ 1686.640480] rtw_8821cu 1-5.1.2:1.0: Firmware version 24.5.0, H2C version 12
-[ 1686.932828] rtw_8821cu 1-5.1.2:1.0: failed to download firmware
-[ 1686.945206] rtw_8821cu 1-5.1.2:1.0: failed to setup chip efuse info
-[ 1686.951538] rtw_8821cu 1-5.1.2:1.0: failed to setup chip information
-[ 1686.958402] rtw_8821cu: probe of 1-5.1.2:1.0 failed with error -22
+from the kbuild tree and commit:
 
-above is same with some from Comfast
+  753da4179d08 ("objtool: Remove --lto and --vmlinux in favor of --link")
 
-The worst in the list is one from EDUP
+from the tip tree.
 
-[ 1817.855704] rtw_8821cu 1-5.1.2:1.2: Firmware version 24.5.0, H2C version 12
-[ 1818.153918] rtw_8821cu 1-5.1.2:1.2: rfe 255 isn't supported
-[ 1818.165176] rtw_8821cu 1-5.1.2:1.2: failed to setup chip efuse info
-[ 1818.171505] rtw_8821cu 1-5.1.2:1.2: failed to setup chip information
+I am not sure if I fixed this up correctly, please check the final result
+when linux-next is released.
 
-rtl8822bu devices are working fine ...
+I fixed it up (I used the former version) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
 
-Hans Ulli
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/eB6BtpQ0AHS=obKOXHznCjx
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKLDH8ACgkQAVBC80lX
+0GwdTAf/c6FzAJfisb6g7dTTTyHS/8MuDFYYhhSiHl9naP8p8QU+GyZMzUSFU7Ru
+sYGotjAHR3V8h/zG4ogT3KN7NLTcFMdS7Iy1BE3QMNZ4YeyUOk6WcdZmnBoWFq3s
+nBd7JfANZCe5clge10zqcRBKS49vrggFYqEeyBvNZn4JFxMdgRqvToOdykUegOXq
+8gR/ynGFnYXjl0vkwyTmXTxaKrlJYn2U/2h1oFXbOqci9Tbme54y1UlYXM9lOWRt
+0RLGXHQ0RffU7HH/PE3V99AkUaeFTQefYazE3n8lgH0wq+DbSxYoEX30C+aLL0N1
++nC4n0GG9aVs6/3JkS76RxyjkUXquw==
+=sdy5
+-----END PGP SIGNATURE-----
+
+--Sig_/eB6BtpQ0AHS=obKOXHznCjx--
