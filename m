@@ -2,120 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30428C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C3CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:20:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243036AbiEWST4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        id S243295AbiEWSUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245628AbiEWSSU (ORCPT
+        with ESMTP id S237474AbiEWSSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:18:20 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F165DD36;
-        Mon, 23 May 2022 10:57:02 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id h8so18112417ljb.6;
-        Mon, 23 May 2022 10:57:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bOlYsdGBjB8la7xfDxJ83baKM4S1nbqwnMPOp413tZ8=;
-        b=XulNbwRW0NjEWCEnZSzm0Gq/3TvyuwtTwqHPQBDZFKe0nwSuv4sY+Gqbrnny+R5/jx
-         8jhRUwSCHPdZuGn76v3OuSYCy0sCm1fMsD4edv/qPUuxYYlRu4Lp3JkSppnV+xwktmQj
-         0l0FNHs4WTUaxkdNlBxJ8QoxokkPG7ZBRgJvlbes/0k44G4eKDVe3KlXyOXGDQVjEUUK
-         vwrL1COxrm62BlICzbZl7jnF550PGr2vRRAp9KuP4Ez8dZcjN1Kfn1TmXMSUCWw7b4Go
-         142po8BcO0k2n6JiDvQQA2gOaHNeQSnwd0Nr5LQpKqO1SSuxfz7JuV7uqQoUXv7sxp1W
-         vsdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bOlYsdGBjB8la7xfDxJ83baKM4S1nbqwnMPOp413tZ8=;
-        b=7FChkw3qqNTrUDoS3wCxL0ub01IEBPaZH1BGQmuP8rs5rVZefYxveqvsNEmo1CkGyl
-         pttN0oTbbNpEtCYek2u22J9NzHItqaWcvAs5DXrokYVLJ9gHKOcGOu5vu0tS9g8WLgOr
-         f9cPkCrxBJNN7ebLoQXoAiyqGIWfQYpxRNwgZnu2PAPUtbksc28bpTQCESEiU6pLYjjv
-         2ZfMMucLv1uIPBwa384GKRFP42V3+YRVl60Zh5O0y6Tz1xAHtNAIoog16qs9wui9FO46
-         VR8pwSPBb4liXSiV6Ngp87uB+JiBHsD1PGrfKtDzEUKSvl2A7UWGN0JMR+8p6atY1Syg
-         12+w==
-X-Gm-Message-State: AOAM533lfl61v9SNN7F2nu8ByvjeSWAnVHO1I2663RHvJ5uJ741SAVlR
-        c9NYDguFr//Ml9OzP4oBbG/zPm1Dr3bUGA==
-X-Google-Smtp-Source: ABdhPJxP57/kkoig/xX65Iulf97/ByC+R673sxqZviml4DwkB2Z0HHmnwHfpK1UjyfgoMOgovfl9Wg==
-X-Received: by 2002:a05:651c:10a8:b0:253:c8a7:3afd with SMTP id k8-20020a05651c10a800b00253c8a73afdmr13839377ljn.431.1653328468359;
-        Mon, 23 May 2022 10:54:28 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id x9-20020a056512078900b0047255d211f9sm2087743lfr.296.2022.05.23.10.54.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 10:54:27 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org, jic23@kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v5 0/5] Add support for ToF sensor on Yoshino platform
-Date:   Mon, 23 May 2022 20:53:39 +0300
-Message-Id: <20220523175344.5845-1-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 23 May 2022 14:18:42 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8553AB82C3
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:57:22 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NHSoR5011312;
+        Mon, 23 May 2022 17:56:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=hiK/gTSAe9vJ+0XObkVQlmijgj5clBKRz6adl2t2/qw=;
+ b=VYAEjSu8KwzRdy9IzIXlbTSQQsay9BcrdK1+IEIEfFgUU+ZQS9cyMlrZiuy8zgIHgxeG
+ BabzYCwC0dp1XWKtz3fVOlL6CWUv6+PqPWA2Qnqp+A84y0WvbevRNpEsIzOM0iczk7qn
+ SvrYGOB+sRvIAavndvo+H8FOV57ZcBzDmNp6ThxP68iUS+dTNUjcvbvxPczEloqI6Q6y
+ Et4fYKANHrhc1NYFFTr6q/STlwHPapPJHxOJqB3UemMEIY0m4zng1b6xZP9RcGWAz3SP
+ GJAKRpJN8piFye+4ahqJh1O1NWYRKeF1Mq2ExgQfNhh8pOqUosN975QUS5P8Vd2Kr0YW qA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8eq0retv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:10 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NHTNWv016791;
+        Mon, 23 May 2022 17:56:09 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8eq0retd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:09 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NHiN3D032732;
+        Mon, 23 May 2022 17:56:08 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03fra.de.ibm.com with ESMTP id 3g6qq9anjd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:07 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NHu5uO48300410
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 17:56:05 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9B39F5204E;
+        Mon, 23 May 2022 17:56:05 +0000 (GMT)
+Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.16.198])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B2BEE52051;
+        Mon, 23 May 2022 17:56:02 +0000 (GMT)
+From:   Sathvika Vasireddy <sv@linux.ibm.com>
+To:     linuxppc-dev@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        peterz@infradead.org, mbenes@suse.cz, aik@ozlabs.ru,
+        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
+        rostedt@goodmis.org, naveen.n.rao@linux.vnet.ibm.com,
+        sv@linux.ibm.com
+Subject: [RFC PATCH 2/4] objtool: Enable objtool to run only on files with ftrace enabled
+Date:   Mon, 23 May 2022 23:25:46 +0530
+Message-Id: <20220523175548.922671-3-sv@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220523175548.922671-1-sv@linux.ibm.com>
+References: <20220523175548.922671-1-sv@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: zGqR_cdO5w9EzBEebYwZ_Glhya1ShdP7
+X-Proofpoint-GUID: bnWaIZ7VLab2xF1nO8dP-ejF7KjP8ACq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-23_07,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ suspectscore=0 mlxlogscore=721 spamscore=0 priorityscore=1501 adultscore=0
+ phishscore=0 bulkscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205230099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds support for the ToF proximity sensor installed on
-Yoshino devices. As part of this series, support handling the reset
-GPIO and VDD supply by the VL53L0X driver. Also stop hardcoding the
-interrupt type, since on Yoshino devices it seems that edge triggering
-doesn't work properly.
+This patch makes sure objtool runs only on the object files
+that have ftrace enabled, instead of running on all the object
+files.
 
-Tested on Sony Xperia XZ1 (poplar).
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
+---
+ scripts/Makefile.build | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-
-v2:
-- Fix a nasty issue: turns out grouping the pinctrl makes it not apply,
-which was the main cause of edge interrupts not working correctly and
-having to use level interrupts, which caused a large amount of false
-detections.
-- handle the irq type more gracefully: if it's not provided, default
-to falling edge, but if it's provided, then use the provided one.
-v3:
-- add irq.h header (forgot to commit)
-- reword commit message (already initialized -> pre-initialized)
-v4:
-- reorder powering on and power off action (Jonathan)
-- sort pinctrls by GPIO number (Konrad)
-v5:
-- "This patch adds..." -> "Add ..." (Krzysztof)
-
-Markuss Broks (5):
-  dt-bindings: proximity: vl53l0x: Document optional supply and GPIO
-    properties
-  proximity: vl53l0x: Get interrupt type from DT
-  proximity: vl53l0x: Handle the VDD regulator
-  proximity: vl53l0x: Handle the reset GPIO
-  arm64: dts: qcom: msm8998-xperia: Introduce ToF sensor support
-
- .../bindings/iio/proximity/st,vl53l0x.yaml    |  5 ++
- .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi | 34 +++++++++++++
- drivers/iio/proximity/vl53l0x-i2c.c           | 50 ++++++++++++++++++-
- 3 files changed, 88 insertions(+), 1 deletion(-)
-
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 2e0c3f9c1459..06ceffd92921 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -258,8 +258,8 @@ else
+ # 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
+ # 'OBJECT_FILES_NON_STANDARD_foo.o := 'n': override directory skip for a file
+ 
+-$(obj)/%.o: objtool-enabled = $(if $(filter-out y%, \
+-	$(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y)
++$(obj)/%.o: objtool-enabled = $(and $(if $(filter-out y%, $(OBJECT_FILES_NON_STANDARD_$(basetarget).o)$(OBJECT_FILES_NON_STANDARD)n),y),        \
++        $(if $(findstring $(strip $(CC_FLAGS_FTRACE)),$(_c_flags)),y),y)
+ 
+ endif
+ 
 -- 
-2.35.1
+2.25.1
 
