@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94640C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241369AbiEWRdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42254 "EHLO
+        id S241373AbiEWRdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241805AbiEWRWh (ORCPT
+        with ESMTP id S241724AbiEWRWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:37 -0400
+        Mon, 23 May 2022 13:22:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A927CB2A;
-        Mon, 23 May 2022 10:19:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B60F7B9F2;
+        Mon, 23 May 2022 10:19:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40BD0608C3;
-        Mon, 23 May 2022 17:18:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E984C34115;
-        Mon, 23 May 2022 17:18:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4055D60B2E;
+        Mon, 23 May 2022 17:18:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469E1C385A9;
+        Mon, 23 May 2022 17:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326300;
-        bh=ePzOuHkPVWLQO2EdRyPrDPRZvqX6OPlOfhBbEtZh7Z0=;
+        s=korg; t=1653326287;
+        bh=oJ86ZVXNQN28dxs9bB7fXpJWumVkqzS59KG85S56cLg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MfrOnTv2gjrFffUw7Bi16ax8SipY7JMN6oajkJBwWyn2cqDsrry9VGPWPmHXMl34V
-         R9BREo65lgO6JWhf3CgdYbfKQFbh2x7r3Aj8UfdttweRziKltotQzrxw4zACYhXw/7
-         lgsoCOliHDs3dO2MWuruH0j/ooCLiHXbYCx7XkDA=
+        b=wW+p+3TrcIR6EzUcXuM6AmsKb7CWSA3uCSP3kocHTMtFtBRRDOpyiyeAIx4pPl1yG
+         fDsGaBc1VyJqc1GbOb8CR3SyTHw+XYoaFT2/Qkx6SjkQqtjbNEXcJ3Lc8ez5n+egRF
+         qm9ZqWmjOQrq38SiDLA3OAveqt/O1bxUbYCrE2tA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 039/132] drbd: remove usage of list iterator variable after loop
-Date:   Mon, 23 May 2022 19:04:08 +0200
-Message-Id: <20220523165829.883026196@linuxfoundation.org>
+        stable@vger.kernel.org, Anton Eidelman <anton@lightbitslabs.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 035/132] nvme-multipath: fix hang when disk goes live over reconnect
+Date:   Mon, 23 May 2022 19:04:04 +0200
+Message-Id: <20220523165829.279852979@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,55 +49,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Anton Eidelman <anton.eidelman@gmail.com>
 
-[ Upstream commit 901aeda62efa21f2eae937bccb71b49ae531be06 ]
+[ Upstream commit a4a6f3c8f61c3cfbda4998ad94596059ad7e4332 ]
 
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to iterate through the list [1].
+nvme_mpath_init_identify() invoked from nvme_init_identify() fetches a
+fresh ANA log from the ctrl.  This is essential to have an up to date
+path states for both existing namespaces and for those scan_work may
+discover once the ctrl is up.
 
-Since that variable should not be used past the loop iteration, a
-separate variable is used to 'remember the current location within the
-loop'.
+This happens in the following cases:
+  1) A new ctrl is being connected.
+  2) An existing ctrl is successfully reconnected.
+  3) An existing ctrl is being reset.
 
-To either continue iterating from that position or skip the iteration
-(if the previous iteration was complete) list_prepare_entry() is used.
+While in (1) ctrl->namespaces is empty, (2 & 3) may have namespaces, and
+nvme_read_ana_log() may call nvme_update_ns_ana_state().
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220331220349.885126-1-jakobkoschel@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+This result in a hang when the ANA state of an existing namespace changes
+and makes the disk live: nvme_mpath_set_live() issues IO to the namespace
+through the ctrl, which does NOT have IO queues yet.
+
+See sample hang below.
+
+Solution:
+- nvme_update_ns_ana_state() to call set_live only if ctrl is live
+- nvme_read_ana_log() call from nvme_mpath_init_identify()
+  therefore only fetches and parses the ANA log;
+  any erros in this process will fail the ctrl setup as appropriate;
+- a separate function nvme_mpath_update()
+  is called in nvme_start_ctrl();
+  this parses the ANA log without fetching it.
+  At this point the ctrl is live,
+  therefore, disks can be set live normally.
+
+Sample failure:
+    nvme nvme0: starting error recovery
+    nvme nvme0: Reconnecting in 10 seconds...
+    block nvme0n6: no usable path - requeuing I/O
+    INFO: task kworker/u8:3:312 blocked for more than 122 seconds.
+          Tainted: G            E     5.14.5-1.el7.elrepo.x86_64 #1
+    Workqueue: nvme-wq nvme_tcp_reconnect_ctrl_work [nvme_tcp]
+    Call Trace:
+     __schedule+0x2a2/0x7e0
+     schedule+0x4e/0xb0
+     io_schedule+0x16/0x40
+     wait_on_page_bit_common+0x15c/0x3e0
+     do_read_cache_page+0x1e0/0x410
+     read_cache_page+0x12/0x20
+     read_part_sector+0x46/0x100
+     read_lba+0x121/0x240
+     efi_partition+0x1d2/0x6a0
+     bdev_disk_changed.part.0+0x1df/0x430
+     bdev_disk_changed+0x18/0x20
+     blkdev_get_whole+0x77/0xe0
+     blkdev_get_by_dev+0xd2/0x3a0
+     __device_add_disk+0x1ed/0x310
+     device_add_disk+0x13/0x20
+     nvme_mpath_set_live+0x138/0x1b0 [nvme_core]
+     nvme_update_ns_ana_state+0x2b/0x30 [nvme_core]
+     nvme_update_ana_state+0xca/0xe0 [nvme_core]
+     nvme_parse_ana_log+0xac/0x170 [nvme_core]
+     nvme_read_ana_log+0x7d/0xe0 [nvme_core]
+     nvme_mpath_init_identify+0x105/0x150 [nvme_core]
+     nvme_init_identify+0x2df/0x4d0 [nvme_core]
+     nvme_init_ctrl_finish+0x8d/0x3b0 [nvme_core]
+     nvme_tcp_setup_ctrl+0x337/0x390 [nvme_tcp]
+     nvme_tcp_reconnect_ctrl_work+0x24/0x40 [nvme_tcp]
+     process_one_work+0x1bd/0x360
+     worker_thread+0x50/0x3d0
+
+Signed-off-by: Anton Eidelman <anton@lightbitslabs.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/nvme/host/core.c      |  1 +
+ drivers/nvme/host/multipath.c | 25 +++++++++++++++++++++++--
+ drivers/nvme/host/nvme.h      |  4 ++++
+ 3 files changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 548e0dd53528..6db0333b5b7a 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -171,7 +171,7 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 		unsigned int set_size)
- {
- 	struct drbd_request *r;
--	struct drbd_request *req = NULL;
-+	struct drbd_request *req = NULL, *tmp = NULL;
- 	int expect_epoch = 0;
- 	int expect_size = 0;
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index f2bb57615762..87877397d1ad 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -4358,6 +4358,7 @@ void nvme_start_ctrl(struct nvme_ctrl *ctrl)
+ 	if (ctrl->queue_count > 1) {
+ 		nvme_queue_scan(ctrl);
+ 		nvme_start_queues(ctrl);
++		nvme_mpath_update(ctrl);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(nvme_start_ctrl);
+diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
+index e9301b51db76..064acad505d3 100644
+--- a/drivers/nvme/host/multipath.c
++++ b/drivers/nvme/host/multipath.c
+@@ -574,8 +574,17 @@ static void nvme_update_ns_ana_state(struct nvme_ana_group_desc *desc,
+ 	ns->ana_grpid = le32_to_cpu(desc->grpid);
+ 	ns->ana_state = desc->state;
+ 	clear_bit(NVME_NS_ANA_PENDING, &ns->flags);
+-
+-	if (nvme_state_is_live(ns->ana_state))
++	/*
++	 * nvme_mpath_set_live() will trigger I/O to the multipath path device
++	 * and in turn to this path device.  However we cannot accept this I/O
++	 * if the controller is not live.  This may deadlock if called from
++	 * nvme_mpath_init_identify() and the ctrl will never complete
++	 * initialization, preventing I/O from completing.  For this case we
++	 * will reprocess the ANA log page in nvme_mpath_update() once the
++	 * controller is ready.
++	 */
++	if (nvme_state_is_live(ns->ana_state) &&
++	    ns->ctrl->state == NVME_CTRL_LIVE)
+ 		nvme_mpath_set_live(ns);
+ }
  
-@@ -225,8 +225,11 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 	 * to catch requests being barrier-acked "unexpectedly".
- 	 * It usually should find the same req again, or some READ preceding it. */
- 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
--		if (req->epoch == expect_epoch)
-+		if (req->epoch == expect_epoch) {
-+			tmp = req;
- 			break;
-+		}
-+	req = list_prepare_entry(tmp, &connection->transfer_log, tl_requests);
- 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
- 		if (req->epoch != expect_epoch)
- 			break;
+@@ -662,6 +671,18 @@ static void nvme_ana_work(struct work_struct *work)
+ 	nvme_read_ana_log(ctrl);
+ }
+ 
++void nvme_mpath_update(struct nvme_ctrl *ctrl)
++{
++	u32 nr_change_groups = 0;
++
++	if (!ctrl->ana_log_buf)
++		return;
++
++	mutex_lock(&ctrl->ana_lock);
++	nvme_parse_ana_log(ctrl, &nr_change_groups, nvme_update_ana_state);
++	mutex_unlock(&ctrl->ana_lock);
++}
++
+ static void nvme_anatt_timeout(struct timer_list *t)
+ {
+ 	struct nvme_ctrl *ctrl = from_timer(ctrl, t, anatt_timer);
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index f1e5c7564cae..72bcd7e5716e 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -776,6 +776,7 @@ void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
+ void nvme_mpath_remove_disk(struct nvme_ns_head *head);
+ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id);
+ void nvme_mpath_init_ctrl(struct nvme_ctrl *ctrl);
++void nvme_mpath_update(struct nvme_ctrl *ctrl);
+ void nvme_mpath_uninit(struct nvme_ctrl *ctrl);
+ void nvme_mpath_stop(struct nvme_ctrl *ctrl);
+ bool nvme_mpath_clear_current_path(struct nvme_ns *ns);
+@@ -850,6 +851,9 @@ static inline int nvme_mpath_init_identify(struct nvme_ctrl *ctrl,
+ "Please enable CONFIG_NVME_MULTIPATH for full support of multi-port devices.\n");
+ 	return 0;
+ }
++static inline void nvme_mpath_update(struct nvme_ctrl *ctrl)
++{
++}
+ static inline void nvme_mpath_uninit(struct nvme_ctrl *ctrl)
+ {
+ }
 -- 
 2.35.1
 
