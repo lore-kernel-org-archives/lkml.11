@@ -2,194 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1201CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234816AbiEWLWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
+        id S234834AbiEWLYA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234800AbiEWLWV (ORCPT
+        with ESMTP id S234804AbiEWLX6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:22:21 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2265311470
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:22:20 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id h205-20020a1c21d6000000b003972dda143eso5243172wmh.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:22:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raspberrypi.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=EhOQGg1mWeCy/lfVLf7GwzqHA1hMMv05+TaoM0mW9F8=;
-        b=sOoZ8mX2X9p1Xl73lr3Zcs5b7MmT0J3eRouAiK6GyN2poK2+owyeg9G88p/veeV2G7
-         tIR+LFlloX+inF6DfDeV/f74MxuCHf1fXrZHPWJBc7bpH+aFf3G7ySEHBZLanS9MgRnj
-         23HG8DRhv7q0c8Zqu7911qHNLGWpk9I1ny/+dVshWeWofQm2QArvxpyf+oB5Nlppxt5r
-         76akydWhU61p0TfnUSjvTNOiMXjaBH523uhSchQWGVqB72+ZvnOKh0O+fKYfV3W8rKAl
-         wUceihSvxkLHAnILZNFqGXhoulDhZ2pQJifMtp9sNzqLznIZdbZaqEvOU78p5WB59xie
-         HUkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EhOQGg1mWeCy/lfVLf7GwzqHA1hMMv05+TaoM0mW9F8=;
-        b=EIZHRC6UEYw0kzpDnTe/4GBzao9TEhEl2jugOJHKina/YlzZLsBKDHM6ULSsGkWEWh
-         GfdAgMxY9ogP989eBee7BL9uU1b5tXpj0NhM+BrMx1G7BumF6pYj7ukjW6OHZhyYnE9V
-         DIvT0dV6i20tFw2tAKodCP5gPyAwUKlYh02ItdKefDZfFQrpJC5mJIZC5KRE80EPhoRc
-         SenFsYmPbbQdI2RBxQOmtmSG4t0eoaWTFBnIXXvCipjfZvHmLx+VOvh4BOCkzfYEPoS6
-         gib0tiNcNB3FvRPB1+GhMQQAwiSxGNEJxMl5yg7/pZCSlEBg3iGMJFWiKmITioiWr7Cd
-         KLKw==
-X-Gm-Message-State: AOAM531mg/xrz0jN9HrJ0XTHKrEg4Vw12vhwo87qUNA1GvHCNziAzWko
-        1rI0voxQm0nXZe2Pr51ZDzVI3g==
-X-Google-Smtp-Source: ABdhPJxb3aRoKOzbx4sz11+NBNpWEFJdvJRVFypDKroEMtQkotBuB1WkeE3RwCI8PFIloWSuNV0K/A==
-X-Received: by 2002:a1c:4d0d:0:b0:397:30f6:b62b with SMTP id o13-20020a1c4d0d000000b0039730f6b62bmr18074451wmh.155.1653304938731;
-        Mon, 23 May 2022 04:22:18 -0700 (PDT)
-Received: from ?IPV6:2a00:1098:3142:14:3110:d736:2a7:6aff? ([2a00:1098:3142:14:3110:d736:2a7:6aff])
-        by smtp.gmail.com with ESMTPSA id q4-20020adfbb84000000b0020c5253d90esm11838361wrg.90.2022.05.23.04.22.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 04:22:18 -0700 (PDT)
-Message-ID: <c8762830-444b-5b9e-bddb-a7c700209308@raspberrypi.com>
-Date:   Mon, 23 May 2022 12:22:18 +0100
+        Mon, 23 May 2022 07:23:58 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE8C15FC6
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:23:55 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L6FLn11zRzhZ8b;
+        Mon, 23 May 2022 19:23:13 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 19:23:53 +0800
+Subject: Re: [PATCH v4 4/5] mm/shmem: fix infinite loop when swap in shmem
+ error at swapoff time
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+CC:     "hughd@google.com" <hughd@google.com>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "vbabka@suse.cz" <vbabka@suse.cz>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "neilb@suse.de" <neilb@suse.de>,
+        "apopple@nvidia.com" <apopple@nvidia.com>,
+        "david@redhat.com" <david@redhat.com>,
+        "surenb@google.com" <surenb@google.com>,
+        "peterx@redhat.com" <peterx@redhat.com>,
+        "rcampbell@nvidia.com" <rcampbell@nvidia.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220519125030.21486-1-linmiaohe@huawei.com>
+ <20220519125030.21486-5-linmiaohe@huawei.com>
+ <20220520063433.GA584983@hori.linux.bs1.fc.nec.co.jp>
+ <970aee34-c377-2b8c-c6bb-45e2a96e84b9@huawei.com>
+ <20220522235326.GA713751@hori.linux.bs1.fc.nec.co.jp>
+ <7269c0c4-7648-a9dc-10fa-3645da5be441@huawei.com>
+Message-ID: <139b521b-f477-d108-79ed-4ea2bd76bdf3@huawei.com>
+Date:   Mon, 23 May 2022 19:23:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: vchiq: Performance regression since 5.18-rc1
-To:     Stefan Wahren <stefan.wahren@i2se.com>, paulmck@kernel.org
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Minchan Kim <minchan@kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        regressions@lists.linux.dev, riel@surriel.com,
-        viro@zeniv.linux.org.uk
-References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
- <20220521234616.GO1790663@paulmck-ThinkPad-P17-Gen-1>
- <bfad3d08-3268-5528-17c1-c17ef3949d96@i2se.com>
- <20220523044818.GS1790663@paulmck-ThinkPad-P17-Gen-1>
- <e0503433-615d-3834-4392-d0868caf47cf@i2se.com>
- <58cb7fbb-d317-83e6-0427-d3f3944b24b8@raspberrypi.com>
- <d7837ac0-fe6f-3bb2-c073-86e4864c5b5e@i2se.com>
- <aa19a0e1-2742-d74f-50b2-e81ba1fed7a6@raspberrypi.com>
- <2ddd354e-a2b6-077c-25be-6ef1b2118d04@i2se.com>
-From:   Phil Elwell <phil@raspberrypi.com>
-In-Reply-To: <2ddd354e-a2b6-077c-25be-6ef1b2118d04@i2se.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <7269c0c4-7648-a9dc-10fa-3645da5be441@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/05/2022 12:15, Stefan Wahren wrote:
-> Hi Phil,
-> 
-> Am 23.05.22 um 13:01 schrieb Phil Elwell:
->> Hi Stefan,
->>
->> On 23/05/2022 11:48, Stefan Wahren wrote:
->>> Hi Phil,
+On 2022/5/23 11:01, Miaohe Lin wrote:
+> On 2022/5/23 7:53, HORIGUCHI NAOYA(堀口 直也) wrote:
+>> On Fri, May 20, 2022 at 04:17:45PM +0800, Miaohe Lin wrote:
+>>> On 2022/5/20 14:34, HORIGUCHI NAOYA(堀口 直也) wrote:
+>>>> On Thu, May 19, 2022 at 08:50:29PM +0800, Miaohe Lin wrote:
+>>>>> When swap in shmem error at swapoff time, there would be a infinite loop
+>>>>> in the while loop in shmem_unuse_inode(). It's because swapin error is
+>>>>> deliberately ignored now and thus info->swapped will never reach 0. So
+>>>>> we can't escape the loop in shmem_unuse().
+>>>>>
+>>>>> In order to fix the issue, swapin_error entry is stored in the mapping
+>>>>> when swapin error occurs. So the swapcache page can be freed and the
+>>>>> user won't end up with a permanently mounted swap because a sector is
+>>>>> bad. If the page is accessed later, the user process will be killed
+>>>>> so that corrupted data is never consumed. On the other hand, if the
+>>>>> page is never accessed, the user won't even notice it.
+>>>>>
+>>>>> Reported-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+>>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>>>
+>>>> Hi Miaohe,
+>>>>
+>>>> Thank you for the update.  I might miss something, but I still see the same
+>>>> problem (I checked it on mm-everything-2022-05-19-00-03 + this patchset).
 >>>
->>> Am 23.05.22 um 11:29 schrieb Phil Elwell:
->>>> Hi Stefan,
+>>> I was testing this patch on my 5.10 kernel. I reproduced the problem in my env and
+>>> fixed it. It seems there might be some critical difference though I checked that by
+>>> reviewing the code... Sorry. :(
+>>>
 >>>>
->>>> On 23/05/2022 07:19, Stefan Wahren wrote:
->>>>> Hi Paul,
->>>>>
->>>>> Am 23.05.22 um 06:48 schrieb Paul E. McKenney:
->>>>>> On Sun, May 22, 2022 at 05:11:36PM +0200, Stefan Wahren wrote:
->>>>>>> Hi Paul,
->>>>>>>
->>>>>>> Am 22.05.22 um 01:46 schrieb Paul E. McKenney:
->>>>>>>> On Sun, May 22, 2022 at 01:22:00AM +0200, Stefan Wahren wrote:
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> while testing the staging/vc04_services/interface/vchiq_arm driver with my
->>>>>>>>> Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
->>>>>>>>> regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
->>>>>>>>> lru_cache_disable: replace work queue synchronization with synchronize_rcu
->>>>>>>>>
->>>>>>>>> Usually i run "vchiq_test -f 1" to see the driver is still working [1].
->>>>>>>>>
->>>>>>>>> Before commit:
->>>>>>>>>
->>>>>>>>> real    0m1,500s
->>>>>>>>> user    0m0,068s
->>>>>>>>> sys    0m0,846s
->>>>>>>>>
->>>>>>>>> After commit:
->>>>>>>>>
->>>>>>>>> real    7m11,449s
->>>>>>>>> user    0m2,049s
->>>>>>>>> sys    0m0,023s
->>>>>>>>>
->>>>>>>>> Best regards
->>>>>>>>>
->>>>>>>>> [1] - https://github.com/raspberrypi/userland
->>>>>>>> Please feel free to try the patch shown below.  Or the pair of patches
->>>>>>>> from Rik here:
->>>>>>>>
->>>>>>>> https://lore.kernel.org/lkml/20220218183114.2867528-2-riel@surriel.com/
->>>>>>>> https://lore.kernel.org/lkml/20220218183114.2867528-3-riel@surriel.com/
->>>>>>> I tried your patch and Rik's patches but in both cases vchiq_test runs 7
->>>>>>> minutes instead of ~ 1 second.
->>>>>> That is surprising.  Do you boot with rcupdate.rcu_normal=1?
->>>>> No, not explicit.
->>>>>>    That would
->>>>>> nullify my patch, but I would expect that Rik's patch would still provide
->>>>>> increased performance even in that case.
->>>>> I will retest with a fresh SD card image.
->>>>>>
->>>>>> Could you please characterize where the slowdown is occurring?
->>>>>
->>>>> Unfortunately i don't have a deep insight into driver and vchiq_test tool. 
->>>>> Just a user view.
->>>>>
->>>>> Do you think an strace would be a good starting point?
->>>>>
->>>>> @Phil Any advices to analyse this issue?
+>>>> This patch has the effect to change the return value of shmem_swapin_folio(),
+>>>> -EIO (without this patch) to -EEXIST (with this patch).
+>>>
+>>> In fact, I didn't change the return value from -EIO to -EEXIST:
+>>>
+>>> @@ -1762,6 +1799,8 @@ static int shmem_swapin_folio(struct inode *inode, pgoff_t index,
+>>>  failed:
+>>>  	if (!shmem_confirm_swap(mapping, index, swap))
+>>>  		error = -EEXIST;
+>>> +	if (error == -EIO)
+>>> +		shmem_set_folio_swapin_error(inode, index, folio, swap)
+>>>
+>>>> But shmem_unuse_swap_entries() checks neither, so no change from caller's view point.
+>>>> Maybe breaking in errors (rather than ENOMEM) in for loop in shmem_unuse_swap_entries()
+>>>> solves the issue?  I briefly checked with the below change, then swapoff can return
+>>>> with failure.
 >>>>
->>>> Sending many small control packets:
->>>>
->>>>    vchiq_test -c 1 10000
->>>>
->>>> essentially tests interrupt latency. Using a small number of large bulk 
->>>> transfers:
->>>>
->>>>    vchiq_test -b 10000 1
->>>>
->>>> becomes a test of how long it takes to lock down pages. It also tests DMA 
->>>> transfer speeds, but since the DMA is run by the firmware (which you aren't 
->>>> changing), I think you can rule that.
->>> Thanks i will try.
->>>>
->>>> You may also find it helpful to include "force_turbo=1" in config.txt for 
->>>> more predictable results.
->>>>
->>>> By the way, running our 5.18-rc7-based branch on a 3B+ I'm not seeing any 
->>>> performance problems:
->>> I assume you are using arm/bcm2709_defconfig and not arm/multi_v7_defconfig 
->>> as me?
+>>>> @@ -1222,7 +1222,7 @@ static int shmem_unuse_swap_entries(struct inode *inode,
+>>>>                         folio_put(folio);
+>>>>                         ret++;
+>>>>                 }
+>>>> -               if (error == -ENOMEM)
+>>>> +               if (error < 0)
+>>>>                         break;
+>>>>                 error = 0;
+>>>>         }
+>>>
+>>> Yes, this is the simplest and straightforward way to fix the issue. But it has the side effect
+>>> that user will end up with a permanently mounted swap just because a sector is bad. That might
+>>> be somewhat unacceptable?
 >>
->> That's correct. Simply switching to multi_v7_defconfig breaks vchiq 
->> completely, presumably because it doesn't define CONFIG_BCM2835_VCHIQ.
-> sorry, forgot to mention. I that i enable VCHIQ as module on top of 
-> multi_v7_defconfig.
+>> Ah, you're right, swapoff should return with success instead of with
+>> failure.  I tried the fix in your another email, and that makes swapoff
+>> return with success, so your fix looks better than mine.
+> 
+> I reproduced the deadloop issues when swapin error occurs at swapoff time in my linux-next-next-20220520 env,
+> and I found this patch could solve the issue now with the fix in my another email.
+> 
+> BTW: When I use dm-dust to inject the swapin IO error, I don't see non-uptodate folio when shmem_swapin_folio
+> and swapoff succeeds. There might be some issues around that module (so I resort to the another way to inject
+> the swapin error), but the patch itself works anyway. ;)
 
-Downstream tree with multi_v7_defconfig + CONFIG_BCM2835_VCHIQ:
+Sorry, the reason I don't see non-uptodate folio when shmem_swapin_folio is that all the shmem pages are still
+in the swapcache. They're not read from disk so there is no really IO error. :) When they're indeed freed, the
+deadloop issue occurs.
 
-pi@raspberrypi:~$ time vchiq_test -f 1
-Functional test - iters:1
-======== iteration 1 ========
-Testing bulk transfer for alignment.
-Testing bulk transfer at PAGE_SIZE.
+I am thinking about extending the function of MADV_PAGEOUT to free the swapcache page. The page resides in the
+swapcache does not save the system memory anyway. And this could help test the swapin behavior. But I'm not
+sure whether it's needed.
 
-real    0m0.566s
-user    0m0.037s
-sys     0m0.166s
+Thanks! ;)
 
-Phil
+> 
+>>
+>> Thanks,
+> 
+> Thanks a lot!
+> 
+>> Naoya Horiguchi
+>>
+> 
+
