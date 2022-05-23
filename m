@@ -2,248 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C263AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB8AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231612AbiEWILx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
+        id S231434AbiEWIMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232102AbiEWILf (ORCPT
+        with ESMTP id S231582AbiEWIMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:11:35 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DA2DA0;
-        Mon, 23 May 2022 01:11:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653293489; x=1684829489;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=sl6/9JLUHTFJB+ti4PlENudXA/E1AmkbR7NoHaodVzs=;
-  b=HyQP6uuRNIZuhtcsTUrEYMuPXLMf10UrVZiqvSZcExnGba9h9jmJX1jt
-   zdhISQEa/CO/bTD4Tln+dcdzNlzTjgZIjT49iYjwLkKT4M9h7QO3Ke46b
-   CvNC071O/H/FxpcNONIkn9DKwfeSES6vPOIkXDcrcalYAYrbL5oTrrOxN
-   94g3ICaI/UQRr6vFDSyCUs8hI1in1w1KhLjx9HvRo1yRota5v0D5mu2wP
-   iNsW38xMf+4ArgqVvYM9y00dk7/avxAb8bEaNYytwOX0llYntPDxHWgw7
-   DdlQKQdMbvs/92ZiXEQkYY0cdvDRUb+t0R574hvi4EeMfp5vXfSSID1Td
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="273259735"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="273259735"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:55:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="663313840"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 May 2022 00:55:10 -0700
-Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 23 May 2022 00:55:09 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 23 May 2022 00:55:09 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.45) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 23 May 2022 00:55:09 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GaSkl4ZTjFNUKSM5a5qKjw8Lb3ecotqtFSDsXBM8ntpXIODgmEjfFhQVTCgqXVcrYQrBMDSgfSVmUGFTjlHpU1yLK2pz73tLgb83KkG0JxR0Sw00iOXie5VRH/JFm8ndOTIc1rdjs2AMA+6pHk9hBRF82L49oswLdZQ0m8HjaJKUNpOaic154fRW483W6zIA0rosxWYOvECzevyUzbLmbefmTNJ9FfK+YoOZQlwCs+dKwJqngZEMpENjDlHhpIYWA9aGnNzxvA3aY789oEoKqmD8MEz18D8tEVeX88IuUVB28wcCT2PknA+X/idykziMBb3ioDwDLl0f5ZqM+2j1Og==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JGgM54O4wWvAciivwpAF9r0vnhZaW1Lo6WSkDbkqLpY=;
- b=K+OsCZIFjRALL8rED/L9iW0znZFtZx1T2pQDW8VO8pK3wFTUcMVObnS4clt8mmwbVzF8xRyIaCWlOuFwG+i918lwShepBk/g0XNjk7OdzGxt7WQctWw4LuRIBfO++k99M6I1liMLgsJb8rpXyNqgrgldV7UH3wbfB6ejqnxjwXyCxXGB1I5+SZhzSt4hb7bW6v7X2AENQLiYucm3Gq44hDQPCm0Xpykmjr/wa3GI9GRoSkxyw7VMB6b41yq0FkZCLdZZiIwV3NaFXH7wnj3/g01z/5/SFh8NZtB7EUxbAOo3oSFYHjQZENiwwETFkRLVGaD5yilY8sSFP+3EeFXtEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MW3PR11MB4684.namprd11.prod.outlook.com (2603:10b6:303:5d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Mon, 23 May
- 2022 07:55:02 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5273.022; Mon, 23 May 2022
- 07:55:01 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "will@kernel.org" <will@kernel.org>
-CC:     "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>
-Subject: RE: [PATCH v4 2/6] iommu: Add a helper to do PASID lookup from domain
-Thread-Topic: [PATCH v4 2/6] iommu: Add a helper to do PASID lookup from
- domain
-Thread-Index: AQHYauORUoINsxb/TUyuLPLPKASxAK0sHSGA
-Date:   Mon, 23 May 2022 07:55:01 +0000
-Message-ID: <BN9PR11MB52761FDB9388AFAA530544248CD49@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
- <20220518182120.1136715-3-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <20220518182120.1136715-3-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b9ba1a10-19b1-4491-4f1a-08da3c918a89
-x-ms-traffictypediagnostic: MW3PR11MB4684:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <MW3PR11MB4684CE82D626FF153858C7D58CD49@MW3PR11MB4684.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3dDbggtWZds7WUGdl0Ug1MFNo47XvAMSoLqqP9pctiuteiOqpY5FU4/7fQwzMDi5z6evlCJhMPQxmJyrI3w8RSPqjXJRvgFwGoqeMNzWEvu5O+L3DoH2iraQVqQ3ZUhLRUK/VVrnaAl4K0rCkqnqqOiwtHHk4OCZVJIqNMW1hh/uXS3d5GxI6p4GdAdaAcjxUgNnB0sBpKXJZxe1kGJgH5xUjHrqZAroBs8FgPYmIJ6ULL1bfQc9KdyTt2tCn6Y8r1+Rh05cW6cMvvR6Ru7+0W6ZN8kQpZSuVpnMX/2oZfmiyEtJ/WqDzqDDDCLzkKCamK5IX2u38kYhKvPN27CUoxgEaZUvuBVrSuhPmWXA1CVvtGHse8EUK8mcNRF4AL0OxXpEwtMEtD5RC7Dua3OT4rzKSmtjm52ookBnBntV1EOSkZkSxIx6ig0V9hxjLK+f7/WoqRAY3HYiqJPzu004/uWj736zATrtjTneYuNKokMfKjJI8fMXCOJp4VnQclJiChA1IiYuWiJzp2GYp9qQzYVvia5dQPJshpXdwRa60xJJ0QKaGUWqDq3rCfA1ZvASR9IkrFb0D7znnDmNVaIoMvv8T5HnUmTHp2UONa3JhJQFFQVxT74Id2h0zMLdhgdALelUNv/+JcIFzCqB4U8C2xC8gLsnu857OnZfoKm7XHld5mVZveFGakyQ9KGKp4q3t7bAKMQIGtF6/wO47ijawC8CKLAdcBWBV7TtGIFULaU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(71200400001)(316002)(9686003)(110136005)(54906003)(55016003)(33656002)(2906002)(7696005)(6506007)(186003)(26005)(86362001)(66446008)(8676002)(4326008)(64756008)(82960400001)(5660300002)(8936002)(38100700002)(66476007)(83380400001)(122000001)(921005)(66946007)(66556008)(38070700005)(52536014)(7416002)(76116006);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LGcZe//3lp9epTlZB+0iBHaG7n1SpBIOvz5fb2C8RFIe9JK2+bjSu1oCXIo8?=
- =?us-ascii?Q?yyLs79fTg3Gg0VGEK26ZHJoeW4d4p0zXwruDLYM4ZpdgxH7yN5m3gniVK7tx?=
- =?us-ascii?Q?AdsBl7oHr9M0KfbfNuLVAJdrzLMejC8KR4eVEvST9Bg62r7cDT9q0NV0thJ1?=
- =?us-ascii?Q?2f3Pb0rmMzWr2UfY8ZjfpeBfJ3vFwsRL+T+X2WCUrk+/SsFBcw5eJD+6wWru?=
- =?us-ascii?Q?qVN/wjFu5Idb0IAuKPHn3/x8IqIWGRKWDw1nHnS/SdTzUKDYdM43h3Tn/Muo?=
- =?us-ascii?Q?jXRUOW0ssLGXxuaKziyNfSLe65XdoY/Dgfmd/T0j4sDCMDu1yxVzokvFe6QI?=
- =?us-ascii?Q?yma5fgxR2bw/tdZWy/4kog9fevZW+t8nlNJOS2EypXKWe/Wih+mN5537jCMt?=
- =?us-ascii?Q?ATje4I8pSin+Ah66RIGpf0zXnhkkb7dmYyPk8GcRNblSfwRdIbQ/LBtc/vlt?=
- =?us-ascii?Q?On/dqP0cNfr9sS6shymOunL/Svhu0LkS6HB8IPRXZPNrgXHqmc62xBYgksdH?=
- =?us-ascii?Q?XMgkLqt4prc8OtpOXH5HIS/JmVl3lTmAPnHpGJe5fz4kB6Ic0JVoL23Sg6V2?=
- =?us-ascii?Q?TZnjPVKmvQa5sxLSYqoCIO+qOkZ2kZk7mSDA8p6X5Iu6V5/XMnmO0krvtzAy?=
- =?us-ascii?Q?DlbUAXS9YiZD48SALEGu3inkRTXtaGxOJAhJu5veGLgw092ZX2g+xy+txKCA?=
- =?us-ascii?Q?UMLOR4CyC2hvdPbnuwnQQdt+7hHpl97/4aPsitqk0OfFhJk6H5WzPhxaJTRJ?=
- =?us-ascii?Q?ZZAYAcm+aE9G5d3oeltw6j+b1W+6CBV+IFQDS1j2868B/GRV/AZS+rZRiePN?=
- =?us-ascii?Q?Ppp8lIZ/0HAS+HWSqyp8gVo0iT8HFubhU22R7ZOUbFkROBkk2GYnWI4CPxzw?=
- =?us-ascii?Q?n4pskd4i1Y9doX7ihhvimNV/4HFPJa2IQCjTLPYXMEPbeFcoaRBr6IaPVlzp?=
- =?us-ascii?Q?ErQFxOc/OF90CotdWovQ7ksXiw46nkX0wBBnPA/IOBFd+lLaF6VQ++L6B7i1?=
- =?us-ascii?Q?B3IOrgMdRBu36XAOopif/vHGMmq4MUsIcosYA0yNSyovDeuDlYwv6G01p366?=
- =?us-ascii?Q?GjjlPs78cyRlNcKkxgdDeCsvKMkflQciMERGVCAIJfaNs6GDxwH05vT8bo9w?=
- =?us-ascii?Q?td1XSeJkwdk6xANrWAXcPMP9PEnmBQZqUA3VBFw5BwBCDtsRBaCzq4GsmC4h?=
- =?us-ascii?Q?s2I1hjNa+nP6E00/U6Z1cQa4OQxyoOkIWs+uqbh1+XlM6npK5ZF6f7OMVBR+?=
- =?us-ascii?Q?PINynCqtiUoCV2KaH/obj7mdHTmpStjBBJzPEzEUKZX6bXMCjjhg+h+MLvg1?=
- =?us-ascii?Q?aaVKAEW+fCyvm86ge6yuajyeRQkRqJG9hz41JYOB6aIvFt/1Tcyn2PTKxzK4?=
- =?us-ascii?Q?SuR6D+rqF5R/itWlR5SAHPOv/qwLqJewkDfGB9vf0Hg6j11WwCFsy5nxnlTQ?=
- =?us-ascii?Q?pRULELGpm481xKaKRT49kKUiFkB0ExTP3x8qE+Ebggm+O0i/hU6c4y5iLXti?=
- =?us-ascii?Q?jtZkbycqLAr4YRlNiwnn8NA5i8gMp+9a5oh1BhdHyxO3FexKrg/2D1PrXK+i?=
- =?us-ascii?Q?qfBvkaYSEbbG1jkr4vZbiYoTtZj2ShzS/CvYxsDz08/RxNq/uJBD1PVKARwd?=
- =?us-ascii?Q?DaLAQLMAgAZKxi9kU+zD4OlMT1osMP8YYx+FpVGey8ib0dU4kSJT4cWeNHv2?=
- =?us-ascii?Q?PquP8dUJO5wtHRrqkpO4ZCt+vdDhJqTeR/bJpXwuSclTnKlozqMDDhgyCUEZ?=
- =?us-ascii?Q?bpPUg86dtw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 23 May 2022 04:12:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 438DE644A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:12:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653293532;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=53MnhvYtL+/cYihHLxo4GLsLARejRnqIvuUsOxI+lBY=;
+        b=F9ROI/1BV3OInshkRy94lTF6N5gUYgm1JvFsW7LMiJdS3Mz170XYIFWdEXdlOAGoIvQ6N0
+        E76zYiPxXHnlHukAQ/4Z4XhcW5OJDVHpwkOJ5LaZ8kRaoes7l/ajyANQHULX/lJAEOFA+j
+        t/EodEZQMRqbDJnona0/lE3M86Vt6ik=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-491-OglF5zPQMYmYAHYXxHjwSA-1; Mon, 23 May 2022 04:12:10 -0400
+X-MC-Unique: OglF5zPQMYmYAHYXxHjwSA-1
+Received: by mail-qt1-f197.google.com with SMTP id q13-20020a05622a04cd00b002f3c0e197afso11065916qtx.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:12:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=53MnhvYtL+/cYihHLxo4GLsLARejRnqIvuUsOxI+lBY=;
+        b=qOZtCFRR2BBdKJEM6ozxLVgCfftuGK/b6JSqytwnmW1eu5MCJHynYbXimWZLXNQ7cQ
+         DrIw86evfnPmhkDAR57p7V9vR8SdVlUHlNEgtRoHiPGbXbkLLKUWINA7bDZslZmwRK3z
+         5HigXuu/b615YuhcBve3sC/2BBY1n7VRlzPBcc9u2ZLPNpZF5r0fPHORNb8cdGxw1u3B
+         1PKlX5TjiP0g+PjmG+fs8qij/H4svaI72ooUq0rUF9gJXHdTYyr0rbNXEbGNHvzazn9v
+         ZvWL3JivOmWIMa3puZu//3/ncfM9ulNY5hTgBqVi1pwPcVMNdfSTtOA2JZc5y8Fj1eFg
+         t75w==
+X-Gm-Message-State: AOAM532sh4zjEk46pgtA+FpcrE4x7i4I8bLG2nyJt5n2FTt759y4ARUk
+        GTVbF5NKHJeWGul1qsIUEd8pzRkQ6XRyrZfMCzft0HkRZ7RpIia857LxwmbnyS52avtRMThU5D/
+        E2H4ZTLxPMVNn1yEfhBUce0XXCis5IbB9BXbMqMuN
+X-Received: by 2002:a05:6214:1cc3:b0:456:56d:f2c5 with SMTP id g3-20020a0562141cc300b00456056df2c5mr16071591qvd.119.1653293530258;
+        Mon, 23 May 2022 01:12:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxndmh3Z/5Upq6a5oy0R43tgYXfcGAKp5IHcGn2lvZMLVj0I5W3ABKYUsCufqilG4+hIlR2T+HHxzM4JZ4Bw6E=
+X-Received: by 2002:a05:6214:1cc3:b0:456:56d:f2c5 with SMTP id
+ g3-20020a0562141cc300b00456056df2c5mr16071553qvd.119.1653293530053; Mon, 23
+ May 2022 01:12:10 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b9ba1a10-19b1-4491-4f1a-08da3c918a89
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2022 07:55:01.7901
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SLVt25K+OC/wMFygT3paD3fEAN++ApJwn2K48rj+3FnjaguiAMVfgaWAxn6pVSA5g0EGhH8b54aG6dF+z9p7EA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4684
-X-OriginatorOrg: intel.com
+References: <20220520172325.980884-1-eperezma@redhat.com> <20220520172325.980884-4-eperezma@redhat.com>
+ <20220521083630.GA5298@gmail.com>
+In-Reply-To: <20220521083630.GA5298@gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Mon, 23 May 2022 10:11:33 +0200
+Message-ID: <CAJaqyWfKXbeT5nUbBvHj4A3Ntz_YwA3OvgDeyq=D6J2cy8dRJw@mail.gmail.com>
+Subject: Re: [PATCH 3/4] vhost-vdpa: uAPI to stop the device
+To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Jason Wang <jasowang@redhat.com>,
+        kvm list <kvm@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>, dinang@xilinx.com,
+        Eli Cohen <elic@nvidia.com>,
+        Laurent Vivier <lvivier@redhat.com>, pabloc@xilinx.com,
+        "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        tanuj.kamde@amd.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        martinpo@xilinx.com, Cindy Lu <lulu@redhat.com>,
+        ecree.xilinx@gmail.com, Parav Pandit <parav@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Thursday, May 19, 2022 2:21 AM
->=20
-> IOMMU group maintains a PASID array which stores the associated IOMMU
-> domains. This patch introduces a helper function to do domain to PASID
-> look up. It will be used by TLB flush and device-PASID attach verificatio=
-n.
->=20
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/iommu/iommu.c | 22 ++++++++++++++++++++++
->  include/linux/iommu.h |  6 +++++-
->  2 files changed, 27 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 00d0262a1fe9..22f44833db64 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3199,3 +3199,25 @@ struct iommu_domain
-> *iommu_get_domain_for_iopf(struct device *dev,
->=20
->  	return domain;
->  }
-> +
-> +ioasid_t iommu_get_pasid_from_domain(struct device *dev, struct
-> iommu_domain *domain)
-> +{
-> +	struct iommu_domain *tdomain;
-> +	struct iommu_group *group;
-> +	unsigned long index;
-> +	ioasid_t pasid =3D INVALID_IOASID;
-> +
-> +	group =3D iommu_group_get(dev);
-> +	if (!group)
-> +		return pasid;
-> +
-> +	xa_for_each(&group->pasid_array, index, tdomain) {
-> +		if (domain =3D=3D tdomain) {
-> +			pasid =3D index;
-> +			break;
-> +		}
-> +	}
+On Sat, May 21, 2022 at 10:36 AM Martin Habets <habetsm.xilinx@gmail.com> w=
+rote:
+>
+> On Fri, May 20, 2022 at 07:23:24PM +0200, Eugenio P=C3=A9rez wrote:
+> > The ioctl adds support for stop the device from userspace.
+> >
+> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > ---
+> >  drivers/vhost/vdpa.c       | 18 ++++++++++++++++++
+> >  include/uapi/linux/vhost.h |  3 +++
+> >  2 files changed, 21 insertions(+)
+> >
+> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > index a325bc259afb..da4a8c709bc1 100644
+> > --- a/drivers/vhost/vdpa.c
+> > +++ b/drivers/vhost/vdpa.c
+> > @@ -478,6 +478,21 @@ static long vhost_vdpa_get_vqs_count(struct vhost_=
+vdpa *v, u32 __user *argp)
+> >       return 0;
+> >  }
+> >
+> > +static long vhost_vdpa_stop(struct vhost_vdpa *v, u32 __user *argp)
+> > +{
+> > +     struct vdpa_device *vdpa =3D v->vdpa;
+> > +     const struct vdpa_config_ops *ops =3D vdpa->config;
+> > +     int stop;
+> > +
+> > +     if (!ops->stop)
+> > +             return -EOPNOTSUPP;
+> > +
+> > +     if (copy_to_user(argp, &stop, sizeof(stop)))
+>
+> You want to use copy_from_user() here.
+>
 
-Don't we need to acquire the group lock here?
+Hi Martin,
 
-Btw the intention of this function is a bit confusing. Patch01 already
-stores the pasid under domain hence it's redundant to get it=20
-indirectly from xarray index. You could simply introduce a flag bit
-(e.g. dma_pasid_enabled) in device_domain_info and then directly
-use domain->dma_pasid once the flag is true.
+You're right, I'll resend a new version with this fixed. Thanks!
 
-> +	iommu_group_put(group);
-> +
-> +	return pasid;
-> +}
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 36ad007084cc..c0440a4be699 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -694,7 +694,7 @@ void iommu_detach_device_pasid(struct
-> iommu_domain *domain,
->  			       struct device *dev, ioasid_t pasid);
->  struct iommu_domain *
->  iommu_get_domain_for_iopf(struct device *dev, ioasid_t pasid);
-> -
-> +ioasid_t iommu_get_pasid_from_domain(struct device *dev, struct
-> iommu_domain *domain);
->  #else /* CONFIG_IOMMU_API */
->=20
->  struct iommu_ops {};
-> @@ -1070,6 +1070,10 @@ iommu_get_domain_for_iopf(struct device *dev,
-> ioasid_t pasid)
->  {
->  	return NULL;
->  }
-> +static ioasid_t iommu_get_pasid_from_domain(struct device *dev, struct
-> iommu_domain *domain)
-> +{
-> +	return INVALID_IOASID;
-> +}
->  #endif /* CONFIG_IOMMU_API */
->=20
->  #ifdef CONFIG_IOMMU_SVA
-> --
-> 2.25.1
+> Martin
+>
+> > +             return -EFAULT;
+> > +
+> > +     return ops->stop(vdpa, stop);
+> > +}
+> > +
+> >  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int =
+cmd,
+> >                                  void __user *argp)
+> >  {
+> > @@ -649,6 +664,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
+filep,
+> >       case VHOST_VDPA_GET_VQS_COUNT:
+> >               r =3D vhost_vdpa_get_vqs_count(v, argp);
+> >               break;
+> > +     case VHOST_STOP:
+> > +             r =3D vhost_vdpa_stop(v, argp);
+> > +             break;
+> >       default:
+> >               r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
+> >               if (r =3D=3D -ENOIOCTLCMD)
+> > diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> > index cab645d4a645..e7526968ab0c 100644
+> > --- a/include/uapi/linux/vhost.h
+> > +++ b/include/uapi/linux/vhost.h
+> > @@ -171,4 +171,7 @@
+> >  #define VHOST_VDPA_SET_GROUP_ASID    _IOW(VHOST_VIRTIO, 0x7C, \
+> >                                            struct vhost_vring_state)
+> >
+> > +/* Stop or resume a device so it does not process virtqueue requests a=
+nymore */
+> > +#define VHOST_STOP                   _IOW(VHOST_VIRTIO, 0x7D, int)
+> > +
+> >  #endif
+> > --
+> > 2.27.0
+>
 
