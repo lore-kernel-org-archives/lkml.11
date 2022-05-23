@@ -2,109 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F39BFC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF861C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242199AbiEWS2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57566 "EHLO
+        id S240825AbiEWS2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244550AbiEWS0R (ORCPT
+        with ESMTP id S245571AbiEWS1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:26:17 -0400
-Received: from condef-05.nifty.com (condef-05.nifty.com [202.248.20.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EDD9D4F5;
-        Mon, 23 May 2022 10:59:59 -0700 (PDT)
-Received: from conssluserg-04.nifty.com ([10.126.8.83])by condef-05.nifty.com with ESMTP id 24NHsVbB010676;
-        Tue, 24 May 2022 02:54:31 +0900
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 24NHs68f030856;
-        Tue, 24 May 2022 02:54:06 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 24NHs68f030856
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1653328447;
-        bh=dBNWfUQZFF9+bb53ddySLO4pxcaDK6Q56t+DuFejwTQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YPJU5jZglHmdJwUdf3fnigknfY4oOOpL20Ktso2K43HKC/WvVbzhIzA/jezTbwsv7
-         etbq0bAlxhbxIHJREfB+0YsXaeGrvsL5b/uYYU/qjxmWS6s0tr0nvErfvfbCQu4Pbs
-         Gli6n1+H0MR+8jpqmsa0Q1zfRYSDGnpfKQ3ESQuZC6gWD29eyTn+tJovl92cLbtUNh
-         UMS0nB8TD2TuQCXCr7LtVUn24t9HQjXwQGh4ZfkNQqBelD9Fth9OZJpQEsArosaRvp
-         r7Una5mA7A03DN1LDoafUdgmM1udQsZvE3lvn6jLy/omLSMGd/QUbmQLrhPEiAmHpK
-         vetgIOir8o3oA==
-X-Nifty-SrcIP: [209.85.167.173]
-Received: by mail-oi1-f173.google.com with SMTP id e189so18692231oia.8;
-        Mon, 23 May 2022 10:54:06 -0700 (PDT)
-X-Gm-Message-State: AOAM5306K2pylWQ7wBKnuYK4qU0mlooJzjFK07dRNVC+vVtzJoptB77b
-        FweYBbdygK2S5RPY9gbxlf4lLGmrS1dtG1yBB8s=
-X-Google-Smtp-Source: ABdhPJydFROQRPLEMNo6nNdOMTyK1LJ+VThHesO2oiz688jMIImNNSAgs59aHnxolEncb9HDmJvuAvA6S5mjHt72qNU=
-X-Received: by 2002:a05:6808:1805:b0:32b:17e3:c7b with SMTP id
- bh5-20020a056808180500b0032b17e30c7bmr110519oib.37.1653328445708; Mon, 23 May
- 2022 10:54:05 -0700 (PDT)
+        Mon, 23 May 2022 14:27:10 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0780DDE302;
+        Mon, 23 May 2022 11:02:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=kdOaPNqdKiUqGPqTepXude0v1LHBppL38xhTNFAbyUE=; b=JFgRBwGvqStc/xVkxZN1fSAgNI
+        eoeei7L1fZ2sul7FXSHr1xAG5XHoKLc3P9YsQeH4W3SZhO0xWCXJJOiXyyTGCf3z5cowiATentBeT
+        ndpFHvaIAP4qcSLaZkRigQWE++Wtc/C8eeT2fsVxJhOvjo3FmLSR0Tqxa4G3wiqJra0T9kmtwJPhc
+        OVXC8q1IGfcerbwhca97OkTFuK7igLWk6048kz8aKrbjn+zSir21oG/aUxa85ZBdgpspT9nzUlFQc
+        of+YJ+muE3Kc2v8OZClQotwRyVp6Mw4Ub4D0pmOWzj1TTh2iwLSUctqH1MJwIE7KnVkHOY8jI+PeI
+        UzGWzXO7Tune+mjnH0oxIRuOLqr5y93m2iB6KPrNyLzneTJelcJRl4D4HqGK8az4isVKT4vg47tbq
+        7zKwrZl6gi5zDkCr4lsx0rOEDgRrXFspjFDKRScxA8A06lR3G1pdjaTHMm0oB//byzf0A+oWkptnO
+        MVePdl1LLPVNcPMiQmfUh99FYyXoiuAfh8EDMvm949esGEGCWFRM194LlPYx61A7Xuai+MOu7Uc1s
+        Y2Rr94yywbsz5ugOX85CeUvUE/ZBOToXlAPjFJfD2ajRCqSUtOTofTv/JYvRcSxVIhrGSUCG+Ysr1
+        hsDCvgiT3HHzNQpIXMO9ytusaKgOYCRzFwgQrTXME=;
+From:   Christian Schoenebeck <qemu_oss@crudebyte.com>
+To:     qemu-devel@nongnu.org
+Cc:     Latchesar Ionkov <lucho@ionkov.net>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        linux-kernel@vger.kernel.org, qemu-devel@nongnu.org,
+        Greg Kurz <groug@kaod.org>,
+        Keno Fischer <keno@juliacomputing.com>,
+        Michael Roitzsch <reactorcontrol@icloud.com>,
+        Will Cohen <wwcohen@gmail.com>, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        Dominique Martinet <asmadeus@codewreck.org>
+Subject: Re: [RFC PATCH] 9p: case-insensitive host filesystems
+Date:   Mon, 23 May 2022 19:59:55 +0200
+Message-ID: <6485122.aT25ngTQys@silver>
+In-Reply-To: <YmMItCb97KqegQw5@codewreck.org>
+References: <1757498.AyhHxzoH2B@silver> <YmMItCb97KqegQw5@codewreck.org>
 MIME-Version: 1.0
-References: <20220517105128.9720-1-3090101217@zju.edu.cn>
-In-Reply-To: <20220517105128.9720-1-3090101217@zju.edu.cn>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 24 May 2022 02:52:45 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARs__+bdMMb0c8whxxzfkcN7U1yjm5PCddqZqshW2o=Cw@mail.gmail.com>
-Message-ID: <CAK7LNARs__+bdMMb0c8whxxzfkcN7U1yjm5PCddqZqshW2o=Cw@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: Fix include path in scripts/Makefile.modpost
-To:     3090101217@zju.edu.cn
-Cc:     Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jing Leng <jleng@ambarella.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 7:51 PM <3090101217@zju.edu.cn> wrote:
->
-> From: Jing Leng <jleng@ambarella.com>
->
-> When building an external module, if users don't need to separate the
-> compilation output and source code, they run the following command:
-> "make -C $(LINUX_SRC_DIR) M=$(PWD)". At this point, "$(KBUILD_EXTMOD)"
-> and "$(src)" are the same.
->
-> If they need to separate them, they run "make -C $(KERNEL_SRC_DIR)
-> O=$(KERNEL_OUT_DIR) M=$(OUT_DIR) src=$(PWD)". Before running the
-> command, they need to copy "Kbuild" or "Makefile" to "$(OUT_DIR)" to
-> prevent compilation failure.
->
-> So the kernel should change the included path to avoid the copy operation.
->
-> Signed-off-by: Jing Leng <jleng@ambarella.com>
-> ---
->  scripts/Makefile.modpost | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
-> index 48585c4d04ad..0273bf7375e2 100644
-> --- a/scripts/Makefile.modpost
-> +++ b/scripts/Makefile.modpost
-> @@ -87,8 +87,7 @@ obj := $(KBUILD_EXTMOD)
->  src := $(obj)
->
->  # Include the module's Makefile to find KBUILD_EXTRA_SYMBOLS
-> -include $(if $(wildcard $(KBUILD_EXTMOD)/Kbuild), \
-> -             $(KBUILD_EXTMOD)/Kbuild, $(KBUILD_EXTMOD)/Makefile)
-> +include $(if $(wildcard $(src)/Kbuild), $(src)/Kbuild, $(src)/Makefile)
->
->  # modpost option for external modules
->  MODPOST += -e
-> --
-> 2.17.1
->
+On Freitag, 22. April 2022 21:57:40 CEST Dominique Martinet wrote:
+> Christian Schoenebeck wrote on Fri, Apr 22, 2022 at 08:02:46PM +0200:
+> > So maybe it's better to handle case-insensitivity entirely on client side?
+> > I've read that some generic "case fold" code has landed in the Linux
+> > kernel
+> > recently that might do the trick?
+> 
+> I haven't tried, but settings S_CASEFOLD on every inodes i_flags might do
+> what you want client-side.
+> That's easy enough to test and could be a mount option
+
+I just made a quick test using:
+
+diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+index 08f48b70a741..5d8e77daed53 100644
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -257,6 +257,7 @@ int v9fs_init_inode(struct v9fs_session_info *v9ses,
+        inode->i_atime = inode->i_mtime = inode->i_ctime = 
+current_time(inode);
+        inode->i_mapping->a_ops = &v9fs_addr_operations;
+        inode->i_private = NULL;
++       inode->i_flags |= S_CASEFOLD;
+ 
+        switch (mode & S_IFMT) {
+        case S_IFIFO:
+
+Unfortunately that did not help much. I still get EEXIST error e.g. when 
+trying 'ln -s foo FOO'.
+
+I am not sure though whether there would be more code places to touch or 
+whether that's even the expected behaviour with S_CASEFOLD for some reason.
+
+> Even with that it's possible to do a direct open without readdir first
+> if one knows the path and I that would only be case-insensitive if the
+> backing server is case insensitive though, so just setting the option
+> and expecting it to work all the time might be a little bit
+> optimistic... I believe guess that should be an optimization at best.
+> 
+> Ideally the server should tell the client they are casefolded somehow,
+> but 9p doesn't have any capability/mount time negotiation besides msize
+> so that's difficult with the current protocol.
 
 
-I do not think "M=$(OUT_DIR) src=$(PWD)" is the official way,
-but this patch is a clean up.
-
-Applied to linux-kbuild. Thanks.
-
-
--- 
-Best Regards
-Masahiro Yamada
