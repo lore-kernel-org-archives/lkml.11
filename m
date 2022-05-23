@@ -2,61 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79756C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F66C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233665AbiEWJ4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
+        id S233779AbiEWJ5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233701AbiEWJ4G (ORCPT
+        with ESMTP id S233661AbiEWJ51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:56:06 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D21388
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:56:03 -0700 (PDT)
+        Mon, 23 May 2022 05:57:27 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856503F895
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:57:26 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 915EB1F8D4;
-        Mon, 23 May 2022 09:56:02 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id 171FE219FB;
+        Mon, 23 May 2022 09:57:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653299762; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1653299845; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ScMPs37Cycx6LNMRaJcpPoJxsRrKJk2lsxHkF3D0KAI=;
-        b=izwznmolT+Zc6Spf1IKNTmGw5gBqNK2iOsgzIaZ2aywJqmYtRA2sGK2t8kwKcvniw/BjGI
-        KAok4Fd/gNx0SIeONdPh+BvkegM0O24qrdaAce35fQXs3fMHLGJCt/VUp+6A8ukOhiJ8qj
-        T9sUL63mkbxiDNofKGPs1gatsdwawHU=
+        bh=FCbT/atTPZtFOzFHjzdEug1Tv8X+SYILWhf9FeCnaKA=;
+        b=jMs7yL9LFWWjmfAhW2WV4WPEFtMuXihCxubLK/yiEC9XdYQqpRHWyAyUHLkAxYGvwld18/
+        63WSOLMRV0dwYYIXIlM0JtAanyTB7N82QLC8+WKkhYbMYoOSpq93z/XovahiFiu4jYa9te
+        Vf4D/p1VwDsU8wqgk0m+lN5PQkmZ8P0=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653299762;
+        s=susede2_ed25519; t=1653299845;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ScMPs37Cycx6LNMRaJcpPoJxsRrKJk2lsxHkF3D0KAI=;
-        b=HKPNOz/P2Y/SpbvG8M6TptM5NfAWLbuZiJduXcSp9rtleaTzjbU4YLIkh02bdftsjMh2nx
-        bd2r7KRCXIA0qaAA==
+        bh=FCbT/atTPZtFOzFHjzdEug1Tv8X+SYILWhf9FeCnaKA=;
+        b=30TQp+hYXcsEWeBJO+oQN0Tv8s7Ssgxe4tfEruQ6Ps8THh2Q6oVvExdJeOZQ2QzR7uUgAs
+        io/yECPLCdy6q/Aw==
 Received: from [10.163.29.78] (unknown [10.163.29.78])
-        by relay2.suse.de (Postfix) with ESMTP id 2A0FC2C141;
-        Mon, 23 May 2022 09:56:00 +0000 (UTC)
-Message-ID: <0f19dba47d9b86e79ba043018c4d5d13e4e4425b.camel@suse.cz>
-Subject: Re: [PATCH 2/2] x86: fix platform info detection in frequency
- invariance
+        by relay2.suse.de (Postfix) with ESMTP id D2ECD2C141;
+        Mon, 23 May 2022 09:57:24 +0000 (UTC)
+Message-ID: <5a9363dbd049697e8f3c232885f499f18cb8d607.camel@suse.cz>
+Subject: Re: [PATCH 1/2] x86: Fix return value in frequency invariance setup
+ for XEON_PHI_KNL/KNM
 From:   Giovanni Gherdovich <ggherdovich@suse.cz>
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         x86@kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 23 May 2022 11:56:00 +0200
-In-Reply-To: <7dffbd70-d7db-6d58-abbb-19006cd9e4a2@intel.com>
+Date:   Mon, 23 May 2022 11:57:23 +0200
+In-Reply-To: <20220521100224.GB2578@worktop.programming.kicks-ass.net>
 References: <20220520161022.5972-1-ggherdovich@suse.cz>
-         <20220520161022.5972-2-ggherdovich@suse.cz>
-         <7dffbd70-d7db-6d58-abbb-19006cd9e4a2@intel.com>
+         <20220521100224.GB2578@worktop.programming.kicks-ass.net>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
@@ -65,88 +63,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-05-20 at 09:44 -0700, Dave Hansen wrote:
-> On 5/20/22 09:10, Giovanni Gherdovich wrote:
-> >  	if (slv_set_max_freq_ratio(&base_freq, &turbo_freq))
-> >  		goto out;
-> >  
-> > -	if (x86_match_cpu(has_glm_turbo_ratio_limits) &&
-> > -	    skx_set_max_freq_ratio(&base_freq, &turbo_freq, 1))
-> > +	if (x86_match_cpu(has_glm_turbo_ratio_limits)) {
-> > +		skx_set_max_freq_ratio(&base_freq, &turbo_freq, 1);
-> >  		goto out;
-> > +	}
-> >  
-> > -	if (x86_match_cpu(has_knl_turbo_ratio_limits) &&
-> > -	    knl_set_max_freq_ratio(&base_freq, &turbo_freq, 1))
-> > +	if (x86_match_cpu(has_knl_turbo_ratio_limits)) {
-> > +		knl_set_max_freq_ratio(&base_freq, &turbo_freq, 1);
-> >  		goto out;
-> > +	}
-> >  
-> > -	if (x86_match_cpu(has_skx_turbo_ratio_limits) &&
-> > -	    skx_set_max_freq_ratio(&base_freq, &turbo_freq, 4))
-> > +	if (x86_match_cpu(has_skx_turbo_ratio_limits)) {
-> > +		skx_set_max_freq_ratio(&base_freq, &turbo_freq, 4);
-> >  		goto out;
-> > +	}
-> >  
-> >  	if (core_set_max_freq_ratio(&base_freq, &turbo_freq))
-> >  		goto out;
+On Sat, 2022-05-21 at 12:02 +0200, Peter Zijlstra wrote:
+> On Fri, May 20, 2022 at 06:10:21PM +0200, Giovanni Gherdovich wrote:
+> > knl_set_max_freq_ratio() should return true on success and false
+> > otherwise. If the last line of the function body is reached, it means no
+> > appropriate value for turbo_freq was found: the setup is unsuccessful and
+> > it should return false.
+> > 
+> > Fixes: 8bea0dfb4a82 ("x86, sched: Add support for frequency invariance on XEON_PHI_KNL/KNM")
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > Signed-off-by: Giovanni Gherdovich <ggherdovich@suse.cz>
+> > ---
+> >  arch/x86/kernel/smpboot.c | 2 +-
 > 
-> But didn't the last patch in the series carefully change the return
-> value for knl_set_max_freq_ratio()?  Now, the only call site is ignoring
-> the return value?  That seems odd.
+> You seems to have missed all that code moved in tip. This no longer
+> applies.
 
-Thanks for having a look! You're right. I need to either check these
-return values, or not have them at all.
+Right. I'll rebase and resend. Plus, as per Dave Hansen's comments on
+the other patch, I need to have a second look at it.
 
-> 
-> Also, this is a mess.  These constructs:
-> 
-> static const struct x86_cpu_id has_knl_turbo_ratio_limits[] = {
->         X86_MATCH(XEON_PHI_KNL),
->         X86_MATCH(XEON_PHI_KNM),
->         {}
-> };
-> 
-> static const struct x86_cpu_id has_skx_turbo_ratio_limits[] = {
->         X86_MATCH(SKYLAKE_X),
->         {}
-> };
-> 
-> static const struct x86_cpu_id has_glm_turbo_ratio_limits[] = {
->         X86_MATCH(ATOM_GOLDMONT),
->         X86_MATCH(ATOM_GOLDMONT_D),
->         X86_MATCH(ATOM_GOLDMONT_PLUS),
->         {}
-> };
-> 
-> are rather goofy.  A single array like rapl_ids[] that points to the
-> handler function would do us a lot more good here, say:
-> 
-> static const struct x86_cpu_id has_knl_turbo_ratio_limits[] = {
->         X86_MATCH(XEON_PHI_KNL, 	&knl_set_max_freq_ratio),
->         X86_MATCH(XEON_PHI_KNM, 	&knl_set_max_freq_ratio),
->         X86_MATCH(SKYLAKE_X,		&skx_set_max_freq_ratio),
->         X86_MATCH(ATOM_GOLDMONT, 	&skx_set_max_freq_ratio),
->         X86_MATCH(ATOM_GOLDMONT_D,	&skx_set_max_freq_ratio),
->         X86_MATCH(ATOM_GOLDMONT_PLUS,	&skx_set_max_freq_ratio),
-> 	X86_MATCH(ANY,			&core_set_max_freq_ratio),
->         {}
-> };
-> 
-> That would get rid of all the goofy gotos and actually puts all the
-> logic in one place.  BTW, I'm not 100% sure about the 'ANY' line.  I
-> think that's how those work, but please double-check me on it.
-
-That's good advice. I'll do that consolidation.
-
-> 
-> While it's generally best to keep bug fixes to a minimum, I think this
-> one is worth a bit of a cleanup because it will remove a bunch of spaghetti.
-
-
-Thanks,
 Giovanni
+
+
 
