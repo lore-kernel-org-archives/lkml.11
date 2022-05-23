@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E54C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240576AbiEWRfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
+        id S241601AbiEWRfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240772AbiEWR0E (ORCPT
+        with ESMTP id S240865AbiEWR0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABB4E22;
-        Mon, 23 May 2022 10:21:06 -0700 (PDT)
+        Mon, 23 May 2022 13:26:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0D217A9E;
+        Mon, 23 May 2022 10:21:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD192B81219;
-        Mon, 23 May 2022 17:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6C0C3411C;
-        Mon, 23 May 2022 17:18:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D5B0B8121C;
+        Mon, 23 May 2022 17:21:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81072C385A9;
+        Mon, 23 May 2022 17:20:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326316;
-        bh=DNfz1o6qKb6qIfL/FrsqbiDZgTcZ8zxQ00E+YIOP5tI=;
+        s=korg; t=1653326459;
+        bh=IiG6DVAr/cCMbHcZiaclUM7731Pl9HADJE4+83bC76I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YcPC848wAF+4Mr0Qb0o3z9X9I2mjQh03DT78NLpjzzQSf1mxkWDtskV/OLrrwyxVd
-         7DUaP4Hn2t0FiLzs5ICC8XgA8qo2hwtVcT7A0ym0nHL3Buxo4GqH+8gRk3WL99SpNz
-         kCLXxWpUI1RNCTU65vmBMmFDrYb+MAexZGgNOcJs=
+        b=bW2ecwIzm2hysXfGCiqAwHdAxyIyXMZ5eX9A7izzBiipG5B61Q5ECuBzjQYVY3Atv
+         pjPYh5emy0sXH1UZw3V8Lmb7XPYn2YZIvD4cwF17uh3OEKaxzICbjxxDZaMSdi97Tv
+         VZsmyaBdsemVhONfvA0N0mdii9f2GbAIo1G1cnKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 044/132] ALSA: usb-audio: Restore Rane SL-1 quirk
-Date:   Mon, 23 May 2022 19:04:13 +0200
-Message-Id: <20220523165830.606361258@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 088/132] net/qla3xxx: Fix a test in ql_reset_work()
+Date:   Mon, 23 May 2022 19:04:57 +0200
+Message-Id: <20220523165837.690435785@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -47,45 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 5c62383c06837b5719cd5447a5758b791279e653 upstream.
+[ Upstream commit 5361448e45fac6fb96738df748229432a62d78b6 ]
 
-At cleaning up and moving the device rename from the quirk table to
-its own table, we removed the entry for Rane SL-1 as we thought it's
-only for renaming.  It turned out, however, that the quirk is required
-for matching with the device that declares itself as no standard
-audio but only as vendor-specific.
+test_bit() tests if one bit is set or not.
+Here the logic seems to check of bit QL_RESET_PER_SCSI (i.e. 4) OR bit
+QL_RESET_START (i.e. 3) is set.
 
-Restore the quirk entry for Rane SL-1 to fix the regression.
+In fact, it checks if bit 7 (4 | 3 = 7) is set, that is to say
+QL_ADAPTER_UP.
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215887
-Fixes: 5436f59bc5bc ("ALSA: usb-audio: Move device rename and profile quirks to an internal table")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220516103112.12950-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This looks harmless, because this bit is likely be set, and when the
+ql_reset_work() delayed work is scheduled in ql3xxx_isr() (the only place
+that schedule this work), QL_RESET_START or QL_RESET_PER_SCSI is set.
+
+This has been spotted by smatch.
+
+Fixes: 5a4faa873782 ("[PATCH] qla3xxx NIC driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/80e73e33f390001d9c0140ffa9baddf6466a41a2.1652637337.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/quirks-table.h |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/ethernet/qlogic/qla3xxx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -3235,6 +3235,15 @@ YAMAHA_DEVICE(0x7010, "UB99"),
- 	}
- },
+diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
+index 4eb9ea280474..40d14d80f6f1 100644
+--- a/drivers/net/ethernet/qlogic/qla3xxx.c
++++ b/drivers/net/ethernet/qlogic/qla3xxx.c
+@@ -3612,7 +3612,8 @@ static void ql_reset_work(struct work_struct *work)
+ 		qdev->mem_map_registers;
+ 	unsigned long hw_flags;
  
-+/* Rane SL-1 */
-+{
-+	USB_DEVICE(0x13e5, 0x0001),
-+	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
-+		.ifnum = QUIRK_ANY_INTERFACE,
-+		.type = QUIRK_AUDIO_STANDARD_INTERFACE
-+        }
-+},
-+
- /* disabled due to regression for other devices;
-  * see https://bugzilla.kernel.org/show_bug.cgi?id=199905
-  */
+-	if (test_bit((QL_RESET_PER_SCSI | QL_RESET_START), &qdev->flags)) {
++	if (test_bit(QL_RESET_PER_SCSI, &qdev->flags) ||
++	    test_bit(QL_RESET_START, &qdev->flags)) {
+ 		clear_bit(QL_LINK_MASTER, &qdev->flags);
+ 
+ 		/*
+-- 
+2.35.1
+
 
 
