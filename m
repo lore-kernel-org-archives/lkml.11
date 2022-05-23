@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5140C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A8FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243605AbiEWRmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
+        id S243830AbiEWRmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242572AbiEWR1r (ORCPT
+        with ESMTP id S242607AbiEWR1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADF47E1DF;
-        Mon, 23 May 2022 10:23:44 -0700 (PDT)
+        Mon, 23 May 2022 13:27:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E198022A;
+        Mon, 23 May 2022 10:23:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D573F6153D;
-        Mon, 23 May 2022 17:15:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE6EC34116;
-        Mon, 23 May 2022 17:15:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A97AB6152F;
+        Mon, 23 May 2022 17:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78D7AC385A9;
+        Mon, 23 May 2022 17:13:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326121;
-        bh=fakn5Rm/GpuLorMbdsgU93zZ0IMk8qoD2rIuHMzIoGw=;
+        s=korg; t=1653326021;
+        bh=BW5Jbg92phWLgEjXChy3GA+iNXA+MLZLVE+rEXvsh+I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jf3bEr1a+TfbsPJHWtcPy8Nsv9qFASFQ/6ZCIBXpw9s/L0BETQ97pZImDE971g3/V
-         lisVfPBk9ZhB2dmo92NcaQO+7HhZHArHreI8uSXNw/0s0D3Tmf0jll08nVaLDmEdfL
-         mlWZ4LJt/1bgDOGApI4h8niNApDc3dAfxZMVnirE=
+        b=DXrFvkCW2uehh4Bwhq/Wm7Q0oWJLRhaduYyvweDjCOwzHNl6jXAsJW/TBXRwlfr4t
+         rqS6EuFHjC95G6RcX9+LxBta1pyU0WEohdPCg/uAchn8Jqz1+5mf5pwDl+G0GTEuSK
+         GF5nOv53u9hv3KbkPMDHAONLUsUEXO3sXAOJHezc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.4 30/68] KVM: x86/mmu: Update number of zapped pages even if page list is stable
-Date:   Mon, 23 May 2022 19:04:57 +0200
-Message-Id: <20220523165807.581079944@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 43/68] NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
+Date:   Mon, 23 May 2022 19:05:10 +0200
+Message-Id: <20220523165809.719807111@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -50,71 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit b28cb0cd2c5e80a8c0feb408a0e4b0dbb6d132c5 upstream.
+[ Upstream commit 23dd4581350d4ffa23d58976ec46408f8f4c1e16 ]
 
-When zapping obsolete pages, update the running count of zapped pages
-regardless of whether or not the list has become unstable due to zapping
-a shadow page with its own child shadow pages.  If the VM is backed by
-mostly 4kb pages, KVM can zap an absurd number of SPTEs without bumping
-the batch count and thus without yielding.  In the worst case scenario,
-this can cause a soft lokcup.
+There are sleep in atomic context bugs when the request to secure
+element of st-nci is timeout. The root cause is that nci_skb_alloc
+with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
+a timer handler. The call paths that could trigger bugs are shown below:
 
- watchdog: BUG: soft lockup - CPU#12 stuck for 22s! [dirty_log_perf_:13020]
-   RIP: 0010:workingset_activation+0x19/0x130
-   mark_page_accessed+0x266/0x2e0
-   kvm_set_pfn_accessed+0x31/0x40
-   mmu_spte_clear_track_bits+0x136/0x1c0
-   drop_spte+0x1a/0xc0
-   mmu_page_zap_pte+0xef/0x120
-   __kvm_mmu_prepare_zap_page+0x205/0x5e0
-   kvm_mmu_zap_all_fast+0xd7/0x190
-   kvm_mmu_invalidate_zap_pages_in_memslot+0xe/0x10
-   kvm_page_track_flush_slot+0x5c/0x80
-   kvm_arch_flush_shadow_memslot+0xe/0x10
-   kvm_set_memslot+0x1a8/0x5d0
-   __kvm_set_memory_region+0x337/0x590
-   kvm_vm_ioctl+0xb08/0x1040
+    (interrupt context 1)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_skb_alloc(..., GFP_KERNEL) //may sleep
 
-Fixes: fbb158cb88b6 ("KVM: x86/mmu: Revert "Revert "KVM: MMU: zap pages in batch""")
-Reported-by: David Matlack <dmatlack@google.com>
-Reviewed-by: Ben Gardon <bgardon@google.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220511145122.3133334-1-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+   (interrupt context 2)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_send_data
+        nci_queue_tx_data_frags
+          nci_skb_alloc(..., GFP_KERNEL) //may sleep
+
+This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
+GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
+flag makes memory allocation operation could be used in atomic context.
+
+Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220517012530.75714-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ net/nfc/nci/data.c | 2 +-
+ net/nfc/nci/hci.c  | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/mmu.c
-+++ b/arch/x86/kvm/mmu.c
-@@ -5821,6 +5821,7 @@ static void kvm_zap_obsolete_pages(struc
- {
- 	struct kvm_mmu_page *sp, *node;
- 	int nr_zapped, batch = 0;
-+	bool unstable;
+diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
+index ce3382be937f..b002e18f38c8 100644
+--- a/net/nfc/nci/data.c
++++ b/net/nfc/nci/data.c
+@@ -118,7 +118,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
  
- restart:
- 	list_for_each_entry_safe_reverse(sp, node,
-@@ -5853,11 +5854,12 @@ restart:
- 			goto restart;
- 		}
+ 		skb_frag = nci_skb_alloc(ndev,
+ 					 (NCI_DATA_HDR_SIZE + frag_len),
+-					 GFP_KERNEL);
++					 GFP_ATOMIC);
+ 		if (skb_frag == NULL) {
+ 			rc = -ENOMEM;
+ 			goto free_exit;
+diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
+index 04e55ccb3383..4fe336ff2bfa 100644
+--- a/net/nfc/nci/hci.c
++++ b/net/nfc/nci/hci.c
+@@ -153,7 +153,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
  
--		if (__kvm_mmu_prepare_zap_page(kvm, sp,
--				&kvm->arch.zapped_obsolete_pages, &nr_zapped)) {
--			batch += nr_zapped;
-+		unstable = __kvm_mmu_prepare_zap_page(kvm, sp,
-+				&kvm->arch.zapped_obsolete_pages, &nr_zapped);
-+		batch += nr_zapped;
-+
-+		if (unstable)
- 			goto restart;
--		}
- 	}
+ 	i = 0;
+ 	skb = nci_skb_alloc(ndev, conn_info->max_pkt_payload_len +
+-			    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++			    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 	if (!skb)
+ 		return -ENOMEM;
  
- 	/*
+@@ -186,7 +186,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ 		if (i < data_len) {
+ 			skb = nci_skb_alloc(ndev,
+ 					    conn_info->max_pkt_payload_len +
+-					    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++					    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 			if (!skb)
+ 				return -ENOMEM;
+ 
+-- 
+2.35.1
+
 
 
