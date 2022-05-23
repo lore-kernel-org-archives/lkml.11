@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A781C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A00C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243328AbiEWSKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
+        id S243512AbiEWSKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243310AbiEWRiI (ORCPT
+        with ESMTP id S243260AbiEWRh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E218DDDD;
-        Mon, 23 May 2022 10:32:17 -0700 (PDT)
+        Mon, 23 May 2022 13:37:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBC781982;
+        Mon, 23 May 2022 10:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF46F611D1;
-        Mon, 23 May 2022 17:32:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7AAAC34115;
-        Mon, 23 May 2022 17:32:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5466B81222;
+        Mon, 23 May 2022 17:30:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07993C385AA;
+        Mon, 23 May 2022 17:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327121;
-        bh=4dfSF32OTFY2vE6VRjsBQCAJkn1HMbzv2NuefqMHs+4=;
+        s=korg; t=1653327030;
+        bh=cAqRWU3u3Ae4nsofTj45RWHjoKKjbBp3mNcaKxMcVh4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ImEZTy3W0zylLdE24vcSWKC3n36AqNLtlAcci+FPAx4LH3NNoRY/GRDmSY/jBnQLI
-         HTv0LsxaiSaLFslSXkIWxQMexwN1KatbsiEIB3v8hoSx1SDxZ8GVqEAdwq4ABVCQ8+
-         QWQahC4hwetRMd70xPNPvTI2TUs32Qs3dx/tJEJc=
+        b=vyb+6pG506OBRbccAGMLNu380RBt9OSbTrci+wTFA5D5jhcnKdehJ9fzF6O+XerYN
+         1b3S4LjcuQK4mA9FMaLr5/UrQA8LsNIcH1rlx125+gNsogrocpHbW/mzfaDaWmN6c6
+         BwoRiwRbGDXINi2vd1zulG3a2sqxHq5DAR2Q0SoM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 138/158] selftests: add ping test with ping_group_range tuned
-Date:   Mon, 23 May 2022 19:04:55 +0200
-Message-Id: <20220523165853.186571152@linuxfoundation.org>
+Subject: [PATCH 5.17 099/158] clk: at91: generated: consider range when calculating best rate
+Date:   Mon, 23 May 2022 19:04:16 +0200
+Message-Id: <20220523165847.846401304@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,65 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-[ Upstream commit e71b7f1f44d3d88c677769c85ef0171caf9fc89f ]
+[ Upstream commit d0031e6fbed955ff8d5f5bbc8fe7382482559cec ]
 
-The 'ping' utility is able to manage two kind of sockets (raw or icmp),
-depending on the sysctl ping_group_range. By default, ping_group_range is
-set to '1 0', which forces ping to use an ip raw socket.
+clk_generated_best_diff() helps in finding the parent and the divisor to
+compute a rate closest to the required one. However, it doesn't take into
+account the request's range for the new rate. Make sure the new rate
+is within the required range.
 
-Let's replay the ping tests by allowing 'ping' to use the ip icmp socket.
-After the previous patch, ipv4 tests results are the same with both kinds
-of socket. For ipv6, there are a lot a new failures (the previous patch
-fixes only two cases).
-
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8a8f4bf0c480 ("clk: at91: clk-generated: create function to find best_diff")
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220413071318.244912-1-codrin.ciubotariu@microchip.com
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/clk/at91/clk-generated.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 3f4c8cfe7aca..7cd9b31d0307 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -810,10 +810,16 @@ ipv4_ping()
- 	setup
- 	set_sysctl net.ipv4.raw_l3mdev_accept=1 2>/dev/null
- 	ipv4_ping_novrf
-+	setup
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv4_ping_novrf
+diff --git a/drivers/clk/at91/clk-generated.c b/drivers/clk/at91/clk-generated.c
+index 23cc8297ec4c..d429ba52a719 100644
+--- a/drivers/clk/at91/clk-generated.c
++++ b/drivers/clk/at91/clk-generated.c
+@@ -117,6 +117,10 @@ static void clk_generated_best_diff(struct clk_rate_request *req,
+ 		tmp_rate = parent_rate;
+ 	else
+ 		tmp_rate = parent_rate / div;
++
++	if (tmp_rate < req->min_rate || tmp_rate > req->max_rate)
++		return;
++
+ 	tmp_diff = abs(req->rate - tmp_rate);
  
- 	log_subsection "With VRF"
- 	setup "yes"
- 	ipv4_ping_vrf
-+	setup "yes"
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv4_ping_vrf
- }
- 
- ################################################################################
-@@ -2348,10 +2354,16 @@ ipv6_ping()
- 	log_subsection "No VRF"
- 	setup
- 	ipv6_ping_novrf
-+	setup
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv6_ping_novrf
- 
- 	log_subsection "With VRF"
- 	setup "yes"
- 	ipv6_ping_vrf
-+	setup "yes"
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv6_ping_vrf
- }
- 
- ################################################################################
+ 	if (*best_diff < 0 || *best_diff >= tmp_diff) {
 -- 
 2.35.1
 
