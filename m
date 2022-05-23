@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E62C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC26C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242563AbiEWRzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
+        id S242415AbiEWRzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241243AbiEWR0i (ORCPT
+        with ESMTP id S241253AbiEWR0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:26:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAD36A433;
-        Mon, 23 May 2022 10:21:30 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC7F6D3AE;
+        Mon, 23 May 2022 10:21:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C64D261117;
-        Mon, 23 May 2022 17:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC78C385AA;
-        Mon, 23 May 2022 17:20:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E0E43CE1705;
+        Mon, 23 May 2022 17:19:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8427C34119;
+        Mon, 23 May 2022 17:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326410;
-        bh=EAhHfBw0AHqVY4ji/13Nyk4Us3/L2S2xYfOiEcLFYnQ=;
+        s=korg; t=1653326384;
+        bh=kePXsJT2lZ2fQxyGP+ajHTM8R08PGr6ZcmBpYcLI058=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yySIKCdqJMCp9wMggzSHhjgo4JC2eT3SNMPKKIhiBm63AtETv7XQfge5LZpChzUrX
-         NO4mvSfS+5W9fqg9DyseS1FkwGEXHe6Axpk5g7k3VZBxL+luJvS1Qe2hFYlMkCNWZ2
-         so5DrjZbD+K+vsYHhHk6KOnBj5bmminRPzmhfAUI=
+        b=JqIfwy89fjPJhvrHcRX5t/zdz+mPFgwsNH4D7Hx4ftMQ1C4q6/pgQRB9cG/3UIlMz
+         GX0+sYEgV3ajKrutMUyfp88BekATSQc7UNoGU6G8+r1DzmFBe3kGG1xR9uCr1KdH81
+         rY9/RrkeXR2tgyPcvOM9GjKp+tzVm6WTV6YZ7+6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 072/132] xfrm: rework default policy structure
-Date:   Mon, 23 May 2022 19:04:41 +0200
-Message-Id: <20220523165835.082581082@linuxfoundation.org>
+        stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>,
+        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 065/132] ARM: dts: aspeed: Add ADC for AST2600 and enable for Rainier and Everest
+Date:   Mon, 23 May 2022 19:04:34 +0200
+Message-Id: <20220523165834.029161364@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -51,235 +48,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Eddie James <eajames@linux.ibm.com>
 
-[ Upstream commit b58b1f563ab78955d37e9e43e02790a85c66ac05 ]
+[ Upstream commit eaad40466bd715c4b342ac9f7c889f5281714feb ]
 
-This is a follow up of commit f8d858e607b2 ("xfrm: make user policy API
-complete"). The goal is to align userland API to the internal structures.
+Add the ADC nodes to the AST2600 devicetree. Enable ADC1 for Rainier and
+Everest systems and add an iio-hwmon node for the 7th channel to report
+the battery voltage.
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by:  Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Tested on Rainier:
+~# cat /sys/class/hwmon/hwmon11/in1_input
+1347
+
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Link: https://lore.kernel.org/r/20210916210045.31769-1-eajames@linux.ibm.com
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netns/xfrm.h |  6 +----
- include/net/xfrm.h       | 48 +++++++++++++++-------------------------
- net/xfrm/xfrm_policy.c   | 10 ++++++---
- net/xfrm/xfrm_user.c     | 43 +++++++++++++++--------------------
- 4 files changed, 44 insertions(+), 63 deletions(-)
+ arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts | 15 +++++++++++++++
+ arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts | 15 +++++++++++++++
+ arch/arm/boot/dts/aspeed-g6.dtsi             | 20 ++++++++++++++++++++
+ 3 files changed, 50 insertions(+)
 
-diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index 947733a639a6..bd7c3be4af5d 100644
---- a/include/net/netns/xfrm.h
-+++ b/include/net/netns/xfrm.h
-@@ -66,11 +66,7 @@ struct netns_xfrm {
- 	int			sysctl_larval_drop;
- 	u32			sysctl_acq_expires;
- 
--	u8			policy_default;
--#define XFRM_POL_DEFAULT_IN	1
--#define XFRM_POL_DEFAULT_OUT	2
--#define XFRM_POL_DEFAULT_FWD	4
--#define XFRM_POL_DEFAULT_MASK	7
-+	u8			policy_default[XFRM_POLICY_MAX];
- 
- #ifdef CONFIG_SYSCTL
- 	struct ctl_table_header	*sysctl_hdr;
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 358dfe6fefef..e03f0f882226 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1080,25 +1080,18 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
- }
- 
- #ifdef CONFIG_XFRM
--static inline bool
--xfrm_default_allow(struct net *net, int dir)
--{
--	u8 def = net->xfrm.policy_default;
--
--	switch (dir) {
--	case XFRM_POLICY_IN:
--		return def & XFRM_POL_DEFAULT_IN ? false : true;
--	case XFRM_POLICY_OUT:
--		return def & XFRM_POL_DEFAULT_OUT ? false : true;
--	case XFRM_POLICY_FWD:
--		return def & XFRM_POL_DEFAULT_FWD ? false : true;
--	}
--	return false;
--}
--
- int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
- 			unsigned short family);
- 
-+static inline bool __xfrm_check_nopolicy(struct net *net, struct sk_buff *skb,
-+					 int dir)
-+{
-+	if (!net->xfrm.policy_count[dir] && !secpath_exists(skb))
-+		return net->xfrm.policy_default[dir] == XFRM_USERPOLICY_ACCEPT;
+diff --git a/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts b/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts
+index 2efd70666738..af7ea7cab8cf 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts
++++ b/arch/arm/boot/dts/aspeed-bmc-ibm-everest.dts
+@@ -231,6 +231,21 @@ led-pcieslot-power {
+ 			gpios = <&gpio0 ASPEED_GPIO(P, 4) GPIO_ACTIVE_LOW>;
+ 		};
+ 	};
 +
-+	return false;
-+}
++	iio-hwmon {
++		compatible = "iio-hwmon";
++		io-channels = <&adc1 7>;
++	};
++};
 +
- static inline int __xfrm_policy_check2(struct sock *sk, int dir,
- 				       struct sk_buff *skb,
- 				       unsigned int family, int reverse)
-@@ -1109,13 +1102,9 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
- 	if (sk && sk->sk_policy[XFRM_POLICY_IN])
- 		return __xfrm_policy_check(sk, ndir, skb, family);
++&adc1 {
++	status = "okay";
++	aspeed,int-vref-microvolt = <2500000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_adc8_default &pinctrl_adc9_default
++				 &pinctrl_adc10_default &pinctrl_adc11_default
++				 &pinctrl_adc12_default &pinctrl_adc13_default
++				 &pinctrl_adc14_default &pinctrl_adc15_default>;
+ };
  
--	if (xfrm_default_allow(net, dir))
--		return (!net->xfrm.policy_count[dir] && !secpath_exists(skb)) ||
--		       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
--		       __xfrm_policy_check(sk, ndir, skb, family);
--	else
--		return (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
--		       __xfrm_policy_check(sk, ndir, skb, family);
-+	return __xfrm_check_nopolicy(net, skb, dir) ||
-+	       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
-+	       __xfrm_policy_check(sk, ndir, skb, family);
- }
- 
- static inline int xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb, unsigned short family)
-@@ -1167,13 +1156,12 @@ static inline int xfrm_route_forward(struct sk_buff *skb, unsigned short family)
- {
- 	struct net *net = dev_net(skb->dev);
- 
--	if (xfrm_default_allow(net, XFRM_POLICY_OUT))
--		return !net->xfrm.policy_count[XFRM_POLICY_OUT] ||
--			(skb_dst(skb)->flags & DST_NOXFRM) ||
--			__xfrm_route_forward(skb, family);
--	else
--		return (skb_dst(skb)->flags & DST_NOXFRM) ||
--			__xfrm_route_forward(skb, family);
-+	if (!net->xfrm.policy_count[XFRM_POLICY_OUT] &&
-+	    net->xfrm.policy_default[XFRM_POLICY_OUT] == XFRM_USERPOLICY_ACCEPT)
-+		return true;
+ &gpio0 {
+diff --git a/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts b/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
+index 6419c9762c0b..6c9f34396a3a 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
++++ b/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
+@@ -246,6 +246,21 @@ fan5-presence {
+ 			linux,code = <11>;
+ 		};
+ 	};
 +
-+	return (skb_dst(skb)->flags & DST_NOXFRM) ||
-+	       __xfrm_route_forward(skb, family);
- }
- 
- static inline int xfrm4_route_forward(struct sk_buff *skb)
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 02099d113a0a..a6271b955e11 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3160,7 +3160,7 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
- 
- nopol:
- 	if (!(dst_orig->dev->flags & IFF_LOOPBACK) &&
--	    !xfrm_default_allow(net, dir)) {
-+	    net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
- 		err = -EPERM;
- 		goto error;
- 	}
-@@ -3572,7 +3572,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 	}
- 
- 	if (!pol) {
--		if (!xfrm_default_allow(net, dir)) {
-+		if (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
- 			return 0;
- 		}
-@@ -3632,7 +3632,8 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 		}
- 		xfrm_nr = ti;
- 
--		if (!xfrm_default_allow(net, dir) && !xfrm_nr) {
-+		if (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK &&
-+		    !xfrm_nr) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOSTATES);
- 			goto reject;
- 		}
-@@ -4121,6 +4122,9 @@ static int __net_init xfrm_net_init(struct net *net)
- 	spin_lock_init(&net->xfrm.xfrm_policy_lock);
- 	seqcount_spinlock_init(&net->xfrm.xfrm_policy_hash_generation, &net->xfrm.xfrm_policy_lock);
- 	mutex_init(&net->xfrm.xfrm_cfg_mutex);
-+	net->xfrm.policy_default[XFRM_POLICY_IN] = XFRM_USERPOLICY_ACCEPT;
-+	net->xfrm.policy_default[XFRM_POLICY_FWD] = XFRM_USERPOLICY_ACCEPT;
-+	net->xfrm.policy_default[XFRM_POLICY_OUT] = XFRM_USERPOLICY_ACCEPT;
- 
- 	rv = xfrm_statistics_init(net);
- 	if (rv < 0)
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 2acba159327c..5fba82757ce5 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -1993,12 +1993,9 @@ static int xfrm_notify_userpolicy(struct net *net)
- 	}
- 
- 	up = nlmsg_data(nlh);
--	up->in = net->xfrm.policy_default & XFRM_POL_DEFAULT_IN ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	up->fwd = net->xfrm.policy_default & XFRM_POL_DEFAULT_FWD ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	up->out = net->xfrm.policy_default & XFRM_POL_DEFAULT_OUT ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
-+	up->in = net->xfrm.policy_default[XFRM_POLICY_IN];
-+	up->fwd = net->xfrm.policy_default[XFRM_POLICY_FWD];
-+	up->out = net->xfrm.policy_default[XFRM_POLICY_OUT];
- 
- 	nlmsg_end(skb, nlh);
- 
-@@ -2009,26 +2006,26 @@ static int xfrm_notify_userpolicy(struct net *net)
- 	return err;
- }
- 
-+static bool xfrm_userpolicy_is_valid(__u8 policy)
-+{
-+	return policy == XFRM_USERPOLICY_BLOCK ||
-+	       policy == XFRM_USERPOLICY_ACCEPT;
-+}
++	iio-hwmon {
++		compatible = "iio-hwmon";
++		io-channels = <&adc1 7>;
++	};
++};
 +
- static int xfrm_set_default(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			    struct nlattr **attrs)
- {
- 	struct net *net = sock_net(skb->sk);
- 	struct xfrm_userpolicy_default *up = nlmsg_data(nlh);
++&adc1 {
++	status = "okay";
++	aspeed,int-vref-microvolt = <2500000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_adc8_default &pinctrl_adc9_default
++		&pinctrl_adc10_default &pinctrl_adc11_default
++		&pinctrl_adc12_default &pinctrl_adc13_default
++		&pinctrl_adc14_default &pinctrl_adc15_default>;
+ };
  
--	if (up->in == XFRM_USERPOLICY_BLOCK)
--		net->xfrm.policy_default |= XFRM_POL_DEFAULT_IN;
--	else if (up->in == XFRM_USERPOLICY_ACCEPT)
--		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_IN;
-+	if (xfrm_userpolicy_is_valid(up->in))
-+		net->xfrm.policy_default[XFRM_POLICY_IN] = up->in;
+ &ehci1 {
+diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+index 1b47be1704f8..ee171b3364fa 100644
+--- a/arch/arm/boot/dts/aspeed-g6.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+@@ -364,6 +364,26 @@ xdma: xdma@1e6e7000 {
+ 				status = "disabled";
+ 			};
  
--	if (up->fwd == XFRM_USERPOLICY_BLOCK)
--		net->xfrm.policy_default |= XFRM_POL_DEFAULT_FWD;
--	else if (up->fwd == XFRM_USERPOLICY_ACCEPT)
--		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_FWD;
-+	if (xfrm_userpolicy_is_valid(up->fwd))
-+		net->xfrm.policy_default[XFRM_POLICY_FWD] = up->fwd;
- 
--	if (up->out == XFRM_USERPOLICY_BLOCK)
--		net->xfrm.policy_default |= XFRM_POL_DEFAULT_OUT;
--	else if (up->out == XFRM_USERPOLICY_ACCEPT)
--		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_OUT;
-+	if (xfrm_userpolicy_is_valid(up->out))
-+		net->xfrm.policy_default[XFRM_POLICY_OUT] = up->out;
- 
- 	rt_genid_bump_all(net);
- 
-@@ -2058,13 +2055,9 @@ static int xfrm_get_default(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	}
- 
- 	r_up = nlmsg_data(r_nlh);
--
--	r_up->in = net->xfrm.policy_default & XFRM_POL_DEFAULT_IN ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	r_up->fwd = net->xfrm.policy_default & XFRM_POL_DEFAULT_FWD ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
--	r_up->out = net->xfrm.policy_default & XFRM_POL_DEFAULT_OUT ?
--			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
-+	r_up->in = net->xfrm.policy_default[XFRM_POLICY_IN];
-+	r_up->fwd = net->xfrm.policy_default[XFRM_POLICY_FWD];
-+	r_up->out = net->xfrm.policy_default[XFRM_POLICY_OUT];
- 	nlmsg_end(r_skb, r_nlh);
- 
- 	return nlmsg_unicast(net->xfrm.nlsk, r_skb, portid);
++			adc0: adc@1e6e9000 {
++				compatible = "aspeed,ast2600-adc0";
++				reg = <0x1e6e9000 0x100>;
++				clocks = <&syscon ASPEED_CLK_APB2>;
++				resets = <&syscon ASPEED_RESET_ADC>;
++				interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
++				#io-channel-cells = <1>;
++				status = "disabled";
++			};
++
++			adc1: adc@1e6e9100 {
++				compatible = "aspeed,ast2600-adc1";
++				reg = <0x1e6e9100 0x100>;
++				clocks = <&syscon ASPEED_CLK_APB2>;
++				resets = <&syscon ASPEED_RESET_ADC>;
++				interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
++				#io-channel-cells = <1>;
++				status = "disabled";
++			};
++
+ 			gpio0: gpio@1e780000 {
+ 				#gpio-cells = <2>;
+ 				gpio-controller;
 -- 
 2.35.1
 
