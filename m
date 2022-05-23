@@ -2,348 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDC0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243413AbiEWSNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
+        id S243470AbiEWSNk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241239AbiEWRu5 (ORCPT
+        with ESMTP id S242753AbiEWRu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:50:57 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A158532DA;
-        Mon, 23 May 2022 10:37:51 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p4so25402825lfg.4;
-        Mon, 23 May 2022 10:37:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=mPzl0IxVpOBD7BXqIA/dVHyw+aKjOBb3ATUZ7spN2qg=;
-        b=YBXi34/97S1J6MVRP9bjFSy6nwf8akZPAOC/SZxPbaoEJt38sG+LmdKjzh08RriLXa
-         /82hF+iabCGUoXkCr++jGmyKd2eu0EPfZuPLmIYT2uuXAE1b2qAPOVGDak/cGhL4fEjO
-         W4MPf0p9X1zgwnrLxftV+Tzaxe6/boss5X1KQb5kPEawpyIt6kV100rXzWTZveBjJutc
-         wwFm+vv8k1hjJztqFZhroiNW32+bzO04NNPPf6PlnO8Z7YvGXEx3+RnfTBTFsaE0aTVf
-         hjech1zrcYaDw6PSWg8f9wOaMmC4Qn28WLbCEyYpLmkNv0YwawmXEPOS1JUsFnuEqS14
-         hz2g==
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48BC45534D
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:37:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653327431;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BYIDCnf/Zf8QzS2kJ2TsL1URkSHu4rYCBHFAM1s78Bs=;
+        b=X4g92M/O9cr8MOyAjlxlKgzzOsLO5gKyOjVE62z+FZcUBd3EzLGJGQhpGP4JqStuwz8wg3
+        2FZ19yMeYhUC8HS6YTjqiIRYt2xK9Qz7JyHi+yGgi6pO0UCO1Cu/dshT2Ca9f5TSg2FPrn
+        g6knrRJ4oiUokNZcqm7z0hNKi51WXRE=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-479-R7GFGLuAPqaiapEOmtluFA-1; Mon, 23 May 2022 13:37:10 -0400
+X-MC-Unique: R7GFGLuAPqaiapEOmtluFA-1
+Received: by mail-qv1-f71.google.com with SMTP id ck16-20020a05621404d000b00461bcafbbe9so11444615qvb.23
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:37:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=mPzl0IxVpOBD7BXqIA/dVHyw+aKjOBb3ATUZ7spN2qg=;
-        b=xS7cSLsS+H53gF5SLPgTeEzaPNM0bfMmRF7xCOjgDyzGGvx9iV0HtJ8+4bxdvGZLQy
-         bTh8TyTSn30eK7n44TuxNtuob7c2DNAahehKAhLnUmA16E1k1fXQpHH2dYpeG6uOiN7k
-         44JxSVjXCeAuGeJkHpD1KAL7PCkgJQG71dnoVEZpvtR9dHS+HhrAf+Scu8pKrVvqhyvk
-         Ka6N02bLGrWG0S6g7tCbdBE35z4XBYJO3gUqvUq0f3yKcBDH3hgu/7qeTn8DBwtswfi3
-         lFkQl0IeoA/HAk0kV7ZAylWZWGYQqaLBO3APWdpFEG6MsZpwq4YH7ClNzUoGKQJ/VnSA
-         smPA==
-X-Gm-Message-State: AOAM530SOsXqwWHUCgBw1kx5TCHtGCbjZmb3va1RUStSazz4CMYE2WK7
-        kiYyGxRBcrPikz9LRgZ5Q9TeO/zjZGw=
-X-Google-Smtp-Source: ABdhPJzwZfozEnQDt+CrjQ7uTvPbLWypALeKVlqUmFxBKfIWsyPw8Alci4bEMHh/m6nHITXZtcC2TA==
-X-Received: by 2002:a2e:7a0d:0:b0:253:decb:be0f with SMTP id v13-20020a2e7a0d000000b00253decbbe0fmr9414809ljc.525.1653327022433;
-        Mon, 23 May 2022 10:30:22 -0700 (PDT)
-Received: from [192.168.1.7] ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id f11-20020a05651232cb00b004786243ab08sm1229661lfg.108.2022.05.23.10.30.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 10:30:22 -0700 (PDT)
-Subject: Re: [PATCH V2 5/7] dt-bindings: Add xen,dev-domid property
- description for xen-grant DMA ops
-From:   Oleksandr <olekstysh@gmail.com>
-To:     Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel <xen-devel@lists.xenproject.org>,
-        "open list:DRM DRIVER FOR QEMU'S CIRRUS DEVICE" 
-        <virtualization@lists.linux-foundation.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Julien Grall <julien@xen.org>, Juergen Gross <jgross@suse.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <1651947548-4055-1-git-send-email-olekstysh@gmail.com>
- <1651947548-4055-6-git-send-email-olekstysh@gmail.com>
- <CAK8P3a2cAnXr8TDDYTiFxTWzQxa67sGnYDQRRD+=Q8_cSb1mEw@mail.gmail.com>
- <56e8c32d-6771-7179-005f-26ca58555659@gmail.com>
- <CAK8P3a1YhkEZ8gcbXHEa5Bwx-4VVRJO8SUHf8=RNWRsc2Yo-+A@mail.gmail.com>
- <460a746c-6b61-214b-4653-44a1430e314d@gmail.com>
- <alpine.DEB.2.22.394.2205181802310.1905099@ubuntu-linux-20-04-desktop>
- <6f469e9c-c26e-f4be-9a85-710afb0d77eb@gmail.com>
-Message-ID: <390ba7bb-ee9e-b7b7-5f08-71a7245fa4ec@gmail.com>
-Date:   Mon, 23 May 2022 20:30:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=BYIDCnf/Zf8QzS2kJ2TsL1URkSHu4rYCBHFAM1s78Bs=;
+        b=pk0rpwBauIN6wC3l5uR1Tvw0HgwXOQOSfKvcBaLOfRCWNEYfgZRmCemjhMnlogSycN
+         8ufDiThRsN/Vm+F3E5Wrc8tLhLDO/d1l8luiFS9FvYw5n9ePZHM2eh1hrWIcwwboqe9r
+         PXzZVTbmI6+N1w2p6S+4dgsUqrCN4DUiejUIeEvPeJkh2meIGohZJmCowxtoEBCTTxn4
+         KdE0QkS8uC2/t63NjW8jKMXZK0dnsOHWov8eDqtRaPsjm3rT6UsOANY0aPBUYJRD0+Ne
+         Y06GKsenuPrQFGoW2WV+0LG/VBBNRH+8Hlg3qegSB1S4QjV4fyHhO4B4RDMqyG1fJU6Z
+         +Hrw==
+X-Gm-Message-State: AOAM5332PiPZU20/H53kt3Jid5bebHYmGnKRqzWpZKOsBnM5qS4/SA2Y
+        4UUNIx4pU50zpYpSHd4TTUGkpU9j0UozQRPBFXiPQRJITUX3MSDo+KDiwQ0OVNmhh6ee6DegqDj
+        bgyu9H9Gi/Tgw7o32hGvl6V69
+X-Received: by 2002:ad4:5bc1:0:b0:42c:531c:ef12 with SMTP id t1-20020ad45bc1000000b0042c531cef12mr18148392qvt.15.1653327430129;
+        Mon, 23 May 2022 10:37:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxFSlrvT0UAwxLdqZ1fz1PXc+yVuTdzO7/sMFpZ8cj76cv99LCVVGr1j1/NEpUjri+Na5pRww==
+X-Received: by 2002:ad4:5bc1:0:b0:42c:531c:ef12 with SMTP id t1-20020ad45bc1000000b0042c531cef12mr18148377qvt.15.1653327429953;
+        Mon, 23 May 2022 10:37:09 -0700 (PDT)
+Received: from [192.168.8.138] (static-71-184-137-158.bstnma.ftas.verizon.net. [71.184.137.158])
+        by smtp.gmail.com with ESMTPSA id w15-20020ac84d0f000000b002f90517bc25sm4619030qtv.41.2022.05.23.10.37.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 10:37:09 -0700 (PDT)
+Message-ID: <36bd82b1a95cb4cbbecac188a4c4e27cf890cdd4.camel@redhat.com>
+Subject: Re: [PATCH v3] drm/nouveau: clear output poll workers before
+ nouveau_fbcon_destroy()
+From:   Lyude Paul <lyude@redhat.com>
+To:     Mark Menzynski <mmenzyns@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Ben Skeggs <bskeggs@redhat.com>, Karol Herbst <kherbst@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
+Date:   Mon, 23 May 2022 13:37:07 -0400
+In-Reply-To: <20220523113541.10562-1-mmenzyns@redhat.com>
+References: <20220523113541.10562-1-mmenzyns@redhat.com>
+Organization: Red Hat Inc.
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-In-Reply-To: <6f469e9c-c26e-f4be-9a85-710afb0d77eb@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Reviewed-by: Lyude Paul <lyude@redhat.com>
 
-On 19.05.22 09:03, Oleksandr wrote:
+Will push to the appropriate branch in a bit, thanks!
 
-Hello Stefano, all
+On Mon, 2022-05-23 at 13:35 +0200, Mark Menzynski wrote:
+> Resources needed for output poll workers are destroyed in
+> nouveau_fbcon_fini() before output poll workers are cleared in
+> nouveau_display_fini(). This means there is a time between fbcon_fini()
+> and display_fini(), where if output poll happens, it crashes.
+> 
+> This patch introduces another output poll clearing before fbcon
+> resources are destroyed.
+> 
+> BUG: KASAN: use-after-free in
+> __drm_fb_helper_initial_config_and_unlock.cold+0x1f3/0x291
+> [drm_kms_helper]
+> 
+> Cc: Ben Skeggs <bskeggs@redhat.com>
+> Cc: Karol Herbst <kherbst@redhat.com>
+> Cc: Lyude Paul <lyude@redhat.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: nouveau@lists.freedesktop.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Mark Menzynski <mmenzyns@redhat.com>
+> ---
+>  drivers/gpu/drm/nouveau/nouveau_fbcon.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+> b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+> index 4f9b3aa5deda..5226323e55d3 100644
+> --- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+> +++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
+> @@ -39,6 +39,7 @@
+>  
+>  #include <drm/drm_crtc.h>
+>  #include <drm/drm_crtc_helper.h>
+> +#include <drm/drm_probe_helper.h>
+>  #include <drm/drm_fb_helper.h>
+>  #include <drm/drm_fourcc.h>
+>  #include <drm/drm_atomic.h>
+> @@ -605,6 +606,7 @@ nouveau_fbcon_fini(struct drm_device *dev)
+>         if (!drm->fbcon)
+>                 return;
+>  
+> +       drm_kms_helper_poll_fini(dev);
+>         nouveau_fbcon_accel_fini(dev);
+>         nouveau_fbcon_destroy(dev, drm->fbcon);
+>         kfree(drm->fbcon);
 
-
->
-> On 19.05.22 04:06, Stefano Stabellini wrote:
->
->
-> Hello Stefano, all
->
->> On Thu, 19 May 2022, Oleksandr wrote:
->>>> On Wed, May 18, 2022 at 5:06 PM Oleksandr <olekstysh@gmail.com> wrote:
->>>>> On 18.05.22 17:32, Arnd Bergmann wrote:
->>>>>> On Sat, May 7, 2022 at 7:19 PM Oleksandr Tyshchenko
->>>>>> <olekstysh@gmail.com> wrote:
->>>>>>     This would mean having a device
->>>>>> node for the grant-table mechanism that can be referred to using the
->>>>>> 'iommus'
->>>>>> phandle property, with the domid as an additional argument.
->>>>> I assume, you are speaking about something like the following?
->>>>>
->>>>>
->>>>> xen_dummy_iommu {
->>>>>       compatible = "xen,dummy-iommu";
->>>>>       #iommu-cells = <1>;
->>>>> };
->>>>>
->>>>> virtio@3000 {
->>>>>       compatible = "virtio,mmio";
->>>>>       reg = <0x3000 0x100>;
->>>>>       interrupts = <41>;
->>>>>
->>>>>       /* The device is located in Xen domain with ID 1 */
->>>>>       iommus = <&xen_dummy_iommu 1>;
->>>>> };
->>>> Right, that's that's the idea,
->>> thank you for the confirmation
->>>
->>>
->>>
->>>>    except I would not call it a 'dummy'.
->>>>   From the perspective of the DT, this behaves just like an IOMMU,
->>>> even if the exact mechanism is different from most hardware IOMMU
->>>> implementations.
->>> well, agree
->>>
->>>
->>>>>> It does not quite fit the model that Linux currently uses for 
->>>>>> iommus,
->>>>>> as that has an allocator for dma_addr_t space
->>>>> yes (# 3/7 adds grant-table based allocator)
->>>>>
->>>>>
->>>>>> , but it would think it's
->>>>>> conceptually close enough that it makes sense for the binding.
->>>>> Interesting idea. I am wondering, do we need an extra actions for 
->>>>> this
->>>>> to work in Linux guest (dummy IOMMU driver, etc)?
->>>> It depends on how closely the guest implementation can be made to
->>>> resemble a normal iommu. If you do allocate dma_addr_t addresses,
->>>> it may actually be close enough that you can just turn the grant-table
->>>> code into a normal iommu driver and change nothing else.
->>> Unfortunately, I failed to find a way how use grant references at the
->>> iommu_ops level (I mean to fully pretend that we are an IOMMU 
->>> driver). I am
->>> not too familiar with that, so what is written below might be wrong 
->>> or at
->>> least not precise.
->>>
->>> The normal IOMMU driver in Linux doesn’t allocate DMA addresses by 
->>> itself, it
->>> just maps (IOVA-PA) what was requested to be mapped by the upper 
->>> layer. The
->>> DMA address allocation is done by the upper layer (DMA-IOMMU which 
->>> is the glue
->>> layer between DMA API and IOMMU API allocates IOVA for PA?). But, 
->>> all what we
->>> need here is just to allocate our specific grant-table based DMA 
->>> addresses
->>> (DMA address = grant reference + offset in the page), so let’s say 
->>> we need an
->>> entity to take a physical address as parameter and return a DMA 
->>> address (what
->>> actually commit #3/7 is doing), and that’s all. So working at the 
->>> dma_ops
->>> layer we get exactly what we need, with the minimal changes to guest
->>> infrastructure. In our case the Xen itself acts as an IOMMU.
->>>
->>> Assuming that we want to reuse the IOMMU infrastructure somehow for 
->>> our needs.
->>> I think, in that case we will likely need to introduce a new 
->>> specific IOVA
->>> allocator (alongside with a generic one) to be hooked up by the 
->>> DMA-IOMMU
->>> layer if we run on top of Xen. But, even having the specific IOVA 
->>> allocator to
->>> return what we indeed need (DMA address = grant reference + offset 
->>> in the
->>> page) we will still need the specific minimal required IOMMU driver 
->>> to be
->>> present in the system anyway in order to track the mappings(?) and 
->>> do nothing
->>> with them, returning a success (this specific IOMMU driver should 
->>> have all
->>> mandatory callbacks implemented).
->>>
->>> I completely agree, it would be really nice to reuse generic IOMMU 
->>> bindings
->>> rather than introducing Xen specific property if what we are trying to
->>> implement in current patch series fits in the usage of "iommus" in 
->>> Linux
->>> more-less. But, if we will have to add more complexity/more 
->>> components to the
->>> code for the sake of reusing device tree binding, this raises a 
->>> question
->>> whether that’s worthwhile.
->>>
->>> Or I really missed something?
->> I think Arnd was primarily suggesting to reuse the IOMMU Device Tree
->> bindings, not necessarily the IOMMU drivers framework in Linux (although
->> that would be an added bonus.)
->>
->> I know from previous discussions with you that making the grant table
->> fit in the existing IOMMU drivers model is difficult, but just reusing
->> the Device Tree bindings seems feasible?
->
-> I started experimenting with that. As wrote in a separate email, I got 
-> a deferred probe timeout,
->
-> after inserting required nodes into guest device tree, which seems to 
-> be a consequence of the unavailability of IOMMU, I will continue to 
-> investigate this question.
-
-
-I have experimented with that. Yes, just reusing the Device Tree 
-bindings is technically feasible (and we are able to do this by only 
-touching grant-dma-ops.c), although deferred probe timeout still stands 
-(as there is no IOMMU driver being present actually).
-
-[    0.583771] virtio-mmio 2000000.virtio: deferred probe timeout, 
-ignoring dependency
-[    0.615556] virtio_blk virtio0: [vda] 4096000 512-byte logical blocks 
-(2.10 GB/1.95 GiB)
-
-
-Below the working diff (on top of current series):
-
-diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
-index da9c7ff..6586152 100644
---- a/drivers/xen/grant-dma-ops.c
-+++ b/drivers/xen/grant-dma-ops.c
-@@ -272,17 +272,24 @@ static const struct dma_map_ops xen_grant_dma_ops = {
-
-  bool xen_is_grant_dma_device(struct device *dev)
-  {
-+       struct device_node *iommu_np;
-+       bool has_iommu;
-+
-         /* XXX Handle only DT devices for now */
-         if (!dev->of_node)
-                 return false;
-
--       return of_property_read_bool(dev->of_node, "xen,backend-domid");
-+       iommu_np = of_parse_phandle(dev->of_node, "iommus", 0);
-+       has_iommu = iommu_np && of_device_is_compatible(iommu_np, 
-"xen,grant-dma");
-+       of_node_put(iommu_np);
-+
-+       return has_iommu;
-  }
-
-  void xen_grant_setup_dma_ops(struct device *dev)
-  {
-         struct xen_grant_dma_data *data;
--       uint32_t domid;
-+       struct of_phandle_args iommu_spec;
-
-         data = find_xen_grant_dma_data(dev);
-         if (data) {
-@@ -294,16 +301,30 @@ void xen_grant_setup_dma_ops(struct device *dev)
-         if (!dev->of_node)
-                 goto err;
-
--       if (of_property_read_u32(dev->of_node, "xen,backend-domid", 
-&domid)) {
--               dev_err(dev, "xen,backend-domid property is not present\n");
-+       if (of_parse_phandle_with_args(dev->of_node, "iommus", 
-"#iommu-cells",
-+                       0, &iommu_spec)) {
-+               dev_err(dev, "Cannot parse iommus property\n");
-+               goto err;
-+       }
-+
-+       if (!of_device_is_compatible(iommu_spec.np, "xen,grant-dma") ||
-+                       iommu_spec.args_count != 1) {
-+               dev_err(dev, "Incompatible IOMMU node\n");
-+               of_node_put(iommu_spec.np);
-                 goto err;
-         }
-
-+       of_node_put(iommu_spec.np);
-+
-         data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-         if (!data)
-                 goto err;
-
--       data->backend_domid = domid;
-+       /*
-+        * The endpoint ID here means the ID of the domain where the 
-corresponding
-+        * backend is running
-+        */
-+       data->backend_domid = iommu_spec.args[0];
-
-         if (xa_err(xa_store(&xen_grant_dma_devices, (unsigned long)dev, 
-data,
-                         GFP_KERNEL))) {
-(END)
-
-
-
-Below, the nodes generated by Xen toolstack:
-
-         xen_grant_dma {
-                 compatible = "xen,grant-dma";
-                 #iommu-cells = <0x01>;
-                 phandle = <0xfde9>;
-         };
-
-         virtio@2000000 {
-                 compatible = "virtio,mmio";
-                 reg = <0x00 0x2000000 0x00 0x200>;
-                 interrupts = <0x00 0x01 0xf01>;
-                 interrupt-parent = <0xfde8>;
-                 dma-coherent;
-                 iommus = <0xfde9 0x01>;
-         };
-
-
-
-I am wondering, would be the proper solution to eliminate deferred probe 
-timeout issue in our particular case (without introducing an extra IOMMU 
-driver)?
-
-
-
-
->
->
->
->
 -- 
-Regards,
-
-Oleksandr Tyshchenko
+Cheers,
+ Lyude Paul (she/her)
+ Software Engineer at Red Hat
 
