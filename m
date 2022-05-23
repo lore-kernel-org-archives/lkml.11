@@ -2,310 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC56C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235429AbiEWMcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 08:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
+        id S235439AbiEWMc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 08:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235401AbiEWMcQ (ORCPT
+        with ESMTP id S235405AbiEWMc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 08:32:16 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E29340F5;
-        Mon, 23 May 2022 05:32:15 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NB0Y9j006560;
-        Mon, 23 May 2022 12:32:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : content-type : mime-version; s=pp1;
- bh=QLxGwyhDTk7XoTo7BgtigfqnQX0lyzx69SyufptLLQs=;
- b=kbn2L7fpJ/hZBjTzCQU7q2wINhtSlum4HhoLLXlVxOvimFIOnjrVK88d+d0KpDtybe81
- dVTVB+5HK9CSFmoKrph2T3WcNDlR0KlQlX3yTQq2WAv7E4vFIGM8liIuZICp0bH+ZUiC
- 46cGZH1BI4PS10BNxX6t4oyuJX3qZ3YPnYWoYoRrT9hk5yusJ/xhjNgbPy80m3VPxvJ7
- bUceFlo+qHuzxZtHemMznjJVu4MgA6k+Q6reiX39JKnHdjjPnYu8OOd4coAV3BcT7DEM
- rPDKNo+0JBBQ+mxFJqakssv5TBxcglhL9izMhw5LTWlMKADBp7QHbNK0modBxrpKkguM iQ== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g87vvurp3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 12:32:13 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NBbLt2003472;
-        Mon, 23 May 2022 12:32:12 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma05fra.de.ibm.com with ESMTP id 3g6qq8tb2g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 12:32:11 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NCI4OV50004342
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 12:18:05 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B0389A404D;
-        Mon, 23 May 2022 12:32:08 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 65527A4040;
-        Mon, 23 May 2022 12:32:08 +0000 (GMT)
-Received: from osiris (unknown [9.145.75.188])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Mon, 23 May 2022 12:32:08 +0000 (GMT)
-Date:   Mon, 23 May 2022 14:32:07 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] s390 updates for 5.19 merge window
-Message-ID: <Yot+xzLZETNTxNo+@osiris>
+        Mon, 23 May 2022 08:32:26 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE5E427E6
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:32:25 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NCDJKw017035;
+        Mon, 23 May 2022 12:32:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=rnlSN2U3Tp5PFehLSRpOz7stpzWVGcZRa+qSO9cJ5a4=;
+ b=KPa5x8SSSpQkfyotj+xuM6mONtHPIFJjd3YIA7zXga0IiZn/JYuQw3AhMWESwzEhdS/M
+ HttsPtkqPUHZaINtp2XDdzTP4gFAowLt5e0uD4G4xiaPnQWa4dUhDCqxXh4c6nW8N0nR
+ 5jZJegUihy/hxjtmGlbo453DwWjVruOxgetXfy4hEq5Qq95WeSHIt4/PMgbLZWWx0s4E
+ 4w0pNchNrGVmVuThxaNZDTFy2VkyFei3rqrV6gqCmFvrLXOWxkuSOz/qpZq1motP5wcL
+ dEga0/xYtmo5S4fLGb2UuQfjaekZECVnRVr7o8BTb+PUAkidq1csw0+2+kJl8q0JqhWt 9A== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g6qps36m7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 12:32:17 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24NCUKUZ010687;
+        Mon, 23 May 2022 12:32:15 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2106.outbound.protection.outlook.com [104.47.55.106])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g6ph1hqxc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 12:32:15 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mVXE1HpXwHRHvewsMsI6OmLCAo1hNaTGfnHQfHDOd1pPaGvxv3bhooBIdoLjz6yqLY1sHmHBT7Hq8BAaK/UhInaAud0KiAn1oAu5sqA7Ko4YnyjegNowcTNGR2ZV2dBuRGdulI91y5P0fcRAl5MPJnTDgGhJqNK/VZfHLW5sTDJ0qt0TUJ4Tyc5pgpvgdgBAnuBRs78T/0SB60Ce1222FdwbWhvIbf1Ls0vG22LxN1COlZ3GTB04Vj98NAvi/O9oIUjZCUJfb7azeZAICApVI1eScbShusZrnwSDP1p7FexXRo3d1B45+vus3nEfZKwoX29LVzElpxCoV8pnsduUCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rnlSN2U3Tp5PFehLSRpOz7stpzWVGcZRa+qSO9cJ5a4=;
+ b=ZwmpPzPFRIMsVtKJx6a8WK0rEBCj/hXTfO/OIANkkx/ufRtzUGYF2bp1Wv+uJ4reIJuSyxO4Z1nMobhTxZYmIE7HqWFP/lNsp/zjZ+bXfCwYU2Xazm0xo6zxaxTRDTPoowYAbsAaUY0ozWVibO1zp/qj15GK3+gBL4qWLfh/RQcdvJFaKoSjixBYZKE/E6ZZVkZhLDtrSZ6W5LDQrSDR1pfzYrZCNAIkCsq8kv7t1SHNA1OOmNv8RamWJSGv8Rpky+kyX1fvot93ScHPIdWu1k4tYUgCYKkRPCsE4wlKntn9qdiGxNlmVcMLbytyeUOv1KecfGMey9pJC1o+P9pzZg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rnlSN2U3Tp5PFehLSRpOz7stpzWVGcZRa+qSO9cJ5a4=;
+ b=D25tC0VqtxJh0CBTCpbq0vk8KPyh/zCMK+/FTaEzcUsgc3b0NVNa5kWRqFVFFgd5cd/3NzHf+O4+pD0UdnzkoJjRz/I/YbgpuKtVAxYZLnUB8TZWMHJP6yovyzt38MBVwdZPuF/f7scrqsuGbbza0ANVge+t1UJbEA4Wbns21ko=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BLAPR10MB5185.namprd10.prod.outlook.com
+ (2603:10b6:208:328::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13; Mon, 23 May
+ 2022 12:32:13 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5273.023; Mon, 23 May 2022
+ 12:32:13 +0000
+Date:   Mon, 23 May 2022 15:31:52 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Uri Arev <me@wantyapps.xyz>
+Cc:     Viresh Kumar <vireshk@kernel.org>, Johan Hovold <johan@kernel.org>,
+        Alex Elder <elder@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: greybus: Fix indentation in fw-management.c
+Message-ID: <20220523123152.GC4009@kadam>
+References: <20220523120857.8476-1-me@wantyapps.xyz>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9i3Hc0IpuPiZ5F9_y744cQ8FAmi-WkvA
-X-Proofpoint-ORIG-GUID: 9i3Hc0IpuPiZ5F9_y744cQ8FAmi-WkvA
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+In-Reply-To: <20220523120857.8476-1-me@wantyapps.xyz>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0019.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4d::23)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_04,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=502 phishscore=0 adultscore=0 spamscore=0 mlxscore=0
- impostorscore=0 clxscore=1011 priorityscore=1501 suspectscore=0
- malwarescore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205230067
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5681c184-b214-45c8-f966-08da3cb8431e
+X-MS-TrafficTypeDiagnostic: BLAPR10MB5185:EE_
+X-Microsoft-Antispam-PRVS: <BLAPR10MB5185F64C3F37F7A579938AC28ED49@BLAPR10MB5185.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2++yTJU80/kPkPpn7oGL1McXqTHXBceks7svUmFTfdnUc19Voxn3MjJSNm22XVhlZgHMrtvgrKSgYYh+u+YQyTubhMJE/PWsb1UqZaf3RMhlo2YTzZGHW8FvCEsNhtlHVAMEeLVz71hA56k+il4+cCMfAnH4p4mm5Uv/m77WZnD5Q5se5m5MFjXtZHtvYuZXdvl8dTKaV5VvuC9fal7Vxdl5ObX3daCKF8211dKdrgE4pr0VeZMKgBLwdUd62r7BcnJvAiSMYk4l2onS1JLD5JadwMFr1kLfq/GOj+e5uRvVVNxRcK3HnaMV0uIXySUUDzgvoFsxl8AkwPY0SqBvu4YW4E9PhsFXhCvxafyQS7SCg8siFV0JKsK5T+l1pIJMhXSQoR/TnkdANuOhen0vDTFZstHC0LPQin0fFJ9CQhSRDw/F0NYFq/Fwgv7K0LpLDdFu2ykXjjSKWq8VQ4CL9Od1WX1OwuZjRoYO/NTp+A1jdXYuPGUNnqEVjCKhCLMU0iAcc31p3DBuUDIeUjB3WGQJTG/o2xjJgijq/Dm49zMVIFQaQiwFvwyE+MuRHN8Nlcrgn0HdJ2PBc5MK6cgk5t8VxQDwx5kf3FZfA2am0CYKzzJYNSlP3bbLorQiJUhJmuOj+oeJWND746eMf07QTOhmSca7HgM2hioAanPUDhLlDRpN6ZbrzuTU5XlnszCm0O1GpOmRqdNqAWROEiBR5A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(4326008)(38100700002)(33716001)(38350700002)(2906002)(44832011)(66476007)(66556008)(66946007)(8676002)(4744005)(5660300002)(54906003)(6916009)(8936002)(6486002)(316002)(508600001)(9686003)(6512007)(26005)(86362001)(186003)(52116002)(83380400001)(33656002)(1076003)(6666004)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rSYMHRUKtYUhjOIJtuz+hw56ybvLUoCyIcC6xsrI/vIp4xb+Eh6N5bIxSHxO?=
+ =?us-ascii?Q?gcxkmLCD45E8z9RhyoNq1ECPrvl46OkNYhLGi2ZwfG612oHmayLlzF/AOoep?=
+ =?us-ascii?Q?Ks9bXraZ0iQfkcY44C2Mtah/CCBgHfEe4PaeXiQg8NcQzD9xGi/PLBnGw/rW?=
+ =?us-ascii?Q?dI0zw2X4+IK+Mmlbi3qy82Wt4PapjMMyZuBcDqGbr4L2uxT0so/vQ5GVa7eC?=
+ =?us-ascii?Q?fDpjU6A+9MyibzY75mBuZIobgkVVYnJNMKPFrIoZ19/IDyEIL5nW5Yf2IDLx?=
+ =?us-ascii?Q?fK0FVkOenODa0gpY6fyEp0IQgQA37ccEb2K0aLMWhIjQx+i68V/rpGnmZ+hV?=
+ =?us-ascii?Q?9BO+KeeCRkEVpY8UPYE3ZBhVYMbOTyrgJH22LMH7oqXUcUbjFyI4k/he5I+R?=
+ =?us-ascii?Q?8drPWmpj1UQHYeEjUOrP4ryrybFsSDS5vW8jH6DPI3abn/SQWLhTTgS7qGuu?=
+ =?us-ascii?Q?jlgsbAMkj+YgJUdjcJwDfKKWvhpG9LdyBOTJeCxgP/tTA9iM19Z/Uf454h3Z?=
+ =?us-ascii?Q?nzolUcN8m8xGhYbHEtIJDg583UKmGb5M5x3GuJZvm31eQPprjKcKWXo5cf4K?=
+ =?us-ascii?Q?XDdVx4b31FlNflstApQJIEj9ImhvczhJL5rqQQj33TwFRmXPKL2G8lkPYCZR?=
+ =?us-ascii?Q?VFyQ8lXIqkoBOjd8B7ISIgJPhNC77Oqjnx4ZE2xj5CpAzhsFXnWRHEGBZu0E?=
+ =?us-ascii?Q?tyDJyrbeC9M2OcVe7SOP2cPCqpdxl3WripmmFH4C88bhiN4CLR3mAMBCOAoL?=
+ =?us-ascii?Q?UQJKkdluK7G0qLQYrQn2olGuTeBOl7I4ptHugDppQz6FdDV2UeDvFZstMBMk?=
+ =?us-ascii?Q?+YoDdAhyhPPMM2l+H2QBubGFcgWqRXBEst0nd6M0r7suX3YlF2u4SzJ0Q2lx?=
+ =?us-ascii?Q?cZkdySGZAIEEiXn1na1T6yw93Nhl9TiaEygFi9NaCT+ypr9usdbeGMmnequr?=
+ =?us-ascii?Q?T02wZXAq7DiHj5cxy8/yxl9R0w3BQPsaZhrZqrGwh1itkQ7z2m5bTL8DBDIi?=
+ =?us-ascii?Q?lrX77w78LxDLReYBiBdhLEwH8WqaQSd3w1z1tqi5cwJIw6MqI6a5njH9RGA4?=
+ =?us-ascii?Q?7y4Qu/BPL5M5u3vrPpIN6dS2pSNqNHWIFsr/AUg/UPjNYPaYdXlhf+hJRle8?=
+ =?us-ascii?Q?5smogkUpb4N/yNFUa1+Oj8GrswIC6PFHEfMU4DkvZpB8UZuRWY+ZJxGDiQ+s?=
+ =?us-ascii?Q?5nsskmnF9127WqWdradvnmI5Gr1Tbc4K4bVA2RQXo7M124lUb8RyHhTIitN+?=
+ =?us-ascii?Q?BTWuQsIoE815ZCHsb63QZ0g9asVLFrbaIedY4kxtHti+ICK2gg8i0Xf8U00B?=
+ =?us-ascii?Q?CJ6hugIKwHZfbn56zjXuNY45OtnOgAWlWJiF2+QfY0B4hhm13JOg0NuNppmJ?=
+ =?us-ascii?Q?hvUlrS4szmg7g0ydOKEujsnF0mDlfxT5D67almUzLoC+5zaGxTBMBRm80rF1?=
+ =?us-ascii?Q?g7xPOZl/fiSo4P3jY/hH+VZqcI0bU2sH+WMeKokG47IueEBuI2g8QJWo4Bx+?=
+ =?us-ascii?Q?qstslRBCrSSHjAif1MNvO+nhEJKA0xQCD6qf/+1RCunPPATriMysJuAscDoq?=
+ =?us-ascii?Q?T+U9b+u3s570KN1gNZt48OS33oho5kSRzqk4IDmOSWboEe01pxbTg8dkWcTt?=
+ =?us-ascii?Q?fGclEdB0203ku4/TI7/w81HwwnT3920kDYwTfLGZyIts1vKYGNrGvAshxDU2?=
+ =?us-ascii?Q?E0gtH6kfs88vTPVszkoO5Huix7dopzHbwNY32E6DOPCibB7lXlesHlnJHKJ/?=
+ =?us-ascii?Q?VB79eyR2FiG8knFf06qHMm6C8EVSDvE=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5681c184-b214-45c8-f966-08da3cb8431e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 12:32:13.2691
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SDWfiKIhf/nHvoHxR4kkYPgipgq/dOzjkReKMZM9nttNQvVIKAr30u10nO77YN01Dlyl9s0v2sspAUWmWZOppG1r2PHSBwd4Cr3ALxEEWBw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB5185
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
+ definitions=2022-05-23_06:2022-05-23,2022-05-23 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 mlxscore=0
+ phishscore=0 mlxlogscore=910 adultscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205230069
+X-Proofpoint-ORIG-GUID: FnQZveJa9zXH6FeipZpztV4X5szWpJuF
+X-Proofpoint-GUID: FnQZveJa9zXH6FeipZpztV4X5szWpJuF
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Mon, May 23, 2022 at 03:08:57PM +0300, Uri Arev wrote:
+> Reported by Checkpatch:
+> CHECK: Alignment should match open parenthesis
+> 
+> -Uri
+> 
 
-please pull s390 updates for the 5.19 merge window. Note that this
-contains one small patch which touches generic entry code, and the
-corresponding pieces within x86. This has been Acked by Thomas Gleixner
-and Peter Zijlstra.
+Don't put your name in the commit message like this.
 
-Thanks,
-Heiko
+> Signed-off-by: Uri Arev <me@wantyapps.xyz>
+> ---
+> v2: More understandable title, add Signed-off-by line
 
-The following changes since commit af2d861d4cd2a4da5137f795ee3509e6f944a25b:
+Why didn't you fix this one as well?
 
-  Linux 5.18-rc4 (2022-04-24 14:51:22 -0700)
+CHECK: Alignment should match open parenthesis
+#452: FILE: drivers/staging/greybus/fw-management.c:452:
++               ret = fw_mgmt_load_and_validate_operation(fw_mgmt,
++                               intf_load.load_method, intf_load.firmware_tag);
 
-are available in the Git repository at:
+regards,
+dan carpenter
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.19-1
 
-for you to fetch changes up to 94d3477897481b92874654455e263e0b1728acb5:
-
-  s390/head: get rid of 31 bit leftovers (2022-05-18 13:31:07 +0200)
-
-----------------------------------------------------------------
-s390 updates for 5.19 merge window
-
-- Make use of the IBM z16 processor activity instrumentation facility
-  to count cryptography operations: add a new PMU device driver so
-  that perf can make use of this.
-
-- Add new IBM z16 extended counter set to cpumf support.
-
-- Add vdso randomization support.
-
-- Add missing KCSAN instrumentation to barriers and spinlocks, which
-  should make s390's KCSAN support complete.
-
-- Add support for IPL-complete-control facility: notify the hypervisor
-  that kexec finished work and the kernel starts.
-
-- Improve error logging for PCI.
-
-- Various small changes to workaround llvm's integrated assembler
-  limitations, and one bug, to make it finally possible to compile the
-  kernel with llvm's integrated assembler. This also requires to raise
-  the minimum clang version to 14.0.0.
-
-- Various other small enhancements, bug fixes, and cleanups all over
-  the place.
-
-----------------------------------------------------------------
-Alexander Egorenkov (2):
-      s390/sclp: add detection of IPL-complete-control facility
-      s390/kexec: set end-of-ipl flag in last diag308 call
-
-Alexander Gordeev (1):
-      s390/smp: sort out physical vs virtual CPU0 lowcore pointer
-
-Guilherme G. Piccoli (1):
-      s390/consoles: improve panic notifiers reliability
-
-Haowen Bai (1):
-      s390/cio: simplify the calculation of variables
-
-Harald Freudenberger (4):
-      s390/zcrypt: add display of ASYM master key verification pattern
-      s390/ap: uevent on apmask/aqpmask change
-      s390/zcrypt: cleanup CPRB struct definitions
-      s390/zcrypt: code cleanup
-
-Heiko Carstens (21):
-      s390/nospec: prefer local labels in .set directives
-      s390/extable: prefer local labels in .set directives
-      s390/vx: remove comments from macros which break LLVM's IAS
-      s390/boot: get rid of startup archive
-      s390/head: adjust iplstart entry point
-      s390/boot: change initial program check handler to disabled wait psw
-      s390/head: initialize all new psws
-      s390/ptrace: move short psw definitions to ptrace header file
-      s390/boot: convert initial lowcore to C
-      s390/boot: convert parmarea to C
-      s390/entry: remove broken and not needed code
-      s390/compat: cleanup compat_linux.h header file
-      s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
-      s390/alternatives: provide identical sized orginal/alternative sequences
-      s390/alternatives: remove padding generation code
-      s390/entry: workaround llvm's IAS limitations
-      s390/purgatory: workaround llvm's IAS limitations
-      s390/boot: workaround llvm IAS bug
-      s390/boot: do not emit debug info for assembly with llvm's IAS
-      scripts/min-tool-version.sh: raise minimum clang version to 14.0.0 for s390
-      s390/head: get rid of 31 bit leftovers
-
-Ilya Leoshkevich (1):
-      s390: add KCSAN instrumentation to barriers and spinlocks
-
-Julia Lawall (2):
-      s390/crypto: fix typos in comments
-      s390/hypfs: fix typos in comments
-
-Niklas Schnelle (4):
-      s390/pci: make better use of zpci_dbg() levels
-      s390/pci: don't log availability events as errors
-      s390/pci: add PCI access type and length to error records
-      s390/pci: add error record for CC 2 retries
-
-Pingfan Liu (1):
-      s390/irq: utilize RCU instead of irq_lock_sparse() in show_msi_interrupt()
-
-Sven Schnelle (7):
-      s390/mmap: increase stack/mmap gap to 128MB
-      s390/vdso: move vdso mapping to its own function
-      s390/vdso: map vdso above stack
-      s390/vdso: add vdso randomization
-      entry: Rename arch_check_user_regs() to arch_enter_from_user_mode()
-      s390/stp: fix todoff size
-      s390/stp: clock_delta should be signed
-
-Thomas Huth (1):
-      s390/vfio-ap: remove superfluous MODULE_DEVICE_TABLE declaration
-
-Thomas Richter (2):
-      s390/pai: add support for cryptography counters
-      s390/cpumf: add new extended counter set for IBM z16
-
- arch/s390/Makefile                             |   2 +
- arch/s390/boot/.gitignore                      |   3 +
- arch/s390/boot/Makefile                        |  78 ++-
- arch/s390/boot/boot.h                          |   6 +-
- arch/s390/boot/{compressed => }/clz_ctz.c      |   0
- arch/s390/boot/compressed/.gitignore           |   4 -
- arch/s390/boot/compressed/Makefile             |  86 ----
- arch/s390/boot/{compressed => }/decompressor.c |   0
- arch/s390/boot/{compressed => }/decompressor.h |   0
- arch/s390/boot/head.S                          | 366 ++++++-------
- arch/s390/boot/ipl_data.c                      |  84 +++
- arch/s390/boot/ipl_parm.c                      |   7 +
- arch/s390/boot/kaslr.c                         |   2 +-
- arch/s390/boot/mem_detect.c                    |   2 +-
- arch/s390/boot/startup.c                       |   2 +-
- arch/s390/boot/{compressed => }/vmlinux.lds.S  |   9 +
- arch/s390/crypto/des_s390.c                    |   2 +-
- arch/s390/crypto/prng.c                        |   2 +-
- arch/s390/hypfs/hypfs_vm.c                     |   2 +-
- arch/s390/include/asm/alternative-asm.h        |  76 +--
- arch/s390/include/asm/alternative.h            |  93 +---
- arch/s390/include/asm/asm-extable.h            |  12 +-
- arch/s390/include/asm/barrier.h                |  16 +-
- arch/s390/include/asm/cio.h                    |   2 +-
- arch/s390/include/asm/compat.h                 |  25 +-
- arch/s390/include/asm/ctl_reg.h                |   4 +-
- arch/s390/include/asm/entry-common.h           |  14 +-
- arch/s390/include/asm/ipl.h                    |   6 +
- arch/s390/include/asm/lowcore.h                |   5 +-
- arch/s390/include/asm/nmi.h                    |   2 +-
- arch/s390/include/asm/nospec-insn.h            |  12 +-
- arch/s390/include/asm/pai.h                    |  74 +++
- arch/s390/include/asm/pci_debug.h              |   7 +-
- arch/s390/include/asm/preempt.h                |  15 +-
- arch/s390/include/asm/processor.h              |   8 +-
- arch/s390/include/asm/ptrace.h                 |  29 ++
- arch/s390/include/asm/sclp.h                   |   1 +
- arch/s390/include/asm/scsw.h                   |  83 ++-
- arch/s390/include/asm/spinlock.h               |   3 +-
- arch/s390/include/asm/stp.h                    |   4 +-
- arch/s390/include/asm/vx-insn.h                |   6 +-
- arch/s390/include/uapi/asm/pkey.h              |   2 +-
- arch/s390/include/uapi/asm/zcrypt.h            |  42 +-
- arch/s390/kernel/Makefile                      |   1 +
- arch/s390/kernel/alternative.c                 |  61 +--
- arch/s390/kernel/compat_linux.h                |  89 ++--
- arch/s390/kernel/entry.S                       |  40 +-
- arch/s390/kernel/irq.c                         |   4 +-
- arch/s390/kernel/machine_kexec.c               |  10 +-
- arch/s390/kernel/nmi.c                         |   6 +-
- arch/s390/kernel/perf_cpum_cf_events.c         | 148 ++++++
- arch/s390/kernel/perf_pai_crypto.c             | 688 +++++++++++++++++++++++++
- arch/s390/kernel/relocate_kernel.S             |   3 +-
- arch/s390/kernel/setup.c                       |   2 +-
- arch/s390/kernel/time.c                        |  12 +-
- arch/s390/kernel/vdso.c                        |  55 +-
- arch/s390/kvm/priv.c                           |   1 -
- arch/s390/lib/spinlock.c                       |   4 +-
- arch/s390/mm/mmap.c                            |   4 +-
- arch/s390/pci/pci.c                            |   2 +-
- arch/s390/pci/pci_clp.c                        |   2 +-
- arch/s390/pci/pci_debug.c                      |   2 +-
- arch/s390/pci/pci_event.c                      |   3 -
- arch/s390/pci/pci_insn.c                       | 108 +++-
- arch/s390/purgatory/head.S                     |  30 +-
- arch/x86/include/asm/entry-common.h            |   4 +-
- drivers/s390/char/con3215.c                    |  25 +-
- drivers/s390/char/con3270.c                    |  31 +-
- drivers/s390/char/raw3270.c                    |  15 +
- drivers/s390/char/raw3270.h                    |   1 +
- drivers/s390/char/sclp_con.c                   |  26 +-
- drivers/s390/char/sclp_early.c                 |   4 +-
- drivers/s390/char/sclp_vt220.c                 |  42 +-
- drivers/s390/cio/chsc.c                        |   4 +-
- drivers/s390/crypto/ap_bus.c                   |  96 ++--
- drivers/s390/crypto/ap_bus.h                   |   1 +
- drivers/s390/crypto/ap_queue.c                 |   7 +-
- drivers/s390/crypto/pkey_api.c                 | 149 +++---
- drivers/s390/crypto/vfio_ap_drv.c              |   2 -
- drivers/s390/crypto/zcrypt_api.c               | 215 ++++----
- drivers/s390/crypto/zcrypt_api.h               |   4 +-
- drivers/s390/crypto/zcrypt_card.c              |   2 +-
- drivers/s390/crypto/zcrypt_cca_key.h           |  58 +--
- drivers/s390/crypto/zcrypt_ccamisc.c           | 272 +++++-----
- drivers/s390/crypto/zcrypt_ccamisc.h           |   6 +
- drivers/s390/crypto/zcrypt_cex2a.c             |  11 +-
- drivers/s390/crypto/zcrypt_cex2c.c             |  10 +-
- drivers/s390/crypto/zcrypt_cex4.c              |  44 +-
- drivers/s390/crypto/zcrypt_ep11misc.c          | 168 +++---
- drivers/s390/crypto/zcrypt_ep11misc.h          |   2 +-
- drivers/s390/crypto/zcrypt_error.h             |   3 +-
- drivers/s390/crypto/zcrypt_msgtype50.c         |  31 +-
- drivers/s390/crypto/zcrypt_msgtype6.c          | 340 ++++++------
- drivers/s390/crypto/zcrypt_msgtype6.h          |  26 +-
- drivers/s390/crypto/zcrypt_queue.c             |   2 +-
- include/linux/entry-common.h                   |   8 +-
- kernel/entry/common.c                          |   2 +-
- scripts/min-tool-version.sh                    |   3 +-
- 98 files changed, 2553 insertions(+), 1534 deletions(-)
- rename arch/s390/boot/{compressed => }/clz_ctz.c (100%)
- delete mode 100644 arch/s390/boot/compressed/.gitignore
- delete mode 100644 arch/s390/boot/compressed/Makefile
- rename arch/s390/boot/{compressed => }/decompressor.c (100%)
- rename arch/s390/boot/{compressed => }/decompressor.h (100%)
- create mode 100644 arch/s390/boot/ipl_data.c
- rename arch/s390/boot/{compressed => }/vmlinux.lds.S (94%)
- create mode 100644 arch/s390/include/asm/pai.h
- create mode 100644 arch/s390/kernel/perf_pai_crypto.c
