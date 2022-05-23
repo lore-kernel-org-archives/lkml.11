@@ -2,104 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbiEWGMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        id S229765AbiEWGmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:42:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235105AbiEWGLr (ORCPT
+        with ESMTP id S229472AbiEWGmC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:11:47 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5475D1EACC
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:11:42 -0700 (PDT)
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 23 May 2022 02:42:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0734D61B;
+        Sun, 22 May 2022 23:41:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id EA1E8402E2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:10:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653286255;
-        bh=sp9B06jvIyEUEn93KrwOb3wB36HiwdmoPpXKJ1JybwY=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=kpiczi5fd/hUdXQede+yislIxYGsEQtC0uwAKGrHQx/GETNuNtFiBbbcD7ZBirGt0
-         kbqPzOFBDGbcm71eJIvJNlDh4FhIXVkWCQ8WcFUgn0goMm+8jerKWiAhusFAfAzkOU
-         +Jn3N45GCWu/noWSS+VBWCJb34Gm/T571jK8Aw4mURcvR69lTPpxoZE4JjM8kfLR2C
-         EtNBHPqVCSKdK5MmDKrRu1Pw5/fr5CjYPU7/0zk4X35F6VXRbjdodpa3xr3lqXWxLL
-         HVuMhkhpKfrKVqupf0UeEWK2ZhKn7k+ZHvqZGd74cAS6lRXa6zOnbGkjscLjX2NiHF
-         COY8Ia3KiCrBQ==
-Received: by mail-ej1-f70.google.com with SMTP id nb10-20020a1709071c8a00b006e8f89863ceso5430185ejc.18
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:10:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sp9B06jvIyEUEn93KrwOb3wB36HiwdmoPpXKJ1JybwY=;
-        b=A5T2WklCkYXSmpgWWASWZbyQ6+XaSz70IumNof2buw40SqeLC/RzuGYBBccXEdaHOY
-         VGw57lDxRpX+WLxuZCF9tEeDT2E52gcwXj/rBu74T4vLdVPSHn6OcaYHCQSL4nlMHjZL
-         u5EEYQM2twzLEiIfBFr7iM68IoolJyb0EqWsAax6jPNmLs7zxsM3JsxMsnBdxeGwXTWm
-         0gdE2/xDRzWnghFXYAy3j3msa1ClpiDZkTs4NS7gfXPfxv2l6VSmgE4n02VXmeiFLltK
-         NYZnCkkarJQ/B5KKtQ9GzpMOhEj5v4IBTaDn8RVSk9mfCGmEzW1JQCrAkzRSgasqPte9
-         VeGA==
-X-Gm-Message-State: AOAM533k1lOtbw6KvkT9jSpi5Lh++szm98Yy0vJzpC5noa0A7fVbGPXz
-        rRrPmqigXHP3wWBfwa/EPWeT/o7OaJl0JVImbvi30DAFNYS3hEQjmFRF7DJje2jKczsPGq8XtcP
-        DhKNx2SwTLexuiyKMTeEMxeCD6iWBbj/jaBhHsLoopA==
-X-Received: by 2002:aa7:c50d:0:b0:42a:aece:6241 with SMTP id o13-20020aa7c50d000000b0042aaece6241mr22385598edq.32.1653286255633;
-        Sun, 22 May 2022 23:10:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwzLfWnbPEmHzJy0GMu6eh7GiUVIy0LwhBJMU5xO9MNZatTlknQybUPzgCRZkuLymcbwwmoyQ==
-X-Received: by 2002:aa7:c50d:0:b0:42a:aece:6241 with SMTP id o13-20020aa7c50d000000b0042aaece6241mr22385589edq.32.1653286255460;
-        Sun, 22 May 2022 23:10:55 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id z18-20020a1709060bf200b006feed200464sm448374ejg.131.2022.05.22.23.10.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:10:55 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     hsweeten@visionengravers.com, alexander.sverdlin@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] ARM: ep93xx: Kconfig: Fix indentation
-Date:   Mon, 23 May 2022 08:10:51 +0200
-Message-Id: <20220523061051.8668-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        by ams.source.kernel.org (Postfix) with ESMTPS id A45A9B80F00;
+        Mon, 23 May 2022 06:26:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B428C385A9;
+        Mon, 23 May 2022 06:26:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653287179;
+        bh=yJL8uVkYFpCvvkQePY+koScMornVS7Wnyustin7mw/g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ynj3tOGCvNqo72OBHX0D0hj+3UxSSIvV8VNH9O3Xf2U6A7vX/Vn0Otn7qof6go3Bb
+         2kGKsZ4IlTf3/qOVa2/Ehao5ArR+cTFAyVEma1RvVjTTNhfnwra1LCkDAjNrW+2GqY
+         MwJq8/+a2KIIdf3iFpb/h9IHmSIbI5qtctZlDxes=
+Date:   Mon, 23 May 2022 08:26:15 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] dmaengine: mxs: fix driver registering
+Message-ID: <YospB9JZdwVfkIhj@kroah.com>
+References: <20220522202223.1343109-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220522202223.1343109-1-dario.binacchi@amarulasolutions.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+On Sun, May 22, 2022 at 10:22:23PM +0200, Dario Binacchi wrote:
+> Driver registration fails on SOC imx8mn as its supplier, the clock
+> control module, is not ready. Since platform_driver_probe(), as
+> reported by its description, is incompatible with deferred probing,
+> we have to use platform_driver_register().
+> 
+> Fixes: a580b8c5429a ("dmaengine: mxs-dma: add dma support for i.MX23/28")
+> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> 
+> ---
+> 
+>  drivers/dma/mxs-dma.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/dma/mxs-dma.c b/drivers/dma/mxs-dma.c
+> index 994fc4d2aca4..b8a3e692330d 100644
+> --- a/drivers/dma/mxs-dma.c
+> +++ b/drivers/dma/mxs-dma.c
+> @@ -670,7 +670,7 @@ static enum dma_status mxs_dma_tx_status(struct dma_chan *chan,
+>  	return mxs_chan->status;
+>  }
+>  
+> -static int __init mxs_dma_init(struct mxs_dma_engine *mxs_dma)
+> +static int mxs_dma_init(struct mxs_dma_engine *mxs_dma)
+>  {
+>  	int ret;
+>  
+> @@ -741,7 +741,7 @@ static struct dma_chan *mxs_dma_xlate(struct of_phandle_args *dma_spec,
+>  				     ofdma->of_node);
+>  }
+>  
+> -static int __init mxs_dma_probe(struct platform_device *pdev)
+> +static int mxs_dma_probe(struct platform_device *pdev)
+>  {
+>  	struct device_node *np = pdev->dev.of_node;
+>  	const struct mxs_dma_type *dma_type;
+> @@ -839,10 +839,7 @@ static struct platform_driver mxs_dma_driver = {
+>  		.name	= "mxs-dma",
+>  		.of_match_table = mxs_dma_dt_ids,
+>  	},
+> +	.probe = mxs_dma_probe,
+>  };
+>  
+> -static int __init mxs_dma_module_init(void)
+> -{
+> -	return platform_driver_probe(&mxs_dma_driver, mxs_dma_probe);
+> -}
+> -subsys_initcall(mxs_dma_module_init);
+> +module_platform_driver(mxs_dma_driver);
+> -- 
+> 2.32.0
+> 
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/arm/mach-ep93xx/Kconfig | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+<formletter>
 
-diff --git a/arch/arm/mach-ep93xx/Kconfig b/arch/arm/mach-ep93xx/Kconfig
-index 15c68a646d51..cd94079ce095 100644
---- a/arch/arm/mach-ep93xx/Kconfig
-+++ b/arch/arm/mach-ep93xx/Kconfig
-@@ -121,10 +121,10 @@ config MACH_MICRO9S
- 	  Contec Micro9-Slim board.
- 
- config MACH_SIM_ONE
--        bool "Support Simplemachines Sim.One board"
--        help
--          Say 'Y' here if you want your kernel to support the
--          Simplemachines Sim.One board.
-+	bool "Support Simplemachines Sim.One board"
-+	help
-+	  Say 'Y' here if you want your kernel to support the
-+	  Simplemachines Sim.One board.
- 
- config MACH_SNAPPER_CL15
- 	bool "Support Bluewater Systems Snapper CL15 Module"
--- 
-2.32.0
+This is not the correct way to submit patches for inclusion in the
+stable kernel tree.  Please read:
+    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+for how to do this properly.
 
+</formletter>
