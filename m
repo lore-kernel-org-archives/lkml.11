@@ -2,75 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC37C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E36C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232784AbiEWUTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
+        id S232818AbiEWUUO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232696AbiEWUTg (ORCPT
+        with ESMTP id S232696AbiEWUUG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:19:36 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE7CBC6C1;
-        Mon, 23 May 2022 13:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=N2rdI1I+QIUtRZp/TJFYWC+M+9hFHdCTsdcwwNaN+is=; b=vIXeVVwGbphsWuV8rScnUaZbYt
-        kyf2gU0WU1/mPAbgSVUYKsexBErSSvoZdKlgokGxbpiuvFd0DNOdgQC+A+Tessq0wgilc07kAYltB
-        sqVqxpKCFYtbxLhbZow8UVOwRTsZ8DjjF5CvM9meRlsIsaT6TM9SbBsTbD7FZ7rCwV7o/hVAQatM8
-        62JXw35Nnxo1JIlfnYbpH5jzoiDRlFRVxbY7qbluMqelxnWO92SZfrwFBTyoUv1z59RgyiVHYm4oH
-        gNLYFXsvtJyv+NDNkdeIwnXaz9uDiogM5FHKG52QpACs5sjEVHWOHlBVCTSbR7nazOqzZ1o22C0O3
-        3FC86RUQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ntBqC-005NuX-Ju; Mon, 23 May 2022 17:27:36 +0000
-Date:   Mon, 23 May 2022 10:27:36 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        willy@infradead.org, Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
-Subject: Re: [PATCH v2] sysctl: handle table->maxlen properly for proc_dobool
-Message-ID: <YovECEBVeCZl79fi@bombadil.infradead.org>
-References: <20220522052624.21493-1-songmuchun@bytedance.com>
+        Mon, 23 May 2022 16:20:06 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96C0BCEA3
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:20:05 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 96F871F747;
+        Mon, 23 May 2022 20:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653337204; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XJCNExi0Kdr0ah2fgcly/f0TPgzz4ig+wetVhpC6XPw=;
+        b=v1HQWTpsWnatXa6J8QZwOeVGjXslQk55RZjF+kVdYiy/6ND4mFsN2jUHSgVlm/Yd82uLL9
+        Lky4u51sYyDIgev6UL7yblzbnC0+vHa02YITHA0d0oCYcelvFOQr8o4CNKQEMw8N4AzbAv
+        cH4B4TjgxdGGRbBjb4lZAe4NEMLEXbY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653337204;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XJCNExi0Kdr0ah2fgcly/f0TPgzz4ig+wetVhpC6XPw=;
+        b=sUeFxIubwXtKDF31HEZ+y79SiMTEIl8ISgqCSyB7+AXpYISM1AHFSmEWq31Kmm2y7FHnoZ
+        VNlDlJdfDL52pwBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8A6A4139F5;
+        Mon, 23 May 2022 20:20:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id davJIXTsi2LfBgAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 23 May 2022 20:20:04 +0000
+Date:   Mon, 23 May 2022 22:20:04 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/vdso for 5.19
+Message-ID: <YovsdAxZsUWxGVl4@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220522052624.21493-1-songmuchun@bytedance.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 01:26:24PM +0800, Muchun Song wrote:
-> Setting ->proc_handler to proc_dobool at the same time setting ->maxlen
-> to sizeof(int) is counter-intuitive, it is easy to make mistakes.  For
-> robustness, fix it by reimplementing proc_dobool() properly.
-> 
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Iurii Zaikin <yzaikin@google.com>
-> ---
+Hi Linus,
 
-Thanks for your patch Muchun!
+phew, this is the last one:
 
-Does this fix an actualy issue? Because the comit log suggest so.
-If so is there a bug which is known or a reproducer which can be
-implemented to showcase that bug?
+please pull a single x86/vdso change for 5.19.
 
-The reason I ask is that we have automatic scrapers for bug fixes,
-and I tend to prefer to avoid giving those automatic scrapers
-the idea that a patch is a fix for a kernel bug when it it is not.
-If what you are change is an optimization then your commit log should
-clarify that.
+Thx.
 
-If you are fixing something then you must be clear about about the
-details I mentioned. And then, if it does fix an issue, how long
-has the issue been know, what are the consequences of it? And up
-to what kernel is this issue present for?
+---
 
-  Luis
+The following changes since commit c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a:
+
+  Linux 5.18-rc6 (2022-05-08 13:54:17 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_vdso_for_v5.19_rc1
+
+for you to fetch changes up to bf00745e7791fe2ba7941aeead8528075a158bbe:
+
+  x86/vsyscall: Remove CONFIG_LEGACY_VSYSCALL_EMULATE (2022-05-11 20:39:31 +0200)
+
+----------------------------------------------------------------
+- Get rid of CONFIG_LEGACY_VSYSCALL_EMULATE as nothing should be using it anymore
+
+----------------------------------------------------------------
+Andy Lutomirski (1):
+      x86/vsyscall: Remove CONFIG_LEGACY_VSYSCALL_EMULATE
+
+ arch/x86/Kconfig                      | 18 +++---------------
+ arch/x86/entry/vsyscall/vsyscall_64.c |  2 +-
+ 2 files changed, 4 insertions(+), 16 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG Nürnberg)
