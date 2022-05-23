@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2356DC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242623AbiEWRnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
+        id S242358AbiEWRnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242725AbiEWR16 (ORCPT
+        with ESMTP id S242735AbiEWR16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A4F8B0B3;
-        Mon, 23 May 2022 10:24:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B278216F;
+        Mon, 23 May 2022 10:24:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16CE560919;
-        Mon, 23 May 2022 17:24:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C6ABC385AA;
-        Mon, 23 May 2022 17:24:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C7C860B35;
+        Mon, 23 May 2022 17:24:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C1F5C385A9;
+        Mon, 23 May 2022 17:24:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326647;
-        bh=LIXj9FZokEunEf4C4T6sv1gdibFULl/cAgkv3fPPJPo=;
+        s=korg; t=1653326654;
+        bh=L//3dBna+EcdB3M94tHttcQc5Adhnn/g/2/48n2Md/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zzRx/rwBPdWkAGQ1adPkEIuVL4KIlpRpZuPJNrWhhmOWB2hI+uikZBuApVEBtVDQ/
-         rxzL2Z1Fn177K5PmZTwm85luI/1eKvBPQ8F0DuL5FZHiR0xLOWeIiFkJEhnKkROMAl
-         +huw6KeSFTIgJxDxEO9zbmFm0RvLOhNwUeCp0zGI=
+        b=Gl9LdG7ppciOGyvxbipiEYN0JOq2nTzZ0aVGIdIClK/E0Iqiffefu5MreGhMTkXrc
+         lCXuEpdlR4hdm0CkXWIy7LqffI93ywwU+9q+U/tv1aQ7Bwu7QFrE26hJ3DLNDzGrBO
+         sywgfZT4RuGblQ3yoY5lriNWLbNHwJBUpDjG5PLM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.17 008/158] i2c: piix4: Add EFCH MMIO support to region request and release
-Date:   Mon, 23 May 2022 19:02:45 +0200
-Message-Id: <20220523165831.943998905@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Bob Peterson <rpeterso@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 018/158] gfs2: Switch lock order of inode and iopen glock
+Date:   Mon, 23 May 2022 19:02:55 +0200
+Message-Id: <20220523165833.645164821@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,182 +49,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Terry Bowman <terry.bowman@amd.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 7c148722d074c29fb998578eea5de3c14b9608c9 upstream.
+[ Upstream commit 29464ee36bcaaee2691249f49b9592b8d5c97ece ]
 
-EFCH cd6h/cd7h port I/O may no longer be available on later AMD
-processors and it is recommended to use MMIO instead. Update the
-request and release functions to support MMIO.
+This patch tries to fix the continual ABBA deadlocks we keep having
+between the iopen and inode glocks. This switches the lock order in
+gfs2_inode_lookup and gfs2_create_inode so the iopen glock is always
+locked first.
 
-MMIO request/release and mmapping require details during cleanup.
-Add a MMIO configuration structure containing resource and vaddress
-details for mapping the region, accessing the region, and releasing
-the region.
-
-Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-[wsa: rebased after fixup in previous patch]
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Cc: Mario Limonciello <Mario.Limonciello@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-piix4.c |   66 ++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 58 insertions(+), 8 deletions(-)
+ fs/gfs2/inode.c | 49 +++++++++++++++++++++++++++----------------------
+ 1 file changed, 27 insertions(+), 22 deletions(-)
 
---- a/drivers/i2c/busses/i2c-piix4.c
-+++ b/drivers/i2c/busses/i2c-piix4.c
-@@ -98,6 +98,9 @@
- #define SB800_PIIX4_PORT_IDX_MASK_KERNCZ	0x18
- #define SB800_PIIX4_PORT_IDX_SHIFT_KERNCZ	3
+diff --git a/fs/gfs2/inode.c b/fs/gfs2/inode.c
+index 66a123306aec..c8ec876f33ea 100644
+--- a/fs/gfs2/inode.c
++++ b/fs/gfs2/inode.c
+@@ -131,7 +131,21 @@ struct inode *gfs2_inode_lookup(struct super_block *sb, unsigned int type,
+ 		struct gfs2_sbd *sdp = GFS2_SB(inode);
+ 		struct gfs2_glock *io_gl;
  
-+#define SB800_PIIX4_FCH_PM_ADDR			0xFED80300
-+#define SB800_PIIX4_FCH_PM_SIZE			8
+-		error = gfs2_glock_get(sdp, no_addr, &gfs2_inode_glops, CREATE, &ip->i_gl);
++		error = gfs2_glock_get(sdp, no_addr, &gfs2_inode_glops, CREATE,
++				       &ip->i_gl);
++		if (unlikely(error))
++			goto fail;
 +
- /* insmod parameters */
- 
- /* If force is set to anything different from 0, we forcibly enable the
-@@ -156,6 +159,12 @@ static const char *piix4_main_port_names
- };
- static const char *piix4_aux_port_name_sb800 = " port 1";
- 
-+struct sb800_mmio_cfg {
-+	void __iomem *addr;
-+	struct resource *res;
-+	bool use_mmio;
-+};
++		error = gfs2_glock_get(sdp, no_addr, &gfs2_iopen_glops, CREATE,
++				       &io_gl);
++		if (unlikely(error))
++			goto fail;
 +
- struct i2c_piix4_adapdata {
- 	unsigned short smba;
++		if (blktype != GFS2_BLKST_UNLINKED)
++			gfs2_cancel_delete_work(io_gl);
++		error = gfs2_glock_nq_init(io_gl, LM_ST_SHARED, GL_EXACT,
++					   &ip->i_iopen_gh);
++		gfs2_glock_put(io_gl);
+ 		if (unlikely(error))
+ 			goto fail;
  
-@@ -163,10 +172,40 @@ struct i2c_piix4_adapdata {
- 	bool sb800_main;
- 	bool notify_imc;
- 	u8 port;		/* Port number, shifted */
-+	struct sb800_mmio_cfg mmio_cfg;
- };
+@@ -161,16 +175,6 @@ struct inode *gfs2_inode_lookup(struct super_block *sb, unsigned int type,
  
--static int piix4_sb800_region_request(struct device *dev)
-+static int piix4_sb800_region_request(struct device *dev,
-+				      struct sb800_mmio_cfg *mmio_cfg)
- {
-+	if (mmio_cfg->use_mmio) {
-+		struct resource *res;
-+		void __iomem *addr;
+ 		set_bit(GLF_INSTANTIATE_NEEDED, &ip->i_gl->gl_flags);
+ 
+-		error = gfs2_glock_get(sdp, no_addr, &gfs2_iopen_glops, CREATE, &io_gl);
+-		if (unlikely(error))
+-			goto fail;
+-		if (blktype != GFS2_BLKST_UNLINKED)
+-			gfs2_cancel_delete_work(io_gl);
+-		error = gfs2_glock_nq_init(io_gl, LM_ST_SHARED, GL_EXACT, &ip->i_iopen_gh);
+-		gfs2_glock_put(io_gl);
+-		if (unlikely(error))
+-			goto fail;
+-
+ 		/* Lowest possible timestamp; will be overwritten in gfs2_dinode_in. */
+ 		inode->i_atime.tv_sec = 1LL << (8 * sizeof(inode->i_atime.tv_sec) - 1);
+ 		inode->i_atime.tv_nsec = 0;
+@@ -716,13 +720,17 @@ static int gfs2_create_inode(struct inode *dir, struct dentry *dentry,
+ 	error = insert_inode_locked4(inode, ip->i_no_addr, iget_test, &ip->i_no_addr);
+ 	BUG_ON(error);
+ 
+-	error = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, GL_SKIP, ghs + 1);
++	error = gfs2_glock_nq_init(io_gl, LM_ST_SHARED, GL_EXACT, &ip->i_iopen_gh);
+ 	if (error)
+ 		goto fail_gunlock2;
+ 
++	error = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, GL_SKIP, ghs + 1);
++	if (error)
++		goto fail_gunlock3;
 +
-+		res = request_mem_region_muxed(SB800_PIIX4_FCH_PM_ADDR,
-+					       SB800_PIIX4_FCH_PM_SIZE,
-+					       "sb800_piix4_smb");
-+		if (!res) {
-+			dev_err(dev,
-+				"SMBus base address memory region 0x%x already in use.\n",
-+				SB800_PIIX4_FCH_PM_ADDR);
-+			return -EBUSY;
-+		}
-+
-+		addr = ioremap(SB800_PIIX4_FCH_PM_ADDR,
-+			       SB800_PIIX4_FCH_PM_SIZE);
-+		if (!addr) {
-+			release_resource(res);
-+			dev_err(dev, "SMBus base address mapping failed.\n");
-+			return -ENOMEM;
-+		}
-+
-+		mmio_cfg->res = res;
-+		mmio_cfg->addr = addr;
-+
-+		return 0;
-+	}
-+
- 	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
- 				  "sb800_piix4_smb")) {
- 		dev_err(dev,
-@@ -178,8 +217,15 @@ static int piix4_sb800_region_request(st
- 	return 0;
- }
+ 	error = gfs2_trans_begin(sdp, blocks, 0);
+ 	if (error)
+-		goto fail_gunlock2;
++		goto fail_gunlock3;
  
--static void piix4_sb800_region_release(struct device *dev)
-+static void piix4_sb800_region_release(struct device *dev,
-+				       struct sb800_mmio_cfg *mmio_cfg)
- {
-+	if (mmio_cfg->use_mmio) {
-+		iounmap(mmio_cfg->addr);
-+		release_resource(mmio_cfg->res);
-+		return;
-+	}
-+
- 	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
- }
+ 	if (blocks > 1) {
+ 		ip->i_eattr = ip->i_no_addr + 1;
+@@ -731,10 +739,6 @@ static int gfs2_create_inode(struct inode *dir, struct dentry *dentry,
+ 	init_dinode(dip, ip, symname);
+ 	gfs2_trans_end(sdp);
  
-@@ -288,11 +334,13 @@ static int piix4_setup_sb800_smba(struct
- 				  u8 *smb_en_status,
- 				  unsigned short *piix4_smba)
- {
-+	struct sb800_mmio_cfg mmio_cfg;
- 	u8 smba_en_lo;
- 	u8 smba_en_hi;
- 	int retval;
- 
--	retval = piix4_sb800_region_request(&PIIX4_dev->dev);
-+	mmio_cfg.use_mmio = 0;
-+	retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
- 	if (retval)
- 		return retval;
- 
-@@ -301,7 +349,7 @@ static int piix4_setup_sb800_smba(struct
- 	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
- 	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
- 
--	piix4_sb800_region_release(&PIIX4_dev->dev);
-+	piix4_sb800_region_release(&PIIX4_dev->dev, &mmio_cfg);
- 
- 	if (!smb_en) {
- 		*smb_en_status = smba_en_lo & 0x10;
-@@ -328,6 +376,7 @@ static int piix4_setup_sb800(struct pci_
- 	unsigned short piix4_smba;
- 	u8 smb_en, smb_en_status, port_sel;
- 	u8 i2ccfg, i2ccfg_offset = 0x10;
-+	struct sb800_mmio_cfg mmio_cfg;
- 	int retval;
- 
- 	/* SB800 and later SMBus does not support forcing address */
-@@ -407,7 +456,8 @@ static int piix4_setup_sb800(struct pci_
- 			piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
- 		}
- 	} else {
--		retval = piix4_sb800_region_request(&PIIX4_dev->dev);
-+		mmio_cfg.use_mmio = 0;
-+		retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
- 		if (retval) {
- 			release_region(piix4_smba, SMBIOSIZE);
- 			return retval;
-@@ -420,7 +470,7 @@ static int piix4_setup_sb800(struct pci_
- 				       SB800_PIIX4_PORT_IDX;
- 		piix4_port_mask_sb800 = SB800_PIIX4_PORT_IDX_MASK;
- 		piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
--		piix4_sb800_region_release(&PIIX4_dev->dev);
-+		piix4_sb800_region_release(&PIIX4_dev->dev, &mmio_cfg);
+-	error = gfs2_glock_nq_init(io_gl, LM_ST_SHARED, GL_EXACT, &ip->i_iopen_gh);
+-	if (error)
+-		goto fail_gunlock2;
+-
+ 	glock_set_object(ip->i_gl, ip);
+ 	glock_set_object(io_gl, ip);
+ 	gfs2_set_iop(inode);
+@@ -745,14 +749,14 @@ static int gfs2_create_inode(struct inode *dir, struct dentry *dentry,
+ 	if (default_acl) {
+ 		error = __gfs2_set_acl(inode, default_acl, ACL_TYPE_DEFAULT);
+ 		if (error)
+-			goto fail_gunlock3;
++			goto fail_gunlock4;
+ 		posix_acl_release(default_acl);
+ 		default_acl = NULL;
  	}
+ 	if (acl) {
+ 		error = __gfs2_set_acl(inode, acl, ACL_TYPE_ACCESS);
+ 		if (error)
+-			goto fail_gunlock3;
++			goto fail_gunlock4;
+ 		posix_acl_release(acl);
+ 		acl = NULL;
+ 	}
+@@ -760,11 +764,11 @@ static int gfs2_create_inode(struct inode *dir, struct dentry *dentry,
+ 	error = security_inode_init_security(&ip->i_inode, &dip->i_inode, name,
+ 					     &gfs2_initxattrs, NULL);
+ 	if (error)
+-		goto fail_gunlock3;
++		goto fail_gunlock4;
  
- 	dev_info(&PIIX4_dev->dev,
-@@ -731,7 +781,7 @@ static s32 piix4_access_sb800(struct i2c
- 	u8 prev_port;
- 	int retval;
+ 	error = link_dinode(dip, name, ip, &da);
+ 	if (error)
+-		goto fail_gunlock3;
++		goto fail_gunlock4;
  
--	retval = piix4_sb800_region_request(&adap->dev);
-+	retval = piix4_sb800_region_request(&adap->dev, &adapdata->mmio_cfg);
- 	if (retval)
- 		return retval;
+ 	mark_inode_dirty(inode);
+ 	d_instantiate(dentry, inode);
+@@ -782,9 +786,10 @@ static int gfs2_create_inode(struct inode *dir, struct dentry *dentry,
+ 	unlock_new_inode(inode);
+ 	return error;
  
-@@ -802,7 +852,7 @@ static s32 piix4_access_sb800(struct i2c
- 		piix4_imc_wakeup();
- 
- release:
--	piix4_sb800_region_release(&adap->dev);
-+	piix4_sb800_region_release(&adap->dev, &adapdata->mmio_cfg);
- 	return retval;
- }
- 
+-fail_gunlock3:
++fail_gunlock4:
+ 	glock_clear_object(ip->i_gl, ip);
+ 	glock_clear_object(io_gl, ip);
++fail_gunlock3:
+ 	gfs2_glock_dq_uninit(&ip->i_iopen_gh);
+ fail_gunlock2:
+ 	gfs2_glock_put(io_gl);
+-- 
+2.35.1
+
 
 
