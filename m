@@ -2,95 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64498C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:55:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2169C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237392AbiEWOz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
+        id S237484AbiEWO5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237309AbiEWOzY (ORCPT
+        with ESMTP id S237417AbiEWO46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:55:24 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362E05AEFD;
-        Mon, 23 May 2022 07:55:23 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id w3so6706052plp.13;
-        Mon, 23 May 2022 07:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lAsfZ94mPmdCtSLuY+yTmU/kf8t1RWq4c+zfwIS3kZU=;
-        b=qL3OCqHcHzyKI5hwEV6UajS56blAArm+NUR5fTeRmpHvBTF2luIyJ0ScsLgXZJOktO
-         AF+2XMLz6+6H7LaZw3wtPUtT2Dr+4Kw6bV6pOwQV3I0sQgHyK9n3jm2RFDteLOjtxfmg
-         md34NvnoGVWei0z081yCNsxplR+5EOZMtzGTDcjJb7Bk86yaGlqqyHz2YHa7w7/uP5yQ
-         W1Vdv3MY9pBEomJvjedvwOBD7nZTr9KwQT/Y2VbgfX6x45Vm9FZy+R4QfW+6P5FSp8sj
-         L9iUxeFcwd5G9AcJFDobomkNWm20xsxRiRWJaHYzrnUnhp+bA0nMBFZAz/XRdjsGXlrR
-         kBcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lAsfZ94mPmdCtSLuY+yTmU/kf8t1RWq4c+zfwIS3kZU=;
-        b=XddCAtc0KqcJee7TmelQnvX243FhLci/a+ihnfyizWM9n5VBXkVfGF9BV2dh8fQe8O
-         XtUbs/o5Mu1rnTG8xJN4zYsnpgFBATW0VffjxjsMUa2Jn0UwhsKmLW3u14NGvzLhOheu
-         xnEq9hSUZPZQ/QafDlblzu9M2ziJCqfs/rTPkEAJ1MObXFbpDeaiIstvP/msA5hNBN3H
-         tkL2EwqZQ47RQLo5cgvd0MtCYQFpfDFkZl70mxar9A43/T+1LUFmRxoH7smLkKHd7Mct
-         wwPHTI7a/6FmX4Nt7c7ipgarNXbvNoIGiLj583CgUnikZdm9uXQhlmdxf1IbxWQuNm+a
-         HLhA==
-X-Gm-Message-State: AOAM532JfmD2mUQDWiJRtkfq5GU5o0LXbgoY3XNOP93kDBEvqOT1o+9M
-        UseREfhvCT/cXLie7P+xTJne+QfFtHB/9w==
-X-Google-Smtp-Source: ABdhPJwZhynyLL9YejikmlfxuBPI0eDBAgXevyP08lOSVThADiIwAEm0EMxekv2afPJkWC7NZT4lQg==
-X-Received: by 2002:a17:903:124b:b0:15e:84d0:ded6 with SMTP id u11-20020a170903124b00b0015e84d0ded6mr22841886plh.141.1653317722732;
-        Mon, 23 May 2022 07:55:22 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id o13-20020a17090a4b4d00b001df264610c4sm138116pjl.0.2022.05.23.07.55.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 07:55:22 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Pankaj Dubey <pankaj.dubey@samsung.com>,
-        Tomasz Figa <t.figa@samsung.com>,
-        Kukjin Kim <kgene.kim@samsung.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] ARM: exynos: Fix refcount leak in exynos_map_pmu
-Date:   Mon, 23 May 2022 18:55:13 +0400
-Message-Id: <20220523145513.12341-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 23 May 2022 10:56:58 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7475A15C;
+        Mon, 23 May 2022 07:56:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653317814; x=1684853814;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kt7b9LLaTfA52fM3CoAr+iwZKWbwibeMswffviI6OJ8=;
+  b=Pdg6bAQeVYlGzdFKn112u3fXdOhJk8tTOFUo2KbYzSTAFAvdq2s3Ig7h
+   3H+/LI1W/3btpEKnjC1qLKm2SzhoB1DJ3sf3Jv8eGDrIW1rnT9sLViMBs
+   y01Ivkdv6cvc8957ONVjOA9646EQdtL75a0LGEeMgJp1t9o05f7oMEF10
+   78eiWooGgvzWrsSCRS3Y4Mn9cMJjnCbJcbgGCE1kDQTFKRCUxVf+heNhE
+   BswzjXbAX5J8LXdgnp98dAHcnz50FKdcycQHKjvLjkM7pLwSoZXpJlXma
+   DEUohwk02aa04RKP5uNhQiL75h7ubywcqGiDh1WRGKx4Alit0G/zEhsox
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273363190"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="273363190"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 07:56:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="663467052"
+Received: from storage2.sh.intel.com (HELO localhost) ([10.67.110.197])
+  by FMSMGA003.fm.intel.com with ESMTP; 23 May 2022 07:56:49 -0700
+Date:   Mon, 23 May 2022 10:56:43 -0400
+From:   Liu Xiaodong <xiaodong.liu@intel.com>
+To:     Ming Lei <ming.lei@redhat.com>
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Harris James R <james.r.harris@intel.com>,
+        io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, ming.lei@redhat.com,
+        xiaodong.liu@intel.com
+Subject: Re: [PATCH V2 0/1] ubd: add io_uring based userspace block driver
+Message-ID: <20220523145643.GA232396@storage2.sh.intel.com>
+References: <20220518063808.GA168577@storage2.sh.intel.com>
+ <YoTyNVccpIYDpx9q@T590>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoTyNVccpIYDpx9q@T590>
+User-Agent: Mutt/1.9.2 (2017-12-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() checks null pointer.
+On Wed, May 18, 2022 at 09:18:45PM +0800, Ming Lei wrote:
+> Hello Liu,
+> 
+> On Wed, May 18, 2022 at 02:38:08AM -0400, Liu Xiaodong wrote:
+> > On Tue, May 17, 2022 at 01:53:57PM +0800, Ming Lei wrote:
+> > > Hello Guys,
+> > > 
+> > > ubd driver is one kernel driver for implementing generic userspace block
+> > > device/driver, which delivers io request from ubd block device(/dev/ubdbN) into
+> > > ubd server[1] which is the userspace part of ubd for communicating
+> > > with ubd driver and handling specific io logic by its target module.
+> > > 
+> > > Another thing ubd driver handles is to copy data between user space buffer
+> > > and request/bio's pages, or take zero copy if mm is ready for support it in
+> > > future. ubd driver doesn't handle any IO logic of the specific driver, so
+> > > it is small/simple, and all io logics are done by the target code in ubdserver.
+> > > 
+> > > The above two are main jobs done by ubd driver.
+> > 
+> > Not like UBD which is straightforward and starts from scratch, VDUSE is
+> > embedded in virtio framework. So its implementation is more complicated, but
+> > all virtio frontend utilities can be leveraged.
+> > When considering security/permission issues, feels UBD would be easier to
+> > solve them.
+> 
+> Stefan Hajnoczi and I are discussing related security/permission
+> issues, can you share more details in your case?
 
-Fixes: fce9e5bb2526 ("ARM: EXYNOS: Add support for mapping PMU base address via DT")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- arch/arm/mach-exynos/exynos.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm/mach-exynos/exynos.c b/arch/arm/mach-exynos/exynos.c
-index 8b48326be9fd..51a247ca4da8 100644
---- a/arch/arm/mach-exynos/exynos.c
-+++ b/arch/arm/mach-exynos/exynos.c
-@@ -149,6 +149,7 @@ static void exynos_map_pmu(void)
- 	np = of_find_matching_node(NULL, exynos_dt_pmu_match);
- 	if (np)
- 		pmu_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
- }
+Hi, Ming
+Security/permission things covered by your discussion are more than I've
+considered.
  
- static void __init exynos_init_irq(void)
--- 
-2.25.1
+> > 
+> > So my questions are:
+> > 1. what do you think about the purpose overlap between UBD and VDUSE?
+> 
+> Sorry, I am not familiar with VDUSE, motivation of ubd is just to make one
+> high performance generic userspace block driver. ubd driver(kernel part) is
+> just responsible for communication and copying data between userspace buffers
+> and kernel io request pages, and the ubdsrv(userspace) target handles io
+> logic.
+> 
+> > 2. Could UBD be implemented with SPDK friendly functionalities? (mainly about
+> > io data mapping, since HW devices in SPDK need to access the mapped data
+> > buffer. Then, in function ubdsrv.c/ubdsrv_init_io_bufs(),
+> > "addr = mmap(,,,,dev->cdev_fd,)",
+> 
+> No, that code is actually for supporting zero copy.
+> 
+> But each request's buffer is allocated by ubdsrv and definitely available for any
+> target, please see loop_handle_io_async() which handles IO from /dev/ubdbN about
+> how to use the buffer. Fro READ, the target code needs to implement READ
+> logic and fill data to the buffer, then the buffer will be copied to
+> kernel io request pages; for WRITE, the target code needs to use the buffer to handle
+> WRITE and the buffer has been updated with kernel io request.
+> 
 
+Oh, I see. Yes, you are right. Mmapped addr in ubdsrv_init_io_bufs is not
+used yet. Request's buffer is allocated by ubdsrv.
+
+
+> > SPDK needs to know the PA of "addr".
+> 
+> What is PA? and why?
+
+Physical address. Sorry, I forgot to expand it.
+Previously I've thought Request data buffer is from mmap addr on corresponding
+ubd cdev, then I just thought SPDK need to know the PA of the buffer for
+its backend hardware devices.
+If the request data buffer is allocated by srv process, then it was not
+needed. So maybe SPDK can be efficiently working on your corrent implementation.
+I'll try to draft an SPDK service backend later.
+
+Thanks
+Xiaodong
+
+ 
