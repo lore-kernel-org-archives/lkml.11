@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77654C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241351AbiEWRpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
+        id S242607AbiEWRqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242821AbiEWR2H (ORCPT
+        with ESMTP id S242800AbiEWR2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:28:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254E98B0BD;
-        Mon, 23 May 2022 10:24:38 -0700 (PDT)
+        Mon, 23 May 2022 13:28:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744E08CB34;
+        Mon, 23 May 2022 10:24:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFE6A60C21;
-        Mon, 23 May 2022 17:24:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC59C385A9;
-        Mon, 23 May 2022 17:24:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 395A6608C0;
+        Mon, 23 May 2022 17:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42429C385A9;
+        Mon, 23 May 2022 17:23:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326676;
-        bh=3Edr0WGxsislP39bX1l22AF4oaC/dYzIMfeh7yF5tdU=;
+        s=korg; t=1653326615;
+        bh=P7ifuMvgfCQC7c5AuL095K8fyYyVN8m4teyXLs5ZboM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OlgZ0RApY4dWmadQvohfPBHutENjLXNh81btwTcR5qpYdEZBR0XC8BfoTmpHN5xCM
-         1CrTe5nOH03ZNnZmU2ihrFxmHNdQ9e+RurrVxlmeKNCztf0kds5STG91L0sXsmXYv+
-         +uA0AVZmrXJIwspvwIWmBo9RpdbmAttwLdhScOlE=
+        b=cnlbLvvnw/IPzNWJlI870VHIgiiGGFde5dtSmqlevo/Yf3o0cknqD2E3MS6I6+it0
+         WHI0JYj/PdJgVjEZH8YqDpsRFS+zh+sMMhaxj0zJrHYayduTvD+QJUh6gb+BLtM+hV
+         VGJhvEVqRCfmNzRD1Hw+G1MRnrjIypl6ZpsciLZA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 025/158] nvme-pci: add quirks for Samsung X5 SSDs
-Date:   Mon, 23 May 2022 19:03:02 +0200
-Message-Id: <20220523165834.742572116@linuxfoundation.org>
+        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
+        Rob Herring <robh@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>, Joel Stanley <joel@jms.id.au>
+Subject: [PATCH 5.15 129/132] dt-bindings: pinctrl: aspeed-g6: remove FWQSPID group
+Date:   Mon, 23 May 2022 19:05:38 +0200
+Message-Id: <20220523165845.083615959@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Monish Kumar R <monish.kumar.r@intel.com>
+From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
 
-[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
+commit a29c96a4053dc3c1d39353b61089882f81c6b23d upstream.
 
-Add quirks to not fail the initialization and to have quick resume
-latency after cold/warm reboot.
+FWQSPID is not a group of FWSPID so remove it.
 
-Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7488838f2315 ("dt-bindings: pinctrl: aspeed: Document AST2600 pinmux")
+Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Link: https://lore.kernel.org/r/20220329173932.2588289-4-quic_jaehyoo@quicinc.com
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/pci.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index e4b79bee6206..94a0b933b133 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3470,7 +3470,10 @@ static const struct pci_device_id nvme_id_table[] = {
- 				NVME_QUIRK_128_BYTES_SQES |
- 				NVME_QUIRK_SHARED_TAGS |
- 				NVME_QUIRK_SKIP_CID_GEN },
--
-+	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
-+		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
-+				NVME_QUIRK_NO_DEEPEST_PS |
-+				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
- 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
- 	{ 0, }
- };
--- 
-2.35.1
-
+--- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
+@@ -58,7 +58,7 @@ patternProperties:
+           $ref: "/schemas/types.yaml#/definitions/string"
+           enum: [ ADC0, ADC1, ADC10, ADC11, ADC12, ADC13, ADC14, ADC15, ADC2,
+                   ADC3, ADC4, ADC5, ADC6, ADC7, ADC8, ADC9, BMCINT, EMMCG1, EMMCG4,
+-                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWQSPID, FWSPIWP,
++                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWSPIWP,
+                   GPIT0, GPIT1, GPIT2, GPIT3, GPIT4, GPIT5, GPIT6, GPIT7, GPIU0, GPIU1,
+                   GPIU2, GPIU3, GPIU4, GPIU5, GPIU6, GPIU7, HVI3C3, HVI3C4, I2C1, I2C10,
+                   I2C11, I2C12, I2C13, I2C14, I2C15, I2C16, I2C2, I2C3, I2C4, I2C5,
 
 
