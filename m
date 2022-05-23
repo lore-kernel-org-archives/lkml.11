@@ -2,95 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A2AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237883AbiEWP36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
+        id S237902AbiEWPaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238064AbiEWP2k (ORCPT
+        with ESMTP id S237865AbiEWPac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:28:40 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3815FF04;
-        Mon, 23 May 2022 08:28:24 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d22so13407518plr.9;
-        Mon, 23 May 2022 08:28:24 -0700 (PDT)
+        Mon, 23 May 2022 11:30:32 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDD45FF1F
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:30:31 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id br17so13916626lfb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:30:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cUC4YaTkSvnRYrJyCu9bbmLHjPFEHYU8Y+xctYQuBfo=;
-        b=pBMqPUwvyvmRiCSpJnrPcKBj4tXANwPwaJQfBeQZbvwD5TWozoyG0AJi0UUreYt344
-         zOf8BbJLr7L8Q27sVXv8Xe/01vjze+sZIZujLJtacMGT25Ek6OwfZJzjVLxZK7pnRZqq
-         w+NlZCn2XazKc9Q+SsUiwDR/EcgWrQCOtFh2AJkgN/dGFO7ntUZsjWuMBlNAjO7V8hp8
-         KM56AtIcTVjuRmWL68A2wCVioWILVggaPBR20LmcqgoOAbSmpWCZAKhMpwl6ObVUpORP
-         4ZNxuFZze22j3imNb4w8yFimrFs8SKdWRstnlHu8BGCnFqUf5JcdPkmeqsZ4Ly0QW9RN
-         yp/Q==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=11tx15XOReGzewyuScT08wDXVdYnhOX55HUlYSxbVO4=;
+        b=I/gaifkPbRc3Ya6NQFwpk6ISV+74r16YxnkKExnrHD9IOzX28AQ+kmze2NkWbcajxc
+         rHv5gQJ/FdqRvV/VnJLO1m+Wq65NeJ5loZDsTILiCsV+vsO5PvBRb4dAJgDL0iLSKvoS
+         lwH00d024zvK+H4pvhqXRV1DuSqckrOl1deEwV5NBKp+SsgFonev9Rh5nzfhHu4bVffz
+         kdh7vdf76mU5/m8oAi7lTVKXdn1K0OT5IWwaQgFsqrMT7hl7TBlsM83gxD4/EEXnbVAw
+         1Ekt/995jl2/70M1BYGcUi0EzUGeIq1oLrVv0ObfSdovQG3LLkcYbkm0cZI6SR8aHt6u
+         ph3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=cUC4YaTkSvnRYrJyCu9bbmLHjPFEHYU8Y+xctYQuBfo=;
-        b=fA5ZzaXz0lHsK56YcpT7hgxF+7saNSM8Sc8qijxsKRrHs+hPaNjB3sebh0kWKxIhWu
-         XC7ekH8hIxzb26x0zXZtDDjcbO9UikcglDjfPCZf1MI+N3nyL4cBbb76F+x49wsHkkr1
-         qurM+WEwHmluTR++ezoN6CQdc1ce7B7fuDJJiZ4QwJoiDOdaH/B78bMyMtcDN9LGTY7B
-         PD7k6ts184eW/C/E1OolQZc7TBNNAxWT2JKwwZpPTvLPJz+MEn7fNzXc/MkIqpEtymPE
-         rWgEoaFrnNcuVMhtbG5585DLzMSwVl+yvL4jHAYTra/w7iGMnASNcR4MCa+uGLb6jjyj
-         yY7w==
-X-Gm-Message-State: AOAM5320em1uWd9xJd78fNkF1Puzx87sbUiHVrPccgAjrw1WLe0G5eDe
-        /DUp0nQ4Tljs+00/d8Ru6C0=
-X-Google-Smtp-Source: ABdhPJyiXyFb6VGU02rrA8lDxILq34YkqQDZvpgVob/1vxaCbMYzV8kEf0lpwxYeYymyJEiLCAvhpQ==
-X-Received: by 2002:a17:902:b58b:b0:162:2e01:9442 with SMTP id a11-20020a170902b58b00b001622e019442mr3261166pls.6.1653319700549;
-        Mon, 23 May 2022 08:28:20 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id p1-20020a056a0026c100b0051810d460adsm7412307pfw.114.2022.05.23.08.28.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 08:28:20 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Peter De Schrijver <pdeschrijver@nvidia.com>,
-        Prashant Gaikwad <pgaikwad@nvidia.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mike Turquette <mturquette@linaro.org>,
-        Stephen Warren <swarren@nvidia.com>, linux-clk@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] clk: tegra20: Fix refcount leak in tegra20_clock_init
-Date:   Mon, 23 May 2022 19:28:11 +0400
-Message-Id: <20220523152811.19692-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=11tx15XOReGzewyuScT08wDXVdYnhOX55HUlYSxbVO4=;
+        b=kEhCdv97m6Ol5XIYQh6Pjgpj0znjgorKpnuyXdQjrHTegzCwhzJH2o8olXQWsiFs35
+         R1JYYesvcCfKNXcSoQtgvqWoWGjFAEihsXJTyV8NlH95i4v0zcEKeKyoeJ4lnyJQL8ov
+         cf+z62WWKTZf5T6pOJZS+OaNs+Ip38TXfm8E6mbYoKclZ+TicqMJJzPvmVHHc8wjD3VN
+         hk8oyTl+RyCs4CdP0Qs8VyKLisqY4ox3IQkZ8vblGqealiqHPtGbm0b42czKjpQ2S0Sw
+         IkCY4O4Ktm5KQcf3br9lDDBVOIhVRDX9G143kphXPp7H9+YvCR05zEjze6BbKTk8iTi3
+         LgIQ==
+X-Gm-Message-State: AOAM532S8+cmJ7nHZQenMz2YSmS76JvBSXGOGVIGQrbreFfYQvnY7vge
+        MxdCcOEBh4HmHbeMHLFCLkBCIQ==
+X-Google-Smtp-Source: ABdhPJyJRlA+mwgV/0/+nj51fLL4x7OsYjBS85WmiP6FyM/mBP3cLnw06RZ5gqPSuvgLQC0gSa9pXQ==
+X-Received: by 2002:a19:7106:0:b0:478:68b5:86d9 with SMTP id m6-20020a197106000000b0047868b586d9mr6052561lfc.417.1653319829319;
+        Mon, 23 May 2022 08:30:29 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056512308500b0047255d211e9sm1888943lfd.280.2022.05.23.08.30.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 08:30:28 -0700 (PDT)
+Message-ID: <4f766cdb-a33b-2470-5b2e-3945c821ce6c@linaro.org>
+Date:   Mon, 23 May 2022 17:30:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/3] dt-bindings: leds: Add bindings for the TLC5925
+ controller
+Content-Language: en-US
+To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220523084958.2723943-1-jjhiblot@traphandler.com>
+ <20220523084958.2723943-2-jjhiblot@traphandler.com>
+ <d12a0afc-c040-5615-fc0d-70a5c29bbf0a@linaro.org>
+ <0e1e417a-6444-ddb5-5c48-c89bd78c5fe8@traphandler.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <0e1e417a-6444-ddb5-5c48-c89bd78c5fe8@traphandler.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+On 23/05/2022 17:16, Jean-Jacques Hiblot wrote:
+> 
+> On 23/05/2022 12:14, Krzysztof Kozlowski wrote:
+>> On 23/05/2022 10:49, Jean-Jacques Hiblot wrote:
+>>> Add bindings documentation for the TLC5925 LED controller.
+>>>
+>>> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+>> Thank you for your patch. There is something to discuss/improve.
+>>
+>>> ---
+>>> devicetree@vger.kernel.org
+>>>   .../bindings/leds/leds-tlc5925.yaml           | 100 ++++++++++++++++++
+>>>   1 file changed, 100 insertions(+)
+>>>   create mode 100644 Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml b/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
+>>> new file mode 100644
+>>> index 000000000000..156db599d5a1
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
+>> Filename: vendor,device
+>> so "ti,tlc5925-leds.yaml" for example.
+>>
+>>
+>>
+>>> @@ -0,0 +1,100 @@
+>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/leds/leds-tlc5925.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: LEDs connected to TI TLC5925 controller
+>>> +
+>>> +maintainers:
+>>> +  - Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+>>> +
+>>> +description: |
+>>> +  The TLC5925 is a low-power 16-channel constant-current LED sink driver.
+>>> +  It is controlled through a SPI interface.
+>>> +  It is built around a shift register and latches which convert serial
+>>> +  input data into a parallel output. Several TLC5925 can be chained to
+>>> +  control more than 16 LEDs with a single chip-select.
+>>> +  The brightness level cannot be controlled, each LED is either on or off.
+>>> +
+>>> +  Each LED is represented as a sub-node of the ti,tlc5925 device.
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    const: ti,tlc5925
+>>> +
+>>> +  shift_register_length:
+>>> +    maxItems: 1
+>> No...
+>> 1. Did you test your bindings with dt_binding_check? This fails
+>> obviously... please, do not send untested bindings.
+>>
+>> 2. vendor prefix, no underscores, proper type, maxItems look wrong here
+>>
+>>> +    description: |
+>>> +      The length of the shift register. If several TLC5925 are chained,
+>>> +      shift_register_length should be set to 16 times the number of TLC5925.
+>>> +      The value must be a multiple of 8.
+>>> +
+>>> +  "#address-cells":
+>>> +    const: 1
+>>> +
+>>> +  "#size-cells":
+>>> +    const: 0
+>>> +
+>>> +  output-enable-b-gpios:
+>>> +    description: |
+>>> +      GPIO pins to enable/disable the parallel output. They describe the GPIOs
+>>> +      connected to the OE/ pin of the TLC5925s.
+>> maxItems
+> 
+> There is no limitation in the driver itself. The actual number of items 
+> here really depends on the number of chips and how they are wired.
 
-Fixes: 37c26a906527 ("clk: tegra: add clock support for Tegra20")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/clk/tegra/clk-tegra20.c | 1 +
- 1 file changed, 1 insertion(+)
+So you could daisy chain 4 billion of devices? Because by not using any
+limit you claim that 4 billion is doable?
 
-diff --git a/drivers/clk/tegra/clk-tegra20.c b/drivers/clk/tegra/clk-tegra20.c
-index be3c33441cfc..8a4514f6d503 100644
---- a/drivers/clk/tegra/clk-tegra20.c
-+++ b/drivers/clk/tegra/clk-tegra20.c
-@@ -1131,6 +1131,7 @@ static void __init tegra20_clock_init(struct device_node *np)
- 	}
- 
- 	pmc_base = of_iomap(node, 0);
-+	of_node_put(node);
- 	if (!pmc_base) {
- 		pr_err("Can't map pmc registers\n");
- 		BUG();
--- 
-2.25.1
+> 
+>>
+>>
+>>> +
+>>> +patternProperties:
+>>> +  "@[a-f0-9]+$":
+>> How many LEDs you can have here? Usually it is limited, so the pattern
+>> should be narrowed.
+> 
+> There is no limitation here either. The chips can be chained to augment 
+> the number of LEDs.
+> 
+> The max number of LED is equal to the length of the shift-register.
 
+
+
+Best regards,
+Krzysztof
