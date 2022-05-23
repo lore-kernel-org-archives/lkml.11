@@ -2,103 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52350C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 537BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230175AbiEWSch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52688 "EHLO
+        id S240880AbiEWScr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239789AbiEWSc0 (ORCPT
+        with ESMTP id S240063AbiEWSbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:32:26 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6915D665
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:06:53 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id DB71E1F94C;
-        Mon, 23 May 2022 17:48:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1653328112; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=pATmHStx2Etwi4BJiCwt56VNk3nHctf1z4LGelI819g=;
-        b=BxpGGZBFyaLD4EvgPMqIkIwcxvybMcPdqBNDp6fZc3qAyG3FoSPUnnccSWzcoi4qgEK9pi
-        DiSo9Gi7sotrr+NVw67J/pRCUVEZKZxdywSe9jZoHgZBb/5eQ8ZRKBSiGG3Ad6XXWvdyru
-        SLX3NV+ujyWpQl/s9gzIjJsbE00PtnQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1653328112;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=pATmHStx2Etwi4BJiCwt56VNk3nHctf1z4LGelI819g=;
-        b=42CK/Jr+OXijgwnfY6Ellej7xGUDROfSOxpYij/tgWdbdI8pU0wUgkkF1vVWayiwtPhDss
-        w5O+MblEVPnJzYCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CFDD913AA5;
-        Mon, 23 May 2022 17:48:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id DqqzMvDIi2IcUgAAMHmgww
-        (envelope-from <bp@suse.de>); Mon, 23 May 2022 17:48:32 +0000
-Date:   Mon, 23 May 2022 19:48:28 +0200
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] x86/mm for 5.19
-Message-ID: <YovI7KgdtDWCQYnd@zn.tnic>
+        Mon, 23 May 2022 14:31:47 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F24A50E16;
+        Mon, 23 May 2022 11:06:45 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id a9so12314078pgv.12;
+        Mon, 23 May 2022 11:06:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6QK5Ggf9n0CfVz8Lb2SQFoXn/joTzIV25cpMh2WCObA=;
+        b=EMdDEmOHwBk4hGi1iUd53cNOtOldCNgi4eZ/EWt+gIBM0jj4RqCTViNMh6Ho0rgyV0
+         bQQHXcFQ3ZaZ3z9sGDzOU5ygznrjSsYkOeHqbfHU10kQl67vBdnH1LB7zyVr0+3Sfdpj
+         XZguw7DkPwv5Ah0RkOOxB1LqE7mFweEKq7SooLrWsjVJ0LlgtdXr3K2hb2dfpgAo/HB2
+         6A95AjQNZnLmxkdQT+Gpj7z3t1P57/1qcxj6GVFJQllcJwJTxMMe9W82RHa9BJbpO4/U
+         MGnRYXXeEChAOhPzqJ8aUejFQeAaaRsgoYBFNMdxwymMY6Zacdp9vvqZcxPsT7q3Cf8V
+         KswA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6QK5Ggf9n0CfVz8Lb2SQFoXn/joTzIV25cpMh2WCObA=;
+        b=c+g5Bx2h6xKCFGPE5t1cbsI1gFri/8B5rsE3H/toTTNzwwhb3RHcgztLF+L6lckZc2
+         B12x7GdCWNrzqRBm0okEBxzp0VlKH2aMNKe36s6BP2oXcAAzaFLf3Yo/mmqdRFDHwoe3
+         TfMA6sRMB8a7lUaYuVYzJIGa+J3zjNCjrJCrSfnfkL5ghyKs6zepe4pdCIgDs9yWR5G4
+         X1IeQlv58zARNb9b8P2bdcleFUMcrre/Fs17/rQhzH2WVyVw0FpLIOE+3wKd1Jdl5cQZ
+         JnNtYVndQfeiWQHeO9a2soaL8QVMv+rzZmLNrZXIidFiY78a8PDCNPrrlGhIzp6TTwJy
+         0aiw==
+X-Gm-Message-State: AOAM5313x4GNzPCnCvgKTLf856nM/JuooFQcS7aKnB1czWavLzgjKBwg
+        DGumu11QLarVJrimvMORfWk=
+X-Google-Smtp-Source: ABdhPJzjf7GeOpqZD7J23t3F6aXzgBH3AoZ4PRkAOwzR1Tug2RPfUnzLzXCKGIC7toX/2WHqOB1biQ==
+X-Received: by 2002:a63:2a94:0:b0:3f9:d9fa:6218 with SMTP id q142-20020a632a94000000b003f9d9fa6218mr12482914pgq.58.1653329204111;
+        Mon, 23 May 2022 11:06:44 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id l30-20020a637c5e000000b003c5e836eddasm4922059pgn.94.2022.05.23.11.06.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 11:06:43 -0700 (PDT)
+Message-ID: <bb5e6267-9f50-7a00-e406-04f7dc85ed17@gmail.com>
+Date:   Mon, 23 May 2022 11:06:40 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 5.4 00/68] 5.4.196-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220523165802.500642349@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On 5/23/22 10:04, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.196 release.
+> There are 68 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.196-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-please pull a single fixlet for x86/mm, for 5.19.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-That doesn't mean that this branch is going to be always boring -
-there's a lot of stuff for it brewing on the horizon but it ain't ready
-yet.
-
-Thx.
-
----
-
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
-
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_mm_for_v5.19_rc1
-
-for you to fetch changes up to 944fad4583bc8a6d7dd80fbe39db50141da95793:
-
-  x86/fault: Cast an argument to the proper address space in prefetch() (2022-04-04 20:08:26 +0200)
-
-----------------------------------------------------------------
-- A sparse address space annotation fix
-
-----------------------------------------------------------------
-Lukas Bulwahn (1):
-      x86/fault: Cast an argument to the proper address space in prefetch()
-
- arch/x86/mm/fault.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
-(HRB 36809, AG Nürnberg)
+Florian
