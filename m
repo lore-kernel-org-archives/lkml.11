@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 882ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:30:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46240C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240734AbiEWR34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
+        id S241332AbiEWRaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241122AbiEWRV5 (ORCPT
+        with ESMTP id S241291AbiEWRWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:21:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7290E75200;
-        Mon, 23 May 2022 10:18:24 -0700 (PDT)
+        Mon, 23 May 2022 13:22:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202877F2E;
+        Mon, 23 May 2022 10:18:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D495460B2C;
-        Mon, 23 May 2022 17:16:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A96C385AA;
-        Mon, 23 May 2022 17:16:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3CFCB81210;
+        Mon, 23 May 2022 17:17:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFE38C385A9;
+        Mon, 23 May 2022 17:17:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326217;
-        bh=Jmahjn+knvlSNapX1inMo0lzVlsJsFsC5BvSMtIWq8k=;
+        s=korg; t=1653326249;
+        bh=VdZ3qN2N3rMjOlO5jRK39pc0DwqbAhKuawjvaF1x4mk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGfKFBtgFqaknnU8HAjriHUACLov8OuNy5B0P7e+psa8VqSZOh6SRLI1vXcZW4a3Y
-         wKUwdUYZv32E+bj0F7CcJFXgSl/tsqrj/9sR45YSFHYysIiPsM/lI04um5kZqu+nea
-         K3sr4Vup5Jdl4DTQVQQ259h1K06nUxJzXSe+c8Ss=
+        b=jsHJuiU6dtfGawWn0CbHp0nzjfP26oAG6SAi1qT36oSBYALrI1gaHz+AMXj22VvMz
+         ms+EuA1m1REaMrQpYamAfbq/OWSSARCxXZ++5t3m4uO4UY/VW8GyS+IN9Zy2g1nIT0
+         7hUdXMlwKuGX8JfOYd3o/YIzzocPekuaqKOHuO5U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Richter <rrichter@amd.com>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Jean Delvare <jdelvare@suse.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
         Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 013/132] Watchdog: sp5100_tco: Move timer initialization into function
-Date:   Mon, 23 May 2022 19:03:42 +0200
-Message-Id: <20220523165825.809764522@linuxfoundation.org>
+Subject: [PATCH 5.15 005/132] i2c: piix4: Replace hardcoded memory map size with a #define
+Date:   Mon, 23 May 2022 19:03:34 +0200
+Message-Id: <20220523165824.442712135@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -54,107 +52,87 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Terry Bowman <terry.bowman@amd.com>
 
-commit abd71a948f7aab47ca49d3e7fe6afa6c48c8aae0 upstream.
+commit 93102cb449780f7b4eecf713451627b78373ce49 upstream.
 
-Refactor driver's timer initialization into new function. This is needed
-inorder to support adding new device layouts while using common timer
-initialization.
+Replace number constant with #define to improve readability and
+maintainability.
 
-Co-developed-by: Robert Richter <rrichter@amd.com>
-Signed-off-by: Robert Richter <rrichter@amd.com>
 Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-Tested-by: Jean Delvare <jdelvare@suse.de>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220202153525.1693378-2-terry.bowman@amd.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Cc: Mario Limonciello <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/watchdog/sp5100_tco.c |   65 +++++++++++++++++++++++-------------------
- 1 file changed, 36 insertions(+), 29 deletions(-)
+ drivers/i2c/busses/i2c-piix4.c |   16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
---- a/drivers/watchdog/sp5100_tco.c
-+++ b/drivers/watchdog/sp5100_tco.c
-@@ -215,6 +215,41 @@ static u32 sp5100_tco_read_pm_reg32(u8 i
- 	return val;
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -77,6 +77,7 @@
+ 
+ /* SB800 constants */
+ #define SB800_PIIX4_SMB_IDX		0xcd6
++#define SB800_PIIX4_SMB_MAP_SIZE	2
+ 
+ #define KERNCZ_IMC_IDX			0x3e
+ #define KERNCZ_IMC_DATA			0x3f
+@@ -290,7 +291,8 @@ static int piix4_setup_sb800(struct pci_
+ 	else
+ 		smb_en = (aux) ? 0x28 : 0x2c;
+ 
+-	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, 2, "sb800_piix4_smb")) {
++	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
++				  "sb800_piix4_smb")) {
+ 		dev_err(&PIIX4_dev->dev,
+ 			"SMB base address index region 0x%x already in use.\n",
+ 			SB800_PIIX4_SMB_IDX);
+@@ -302,7 +304,7 @@ static int piix4_setup_sb800(struct pci_
+ 	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
+ 	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
+ 
+-	release_region(SB800_PIIX4_SMB_IDX, 2);
++	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+ 
+ 	if (!smb_en) {
+ 		smb_en_status = smba_en_lo & 0x10;
+@@ -371,7 +373,8 @@ static int piix4_setup_sb800(struct pci_
+ 			piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+ 		}
+ 	} else {
+-		if (!request_muxed_region(SB800_PIIX4_SMB_IDX, 2,
++		if (!request_muxed_region(SB800_PIIX4_SMB_IDX,
++					  SB800_PIIX4_SMB_MAP_SIZE,
+ 					  "sb800_piix4_smb")) {
+ 			release_region(piix4_smba, SMBIOSIZE);
+ 			return -EBUSY;
+@@ -384,7 +387,7 @@ static int piix4_setup_sb800(struct pci_
+ 				       SB800_PIIX4_PORT_IDX;
+ 		piix4_port_mask_sb800 = SB800_PIIX4_PORT_IDX_MASK;
+ 		piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+-		release_region(SB800_PIIX4_SMB_IDX, 2);
++		release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+ 	}
+ 
+ 	dev_info(&PIIX4_dev->dev,
+@@ -682,7 +685,8 @@ static s32 piix4_access_sb800(struct i2c
+ 	u8 port;
+ 	int retval;
+ 
+-	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, 2, "sb800_piix4_smb"))
++	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
++				  "sb800_piix4_smb"))
+ 		return -EBUSY;
+ 
+ 	/* Request the SMBUS semaphore, avoid conflicts with the IMC */
+@@ -758,7 +762,7 @@ static s32 piix4_access_sb800(struct i2c
+ 		piix4_imc_wakeup();
+ 
+ release:
+-	release_region(SB800_PIIX4_SMB_IDX, 2);
++	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+ 	return retval;
  }
  
-+static int sp5100_tco_timer_init(struct sp5100_tco *tco)
-+{
-+	struct watchdog_device *wdd = &tco->wdd;
-+	struct device *dev = wdd->parent;
-+	u32 val;
-+
-+	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
-+	if (val & SP5100_WDT_DISABLED) {
-+		dev_err(dev, "Watchdog hardware is disabled\n");
-+		return -ENODEV;
-+	}
-+
-+	/*
-+	 * Save WatchDogFired status, because WatchDogFired flag is
-+	 * cleared here.
-+	 */
-+	if (val & SP5100_WDT_FIRED)
-+		wdd->bootstatus = WDIOF_CARDRESET;
-+
-+	/* Set watchdog action to reset the system */
-+	val &= ~SP5100_WDT_ACTION_RESET;
-+	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
-+
-+	/* Set a reasonable heartbeat before we stop the timer */
-+	tco_timer_set_timeout(wdd, wdd->timeout);
-+
-+	/*
-+	 * Stop the TCO before we change anything so we don't race with
-+	 * a zeroed timer.
-+	 */
-+	tco_timer_stop(wdd);
-+
-+	return 0;
-+}
-+
- static int sp5100_tco_setupdevice(struct device *dev,
- 				  struct watchdog_device *wdd)
- {
-@@ -340,35 +375,7 @@ static int sp5100_tco_setupdevice(struct
- 	/* Setup the watchdog timer */
- 	tco_timer_enable(tco);
- 
--	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
--	if (val & SP5100_WDT_DISABLED) {
--		dev_err(dev, "Watchdog hardware is disabled\n");
--		ret = -ENODEV;
--		goto unreg_region;
--	}
--
--	/*
--	 * Save WatchDogFired status, because WatchDogFired flag is
--	 * cleared here.
--	 */
--	if (val & SP5100_WDT_FIRED)
--		wdd->bootstatus = WDIOF_CARDRESET;
--	/* Set watchdog action to reset the system */
--	val &= ~SP5100_WDT_ACTION_RESET;
--	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
--
--	/* Set a reasonable heartbeat before we stop the timer */
--	tco_timer_set_timeout(wdd, wdd->timeout);
--
--	/*
--	 * Stop the TCO before we change anything so we don't race with
--	 * a zeroed timer.
--	 */
--	tco_timer_stop(wdd);
--
--	release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
--
--	return 0;
-+	ret = sp5100_tco_timer_init(tco);
- 
- unreg_region:
- 	release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
 
 
