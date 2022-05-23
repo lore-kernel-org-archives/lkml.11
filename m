@@ -2,159 +2,368 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B13FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B4A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231809AbiEWIZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57824 "EHLO
+        id S231919AbiEWI0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbiEWIZg (ORCPT
+        with ESMTP id S231797AbiEWIZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:25:36 -0400
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9416A1B9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:25:32 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220523082529euoutp02843df59cf8199438350aa2bb4d685acb~xrm7yQ9mN1640416404euoutp02E
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:25:29 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220523082529euoutp02843df59cf8199438350aa2bb4d685acb~xrm7yQ9mN1640416404euoutp02E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1653294329;
-        bh=Xt3i2bDFzBoorS3pe19S78Qefpbzo5XCAIUGcGfIhmU=;
-        h=Date:Subject:To:From:In-Reply-To:References:From;
-        b=pbZxOALzpbvOAVqWm2uE0bAuZIH+KJzmehFyc2QnKErw7ZsOgIqtZ1fu+S22Sb4bo
-         VGjILQ+5ju1nd2mbjZNLkKjtBD5NRikIopIvgzSNfMW13PkaOWbSwDzbGKgjD6DhCV
-         AN9vrskz6I5W3PQqxeJDEAs5zK0cizli6jvHPkSc=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220523082529eucas1p16589ffdf204dbfad55d0aefbf2f68dc4~xrm7SFYkL1415614156eucas1p1n;
-        Mon, 23 May 2022 08:25:29 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id AD.47.10260.9F44B826; Mon, 23
-        May 2022 09:25:29 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220523082528eucas1p154de304dc76b15b99d571399400530f3~xrm6ymVAt2444124441eucas1p1a;
-        Mon, 23 May 2022 08:25:28 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220523082528eusmtrp2fe33f2de7b5f28c5c3c8fa8198f3e58b~xrm6xlJgz1491314913eusmtrp2F;
-        Mon, 23 May 2022 08:25:28 +0000 (GMT)
-X-AuditID: cbfec7f5-bddff70000002814-7d-628b44f9a9ab
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 1B.D1.09522.8F44B826; Mon, 23
-        May 2022 09:25:28 +0100 (BST)
-Received: from CAMSVWEXC01.scsc.local (unknown [106.1.227.71]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220523082528eusmtip137c716859f4c05ff6297ff5668064f79~xrm6ktjUt2896028960eusmtip1F;
-        Mon, 23 May 2022 08:25:28 +0000 (GMT)
-Received: from [106.110.32.130] (106.110.32.130) by CAMSVWEXC01.scsc.local
-        (2002:6a01:e347::6a01:e347) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-        Mon, 23 May 2022 09:25:23 +0100
-Message-ID: <43bac47d-5ef6-2b6c-e747-58e5a2fb7b52@samsung.com>
-Date:   Mon, 23 May 2022 10:25:22 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
-        Thunderbird/91.8.1
-Subject: Re: [dm-devel] [PATCH v4 00/13] support non power of 2 zoned
- devices
+        Mon, 23 May 2022 04:25:43 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487F42DA8D;
+        Mon, 23 May 2022 01:25:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653294341; x=1684830341;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=igM5Ma7k6eALC5kfFd9tq0y+ANq1lCOaYezXzYPWJnE=;
+  b=WZbFlL1KKOy3dDuoAtFgXOIOzufFmY2q06oWUFnjzkBWyg9mwskLzGTC
+   FKB3pN45sNGoNA3+66G3X9r4yNBfWF/y2lDK12dz912SdVX+R9qjgwRaS
+   lOymXxt8Y43JWcsmopJH3NIfN57rZAAmA38G+84zEh05yRgsK214XQHH6
+   Iw0J9xQSPi6zMEuWpH3oBtWEJX2DEIXdWVOwaN0RsAKYBMX3AMqbTksFv
+   fJ29+wp3DhXcdZ5R8Zh8JtCE9zX8FczUGzJ6D5Xf7uZCrrshUZApxn3Dy
+   DNnI1fB/iMGmlDt8DAeYSfdX63EbNFmMBPBUZXU5Kq2c8WKJF9LwoDwGS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="260750720"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="260750720"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 01:25:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="571965970"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga007.jf.intel.com with ESMTP; 23 May 2022 01:25:38 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 23 May 2022 01:25:37 -0700
+Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 23 May 2022 01:25:36 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Mon, 23 May 2022 01:25:36 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Mon, 23 May 2022 01:25:35 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jkbKe7AFEqusPJ2X94EKKSV7HxQ48Yq/JFAP4RMK1kpLEn5YjveDlYi0ecfqRYKKpiglyRjbhVvBIN7RG4k4gGegWq2Ab+QdGg3A25BW5wRXp8HRK+QbFcvn1cPP39j8zyFySlYZbrWeq9flXs6GNhNoRUjZ6LrfIW6Btjn2CxTS1R+2cE/5C4XDd9s4yaMukz3U2eWZ6wpd/Ceo7JIOCkgLABQkLiaTEbiFVPT17+8eIbl1yPzf1hpljtzuzLR8BnL7tPYtN7M5wPhgONTk8xOP7HDTKQboEMYcHeYYVZONw8jy7oe87ToxkAkjd8JMCs/VhsY1yslOJ1vjhYTW/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SUPcr5MNodFzKyOfga4eJJ75hC8ovKD8iBN7CfRCV1o=;
+ b=NTmjLDZ0nW34tvzgNSPAaCDvrSbA9e3RkWLDX38nzbhmjo8EJpGssokauFJP6wZYHn5kobWI6yR0XQkkFJTaNOeG7vyXg4rT0kJD4h+p/pCpvr2cnz4b8t3efIsp85aHgWrMd56acKa+021CnTWnVxJwo0mEZJuSMaZZwQJT4GKYAQb74yVxUUoaRtGO6BNCk0jE5YwuxvpTODMG7H3IpQ20Pju7fsVRWxffIfQeqJ5CxjDdikn5UGRERggyRbAUhczRNvZ3YGceDYCkCWfdXsNfY+/yVOSKH5Q8EDMsyeomxqXZg9dFVV4rJZ+dqSmWNUmoKI9hc7qatdsgQ4OR7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
+ by DM6PR11MB3930.namprd11.prod.outlook.com (2603:10b6:5:197::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Mon, 23 May
+ 2022 08:25:34 +0000
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::3114:d1ec:335e:d303]) by BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::3114:d1ec:335e:d303%3]) with mapi id 15.20.5273.023; Mon, 23 May 2022
+ 08:25:34 +0000
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Lu Baolu" <baolu.lu@linux.intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "will@kernel.org" <will@kernel.org>
+CC:     "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>
+Subject: RE: [PATCH v4 4/6] iommu: Add PASID support for DMA mapping API users
+Thread-Topic: [PATCH v4 4/6] iommu: Add PASID support for DMA mapping API
+ users
+Thread-Index: AQHYauOT13oDIcCFekWTxcG7Uq0rw60sIOpA
+Date:   Mon, 23 May 2022 08:25:33 +0000
+Message-ID: <BL1PR11MB5271E995E160E0C6A6C0C89A8CD49@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+ <20220518182120.1136715-5-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20220518182120.1136715-5-jacob.jun.pan@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     <dsterba@suse.cz>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        =?UTF-8?Q?Javier_Gonz=c3=a1lez?= <javier.gonz@samsung.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Johannes Thumshirn <Johannes.Thumshirn@wdc.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "pankydev8@gmail.com" <pankydev8@gmail.com>,
-        "gost.dev@samsung.com" <gost.dev@samsung.com>,
-        "jiangbo.365@bytedance.com" <jiangbo.365@bytedance.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "dm-devel@redhat.com" <dm-devel@redhat.com>,
-        "dsterba@suse.com" <dsterba@suse.com>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Adam Manzanares <a.manzanares@samsung.com>
-From:   Pankaj Raghav <p.raghav@samsung.com>
-In-Reply-To: <20220520171830.GR18596@twin.jikos.cz>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [106.110.32.130]
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-        CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347)
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0xbVRzHPbeXey+NhbuC4YSxqnXOiFpqIMtJ9tB1GK5PmBofxMjuypU1
-        K2VpV3yQRZiWt8BKgllhlDDdsN1ESwF5TVYpjNC6aWEryMbMYI/ihgiMlQq49m6G/z6/8/t+
-        c77fk0MJxEVELKXSHOC0GlYtJYR4W7//3HP+5LI98qPjBLJeqiRQwH1OgHpu14ah83cLMHQs
-        sIij7kYjhr6zOjE02WwSoPLev3G0XHoZQ0bHBYB6xp5Bv19tIlF3zyCOPJ11BDIfnyKRt2oK
-        oJOjUzgq/HEBIEO5n3wxmlk5e5JgOkyXSMbj1jM2SwnBtHzzOdM1mk8wh1xOAdNhmAhjZk6P
-        EEyzfQRnXA19JNMylMfM2SRMUW8ZlhaRLtyayalVuZw2Yftu4V6v5xDYb8Q/mXGcCMsHxwSl
-        IJyCdBI0X5vES4GQEtNNAN6x+jF+mAdwZtQcxg9zAJ6Z7sEfWFar/yX4xQkAb7prif9VluVV
-        kh+6AJydrQlZRPR2aJswEEHG6SehvaKY4M/XwcEjkyHNI/R7sMbkCp1H0anwcOd4iAV0DByb
-        NIdCRdOtFDzfVn3vBooi6HhYUEIGNeF0Irx85SrJ65+GhvbAfX4Utt+qEwTlkJbCWo+Mb3AQ
-        nup3hXJC+ogQmk934bwmGfbVR/KaKOgbsJM8x8HVjmCEIOfBKW9AwHu/BLCyo5ngvVtghUvN
-        4w5Y4NzFYwT03lrHh4mAxrav74cRweJCcRXYaFrzDKY1dU1rqpjWVGkAuAXEcHpddhanS9Rw
-        H8t0bLZOr8mSKXOybeDeXx1aGVj4CTT5ZmUOgFHAASAlkEaL2tniPWJRJvvpZ5w2J0OrV3M6
-        B1hP4dIYkVL1Ayums9gD3D6O289pH2wxKjw2HzMoMi+Ul2iM7upX0x7u9n7R+tjC7jnJ98Nx
-        yhtv/jkY7yl4Ac4ffv8lyZZtVUs+e/1D/fa4LDixil3Ji60Fv+0cWOp+x9t7UaV+vGR69on1
-        9b4PkpMWG1ZsAXbDrkLwbq5s5PpMZ0oGWdmfUHNcuWKR30j9ZXORzbIvY975lPG1zXfdMuWO
-        wVSV9Lr7muLlXO/trz5K23hzvMI3YZSnWH9NX8xpbmwcfns5SZstCf/DZrRfvKNjWvuc3NlM
-        keLZKGyo7pV5xwbVwb/Gf27Vp06/Jdw0lPLPGC45sy1yk/DoG5HTO7fKxz70JyhfbymzwsXK
-        JaX8VP6wIrExQVE5zH6rTJfiur3s8/ECrY79Dy66qUsaBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrIKsWRmVeSWpSXmKPExsVy+t/xu7o/XLqTDC5+UrRYfbefzeL32fPM
-        FnvfzWa1uPCjkcli8e/vLBZ7Fk1isli5+iiTxZP1s5gteg58YLH423WPyWLSoWuMFntvaVtc
-        eryC3WLP3pMsFpd3zWGzmL/sKbvFjQlPGS3W3HzKYtG28SujRWvPT3YHEY9/J9aweeycdZfd
-        4/LZUo9NqzrZPDYvqffYfbOBzaPpzFFmj52t91k93u+7yuaxfstVFo8zC46we2w+Xe3xeZOc
-        R/uBbqYAvig9m6L80pJUhYz84hJbpWhDCyM9Q0sLPSMTSz1DY/NYKyNTJX07m5TUnMyy1CJ9
-        uwS9jBuXmxgLJrFUvD+0nLWBcTFzFyMnh4SAicT/yX/Yuhi5OIQEljJKzDp1jBEiISPx6cpH
-        dghbWOLPtS6ooo+MEvumHmUCSQgJ7GaU6FshB2LzCthJbLrfygZiswioSmzp62CDiAtKnJz5
-        hAXEFhWIkHiw+ywriC0s4CtxdcobsDizgLjErSfzmUAWiAhs5pD49W8Z1IItrBIvX+Z1MXJw
-        sAloSTR2gh3EKWAsce/BY3aIXk2J1u2/oWx5ie1v5zCDlEsIKEnMvqwHcX+txKv7uxknMIrM
-        QnLRLCSbZyGZNAvJpAWMLKsYRVJLi3PTc4sN9YoTc4tL89L1kvNzNzEC0862Yz8372Cc9+qj
-        3iFGJg7GQ4wSHMxKIrzbEzuShHhTEiurUovy44tKc1KLDzGaAoNlIrOUaHI+MPHllcQbmhmY
-        GpqYWRqYWpoZK4nzehZ0JAoJpCeWpGanphakFsH0MXFwSjUwxe17x7rj/5vnH5fG9B80T49V
-        MX0zYfXp/e7Bs+y9lk3//vFU8l+WfX2xZ5cvPV76p0pb99ieS9pTK38pezHJfV4YuKl8lXPj
-        UxvbjE7NCtU5/9s37jL5mLR+SkcRr7Be/6Pv1h/k4yX/Lj0VL+pjvH3jzSaNWJ7Vs6cv+HH4
-        4dVLiy/k5Tg9mZKm9+ZoZPCZSC/bB3/NZZ4miFUeO9xafesCa9CrugdLTgdu+WrI1TLjUvEU
-        jeyNte2OH1kZlrOv22NxScJ+tsoXIW/1jfv0Vvkosf/kjt0uf/S5+g7fAG77HXp+KbP3PKuN
-        2LaRa9euN/eMH308WmH35q2Ixc+Atk7ul4ey6xwZTU5+PX2wTkOJpTgj0VCLuag4EQB2tdxI
-        xAMAAA==
-X-CMS-MailID: 20220523082528eucas1p154de304dc76b15b99d571399400530f3
-X-Msg-Generator: CA
-X-RootMTR: 20220520172257eucas1p1b94b150d71352587ced5d46b8c3f3537
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220520172257eucas1p1b94b150d71352587ced5d46b8c3f3537
-References: <YoPAnj9ufkt5nh1G@mit.edu>
-        <7f9cb19b-621b-75ea-7273-2d2769237851@opensource.wdc.com>
-        <20220519031237.sw45lvzrydrm7fpb@garbanzo>
-        <69f06f90-d31b-620b-9009-188d1d641562@opensource.wdc.com>
-        <PH0PR04MB74166C87F694B150A5AE0F009BD09@PH0PR04MB7416.namprd04.prod.outlook.com>
-        <4a8f0e1b-0acb-1ed4-8d7a-c9ba93fcfd02@opensource.wdc.com>
-        <16f3f9ee-7db7-2173-840c-534f67bcaf04@suse.de>
-        <20220520062720.wxdcp5lkscesppch@mpHalley-2.localdomain>
-        <be429864-09cb-e3fb-2afe-46a3453c4d73@opensource.wdc.com>
-        <aee22e8a-b89b-378c-3d5b-238c1215b01d@samsung.com>
-        <CGME20220520172257eucas1p1b94b150d71352587ced5d46b8c3f3537@eucas1p1.samsung.com>
-        <20220520171830.GR18596@twin.jikos.cz>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 96e41911-c5a1-44f1-3f1c-08da3c95ce8e
+x-ms-traffictypediagnostic: DM6PR11MB3930:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <DM6PR11MB393052E3A8AA4035585217AD8CD49@DM6PR11MB3930.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tvZuz15qw5OsqjmiDLi12U60sJIjSvsjn0HTQo5eMMRvB4+AMzqaBYKRL7TfIB23r/D5X7Fuu5Pc7XluATERvRqKmnx36kPheGos7h8aHjn/noA2i8trADvcdq/8H3sAfkoDNUPLXptH2CqWRlsIQqc6qOwK6JkwJda0l/b9wbltSr8AoyzNPaN3VzWZIJHbfcH1snmUWAt9asOxma2xDiQIdACXlbzFU5P0JwEYWlMqgzJ45sHAAZji6Eu883VBm+iVYQMofsGrHxL3lFVfQeS0cnFkkCGFDZTGvTb0DIreGiFcuhUVxkzmHugoMCUUow8nSdcFVwcqKhrHAmmrzundIcGD/2xC8dw6ekH4mhDnM8f+y++9zt60U+KAuHfF3NgJBlev81sU9JPOr7OOFCndVL7h49ceYJSoNLHnsfYGHpSj/otMknkjVyeVJxmFEP+9ZEJleCfpL0QHaiDGbRqJiqOFmJ0YAZUxm23emvAtvZ01421zVoZALOZpOdg+gShkQ3yVQMiEwEfeFiOHmJOHnpDYj8I/iPSpovuu2DN5UMr6s/flaAlyhmlnTAHJ+IYWhkBNGQtwLYV5M+HdMHeENTrxFTW0uhmquooq9VUuSV01FRKLzqLFddgC9R0ykvlZxpUBmUBOyohNAtXK8tEEKNR0fm0YZ0HqSjO2KlS+/wpoUkpff08qzZU/q5mDXa4uRWHahLAu9Y4pSIyAO+RaY/hCxrIDdzUd7+XrCEE7hQdQirgoit44N/RyTK2GR9FwYrkSnrploWHuywvQVjb6Z3C8Y6Jvi7do3O+Y+ms=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5271.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(921005)(38100700002)(2906002)(38070700005)(66946007)(8676002)(66446008)(64756008)(66476007)(66556008)(76116006)(82960400001)(55016003)(52536014)(122000001)(71200400001)(5660300002)(54906003)(110136005)(8936002)(7416002)(316002)(508600001)(9686003)(7696005)(26005)(86362001)(186003)(83380400001)(33656002)(6506007)(26730200005)(19860200003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?44w5/dcusEePT35zys05DpstC2T/PHIwZdlIFDRP4uUm5rrZghlOFSBOeQ2D?=
+ =?us-ascii?Q?OqoiDmtV0C1klcabZn4SZjTH8o/P38OUc9wXwJJ3t51aH8/PWvKUZysZQGa6?=
+ =?us-ascii?Q?XKBsOP57l/77XdtBrLs32I8JTEKRtlQ2KbSHrIWhmgPgVOAYeDNcOIYJnMAZ?=
+ =?us-ascii?Q?+yZtAt7Zvkgy84lpqiiRi2N/4JFjoqOAyXAc/m+5I9nKJ/Y3VxzlvJp+qrqc?=
+ =?us-ascii?Q?2hOuo5uJmWgTrFqrUhiDQm3PcyFj/OKMJkvfQbSglAz14J0iXgPIA+jG+glC?=
+ =?us-ascii?Q?pMiEhfM1dZ03X++PiWAzWbeyu1wC4nEoy3yCnsi3GsijTfMhCGNumSZbolfR?=
+ =?us-ascii?Q?xxf71s5wOwe2DIZhsqvwLONqJ6awHIuCT3TXz8jGf4bnGgnOQioN+sjae/OJ?=
+ =?us-ascii?Q?aH8fR9Vaoufff0tJa7yeb+3IL5t9wts/LDx51fj/deeDmCvNV99X7DC4Ho5P?=
+ =?us-ascii?Q?RuehCBSWZIV4zUU2rDgc+27pk8JkPnAxQPtJVQREj3aS9bIz7pytPLYs9ULe?=
+ =?us-ascii?Q?0kl1rsXXfK9qQmFXzhLDb5kbmt4YhpKiVZJbSHu0Vx14EivBamOY0Q6Di+9h?=
+ =?us-ascii?Q?eFUIPpcFchM5F6Arj2ZB7S8A0ZncitO7nJMLQ1j3JimvWQETndl4e0gfu3r3?=
+ =?us-ascii?Q?zApJRyYZd/jAb5DVwv4gjtI+vtgn4/0zKShd4xbHr5jaChbCJIVN+10soy2+?=
+ =?us-ascii?Q?nzPGnvVCmtUwKiyJOIUFnbikEIGdSGtsMaMYJcdrEScLnqeQ7QSJL7dpHzRs?=
+ =?us-ascii?Q?uzrJVAZIflQp8HjUxrxbtfvudF+VO+tlKceb7NU5olHQRESWwgAT2L5cUUeA?=
+ =?us-ascii?Q?fnDscte/pjW1Mlz2L6yoEntVvRJ9mad7HmdVK/MbnkPJxSb7ZhtcLJMa6Hpx?=
+ =?us-ascii?Q?NHkOsbaJcXvGAIrOaGX4ZFrZeeAIEbByhCNoOCaMkLoi1A+LK+2aYRBlYEor?=
+ =?us-ascii?Q?SMJws46zgkNfxzcn/fu3KR2mfKRogd6zbWBMowEUYJCroEAvp+xoIQNw5ZIL?=
+ =?us-ascii?Q?MEuIKezCiZl1pN9sY/+CikzTitpgIaJIxu/MZq9fcqUwi/IbvdWKeu0A5nVV?=
+ =?us-ascii?Q?yt01/ZGulAU/9DmiShN9A8uKzz4ocJM9vLUppDR8lWaXTTCQR4uFMQwN3jNb?=
+ =?us-ascii?Q?KMPEU8e0Lm718HTS/k12ogPX6ytXQ5d/R+SCJOLCW5EbrL+2OZQSoq/2q0rE?=
+ =?us-ascii?Q?0HYSKZjF+MOpv44EvkDaW7wOPOj1oaKIK281ViEu8A+JlHSlnWJSyY0pKg4I?=
+ =?us-ascii?Q?VMHfdetuj7+LgzXYSizLHzrwj0e3zusU8kFZD9ac6/hPACn/PIkRFPvyTtJ7?=
+ =?us-ascii?Q?150FiL0mizIohVxo7Q9V/n0861ceU7B/b52dEsQCNjFzTs1h+PgqinSg/vDc?=
+ =?us-ascii?Q?rl1yG76hxmBfSh2a3VZ+LnQtQZVi7CC+GtvVbbWPYkgBoB27FpifblMHa4bz?=
+ =?us-ascii?Q?MeNTSjA3nTFMbL5HxxXiT90pT3ppvmCkLU5/65bJC7FC/R95kBRyOGEub8hN?=
+ =?us-ascii?Q?MDdrNUWeVqnQfNklxskEHqNbbW6QM+p61rMhwajsczTbIS6yeb6ZPGGEfqPr?=
+ =?us-ascii?Q?BiHXDPvpg+U9UbEBQKZgC7u4kvfnOTDbmF3xKONPipYSUqUI8JIKQ3bjVWPD?=
+ =?us-ascii?Q?wrsu8ZvrieDmaQFpfstFaujZLWEwqT75/JZ2WHDVJk9+Rv1neme3McJr0aDE?=
+ =?us-ascii?Q?E1ZZYcNNknl6kgsL95+ELRdxxS6CrHKn7ABO/QJxhXiDYjLb4VibRN09KIuU?=
+ =?us-ascii?Q?NV9MmFa+8w=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96e41911-c5a1-44f1-3f1c-08da3c95ce8e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2022 08:25:33.9412
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BE5mP+sEy7vCcPDiUihGcCiA3xcA2PipEHRK4QTGacbgBTmrS7m4Zcs1TNuMVwK8JJWqmKzaRD2lOM5cCt2ydw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3930
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/20/22 19:18, David Sterba wrote:
->> I see that many people in the community feel it is better to target the
->> dm layer for the initial support of npo2 devices. I can give it a shot
->> and maintain a native out-of-tree support for FSs for npo2 devices and
->> merge it upstream as we see fit later.
-> 
-> Some of the changes from your patchset are cleanups or abstracting the
-> alignment and zone calculations, so this can be merged to minimize the
-> out of tree code.
-Sounds good. I will send it separately. Thanks.
+> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Sent: Thursday, May 19, 2022 2:21 AM
+>=20
+> DMA mapping API is the de facto standard for in-kernel DMA. It operates
+> on a per device/RID basis which is not PASID-aware.
+>=20
+> Some modern devices such as Intel Data Streaming Accelerator, PASID is
+> required for certain work submissions. To allow such devices use DMA
+> mapping API, we need the following functionalities:
+> 1. Provide device a way to retrieve a PASID for work submission within
+> the kernel
+> 2. Enable the kernel PASID on the IOMMU for the device
+> 3. Attach the kernel PASID to the device's default DMA domain, let it
+> be IOVA or physical address in case of pass-through.
+>=20
+> This patch introduces a driver facing API that enables DMA API
+> PASID usage. Once enabled, device drivers can continue to use DMA APIs as
+> is. There is no difference in dma_handle between without PASID and with
+> PASID.
+>=20
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/dma-iommu.c | 114
+> ++++++++++++++++++++++++++++++++++++++
+>  include/linux/dma-iommu.h |   3 +
+>  2 files changed, 117 insertions(+)
+>=20
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 1ca85d37eeab..6ad7ba619ef0 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -34,6 +34,8 @@ struct iommu_dma_msi_page {
+>  	phys_addr_t		phys;
+>  };
+>=20
+> +static DECLARE_IOASID_SET(iommu_dma_pasid);
+> +
+>  enum iommu_dma_cookie_type {
+>  	IOMMU_DMA_IOVA_COOKIE,
+>  	IOMMU_DMA_MSI_COOKIE,
+> @@ -370,6 +372,118 @@ void iommu_put_dma_cookie(struct
+> iommu_domain *domain)
+>  	domain->iova_cookie =3D NULL;
+>  }
+>=20
+> +/* Protect iommu_domain DMA PASID data */
+> +static DEFINE_MUTEX(dma_pasid_lock);
+> +/**
+> + * iommu_attach_dma_pasid --Attach a PASID for in-kernel DMA. Use the
+> device's
+> + * DMA domain.
+> + * @dev: Device to be enabled
+> + * @pasid: The returned kernel PASID to be used for DMA
+> + *
+> + * DMA request with PASID will be mapped the same way as the legacy DMA.
+> + * If the device is in pass-through, PASID will also pass-through. If th=
+e
+> + * device is in IOVA, the PASID will point to the same IOVA page table.
+> + *
+> + * @return err code or 0 on success
+> + */
+> +int iommu_attach_dma_pasid(struct device *dev, ioasid_t *pasid)
+
+iommu_attach_dma_domain_pasid? 'dma_pasid' is too broad from
+a API p.o.v.
+
+> +{
+> +	struct iommu_domain *dom;
+> +	ioasid_t id, max;
+> +	int ret =3D 0;
+> +
+> +	dom =3D iommu_get_domain_for_dev(dev);
+> +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
+> +		return -ENODEV;
+> +
+> +	/* Only support domain types that DMA API can be used */
+> +	if (dom->type =3D=3D IOMMU_DOMAIN_UNMANAGED ||
+> +	    dom->type =3D=3D IOMMU_DOMAIN_BLOCKED) {
+> +		dev_warn(dev, "Invalid domain type %d", dom->type);
+> +		return -EPERM;
+> +	}
+
+WARN_ON.
+
+and probably we can just check whether domain is default domain here.
+
+> +
+> +	mutex_lock(&dma_pasid_lock);
+> +	id =3D dom->dma_pasid;
+> +	if (!id) {
+> +		/*
+> +		 * First device to use PASID in its DMA domain, allocate
+> +		 * a single PASID per DMA domain is all we need, it is also
+> +		 * good for performance when it comes down to IOTLB flush.
+> +		 */
+> +		max =3D 1U << dev->iommu->pasid_bits;
+> +		if (!max) {
+> +			ret =3D -EINVAL;
+> +			goto done_unlock;
+> +		}
+> +
+> +		id =3D ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
+> +		if (id =3D=3D INVALID_IOASID) {
+> +			ret =3D -ENOMEM;
+> +			goto done_unlock;
+> +		}
+> +
+> +		dom->dma_pasid =3D id;
+> +		atomic_set(&dom->dma_pasid_users, 1);
+
+this is always accessed with lock held hence no need to be atomic.
+
+> +	}
+> +
+> +	ret =3D iommu_attach_device_pasid(dom, dev, id);
+> +	if (!ret) {
+> +		*pasid =3D id;
+> +		atomic_inc(&dom->dma_pasid_users);
+> +		goto done_unlock;
+> +	}
+> +
+> +	if (atomic_dec_and_test(&dom->dma_pasid_users)) {
+> +		ioasid_free(id);
+> +		dom->dma_pasid =3D 0;
+> +	}
+> +done_unlock:
+> +	mutex_unlock(&dma_pasid_lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iommu_attach_dma_pasid);
+> +
+> +/**
+> + * iommu_detach_dma_pasid --Disable in-kernel DMA request with PASID
+> + * @dev:	Device's PASID DMA to be disabled
+> + *
+> + * It is the device driver's responsibility to ensure no more incoming D=
+MA
+> + * requests with the kernel PASID before calling this function. IOMMU dr=
+iver
+> + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared a=
+nd
+> + * drained.
+> + *
+> + */
+> +void iommu_detach_dma_pasid(struct device *dev)
+> +{
+> +	struct iommu_domain *dom;
+> +	ioasid_t pasid;
+> +
+> +	dom =3D iommu_get_domain_for_dev(dev);
+> +	if (WARN_ON(!dom || !dom->ops || !dom->ops->detach_dev_pasid))
+> +		return;
+> +
+> +	/* Only support DMA API managed domain type */
+> +	if (WARN_ON(dom->type =3D=3D IOMMU_DOMAIN_UNMANAGED ||
+> +		    dom->type =3D=3D IOMMU_DOMAIN_BLOCKED))
+> +		return;
+> +
+> +	mutex_lock(&dma_pasid_lock);
+> +	pasid =3D iommu_get_pasid_from_domain(dev, dom);
+> +	if (!pasid || pasid =3D=3D INVALID_IOASID) {
+> +		dev_err(dev, "No valid DMA PASID attached\n");
+> +		mutex_unlock(&dma_pasid_lock);
+> +		return;
+> +	}
+
+here just use dom->dma_pasid and let iommu driver to figure out
+underlying whether this device has been attached to the domain
+with the said pasid.
+
+> +	iommu_detach_device_pasid(dom, dev, pasid);
+> +	if (atomic_dec_and_test(&dom->dma_pasid_users)) {
+> +		ioasid_free(pasid);
+> +		dom->dma_pasid =3D 0;
+> +	}
+> +	mutex_unlock(&dma_pasid_lock);
+> +}
+> +EXPORT_SYMBOL(iommu_detach_dma_pasid);
+> +
+>  /**
+>   * iommu_dma_get_resv_regions - Reserved region driver helper
+>   * @dev: Device from iommu_get_resv_regions()
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index 24607dc3c2ac..538650b9cb75 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -18,6 +18,9 @@ int iommu_get_dma_cookie(struct iommu_domain
+> *domain);
+>  int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t
+> base);
+>  void iommu_put_dma_cookie(struct iommu_domain *domain);
+>=20
+> +int iommu_attach_dma_pasid(struct device *dev, ioasid_t *pasid);
+> +void iommu_detach_dma_pasid(struct device *dev);
+> +
+>  /* Setup call for arch DMA mapping code */
+>  void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64
+> dma_limit);
+>  int iommu_dma_init_fq(struct iommu_domain *domain);
+> --
+> 2.25.1
+
