@@ -2,153 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F217C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 093C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244714AbiEWSRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
+        id S244844AbiEWSRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243232AbiEWSBU (ORCPT
+        with ESMTP id S243701AbiEWSCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:01:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32FB6DFF74;
-        Mon, 23 May 2022 10:46:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 101B9B81202;
-        Mon, 23 May 2022 17:29:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CCF8C34115;
-        Mon, 23 May 2022 17:29:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326969;
-        bh=4lto3opJQdBcvB9mshv3B7x9QIIiku/yZIV+JmzGeQA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xQzOtvM9JC0V7HwfC58bMUbkkTAuEsHm9mALqlQWRf7QXU0Q3EqHT5zjE30AVxSMt
-         7+iSAdVAQZDR5mfEhbT+KjvR3OyneIjUrGh7DhkZ1no4g+Raj+8hG/Khu9eo6LCANa
-         nFTQLGvsOW2FPBuGDh9oejvjeDKIgfblX46mZp9M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 115/158] mptcp: Do TCP fallback on early DSS checksum failure
-Date:   Mon, 23 May 2022 19:04:32 +0200
-Message-Id: <20220523165850.007093415@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 23 May 2022 14:02:01 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84B0E15DC;
+        Mon, 23 May 2022 10:46:54 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id r6-20020a1c2b06000000b00396fee5ebc9so4931wmr.1;
+        Mon, 23 May 2022 10:46:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nqWcOyn3PXt1X1nKWcFnT+4sHBA6gWKtV/kf9MDUA7o=;
+        b=HKXHJBcOg7lQks5kDSUQtrxQgMC2fx2+weg16YS+NWI7HKddWW0051D0XlVWZnw8Ll
+         lRLtj7tDbxyt2ldKgMsNG3KWXnFwA5cstztvfbAiBcEcyHoBxxcSUkk9Hk6rAnSSaxJM
+         Gd/iyk53+92Hfy3JYsVu3CZZVB1HHFmUQnzRzdCZDqUldjmA6tqEnio8pFS0X4WDLhc+
+         LnwgXz2C9a2jexaB1mLszAXMtzJOCq3DNPceHjyrRZQbpis929atLctr1PbZ4aeGqEZ7
+         VJkQw9nGU6Vj7T5skqJFJ8sqK5/vmlxfGpcVAZ2IJcqoUfR4Uif1rFolA1ZEWYI/G/eB
+         Ghfw==
+X-Gm-Message-State: AOAM530ZUEiqDZtggv00Jth2NpR4H991Hc88Qn/Xob6TEMkqwx2TySqe
+        tF8kxdeCx96uNMo9Aqd6uEBznnJFEf0=
+X-Google-Smtp-Source: ABdhPJyEdWzCn0L2yyxPQcLUSRH/1H0nuvgdYiTusbHGyusRpWesuhpMBx3CwF3sI0evb0YKQ8o3zg==
+X-Received: by 2002:a05:600c:4fd3:b0:394:7fa6:2584 with SMTP id o19-20020a05600c4fd300b003947fa62584mr96129wmq.177.1653327674307;
+        Mon, 23 May 2022 10:41:14 -0700 (PDT)
+Received: from [192.168.1.126] ([94.205.35.240])
+        by smtp.gmail.com with ESMTPSA id x1-20020a1c7c01000000b00397122e63b6sm9334328wmc.29.2022.05.23.10.41.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 10:41:13 -0700 (PDT)
+Message-ID: <22589460-930c-b307-acf0-2a49f5f5261f@linux.com>
+Date:   Mon, 23 May 2022 21:41:09 +0400
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5.10] staging: rtl8723bs: prevent ->Ssid overflow in
+ rtw_wx_set_scan()
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        dan.carpenter@oracle.com, straube.linux@gmail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, stable <stable@vger.kernel.org>
+References: <YoZk3YLEDYKGG5xe@kroah.com>
+ <20220520035730.5533-1-efremov@linux.com> <YounkTGwmcQns3vy@kroah.com>
+From:   Denis Efremov <efremov@linux.com>
+In-Reply-To: <YounkTGwmcQns3vy@kroah.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Hi,
 
-[ Upstream commit ae66fb2ba6c3dcaf8b9612b65aa949a1a4bed150 ]
+On 5/23/22 19:26, Greg KH wrote:
+> On Fri, May 20, 2022 at 07:57:30AM +0400, Denis Efremov (Oracle) wrote:
+>> This code has a check to prevent read overflow but it needs another
+>> check to prevent writing beyond the end of the ->Ssid[] array.
+>>
+>> Fixes: 554c0a3abf21 ("staging: Add rtl8723bs sdio wifi driver")
+>> Cc: stable <stable@vger.kernel.org>
+>> Signed-off-by: Denis Efremov (Oracle) <efremov@linux.com>
+>> ---
+>>  drivers/staging/rtl8723bs/os_dep/ioctl_linux.c | 6 ++++--
+>>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> And only 5.10 needs this?  What about all other kernel branches?
+> 
 
-RFC 8684 section 3.7 describes several opportunities for a MPTCP
-connection to "fall back" to regular TCP early in the connection
-process, before it has been confirmed that MPTCP options can be
-successfully propagated on all SYN, SYN/ACK, and data packets. If a peer
-acknowledges the first received data packet with a regular TCP header
-(no MPTCP options), fallback is allowed.
+From 5.10, 5.4, 4.19, to 4.14.
 
-If the recipient of that first data packet finds a MPTCP DSS checksum
-error, this provides an opportunity to fail gracefully with a TCP
-fallback rather than resetting the connection (as might happen if a
-checksum failure were detected later).
+There is a small spaces conflict in 5.4-4.14 kernels because of
+c77761d660a6 staging: rtl8723bs: Fix spacing issues
 
-This commit modifies the checksum failure code to attempt fallback on
-the initial subflow of a MPTCP connection, only if it's a failure in the
-first data mapping. In cases where the peer initiates the connection,
-requests checksums, is the first to send data, and the peer is sending
-incorrect checksums (see
-https://github.com/multipath-tcp/mptcp_net-next/issues/275), this allows
-the connection to proceed as TCP rather than reset.
+I sent another patch to handle it.
 
-Fixes: dd8bcd1768ff ("mptcp: validate the data checksum")
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/mptcp/protocol.h |  3 ++-
- net/mptcp/subflow.c  | 21 ++++++++++++++++++---
- 2 files changed, 20 insertions(+), 4 deletions(-)
-
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index e4413b3e50c2..8015389859d9 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -443,7 +443,8 @@ struct mptcp_subflow_context {
- 		can_ack : 1,        /* only after processing the remote a key */
- 		disposable : 1,	    /* ctx can be free at ulp release time */
- 		stale : 1,	    /* unable to snd/rcv data, do not use for xmit */
--		local_id_valid : 1; /* local_id is correctly initialized */
-+		local_id_valid : 1, /* local_id is correctly initialized */
-+		valid_csum_seen : 1;        /* at least one csum validated */
- 	enum mptcp_data_avail data_avail;
- 	u32	remote_nonce;
- 	u64	thmac;
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index e27574e9f969..7a3a70067c80 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -958,11 +958,14 @@ static enum mapping_status validate_data_csum(struct sock *ssk, struct sk_buff *
- 				 subflow->map_data_csum);
- 	if (unlikely(csum)) {
- 		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_DATACSUMERR);
--		subflow->send_mp_fail = 1;
--		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_MPFAILTX);
-+		if (subflow->mp_join || subflow->valid_csum_seen) {
-+			subflow->send_mp_fail = 1;
-+			MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_MPFAILTX);
-+		}
- 		return subflow->mp_join ? MAPPING_INVALID : MAPPING_DUMMY;
- 	}
- 
-+	subflow->valid_csum_seen = 1;
- 	return MAPPING_OK;
- }
- 
-@@ -1144,6 +1147,18 @@ static void subflow_sched_work_if_closed(struct mptcp_sock *msk, struct sock *ss
- 	}
- }
- 
-+static bool subflow_can_fallback(struct mptcp_subflow_context *subflow)
-+{
-+	struct mptcp_sock *msk = mptcp_sk(subflow->conn);
-+
-+	if (subflow->mp_join)
-+		return false;
-+	else if (READ_ONCE(msk->csum_enabled))
-+		return !subflow->valid_csum_seen;
-+	else
-+		return !subflow->fully_established;
-+}
-+
- static bool subflow_check_data_avail(struct sock *ssk)
- {
- 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-@@ -1221,7 +1236,7 @@ static bool subflow_check_data_avail(struct sock *ssk)
- 		return true;
- 	}
- 
--	if (subflow->mp_join || subflow->fully_established) {
-+	if (!subflow_can_fallback(subflow)) {
- 		/* fatal protocol error, close the socket.
- 		 * subflow_error_report() will introduce the appropriate barriers
- 		 */
--- 
-2.35.1
-
-
-
+Thanks,
+Denis
