@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5FB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239315AbiEWRE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46392 "EHLO
+        id S239327AbiEWRFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239186AbiEWREa (ORCPT
+        with ESMTP id S239256AbiEWREf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECB2606C5;
-        Mon, 23 May 2022 10:04:28 -0700 (PDT)
+        Mon, 23 May 2022 13:04:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CEE60B85;
+        Mon, 23 May 2022 10:04:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B638614CA;
-        Mon, 23 May 2022 17:04:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C77BC385AA;
-        Mon, 23 May 2022 17:04:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74880B811E9;
+        Mon, 23 May 2022 17:04:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DBC9C385A9;
+        Mon, 23 May 2022 17:04:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325467;
-        bh=HSgZXCYSvJ2DAUSCVxoxr58HGGP+tTK7i18NqmCvYZI=;
+        s=korg; t=1653325471;
+        bh=sBS5VQKb5ioj3Nk8RgBkunxitCuvKvoRM4eCzRa6ets=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M/BwFFYO3dWIhZmOhD9pz+/iGh/rZuCQ8Db2RLyDADqgRVy1/noa6dmx+yL7UDWQO
-         hiAK8o3qwzZOguSo6dHxhqMYvREwuzoJ30eJnmnaAuU2PA8LQR1dYvNBj2VI0ezHld
-         jeQNDRnNmmK9U8zH79Glajlt5c+c+NCql8IphZQU=
+        b=nTTw5TuuOyWdUNbNkYn9mzqD/tFKCyMbLLRSCF8wMS4WNbCTPAh3Fu/dMZyX2+yK7
+         4Sv2rbP9EFJfXZ/lsmDLoZIl34++GT4wiyoyLGeqn/h+8+lmSnCitf9yukcaB1HUrM
+         13lUfZ8sNxQWVG/YQmCzsXoM9voFWsNLXKU13IEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namhyung Kim <namhyung@gmail.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Gleb Chesnokov <Chesnokov.G@raidix.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 21/25] perf bench numa: Address compiler error on s390
-Date:   Mon, 23 May 2022 19:03:39 +0200
-Message-Id: <20220523165749.082966913@linuxfoundation.org>
+Subject: [PATCH 4.9 22/25] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
+Date:   Mon, 23 May 2022 19:03:40 +0200
+Message-Id: <20220523165749.618286779@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 References: <20220523165743.398280407@linuxfoundation.org>
@@ -54,62 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Richter <tmricht@linux.ibm.com>
+From: Gleb Chesnokov <Chesnokov.G@raidix.com>
 
-[ Upstream commit f8ac1c478424a9a14669b8cef7389b1e14e5229d ]
+[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
 
-The compilation on s390 results in this error:
+Aborting commands that have already been sent to the firmware can
+cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
 
-  # make DEBUG=y bench/numa.o
-  ...
-  bench/numa.c: In function ‘__bench_numa’:
-  bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
-              writing between 1 and 11 bytes into a region of size between
-              10 and 20 [-Werror=format-truncation=]
-  1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
-                                                               ^~
-  ...
-  bench/numa.c:1749:64: note: directive argument in the range
-                 [-2147483647, 2147483646]
-  ...
-  #
+For instance:
 
-The maximum length of the %d replacement is 11 characters because of the
-negative sign.  Therefore extend the array by two more characters.
+ - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
 
-Output after:
+ - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
 
-  # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
-  -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
-  #
+ - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
 
-Fixes: 3aff8ba0a4c9c919 ("perf bench numa: Avoid possible truncation when using snprintf()")
-Suggested-by: Namhyung Kim <namhyung@gmail.com>
-Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220520081158.2990006-1-tmricht@linux.ibm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+ - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
+   unmapped
+
+Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
+
+Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/bench/numa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/qla2xxx/qla_target.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
-index 7b364f2926d4..901e9d6efcec 100644
---- a/tools/perf/bench/numa.c
-+++ b/tools/perf/bench/numa.c
-@@ -1626,7 +1626,7 @@ static int __bench_numa(const char *name)
- 		"GB/sec,", "total-speed",	"GB/sec total speed");
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index 6ef7a094ee51..b4a21adb3e73 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -3286,6 +3286,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
  
- 	if (g->p.show_details >= 2) {
--		char tname[14 + 2 * 10 + 1];
-+		char tname[14 + 2 * 11 + 1];
- 		struct thread_data *td;
- 		for (p = 0; p < g->p.nr_proc; p++) {
- 			for (t = 0; t < g->p.nr_threads; t++) {
+ 	spin_lock_irqsave(&cmd->cmd_lock, flags);
+ 	if (cmd->aborted) {
++		if (cmd->sg_mapped)
++			qlt_unmap_sg(vha, cmd);
++
+ 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
+ 		/*
+ 		 * It's normal to see 2 calls in this path:
 -- 
 2.35.1
 
