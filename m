@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A877C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBEF0C38A04
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245467AbiEWSH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39390 "EHLO
+        id S245653AbiEWSIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244013AbiEWRig (ORCPT
+        with ESMTP id S243722AbiEWRiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A5D986DB;
-        Mon, 23 May 2022 10:33:08 -0700 (PDT)
+        Mon, 23 May 2022 13:38:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F4294183;
+        Mon, 23 May 2022 10:32:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E947EB8121B;
-        Mon, 23 May 2022 17:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47759C385A9;
-        Mon, 23 May 2022 17:30:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95DEC611E3;
+        Mon, 23 May 2022 17:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9561DC385AA;
+        Mon, 23 May 2022 17:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327004;
-        bh=78eIVbKrFEg+O5i0kkKIJmRGiqznDYuV/M2Fuaxz640=;
+        s=korg; t=1653327131;
+        bh=y1xog3J27YTwN0A9xZLgHTReF4/FxWbtCjlVdhy8QJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xcf0s5iNNSzDviA51yQfFzCKtbuXZkZtfopen475XPZiDH2qGtusubAXkRoF/HR9R
-         ZmhaYUd5zIphM4hF+lpus8BJtrZUSpAk01oOb6LfHWIErzjd7VtVKSGpJ/84hMLc4W
-         DmlXeg9DOLl9Z+jJqzS0XbIg4Ab57bRXDdL6n2go=
+        b=HRnqyKuurbJcvW1RXd5CTC+xtuukQNksB9OzP5ii0PvbyniI+msq8GzEYWp1wXMCO
+         BMz1WzAvVEhZxc3++VlChmWXU0vOUFS/qdBOBQpK4V6fMwHhact82sfB+BCAG5N244
+         Me47EMjLNhvg/HVX1Bn0yBHFSh7jsvbB5YmtWcRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avi Kivity <avi@scylladb.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Pearson <markpearson@lenvo.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 125/158] perf build: Fix check for btf__load_from_kernel_by_id() in libbpf
-Date:   Mon, 23 May 2022 19:04:42 +0200
-Message-Id: <20220523165851.378018376@linuxfoundation.org>
+Subject: [PATCH 5.17 141/158] platform/x86: thinkpad_acpi: Convert btusb DMI list to quirks
+Date:   Mon, 23 May 2022 19:04:58 +0200
+Message-Id: <20220523165853.667469365@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -52,181 +51,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 0ae065a5d265bc5ada13e350015458e0c5e5c351 ]
+[ Upstream commit c25d7f32e3e209462cd82e6e93e66b72dbb2308f ]
 
-Avi Kivity reported a problem where the __weak
-btf__load_from_kernel_by_id() in tools/perf/util/bpf-event.c was being
-used and it called btf__get_from_id() in tools/lib/bpf/btf.c that in
-turn called back to btf__load_from_kernel_by_id(), resulting in an
-endless loop.
+DMI matching in thinkpad_acpi happens local to a function meaning
+quirks can only match that function.
 
-Fix this by adding a feature test to check if
-btf__load_from_kernel_by_id() is available when building perf with
-LIBBPF_DYNAMIC=1, and if not then provide the fallback to the old
-btf__get_from_id(), that doesn't call back to btf__load_from_kernel_by_id()
-since at that time it didn't exist at all.
+Future changes to thinkpad_acpi may need to quirk other code, so
+change this to use a quirk infrastructure.
 
-Tested on Fedora 35 where we have libbpf-devel 0.4.0 with LIBBPF_DYNAMIC
-where we don't have btf__load_from_kernel_by_id() and thus its feature
-test fail, not defining HAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID:
-
-  $ cat /tmp/build/perf-urgent/feature/test-libbpf-btf__load_from_kernel_by_id.make.output
-  test-libbpf-btf__load_from_kernel_by_id.c: In function ‘main’:
-  test-libbpf-btf__load_from_kernel_by_id.c:6:16: error: implicit declaration of function ‘btf__load_from_kernel_by_id’ [-Werror=implicit-function-declaration]
-      6 |         return btf__load_from_kernel_by_id(20151128, NULL);
-        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-  cc1: all warnings being treated as errors
-  $
-
-  $ nm /tmp/build/perf-urgent/perf | grep btf__load_from_kernel_by_id
-  00000000005ba180 T btf__load_from_kernel_by_id
-  $
-
-  $ objdump --disassemble=btf__load_from_kernel_by_id -S /tmp/build/perf-urgent/perf
-
-  /tmp/build/perf-urgent/perf:     file format elf64-x86-64
-  <SNIP>
-  00000000005ba180 <btf__load_from_kernel_by_id>:
-  #include "record.h"
-  #include "util/synthetic-events.h"
-
-  #ifndef HAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
-  struct btf *btf__load_from_kernel_by_id(__u32 id)
-  {
-    5ba180:	55                   	push   %rbp
-    5ba181:	48 89 e5             	mov    %rsp,%rbp
-    5ba184:	48 83 ec 10          	sub    $0x10,%rsp
-    5ba188:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
-    5ba18f:	00 00
-    5ba191:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
-    5ba195:	31 c0                	xor    %eax,%eax
-         struct btf *btf;
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-         int err = btf__get_from_id(id, &btf);
-    5ba197:	48 8d 75 f0          	lea    -0x10(%rbp),%rsi
-    5ba19b:	e8 a0 57 e5 ff       	call   40f940 <btf__get_from_id@plt>
-    5ba1a0:	89 c2                	mov    %eax,%edx
-  #pragma GCC diagnostic pop
-
-         return err ? ERR_PTR(err) : btf;
-    5ba1a2:	48 98                	cltq
-    5ba1a4:	85 d2                	test   %edx,%edx
-    5ba1a6:	48 0f 44 45 f0       	cmove  -0x10(%rbp),%rax
-  }
-  <SNIP>
-
-Fixes: 218e7b775d368f38 ("perf bpf: Provide a weak btf__load_from_kernel_by_id() for older libbpf versions")
-Reported-by: Avi Kivity <avi@scylladb.com>
-Link: https://lore.kernel.org/linux-perf-users/f0add43b-3de5-20c5-22c4-70aff4af959f@scylladb.com
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/linux-perf-users/YobjjFOblY4Xvwo7@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Tested-by: Mark Pearson <markpearson@lenvo.com>
+Link: https://lore.kernel.org/r/20220429030501.1909-2-mario.limonciello@amd.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/build/Makefile.feature                               | 1 +
- tools/build/feature/Makefile                               | 4 ++++
- .../feature/test-libbpf-btf__load_from_kernel_by_id.c      | 7 +++++++
- tools/perf/Makefile.config                                 | 7 +++++++
- tools/perf/util/bpf-event.c                                | 4 +++-
- 5 files changed, 22 insertions(+), 1 deletion(-)
- create mode 100644 tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
+ drivers/platform/x86/thinkpad_acpi.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/tools/build/Makefile.feature b/tools/build/Makefile.feature
-index ae61f464043a..c6a48d0ef9ff 100644
---- a/tools/build/Makefile.feature
-+++ b/tools/build/Makefile.feature
-@@ -98,6 +98,7 @@ FEATURE_TESTS_EXTRA :=                  \
-          llvm-version                   \
-          clang                          \
-          libbpf                         \
-+         libbpf-btf__load_from_kernel_by_id \
-          libpfm4                        \
-          libdebuginfod			\
-          clang-bpf-co-re
-diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
-index de66e1cc0734..cb4a2a4fa2e4 100644
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -57,6 +57,7 @@ FILES=                                          \
-          test-lzma.bin                          \
-          test-bpf.bin                           \
-          test-libbpf.bin                        \
-+         test-libbpf-btf__load_from_kernel_by_id.bin	\
-          test-get_cpuid.bin                     \
-          test-sdt.bin                           \
-          test-cxx.bin                           \
-@@ -287,6 +288,9 @@ $(OUTPUT)test-bpf.bin:
- $(OUTPUT)test-libbpf.bin:
- 	$(BUILD) -lbpf
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index 3fb8cda31eb9..c43586f1cb4b 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -309,6 +309,15 @@ struct ibm_init_struct {
+ 	struct ibm_struct *data;
+ };
  
-+$(OUTPUT)test-libbpf-btf__load_from_kernel_by_id.bin:
-+	$(BUILD) -lbpf
++/* DMI Quirks */
++struct quirk_entry {
++	bool btusb_bug;
++};
 +
- $(OUTPUT)test-sdt.bin:
- 	$(BUILD)
- 
-diff --git a/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-new file mode 100644
-index 000000000000..f7c084428735
---- /dev/null
-+++ b/tools/build/feature/test-libbpf-btf__load_from_kernel_by_id.c
-@@ -0,0 +1,7 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <bpf/libbpf.h>
++static struct quirk_entry quirk_btusb_bug = {
++	.btusb_bug = true,
++};
 +
-+int main(void)
-+{
-+	return btf__load_from_kernel_by_id(20151128, NULL);
-+}
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index f3bf9297bcc0..1bd64e7404b9 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -553,9 +553,16 @@ ifndef NO_LIBELF
-         ifeq ($(feature-libbpf), 1)
-           EXTLIBS += -lbpf
-           $(call detected,CONFIG_LIBBPF_DYNAMIC)
-+
-+          $(call feature_check,libbpf-btf__load_from_kernel_by_id)
-+          ifeq ($(feature-libbpf-btf__load_from_kernel_by_id), 1)
-+            CFLAGS += -DHAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
-+          endif
-         else
-           dummy := $(error Error: No libbpf devel library found, please install libbpf-devel);
-         endif
-+      else
-+	CFLAGS += -DHAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
-       endif
-     endif
+ static struct {
+ 	u32 bluetooth:1;
+ 	u32 hotkey:1;
+@@ -338,6 +347,7 @@ static struct {
+ 	u32 hotkey_poll_active:1;
+ 	u32 has_adaptive_kbd:1;
+ 	u32 kbd_lang:1;
++	struct quirk_entry *quirks;
+ } tp_features;
  
-diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
-index a517eaa51eb3..65dfd2c70246 100644
---- a/tools/perf/util/bpf-event.c
-+++ b/tools/perf/util/bpf-event.c
-@@ -22,7 +22,8 @@
- #include "record.h"
- #include "util/synthetic-events.h"
- 
--struct btf * __weak btf__load_from_kernel_by_id(__u32 id)
-+#ifndef HAVE_LIBBPF_BTF__LOAD_FROM_KERNEL_BY_ID
-+struct btf *btf__load_from_kernel_by_id(__u32 id)
- {
-        struct btf *btf;
- #pragma GCC diagnostic push
-@@ -32,6 +33,7 @@ struct btf * __weak btf__load_from_kernel_by_id(__u32 id)
- 
-        return err ? ERR_PTR(err) : btf;
+ static struct {
+@@ -4361,9 +4371,10 @@ static void bluetooth_exit(void)
+ 	bluetooth_shutdown();
  }
-+#endif
  
- struct bpf_program * __weak
- bpf_object__next_program(const struct bpf_object *obj, struct bpf_program *prev)
+-static const struct dmi_system_id bt_fwbug_list[] __initconst = {
++static const struct dmi_system_id fwbug_list[] __initconst = {
+ 	{
+ 		.ident = "ThinkPad E485",
++		.driver_data = &quirk_btusb_bug,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_BOARD_NAME, "20KU"),
+@@ -4371,6 +4382,7 @@ static const struct dmi_system_id bt_fwbug_list[] __initconst = {
+ 	},
+ 	{
+ 		.ident = "ThinkPad E585",
++		.driver_data = &quirk_btusb_bug,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_BOARD_NAME, "20KV"),
+@@ -4378,6 +4390,7 @@ static const struct dmi_system_id bt_fwbug_list[] __initconst = {
+ 	},
+ 	{
+ 		.ident = "ThinkPad A285 - 20MW",
++		.driver_data = &quirk_btusb_bug,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_BOARD_NAME, "20MW"),
+@@ -4385,6 +4398,7 @@ static const struct dmi_system_id bt_fwbug_list[] __initconst = {
+ 	},
+ 	{
+ 		.ident = "ThinkPad A285 - 20MX",
++		.driver_data = &quirk_btusb_bug,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_BOARD_NAME, "20MX"),
+@@ -4392,6 +4406,7 @@ static const struct dmi_system_id bt_fwbug_list[] __initconst = {
+ 	},
+ 	{
+ 		.ident = "ThinkPad A485 - 20MU",
++		.driver_data = &quirk_btusb_bug,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_BOARD_NAME, "20MU"),
+@@ -4399,6 +4414,7 @@ static const struct dmi_system_id bt_fwbug_list[] __initconst = {
+ 	},
+ 	{
+ 		.ident = "ThinkPad A485 - 20MV",
++		.driver_data = &quirk_btusb_bug,
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_BOARD_NAME, "20MV"),
+@@ -4421,7 +4437,8 @@ static int __init have_bt_fwbug(void)
+ 	 * Some AMD based ThinkPads have a firmware bug that calling
+ 	 * "GBDC" will cause bluetooth on Intel wireless cards blocked
+ 	 */
+-	if (dmi_check_system(bt_fwbug_list) && pci_dev_present(fwbug_cards_ids)) {
++	if (tp_features.quirks && tp_features.quirks->btusb_bug &&
++	    pci_dev_present(fwbug_cards_ids)) {
+ 		vdbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_RFKILL,
+ 			FW_BUG "disable bluetooth subdriver for Intel cards\n");
+ 		return 1;
+@@ -11438,6 +11455,7 @@ static void thinkpad_acpi_module_exit(void)
+ 
+ static int __init thinkpad_acpi_module_init(void)
+ {
++	const struct dmi_system_id *dmi_id;
+ 	int ret, i;
+ 
+ 	tpacpi_lifecycle = TPACPI_LIFE_INIT;
+@@ -11477,6 +11495,10 @@ static int __init thinkpad_acpi_module_init(void)
+ 		return -ENODEV;
+ 	}
+ 
++	dmi_id = dmi_first_match(fwbug_list);
++	if (dmi_id)
++		tp_features.quirks = dmi_id->driver_data;
++
+ 	/* Device initialization */
+ 	tpacpi_pdev = platform_device_register_simple(TPACPI_DRVR_NAME, -1,
+ 							NULL, 0);
 -- 
 2.35.1
 
