@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B26C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233506AbiEWRJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
+        id S239694AbiEWRJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239690AbiEWRJR (ORCPT
+        with ESMTP id S239642AbiEWRJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:09:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03206BFD5;
-        Mon, 23 May 2022 10:08:46 -0700 (PDT)
+        Mon, 23 May 2022 13:09:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17AB16CF4B;
+        Mon, 23 May 2022 10:08:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AECEB81202;
-        Mon, 23 May 2022 17:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F6C8C385A9;
-        Mon, 23 May 2022 17:08:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1161614E5;
+        Mon, 23 May 2022 17:08:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED3FBC385A9;
+        Mon, 23 May 2022 17:08:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325721;
-        bh=0RExpm7wblGpAeSEAdGi/ol9O+UYZDtxWBrAUD8XZiM=;
+        s=korg; t=1653325714;
+        bh=6jhRKQnWsBNV7uoEmE4x1UeX87wkijtPfVy9slE/kHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oG+oSVsdlb6tJDnNWTz8qwoDNjQb927lHbOv31hUMGWJBjocwG/AwKlccbPIMA9hy
-         Q7r5tChk94ysasLtCL+7wRu4oAJXFnzDBUFwDEnAGW7N01ZrKtL72tysYzxmi/HKLR
-         mv3nhi4JguD+sD1bo07KE0M1AItUoYVh1zBfC93M=
+        b=bph8p0ZDg2sVWJWvimWeC9mkSYEdNjZmxR9fUnE+oY1w1HordoEeM5FXo2OFwhjsz
+         iUqh06SjqemRld87wgQKrMSus8dj4xmbcBHyzM7DAvoqJ1ooRJTdVYkM/hvucD9QhU
+         nhuen5wTLbgAPF1PKQIcLifWfftqRI29vii/XKxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Mitchell <kevmitch@arista.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 4.14 22/33] igb: skip phy status check where unavailable
-Date:   Mon, 23 May 2022 19:05:11 +0200
-Message-Id: <20220523165751.788904127@linuxfoundation.org>
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 4.14 12/33] mmc: block: Use generic_cmd6_time when modifying INAND_CMD38_ARG_EXT_CSD
+Date:   Mon, 23 May 2022 19:05:01 +0200
+Message-Id: <20220523165749.737323588@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
 References: <20220523165746.957506211@linuxfoundation.org>
@@ -51,46 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Mitchell <kevmitch@arista.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 942d2ad5d2e0df758a645ddfadffde2795322728 ]
+commit ad91619aa9d78ab1c6d4a969c3db68bc331ae76c upstream
 
-igb_read_phy_reg() will silently return, leaving phy_data untouched, if
-hw->ops.read_reg isn't set. Depending on the uninitialized value of
-phy_data, this led to the phy status check either succeeding immediately
-or looping continuously for 2 seconds before emitting a noisy err-level
-timeout. This message went out to the console even though there was no
-actual problem.
+The INAND_CMD38_ARG_EXT_CSD is a vendor specific EXT_CSD register, which is
+used to prepare an erase/trim operation. However, it doesn't make sense to
+use a timeout of 10 minutes while updating the register, which becomes the
+case when the timeout_ms argument for mmc_switch() is set to zero.
 
-Instead, first check if there is read_reg function pointer. If not,
-proceed without trying to check the phy status register.
+Instead, let's use the generic_cmd6_time, as that seems like a reasonable
+timeout to use for these cases.
 
-Fixes: b72f3f72005d ("igb: When GbE link up, wait for Remote receiver status condition")
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20200122142747.5690-3-ulf.hansson@linaro.org
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/mmc/core/block.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 6bd30d51dafc..618063d21f96 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4622,7 +4622,8 @@ static void igb_watchdog_task(struct work_struct *work)
- 				break;
- 			}
- 
--			if (adapter->link_speed != SPEED_1000)
-+			if (adapter->link_speed != SPEED_1000 ||
-+			    !hw->phy.ops.read_reg)
- 				goto no_wait;
- 
- 			/* wait for Remote receiver status OK */
--- 
-2.35.1
-
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -1345,7 +1345,7 @@ static void mmc_blk_issue_discard_rq(str
+ 					 arg == MMC_TRIM_ARG ?
+ 					 INAND_CMD38_ARG_TRIM :
+ 					 INAND_CMD38_ARG_ERASE,
+-					 0);
++					 card->ext_csd.generic_cmd6_time);
+ 		}
+ 		if (!err)
+ 			err = mmc_erase(card, from, nr, arg);
+@@ -1387,7 +1387,7 @@ retry:
+ 				 arg == MMC_SECURE_TRIM1_ARG ?
+ 				 INAND_CMD38_ARG_SECTRIM1 :
+ 				 INAND_CMD38_ARG_SECERASE,
+-				 0);
++				 card->ext_csd.generic_cmd6_time);
+ 		if (err)
+ 			goto out_retry;
+ 	}
+@@ -1405,7 +1405,7 @@ retry:
+ 			err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+ 					 INAND_CMD38_ARG_EXT_CSD,
+ 					 INAND_CMD38_ARG_SECTRIM2,
+-					 0);
++					 card->ext_csd.generic_cmd6_time);
+ 			if (err)
+ 				goto out_retry;
+ 		}
 
 
