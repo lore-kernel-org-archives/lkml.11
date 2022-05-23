@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06364C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D64BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241578AbiEWRa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
+        id S241190AbiEWRah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241501AbiEWRWY (ORCPT
+        with ESMTP id S241556AbiEWRW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 278267B9C9;
-        Mon, 23 May 2022 10:19:05 -0700 (PDT)
+        Mon, 23 May 2022 13:22:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15BA7892C;
+        Mon, 23 May 2022 10:19:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C06C60A2A;
-        Mon, 23 May 2022 17:17:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D791C34116;
-        Mon, 23 May 2022 17:17:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14B1FB81201;
+        Mon, 23 May 2022 17:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 749FEC385A9;
+        Mon, 23 May 2022 17:17:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326255;
-        bh=6f8285nghVkWx/s8BBOEdiOuq1Ad5h9KsR2MxrPZmRs=;
+        s=korg; t=1653326265;
+        bh=GvPy1TSq0hpYJR7v+A8xk20wsgXU7QBU18utSfY49Sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WQmvY1Ax5NJIMW4awCmyZuaU2swtpxt82U29utr4XcnlmXc6SB/8rzebrm8BDWGq+
-         kvSBbIxirrM1ZScTB9chPlKUj6wmnpiWZP2O0fagO8tRkrpi858qHcdM4d4tYjSXlL
-         7U2zZHsMG/Q0fUa95LGuSl2SdKB9fvXpnxxP5bO8=
+        b=n2EFeN3yvrthkrycVV6rviYPu5PpxD4mJkSuPD9xrxBnCmSI/zKUbLsKGh5GBCIx/
+         EGbVf8ljDA4BAUaeyVXITXzCTtyHDkwhyLCJuQQI/ZLCs9R1B3M2ILfPn5MFiPozFB
+         4TrXl2xA6ueY2XEFSXAishRERnRWoSohFn/bSm+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 024/132] nvme-pci: add quirks for Samsung X5 SSDs
-Date:   Mon, 23 May 2022 19:03:53 +0200
-Message-Id: <20220523165827.502935276@linuxfoundation.org>
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 008/132] i2c: piix4: Move SMBus port selection into function
+Date:   Mon, 23 May 2022 19:03:37 +0200
+Message-Id: <20220523165824.975018684@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,38 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Monish Kumar R <monish.kumar.r@intel.com>
+From: Terry Bowman <terry.bowman@amd.com>
 
-[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
+commit fbafbd51bff52cb3a920fd98d4dae2a78dd433d0 upstream.
 
-Add quirks to not fail the initialization and to have quick resume
-latency after cold/warm reboot.
+Move port selection code into a separate function. Refactor is in
+preparation for following MMIO changes.
 
-Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/pci.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-piix4.c |   27 +++++++++++++++++----------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index d7695bdbde8d..e6f55cf6e494 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3379,7 +3379,10 @@ static const struct pci_device_id nvme_id_table[] = {
- 				NVME_QUIRK_128_BYTES_SQES |
- 				NVME_QUIRK_SHARED_TAGS |
- 				NVME_QUIRK_SKIP_CID_GEN },
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -698,6 +698,20 @@ static void piix4_imc_wakeup(void)
+ 	release_region(KERNCZ_IMC_IDX, 2);
+ }
+ 
++static int piix4_sb800_port_sel(u8 port)
++{
++	u8 smba_en_lo, val;
++
++	outb_p(piix4_port_sel_sb800, SB800_PIIX4_SMB_IDX);
++	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
++
++	val = (smba_en_lo & ~piix4_port_mask_sb800) | port;
++	if (smba_en_lo != val)
++		outb_p(val, SB800_PIIX4_SMB_IDX + 1);
++
++	return (smba_en_lo & piix4_port_mask_sb800);
++}
++
+ /*
+  * Handles access to multiple SMBus ports on the SB800.
+  * The port is selected by bits 2:1 of the smb_en register (0x2c).
+@@ -714,8 +728,7 @@ static s32 piix4_access_sb800(struct i2c
+ 	unsigned short piix4_smba = adapdata->smba;
+ 	int retries = MAX_TIMEOUT;
+ 	int smbslvcnt;
+-	u8 smba_en_lo;
+-	u8 port;
++	u8 prev_port;
+ 	int retval;
+ 
+ 	retval = piix4_sb800_region_request(&adap->dev);
+@@ -775,18 +788,12 @@ static s32 piix4_access_sb800(struct i2c
+ 		}
+ 	}
+ 
+-	outb_p(piix4_port_sel_sb800, SB800_PIIX4_SMB_IDX);
+-	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
 -
-+	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
-+		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
-+				NVME_QUIRK_NO_DEEPEST_PS |
-+				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
- 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
- 	{ 0, }
- };
--- 
-2.35.1
-
+-	port = adapdata->port;
+-	if ((smba_en_lo & piix4_port_mask_sb800) != port)
+-		outb_p((smba_en_lo & ~piix4_port_mask_sb800) | port,
+-		       SB800_PIIX4_SMB_IDX + 1);
++	prev_port = piix4_sb800_port_sel(adapdata->port);
+ 
+ 	retval = piix4_access(adap, addr, flags, read_write,
+ 			      command, size, data);
+ 
+-	outb_p(smba_en_lo, SB800_PIIX4_SMB_IDX + 1);
++	piix4_sb800_port_sel(prev_port);
+ 
+ 	/* Release the semaphore */
+ 	outb_p(smbslvcnt | 0x20, SMBSLVCNT);
 
 
