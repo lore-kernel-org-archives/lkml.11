@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A38BDC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82217C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244691AbiEWSHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        id S244657AbiEWSGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243626AbiEWRiV (ORCPT
+        with ESMTP id S243565AbiEWRiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:21 -0400
+        Mon, 23 May 2022 13:38:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC2093996;
-        Mon, 23 May 2022 10:32:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F4471D86;
+        Mon, 23 May 2022 10:32:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C97D5B81227;
-        Mon, 23 May 2022 17:31:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C93A6C385A9;
-        Mon, 23 May 2022 17:31:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40748B81204;
+        Mon, 23 May 2022 17:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87B54C385AA;
+        Mon, 23 May 2022 17:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327105;
-        bh=qSmR5E7RYaAZaARo/MP2Fh7BsQDVD2MLFAr7or8Gw0E=;
+        s=korg; t=1653327115;
+        bh=dgG/AjxTDAWbTv8PbOERZK7TlvSzG5giHmfTLth98NY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RM3/KDte2kGxcg5Z7/TbM3wKSXB7amdjjhYKk5FECt8iJG8bfxUtZBgSfEYNHcVQU
-         4GD5Ej8M/5swHpbxNZPyutJGezALppaMAYJsAsPO9dENZ8CUaHWFvuk41cw7CAsKon
-         wFBFR7K6HH73dYHmcm5MTkyb5s6/e7nevzo2Znj8=
+        b=lLd/5otKO/UI1QRSFjxWvGJx52tUjGfeIGXo9EOdpIXhiiCZVaqrldrOHGHJoWvCY
+         KkSD3JybyxbfktM3V1BM3NM7qXV/Ieo+axNGIc4VtpMJhhiIyeF7NfSHWySeDxoSdI
+         wlBXOkh/WCWHduFAyPtMy3m3vcYfkNQVnFPb/AH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Stefan Roese <sr@denx.de>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org,
+        Kieran Frewen <kieran.frewen@morsemicro.com>,
+        Bassem Dawood <bassem@morsemicro.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 157/158] i2c: mt7621: fix missing clk_disable_unprepare() on error in mtk_i2c_probe()
-Date:   Mon, 23 May 2022 19:05:14 +0200
-Message-Id: <20220523165856.200911142@linuxfoundation.org>
+Subject: [PATCH 5.17 136/158] nl80211: validate S1G channel width
+Date:   Mon, 23 May 2022 19:04:53 +0200
+Message-Id: <20220523165852.870833198@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,53 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Kieran Frewen <kieran.frewen@morsemicro.com>
 
-[ Upstream commit a2537c98a8a3b57002e54a262d180b9490bc7190 ]
+[ Upstream commit 5d087aa759eb82b8208411913f6c2158bd85abc0 ]
 
-Fix the missing clk_disable_unprepare() before return
-from mtk_i2c_probe() in the error handling case.
+Validate the S1G channel width input by user to ensure it matches
+that of the requested channel
 
-Fixes: d04913ec5f89 ("i2c: mt7621: Add MediaTek MT7621/7628/7688 I2C driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Stefan Roese <sr@denx.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Kieran Frewen <kieran.frewen@morsemicro.com>
+Signed-off-by: Bassem Dawood <bassem@morsemicro.com>
+Link: https://lore.kernel.org/r/20220420041321.3788789-2-kieran.frewen@morsemicro.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mt7621.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/wireless/nl80211.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-mt7621.c b/drivers/i2c/busses/i2c-mt7621.c
-index 45fe4a7fe0c0..901f0fb04fee 100644
---- a/drivers/i2c/busses/i2c-mt7621.c
-+++ b/drivers/i2c/busses/i2c-mt7621.c
-@@ -304,7 +304,8 @@ static int mtk_i2c_probe(struct platform_device *pdev)
- 
- 	if (i2c->bus_freq == 0) {
- 		dev_warn(i2c->dev, "clock-frequency 0 not supported\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_disable_clk;
- 	}
- 
- 	adap = &i2c->adap;
-@@ -322,10 +323,15 @@ static int mtk_i2c_probe(struct platform_device *pdev)
- 
- 	ret = i2c_add_adapter(adap);
- 	if (ret < 0)
--		return ret;
-+		goto err_disable_clk;
- 
- 	dev_info(&pdev->dev, "clock %u kHz\n", i2c->bus_freq / 1000);
- 
-+	return 0;
-+
-+err_disable_clk:
-+	clk_disable_unprepare(i2c->clk);
-+
- 	return ret;
- }
- 
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index dc171ca0d1b1..06a35f1bec23 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -3128,6 +3128,15 @@ int nl80211_parse_chandef(struct cfg80211_registered_device *rdev,
+ 	} else if (attrs[NL80211_ATTR_CHANNEL_WIDTH]) {
+ 		chandef->width =
+ 			nla_get_u32(attrs[NL80211_ATTR_CHANNEL_WIDTH]);
++		if (chandef->chan->band == NL80211_BAND_S1GHZ) {
++			/* User input error for channel width doesn't match channel  */
++			if (chandef->width != ieee80211_s1g_channel_width(chandef->chan)) {
++				NL_SET_ERR_MSG_ATTR(extack,
++						    attrs[NL80211_ATTR_CHANNEL_WIDTH],
++						    "bad channel width");
++				return -EINVAL;
++			}
++		}
+ 		if (attrs[NL80211_ATTR_CENTER_FREQ1]) {
+ 			chandef->center_freq1 =
+ 				nla_get_u32(attrs[NL80211_ATTR_CENTER_FREQ1]);
 -- 
 2.35.1
 
