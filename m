@@ -2,99 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45814C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A75D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239357AbiEWRFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47736 "EHLO
+        id S239363AbiEWRFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239257AbiEWREx (ORCPT
+        with ESMTP id S239299AbiEWREx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:04:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E6D674C5;
-        Mon, 23 May 2022 10:04:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372AA674DD
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:04:51 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD3E7614BB;
-        Mon, 23 May 2022 17:04:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E74E7C385A9;
-        Mon, 23 May 2022 17:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325490;
-        bh=1vNedQjfYeJf4gSkwmjMImK2i6aez+HKQrc2U7rc+6M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VN5GSvfiMJbyUtpdXUPlIxLCHopfeeZ3EO0Wl9UTuqqMmqvvcKgM4Khao9jXhYhop
-         1nlKjm9NFu3gTLMHEL8lCLvE5UFriZd4ylqoNC25HGKkiOvgvf+TOHcuiVy6/xeFRR
-         VwGY3fL/OJTzjTPXjaP4GvbEwsNIJYHAjJKRY8fk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 4.9 09/25] mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
-Date:   Mon, 23 May 2022 19:03:27 +0200
-Message-Id: <20220523165746.295047581@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
-References: <20220523165743.398280407@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 65E722223A;
+        Mon, 23 May 2022 19:04:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1653325485;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jb6PERdk6i9UFuOnXNXUP3rrDZ8XeDfZdaGqhadGnCU=;
+        b=Ih5AmYm8o1wIkM6kcDHNAbqqH2sSuEv1mYQKGBnAgUS3MHS26G0HujQQ36/S8RVWPFcfSn
+        Vq2LBEL+oL6sqFXVRAU8YnD4c0yakjpr3QdQBeJsSswrm4md5PdEEhXdN9QSoBajQDiaDT
+        iRdpv9dd8Sv7E5C/cEz5vIjYFlY13jk=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 23 May 2022 19:04:44 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Cc:     linux-mtd@lists.infradead.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] mtd: spi-nor: macronix: Add support for mx66l2g45g
+In-Reply-To: <20220523150334.1758649-1-jiaqing.zhao@linux.intel.com>
+References: <20220523150334.1758649-1-jiaqing.zhao@linux.intel.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <e310ab2100f459346ae6cfa77c9ada19@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+Am 2022-05-23 17:03, schrieb Jiaqing Zhao:
+> Macronix mx66l2g45g is a 3V, 2Gbit (256MB) NOR flash that supports
+> x1, x2, and x4 operation modes.
+> 
+> Tested read/write/erase with Aspeed AST2600 BMC SoC operating in x2
+> mode at 50MHz, using Aspeed spi-mem driver.
+> 
+> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
 
-commit 533a6cfe08f96a7b5c65e06d20916d552c11b256 upstream
+Reviewed-by: Michael Walle <michael@walle.cc>
 
-All callers of __mmc_switch() should now be specifying a valid timeout for
-the CMD6 command. However, just to be sure, let's print a warning and
-default to use the generic_cmd6_time in case the provided timeout_ms
-argument is zero.
+# is this picked up by b4? link goes to the sfdp dump
+Link: 
+https://lore.kernel.org/r/2b859cff-2403-0526-f3ae-749920b3fd8b@linux.intel.com
 
-In this context, let's also simplify some of the corresponding code and
-clarify some related comments.
-
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-4-ulf.hansson@linaro.org
-Signed-off-by: Kamal Dasu <kdasu.kdev@gmail.com>
-[kamal: Drop non-existent hunks in 4.9's __mmc_switch]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mmc/core/mmc_ops.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -22,8 +22,6 @@
- #include "host.h"
- #include "mmc_ops.h"
- 
--#define MMC_OPS_TIMEOUT_MS	(10 * 60 * 1000) /* 10 minute timeout */
--
- static const u8 tuning_blk_pattern_4bit[] = {
- 	0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
- 	0xc3, 0x3c, 0xcc, 0xff, 0xfe, 0xff, 0xfe, 0xef,
-@@ -530,8 +528,11 @@ int __mmc_switch(struct mmc_card *card,
- 		ignore_crc = false;
- 
- 	/* We have an unspecified cmd timeout, use the fallback value. */
--	if (!timeout_ms)
--		timeout_ms = MMC_OPS_TIMEOUT_MS;
-+	if (!timeout_ms) {
-+		pr_warn("%s: unspecified timeout for CMD6 - use generic\n",
-+			mmc_hostname(host));
-+		timeout_ms = card->ext_csd.generic_cmd6_time;
-+	}
- 
- 	/* Must check status to be sure of no errors. */
- 	timeout = jiffies + msecs_to_jiffies(timeout_ms) + 1;
-
-
+-michael
