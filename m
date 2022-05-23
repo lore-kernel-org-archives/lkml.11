@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 431EDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F053C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240885AbiEWRjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
+        id S241163AbiEWRjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240617AbiEWRZu (ORCPT
+        with ESMTP id S241931AbiEWR1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:25:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB3522BD7;
-        Mon, 23 May 2022 10:21:05 -0700 (PDT)
+        Mon, 23 May 2022 13:27:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E55079811;
+        Mon, 23 May 2022 10:22:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B09A0B8121A;
-        Mon, 23 May 2022 17:19:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED80BC385A9;
-        Mon, 23 May 2022 17:19:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3271460A2A;
+        Mon, 23 May 2022 17:22:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BEDDC385A9;
+        Mon, 23 May 2022 17:22:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326352;
-        bh=7ORnn3JFvU6w8aQU8L+UaweZmp4SFBZtU6G2YBLCw2A=;
+        s=korg; t=1653326548;
+        bh=k8uQgKRYzDv5bvtHUWgEwNihhvA8//WvV+HXDM4GpjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nbTKDHBzxp0MYZSKJP4LJyzCEvvyrvOIQWmufEilzsT+uJosf4pf1/S01vUJiZ4Gq
-         QoXGxz9YK59Sb9Al9c1hOR9KLyKQqbGL0ZJ6gpSwL4NG2k+YUszsZYbkbL+bsaH0ay
-         fY0ikSQogY+uKXFfs7r6sQQ2JRh5Ikb4rq02scJc=
+        b=SJ1UDfpQAhXvjpRsjyDEcTJL2tcsjRXNq4fuL2T0FNcXmqhTms2K1Xa/h9iU6gOFN
+         DZUgdCfNT/KHG+lq3wDkuwjEstwNmDWTcqtHRjTfJZpfTH/OIPptyFkS6Ke2CQCY7r
+         07CVIlNTTCC84w0uYJtnPFuoNFvzzKm0kyHplplQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 025/132] gfs2: Disable page faults during lockless buffered reads
-Date:   Mon, 23 May 2022 19:03:54 +0200
-Message-Id: <20220523165827.674753669@linuxfoundation.org>
+Subject: [PATCH 5.15 116/132] selftests: add ping test with ping_group_range tuned
+Date:   Mon, 23 May 2022 19:05:25 +0200
+Message-Id: <20220523165842.776478238@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,48 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-[ Upstream commit 52f3f033a5dbd023307520af1ff551cadfd7f037 ]
+[ Upstream commit e71b7f1f44d3d88c677769c85ef0171caf9fc89f ]
 
-During lockless buffered reads, filemap_read() holds page cache page
-references while trying to copy data to the user-space buffer.  The
-calling process isn't holding the inode glock, but the page references
-it holds prevent those pages from being removed from the page cache, and
-that prevents the underlying inode glock from being moved to another
-node.  Thus, we can end up in the same kinds of distributed deadlock
-situations as with normal (non-lockless) buffered reads.
+The 'ping' utility is able to manage two kind of sockets (raw or icmp),
+depending on the sysctl ping_group_range. By default, ping_group_range is
+set to '1 0', which forces ping to use an ip raw socket.
 
-Fix that by disabling page faults during lockless reads as well.
+Let's replay the ping tests by allowing 'ping' to use the ip icmp socket.
+After the previous patch, ipv4 tests results are the same with both kinds
+of socket. For ipv6, there are a lot a new failures (the previous patch
+fixes only two cases).
 
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/file.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/fcnal-test.sh | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index eb5ea0262f3c..60390f9dc31f 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -963,14 +963,16 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 			return ret;
- 		iocb->ki_flags &= ~IOCB_DIRECT;
- 	}
-+	pagefault_disable();
- 	iocb->ki_flags |= IOCB_NOIO;
- 	ret = generic_file_read_iter(iocb, to);
- 	iocb->ki_flags &= ~IOCB_NOIO;
-+	pagefault_enable();
- 	if (ret >= 0) {
- 		if (!iov_iter_count(to))
- 			return ret;
- 		written = ret;
--	} else {
-+	} else if (ret != -EFAULT) {
- 		if (ret != -EAGAIN)
- 			return ret;
- 		if (iocb->ki_flags & IOCB_NOWAIT)
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index aec9e784d0b4..91f54112167f 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -803,10 +803,16 @@ ipv4_ping()
+ 	setup
+ 	set_sysctl net.ipv4.raw_l3mdev_accept=1 2>/dev/null
+ 	ipv4_ping_novrf
++	setup
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv4_ping_novrf
+ 
+ 	log_subsection "With VRF"
+ 	setup "yes"
+ 	ipv4_ping_vrf
++	setup "yes"
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv4_ping_vrf
+ }
+ 
+ ################################################################################
+@@ -2324,10 +2330,16 @@ ipv6_ping()
+ 	log_subsection "No VRF"
+ 	setup
+ 	ipv6_ping_novrf
++	setup
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv6_ping_novrf
+ 
+ 	log_subsection "With VRF"
+ 	setup "yes"
+ 	ipv6_ping_vrf
++	setup "yes"
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv6_ping_vrf
+ }
+ 
+ ################################################################################
 -- 
 2.35.1
 
