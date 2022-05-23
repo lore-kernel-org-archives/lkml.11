@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D37C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E05D6C38A06
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243360AbiEWRiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
+        id S243682AbiEWRiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241701AbiEWR1F (ORCPT
+        with ESMTP id S241735AbiEWR1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860CF72210;
-        Mon, 23 May 2022 10:22:11 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7C975200;
+        Mon, 23 May 2022 10:22:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13E0FB81215;
-        Mon, 23 May 2022 17:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58226C385A9;
-        Mon, 23 May 2022 17:22:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E55061149;
+        Mon, 23 May 2022 17:21:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A84C385A9;
+        Mon, 23 May 2022 17:21:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326529;
-        bh=aXIclfWBIOx5lIp7wg9pctDo0qwzajhfixeFv43Rg3Q=;
+        s=korg; t=1653326491;
+        bh=b1f3Xs/RdsG4s/2l3MGwmQkavIui4Nkfu8c/7GVi37E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pI52wukPqLmeQ/htaT07kQibqIcaVeaWskdm36wgXSfyOS8+KQKIfouL+uQ7LmnbN
-         xRSVt7TgONfobnwCa7xNQMN0Vro8Y5ZdsDLtUBNQNucE//jW0O0U7rks9Vsrfx1X4m
-         hC+fu4dRKf/jAyU3+aVFtwPmZdGzBrTbr9lhws0o=
+        b=ssi+FhIjAkuhXZzVCT2HFfNJ5TSsVPknWN5kYpnbx7rI7vrIbSQHw57ECxee00lje
+         e0yZuOWsHQvvY2ChT0h/Oih/LEGd3VeiQTSHJePviOkMg1+C48aMYW3Icu1T5EJHWP
+         8ndljjV82m0lpekL7QJP/1ZtLhtEI5E2VSa1SPrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 082/132] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-Date:   Mon, 23 May 2022 19:04:51 +0200
-Message-Id: <20220523165836.729718699@linuxfoundation.org>
+Subject: [PATCH 5.15 097/132] mptcp: fix checksum byte order
+Date:   Mon, 23 May 2022 19:05:06 +0200
+Message-Id: <20220523165839.452698115@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,65 +50,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd ]
+[ Upstream commit ba2c89e0ea74a904d5231643245753d77422e7f5 ]
 
-In vmxnet3_rq_create(), when dma_alloc_coherent() fails,
-vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
--> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls
-vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
--> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(),
-rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-a NULL pointer dereference.
+The MPTCP code typecasts the checksum value to u16 and
+then converts it to big endian while storing the value into
+the MPTCP option.
 
-To fix this possible bug, an if statement is added to check whether
-rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
+As a result, the wire encoding for little endian host is
+wrong, and that causes interoperabilty interoperability
+issues with other implementation or host with different endianness.
 
-The error log in our fault-injection testing is shown as follows:
+Address the issue writing in the packet the unmodified __sum16 value.
 
-[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-...
-[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-...
-[   65.227977] Call Trace:
-...
-[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-[   65.228866]  __dev_close_many+0x288/0x350
-[   65.229607]  dev_close_many+0xa4/0x480
-[   65.231124]  dev_close+0x138/0x230
-[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-...
+MPTCP checksum is disabled by default, interoperating with systems
+with bad mptcp-level csum encoding should cause fallback to TCP.
 
-Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050711.2636709-1-r33s3n6@gmail.com
+Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/275
+Fixes: c5b39e26d003 ("mptcp: send out checksum for DSS")
+Fixes: 390b95a5fb84 ("mptcp: receive checksum for DSS")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/mptcp/options.c  | 36 ++++++++++++++++++++++++------------
+ net/mptcp/protocol.h |  2 +-
+ net/mptcp/subflow.c  |  2 +-
+ 3 files changed, 26 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 8ab86bbdbf5e..bc3192cf48e3 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1668,6 +1668,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 	u32 i, ring_idx;
- 	struct Vmxnet3_RxDesc *rxd;
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index d158f53d3bc3..193f0fcce8d8 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -107,7 +107,7 @@ static void mptcp_parse_option(const struct sk_buff *skb,
+ 			ptr += 2;
+ 		}
+ 		if (opsize == TCPOLEN_MPTCP_MPC_ACK_DATA_CSUM) {
+-			mp_opt->csum = (__force __sum16)get_unaligned_be16(ptr);
++			mp_opt->csum = get_unaligned((__force __sum16 *)ptr);
+ 			mp_opt->suboptions |= OPTION_MPTCP_CSUMREQD;
+ 			ptr += 2;
+ 		}
+@@ -221,7 +221,7 @@ static void mptcp_parse_option(const struct sk_buff *skb,
  
-+	/* ring has already been cleaned up */
-+	if (!rq->rx_ring[0].base)
-+		return;
+ 			if (opsize == expected_opsize + TCPOLEN_MPTCP_DSS_CHECKSUM) {
+ 				mp_opt->suboptions |= OPTION_MPTCP_CSUMREQD;
+-				mp_opt->csum = (__force __sum16)get_unaligned_be16(ptr);
++				mp_opt->csum = get_unaligned((__force __sum16 *)ptr);
+ 				ptr += 2;
+ 			}
+ 
+@@ -1214,7 +1214,7 @@ static void mptcp_set_rwin(const struct tcp_sock *tp)
+ 		WRITE_ONCE(msk->rcv_wnd_sent, ack_seq);
+ }
+ 
+-u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
++__sum16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
+ {
+ 	struct csum_pseudo_header header;
+ 	__wsum csum;
+@@ -1230,15 +1230,25 @@ u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
+ 	header.csum = 0;
+ 
+ 	csum = csum_partial(&header, sizeof(header), sum);
+-	return (__force u16)csum_fold(csum);
++	return csum_fold(csum);
+ }
+ 
+-static u16 mptcp_make_csum(const struct mptcp_ext *mpext)
++static __sum16 mptcp_make_csum(const struct mptcp_ext *mpext)
+ {
+ 	return __mptcp_make_csum(mpext->data_seq, mpext->subflow_seq, mpext->data_len,
+ 				 ~csum_unfold(mpext->csum));
+ }
+ 
++static void put_len_csum(u16 len, __sum16 csum, void *data)
++{
++	__sum16 *sumptr = data + 2;
++	__be16 *ptr = data;
 +
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
- 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
- #ifdef __BIG_ENDIAN_BITFIELD
++	put_unaligned_be16(len, ptr);
++
++	put_unaligned(csum, sumptr);
++}
++
+ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
+ 			 struct mptcp_out_options *opts)
+ {
+@@ -1315,8 +1325,9 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
+ 			put_unaligned_be32(mpext->subflow_seq, ptr);
+ 			ptr += 1;
+ 			if (opts->csum_reqd) {
+-				put_unaligned_be32(mpext->data_len << 16 |
+-						   mptcp_make_csum(mpext), ptr);
++				put_len_csum(mpext->data_len,
++					     mptcp_make_csum(mpext),
++					     ptr);
+ 			} else {
+ 				put_unaligned_be32(mpext->data_len << 16 |
+ 						   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
+@@ -1364,11 +1375,12 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
+ 			goto mp_capable_done;
+ 
+ 		if (opts->csum_reqd) {
+-			put_unaligned_be32(opts->data_len << 16 |
+-					   __mptcp_make_csum(opts->data_seq,
+-							     opts->subflow_seq,
+-							     opts->data_len,
+-							     ~csum_unfold(opts->csum)), ptr);
++			put_len_csum(opts->data_len,
++				     __mptcp_make_csum(opts->data_seq,
++						       opts->subflow_seq,
++						       opts->data_len,
++						       ~csum_unfold(opts->csum)),
++				     ptr);
+ 		} else {
+ 			put_unaligned_be32(opts->data_len << 16 |
+ 					   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 6bcdaf01f483..72a259a74b57 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -718,7 +718,7 @@ void mptcp_token_destroy(struct mptcp_sock *msk);
+ void mptcp_crypto_key_sha(u64 key, u32 *token, u64 *idsn);
+ 
+ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac);
+-u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum);
++__sum16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum);
+ 
+ void __init mptcp_pm_init(void);
+ void mptcp_pm_data_init(struct mptcp_sock *msk);
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 04afead7316f..9c7deffe7cb6 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -846,7 +846,7 @@ static enum mapping_status validate_data_csum(struct sock *ssk, struct sk_buff *
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
+ 	u32 offset, seq, delta;
+-	u16 csum;
++	__sum16 csum;
+ 	int len;
+ 
+ 	if (!csum_reqd)
 -- 
 2.35.1
 
