@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D923C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33354C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243321AbiEWRvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
+        id S244099AbiEWRv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240803AbiEWR3M (ORCPT
+        with ESMTP id S241457AbiEWR0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:29:12 -0400
+        Mon, 23 May 2022 13:26:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D312D377DD;
-        Mon, 23 May 2022 10:26:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D49719D2;
+        Mon, 23 May 2022 10:21:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D5A1B81211;
-        Mon, 23 May 2022 17:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B7D2C385A9;
-        Mon, 23 May 2022 17:14:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FE15B8120F;
+        Mon, 23 May 2022 17:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B24DC3411C;
+        Mon, 23 May 2022 17:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326054;
-        bh=N6jF/zf8eE9gSsnVR0cuxYXWWX2t6nRC2iwKobuSLnE=;
+        s=korg; t=1653326416;
+        bh=lhOmLS/R9QJKcENUCDPWK6y1PeRsDp5qBeu0TJ02EbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BcueUzLOXnX9n9k4ktqWkYeaXz42QUykPDm2E2aLWvFkbHpwzKXb+ZutfayNR0mS2
-         y5t7iJiPR3piDt79UuDsICd/Sf7GfbBx8q5oU8yNTL4e6S9L9Cn5J8/PwsYItZjs75
-         vr1voLgSQmYfbRrMQLc8oGgXv2hVATAdDTyTD03A=
+        b=fVAoOkt70QgklKaasB2A1J9x6BCrxXjdtWoQBDQdQzqq50eyU06DGCDop35Bv6qnV
+         pHfcWRHUCOsjVxWErUXAUC/HxAFs1ElkoPdJhmtZox2iG+6zSQoEEZ3vXIKzJg6L/B
+         1ShI5JiNUOfxVjbEEFFeUBorIEug5TMrQHotWFQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Mitchell <kevmitch@arista.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.4 48/68] igb: skip phy status check where unavailable
-Date:   Mon, 23 May 2022 19:05:15 +0200
-Message-Id: <20220523165810.476425316@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Chee Hou Ong <chee.houx.ong@intel.com>,
+        Aman Kumar <aman.kumar@intel.com>,
+        Pallavi Kumari <kumari.pallavi@intel.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 051/132] Revert "can: m_can: pci: use custom bit timings for Elkhart Lake"
+Date:   Mon, 23 May 2022 19:04:20 +0200
+Message-Id: <20220523165831.688100631@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +52,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Mitchell <kevmitch@arista.com>
+From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
 
-[ Upstream commit 942d2ad5d2e0df758a645ddfadffde2795322728 ]
+commit 14ea4a470494528c7e88da5c4116c24eb027059f upstream.
 
-igb_read_phy_reg() will silently return, leaving phy_data untouched, if
-hw->ops.read_reg isn't set. Depending on the uninitialized value of
-phy_data, this led to the phy status check either succeeding immediately
-or looping continuously for 2 seconds before emitting a noisy err-level
-timeout. This message went out to the console even though there was no
-actual problem.
+This reverts commit 0e8ffdf3b86dfd44b651f91b12fcae76c25c453b.
 
-Instead, first check if there is read_reg function pointer. If not,
-proceed without trying to check the phy status register.
+Commit 0e8ffdf3b86d ("can: m_can: pci: use custom bit timings for
+Elkhart Lake") broke the test case using bitrate switching.
 
-Fixes: b72f3f72005d ("igb: When GbE link up, wait for Remote receiver status condition")
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+| ip link set can0 up type can bitrate 500000 dbitrate 4000000 fd on
+| ip link set can1 up type can bitrate 500000 dbitrate 4000000 fd on
+| candump can0 &
+| cangen can1 -I 0x800 -L 64 -e -fb \
+|     -D 11223344deadbeef55667788feedf00daabbccdd44332211 -n 1 -v -v
+
+Above commit does everything correctly according to the datasheet.
+However datasheet wasn't correct.
+
+I got confirmation from hardware engineers that the actual CAN
+hardware on Intel Elkhart Lake is based on M_CAN version v3.2.0.
+Datasheet was mirroring values from an another specification which was
+based on earlier M_CAN version leading to wrong bit timings.
+
+Therefore revert the commit and switch back to common bit timings.
+
+Fixes: ea4c1787685d ("can: m_can: pci: use custom bit timings for Elkhart Lake")
+Link: https://lore.kernel.org/all/20220512124144.536850-1-jarkko.nikula@linux.intel.com
+Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Reported-by: Chee Hou Ong <chee.houx.ong@intel.com>
+Reported-by: Aman Kumar <aman.kumar@intel.com>
+Reported-by: Pallavi Kumari <kumari.pallavi@intel.com>
+Cc: <stable@vger.kernel.org> # v5.16+
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/can/m_can/m_can_pci.c |   48 +++-----------------------------------
+ 1 file changed, 4 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 3df25b231ab5..26c8d09ad4dd 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -5318,7 +5318,8 @@ static void igb_watchdog_task(struct work_struct *work)
- 				break;
- 			}
+--- a/drivers/net/can/m_can/m_can_pci.c
++++ b/drivers/net/can/m_can/m_can_pci.c
+@@ -18,14 +18,9 @@
  
--			if (adapter->link_speed != SPEED_1000)
-+			if (adapter->link_speed != SPEED_1000 ||
-+			    !hw->phy.ops.read_reg)
- 				goto no_wait;
+ #define M_CAN_PCI_MMIO_BAR		0
  
- 			/* wait for Remote receiver status OK */
--- 
-2.35.1
-
++#define M_CAN_CLOCK_FREQ_EHL		200000000
+ #define CTL_CSR_INT_CTL_OFFSET		0x508
+ 
+-struct m_can_pci_config {
+-	const struct can_bittiming_const *bit_timing;
+-	const struct can_bittiming_const *data_timing;
+-	unsigned int clock_freq;
+-};
+-
+ struct m_can_pci_priv {
+ 	struct m_can_classdev cdev;
+ 
+@@ -89,40 +84,9 @@ static struct m_can_ops m_can_pci_ops =
+ 	.read_fifo = iomap_read_fifo,
+ };
+ 
+-static const struct can_bittiming_const m_can_bittiming_const_ehl = {
+-	.name = KBUILD_MODNAME,
+-	.tseg1_min = 2,		/* Time segment 1 = prop_seg + phase_seg1 */
+-	.tseg1_max = 64,
+-	.tseg2_min = 1,		/* Time segment 2 = phase_seg2 */
+-	.tseg2_max = 128,
+-	.sjw_max = 128,
+-	.brp_min = 1,
+-	.brp_max = 512,
+-	.brp_inc = 1,
+-};
+-
+-static const struct can_bittiming_const m_can_data_bittiming_const_ehl = {
+-	.name = KBUILD_MODNAME,
+-	.tseg1_min = 2,		/* Time segment 1 = prop_seg + phase_seg1 */
+-	.tseg1_max = 16,
+-	.tseg2_min = 1,		/* Time segment 2 = phase_seg2 */
+-	.tseg2_max = 8,
+-	.sjw_max = 4,
+-	.brp_min = 1,
+-	.brp_max = 32,
+-	.brp_inc = 1,
+-};
+-
+-static const struct m_can_pci_config m_can_pci_ehl = {
+-	.bit_timing = &m_can_bittiming_const_ehl,
+-	.data_timing = &m_can_data_bittiming_const_ehl,
+-	.clock_freq = 200000000,
+-};
+-
+ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ {
+ 	struct device *dev = &pci->dev;
+-	const struct m_can_pci_config *cfg;
+ 	struct m_can_classdev *mcan_class;
+ 	struct m_can_pci_priv *priv;
+ 	void __iomem *base;
+@@ -150,8 +114,6 @@ static int m_can_pci_probe(struct pci_de
+ 	if (!mcan_class)
+ 		return -ENOMEM;
+ 
+-	cfg = (const struct m_can_pci_config *)id->driver_data;
+-
+ 	priv = cdev_to_priv(mcan_class);
+ 
+ 	priv->base = base;
+@@ -163,9 +125,7 @@ static int m_can_pci_probe(struct pci_de
+ 	mcan_class->dev = &pci->dev;
+ 	mcan_class->net->irq = pci_irq_vector(pci, 0);
+ 	mcan_class->pm_clock_support = 1;
+-	mcan_class->bit_timing = cfg->bit_timing;
+-	mcan_class->data_timing = cfg->data_timing;
+-	mcan_class->can.clock.freq = cfg->clock_freq;
++	mcan_class->can.clock.freq = id->driver_data;
+ 	mcan_class->ops = &m_can_pci_ops;
+ 
+ 	pci_set_drvdata(pci, mcan_class);
+@@ -218,8 +178,8 @@ static SIMPLE_DEV_PM_OPS(m_can_pci_pm_op
+ 			 m_can_pci_suspend, m_can_pci_resume);
+ 
+ static const struct pci_device_id m_can_pci_id_table[] = {
+-	{ PCI_VDEVICE(INTEL, 0x4bc1), (kernel_ulong_t)&m_can_pci_ehl, },
+-	{ PCI_VDEVICE(INTEL, 0x4bc2), (kernel_ulong_t)&m_can_pci_ehl, },
++	{ PCI_VDEVICE(INTEL, 0x4bc1), M_CAN_CLOCK_FREQ_EHL, },
++	{ PCI_VDEVICE(INTEL, 0x4bc2), M_CAN_CLOCK_FREQ_EHL, },
+ 	{  }	/* Terminating Entry */
+ };
+ MODULE_DEVICE_TABLE(pci, m_can_pci_id_table);
 
 
