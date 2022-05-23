@@ -2,76 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7259C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236917AbiEWODv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
+        id S236847AbiEWOEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236862AbiEWODb (ORCPT
+        with ESMTP id S236838AbiEWOER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:03:31 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08C123163;
-        Mon, 23 May 2022 07:03:30 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L6Jt04Slrz1JC8d;
-        Mon, 23 May 2022 22:02:00 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
- (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
- 2022 22:03:28 +0800
-From:   Baokun Li <libaokun1@huawei.com>
-To:     <linux-ext4@vger.kernel.org>
-CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
-        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
-        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
-        <yebin10@huawei.com>, <yukuai3@huawei.com>, <libaokun1@huawei.com>
-Subject: [PATCH v2 2/2] ext4: correct the judgment of BUG in ext4_mb_normalize_request
-Date:   Mon, 23 May 2022 22:16:58 +0800
-Message-ID: <20220523141658.2919003-3-libaokun1@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220523141658.2919003-1-libaokun1@huawei.com>
-References: <20220523141658.2919003-1-libaokun1@huawei.com>
+        Mon, 23 May 2022 10:04:17 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D1357B38
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:04:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1653314657;
+  x=1684850657;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jmA5B4dvI7xazBJLNO/gm5LrfVmN7fBAWkoDxCERPj0=;
+  b=nFfhcKRuauPGR709FMVVvQrz6iRxxuYZq352HpQ6+s6C6M6FnklSOu6m
+   MATn6LKJyBxMYj7qGlAohBALa1nDNQG5XzMx2Y40axkocXPll/U2HoOyR
+   s5Lg5t4akJaYrv9jICwmt/jK57JkwSd6/IsxHin6N87zKkyOaCBTjeXdg
+   WtHIxv6SUXU8q9jLxi0DFoSlrdhwzcAHNfNNWRp5Extm1tRgAptS145ix
+   JKJtTpyAaSDACM3sC1P6CD0Ecrg+Ec8v2Fmx4AgQvciQl0ryShGNDxz0J
+   jJiqaopA4jI9wjAJs5IAxyWqiyZcwUmJ4Zd0ryntygJcl4xbMkvIp0nRS
+   Q==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <richard@nod.at>, <anton.ivanov@cambridgegreys.com>,
+        <johannes@sipsolutions.net>
+CC:     <kernel@axis.com>, <x86@kernel.org>,
+        <linux-um@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>
+Subject: [PATCH] um: Fix out-of-bounds read in LDT setup
+Date:   Mon, 23 May 2022 16:04:03 +0200
+Message-ID: <20220523140403.2361040-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When either of the "start + size <= ac->ac_o_ex.fe_logical" or
-"start > ac->ac_o_ex.fe_logical" conditions is met, it indicates
-that the fe_logical is not in the allocated range.
-In this case, it should be bug_ON.
+syscall_stub_data() expects the data_count parameter to be the number of
+longs, not bytes.
 
-Fixes: c9de560ded61 ("ext4: Add multi block allocator for ext4")
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
+ ==================================================================
+ BUG: KASAN: stack-out-of-bounds in syscall_stub_data+0x70/0xe0
+ Read of size 128 at addr 000000006411f6f0 by task swapper/1
+
+ CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0+ #18
+ Call Trace:
+  show_stack.cold+0x166/0x2a7
+  __dump_stack+0x3a/0x43
+  dump_stack_lvl+0x1f/0x27
+  print_report.cold+0xdb/0xf81
+  kasan_report+0x119/0x1f0
+  kasan_check_range+0x3a3/0x440
+  memcpy+0x52/0x140
+  syscall_stub_data+0x70/0xe0
+  write_ldt_entry+0xac/0x190
+  init_new_ldt+0x515/0x960
+  init_new_context+0x2c4/0x4d0
+  mm_init.constprop.0+0x5ed/0x760
+  mm_alloc+0x118/0x170
+  0x60033f48
+  do_one_initcall+0x1d7/0x860
+  0x60003e7b
+  kernel_init+0x6e/0x3d4
+  new_thread_handler+0x1e7/0x2c0
+
+ The buggy address belongs to stack of task swapper/1
+  and is located at offset 64 in frame:
+  init_new_ldt+0x0/0x960
+
+ This frame has 2 objects:
+  [32, 40) 'addr'
+  [64, 80) 'desc'
+ ==================================================================
+
+Fixes: 858259cf7d1c443c83 ("uml: maintain own LDT entries")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
-V1->V2:
-	Change Fixes from dfe076c106f6 to c9de560ded61.
+ arch/x86/um/ldt.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
- fs/ext4/mballoc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 6aafc242fe23..61ced468f178 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -4185,7 +4185,7 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
- 	}
- 	rcu_read_unlock();
- 
--	if (start + size <= ac->ac_o_ex.fe_logical &&
-+	if (start + size <= ac->ac_o_ex.fe_logical ||
- 			start > ac->ac_o_ex.fe_logical) {
- 		ext4_msg(ac->ac_sb, KERN_ERR,
- 			 "start %lu, size %lu, fe_logical %lu",
+diff --git a/arch/x86/um/ldt.c b/arch/x86/um/ldt.c
+index 3ee234b6234d..255a44dd415a 100644
+--- a/arch/x86/um/ldt.c
++++ b/arch/x86/um/ldt.c
+@@ -23,9 +23,11 @@ static long write_ldt_entry(struct mm_id *mm_idp, int func,
+ {
+ 	long res;
+ 	void *stub_addr;
++
++	BUILD_BUG_ON(sizeof(*desc) % sizeof(long));
++
+ 	res = syscall_stub_data(mm_idp, (unsigned long *)desc,
+-				(sizeof(*desc) + sizeof(long) - 1) &
+-				    ~(sizeof(long) - 1),
++				sizeof(*desc) / sizeof(long),
+ 				addr, &stub_addr);
+ 	if (!res) {
+ 		unsigned long args[] = { func,
 -- 
-2.31.1
+2.34.1
 
