@@ -2,97 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238470AbiEWQCB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        id S238541AbiEWQCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238513AbiEWQBd (ORCPT
+        with ESMTP id S238522AbiEWQBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:01:33 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACD8193F7;
-        Mon, 23 May 2022 09:01:26 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 1B7B421B83;
-        Mon, 23 May 2022 16:01:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653321685; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
-        bh=fi+V34PTkWcZoMwWtG2mVa3bYbZ61n1jXy1FWg8+OfA=;
-        b=qkTWvOigKviuXOzACz+miEgbMCqrJEgK2Rkvn1kyMAuRDybQMaofRPWHhBB6LIse1Aq7V8
-        Nzm2QpBxCkK27n1rPgdL5j6RPt3hEhu3g7/E9fmfsaC2UbDOxBiKmvxe5yJ2DoHdqLsNo0
-        hPuKBmEbMU340r2kwtNWfggcyGkArs4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653321685;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
-        bh=fi+V34PTkWcZoMwWtG2mVa3bYbZ61n1jXy1FWg8+OfA=;
-        b=BGbNCSotJVuECgCwOhKCmpNAuEZ0QJMVaI8dsNrVkK+Yw+LHkypAJEEUtoPBs6fOis/Nl/
-        r00N60Xj1bJJdeBw==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0663A2C141;
-        Mon, 23 May 2022 16:01:24 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id A413860294; Mon, 23 May 2022 18:01:24 +0200 (CEST)
-Message-Id: <fbb31dc72fb38a69a2aca6c25f1be71d6a8bcc96.1653321424.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ipsec] Revert "net: af_key: add check for pfkey_broadcast in
- function pfkey_process"
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org
-Cc:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Date:   Mon, 23 May 2022 18:01:24 +0200 (CEST)
+        Mon, 23 May 2022 12:01:39 -0400
+X-Greylist: delayed 37374 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 23 May 2022 09:01:35 PDT
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16E0186D0;
+        Mon, 23 May 2022 09:01:31 -0700 (PDT)
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 24NG1I0J011245;
+        Tue, 24 May 2022 01:01:18 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 24NG1I0J011245
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653321678;
+        bh=nzqFcuEyx/MuWRxIhkFKZ05YKWhIDvaI4AOGehk/eQU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bpM6k/YREumRwR1wV+o7WygPJZgEEa/ctjJYwTEJ2ioa2gRSkcevQOL8I0abhh7Xk
+         G/tWYUOtcRwjNcFKoWRKOzI1nUBzx1Y3ivuoc3ARyHb5v2h3LJB52aWS+NYVksXhHd
+         Bbqrbvr1E7VxpwMgEkxJva53m7AJJUYHJGzXTt7bJ4kPtU6KVhMJPOgUcybTMksFla
+         ix4527FtvqcaoqZIg3ArIW/z0u+0L5GNAs+OTkIB5yJTXG42cT/74FPkwDZWb3EgOT
+         RPc3QAYRPbgCVo/VdPYIx5N+Wrot0PuGrz4Sru6a4/pEVfu6i5w4lH0o98zfzKGO4A
+         izfINEMOoUHJw==
+X-Nifty-SrcIP: [209.85.210.171]
+Received: by mail-pf1-f171.google.com with SMTP id w200so14084353pfc.10;
+        Mon, 23 May 2022 09:01:18 -0700 (PDT)
+X-Gm-Message-State: AOAM531kBuuFzLRS32QQX1pZBecFePtF3LTKuGXfLubjA6/aPlOXC5QH
+        lvc1MbSVSyZ5NisZWR22rfbv1Hy10mjp6bvkzWk=
+X-Google-Smtp-Source: ABdhPJz8T55c2giO315+2kau6VgxZ8KUP01sqeHrFD1N0OM+wHS+FuNhPvqHv8mULyzZO18CHDXB1DoEzgUCF1xv0V4=
+X-Received: by 2002:a65:48c1:0:b0:3fa:74c6:3997 with SMTP id
+ o1-20020a6548c1000000b003fa74c63997mr3019714pgs.352.1653321677651; Mon, 23
+ May 2022 09:01:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220523205927.4dbeb49f@canb.auug.org.au>
+In-Reply-To: <20220523205927.4dbeb49f@canb.auug.org.au>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 24 May 2022 00:59:57 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQjc5h-Ffg4Mx0--hs2C35_n_Db2yTiyzmeguH+F0mLaA@mail.gmail.com>
+Message-ID: <CAK7LNAQjc5h-Ffg4Mx0--hs2C35_n_Db2yTiyzmeguH+F0mLaA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the kbuild tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+On Mon, May 23, 2022 at 7:59 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> After merging the kbuild tree, today's linux-next build (sparc64
+> defconfig) failed like this:
+>
+> make[3]: *** Deleting file 'arch/sparc/vdso/vclock_gettime.o'
+> scripts/check-local-export: line 36: symbol_types[${name}]: bad array subscript
+>
+> Caused by commit
+>
+>   86e4cdec74f0 ("kbuild: check static EXPORT_SYMBOL* by script instead of modpost")
+>
+> I have reverted that commit for today.
+>
+> --
+> Cheers,
+> Stephen Rothwell
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
 
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
+Thanks.
+I fixed my branch.
+I confirmed a successful build for sparc64 defconfig.
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- net/key/af_key.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 339d95df19d3..fbb2c16693ad 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2826,10 +2826,8 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
- 
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
- 
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+
+
 -- 
-2.36.1
-
+Best Regards
+Masahiro Yamada
