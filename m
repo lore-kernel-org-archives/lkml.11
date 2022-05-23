@@ -2,149 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8200EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD876C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:04:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235906AbiEWNCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
+        id S235857AbiEWNEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233492AbiEWNCh (ORCPT
+        with ESMTP id S235729AbiEWNEq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:02:37 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803FD22BD5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:02:36 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id a38so10747783pgl.9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:02:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DDMJSeyEhz3D8bGy5InCdDzKQ32lo+eZUXii2YT076w=;
-        b=SYoS4zFvTiXtdoMfpCOIouQm7bVwMfE6+UlK4HDAtlU3277AH047Ur9x22r05V5pow
-         9DBafu+rDDrqZ4wr7PQ3NaEXstFSubiBcJjb0s+Gukf+htgc0+zHXf3e+IUiL/+nVQR2
-         ZQ4AWIqsVFyttV9JF0c73CazcawkwE5OzrCJllCj7o8MDHd2TCNkThwa0ci/vm1Le2EO
-         ldZvmd6H4kQabjMegLcnFMGx/y11KMsjKXTcTho3xDc2yGkl1E69QHblnYlqSePLtw7Z
-         eqmzYpdyg3V9Qnj8QwKEgp/vWwdLCbltz3g5CK5ZtqheawxjxXWCYi457kfWpHOwPkWo
-         Z7Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DDMJSeyEhz3D8bGy5InCdDzKQ32lo+eZUXii2YT076w=;
-        b=rRS8reb/SFsIlrXAB6/06ujydIFm1Ef+zSXDl/EIJpLbQQPxNl3GgpvLp5NEcUd4xb
-         uqc27RPALeyQt+zp/Et1iX8q7f7TdC8A/WLw5anGki4ZjXbqJuPttGuTsSK5ScSOF155
-         77JpQ+PNKTcXHN00ePmR/Tg3NhuRAiMmVT9sLXdn7ABPgLg075B2953Wy4k35gG0xT+a
-         GvW624chFvBFsJrrIRY8BC9rVn7gDNXAtyF/xg+eWlLIGtW94rcyih+zNadb9NNxQhgy
-         aGDEvkJIOIXsjLzPhwpjiC8/bkLeF3KJpozMvSNK8RyYf9q9UyGp2YDZ4UUDdYEzMRuJ
-         w/IA==
-X-Gm-Message-State: AOAM532iMgNGtkXYTu8+XfPI6bYQ1/vdpUkl9kPoF0rSuagMLCPHlUQw
-        hu95FJg4GZPZ6udQZSGUgcw=
-X-Google-Smtp-Source: ABdhPJyP+rcgfnE++8labjEMCnSV+ws14gytPrT5o3etY2G6nnehd2OCtnI6uORIs7/BS9FFYiU+1A==
-X-Received: by 2002:a05:6a00:2d0:b0:518:95f8:d00a with SMTP id b16-20020a056a0002d000b0051895f8d00amr7304351pft.8.1653310955804;
-        Mon, 23 May 2022 06:02:35 -0700 (PDT)
-Received: from 167-179-157-192.a7b39d.syd.nbn.aussiebb.net (167-179-157-192.a7b39d.syd.nbn.aussiebb.net. [167.179.157.192])
-        by smtp.gmail.com with ESMTPSA id v22-20020aa78096000000b0050dc76281d0sm7380271pff.170.2022.05.23.06.02.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 06:02:35 -0700 (PDT)
-From:   Jonathan Liu <net147@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     Marek Vasut <marex@denx.de>, Maxime Ripard <maxime@cerno.tech>,
-        Jonathan Liu <net147@gmail.com>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] drm: bridge: icn6211: Adjust clock phase using SYS_CTRL_1
-Date:   Mon, 23 May 2022 23:01:44 +1000
-Message-Id: <20220523130144.444225-1-net147@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 23 May 2022 09:04:46 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204F92DF;
+        Mon, 23 May 2022 06:04:45 -0700 (PDT)
+Received: from kwepemi500006.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L6Hbs0zfJzDqMC;
+        Mon, 23 May 2022 21:04:41 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500006.china.huawei.com (7.221.188.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 21:04:42 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
+ 2022 21:04:42 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <jack@suse.cz>, <tj@kernel.org>, <axboe@kernel.dk>,
+        <paolo.valente@linaro.org>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next v6 1/3] block, bfq: record how many queues are busy in bfq_group
+Date:   Mon, 23 May 2022 21:18:16 +0800
+Message-ID: <20220523131818.2798712-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220523131818.2798712-1-yukuai3@huawei.com>
+References: <20220523131818.2798712-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The code from [1] sets SYS_CTRL_1 to different values depending on the
-desired clock phase (0, 1/4, 1/2 or 3/4). A clock phase of 0 aligns the
-positive edge of the clock with the pixel data while other values delay
-the clock by a fraction of the clock period. A clock phase of 1/2 aligns
-the negative edge of the clock with the pixel data.
+Prepare to refactor the counting of 'num_groups_with_pending_reqs'.
 
-The driver currently hard codes SYS_CTRL_1 to 0x88 which corresponds to
-aligning the positive edge of the clock with the pixel data. This won't
-work correctly for panels that require aligning the negative edge of the
-clock with the pixel data.
+Add a counter 'busy_queues' in bfq_group, and update it in
+bfq_add/del_bfqq_busy().
 
-Adjust the clock phase to 0 if DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE is
-present in bus_flags, otherwise adjust the clock phase to 1/2 as
-appropriate for DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE.
-
-[1] https://github.com/tdjastrzebski/ICN6211-Configurator
-
-Signed-off-by: Jonathan Liu <net147@gmail.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
 ---
-V2: Use GENMASK and FIELD_PREP macros
----
- drivers/gpu/drm/bridge/chipone-icn6211.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ block/bfq-cgroup.c  |  1 +
+ block/bfq-iosched.h |  2 ++
+ block/bfq-wf2q.c    | 20 ++++++++++++++++++++
+ 3 files changed, 23 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/chipone-icn6211.c b/drivers/gpu/drm/bridge/chipone-icn6211.c
-index 47dea657a752..f1538fb5f8a9 100644
---- a/drivers/gpu/drm/bridge/chipone-icn6211.c
-+++ b/drivers/gpu/drm/bridge/chipone-icn6211.c
-@@ -9,6 +9,8 @@
- #include <drm/drm_print.h>
- #include <drm/drm_mipi_dsi.h>
+diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
+index 09574af83566..4d516879d9fa 100644
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -557,6 +557,7 @@ static void bfq_pd_init(struct blkg_policy_data *pd)
+ 				   */
+ 	bfqg->bfqd = bfqd;
+ 	bfqg->active_entities = 0;
++	bfqg->busy_queues = 0;
+ 	bfqg->online = true;
+ 	bfqg->rq_pos_tree = RB_ROOT;
+ }
+diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
+index 978ef5d6fe6a..3847f4ab77ac 100644
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -906,6 +906,7 @@ struct bfq_group_data {
+  *                   are groups with more than one active @bfq_entity
+  *                   (see the comments to the function
+  *                   bfq_bfqq_may_idle()).
++ * @busy_queues: number of busy bfqqs.
+  * @rq_pos_tree: rbtree sorted by next_request position, used when
+  *               determining if two or more queues have interleaving
+  *               requests (see bfq_find_close_cooperator()).
+@@ -942,6 +943,7 @@ struct bfq_group {
+ 	struct bfq_entity *my_entity;
  
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
- #include <linux/delay.h>
- #include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
-@@ -26,6 +28,11 @@
- #define PD_CTRL(n)		(0x0a + ((n) & 0x3)) /* 0..3 */
- #define RST_CTRL(n)		(0x0e + ((n) & 0x1)) /* 0..1 */
- #define SYS_CTRL(n)		(0x10 + ((n) & 0x7)) /* 0..4 */
-+#define SYS_CTRL_1_CLK_PHASE_MSK	GENMASK(5, 4)
-+#define CLK_PHASE_0			0
-+#define CLK_PHASE_1_4			1
-+#define CLK_PHASE_1_2			2
-+#define CLK_PHASE_3_4			3
- #define RGB_DRV(n)		(0x18 + ((n) & 0x3)) /* 0..3 */
- #define RGB_DLY(n)		(0x1c + ((n) & 0x1)) /* 0..1 */
- #define RGB_TEST_CTRL		0x1e
-@@ -336,7 +343,7 @@ static void chipone_atomic_enable(struct drm_bridge *bridge,
- 	const struct drm_bridge_state *bridge_state;
- 	u16 hfp, hbp, hsync;
- 	u32 bus_flags;
--	u8 pol, id[4];
-+	u8 pol, sys_ctrl_1, id[4];
+ 	int active_entities;
++	int busy_queues;
  
- 	chipone_readb(icn, VENDOR_ID, id);
- 	chipone_readb(icn, DEVICE_ID_H, id + 1);
-@@ -414,7 +421,14 @@ static void chipone_atomic_enable(struct drm_bridge *bridge,
- 	chipone_configure_pll(icn, mode);
+ 	struct rb_root rq_pos_tree;
  
- 	chipone_writeb(icn, SYS_CTRL(0), 0x40);
--	chipone_writeb(icn, SYS_CTRL(1), 0x88);
-+	sys_ctrl_1 = 0x88;
+diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
+index f8eb340381cf..d9ff33e0be38 100644
+--- a/block/bfq-wf2q.c
++++ b/block/bfq-wf2q.c
+@@ -218,6 +218,16 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+ 	return false;
+ }
+ 
++static void bfq_inc_busy_queues(struct bfq_queue *bfqq)
++{
++	bfqq_group(bfqq)->busy_queues++;
++}
 +
-+	if (bus_flags & DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE)
-+		sys_ctrl_1 |= FIELD_PREP(SYS_CTRL_1_CLK_PHASE_MSK, CLK_PHASE_0);
-+	else
-+		sys_ctrl_1 |= FIELD_PREP(SYS_CTRL_1_CLK_PHASE_MSK, CLK_PHASE_1_2);
++static void bfq_dec_busy_queues(struct bfq_queue *bfqq)
++{
++	bfqq_group(bfqq)->busy_queues--;
++}
 +
-+	chipone_writeb(icn, SYS_CTRL(1), sys_ctrl_1);
+ #else /* CONFIG_BFQ_GROUP_IOSCHED */
  
- 	/* icn6211 specific sequence */
- 	chipone_writeb(icn, MIPI_FORCE_0, 0x20);
+ static bool bfq_update_parent_budget(struct bfq_entity *next_in_service)
+@@ -230,6 +240,14 @@ static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+ 	return true;
+ }
+ 
++static void bfq_inc_busy_queues(struct bfq_queue *bfqq)
++{
++}
++
++static void bfq_dec_busy_queues(struct bfq_queue *bfqq)
++{
++}
++
+ #endif /* CONFIG_BFQ_GROUP_IOSCHED */
+ 
+ /*
+@@ -1660,6 +1678,7 @@ void bfq_del_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	bfq_clear_bfqq_busy(bfqq);
+ 
+ 	bfqd->busy_queues[bfqq->ioprio_class - 1]--;
++	bfq_inc_busy_queues(bfqq);
+ 
+ 	if (bfqq->wr_coeff > 1)
+ 		bfqd->wr_busy_queues--;
+@@ -1683,6 +1702,7 @@ void bfq_add_bfqq_busy(struct bfq_data *bfqd, struct bfq_queue *bfqq)
+ 
+ 	bfq_mark_bfqq_busy(bfqq);
+ 	bfqd->busy_queues[bfqq->ioprio_class - 1]++;
++	bfq_dec_busy_queues(bfqq);
+ 
+ 	if (!bfqq->dispatched)
+ 		if (bfqq->wr_coeff == 1)
 -- 
-2.36.1
+2.31.1
 
