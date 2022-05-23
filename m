@@ -2,117 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 000CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0726FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiEWHCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50302 "EHLO
+        id S229848AbiEWHEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbiEWHCE (ORCPT
+        with ESMTP id S229574AbiEWHEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:02:04 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094AB25472D
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:01:13 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nt1wt-0007Lr-4Z; Mon, 23 May 2022 08:53:51 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nt1wq-0001DV-Gs; Mon, 23 May 2022 08:53:48 +0200
-Date:   Mon, 23 May 2022 08:53:48 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Hans Ulli Kroll <linux@ulli-kroll.de>
-Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
-Message-ID: <20220523065348.GK25578@pengutronix.de>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
- <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
+        Mon, 23 May 2022 03:04:11 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF5819C14;
+        Sun, 22 May 2022 23:56:54 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L66sG0b1tz4xD8;
+        Mon, 23 May 2022 16:30:41 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1653287444;
+        bh=xgg1hS9BSFr5BuV1JPPaBTBshDJNljlVHdKXJO5tQ78=;
+        h=Date:From:To:Cc:Subject:From;
+        b=sYnPmLi8oYAqcYCjY6GHNChs5KYvus+P0r4Ha+hu2Qpo4kVIGVj3bhfLVwJn2ECT9
+         PItx4IuEgzjyncJt2ukJrkkvkgo/Fv1BP4r3Sg01O985QC2dDBSVqergEj1J6aeBmX
+         ixUmaX8DtshIG85goiSPBdK6QLcd+4Upjjm8mwLFnhm21hocfXOfWy3xy9rOrqLOqU
+         ah63LfYwt5wNL9w1tP47lwxGiCsdZJRhodfw3bW4nWXtmpm5os/6fD7q7RffpbUVdE
+         GDUC0EEl/UfPdyuTfLneQT6/f8y+tw87u/TO1lbIuDfaV7ECB1+RjP5meIVBOmXYfT
+         GTl8/z/PRXEbg==
+Date:   Mon, 23 May 2022 16:30:40 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Juergen Gross <jgross@suse.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Xen Devel <xen-devel@lists.xenproject.org>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Maximilian Heyne <mheyne@amazon.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: linux-next: manual merge of the xen-tip tree with the pm tree
+Message-ID: <20220523163040.6064b190@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:45:07 up 53 days, 19:14, 61 users,  load average: 0.03, 0.24,
- 0.25
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; boundary="Sig_/LHaDpV_gDAUXQ2VrDx=4El=";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans Ulli,
+--Sig_/LHaDpV_gDAUXQ2VrDx=4El=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 23, 2022 at 06:07:16AM +0200, Hans Ulli Kroll wrote:
-> On Wed, 2022-05-18 at 10:23 +0200, Sascha Hauer wrote:
-> > This series adds support for the USB chip variants to the RTW88 driver.
-> > 
-> 
-> Hi Sascha
-> 
-> glad you found some *working* devices for rtw88 !
+Hi all,
 
-Well, not fully. I had to add [3] = RTW_DEF_RFE(8822c, 0, 0), to the
-rtw8822c_rfe_defs array.
+Today's linux-next merge of the xen-tip tree got a conflict in:
 
-> 
-> I spend some of the weekend testing your driver submission.
-> 
-> for rtl8821cu devices I get following output
-> 
-> some Logilink device
-> 
-> [ 1686.605567] usb 1-5.1.2: New USB device found, idVendor=0bda, idProduct=c811, bcdDevice=
-> 2.00
-> [ 1686.614186] usb 1-5.1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-> [ 1686.621721] usb 1-5.1.2: Product: 802.11ac NIC
-> [ 1686.626227] usb 1-5.1.2: Manufacturer: Realtek
-> [ 1686.630695] usb 1-5.1.2: SerialNumber: 123456
-> [ 1686.640480] rtw_8821cu 1-5.1.2:1.0: Firmware version 24.5.0, H2C version 12
-> [ 1686.932828] rtw_8821cu 1-5.1.2:1.0: failed to download firmware
-> [ 1686.945206] rtw_8821cu 1-5.1.2:1.0: failed to setup chip efuse info
-> [ 1686.951538] rtw_8821cu 1-5.1.2:1.0: failed to setup chip information
-> [ 1686.958402] rtw_8821cu: probe of 1-5.1.2:1.0 failed with error -22
-> 
-> above is same with some from Comfast
-> 
-> The worst in the list is one from EDUP
-> 
-> [ 1817.855704] rtw_8821cu 1-5.1.2:1.2: Firmware version 24.5.0, H2C version 12
-> [ 1818.153918] rtw_8821cu 1-5.1.2:1.2: rfe 255 isn't supported
-> [ 1818.165176] rtw_8821cu 1-5.1.2:1.2: failed to setup chip efuse info
-> [ 1818.171505] rtw_8821cu 1-5.1.2:1.2: failed to setup chip information
+  arch/x86/xen/enlighten_pv.c
 
-Do these chips work with your out of tree variant of this driver?
+between commit:
 
-Is the efuse info completely 0xff or only the field indicating the rfe
-option?
+  f089ab674cea ("xen/x86: Use do_kernel_power_off()")
 
-> 
-> rtl8822bu devices are working fine ...
+from the pm tree and commit:
 
-Nice. Did you test a rtw8723du device as well?
+  1591a65f55bc ("x86: xen: remove STACK_FRAME_NON_STANDARD from xen_cpuid")
 
-Sascha
+from the xen-tip tree.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc arch/x86/xen/enlighten_pv.c
+index af1f6e886225,ca85d1409917..000000000000
+--- a/arch/x86/xen/enlighten_pv.c
++++ b/arch/x86/xen/enlighten_pv.c
+@@@ -30,8 -30,6 +30,7 @@@
+  #include <linux/pci.h>
+  #include <linux/gfp.h>
+  #include <linux/edd.h>
+- #include <linux/objtool.h>
+ +#include <linux/reboot.h>
+ =20
+  #include <xen/xen.h>
+  #include <xen/events.h>
+
+--Sig_/LHaDpV_gDAUXQ2VrDx=4El=
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKLKhAACgkQAVBC80lX
+0GwP1QgAm4zlmI0lzfyk52XGg8pKpPdKKocChsJEtTH1iwbUUM+owKfGB6L7OMlY
+bRZFmQUgIy581cwpFPqYhi1vOcTkOX3E6npA1fhBdamYar7tCqu4xwq2f1A0rTjZ
+Zb9+lcJZHYcp5nApkqC0Us7UICIrvI0ylGXF3okKtscKsoMLPT1jfqrUGo8UIjyA
+l2jPDtIFntlk5bKhcjH4Bk1igoNW/hX97iPzsgj9KTrtVwQ2ISq5PjptZToaiaS0
+JCE4UGrHdiXjmzaDo7saPc5lEs9cUpvLm1TV+9VHYDfs3/UJvS29BTlCHra02K6e
+j3xKHiad9zTxderG5aSSt88c1YZ3AA==
+=BbA2
+-----END PGP SIGNATURE-----
+
+--Sig_/LHaDpV_gDAUXQ2VrDx=4El=--
