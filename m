@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7791BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241257AbiEWSFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46134 "EHLO
+        id S243691AbiEWSFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241782AbiEWRgD (ORCPT
+        with ESMTP id S242402AbiEWRhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:36:03 -0400
+        Mon, 23 May 2022 13:37:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCFF90CE8;
-        Mon, 23 May 2022 10:29:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3848050057;
+        Mon, 23 May 2022 10:31:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0A6960B2C;
-        Mon, 23 May 2022 17:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9900C385A9;
-        Mon, 23 May 2022 17:28:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F0E561262;
+        Mon, 23 May 2022 17:31:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CB72C385AA;
+        Mon, 23 May 2022 17:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326919;
-        bh=2K0Ed2rmG9vLt8EFWi7OhhXbZZ/LsAZmEhrjRjuARM4=;
+        s=korg; t=1653327079;
+        bh=di/0u1pfyt5gJ4peynH3b3jQYS0oAszZJH+iUQ2G0Ic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wYgwDuKlA+TNyRx4dXAXed3Ee8FKQOEEC3saczeCmQ9h0WjpbT9somWEqXucYsi7H
-         P+CDDCYUaCC0ccxyTR83NgE/fRcWHF1EW3p7YEzeHW3sbe683QDxCcjHXpL4Lq7IyE
-         6Lef+SdjJHItiySKX57HYvX1O2I3tdbq/ubyMcfs=
+        b=D6CIGSFRN37/XJNA9UXCfnwhn8Fh2TO1Jnk9aZ4s8JT2DC6PnSgwFbtuLReASxCs4
+         mhHREU2fE7dTRPKVISBZ+LjSekk0aI45PTvnBg3NbV5Rv72FbY0PImXlvElbNyzk8+
+         /iBvc8RajCoGPd/H5wD/cTtLqpQVH+w1Kt5bBZrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charan Teja Kalla <quic_charante@quicinc.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 5.17 067/158] dma-buf: ensure unique directory name for dmabuf stats
-Date:   Mon, 23 May 2022 19:03:44 +0200
-Message-Id: <20220523165841.999829287@linuxfoundation.org>
+        stable@vger.kernel.org, Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        Grant Grundler <grundler@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 150/158] net: atlantic: fix "frag[0] not initialized"
+Date:   Mon, 23 May 2022 19:05:07 +0200
+Message-Id: <20220523165855.043512482@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,71 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+From: Grant Grundler <grundler@chromium.org>
 
-commit 370704e707a5f2d3c9a1d4ed8bd8cd67507d7bb5 upstream.
+[ Upstream commit 62e0ae0f4020250f961cf8d0103a4621be74e077 ]
 
-The dmabuf file uses get_next_ino()(through dma_buf_getfile() ->
-alloc_anon_inode()) to get an inode number and uses the same as a
-directory name under /sys/kernel/dmabuf/buffers/<ino>. This directory is
-used to collect the dmabuf stats and it is created through
-dma_buf_stats_setup(). At current, failure to create this directory
-entry can make the dma_buf_export() to fail.
+In aq_ring_rx_clean(), if buff->is_eop is not set AND
+buff->len < AQ_CFG_RX_HDR_SIZE, then hdr_len remains equal to
+buff->len and skb_add_rx_frag(xxx, *0*, ...) is not called.
 
-Now, as the get_next_ino() can definitely give a repetitive inode no
-causing the directory entry creation to fail with -EEXIST. This is a
-problem on the systems where dmabuf stats functionality is enabled on
-the production builds can make the dma_buf_export(), though the dmabuf
-memory is allocated successfully, to fail just because it couldn't
-create stats entry.
+The loop following this code starts calling skb_add_rx_frag() starting
+with i=1 and thus frag[0] is never initialized. Since i is initialized
+to zero at the top of the primary loop, we can just reference and
+post-increment i instead of hardcoding the 0 when calling
+skb_add_rx_frag() the first time.
 
-This issue we are able to see on the snapdragon system within 13 days
-where there already exists a directory with inode no "122602" so
-dma_buf_stats_setup() failed with -EEXIST as it is trying to create
-the same directory entry.
-
-To make the dentry name as unique, use the dmabuf fs specific inode
-which is based on the simple atomic variable increment. There is tmpfs
-subsystem too which relies on its own inode generation rather than
-relying on the get_next_ino() for the same reason of avoiding the
-duplicate inodes[1].
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?id=e809d5f0b5c912fe981dce738f3283b2010665f0
-
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Cc: <stable@vger.kernel.org> # 5.15.x+
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/1652441296-1986-1-git-send-email-quic_charante@quicinc.com
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Aashay Shringarpure <aashay@google.com>
+Reported-by: Yi Chou <yich@google.com>
+Reported-by: Shervin Oloumi <enlightened@google.com>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma-buf/dma-buf.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -407,6 +407,7 @@ static inline int is_dma_buf_file(struct
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 77e76c9efd32..440423b0e8ea 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -446,7 +446,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		       ALIGN(hdr_len, sizeof(long)));
  
- static struct file *dma_buf_getfile(struct dma_buf *dmabuf, int flags)
- {
-+	static atomic64_t dmabuf_inode = ATOMIC64_INIT(0);
- 	struct file *file;
- 	struct inode *inode = alloc_anon_inode(dma_buf_mnt->mnt_sb);
+ 		if (buff->len - hdr_len > 0) {
+-			skb_add_rx_frag(skb, 0, buff->rxdata.page,
++			skb_add_rx_frag(skb, i++, buff->rxdata.page,
+ 					buff->rxdata.pg_off + hdr_len,
+ 					buff->len - hdr_len,
+ 					AQ_CFG_RX_FRAME_MAX);
+@@ -455,7 +455,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
  
-@@ -416,6 +417,13 @@ static struct file *dma_buf_getfile(stru
- 	inode->i_size = dmabuf->size;
- 	inode_set_bytes(inode, dmabuf->size);
- 
-+	/*
-+	 * The ->i_ino acquired from get_next_ino() is not unique thus
-+	 * not suitable for using it as dentry name by dmabuf stats.
-+	 * Override ->i_ino with the unique and dmabuffs specific
-+	 * value.
-+	 */
-+	inode->i_ino = atomic64_add_return(1, &dmabuf_inode);
- 	file = alloc_file_pseudo(inode, dma_buf_mnt, "dmabuf",
- 				 flags, &dma_buf_fops);
- 	if (IS_ERR(file))
+ 		if (!buff->is_eop) {
+ 			buff_ = buff;
+-			i = 1U;
+ 			do {
+ 				next_ = buff_->next;
+ 				buff_ = &self->buff_ring[next_];
+-- 
+2.35.1
+
 
 
