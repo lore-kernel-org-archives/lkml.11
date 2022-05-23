@@ -2,131 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D76C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234874AbiEWLax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S234933AbiEWLcA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234793AbiEWLau (ORCPT
+        with ESMTP id S234793AbiEWLb6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:30:50 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2061.outbound.protection.outlook.com [40.107.237.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9889A4F479
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:30:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E08PxoH98zZWNcsQTml9UIBnY5vPvwwBlSrdXHIS1o/mascHnGtpHmWwESt+TwGg724wgdl8/K7BMRU0G234P65ULBg3Q+TG0zE5MafCEBLi/JBG5vIp3kRuUl+ebrHMeRZ+2kbWQfFHWjIsfbBJtK3mSIfDNNyVVcW1cvnIdlGZo7a0w5tPbbkuPv683QTlxGWp2t+8Vpdtc+V5de6sL8LwDwHyGA+DVbCvq64A0pfI/8GsfHGhlOAoKTy8vVMImzDijhGqVOL6JxryKw4pBaOMY2J+Vc0pxgmFodO0AOoMbEiDUkiwbQUPpOCGkm27uPy3jdePLBJsl6ZnPw6zeg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bMTYoLt11ZaYE1U1BYzrGqbPnmLeIEx2aYALfI6mm3c=;
- b=aC25XajS0uqa6eDsSTi8y5HLa2BphosTC1fTklRs+pOCsio0JejtpKJc0Xv7RCT4Loe/C5sDCDcw1a20olOLTUgCk784InMEWXF6/7FjZboMvHDUP7YGXMOKPVlk69XvK1Jwt6Q63v5xvdkFuicxDYXXNExP4SFNeZnq59siMitNAVstyLgltlfuOC/S9sAPrq6YqkKyvYSsQwYpsfwBAQJJaFjfzY8LVkxSkSfEthln+tAD9zrNpy3VX5+761FiuhOwDOLa1DUTJrGChvN28GrGRsHP5IAeHSHGtt97Rn/1e7HpO2Z0kU9PVZLAEVj1LG32JRF0HqddFTOWLWbvYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bMTYoLt11ZaYE1U1BYzrGqbPnmLeIEx2aYALfI6mm3c=;
- b=1iW6Smha3SjxHmx4wWK+Jb1aLPi0WyUx7sUUpSwGNABEypzTcgvo04fIAdP3/t9kFQcxhPufTQqVPRO+DcXslzcmW0VyRi23or1lH5VdiCd0CzYAyiOFjQNu/ODnMry6g9dP2mGU6CFVRsO2Wt9qF9O4v6WrtxNNybasfZgMz8A=
-Received: from MWHPR14CA0016.namprd14.prod.outlook.com (2603:10b6:300:ae::26)
- by MWHPR12MB1741.namprd12.prod.outlook.com (2603:10b6:300:10f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Mon, 23 May
- 2022 11:30:44 +0000
-Received: from CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:ae:cafe::7) by MWHPR14CA0016.outlook.office365.com
- (2603:10b6:300:ae::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17 via Frontend
- Transport; Mon, 23 May 2022 11:30:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1NAM11FT055.mail.protection.outlook.com (10.13.175.129) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5273.14 via Frontend Transport; Mon, 23 May 2022 11:30:43 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
- 2022 06:30:42 -0500
-Received: from amd-B450M-DS3H.amd.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 23 May 2022 06:30:33 -0500
-From:   Syed Saba kareem <ssabakar@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
-        <Sunil-kumar.Dommati@amd.com>, <ajitkumar.pandey@amd.com>,
-        Syed Saba kareem <ssabakar@amd.com>,
-        kernel test robot <lkp@intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ASoC: SOF: amd: Fixed Build error
-Date:   Mon, 23 May 2022 16:59:53 +0530
-Message-ID: <20220523112956.3087604-1-ssabakar@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 23 May 2022 07:31:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCE236E0E;
+        Mon, 23 May 2022 04:31:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC846B81014;
+        Mon, 23 May 2022 11:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33631C385A9;
+        Mon, 23 May 2022 11:31:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653305515;
+        bh=ec/8ICRiIA0J8KQbodu4J3bWjx7guSjaJnAwLaZGMX4=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=dQizoHBLLVHuA3n7nqEfZI++hCTQbJHicLcfHSH/o17PYAIPjNqCNjRmH1zRNa70U
+         k6JL9Qx9HHRuPQ/RDggsbYIzN5gEXNTxRshBY3YuOOisHu5lD9v5+Axnem6zzGqC6g
+         9da0NUsOF5VKxk4txqaFArTcmYDWxVT3Ku2H8RY2S/O+3Gb95ZkjelB+yrJaJNqfxf
+         hzRYuOb1srEuafbL5rjexfvb9qsGOXSrPQhuIdJoi6zZjwwtYWww2inEeFm9KlTEHc
+         J6yumbfutNVJcClnaZYsU1vQsjMt2oMw7mn9od0+VdtLyj63Y9ds+G64idfz9NhIoj
+         uFW94L1PYooNA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     duoming@zju.edu.cn
+Cc:     "Greg KH" <gregkh@linuxfoundation.org>,
+        linux-wireless@vger.kernel.org, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rafael@kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
+References: <20220523052810.24767-1-duoming@zju.edu.cn>
+        <YosqUjCYioGh3kBW@kroah.com>
+        <41a266af.2abb6.180efa8594d.Coremail.duoming@zju.edu.cn>
+Date:   Mon, 23 May 2022 14:31:48 +0300
+In-Reply-To: <41a266af.2abb6.180efa8594d.Coremail.duoming@zju.edu.cn>
+        (duoming's message of "Mon, 23 May 2022 14:43:49 +0800 (GMT+08:00)")
+Message-ID: <87r14kzdqz.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 473b6918-063a-4e42-e74c-08da3cafac87
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1741:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB17418B1844CE394131CCAE77FCD49@MWHPR12MB1741.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9VyrolCUyTupML8s61CX2FedS2aQ69OiOQUERtUNcje5sHdH6BdCSI7o72kXcvhaMfWUrxKx061RPKMgJiKrROaYWyT6A3UnUKc1Us6rd//iPVEu+6jENsWUmcsXw/Fwby0SVQR6xDDDuodunwTaSzrapwiQCxmKlGNzeb4w99f75fRUqso/amBO0qHoJrqM8EuaqooLuDyYSMMNfiJK06ti8jBi+/06ZsuA+mFq1xOJ8MKy3/EIqYGN4C6lCXfm403cbRQFzGfRNdoERs/eWBogzxBd29lYSZ3zNoi2KwAWkDWL+WBwCFuoZXMxQD+hbMY9GCL2zMfKLcio8Qa3gCf0QGxXkpzEE+3gFgr+rnNDWg040cUW6YLq/j3Vnq+aYCnfTU3Kny5++DFbwGKdYMzsFDFqyv0Z79kfqQaABCCXs7O/FZnN3TSRhhv7Cyd2ZehiWMnrtALg8XbI3vjrum1fuDOtIqyEscS2d6tFZ24SC+qgaUIi89pKBFJRHaEPrksNQW9DG5ZVOi+N1C9fnd0LTmhSBrP9K5F3MystrY/cPML32BLdYBeUPMRYrBHwHpsp0jW7yd5MpFX72ZeQj7igF/NaS3/ywkO4rDNpH97fL657kAR8EiHr22aT3zfDE6gC7G1tLdVp6a8Sf1QMKwJeb7lIAwLWdcB8iIMOvuAzjpakc2U23nMaOL0HZVdc/63IBjntBrnhwaY8SKK2iA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(82310400005)(2616005)(70206006)(70586007)(8676002)(4326008)(356005)(7696005)(508600001)(54906003)(110136005)(316002)(40460700003)(26005)(81166007)(186003)(6666004)(8936002)(5660300002)(1076003)(4744005)(47076005)(336012)(426003)(2906002)(36860700001)(36756003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 11:30:43.5846
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 473b6918-063a-4e42-e74c-08da3cafac87
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1741
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add linux/module.h in acp-pci.c to solve the below dependency
+(adding Johannes)
 
-All error/warnings (new ones prefixed by >>):
+duoming@zju.edu.cn writes:
 
->> sound/soc/amd/acp/acp-pci.c:148:1: warning: data definition has no type or storage class
-148 | MODULE_DEVICE_TABLE(pci, acp_pci_ids);
-| ^~~~~~~~~~~~~~~~~~~
->> sound/soc/amd/acp/acp-pci.c:148:1: error: type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE' [-Werror=implicit-int]
-...
+>> > --- a/lib/kobject.c
+>> > +++ b/lib/kobject.c
+>> > @@ -254,7 +254,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+>> >  	if (kobj->name && !fmt)
+>> >  		return 0;
+>> >  
+>> > -	s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
+>> > +	s = kvasprintf_const(GFP_ATOMIC, fmt, vargs);
+>> >  	if (!s)
+>> >  		return -ENOMEM;
+>> >  
+>> > @@ -267,7 +267,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+>> >  	if (strchr(s, '/')) {
+>> >  		char *t;
+>> >  
+>> > -		t = kstrdup(s, GFP_KERNEL);
+>> > +		t = kstrdup(s, GFP_ATOMIC);
+>> >  		kfree_const(s);
+>> >  		if (!t)
+>> >  			return -ENOMEM;
+>> 
+>> Please no, you are hurting the whole kernel because of one odd user.
+>> Please do not make these calls under atomic context.
+>
+> Thanks for your time and suggestions. I will remove the gfp_t
+> parameter of dev_coredumpv in order to show it could not be used in
+> atomic context.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Syed Saba Kareem<ssabakar@amd.com>
----
- sound/soc/amd/acp/acp-pci.c | 1 +
- 1 file changed, 1 insertion(+)
+In a way it would be nice to be able to call dev_coredump from atomic
+contexts, though I don't know how practical it actually is. Is there any
+other option? What about adding a gfp_t parameter to dev_set_name()? Or
+is there an alternative for dev_set_name() which can be called in atomic
+contexts?
 
-diff --git a/sound/soc/amd/acp/acp-pci.c b/sound/soc/amd/acp/acp-pci.c
-index 340e39d7f420..c893963ee2d0 100644
---- a/sound/soc/amd/acp/acp-pci.c
-+++ b/sound/soc/amd/acp/acp-pci.c
-@@ -16,6 +16,7 @@
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-+#include <linux/module.h>
- 
- #include "amd.h"
- #include "../mach-config.h"
+Johannes&Greg, any ideas?
+
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
