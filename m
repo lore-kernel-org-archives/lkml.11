@@ -2,127 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E574BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A2AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237871AbiEWP3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42926 "EHLO
+        id S237883AbiEWP36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237793AbiEWP3x (ORCPT
+        with ESMTP id S238064AbiEWP2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:29:53 -0400
-Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [5.144.164.162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8205EDF7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:29:51 -0700 (PDT)
-Received: from [10.1.250.9] (riviera.nat.ds.pw.edu.pl [194.29.137.1])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 4D8711F6C6;
-        Mon, 23 May 2022 17:29:47 +0200 (CEST)
-Message-ID: <f8e569e4-9a6b-75eb-5094-f3e2d9a1ecf8@somainline.org>
-Date:   Mon, 23 May 2022 17:29:42 +0200
+        Mon, 23 May 2022 11:28:40 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3815FF04;
+        Mon, 23 May 2022 08:28:24 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id d22so13407518plr.9;
+        Mon, 23 May 2022 08:28:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cUC4YaTkSvnRYrJyCu9bbmLHjPFEHYU8Y+xctYQuBfo=;
+        b=pBMqPUwvyvmRiCSpJnrPcKBj4tXANwPwaJQfBeQZbvwD5TWozoyG0AJi0UUreYt344
+         zOf8BbJLr7L8Q27sVXv8Xe/01vjze+sZIZujLJtacMGT25Ek6OwfZJzjVLxZK7pnRZqq
+         w+NlZCn2XazKc9Q+SsUiwDR/EcgWrQCOtFh2AJkgN/dGFO7ntUZsjWuMBlNAjO7V8hp8
+         KM56AtIcTVjuRmWL68A2wCVioWILVggaPBR20LmcqgoOAbSmpWCZAKhMpwl6ObVUpORP
+         4ZNxuFZze22j3imNb4w8yFimrFs8SKdWRstnlHu8BGCnFqUf5JcdPkmeqsZ4Ly0QW9RN
+         yp/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cUC4YaTkSvnRYrJyCu9bbmLHjPFEHYU8Y+xctYQuBfo=;
+        b=fA5ZzaXz0lHsK56YcpT7hgxF+7saNSM8Sc8qijxsKRrHs+hPaNjB3sebh0kWKxIhWu
+         XC7ekH8hIxzb26x0zXZtDDjcbO9UikcglDjfPCZf1MI+N3nyL4cBbb76F+x49wsHkkr1
+         qurM+WEwHmluTR++ezoN6CQdc1ce7B7fuDJJiZ4QwJoiDOdaH/B78bMyMtcDN9LGTY7B
+         PD7k6ts184eW/C/E1OolQZc7TBNNAxWT2JKwwZpPTvLPJz+MEn7fNzXc/MkIqpEtymPE
+         rWgEoaFrnNcuVMhtbG5585DLzMSwVl+yvL4jHAYTra/w7iGMnASNcR4MCa+uGLb6jjyj
+         yY7w==
+X-Gm-Message-State: AOAM5320em1uWd9xJd78fNkF1Puzx87sbUiHVrPccgAjrw1WLe0G5eDe
+        /DUp0nQ4Tljs+00/d8Ru6C0=
+X-Google-Smtp-Source: ABdhPJyiXyFb6VGU02rrA8lDxILq34YkqQDZvpgVob/1vxaCbMYzV8kEf0lpwxYeYymyJEiLCAvhpQ==
+X-Received: by 2002:a17:902:b58b:b0:162:2e01:9442 with SMTP id a11-20020a170902b58b00b001622e019442mr3261166pls.6.1653319700549;
+        Mon, 23 May 2022 08:28:20 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id p1-20020a056a0026c100b0051810d460adsm7412307pfw.114.2022.05.23.08.28.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 08:28:20 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Peter De Schrijver <pdeschrijver@nvidia.com>,
+        Prashant Gaikwad <pgaikwad@nvidia.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Mike Turquette <mturquette@linaro.org>,
+        Stephen Warren <swarren@nvidia.com>, linux-clk@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] clk: tegra20: Fix refcount leak in tegra20_clock_init
+Date:   Mon, 23 May 2022 19:28:11 +0400
+Message-Id: <20220523152811.19692-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: Removal of qcom,board-id and qcom,msm-id
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     agross@kernel.org, arnd@arndb.de, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, olof@lixom.net, robh@kernel.org,
-        sboyd@kernel.org
-References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
- <20220522195138.35943-1-konrad.dybcio@somainline.org>
- <53d5999b-88ee-24db-fd08-ff9406e2b7b7@linaro.org>
- <02ab0276-b078-fe66-8596-fcec4378722b@somainline.org>
- <49a52870-9aab-c4bd-2077-66732f42bbba@linaro.org>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <49a52870-9aab-c4bd-2077-66732f42bbba@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+of_find_matching_node() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-On 23/05/2022 14:14, Krzysztof Kozlowski wrote:
-> On 23/05/2022 14:02, Konrad Dybcio wrote:
->> On 23/05/2022 09:21, Krzysztof Kozlowski wrote:
->>> On 22/05/2022 21:51, Konrad Dybcio wrote:
->>>> Hi,
->>>>
->>>> removing these properties will not bring almost any benefit (other than making
->>>> some checks happy any saving some <200 LoC) and will make the lives of almost
->>>> all people doing independent development for linux-on-msm harder. There are
->>>> almost unironically like 3 people outside Linaro and QUIC who have
->>>> non-vendor-fused development boards AND the sources to rebuild the
->>>> bootloader on their own. Making it harder to boot is only going to
->>>> discourage people from developing on these devices, which is already not
->>>> that pleasant, especially with newer platforms where you have to fight with
->>>> the oh-so-bright ideas of Android boot chain..
->>>>
->>>> This only concerns devices released before sm8350, as the new ones will not
->>>> even boot with these properties present (or at least SONY Sagami, but I
->>>> doubt it's an isolated case), so other than completing support for older
->>>> devices, it won't be an issue going forward, anyway. But there are give
->>>> or take 50 locked down devices in mainline right now, and many more waiting
->>>> to be upstreamed in various downstream close-to-mainline trees that should
->>>> not be disregarded just because Qualcomm is far from the best at making
->>>> their BSP software stack clean.
->>> I actually wonder why do you need these properties for community work on
->>> such boards? You ship kernel with one concatenated DTB and the
->>> bootloader does not need the board-id/msm-id fields, doesn't it?
->> If that were the case, I would have never complained about this! It's
->> the bootloader itself that needs it, you can see it in a "Best match
->> [blah blah] 258/0x1000/...." log line, where it walks through the
->> appended (or otherwise compiled into the boot.img) DTBs and looks for
->> matches for the burnt-in msm-, board- and (on newer-older platforms)
->> pmic-id. If it cannot find these, it refuses to boot with an Android
->> Verified Boot red state and you get a not-so-nice "Your device has been
->> unlocked and the boot image is not working" or something like this on
->> your screen.
->>
->>
->>> Not mentioning that in the past bootloader was actually not using these
->>> properties at all, because it was the dtbTool who was parsing them.
->> Not sure when that was the case, maybe with very old arm32 bootloaders
->> in the times before I did development on Qualcomm devices.
->>
->>
->>>    So
->>> in any case either your device works fine without these properties or
->>> you have to use dtbTool, right?
->> To the best of my idea, wrong :( Unless the vendor modified the LK/XBL
->> code on their own, it looks for a "best match" (but if it's not a
->> precise match, it won't even bother trying to boot, just fyi..), meaning
->> it tries to go through a list of SoC ID and revision pairs (msm-id),
->> board IDs (board-id) and PMIC id+rev pairs (pmic-id) and if no match is
->> found, it doesn't even exit the bootloader and says something like "no
->> dtbs found".
-> This would mean that dtbTool as described in the actual patch [1] is not
-> used and bootloader ignores the table. If that's the case, the commit
-> and requirement of such complex board-foundry-pmic-compatibles should be
-> dropped. So I am getting now to what Dmitry said...
->
-> [1]
-> https://lore.kernel.org/all/1448062280-15406-2-git-send-email-sboyd@codeaurora.org/
+Fixes: 37c26a906527 ("clk: tegra: add clock support for Tegra20")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/clk/tegra/clk-tegra20.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-This solution assumes everybody is using the so-called QCDT images, 
-which is not necessarily the case, as not all bootloaders (even if they 
-should, as their base BSP tags sometimes imply) support that. Others, in 
-turn, require that and will not recognize appended DTBs properly for 
-reasons unknown..
+diff --git a/drivers/clk/tegra/clk-tegra20.c b/drivers/clk/tegra/clk-tegra20.c
+index be3c33441cfc..8a4514f6d503 100644
+--- a/drivers/clk/tegra/clk-tegra20.c
++++ b/drivers/clk/tegra/clk-tegra20.c
+@@ -1131,6 +1131,7 @@ static void __init tegra20_clock_init(struct device_node *np)
+ 	}
+ 
+ 	pmc_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!pmc_base) {
+ 		pr_err("Can't map pmc registers\n");
+ 		BUG();
+-- 
+2.25.1
 
-
-I once went as far as writing up solutions to getting a boot on almost 
-all combinations of these.. I may even still have it stashed somewhere.. 
-things get crazy when you factor in DTBO and GKI..
-
-
-Konrad
-
->
->
-> Best regards,
-> Krzysztof
