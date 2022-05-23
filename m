@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A8BC38A04
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E00CCC4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243298AbiEWRiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        id S242706AbiEWRhp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241677AbiEWR1E (ORCPT
+        with ESMTP id S241514AbiEWR0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:04 -0400
+        Mon, 23 May 2022 13:26:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC5676285;
-        Mon, 23 May 2022 10:22:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D30F737A9;
+        Mon, 23 May 2022 10:21:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8655B81218;
-        Mon, 23 May 2022 17:16:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 428F5C385AA;
-        Mon, 23 May 2022 17:16:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1E19B81214;
+        Mon, 23 May 2022 17:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D32C385AA;
+        Mon, 23 May 2022 17:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326188;
-        bh=+bwDGyDJKCF8LB9fJwHxTM4vlvD9HScCpYl69iObhuI=;
+        s=korg; t=1653326082;
+        bh=S4saDqSBPAHF5po1ATrYvKaytjDDNFnmsPkryfjOuyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XoTkpakr/hBhlmNEyFCpvy9ZgZV13CiTjMwz7g0Sn9U88Rp5lFOdYcFLX6wxNcAfr
-         G501rj22fnrkm18LD7AIQOYAQYLuHGxiiqH6efv2mQATsBnbqfglf4m75AnnBLD7VG
-         gAGv7Lj9LEVfaJZIo380KVwCRyiNAuOq2ckb4ULY=
+        b=b06IUBeCnoHKVDgsEPMqzpONaLCoQW35Zad1wwnvIaRW4Eai2NyOT7kInRqIheDXN
+         NaUkrHpMOPM6J7sJ8/M2X0+fwQMUZv/mBFGKoKbpLiw2Q9DWDLUoAHVIvqrtljWMZJ
+         xrHVLY+KVZg+kiXwtCGsk7Qd+HOv4J1r2IKPf8MY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Martin Willi <martin@strongswan.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Namhyung Kim <namhyung@gmail.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 17/97] crypto: x86/chacha20 - Avoid spurious jumps to other functions
-Date:   Mon, 23 May 2022 19:05:21 +0200
-Message-Id: <20220523165815.020280320@linuxfoundation.org>
+Subject: [PATCH 5.4 52/68] perf bench numa: Address compiler error on s390
+Date:   Mon, 23 May 2022 19:05:19 +0200
+Message-Id: <20220523165811.111295465@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,50 +54,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thomas Richter <tmricht@linux.ibm.com>
 
-[ Upstream commit 4327d168515fd8b5b92fa1efdf1d219fb6514460 ]
+[ Upstream commit f8ac1c478424a9a14669b8cef7389b1e14e5229d ]
 
-The chacha_Nblock_xor_avx512vl() functions all have their own,
-identical, .LdoneN label, however in one particular spot {2,4} jump to
-the 8 version instead of their own. Resulting in:
+The compilation on s390 results in this error:
 
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_2block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_4block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
+  # make DEBUG=y bench/numa.o
+  ...
+  bench/numa.c: In function ‘__bench_numa’:
+  bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
+              writing between 1 and 11 bytes into a region of size between
+              10 and 20 [-Werror=format-truncation=]
+  1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
+                                                               ^~
+  ...
+  bench/numa.c:1749:64: note: directive argument in the range
+                 [-2147483647, 2147483646]
+  ...
+  #
 
-Make each function consistently use its own done label.
+The maximum length of the %d replacement is 11 characters because of the
+negative sign.  Therefore extend the array by two more characters.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Martin Willi <martin@strongswan.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Output after:
+
+  # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
+  -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
+  #
+
+Fixes: 3aff8ba0a4c9c919 ("perf bench numa: Avoid possible truncation when using snprintf()")
+Suggested-by: Namhyung Kim <namhyung@gmail.com>
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220520081158.2990006-1-tmricht@linux.ibm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/crypto/chacha-avx512vl-x86_64.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/perf/bench/numa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/crypto/chacha-avx512vl-x86_64.S b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-index bb193fde123a..8713c16c2501 100644
---- a/arch/x86/crypto/chacha-avx512vl-x86_64.S
-+++ b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-@@ -172,7 +172,7 @@ SYM_FUNC_START(chacha_2block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone2
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
+diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
+index 5797253b9700..69d62e57a0c3 100644
+--- a/tools/perf/bench/numa.c
++++ b/tools/perf/bench/numa.c
+@@ -1630,7 +1630,7 @@ static int __bench_numa(const char *name)
+ 		"GB/sec,", "total-speed",	"GB/sec total speed");
  
-@@ -438,7 +438,7 @@ SYM_FUNC_START(chacha_4block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone4
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
- 
+ 	if (g->p.show_details >= 2) {
+-		char tname[14 + 2 * 10 + 1];
++		char tname[14 + 2 * 11 + 1];
+ 		struct thread_data *td;
+ 		for (p = 0; p < g->p.nr_proc; p++) {
+ 			for (t = 0; t < g->p.nr_threads; t++) {
 -- 
 2.35.1
 
