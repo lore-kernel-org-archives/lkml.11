@@ -2,68 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B385C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A834C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232058AbiEWIlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34206 "EHLO
+        id S232079AbiEWIl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232005AbiEWIlp (ORCPT
+        with ESMTP id S232049AbiEWIlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:41:45 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9960F18E0D;
-        Mon, 23 May 2022 01:41:41 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id D76C31F42CC6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653295300;
-        bh=0P46duBDuz2b5CE/o2n56812oMHke0Ez/vRylcz7E8w=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DnbM3Sz+hSQk0SLXivU4I4uVTqNsW6Afi3aXHedtSkumaqlwPyJt63SeARySgkWhU
-         V0bX58p4FClZRwXaMagpvPdcnexlvyUQzwHcdoyDM9FP3wzGJy8BSKlBOBnLr5j+Gc
-         vynWi3U5cSwtRMtT621qLvUSJIvzp0Mz+HUtOvZzxCokHVmSohEjaK84FkDEZNZA+L
-         Is5i9p8pDEBkr+jWHCQO4ezFkWE+OohHFCF/KWproX8j2MYcLIlDABfAc+FcE1acjB
-         c+W92jSNmEJ59Rgudk99ODg8/JxxqS0oiXqcyNjkj99WoSvmpvE5iTbFtg9zvrO4KW
-         xnPVw4t4ABqUA==
-Message-ID: <e6d5bf20-4ed2-2d98-438e-315a9ed6b71a@collabora.com>
-Date:   Mon, 23 May 2022 10:41:37 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] i2c: mediatek: Fix an error handling path in
- mtk_i2c_probe()
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        dan.carpenter@oracle.com, Qii Wang <qii.wang@mediatek.com>,
+        Mon, 23 May 2022 04:41:50 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8A91EC57;
+        Mon, 23 May 2022 01:41:49 -0700 (PDT)
+X-UUID: a78365c208f742d2a23d854dcb21d822-20220523
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:b43c7441-8be3-47b5-815f-bfccff1c1aa2,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:598e35e3-edbf-4bd4-8a34-dfc5f7bb086d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: a78365c208f742d2a23d854dcb21d822-20220523
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <jia-wei.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1188755681; Mon, 23 May 2022 16:41:46 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 23 May 2022 16:41:45 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 23 May 2022 16:41:44 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 23 May 2022 16:41:44 +0800
+From:   Tim Chang <jia-wei.chang@mediatek.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <8001bcdbee9f8afc85118c99b8166eb6473dcba5.1653222111.git.christophe.jaillet@wanadoo.fr>
-From:   AngeloGioacchino Del Regno 
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Roger Lu <roger.lu@mediatek.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <hsinyi@google.com>,
+        AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <8001bcdbee9f8afc85118c99b8166eb6473dcba5.1653222111.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v3 3/4] dt-bindings: soc: mediatek: add mt8195 svs dt-bindings
+Date:   Mon, 23 May 2022 16:40:33 +0800
+Message-ID: <20220523084034.26802-4-jia-wei.chang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220523084034.26802-1-jia-wei.chang@mediatek.com>
+References: <20220523084034.26802-1-jia-wei.chang@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 22/05/22 14:22, Christophe JAILLET ha scritto:
-> The clsk are prepared, enabled, then disabled. So if an error occurs after
-> the disable step, they are still prepared.
-> 
-> Add an error handling path to unprepare the clks in such a case, as already
-> done in the .remove function.
-> 
-> Fixes: 8b4fc246c3ff ("i2c: mediatek: Optimize master_xfer() and avoid circular locking")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 
-Thanks!
+Add mt8195 svs compatible in dt-bindings.
 
+Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml b/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
+index c86a5430641f..4bf26a333373 100644
+--- a/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
++++ b/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
+@@ -25,6 +25,7 @@ properties:
+       - mediatek,mt8183-svs
+       - mediatek,mt8186-svs
+       - mediatek,mt8192-svs
++      - mediatek,mt8195-svs
+ 
+   reg:
+     maxItems: 1
+-- 
+2.18.0
 
