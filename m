@@ -2,191 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29AB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE62C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236420AbiEWN2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36110 "EHLO
+        id S236270AbiEWN3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236373AbiEWN2Z (ORCPT
+        with ESMTP id S236225AbiEWN3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:28:25 -0400
-Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60D53DA5C;
-        Mon, 23 May 2022 06:28:15 -0700 (PDT)
-Received: from [77.244.183.192] (port=63488 helo=[192.168.178.75])
-        by hostingweb31.netsons.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <luca@lucaceresoli.net>)
-        id 1nt86W-0004R3-V3; Mon, 23 May 2022 15:28:13 +0200
-Message-ID: <30b9a2fe-7f9e-bc85-8ecb-d2137c243c36@lucaceresoli.net>
-Date:   Mon, 23 May 2022 15:28:09 +0200
+        Mon, 23 May 2022 09:29:06 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99233240AA
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:29:03 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id ds11so14094000pjb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:29:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=C3bZbEaAq3Xu1O+OItJ+lvJSF2o3pyc0onzZAOeeJCk=;
+        b=mIybBL1U6Elcn4NFipNHc5oYx+P5Xk/K0gsj85ZVi5o0E3KwuASAj4EvcTaDp/36nj
+         jP1tJ4Jbnb4vasuwpfNDRsYJbfLxNA06dWhQ47QuAk/4RciDwvzHhvr4ZfEclYuY07jK
+         fyswcaPhtbpzv+HtgMjrpL14+hJxbjhHfys+P4F2FtOj+8fSuy/Ge9UahGkhgN3nyn5G
+         tcnNDsRQCe3AVMSUSp371ndlhVm2cueqcTjzWm4bmNxdo1wQse2nsxh9wEw/7THhxzz2
+         fsLXjpoEBx0WzKoOA3XUajKrGaIzhE1D5ZQ3bAfiHNHr18QdHkYwLtje3LghS5hTLHY5
+         8shw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C3bZbEaAq3Xu1O+OItJ+lvJSF2o3pyc0onzZAOeeJCk=;
+        b=qpl0VdAWxq+HIrup4+RXBvSGLgp4fcmG+/7ZxKr3XDYlWICvPMItQlaQ+9xnovuCbB
+         4p8/qZ5oExNU/XnyqjxFwBmWnHVzkLgbi0/ETMZi/o6JqzEGJWdtkngrKTRtsmFWRTLh
+         GR758Zq8Mb6o7j5QbRGOjNZTd8gjLRJFREZUevNbZfFI4cGqyN5ItuDw6fexSJDLJVW1
+         BFL1YH4Gim8ZbiYJHY+lMu+TGoDHskFfLnGpFKJ6TrGsl4DBXjFrtf0Et9T2JikTO4FY
+         SxaP27x5OFOrltzmo7cz35s8QdXsLGjnAeZY2+/kkyMtuPsGK0eaUY68CRkAJEx8vp/B
+         L5aA==
+X-Gm-Message-State: AOAM530nGdT0SeRrMKpZt+6vOtGBSVfQ3PItt7QTXsf7s5zzUDMAq8lH
+        6hjHKwMrbymzTiOBDJ7Kw/KvvsIu3afWIA==
+X-Google-Smtp-Source: ABdhPJyb765pKTXIFpPUXz3mbvBfvf4qGd0h2/E1/qyzdrr0Bi3GVvZ4dyys9lszdqnXxEVrTyP2Dw==
+X-Received: by 2002:a17:902:e3d4:b0:162:23a7:a7e7 with SMTP id r20-20020a170902e3d400b0016223a7a7e7mr5406661ple.32.1653312542991;
+        Mon, 23 May 2022 06:29:02 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id c2-20020a62f842000000b0051800111b2fsm7347132pfm.216.2022.05.23.06.29.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 06:29:02 -0700 (PDT)
+Message-ID: <f1a08877-e27f-6520-272d-a3e6598f97b9@kernel.dk>
+Date:   Mon, 23 May 2022 07:29:00 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] PCI: dra7xx: Fix link removal on probe error
-Content-Language: it-IT
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>, PCI <linux-pci@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Android Kernel Team <kernel-team@android.com>
-References: <20211214221450.589884-1-luca@lucaceresoli.net>
- <CAL_Jsq+GQTcx1EGKHug2ZcDZufrKM-4k6PB0vQeTCTG42MHzvA@mail.gmail.com>
- <59a23c89-0810-eb28-acd9-7051ac34d438@lucaceresoli.net>
- <4579940c-27dc-733e-4022-ebea4671c839@lucaceresoli.net>
- <CAL_JsqJ5nr6xJoTv3A6UPMMDXhWKcwSEUA3ux3kK8OMWQxdc6w@mail.gmail.com>
- <YnvnNUrsCOUxMu8A@lpieralisi>
- <615718f9-151e-20fb-fcb0-56063ae61ca6@lucaceresoli.net>
- <CAGETcx9r4e9PkUFNZ+vUfqOSO5=e9apmBj0+DyOkKEvc4CnsLQ@mail.gmail.com>
- <ebd3f89b-3487-a610-7583-4ffda01a0dd6@lucaceresoli.net>
- <CAGETcx-GWqV2Teq0ufK2946rtB7Q-5Y=uzLN_kMbZ+57Aq127A@mail.gmail.com>
-From:   Luca Ceresoli <luca@lucaceresoli.net>
-In-Reply-To: <CAGETcx-GWqV2Teq0ufK2946rtB7Q-5Y=uzLN_kMbZ+57Aq127A@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH -next v5 0/3] support concurrent sync io for bfq on a
+ specail occasion
+Content-Language: en-US
+To:     Yu Kuai <yukuai3@huawei.com>, paolo.valente@linaro.org
+Cc:     jack@suse.cz, tj@kernel.org, linux-block@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+References: <20220428120837.3737765-1-yukuai3@huawei.com>
+ <d50df657-d859-79cf-c292-412eaa383d2c@huawei.com>
+ <61b67d5e-829c-8130-7bda-81615d654829@huawei.com>
+ <81411289-e13c-20f5-df63-c059babca57a@huawei.com>
+ <d5a90a08-1ac6-587a-e900-0436bd45543a@kernel.dk>
+ <55919e29-1f22-e8aa-f3d2-08c57d9e1c22@huawei.com>
+ <b32ed748-a141-862c-ed35-debb474962ed@kernel.dk>
+ <1172d00f-0843-1d7c-721f-fdb60a0945cb@huawei.com>
+ <dfd2ac0b-74da-85f4-ff66-2eb307578d93@kernel.dk>
+ <8f0b5115-6a96-d5eb-5243-0be832cf121b@huawei.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <8f0b5115-6a96-d5eb-5243-0be832cf121b@huawei.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lucaceresoli.net
-X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca@lucaceresoli.net
-X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Saravana,
-
-On 19/05/22 22:25, Saravana Kannan wrote:
-> On Tue, May 17, 2022 at 12:32 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
->>
->> Hi Saravana,
->>
->> On 14/05/22 05:46, Saravana Kannan wrote:
->>> On Thu, May 12, 2022 at 7:07 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
->>>>
->>>> Hi Lorenzo,
->>>>
->>>> On 11/05/22 18:41, Lorenzo Pieralisi wrote:
->>>>> On Sat, Jan 15, 2022 at 10:02:00AM -0600, Rob Herring wrote:
->>>>>> +Saravana
->>>>>>
->>>>>> On Tue, Jan 11, 2022 at 4:35 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
->>>>>>>
->>>>>>> Hi Rob,
->>>>>>>
->>>>>>> On 16/12/21 10:08, Luca Ceresoli wrote:
->>>>>>>> Hi Rob,
->>>>>>>>
->>>>>>>> thanks for the quick feedback!
->>>>>>>>
->>>>>>>> On 14/12/21 23:42, Rob Herring wrote:
->>>>>>>>> On Tue, Dec 14, 2021 at 4:15 PM Luca Ceresoli <luca@lucaceresoli.net> wrote:
->>>>>>>>>>
->>>>>>>>>> If a devm_phy_get() calls fails with phy_count==N (N > 0), then N links
->>>>>>>>>> have already been added by device_link_add() and won't be deleted by
->>>>>>>>>> device_link_del() because the code calls 'return' and not 'goto err_link'.
->>>>>>>>>>
->>>>>>>>>> Fix in a very simple way by doing all the devm_phy_get() calls before all
->>>>>>>>>> the device_link_add() calls.
->>>>>>>>>>
->>>>>>>>>> Fixes: 7a4db656a635 ("PCI: dra7xx: Create functional dependency between PCIe and PHY")
->>>>>>>>>> Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
->>>>>>>>>> ---
->>>>>>>>>>  drivers/pci/controller/dwc/pci-dra7xx.c | 2 ++
->>>>>>>>>>  1 file changed, 2 insertions(+)
->>>>>>>>>>
->>>>>>>>>> diff --git a/drivers/pci/controller/dwc/pci-dra7xx.c b/drivers/pci/controller/dwc/pci-dra7xx.c
->>>>>>>>>> index f7f1490e7beb..2ccc53869e13 100644
->>>>>>>>>> --- a/drivers/pci/controller/dwc/pci-dra7xx.c
->>>>>>>>>> +++ b/drivers/pci/controller/dwc/pci-dra7xx.c
->>>>>>>>>> @@ -757,7 +757,9 @@ static int dra7xx_pcie_probe(struct platform_device *pdev)
->>>>>>>>>>                 phy[i] = devm_phy_get(dev, name);
->>>>>>>>>>                 if (IS_ERR(phy[i]))
->>>>>>>>>>                         return PTR_ERR(phy[i]);
->>>>>>>>>> +       }
->>>>>>>>>>
->>>>>>>>>> +       for (i = 0; i < phy_count; i++) {
->>>>>>>>>>                 link[i] = device_link_add(dev, &phy[i]->dev, DL_FLAG_STATELESS);
+On 5/23/22 6:58 AM, Yu Kuai wrote:
+> ? 2022/05/23 20:36, Jens Axboe ??:
+>> On 5/23/22 2:18 AM, Yu Kuai wrote:
+>>> ? 2022/05/23 9:24, Jens Axboe ??:
+>>>> On 5/22/22 7:10 PM, yukuai (C) wrote:
+>>>>> ? 2022/05/21 20:21, Jens Axboe ??:
+>>>>>> On 5/21/22 1:22 AM, yukuai (C) wrote:
+>>>>>>> ? 2022/05/14 17:29, yukuai (C) ??:
+>>>>>>>> ? 2022/05/05 9:00, yukuai (C) ??:
+>>>>>>>>> Hi, Paolo
 >>>>>>>>>
->>>>>>>>> I think this should happen automatically now with fw_devlink being
->>>>>>>>> enabled by default. Can you try?
+>>>>>>>>> Can you take a look at this patchset? It has been quite a long time
+>>>>>>>>> since we spotted this problem...
+>>>>>>>>>
 >>>>>>>>
->>>>>>>> Do you mean removal should be done automatically? I think they are not
->>>>>>>> due to the DL_FLAG_STATELESS flag.
->>>>>>>
->>>>>>> I would love to have feedback because, as said, I think my patch is
->>>>>>> correct, but if I'm wrong (which might well be) I have to drop patch 1
->>>>>>> and rewrite patch 2 in a slightly more complex form.
+>>>>>>>> friendly ping ...
+>>>>>>> friendly ping ...
 >>>>>>
->>>>>> I mean that why do you need explicit dependency tracking here when
->>>>>> dependencies on a PHY should happen automatically now. IOW, what is
->>>>>> special about this driver and dependency?
+>>>>>> I can't speak for Paolo, but I've mentioned before that the majority
+>>>>>> of your messages end up in my spam. That's still the case, in fact
+>>>>>> I just marked maybe 10 of them as not spam.
+>>>>>>
+>>>>>> You really need to get this issued sorted out, or you will continue
+>>>>>> to have patches ignore because folks may simply not see them.
+>>>>>>
+>>>>> Hi,
 >>>>>
->>>>> Any update on this patch ? I think patch 2 can be merged, please
->>>>> let me know if this one can be dropped.
+>>>>> Thanks for your notice.
+>>>>>
+>>>>> Is it just me or do you see someone else's messages from *huawei.com
+>>>>> end up in spam? I tried to seek help from our IT support, however, they
+>>>>> didn't find anything unusual...
 >>>>
->>>> Thanks for the feedback! You would say yes, you can merge patch 2,
->>>> except it probably does not even apply as it is written in a way that is
->>>> based on the changes in patch 1.
->>>>
->>>> I could rewrite patch 2 to not depend on patch 1 of course, but it
->>>> wouldn't make code simpler, perhaps more complex. And moreover the
->>>> hardware that I used to have access to has phy_count==1 so I could never
->>>> test the failing case, and sadly now I have no access to that hardware.
+>>>> Not sure, I think it's just you. It may be the name as well "yukuai (C)"
+>>> Hi, Jens
 >>>
->>> Hi Luca,
+>>> I just change this default name "yukuai (C)" to "Yu Kuai", can you
+>>> please have a check if following emails still go to spam?
 >>>
->>> The fw_devlink code to create device links from consumers to "phys"
->>> suppliers is pretty well exercised. Most/all Android devices running
->>> 5.10+ kernels (including Pixel 6) use fw_devlink=on to be able to boot
->>> properly.
->>>
->>> So I'd be pretty confident in deleting the device_link_add/del() code
->>> in drivers/pci/controller/dwc/pci-dra7xx.c. The device links should
->>> already be there before the probe is even called.
->>>
->>> Also, if you want to check if the device links (even the 1 phy one you
->>> have) are being created, you can look at /sys/class/devlink to see the
->>> list of all device links that are currently present. You can delete
->>> the code and then use this to check too.
+>>> https://lore.kernel.org/all/20220523082633.2324980-1-yukuai3@huawei.com/
 >>
->> Thank you for your feedback. Unfortunately as I said I have no access to
->> the hardware, and won't have anymore. I don't think it is a good idea to
->> send a patch that I cannot test on real hardware, especially since it is
->> for a generic hardware that thus might affect others. But I would be
->> glad to review any such patch that might be sent, FWIW.
-> 
-> Just to make sure I'm on the same page. I thought you at least had a
-> device where phy_count = 1. But looks like you are saying you don't?
+>> These did not go into spam, were delivered just fine.
+>>
+> Cheers for solving this, I'll resend this patchset just in case they are
+> in spam for Paolo...
 
-I used to have access to a hardware with phy_count = 1 on a former job,
-but I don't have it anymore and won't have it since I left that job
-position.
-
-> If all you want to check is "phys" have device links created for them
-> for whatever random DT device that has a "phys" property, then I can
-> test and confirm that for you on whatever platform I have. But if you
-> want a test specifically for the device that corresponds to the driver
-> you were fixing, then I can't. Let me know.
-
-Honestly, I'm afraid I don't have much time to invest in trying to
-recollect all the details and motivations for this patchset. Likely I
-spotted this by code inspection while debugging other issues (I had a
-non-working PCIe device, but it was not the host fault). If you think
-there is little value in these patches, I'm OK in dropping them.
+Let's hope it's solved, you never know with gmail... But that series did
+go through fine as well, fwiw.
 
 -- 
-Luca
+Jens Axboe
+
