@@ -2,89 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59454C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC37C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232777AbiEWUTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
+        id S232784AbiEWUTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiEWUTe (ORCPT
+        with ESMTP id S232696AbiEWUTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:19:34 -0400
-X-Greylist: delayed 2991 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 23 May 2022 13:19:32 PDT
+        Mon, 23 May 2022 16:19:36 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5369BC6C1;
-        Mon, 23 May 2022 13:19:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE7CBC6C1;
+        Mon, 23 May 2022 13:19:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=BEjCKmEEMSSOtJMVmqVfIC+RkZgNI8u3xBenZK+hUro=; b=XRTrc4lAUy9jkpgVFOq2TSxezd
-        I3wKs11DSNWPt0smYy84y8nX4OQpi2ShTNU+G9tW+Yllwv6rMJhJQ7BXgKVp1vNon4qhiH1MqoODT
-        l/Z0+UcxTluUmD/IPXWAYoogG+L7bdnoCFn41igpJqE+Z0iBqPr6hgZahTLWZDS1Hs5bTMGfphH8F
-        XO5iqaxMoV2nZbBszT3k9ljMldkb1qdaL4+ZUE91w5xsku3P8VN18E/atgx0/LbcuB5y8eG65c+zb
-        8J/dPbRR92XSx0HQiulEuZ4Sjx1DrsRys+Q+UVF9bIaUIPS+JwEisoXZvd78Aoa+iG3xZ0t7m7ri2
-        Y+kik54w==;
+        bh=N2rdI1I+QIUtRZp/TJFYWC+M+9hFHdCTsdcwwNaN+is=; b=vIXeVVwGbphsWuV8rScnUaZbYt
+        kyf2gU0WU1/mPAbgSVUYKsexBErSSvoZdKlgokGxbpiuvFd0DNOdgQC+A+Tessq0wgilc07kAYltB
+        sqVqxpKCFYtbxLhbZow8UVOwRTsZ8DjjF5CvM9meRlsIsaT6TM9SbBsTbD7FZ7rCwV7o/hVAQatM8
+        62JXw35Nnxo1JIlfnYbpH5jzoiDRlFRVxbY7qbluMqelxnWO92SZfrwFBTyoUv1z59RgyiVHYm4oH
+        gNLYFXsvtJyv+NDNkdeIwnXaz9uDiogM5FHKG52QpACs5sjEVHWOHlBVCTSbR7nazOqzZ1o22C0O3
+        3FC86RUQ==;
 Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ntCIl-005SSl-Cr; Mon, 23 May 2022 17:57:07 +0000
-Date:   Mon, 23 May 2022 10:57:07 -0700
+        id 1ntBqC-005NuX-Ju; Mon, 23 May 2022 17:27:36 +0000
+Date:   Mon, 23 May 2022 10:27:36 -0700
 From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Xiubo Li <xiubli@redhat.com>
-Cc:     jlayton@kernel.org, idryomov@gmail.com, viro@zeniv.linux.org.uk,
-        willy@infradead.org, vshankar@redhat.com,
-        ceph-devel@vger.kernel.org, arnd@arndb.de,
-        akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] fs/dcache: add d_compare() helper support
-Message-ID: <YovK86vEmOUUoBn6@bombadil.infradead.org>
-References: <20220519101847.87907-1-xiubli@redhat.com>
- <20220519101847.87907-2-xiubli@redhat.com>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        willy@infradead.org, Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>
+Subject: Re: [PATCH v2] sysctl: handle table->maxlen properly for proc_dobool
+Message-ID: <YovECEBVeCZl79fi@bombadil.infradead.org>
+References: <20220522052624.21493-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220519101847.87907-2-xiubli@redhat.com>
+In-Reply-To: <20220522052624.21493-1-songmuchun@bytedance.com>
 Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 06:18:45PM +0800, Xiubo Li wrote:
-> Reviewed-by: Jeff Layton <jlayton@kernel.org>
-> Signed-off-by: Xiubo Li <xiubli@redhat.com>
-> ---
->  fs/dcache.c            | 15 +++++++++++++++
->  include/linux/dcache.h |  2 ++
->  2 files changed, 17 insertions(+)
+On Sun, May 22, 2022 at 01:26:24PM +0800, Muchun Song wrote:
+> Setting ->proc_handler to proc_dobool at the same time setting ->maxlen
+> to sizeof(int) is counter-intuitive, it is easy to make mistakes.  For
+> robustness, fix it by reimplementing proc_dobool() properly.
 > 
-> diff --git a/fs/dcache.c b/fs/dcache.c
-> index 93f4f5ee07bf..95a72f92a94b 100644
-> --- a/fs/dcache.c
-> +++ b/fs/dcache.c
-> @@ -2262,6 +2262,21 @@ static inline bool d_same_name(const struct dentry *dentry,
->  				       name) == 0;
->  }
->  
-> +/**
-> + * d_compare - compare dentry name with case-exact name
-> + * @parent: parent dentry
-> + * @dentry: the negative dentry that was passed to the parent's lookup func
-> + * @name:   the case-exact name to be associated with the returned dentry
-> + *
-> + * Return: 0 if names are same, or 1
-> + */
-> +bool d_compare(const struct dentry *parent, const struct dentry *dentry,
-> +	       const struct qstr *name)
-> +{
-> +	return !d_same_name(dentry, parent, name);
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> Cc: Luis Chamberlain <mcgrof@kernel.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Iurii Zaikin <yzaikin@google.com>
+> ---
 
-What's wrong with d_same_name()? Why introduce a whole new operation
-and export it when you the same prototype except first and second
-argument moved with an even more confusing name?
+Thanks for your patch Muchun!
 
-> +}
-> +EXPORT_SYMBOL(d_compare);
+Does this fix an actualy issue? Because the comit log suggest so.
+If so is there a bug which is known or a reproducer which can be
+implemented to showcase that bug?
 
-New symbols should go with EXPORT_SYMBOL_GPL() instead.
+The reason I ask is that we have automatic scrapers for bug fixes,
+and I tend to prefer to avoid giving those automatic scrapers
+the idea that a patch is a fix for a kernel bug when it it is not.
+If what you are change is an optimization then your commit log should
+clarify that.
+
+If you are fixing something then you must be clear about about the
+details I mentioned. And then, if it does fix an issue, how long
+has the issue been know, what are the consequences of it? And up
+to what kernel is this issue present for?
 
   Luis
