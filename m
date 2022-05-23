@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AD1C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BD2C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241864AbiEWRgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
+        id S241895AbiEWRgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240915AbiEWR0J (ORCPT
+        with ESMTP id S240841AbiEWR0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:09 -0400
+        Mon, 23 May 2022 13:26:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8292343ADD;
-        Mon, 23 May 2022 10:21:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799863BA61;
+        Mon, 23 May 2022 10:21:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 279E4B8121D;
-        Mon, 23 May 2022 17:21:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C1FC385A9;
-        Mon, 23 May 2022 17:21:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D78CAB81222;
+        Mon, 23 May 2022 17:20:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A54BC385A9;
+        Mon, 23 May 2022 17:20:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326468;
-        bh=JnNWw/t2HA0rSws4pPMJwzJIgFsdxCM4zHANsZhxPDw=;
+        s=korg; t=1653326455;
+        bh=fN23NSwamIBlH5sSv/qgeU1vy1uyJnYA3y7f4Xso8kM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HOymOp7Jmuc2PAu1SFiPP8a5F25xuaM6JdXsA29U161/fIZnFX5Pfu4s/vMgNTvuI
-         TUioVtPEoKFTHOH2tgkzSgzW66t+9DgYYK/tlhUGDaCAEfnSYIQFDsJe0gfMl/FutL
-         8uHzZRe9hW0Wzc7Dr1YlfYSYzxMxB1qfXtqYGrM0=
+        b=TqBWe6mxbl+5/A1NTjQxzSBP3T1DMhd/5nN12OTGPcpsZeKymUa21X0T2CzuQULYA
+         QFMNJm6njSgVGa6BcriCOegcFDhkUShtz3GrfCM/XDBpsJMwg1iKzwRrxrRyUjhAbP
+         KWYcW/7oq972BIerOhXf4JzzsrMnSlgwQgVVcSTg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/132] net/mlx5e: Properly block LRO when XDP is enabled
-Date:   Mon, 23 May 2022 19:05:00 +0200
-Message-Id: <20220523165838.377088716@linuxfoundation.org>
+Subject: [PATCH 5.15 087/132] clk: at91: generated: consider range when calculating best rate
+Date:   Mon, 23 May 2022 19:04:56 +0200
+Message-Id: <20220523165837.503800862@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,45 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-[ Upstream commit cf6e34c8c22fba66bd21244b95ea47e235f68974 ]
+[ Upstream commit d0031e6fbed955ff8d5f5bbc8fe7382482559cec ]
 
-LRO is incompatible and mutually exclusive with XDP. However, the needed
-checks are only made when enabling XDP. If LRO is enabled when XDP is
-already active, the command will succeed, and XDP will be skipped in the
-data path, although still enabled.
+clk_generated_best_diff() helps in finding the parent and the divisor to
+compute a rate closest to the required one. However, it doesn't take into
+account the request's range for the new rate. Make sure the new rate
+is within the required range.
 
-This commit fixes the bug by checking the XDP status in
-mlx5e_fix_features and disabling LRO if XDP is enabled.
-
-Fixes: 86994156c736 ("net/mlx5e: XDP fast RX drop bpf programs support")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 8a8f4bf0c480 ("clk: at91: clk-generated: create function to find best_diff")
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220413071318.244912-1-codrin.ciubotariu@microchip.com
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/clk/at91/clk-generated.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 01301bee420c..7efb898e9f96 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3542,6 +3542,13 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 		}
- 	}
- 
-+	if (params->xdp_prog) {
-+		if (features & NETIF_F_LRO) {
-+			netdev_warn(netdev, "LRO is incompatible with XDP\n");
-+			features &= ~NETIF_F_LRO;
-+		}
-+	}
+diff --git a/drivers/clk/at91/clk-generated.c b/drivers/clk/at91/clk-generated.c
+index b656d25a9767..fe772baeb15f 100644
+--- a/drivers/clk/at91/clk-generated.c
++++ b/drivers/clk/at91/clk-generated.c
+@@ -106,6 +106,10 @@ static void clk_generated_best_diff(struct clk_rate_request *req,
+ 		tmp_rate = parent_rate;
+ 	else
+ 		tmp_rate = parent_rate / div;
 +
- 	if (MLX5E_GET_PFLAG(params, MLX5E_PFLAG_RX_CQE_COMPRESS)) {
- 		features &= ~NETIF_F_RXHASH;
- 		if (netdev->features & NETIF_F_RXHASH)
++	if (tmp_rate < req->min_rate || tmp_rate > req->max_rate)
++		return;
++
+ 	tmp_diff = abs(req->rate - tmp_rate);
+ 
+ 	if (*best_diff < 0 || *best_diff >= tmp_diff) {
 -- 
 2.35.1
 
