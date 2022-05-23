@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E4EC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A964C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243895AbiEWRrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        id S243757AbiEWRrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242990AbiEWR2Q (ORCPT
+        with ESMTP id S242401AbiEWR1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:28:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34778DDFA;
-        Mon, 23 May 2022 10:25:02 -0700 (PDT)
+        Mon, 23 May 2022 13:27:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906EF7CB2E;
+        Mon, 23 May 2022 10:23:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E847B81201;
-        Mon, 23 May 2022 17:24:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE0F4C385A9;
-        Mon, 23 May 2022 17:24:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D072608C0;
+        Mon, 23 May 2022 17:23:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 877E5C385AA;
+        Mon, 23 May 2022 17:23:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326657;
-        bh=cexE1aFde1gdOEfAfUUm4v7S/Vt5OzCWmuXeGZWXGpA=;
+        s=korg; t=1653326584;
+        bh=IUN29lJ+JAwPbvxgjq8dqn4ODUTyFTt6/A5kJgrGy2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gzjHEAeZMmWmYXDUwbURDwpJFPC0VjUW/lsvcNwD2Y2sndAN5MGqtUKAne8XPTQR9
-         zcHDM7miOX8X7RkYdgo89XbEHbKknukq/9atcIMJTUgha1QnOrikpfZn990SyIfsUR
-         tAez/EKEPuwPDbscm5sN1sYvQ2wXankYxBeEkMBM=
+        b=w3L7ICqeDr3ICLA9u03pyMWD7iYHuuJbhR59nI/NE0YHYnWTGz59jZHScW8shnbRn
+         Xj5rruSqSLDYyBgUWmkbDDtsH3WDZah9t8dE5H1csE/W+qHmbtINhtjDOycXgSJOvW
+         ayZ+dBj18IxcOkSZ+9hHyBdJsfvf4iNWSijltCTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org, Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        Grant Grundler <grundler@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 019/158] rtc: fix use-after-free on device removal
-Date:   Mon, 23 May 2022 19:02:56 +0200
-Message-Id: <20220523165833.811345525@linuxfoundation.org>
+Subject: [PATCH 5.15 126/132] net: atlantic: verify hw_head_ lies within TX buffer ring
+Date:   Mon, 23 May 2022 19:05:35 +0200
+Message-Id: <20220523165844.539556765@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,78 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit c8fa17d9f08a448184f03d352145099b5beb618e ]
+[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
 
-If the irqwork is still scheduled or running while the RTC device is
-removed, a use-after-free occurs in rtc_timer_do_work().  Cleanup the
-timerqueue and ensure the work is stopped to fix this.
+Bounds check hw_head index provided by NIC to verify it lies
+within the TX buffer ring.
 
- BUG: KASAN: use-after-free in mutex_lock+0x94/0x110
- Write of size 8 at addr ffffff801d846338 by task kworker/3:1/41
-
- Workqueue: events rtc_timer_do_work
- Call trace:
-  mutex_lock+0x94/0x110
-  rtc_timer_do_work+0xec/0x630
-  process_one_work+0x5fc/0x1344
-  ...
-
- Allocated by task 551:
-  kmem_cache_alloc_trace+0x384/0x6e0
-  devm_rtc_allocate_device+0xf0/0x574
-  devm_rtc_device_register+0x2c/0x12c
-  ...
-
- Freed by task 572:
-  kfree+0x114/0x4d0
-  rtc_device_release+0x64/0x80
-  device_release+0x8c/0x1f4
-  kobject_put+0x1c4/0x4b0
-  put_device+0x20/0x30
-  devm_rtc_release_device+0x1c/0x30
-  devm_action_release+0x54/0x90
-  release_nodes+0x124/0x310
-  devres_release_group+0x170/0x240
-  i2c_device_remove+0xd8/0x314
-  ...
-
- Last potentially related work creation:
-  insert_work+0x5c/0x330
-  queue_work_on+0xcc/0x154
-  rtc_set_time+0x188/0x5bc
-  rtc_dev_ioctl+0x2ac/0xbd0
-  ...
-
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210160951.7718-1-vincent.whitchurch@axis.com
+Reported-by: Aashay Shringarpure <aashay@google.com>
+Reported-by: Yi Chou <yich@google.com>
+Reported-by: Shervin Oloumi <enlightened@google.com>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/class.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/rtc/class.c b/drivers/rtc/class.c
-index 4b460c61f1d8..40d504dac1a9 100644
---- a/drivers/rtc/class.c
-+++ b/drivers/rtc/class.c
-@@ -26,6 +26,15 @@ struct class *rtc_class;
- static void rtc_device_release(struct device *dev)
- {
- 	struct rtc_device *rtc = to_rtc_device(dev);
-+	struct timerqueue_head *head = &rtc->timerqueue;
-+	struct timerqueue_node *node;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index 9f1b15077e7d..45c17c585d74 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -889,6 +889,13 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
+ 		err = -ENXIO;
+ 		goto err_exit;
+ 	}
 +
-+	mutex_lock(&rtc->ops_lock);
-+	while ((node = timerqueue_getnext(head)))
-+		timerqueue_del(head, node);
-+	mutex_unlock(&rtc->ops_lock);
++	/* Validate that the new hw_head_ is reasonable. */
++	if (hw_head_ >= ring->size) {
++		err = -ENXIO;
++		goto err_exit;
++	}
 +
-+	cancel_work_sync(&rtc->irqwork);
+ 	ring->hw_head = hw_head_;
+ 	err = aq_hw_err_from_flags(self);
  
- 	ida_simple_remove(&rtc_ida, rtc->id);
- 	mutex_destroy(&rtc->ops_lock);
 -- 
 2.35.1
 
