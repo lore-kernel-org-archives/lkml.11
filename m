@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEAF4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243626AbiEWSOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
+        id S243764AbiEWSOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243876AbiEWRvt (ORCPT
+        with ESMTP id S243874AbiEWRvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:51:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F225D5FC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140C762122;
         Mon, 23 May 2022 10:38:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EFBC6090C;
-        Mon, 23 May 2022 17:29:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9520EC385A9;
-        Mon, 23 May 2022 17:29:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BC05611DF;
+        Mon, 23 May 2022 17:29:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B7F5C36AE3;
+        Mon, 23 May 2022 17:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326995;
-        bh=LYnJcQJy1pId1GQSjCERvqnOJ4fRwclu+T581GZ7mHI=;
+        s=korg; t=1653326951;
+        bh=ReFu1Mc6+Zt9GNQWgQvuhxkurL2O6QAqaRyiafUG/h8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sfyIMllZ258Q7By9F3XAtX/emWP7Gw6/5kw0cp3M93C5ro5eDJ9aRAU952FUHepaZ
-         eAZruaaLehyHPDlAHomuNFAYp6SqtdHNinZpLgpJTkoC+3JsdMa14jBEwW7xyfdcvp
-         CyIZTLR4NzWb/y3bMcCp670eG1I6AO3cTkApKQSs=
+        b=c8yHrZpDzldwFJtO4+LBx5SJOQlg+nSNg+6z4ypPKAM03TkhNPO4oEQM1Tji1K432
+         8kqCJ5HNWIn0VzTYPfO4SXu6ojiQclVFmeoCAXt1wFPQV7r2t38tXt3Tpb7uJgWppB
+         Xsx4pPhU9eIm0AkQAz/P6wNh3oYT/1CL0MdEVsgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 123/158] scsi: ufs: core: Fix referencing invalid rsp field
-Date:   Mon, 23 May 2022 19:04:40 +0200
-Message-Id: <20220523165851.110975996@linuxfoundation.org>
+Subject: [PATCH 5.17 110/158] net: af_key: add check for pfkey_broadcast in function pfkey_process
+Date:   Mon, 23 May 2022 19:04:27 +0200
+Message-Id: <20220523165849.276567989@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,61 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daejun Park <daejun7.park@samsung.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit d5d92b64408443e113b9742f8f1c35278910dd4d ]
+[ Upstream commit 4dc2a5a8f6754492180741facf2a8787f2c415d7 ]
 
-Fix referencing sense data when it is invalid. When the length of the data
-segment is 0, there is no valid information in the rsp field, so
-ufshpb_rsp_upiu() is returned without additional operation.
+If skb_clone() returns null pointer, pfkey_broadcast() will
+return error.
+Therefore, it should be better to check the return value of
+pfkey_broadcast() and return error if fails.
 
-Link: https://lore.kernel.org/r/252651381.41652940482659.JavaMail.epsvc@epcpadp4
-Fixes: 4b5f49079c52 ("scsi: ufs: ufshpb: L2P map management for HPB read")
-Acked-by: Avri Altman <avri.altman@wdc.com>
-Signed-off-by: Daejun Park <daejun7.park@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshpb.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+ net/key/af_key.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
-index b34feba1f53d..8dc818b03939 100644
---- a/drivers/scsi/ufs/ufshpb.c
-+++ b/drivers/scsi/ufs/ufshpb.c
-@@ -1256,6 +1256,13 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
- 	struct utp_hpb_rsp *rsp_field = &lrbp->ucd_rsp_ptr->hr;
- 	int data_seg_len;
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index fd51db3be91c..92e9d75dba2f 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2826,8 +2826,10 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
  
-+	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
-+		& MASK_RSP_UPIU_DATA_SEG_LEN;
-+
-+	/* If data segment length is zero, rsp_field is not valid */
-+	if (!data_seg_len)
-+		return;
-+
- 	if (unlikely(lrbp->lun != rsp_field->lun)) {
- 		struct scsi_device *sdev;
- 		bool found = false;
-@@ -1290,18 +1297,6 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
- 		return;
- 	}
+-	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
++	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
++	if (err)
++		return err;
  
--	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
--		& MASK_RSP_UPIU_DATA_SEG_LEN;
--
--	/* To flush remained rsp_list, we queue the map_work task */
--	if (!data_seg_len) {
--		if (!ufshpb_is_general_lun(hpb->lun))
--			return;
--
--		ufshpb_kick_map_work(hpb);
--		return;
--	}
--
- 	BUILD_BUG_ON(sizeof(struct utp_hpb_rsp) != UTP_HPB_RSP_SIZE);
- 
- 	if (!ufshpb_is_hpb_rsp_valid(hba, lrbp, rsp_field))
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
 
