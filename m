@@ -2,152 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F79C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6037AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238532AbiEWQHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
+        id S238464AbiEWQJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238387AbiEWQHH (ORCPT
+        with ESMTP id S238387AbiEWQJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:07:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBBE22BF3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:06:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 23 May 2022 12:09:16 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD522186F8;
+        Mon, 23 May 2022 09:09:15 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8EA35B81192
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 16:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A1EC385AA;
-        Mon, 23 May 2022 16:06:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653322016;
-        bh=qyIyPX6ADZ1zEeCUptE8kITzDG/Coxms3dWlBd9Ao8I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r/Cq1M528dfKuwMUBnpcrF0W2aVzTWOBDppAGmjEzZvjT34Jpaqi5FCb5rOIJmVrO
-         ZOdDM9d5bDLbI1U/KwtuTJiX8SVfbkp62JwkuGfWg05kyUo0yeIEr2wQuZojxwSGPh
-         qvZHKG0HwTGIlQ9FWTlOekAxZWbYlEhRZRaaA91s=
-Date:   Mon, 23 May 2022 18:06:53 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     eli.billauer@gmail.com, arnd@arndb.de,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] char: xillybus: Check endpoint type before allocing
-Message-ID: <YouxHY48daZt7J/O@kroah.com>
-References: <Yn9XwHxWsLIJXlHu@kroah.com>
- <20220514114819.2773691-1-zheyuma97@gmail.com>
- <Yn+va5fTsuaFTxVR@kroah.com>
- <CAMhUBj=RMJwn2K+rQC9rQ=QEe5QkiJ29rMd8KzEC8B7vtXo+ug@mail.gmail.com>
- <Yocp+WZ0On9/wObu@kroah.com>
- <CAMhUBj=J5-V_D_kucpiWz6ZdOSSR1N9nRXQxOKgmwRA+LxW17Q@mail.gmail.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8C1AD21A64;
+        Mon, 23 May 2022 16:09:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653322154; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4ywoMr61UmNyulUm1OYgOzOzU4gEj3gsscFPBmvSZr0=;
+        b=d8CuZxzb28+AguRGeC9cq1qFeJlmern+8wNDOixtu6mV54Sm1yPmHWbOZcNRFCPwyNqaUc
+        NwUCvIuPcrwM6cOjmpMHXVsmg2N6xFHmwHjSgeD6URz49d0Fhbq2/7rlCIoh0FzZ6huKDI
+        kN0+gihk+pBzkZXziR51IXAAmia7ofY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653322154;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4ywoMr61UmNyulUm1OYgOzOzU4gEj3gsscFPBmvSZr0=;
+        b=ZXFNWEdOKAJQ9umVco/MxuBshhf2jIW4d5YMy71n/AicE6eq39HIVKLhJ6QsSqRo7iaUh7
+        hUn6iz0amKmZuKDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2F856139F5;
+        Mon, 23 May 2022 16:09:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id RCj5CKqxi2KsKQAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Mon, 23 May 2022 16:09:14 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id a98d69dc;
+        Mon, 23 May 2022 16:09:52 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+Subject: [PATCH] ceph: fix decoding of client session messages flags
+Date:   Mon, 23 May 2022 17:09:51 +0100
+Message-Id: <20220523160951.8781-1-lhenriques@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMhUBj=J5-V_D_kucpiWz6ZdOSSR1N9nRXQxOKgmwRA+LxW17Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 01:06:59PM +0800, Zheyu Ma wrote:
-> On Fri, May 20, 2022 at 1:41 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Fri, May 20, 2022 at 11:32:51AM +0800, Zheyu Ma wrote:
-> > > On Sat, May 14, 2022 at 9:32 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > On Sat, May 14, 2022 at 07:48:19PM +0800, Zheyu Ma wrote:
-> > > > > The driver submits bulk urb without checking the endpoint type is
-> > > > > actually bulk.
-> > > > >
-> > > > > [    3.108690] usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-> > > > > [    3.108983] WARNING: CPU: 0 PID: 211 at drivers/usb/core/urb.c:503 usb_submit_urb+0xcd9/0x18b0
-> > > > > [    3.110976] RIP: 0010:usb_submit_urb+0xcd9/0x18b0
-> > > > > [    3.115318] Call Trace:
-> > > > > [    3.115452]  <TASK>
-> > > > > [    3.115570]  try_queue_bulk_in+0x43c/0x6e0 [xillyusb]
-> > > > > [    3.115838]  xillyusb_probe+0x488/0x1230 [xillyusb]
-> > > > >
-> > > > > Add a check in endpoint_alloc() to fix the bug.
-> > > > >
-> > > > > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> > > > > ---
-> > > > > Changes in v2:
-> > > > >     - Check the endpoint type at probe time
-> > > > > ---
-> > > > >  drivers/char/xillybus/xillyusb.c | 27 ++++++++++++++++++++++++++-
-> > > > >  1 file changed, 26 insertions(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
-> > > > > index dc3551796e5e..4467f13993ef 100644
-> > > > > --- a/drivers/char/xillybus/xillyusb.c
-> > > > > +++ b/drivers/char/xillybus/xillyusb.c
-> > > > > @@ -167,6 +167,7 @@ struct xillyusb_dev {
-> > > > >       struct device           *dev; /* For dev_err() and such */
-> > > > >       struct kref             kref;
-> > > > >       struct workqueue_struct *workq;
-> > > > > +     struct usb_interface *intf;
-> > > > >
-> > > > >       int error;
-> > > > >       spinlock_t error_lock; /* protect @error */
-> > > > > @@ -475,6 +476,25 @@ static void endpoint_dealloc(struct xillyusb_endpoint *ep)
-> > > > >       kfree(ep);
-> > > > >  }
-> > > > >
-> > > > > +static int xillyusb_check_endpoint(struct xillyusb_dev *xdev, u8 ep_num)
-> > > > > +{
-> > > > > +     struct usb_host_interface *if_desc = xdev->intf->altsetting;
-> > > > > +     int i;
-> > > > > +
-> > > > > +     for (i = 0; i < if_desc->desc.bNumEndpoints; i++) {
-> > > > > +             struct usb_endpoint_descriptor *ep = &if_desc->endpoint[i].desc;
-> > > > > +
-> > > > > +             if (ep->bEndpointAddress != ep_num)
-> > > > > +                     continue;
-> > > > > +
-> > > > > +             if ((usb_pipein(ep_num) && usb_endpoint_is_bulk_in(ep)) ||
-> > > > > +                     (usb_pipeout(ep_num) && usb_endpoint_is_bulk_out(ep)))
-> > > > > +                     return 0;
-> > > > > +     }
-> > > >
-> > > > Why not use the built-in usb core functions that do this for you instead
-> > > > of hand-parsing this?  Look at usb_find_common_endpoints() and related
-> > > > functions, that should make this much easier.
-> > >
-> > > Thanks for your reminder. But in this driver, we have to check not
-> > > only the type and direction of the endpoint, but also the address of
-> > > it. And the endpoint's address is sometimes dynamic. For example,  in
-> > > the function xillyusb_open():
-> > >
-> > > out_ep = endpoint_alloc(xdev, (chan->chan_idx + 2) | USB_DIR_OUT,
-> > > bulk_out_work, BUF_SIZE_ORDER, BUFNUM);
-> > >
-> > > However, usb_find_common_endpoints() can only find the first endpoint
-> > > that satisfies the condition, not on a specific address. I cannot find
-> > > a more suitable built-in core function, please correct me if I'm
-> > > wrong.
-> >
-> > I do not understand the problem here, it looks like your code above that
-> > I responded to doesn't care about specific addresses at all.  It is just
-> > walking all of them and making sure that it is a bulk in/out endpoint.
-> 
-> Please correct me if I'm wrong. I think the driver needs to check if
-> the urb has the correct type before submitting the urb, and this check
-> should be done early.
+The cephfs kernel client started to show  the message:
 
-Yes, very very early, like probe() callback time early.
+ ceph: mds0 session blocklisted
 
-Not way down here in "do we want to allow open() to work or not" like
-you are currently doing.
+when mounting a filesystem.  This is due to the fact that the session
+messages are being incorrectly decoded: the skip needs to take into
+account the 'len'.
 
-If the device does not have the EXACT USB endpoints that you are
-expecting (size, address, direction, type, etc.) at probe time reject
-the device.
+While there, fixed some whitespaces too.
 
-That is what the helper functions I pointed you at are for.
+Fixes: e1c9788cb397 ("ceph: don't rely on error_string to validate blocklisted session.")
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+---
+ fs/ceph/mds_client.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-This driver is trying to detect this type of problem _way_ too late.
-
-thanks,
-
-greg k-h
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index 00c3de177dd6..1bd3e1bb0fdf 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -3375,13 +3375,17 @@ static void handle_session(struct ceph_mds_session *session,
+ 	}
+ 
+ 	if (msg_version >= 5) {
+-		u32 flags;
+-		/* version >= 4, struct_v, struct_cv, len, metric_spec */
+-	        ceph_decode_skip_n(&p, end, 2 + sizeof(u32) * 2, bad);
++		u32 flags, len;
++
++		/* version >= 4 */
++		ceph_decode_skip_16(&p, end, bad); /* struct_v, struct_cv */
++		ceph_decode_32_safe(&p, end, len, bad); /* len */
++		ceph_decode_skip_n(&p, end, len, bad); /* metric_spec */
++
+ 		/* version >= 5, flags   */
+-                ceph_decode_32_safe(&p, end, flags, bad);
++		ceph_decode_32_safe(&p, end, flags, bad);
+ 		if (flags & CEPH_SESSION_BLOCKLISTED) {
+-		        pr_warn("mds%d session blocklisted\n", session->s_mds);
++			pr_warn("mds%d session blocklisted\n", session->s_mds);
+ 			blocklisted = true;
+ 		}
+ 	}
