@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAC3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DAEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238985AbiEWRUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
+        id S239917AbiEWRUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240853AbiEWRQp (ORCPT
+        with ESMTP id S240874AbiEWRQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55D669B51;
-        Mon, 23 May 2022 10:16:35 -0700 (PDT)
+        Mon, 23 May 2022 13:16:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50CB3CA4B;
+        Mon, 23 May 2022 10:16:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FFF2B81204;
-        Mon, 23 May 2022 17:13:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BCB9C385AA;
-        Mon, 23 May 2022 17:13:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B7D160AB8;
+        Mon, 23 May 2022 17:16:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 797EBC385A9;
+        Mon, 23 May 2022 17:16:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326017;
-        bh=tzRz9+4QZigOteXiZvFEjKVlKA33ZGoT+eMajcfxfmU=;
+        s=korg; t=1653326191;
+        bh=/Vk7ECsDXhpMvGRMfy4e9zNGXnb68sLiEKG/15Y2J1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VTqA5LMN6U1i1EiSrFU/WkqhP8rfHyEKmuIhUwelud1VihtZk47NqvoS1muqikhGM
-         aTy9t1YLUTED6MRV8wPYDl+tZgC/o0epqVVDe5Sz1f/VYOXu5c7SHJMOxUTiqsTrOA
-         JtC8GwzICbJt7lLwrvAr/Lx4Nh5EnhZ+wjUP5Zbo=
+        b=JJFlz376M95fHKT4usOpk1+DU/nlMnRhfnCUtso+mWTaaS8YUHut7kQUCINU1sE8T
+         hHcMRGQ28r5KNFP7HbcebVgose+Loi7OsSZ3/EwluoMZ7LRTgevTCSOCtu83krd3O9
+         ATzGQUIJKB5T8AcIl+dHxG3oINVimY/euVguw3Gw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 42/68] net/qla3xxx: Fix a test in ql_reset_work()
-Date:   Mon, 23 May 2022 19:05:09 +0200
-Message-Id: <20220523165809.551977508@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.4 59/68] Input: ili210x - fix reset timing
+Date:   Mon, 23 May 2022 19:05:26 +0200
+Message-Id: <20220523165812.193006556@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -50,48 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 5361448e45fac6fb96738df748229432a62d78b6 ]
+commit e4920d42ce0e9c8aafb7f64b6d9d4ae02161e51e upstream.
 
-test_bit() tests if one bit is set or not.
-Here the logic seems to check of bit QL_RESET_PER_SCSI (i.e. 4) OR bit
-QL_RESET_START (i.e. 3) is set.
+According to Ilitek "231x & ILI251x Programming Guide" Version: 2.30
+"2.1. Power Sequence", "T4 Chip Reset and discharge time" is minimum
+10ms and "T2 Chip initial time" is maximum 150ms. Adjust the reset
+timings such that T4 is 12ms and T2 is 160ms to fit those figures.
 
-In fact, it checks if bit 7 (4 | 3 = 7) is set, that is to say
-QL_ADAPTER_UP.
+This prevents sporadic touch controller start up failures when some
+systems with at least ILI251x controller boot, without this patch
+the systems sometimes fail to communicate with the touch controller.
 
-This looks harmless, because this bit is likely be set, and when the
-ql_reset_work() delayed work is scheduled in ql3xxx_isr() (the only place
-that schedule this work), QL_RESET_START or QL_RESET_PER_SCSI is set.
-
-This has been spotted by smatch.
-
-Fixes: 5a4faa873782 ("[PATCH] qla3xxx NIC driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/80e73e33f390001d9c0140ffa9baddf6466a41a2.1652637337.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 201f3c803544c ("Input: ili210x - add reset GPIO support")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Link: https://lore.kernel.org/r/20220518204901.93534-1-marex@denx.de
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/qlogic/qla3xxx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/input/touchscreen/ili210x.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
-index da2862d59681..5e81cd317a32 100644
---- a/drivers/net/ethernet/qlogic/qla3xxx.c
-+++ b/drivers/net/ethernet/qlogic/qla3xxx.c
-@@ -3629,7 +3629,8 @@ static void ql_reset_work(struct work_struct *work)
- 		qdev->mem_map_registers;
- 	unsigned long hw_flags;
+--- a/drivers/input/touchscreen/ili210x.c
++++ b/drivers/input/touchscreen/ili210x.c
+@@ -290,9 +290,9 @@ static int ili210x_i2c_probe(struct i2c_
+ 		if (error)
+ 			return error;
  
--	if (test_bit((QL_RESET_PER_SCSI | QL_RESET_START), &qdev->flags)) {
-+	if (test_bit(QL_RESET_PER_SCSI, &qdev->flags) ||
-+	    test_bit(QL_RESET_START, &qdev->flags)) {
- 		clear_bit(QL_LINK_MASTER, &qdev->flags);
+-		usleep_range(50, 100);
++		usleep_range(12000, 15000);
+ 		gpiod_set_value_cansleep(reset_gpio, 0);
+-		msleep(100);
++		msleep(160);
+ 	}
  
- 		/*
--- 
-2.35.1
-
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 
 
