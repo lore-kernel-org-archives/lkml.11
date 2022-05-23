@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A331C352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B08C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242974AbiEWRhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        id S242306AbiEWRhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241577AbiEWR0v (ORCPT
+        with ESMTP id S241453AbiEWR0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCAD075216;
-        Mon, 23 May 2022 10:22:02 -0700 (PDT)
+        Mon, 23 May 2022 13:26:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08EC71D86;
+        Mon, 23 May 2022 10:21:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA567B81227;
-        Mon, 23 May 2022 17:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE47C385A9;
-        Mon, 23 May 2022 17:14:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C82A6090C;
+        Mon, 23 May 2022 17:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4653BC385A9;
+        Mon, 23 May 2022 17:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326098;
-        bh=3GySsgKbj9YOlHOOORgomtwxeGx2+Fwp1qtu2bu+WUI=;
+        s=korg; t=1653326510;
+        bh=v4X3XFtOTn07sCrVecFkbC+2a2JcsoUia1LKm6l68E0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dldvmFkzSHH0OtoD7g4B2WatdwFCOHLKWVH1hDiAicToiq9Xrq1NbSAOvRKGap6Lw
-         e1Fs+wd7R7uaBQghFpIR81XASo+ULnoH4vR0U/TlK4LxTIfsxUqOmANS5SVWTQJpUt
-         +PjNn3vRgbhvuCqsc5yHW6GhCFythaQ+jChCbGsU=
+        b=OQw3S1k8T8nZvqtXZEJ+Zoa3SulXcTfNu72AjyM80BLztfjoshPzpFxF16iG/4+Bt
+         r8FoKAGy8YZDFDxDzWB3qtPkiDMljtUK5cjSbNBdYGYtbnRrGGT19W3uHNKfSoqpAP
+         +bbd0VQMnPGMV2YNHbOC1SbYq80OwcbVC6GJ6uR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 54/68] mac80211: fix rx reordering with non explicit / psmp ack policy
-Date:   Mon, 23 May 2022 19:05:21 +0200
-Message-Id: <20220523165811.420451667@linuxfoundation.org>
+Subject: [PATCH 5.15 076/132] netfilter: nft_flow_offload: skip dst neigh lookup for ppp devices
+Date:   Mon, 23 May 2022 19:04:45 +0200
+Message-Id: <20220523165835.734039608@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,34 +51,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
+[ Upstream commit 45ca3e61999e9a30ca2b7cfbf9da8a9f8d13be31 ]
 
-When the QoS ack policy was set to non explicit / psmp ack, frames are treated
-as not being part of a BA session, which causes extra latency on reordering.
-Fix this by only bypassing reordering for packets with no-ack policy
+The dst entry does not contain a valid hardware address, so skip the lookup
+in order to avoid running into errors here.
+The proper hardware address is filled in from nft_dev_path_info
 
+Fixes: 72efd585f714 ("netfilter: flowtable: add pppoe support")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/netfilter/nft_flow_offload.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index ab91683d9459..99d5f8b58e92 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1400,8 +1400,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
- 		goto dont_reorder;
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index 0af34ad41479..dd824193c920 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -36,6 +36,15 @@ static void nft_default_forward_path(struct nf_flow_route *route,
+ 	route->tuple[dir].xmit_type	= nft_xmit_type(dst_cache);
+ }
  
- 	/* not part of a BA session */
--	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
--	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
-+	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
- 		goto dont_reorder;
++static bool nft_is_valid_ether_device(const struct net_device *dev)
++{
++	if (!dev || (dev->flags & IFF_LOOPBACK) || dev->type != ARPHRD_ETHER ||
++	    dev->addr_len != ETH_ALEN || !is_valid_ether_addr(dev->dev_addr))
++		return false;
++
++	return true;
++}
++
+ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
+ 				     const struct dst_entry *dst_cache,
+ 				     const struct nf_conn *ct,
+@@ -47,6 +56,9 @@ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
+ 	struct neighbour *n;
+ 	u8 nud_state;
  
- 	/* new, potentially un-ordered, ampdu frame - process it */
++	if (!nft_is_valid_ether_device(dev))
++		goto out;
++
+ 	n = dst_neigh_lookup(dst_cache, daddr);
+ 	if (!n)
+ 		return -1;
+@@ -60,6 +72,7 @@ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
+ 	if (!(nud_state & NUD_VALID))
+ 		return -1;
+ 
++out:
+ 	return dev_fill_forward_path(dev, ha, stack);
+ }
+ 
+@@ -78,15 +91,6 @@ struct nft_forward_info {
+ 	enum flow_offload_xmit_type xmit_type;
+ };
+ 
+-static bool nft_is_valid_ether_device(const struct net_device *dev)
+-{
+-	if (!dev || (dev->flags & IFF_LOOPBACK) || dev->type != ARPHRD_ETHER ||
+-	    dev->addr_len != ETH_ALEN || !is_valid_ether_addr(dev->dev_addr))
+-		return false;
+-
+-	return true;
+-}
+-
+ static void nft_dev_path_info(const struct net_device_path_stack *stack,
+ 			      struct nft_forward_info *info,
+ 			      unsigned char *ha, struct nf_flowtable *flowtable)
 -- 
 2.35.1
 
