@@ -2,92 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E819C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38788C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237228AbiEWOdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58086 "EHLO
+        id S237242AbiEWOdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237181AbiEWOdI (ORCPT
+        with ESMTP id S237203AbiEWOdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:33:08 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB56D33A04
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:33:07 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so13895803pjq.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:33:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o5VXWNPSZA3rC+8/IoRn3B39pVcambgp6FwS9mwBIhE=;
-        b=VGALFZc0nYQQoedtnupkwyTglseKhWTY2On5GWZjTBnVdfqeZRtT6V0EiUpJ4SUwsd
-         r9zRnVuzUcyDeEjRa1u++eT4aTIC52q/m+Q/fVKQ3QanGuFNW7G8l2O3IGcZdTJf9Ptj
-         vNJdha+QWBjmlb2h2upXjluOrjOKlA/5fjH+VuGtiQR8mnzvfFkot6ua1qompAvmKTP2
-         rsM61K6/prGiCKWrP1ZOyPEXy7YHuCvAioTCZowwRpVdsQ9hyzAaHmZZbUFHIKue0Jum
-         rInuwPcIRCPqJKhB2ASaMyZ7xevms3Vtn1jH86zuT5wA4Ado2Qk5+j7P/uwRR4EidLRf
-         k4Sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o5VXWNPSZA3rC+8/IoRn3B39pVcambgp6FwS9mwBIhE=;
-        b=74fQyzR5ioyieGcgwLRY4t9QsJugFBABFeNh/Xp92372Tyhp161RzPfAy5mYfTaBzc
-         G79SpFqATRmKTy9YUcmaY4A/ckh0HEZ5xb+xg5i2ttAsCclPeUvHpFBRxCm0+juJeO+P
-         pQi7JB+GQpkyVvSPnBgG4/6IhQEd1qJ5zBcwEjtgE7ieoBl573BbeH5yBK+gbiCDtih8
-         IVKWM5dCYvS9zZabVZqAHt56TZDzhZy2f/r0ZU4b+1DuQuZUVmJBbuW7yx8n/P9E0u/t
-         8l/LBpHZ8sjEO+WVA9ortsnPxnYllx9kDyGmUMiZ2c7XIqXvwf8jsdtzLFVJnBbwRqA2
-         YU0w==
-X-Gm-Message-State: AOAM533LVu817nDj13zsEHO7/lQifLy3X2EyPcuKMjWwRsql33vbXZzw
-        +Fg2mNyhsdaepqjfKKiekNc=
-X-Google-Smtp-Source: ABdhPJy22fsu+i3GK5N2DZ0aRKa6iZuZr30HkITvLYPMJ/oH+EPw7wfRAJ0866/BtpxvxVyX7CHwLg==
-X-Received: by 2002:a17:90a:6c66:b0:1df:9399:9189 with SMTP id x93-20020a17090a6c6600b001df93999189mr26896192pjj.179.1653316387168;
-        Mon, 23 May 2022 07:33:07 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id n18-20020a6563d2000000b003f655cf45c0sm4835848pgv.63.2022.05.23.07.33.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 07:33:06 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] mtd: maps: Fix refcount leak in ap_flash_init
-Date:   Mon, 23 May 2022 18:32:55 +0400
-Message-Id: <20220523143255.4376-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 23 May 2022 10:33:20 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A674333E9B;
+        Mon, 23 May 2022 07:33:18 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id A1E4680C2;
+        Mon, 23 May 2022 14:29:19 +0000 (UTC)
+Date:   Mon, 23 May 2022 17:33:16 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Keerthy <j-keerthy@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH 2/3] clocksource/drivers/timer-ti-dm: Make timer
+ selectable for ARCH_K3
+Message-ID: <YoubLHal7JxhoXtA@atomide.com>
+References: <20220408101715.43697-1-tony@atomide.com>
+ <20220408101715.43697-3-tony@atomide.com>
+ <156a53a2-c33b-7ec5-3584-41ef25cb9cdd@linaro.org>
+ <Yos0IOkCd4R9a9YZ@atomide.com>
+ <5b71f5e8-c3df-46ef-094f-9739dd7a0f5f@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5b71f5e8-c3df-46ef-094f-9739dd7a0f5f@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_matching_node() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+* Daniel Lezcano <daniel.lezcano@linaro.org> [220523 12:37]:
+> On 23/05/2022 09:13, Tony Lindgren wrote:
+> > Did you notice some loadable module usage issues for timers that are not
+> > system timers? Just wondering if there are some issues that I did not
+> > notice.
+> 
+> I think the removal won't be supported. We already had a proposal to move
+> one of the timer as a module but I wanted to have more insights about the
+> changes, not just do that because of a GKI Android.
 
-Fixes: b0afd44bc192 ("mtd: physmap_of: add a hook for Versatile write protection")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/mtd/maps/physmap-versatile.c | 1 +
- 1 file changed, 1 insertion(+)
+OK good to know.
 
-diff --git a/drivers/mtd/maps/physmap-versatile.c b/drivers/mtd/maps/physmap-versatile.c
-index ad7cd9cfaee0..6ba6a1dd127c 100644
---- a/drivers/mtd/maps/physmap-versatile.c
-+++ b/drivers/mtd/maps/physmap-versatile.c
-@@ -93,6 +93,7 @@ static int ap_flash_init(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 	ebi_base = of_iomap(ebi, 0);
-+	of_node_put(ebi);
- 	if (!ebi_base)
- 		return -ENODEV;
- 
--- 
-2.25.1
+Thanks,
 
+Tony
