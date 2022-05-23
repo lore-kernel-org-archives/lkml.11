@@ -2,116 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 439CBC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D10EC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243275AbiEWRlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
+        id S243417AbiEWRlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242517AbiEWR1q (ORCPT
+        with ESMTP id S242510AbiEWR1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696658149D;
-        Mon, 23 May 2022 10:23:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A510760919;
-        Mon, 23 May 2022 17:23:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C86C385A9;
-        Mon, 23 May 2022 17:23:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326606;
-        bh=jHgHNmA6N9MgKWp6UWM3cI1VoBGw2Rdn9KeuwCDLBFE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G9GxEg5GDuSG5nTOVsHWRM+YwISNbCpwEOPwPHYsl2kp6d4BMTWyM186uSW0VJHvX
-         SL+FASZgCsc/ykvyQot4SoFLAJcnGbcP29/nd9jL92c2slST1YN/4v7fcB2W9bV3ce
-         vdNNFEqTE0fI4NNzxoC+c2wNHe/InmTCwsnh67T8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namhyung Kim <namhyung@gmail.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 111/132] perf bench numa: Address compiler error on s390
-Date:   Mon, 23 May 2022 19:05:20 +0200
-Message-Id: <20220523165841.913873265@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4914A814AC;
+        Mon, 23 May 2022 10:23:38 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso14375564pjg.0;
+        Mon, 23 May 2022 10:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kVCTG+3+NA8/KUywnzUbBkQ75c3uC0F9FoLTv7cklr4=;
+        b=dEAveRG7O1ujSVYjlQfsaO+q3cP8iBMOi6KEg10kguUaVpe8ICSQBjKAxntihwgkrX
+         rF6creaObAFxLfp98upZ7iOl8Cjj8uZA5cYNqmwh4Xtg+nXlgJ7sDoxec1jK5PLk1s/W
+         2Uli+3sqrT/0iIINldfzLFsH5qxEmWQpeuo4GUFJ/iLWBBj9tHEzp68NQC/OWUmZVEc1
+         tAb0X2ongh3O15vvd6Pu5GEq5Rn1FOGtRYjGr871OE8/NMmDCCJ37XrBGpYIIlQf4QwR
+         dgYh3JXeb+Z5tM5Ji3GqYHqXuXkOnvGuqCeYL4QNymyFqfrbcRtK1dPLvohkLxHLUQbK
+         V51w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kVCTG+3+NA8/KUywnzUbBkQ75c3uC0F9FoLTv7cklr4=;
+        b=DuJbFKpQS5RuupYF5CiIo2rIN5r3WjI7yehGRE4hNj7U8TqWUJ4cOM6C+y6y9IhbFH
+         9OI//CdQd3/IrP7MsvksJCEtRF0wbpb+RJfW67Cxn4lh1IAXHCUlz+ZzXLYoe8FOlZ50
+         qu++0ZI/n3/E4YBabl0EKzAdfqwHaGa96/bTi84Ee+zLYh1H4m4c9M4ihWoXMma29qNv
+         uRjlkMzbFMixHUkE7rpxkETBSEuDZvUrqKNu33boIp8a1vm2Ep8mAGFvq6MlO9/qnn5/
+         H2xgctWnrdK0PMzqXrzfggcggUikM7RgWp2YY06AJuzh5ikX3sL7TVuIhAWPOEhypDqU
+         wL3A==
+X-Gm-Message-State: AOAM530ZltzhTyLuf1+jsPtEVkRz9Xp/tPG3nl3peuDCpamrLCxG9k/C
+        nA1a4oNeC+S+zQWOkNjMdKg=
+X-Google-Smtp-Source: ABdhPJwj7ZzeTeCfVX6/y6kQdpi8V/I/S7H9fOj6ggu3ZX2FrU5/IBQ/5FPYM+tQkrE9SEoHUozFnQ==
+X-Received: by 2002:a17:90b:3b8b:b0:1df:f2ca:c56d with SMTP id pc11-20020a17090b3b8b00b001dff2cac56dmr39343pjb.199.1653326604202;
+        Mon, 23 May 2022 10:23:24 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id 1-20020a170902c10100b001617aef3e08sm5474612pli.51.2022.05.23.10.23.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 10:23:23 -0700 (PDT)
+Message-ID: <772f9381-1180-319e-3afa-cca900291c94@gmail.com>
+Date:   Mon, 23 May 2022 10:23:22 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH ipsec] Revert "net: af_key: add check for pfkey_broadcast
+ in function pfkey_process"
+Content-Language: en-US
+To:     Michal Kubecek <mkubecek@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        netdev@vger.kernel.org
+Cc:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+References: <fbb31dc72fb38a69a2aca6c25f1be71d6a8bcc96.1653321424.git.mkubecek@suse.cz>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <fbb31dc72fb38a69a2aca6c25f1be71d6a8bcc96.1653321424.git.mkubecek@suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Richter <tmricht@linux.ibm.com>
+On 5/23/22 09:01, Michal Kubecek wrote:
+> This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+> 
+> A non-zero return value from pfkey_broadcast() does not necessarily mean
+> an error occurred as this function returns -ESRCH when no registered
+> listener received the message. In particular, a call with
+> BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+> zero so that this commit in fact prevents processing any PF_KEY message.
+> One visible effect is that racoon daemon fails to find encryption
+> algorithms like aes and refuses to start.
+> 
+> Excluding -ESRCH return value would fix this but it's not obvious that
+> we really want to bail out here and most other callers of
+> pfkey_broadcast() also ignore the return value. Also, as pointed out by
+> Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+> should use netlink instead so that we should only disturb the code for
+> really important fixes.
+> 
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-[ Upstream commit f8ac1c478424a9a14669b8cef7389b1e14e5229d ]
-
-The compilation on s390 results in this error:
-
-  # make DEBUG=y bench/numa.o
-  ...
-  bench/numa.c: In function ‘__bench_numa’:
-  bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
-              writing between 1 and 11 bytes into a region of size between
-              10 and 20 [-Werror=format-truncation=]
-  1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
-                                                               ^~
-  ...
-  bench/numa.c:1749:64: note: directive argument in the range
-                 [-2147483647, 2147483646]
-  ...
-  #
-
-The maximum length of the %d replacement is 11 characters because of the
-negative sign.  Therefore extend the array by two more characters.
-
-Output after:
-
-  # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
-  -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
-  #
-
-Fixes: 3aff8ba0a4c9c919 ("perf bench numa: Avoid possible truncation when using snprintf()")
-Suggested-by: Namhyung Kim <namhyung@gmail.com>
-Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220520081158.2990006-1-tmricht@linux.ibm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/perf/bench/numa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
-index f2640179ada9..c2c81567afa5 100644
---- a/tools/perf/bench/numa.c
-+++ b/tools/perf/bench/numa.c
-@@ -1672,7 +1672,7 @@ static int __bench_numa(const char *name)
- 		"GB/sec,", "total-speed",	"GB/sec total speed");
- 
- 	if (g->p.show_details >= 2) {
--		char tname[14 + 2 * 10 + 1];
-+		char tname[14 + 2 * 11 + 1];
- 		struct thread_data *td;
- 		for (p = 0; p < g->p.nr_proc; p++) {
- 			for (t = 0; t < g->p.nr_threads; t++) {
+Maybe you can add a comment above the call such that future tool-based 
+patches submissions to give the author a chance to read the comment 
+above and ask oneself twice whether this is relevant or not?
 -- 
-2.35.1
-
-
-
+Florian
