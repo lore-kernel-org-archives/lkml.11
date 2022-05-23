@@ -2,175 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26042C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233828AbiEWJ6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
+        id S233615AbiEWJ6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233735AbiEWJ5z (ORCPT
+        with ESMTP id S233645AbiEWJ6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:57:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43D501A051
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:57:53 -0700 (PDT)
+        Mon, 23 May 2022 05:58:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C743F403EB
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:58:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653299872;
+        s=mimecast20190719; t=1653299892;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=j7po0GtrBtc9y8cOPJ/0GbOoVIs2F1iXmywPEu00Vik=;
-        b=RzDTXOVM6vVpT8pw0AidYI1rqvoyMOuMqvhqzFvq6NaTKO4WVYqvUWOdVOeoIr0apFbE/C
-        Uklh1r+Oe+GzZs2Tb2NAF/HXZI57uDcirYGejVjyUnl33eegEGLD7IkdGwrD6pda9S1UGE
-        OCGutU7c6yYeMQdAp5WoDgo89I2QstI=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=OVQygW/WRePQfq33h+NUTgse8308ziOIB4rNgjq1sRo=;
+        b=M8fYOO69kVfuWkSYu0KbSbwFj75bdjpwffPHBXHrs5jwDFsj8mCNP2kxGGHcGKY1hAOT6t
+        QiAWyZKwVc2Bm9uPBSrftfjR1X2UZbQPCtbu49H5BxtnnnAyV8733sSpyYqGbJGXyr8ofU
+        Cf/3WPzedoBDQXpiludgqlKoL0VGInA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-86-pLmewfKSMUSJPciWU1xEPA-1; Mon, 23 May 2022 05:57:43 -0400
-X-MC-Unique: pLmewfKSMUSJPciWU1xEPA-1
-Received: by mail-qk1-f200.google.com with SMTP id j12-20020ae9c20c000000b0069e8ac6b244so11044107qkg.1
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 02:57:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=j7po0GtrBtc9y8cOPJ/0GbOoVIs2F1iXmywPEu00Vik=;
-        b=xaGGhwxAu1th4SXhz1YVlR/IlNAKQkM7c5xSaqmpK0uFM11Ao+Yvn/b0r24kLI/uqa
-         jdZOktZs+h5+JvZYrgPrAYdVqxOfajbNoRNymk6VWC5Tw9jiVR5xI7T9rlj87b0oOSMd
-         QMXFNQVfrC09kqE94X+yZNkLdewGiChk3g3vsLiMyim4ECCdOLI2dk7LcL+6vhBg/Zzq
-         RPLLY8Ajar3n4YCad44QkGCDrchJWP0lt0f0AvwLhH6wbVFyvoCMpFfhLqj7DfH98f3t
-         cCGGRQj+Qi39QpamxLrq8V5Fl0jXt4tUsV8PFEKnACTeB78j8TDCEwLG4jJ4lHIJb5q+
-         lIKw==
-X-Gm-Message-State: AOAM531KN46/yyGAc/rtKggOPwDY11lLMAUnDkhZ59gcg6TOToNejAHo
-        umQ7z+CRfzkYPE0Y0+kGXPT9c1JfAv5XBJ8KVrG5AzZkUQgdA6KGuk/qk+pbjnYhH5yLdebXZT/
-        15W+Cxd3NwEp4spuKKP749Vl9o2NvAz7uB/3bd85S
-X-Received: by 2002:ac8:4e81:0:b0:2f9:34e4:8955 with SMTP id 1-20020ac84e81000000b002f934e48955mr3214632qtp.459.1653299863486;
-        Mon, 23 May 2022 02:57:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxvbFG1aDvatEqz9FXE4l2jp7/tHOGW5uKpg80Hd8pzafG0zBsY8brrzQMiJMaoyoUAVsq3ctLvZhaXY1yEfaE=
-X-Received: by 2002:ac8:4e81:0:b0:2f9:34e4:8955 with SMTP id
- 1-20020ac84e81000000b002f934e48955mr3214627qtp.459.1653299863283; Mon, 23 May
- 2022 02:57:43 -0700 (PDT)
+ us-mta-645-8WMgEsrrPLykg32nwdRpSQ-1; Mon, 23 May 2022 05:58:08 -0400
+X-MC-Unique: 8WMgEsrrPLykg32nwdRpSQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1A021833961;
+        Mon, 23 May 2022 09:58:08 +0000 (UTC)
+Received: from fedora (unknown [10.40.194.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2D2D61121314;
+        Mon, 23 May 2022 09:58:05 +0000 (UTC)
+Date:   Mon, 23 May 2022 11:58:03 +0200
+From:   Lukas Czerner <lczerner@redhat.com>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, jack@suse.cz, ritesh.list@gmail.com,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        yebin10@huawei.com, yukuai3@huawei.com,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH 1/2] ext4: fix bug_on ext4_mb_use_inode_pa
+Message-ID: <20220523095803.gomx2q62ymocrkrz@fedora>
+References: <20220521134217.312071-1-libaokun1@huawei.com>
+ <20220521134217.312071-2-libaokun1@huawei.com>
 MIME-Version: 1.0
-References: <20220520172325.980884-1-eperezma@redhat.com> <20220520172325.980884-3-eperezma@redhat.com>
- <c1a31c3f-46c0-f0a2-eb43-757914d46ac3@oracle.com>
-In-Reply-To: <c1a31c3f-46c0-f0a2-eb43-757914d46ac3@oracle.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Mon, 23 May 2022 11:57:07 +0200
-Message-ID: <CAJaqyWdg0tuBcDeaB9Q-XkEoPRSqQ=ruFh1eqT40uOeknRwdkw@mail.gmail.com>
-Subject: Re: [PATCH 2/4] vhost-vdpa: introduce STOP backend feature bit
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>, dinang@xilinx.com,
-        Eli Cohen <elic@nvidia.com>,
-        Laurent Vivier <lvivier@redhat.com>, pabloc@xilinx.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Xie Yongji <xieyongji@bytedance.com>, habetsm.xilinx@gmail.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        tanuj.kamde@amd.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        martinpo@xilinx.com, Cindy Lu <lulu@redhat.com>,
-        ecree.xilinx@gmail.com, Parav Pandit <parav@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220521134217.312071-2-libaokun1@huawei.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 12:25 PM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
->
->
->
-> On 5/20/2022 10:23 AM, Eugenio P=C3=A9rez wrote:
-> > Userland knows if it can stop the device or not by checking this featur=
-e
-> > bit.
-> >
-> > It's only offered if the vdpa driver backend implements the stop()
-> > operation callback, and try to set it if the backend does not offer tha=
-t
-> > callback is an error.
-> >
-> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > ---
-> >   drivers/vhost/vdpa.c             | 13 +++++++++++++
-> >   include/uapi/linux/vhost_types.h |  2 ++
-> >   2 files changed, 15 insertions(+)
-> >
-> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> > index 1f1d1c425573..a325bc259afb 100644
-> > --- a/drivers/vhost/vdpa.c
-> > +++ b/drivers/vhost/vdpa.c
-> > @@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdp=
-a *v,
-> >       return 0;
-> >   }
-> >
-> > +static bool vhost_vdpa_can_stop(const struct vhost_vdpa *v)
-> > +{
-> > +     struct vdpa_device *vdpa =3D v->vdpa;
-> > +     const struct vdpa_config_ops *ops =3D vdpa->config;
-> > +
-> > +     return ops->stop;
-> > +}
-> > +
-> >   static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user =
-*featurep)
-> >   {
-> >       struct vdpa_device *vdpa =3D v->vdpa;
-> > @@ -577,6 +585,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
-filep,
-> >                       return -EFAULT;
-> >               if (features & ~VHOST_VDPA_BACKEND_FEATURES)
-> >                       return -EOPNOTSUPP;
-> > +             if ((features & VHOST_BACKEND_F_STOP) &&
-> VHOST_BACKEND_F_STOP is not part of VHOST_VDPA_BACKEND_FEATURES. There's
-> no chance for VHOST_BACKEND_F_STOP to get here.
->
+On Sat, May 21, 2022 at 09:42:16PM +0800, Baokun Li wrote:
+> Hulk Robot reported a BUG_ON:
+> ==================================================================
+> kernel BUG at fs/ext4/mballoc.c:3211!
+> [...]
+> RIP: 0010:ext4_mb_mark_diskspace_used.cold+0x85/0x136f
+> [...]
+> Call Trace:
+>  ext4_mb_new_blocks+0x9df/0x5d30
+>  ext4_ext_map_blocks+0x1803/0x4d80
+>  ext4_map_blocks+0x3a4/0x1a10
+>  ext4_writepages+0x126d/0x2c30
+>  do_writepages+0x7f/0x1b0
+>  __filemap_fdatawrite_range+0x285/0x3b0
+>  file_write_and_wait_range+0xb1/0x140
+>  ext4_sync_file+0x1aa/0xca0
+>  vfs_fsync_range+0xfb/0x260
+>  do_fsync+0x48/0xa0
+> [...]
+> ==================================================================
+> 
+> Above issue may happen as follows:
+> -------------------------------------
+> do_fsync
+>  vfs_fsync_range
+>   ext4_sync_file
+>    file_write_and_wait_range
+>     __filemap_fdatawrite_range
+>      do_writepages
+>       ext4_writepages
+>        mpage_map_and_submit_extent
+>         mpage_map_one_extent
+>          ext4_map_blocks
+>           ext4_mb_new_blocks
+>            ext4_mb_normalize_request
+>             >>> start + size <= ac->ac_o_ex.fe_logical
+>            ext4_mb_regular_allocator
+>             ext4_mb_simple_scan_group
+>              ext4_mb_use_best_found
+>               ext4_mb_new_preallocation
+>                ext4_mb_new_inode_pa
+>                 ext4_mb_use_inode_pa
+>                  >>> set ac->ac_b_ex.fe_len <= 0
+>            ext4_mb_mark_diskspace_used
+>             >>> BUG_ON(ac->ac_b_ex.fe_len <= 0);
+> 
+> we can easily reproduce this problem with the following commands:
+> 	`fallocate -l100M disk`
+> 	`mkfs.ext4 -b 1024 -g 256 disk`
+> 	`mount disk /mnt`
+> 	`fsstress -d /mnt -l 0 -n 1000 -p 1`
+> 
+> The size must be smaller than or equal to EXT4_BLOCKS_PER_GROUP.
+> Therefore, "start + size <= ac->ac_o_ex.fe_logical" may occur
+> when the size is truncated. So start should be the start position of
+> the group where ac_o_ex.fe_logical is located after alignment.
+> In addition, when the value of fe_logical or EXT4_BLOCKS_PER_GROUP
+> is very large, the value calculated by start_off is more accurate.
+> 
+> Fixes: cd648b8a8fd5 ("ext4: trim allocation requests to group size")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> ---
+>  fs/ext4/mballoc.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+> index ea653d19f9ec..32410b79b664 100644
+> --- a/fs/ext4/mballoc.c
+> +++ b/fs/ext4/mballoc.c
+> @@ -4107,6 +4107,17 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
+>  	size = size >> bsbits;
+>  	start = start_off >> bsbits;
+>  
+> +	/*
+> +	 * Because size must be less than or equal to
+> +	 * EXT4_BLOCKS_PER_GROUP, start should be the start position of
+> +	 * the group where ac_o_ex.fe_logical is located after alignment.
+> +	 * In addition, when the value of fe_logical or
+> +	 * EXT4_BLOCKS_PER_GROUP is very large, the value calculated
+> +	 * by start_off is more accurate.
+> +	 */
+> +	start = max(start, round_down(ac->ac_o_ex.fe_logical,
+> +			EXT4_BLOCKS_PER_GROUP(ac->ac_sb)));
 
-That's right. I think I missed to backport your patches about set
-backend_features only once in my testing.
+This does not look right. The second argument in round_down() must be a
+power of two, but there is no such restriction on blocks per group.
 
-I will re-test with the latest qemu master, thanks!
+Also I am not quite sure why do we adjust the start in this way at all?
+If we found what seems to be a preallocated extent which we can use and
+we're actually going to use 0 lenght extent it seems like the problem is
+somewhere else? Can you desribe the problem a bit more in detail?
 
-> -Siwei
-> > +                  !vhost_vdpa_can_stop(v))
-> > +                     return -EOPNOTSUPP;
-> >               vhost_set_backend_features(&v->vdev, features);
-> >               return 0;
-> >       }
-> > @@ -624,6 +635,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
-filep,
-> >               break;
-> >       case VHOST_GET_BACKEND_FEATURES:
-> >               features =3D VHOST_VDPA_BACKEND_FEATURES;
-> > +             if (vhost_vdpa_can_stop(v))
-> > +                     features |=3D VHOST_BACKEND_F_STOP;
-> >               if (copy_to_user(featurep, &features, sizeof(features)))
-> >                       r =3D -EFAULT;
-> >               break;
-> > diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhos=
-t_types.h
-> > index 634cee485abb..2758e665791b 100644
-> > --- a/include/uapi/linux/vhost_types.h
-> > +++ b/include/uapi/linux/vhost_types.h
-> > @@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
-> >    * message
-> >    */
-> >   #define VHOST_BACKEND_F_IOTLB_ASID  0x3
-> > +/* Stop device from processing virtqueue buffers */
-> > +#define VHOST_BACKEND_F_STOP  0x4
-> >
-> >   #endif
->
+Maybe I need to look at the ext4_mb_normalize_request() some more.
+
+-Lukas
+
+> +
+>  	/* don't cover already allocated blocks in selected range */
+>  	if (ar->pleft && start <= ar->lleft) {
+>  		size -= ar->lleft + 1 - start;
+> -- 
+> 2.31.1
+> 
 
