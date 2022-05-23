@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 223B5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 615DAC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244059AbiEWSGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
+        id S244525AbiEWSGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243150AbiEWRhz (ORCPT
+        with ESMTP id S243481AbiEWRiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:55 -0400
+        Mon, 23 May 2022 13:38:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 816B26FA1E;
-        Mon, 23 May 2022 10:32:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C61190CE3;
+        Mon, 23 May 2022 10:32:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C20FBB8121A;
-        Mon, 23 May 2022 17:29:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0D35C385A9;
-        Mon, 23 May 2022 17:29:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F50EB81208;
+        Mon, 23 May 2022 17:09:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA465C385AA;
+        Mon, 23 May 2022 17:09:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326998;
-        bh=23su02o+7aksN6p3FS7YDRxWi6rUQ/aMOIQEY1F9QY8=;
+        s=korg; t=1653325753;
+        bh=4otzz0Ek9YgjFM5VEIzznDR47c+nrHLEJbYejAR82I8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xWfqN58+W68llD0fiBLtWJJC7roo7rSrRtTKorXJ35zL3XzVNdZWK5ZhbAca0qD6W
-         oDTB0KZqnl6P2p+gIMsC7shCLg21CSXTodZcpZXikx8c5bTGl/BREk0NGRdc3znoOn
-         dwhn+b9D3WKS2GkdsCbOuHXLwlG/W2PFT+doEa1w=
+        b=a3id5fkhHbEI81RpNsCIE1g9pjd8w1/Ae4PF1b58LzOhCHXDUFB270jgbNifC1oD9
+         A+YHwyPmYwfVZ+V1IfNKkNt56uwapTcMR4ihdbY1IMuSkCFg+HnH03k0qAXzRayjGY
+         fKUSw3MdhIZSb+x+vJRoyW+AvQ03suvO9luxGPhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Greenwalt <paul.greenwalt@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.17 097/158] ice: fix possible under reporting of ethtool Tx and Rx statistics
-Date:   Mon, 23 May 2022 19:04:14 +0200
-Message-Id: <20220523165847.535271104@linuxfoundation.org>
+        stable@vger.kernel.org, Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        Grant Grundler <grundler@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 31/33] net: atlantic: verify hw_head_ lies within TX buffer ring
+Date:   Mon, 23 May 2022 19:05:20 +0200
+Message-Id: <20220523165753.403273785@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
+References: <20220523165746.957506211@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Greenwalt <paul.greenwalt@intel.com>
+From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 31b6298fd8e29effe9ed6b77351ac5969be56ce0 ]
+[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
 
-The hardware statistics counters are not cleared during resets so the
-drivers first access is to initialize the baseline and then subsequent
-reads are for reporting the counters. The statistics counters are read
-during the watchdog subtask when the interface is up. If the baseline
-is not initialized before the interface is up, then there can be a brief
-window in which some traffic can be transmitted/received before the
-initial baseline reading takes place.
+Bounds check hw_head index provided by NIC to verify it lies
+within the TX buffer ring.
 
-Directly initialize ethtool statistics in driver open so the baseline will
-be initialized when the interface is up, and any dropped packets
-incremented before the interface is up won't be reported.
-
-Fixes: 28dc1b86f8ea9 ("ice: ignore dropped packets during init")
-Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Reported-by: Aashay Shringarpure <aashay@google.com>
+Reported-by: Yi Chou <yich@google.com>
+Reported-by: Shervin Oloumi <enlightened@google.com>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 7f6715eb862f..30f055e1a92a 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5907,9 +5907,10 @@ static int ice_up_complete(struct ice_vsi *vsi)
- 			ice_ptp_link_change(pf, pf->hw.pf_id, true);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index 1c1bb074f664..066abf9dc91e 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -625,6 +625,13 @@ static int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
+ 		err = -ENXIO;
+ 		goto err_exit;
  	}
++
++	/* Validate that the new hw_head_ is reasonable. */
++	if (hw_head_ >= ring->size) {
++		err = -ENXIO;
++		goto err_exit;
++	}
++
+ 	ring->hw_head = hw_head_;
+ 	err = aq_hw_err_from_flags(self);
  
--	/* clear this now, and the first stats read will be used as baseline */
--	vsi->stat_offsets_loaded = false;
--
-+	/* Perform an initial read of the statistics registers now to
-+	 * set the baseline so counters are ready when interface is up
-+	 */
-+	ice_update_eth_stats(vsi);
- 	ice_service_task_schedule(pf);
- 
- 	return 0;
 -- 
 2.35.1
 
