@@ -2,125 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87955C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236753AbiEWN7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
+        id S236783AbiEWOA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236604AbiEWN66 (ORCPT
+        with ESMTP id S236765AbiEWOA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:58:58 -0400
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46DE5712F;
-        Mon, 23 May 2022 06:58:55 -0700 (PDT)
-Received: by mail-qv1-f50.google.com with SMTP id l1so12145540qvh.1;
-        Mon, 23 May 2022 06:58:55 -0700 (PDT)
+        Mon, 23 May 2022 10:00:26 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B51657143
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:00:22 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-d39f741ba0so18504501fac.13
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:00:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fYWALA3lJgoSN00lrVAVMkJgNm+QYBYbKEt1Mc7Ujl4=;
-        b=cLcoPu+jy2A84xyELl+PC8QHKnEQom/uR+IZrlblq4jaAQdX5bwIx+YC+v8UuYkKbO
-         euvE1owgn5zLGtmYzYKXgXzxoeWkhKISf0CnKf7QAE41WV4i9EfX0aMu8P1ObNUbTpJS
-         Bfp3V0VEf7XvxdyFrIYwTVHaQa5GAv8h/v/MicPbw5w+mqNHeGRfpXMoK9a29mFBc6Z4
-         WJRHy5d10mxvg+WlGgczVPvWGaCwMx3KxcpsN5rZJHKzCLOCyeb8ugHCiJRP9Ob4uGQW
-         M56BlHBCN2Mjgdd5lrws+XYa42sgUDRCXkO0fMl0ddeHqdMkB6+UNj3dZpuf5qtRnjSf
-         LRhQ==
-X-Gm-Message-State: AOAM530F1GbidAqKZCIzTYHIgQ6K9C64jufU3iPVo6W+yrRev/4xSHJV
-        YFS9Kjf5eYBHSkeisttj96rABJShdxRJzw==
-X-Google-Smtp-Source: ABdhPJxn+zxXbkpHwy/aXTGgQgtstkKudNX1BtloONutSOmdlVuT2flBdrV+6ozu5wuVLi91JmXlCg==
-X-Received: by 2002:ad4:5de6:0:b0:462:180d:7038 with SMTP id jn6-20020ad45de6000000b00462180d7038mr10559956qvb.16.1653314334747;
-        Mon, 23 May 2022 06:58:54 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id bi12-20020a05620a318c00b006a370031c3esm3792652qkb.106.2022.05.23.06.58.53
+        bh=EHMcsEmvvJZ5YK4UB7JWYPJGU7GAR4VtM9LZecjaIGM=;
+        b=11twM4BMmaOPhFAaXF/uaQnE1kug/8X8jA6QhynRe0XODvM8jdj11tEDBvAGtXCDL9
+         7qZLKTDRy7CyFvVnRq0C2ydmN5RKk+Vkhku4NVlKnchmFt7ZfXCUsLqnfjagoY1ffCjH
+         oPF0qL/RyrCVmp/VRdaTvf1zVsHRScgVlftwAa6qI2MkWGf2x2ts7QjIclVMzgKBNjys
+         acC1ScNwKzgsyEHY9Th2z41PCfetEJHPLKluwZy1WuS48APoq82b0Qr/+5h7fPM/szz/
+         6DWWglnJv5WmOYrtW37c2VCAwKMw7iMSBTA3Whr1xl0z13AvVjDUHxqaZ3ZkZpGtm0Wh
+         +pfA==
+X-Gm-Message-State: AOAM532vTBAsGbM1qUaRP4pMpc1+X0rNvTC0WDbGnTuhhG0MZPe99Pgf
+        3pcD1/EANlz6ubl90nCDM2IPJG0vjTSevg==
+X-Google-Smtp-Source: ABdhPJye//7SNjkYO5SOP/qMnpB89GgsP7Yh4W378RqS8lRstSPiu1nUrvAx1w9mqPnyjlnv1WaFpw==
+X-Received: by 2002:a05:6870:ecac:b0:f1:a98e:f2ed with SMTP id eo44-20020a056870ecac00b000f1a98ef2edmr11706747oab.159.1653314420091;
+        Mon, 23 May 2022 07:00:20 -0700 (PDT)
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com. [209.85.210.53])
+        by smtp.gmail.com with ESMTPSA id y199-20020a4a45d0000000b0040e699e8d8asm3556397ooa.45.2022.05.23.07.00.19
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 06:58:54 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id q135so25551127ybg.10;
-        Mon, 23 May 2022 06:58:53 -0700 (PDT)
-X-Received: by 2002:a81:234b:0:b0:2f8:4082:bbd3 with SMTP id
- j72-20020a81234b000000b002f84082bbd3mr23570342ywj.47.1653314322494; Mon, 23
- May 2022 06:58:42 -0700 (PDT)
+        Mon, 23 May 2022 07:00:19 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id c15-20020a9d684f000000b0060b097c71ecso3238053oto.10
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:00:19 -0700 (PDT)
+X-Received: by 2002:a81:2143:0:b0:2fb:1274:247e with SMTP id
+ h64-20020a812143000000b002fb1274247emr23349727ywh.384.1653313941447; Mon, 23
+ May 2022 06:52:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220522155046.260146-1-tmaimon77@gmail.com> <20220522155046.260146-18-tmaimon77@gmail.com>
- <c1b86493-d82d-a639-07af-4c979d733786@linaro.org>
-In-Reply-To: <c1b86493-d82d-a639-07af-4c979d733786@linaro.org>
+References: <20220523132353.1767614-1-Vsujithkumar.Reddy@amd.com> <20220523132353.1767614-2-Vsujithkumar.Reddy@amd.com>
+In-Reply-To: <20220523132353.1767614-2-Vsujithkumar.Reddy@amd.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 23 May 2022 15:58:31 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWSccO3J5OYrFUn+azKyzYBP1wmuHZoRU2t3PUbkZx1wA@mail.gmail.com>
-Message-ID: <CAMuHMdWSccO3J5OYrFUn+azKyzYBP1wmuHZoRU2t3PUbkZx1wA@mail.gmail.com>
-Subject: Re: [PATCH v1 17/19] arm64: dts: nuvoton: Add initial NPCM8XX device tree
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tomer Maimon <tmaimon77@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        =?UTF-8?Q?Bj=C3=B6rn_Andersson?= <bjorn.andersson@linaro.org>,
+Date:   Mon, 23 May 2022 15:52:10 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUY1MPGT4QO0aL1m+NHrs0eQ357YEOcjKpt0fQ4KSekWg@mail.gmail.com>
+Message-ID: <CAMuHMdUY1MPGT4QO0aL1m+NHrs0eQ357YEOcjKpt0fQ4KSekWg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] ASoC: amd: acp: Add support for nau8825 and
+ max98360 card
+To:     V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+Cc:     Mark Brown <broonie@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Vijendar.Mukunda@amd.com, Basavaraj.Hiregoudar@amd.com,
+        Sunil-kumar.Dommati@amd.com, ajitkumar.pandey@amd.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod <vkoul@kernel.org>, Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>, arm-soc <soc@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
+        Arnd Bergmann <arnd@arndb.de>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Akihiko Odaki <akihiko.odaki@gmail.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Bard Liao <bard.liao@intel.com>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Hi Sujith,
 
-On Mon, May 23, 2022 at 11:08 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-> On 22/05/2022 17:50, Tomer Maimon wrote:
-> > This adds initial device tree support for the
-> > Nuvoton NPCM845 Board Management controller (BMC) SoC family.
+On Mon, May 23, 2022 at 3:24 PM V sujith kumar Reddy
+<Vsujithkumar.Reddy@amd.com> wrote:
+> We have new platform with nau8825 as a primary codec and max98360 as an
+> amp codec. Add machine struct to register sof audio based sound card
+> on such Chrome machine.
 >
-> Thank you for your patch. There is something to discuss/improve.
+> Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+
+Thanks for your patch!
+
+> --- a/sound/soc/amd/acp-config.c
+> +++ b/sound/soc/amd/acp-config.c
+> @@ -130,4 +130,25 @@ struct snd_soc_acpi_mach snd_soc_acpi_amd_sof_machines[] = {
+>  };
+>  EXPORT_SYMBOL(snd_soc_acpi_amd_sof_machines);
 >
-> > The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and
-> > have various peripheral IPs.
-> >
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> +struct snd_soc_acpi_mach snd_soc_acpi_amd_rmb_sof_machines[] = {
+> +       {
+> +               .id = "AMDI1019",
+> +               .drv_name = "rmb-dsp",
+> +               .pdata = (void *)&acp_quirk_data,
 
-> > +             l2: l2-cache {
-> > +                     compatible = "cache";
->
-> Is this a real compatible? What bindings are you using here?
+You can assign an arbitrary pointer type to "void *" without casting.
+In fact the cast makes the code less safe, as it prevents the compiler
+from informing you in case a future patch changes types.
 
-The compatible value and related properties are defined in the
-Devicetree Specification, v0.4-rc1, Section 3.9 ("Multi-level and
-Shared Cache Nodes (/cpus/cpu*/l?-cache)").
+The same applies to below, and to the existing casts.
 
-The properties are handled by
-dtschema/schemas/cache-controller.yaml, but the latter seems to lack
-any checking on the compatible value?
+> +               .fw_filename = "sof-rmb.ri",
+> +               .sof_tplg_filename = "sof-acp-rmb.tplg",
+> +       },
+> +       {
+> +               .id = "10508825",
+> +               .drv_name = "nau8825-max",
+> +               .pdata = (void *)&acp_quirk_data,
+> +               .machine_quirk = snd_soc_acpi_codec_list,
+> +               .quirk_data = &amp_max,
+> +               .fw_filename = "sof-rmb.ri",
+> +               .sof_tplg_filename = "sof-acp-rmb.tplg",
+> +       },
+> +       {},
+> +};
 
 Gr{oetje,eeting}s,
 
