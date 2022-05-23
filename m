@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D01AAC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A76C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241629AbiEWRbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
+        id S241804AbiEWRbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241782AbiEWRWg (ORCPT
+        with ESMTP id S241793AbiEWRWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:36 -0400
+        Mon, 23 May 2022 13:22:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102717CB08;
-        Mon, 23 May 2022 10:19:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057197CB10;
+        Mon, 23 May 2022 10:19:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90BB8B811FF;
-        Mon, 23 May 2022 17:19:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B10CFC385AA;
-        Mon, 23 May 2022 17:19:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00EFDB811FE;
+        Mon, 23 May 2022 17:13:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32C3EC385AA;
+        Mon, 23 May 2022 17:13:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326368;
-        bh=QQM2k9G4KGPPMRx/b75fnIz+rJxFZTX5YdrkkcEBeSg=;
+        s=korg; t=1653325995;
+        bh=Z6/7f7HNKOU9oPu3ojflFpWYnzcyZfoFiGG0zJfOUSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S9FTREnp/Ri/3wfNHCNXLw81Hgjw1kdtb672iPByJKAIFtOgV6EBKnpYgr60W7Q9b
-         b2tt1KFK84cJQ427Q8tVElZ7j+uVhfaywAELuvshWp273yPDTVxeMHuUuKD1vjaq+X
-         xkovUkC1N+3wUrEdFC3KVqgypDeT8K2JUV2558zI=
+        b=Ai3jJBH9JbJrFnmJp3c4PnfKXmqwZip4vt35xosMGBpKbES1wfuO/lroFj73eYlXU
+         AHWRyrFHv5PFz/trYGwmTTfe1Pozz15DzvgeM/QcXRujWEBjJnEv2XpAJpYIHGf+St
+         rrOflOUXg2azjwanzZPIgmPHquQ3FYvt4D7sbSvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 5.15 060/132] dma-buf: fix use of DMA_BUF_SET_NAME_{A,B} in userspace
-Date:   Mon, 23 May 2022 19:04:29 +0200
-Message-Id: <20220523165833.209250206@linuxfoundation.org>
+        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 35/68] ARM: dts: aspeed-g6: fix SPI1/SPI2 quad pin group
+Date:   Mon, 23 May 2022 19:05:02 +0200
+Message-Id: <20220523165808.400971223@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
 
-commit 7c3e9fcad9c7d8bb5d69a576044fb16b1d2e8a01 upstream.
+[ Upstream commit 890362d41b244536ab63591f813393f5fdf59ed7 ]
 
-The typedefs u32 and u64 are not available in userspace. Thus user get
-an error he try to use DMA_BUF_SET_NAME_A or DMA_BUF_SET_NAME_B:
+Fix incorrect function mappings in pinctrl_qspi1_default and
+pinctrl_qspi2_default since their function should be SPI1 and
+SPI2 respectively.
 
-    $ gcc -Wall   -c -MMD -c -o ioctls_list.o ioctls_list.c
-    In file included from /usr/include/x86_64-linux-gnu/asm/ioctl.h:1,
-                     from /usr/include/linux/ioctl.h:5,
-                     from /usr/include/asm-generic/ioctls.h:5,
-                     from ioctls_list.c:11:
-    ioctls_list.c:463:29: error: ‘u32’ undeclared here (not in a function)
-      463 |     { "DMA_BUF_SET_NAME_A", DMA_BUF_SET_NAME_A, -1, -1 }, // linux/dma-buf.h
-          |                             ^~~~~~~~~~~~~~~~~~
-    ioctls_list.c:464:29: error: ‘u64’ undeclared here (not in a function)
-      464 |     { "DMA_BUF_SET_NAME_B", DMA_BUF_SET_NAME_B, -1, -1 }, // linux/dma-buf.h
-          |                             ^~~~~~~~~~~~~~~~~~
-
-The issue was initially reported here[1].
-
-[1]: https://github.com/jerome-pouiller/ioctl/pull/14
-
-Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Fixes: a5bff92eaac4 ("dma-buf: Fix SET_NAME ioctl uapi")
-CC: stable@vger.kernel.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220517072708.245265-1-Jerome.Pouiller@silabs.com
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f510f04c8c83 ("ARM: dts: aspeed: Add AST2600 pinmux nodes")
+Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Link: https://lore.kernel.org/r/20220329173932.2588289-8-quic_jaehyoo@quicinc.com
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/dma-buf.h |    4 ++--
+ arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/uapi/linux/dma-buf.h
-+++ b/include/uapi/linux/dma-buf.h
-@@ -92,7 +92,7 @@ struct dma_buf_sync {
-  * between them in actual uapi, they're just different numbers.
-  */
- #define DMA_BUF_SET_NAME	_IOW(DMA_BUF_BASE, 1, const char *)
--#define DMA_BUF_SET_NAME_A	_IOW(DMA_BUF_BASE, 1, u32)
--#define DMA_BUF_SET_NAME_B	_IOW(DMA_BUF_BASE, 1, u64)
-+#define DMA_BUF_SET_NAME_A	_IOW(DMA_BUF_BASE, 1, __u32)
-+#define DMA_BUF_SET_NAME_B	_IOW(DMA_BUF_BASE, 1, __u64)
+diff --git a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
+index 4792b3d9459d..ac723fe898c7 100644
+--- a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
+@@ -648,12 +648,12 @@ pinctrl_pwm9g1_default: pwm9g1_default {
+ 	};
  
- #endif
+ 	pinctrl_qspi1_default: qspi1_default {
+-		function = "QSPI1";
++		function = "SPI1";
+ 		groups = "QSPI1";
+ 	};
+ 
+ 	pinctrl_qspi2_default: qspi2_default {
+-		function = "QSPI2";
++		function = "SPI2";
+ 		groups = "QSPI2";
+ 	};
+ 
+-- 
+2.35.1
+
 
 
