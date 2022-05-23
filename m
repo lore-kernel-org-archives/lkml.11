@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239130AbiEWRIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59424 "EHLO
+        id S231777AbiEWRJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239577AbiEWRHo (ORCPT
+        with ESMTP id S239562AbiEWRH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:07:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DC76AA77;
-        Mon, 23 May 2022 10:07:21 -0700 (PDT)
+        Mon, 23 May 2022 13:07:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400185BE5F;
+        Mon, 23 May 2022 10:07:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87E12614D8;
-        Mon, 23 May 2022 17:07:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ADD9C385A9;
-        Mon, 23 May 2022 17:07:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0A84B81201;
+        Mon, 23 May 2022 17:07:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06EC4C385A9;
+        Mon, 23 May 2022 17:07:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325639;
-        bh=N9Cqymp8pKXu4Y9O5HZccS0xfN9veRewpmqi8BaRNzE=;
+        s=korg; t=1653325671;
+        bh=0naOMxH3Ws/cN6Gr0znKiOXtUMhUhuBDe3no0f3cIO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0TaPZtg+KhSXhlHwdznq1poXjK6ijcVJd0l4k+fBCYpLZLi9JPYCZ6H3WQDAPwJ1X
-         DAM41ONg/rUWOWePuMemqXX5Gi8faNb/XGxEJMSA4l760NLngU/Eq7akIigV2d3dlz
-         RxOnhAh+qvDSkDSi5rL5AJkVtbQkXpo/0v1ACgG0=
+        b=ZHEsn36XfNd1dCLzp9rC0Fmi1jVRcR0QBf0HA6qfGGsc8JdZAKBTgrc3MLT9Irfmy
+         WmcB2SPHGkxAM4Bp2vgQBhyBIHvBb20eeSnu/OTVp6dSmIPuwRBkl4H4OBcHJA2+Kf
+         1AoCMhHRqkScm3/PoweB3oJG1uISRP+rN8Pbwh+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 02/97] io_uring: always grab file table for deferred statx
-Date:   Mon, 23 May 2022 19:05:06 +0200
-Message-Id: <20220523165812.675707833@linuxfoundation.org>
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 04/33] Input: stmfts - fix reference leak in stmfts_input_open
+Date:   Mon, 23 May 2022 19:04:53 +0200
+Message-Id: <20220523165747.818755611@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
+References: <20220523165746.957506211@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,43 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-Lee reports that there's a use-after-free of the process file table.
-There's an assumption that we don't need the file table for some
-variants of statx invocation, but that turns out to be false and we
-end up with not grabbing a reference for the request even if the
-deferred execution uses it.
+[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
 
-Get rid of the REQ_F_NO_FILE_TABLE optimization for statx, and always
-grab that reference.
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stmfts_input_open, so we should fix it.
 
-This issues doesn't exist upstream since the native workers got
-introduced with 5.12.
-
-Link: https://lore.kernel.org/io-uring/YoOJ%2FT4QRKC+fAZE@google.com/
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/input/touchscreen/stmfts.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4252,12 +4252,8 @@ static int io_statx(struct io_kiocb *req
- 	struct io_statx *ctx = &req->statx;
- 	int ret;
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
+index d9e93dabbca2..9007027a7ad9 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -344,11 +344,11 @@ static int stmfts_input_open(struct input_dev *dev)
  
--	if (force_nonblock) {
--		/* only need file table for an actual valid fd */
--		if (ctx->dfd == -1 || ctx->dfd == AT_FDCWD)
--			req->flags |= REQ_F_NO_FILE_TABLE;
-+	if (force_nonblock)
- 		return -EAGAIN;
--	}
+ 	err = pm_runtime_get_sync(&sdata->client->dev);
+ 	if (err < 0)
+-		return err;
++		goto out;
  
- 	ret = do_statx(ctx->dfd, ctx->filename, ctx->flags, ctx->mask,
- 		       ctx->buffer);
+ 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
+ 	if (err)
+-		return err;
++		goto out;
+ 
+ 	mutex_lock(&sdata->mutex);
+ 	sdata->running = true;
+@@ -371,7 +371,9 @@ static int stmfts_input_open(struct input_dev *dev)
+ 				 "failed to enable touchkey\n");
+ 	}
+ 
+-	return 0;
++out:
++	pm_runtime_put_noidle(&sdata->client->dev);
++	return err;
+ }
+ 
+ static void stmfts_input_close(struct input_dev *dev)
+-- 
+2.35.1
+
 
 
