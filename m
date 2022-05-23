@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9634AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA33C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242879AbiEWSEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35940 "EHLO
+        id S242744AbiEWSEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241784AbiEWRgD (ORCPT
+        with ESMTP id S241806AbiEWRgG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:36:03 -0400
+        Mon, 23 May 2022 13:36:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EEB8FD66;
-        Mon, 23 May 2022 10:30:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124D88FF8E;
+        Mon, 23 May 2022 10:30:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 083AD611E6;
-        Mon, 23 May 2022 17:29:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECC61C385A9;
-        Mon, 23 May 2022 17:29:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEF1E611EC;
+        Mon, 23 May 2022 17:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C88E3C385AA;
+        Mon, 23 May 2022 17:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326941;
-        bh=iGoQwlvfqcP4hlbNazx0sB6oj/lSpmf3r72OruQpJEs=;
+        s=korg; t=1653326957;
+        bh=BsltoaHFf01AQuDFN1N0mYkufnkqjRvwU6I+tIFyGV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pX5F67BAIAgjk+rZs3MTzb41JQvqrCDsLk0Ibd86Gy8zpq/ANFGMimiElHbNAJfXg
-         Xj7k4RVJhW+8Xipth2bhbEqWlZuijpd6fak1CHgRYhSCTJtrd7Q4SaYEnkP3HAek6i
-         CTcVQ2cnJEsB4MsPk/dM1p2XRY+DQ5bYjg/3qoac=
+        b=I4324facxbJsCkQ+fmESfz6shN1lNpxyTgNABz/Nm/TYnYCg6mAKbNMThYPUemfZs
+         15o/ft2atafe28sJ7Ki7Xih6tfFxm9w/yD2RUPnxnwBGLWbp0UWBG4TFyYw1lcOLJS
+         dxqMruCwvtPzAOXfkOlR4IKGbrUFjyYSLzCzZNdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 107/158] net/mlx5e: Properly block HW GRO when XDP is enabled
-Date:   Mon, 23 May 2022 19:04:24 +0200
-Message-Id: <20220523165848.887505261@linuxfoundation.org>
+Subject: [PATCH 5.17 112/158] ARM: 9197/1: spectre-bhb: fix loop8 sequence for Thumb2
+Date:   Mon, 23 May 2022 19:04:29 +0200
+Message-Id: <20220523165849.573535084@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,50 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit b0617e7b35001c92c8fa777e1a095d3e693813df ]
+[ Upstream commit 3cfb3019979666bdf33a1010147363cf05e0f17b ]
 
-HW GRO is incompatible and mutually exclusive with XDP and XSK. However,
-the needed checks are only made when enabling XDP. If HW GRO is enabled
-when XDP is already active, the command will succeed, and XDP will be
-skipped in the data path, although still enabled.
+In Thumb2, 'b . + 4' produces a branch instruction that uses a narrow
+encoding, and so it does not jump to the following instruction as
+expected. So use W(b) instead.
 
-This commit fixes the bug by checking the XDP and XSK status in
-mlx5e_fix_features and disabling HW GRO if XDP is enabled.
-
-Fixes: 83439f3c37aa ("net/mlx5e: Add HW-GRO offload")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 6c7cb60bff7a ("ARM: fix Thumb2 regression with Spectre BHB")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/arm/kernel/entry-armv.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 1f8fc8d77bc3..4b83dd05afcd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3870,6 +3870,18 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 			netdev_warn(netdev, "LRO is incompatible with XDP\n");
- 			features &= ~NETIF_F_LRO;
- 		}
-+		if (features & NETIF_F_GRO_HW) {
-+			netdev_warn(netdev, "HW GRO is incompatible with XDP\n");
-+			features &= ~NETIF_F_GRO_HW;
-+		}
-+	}
-+
-+	if (priv->xsk.refcnt) {
-+		if (features & NETIF_F_GRO_HW) {
-+			netdev_warn(netdev, "HW GRO is incompatible with AF_XDP (%u XSKs are active)\n",
-+				    priv->xsk.refcnt);
-+			features &= ~NETIF_F_GRO_HW;
-+		}
- 	}
+diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
+index ee3f7a599181..4bbd92d41031 100644
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1040,7 +1040,7 @@ vector_bhb_loop8_\name:
  
- 	if (MLX5E_GET_PFLAG(params, MLX5E_PFLAG_RX_CQE_COMPRESS)) {
+ 	@ bhb workaround
+ 	mov	r0, #8
+-3:	b	. + 4
++3:	W(b)	. + 4
+ 	subs	r0, r0, #1
+ 	bne	3b
+ 	dsb
 -- 
 2.35.1
 
