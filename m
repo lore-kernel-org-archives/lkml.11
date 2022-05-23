@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D98C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239431AbiEWROW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:14:22 -0400
+        id S240044AbiEWRO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:14:26 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240015AbiEWRLd (ORCPT
+        with ESMTP id S240306AbiEWRL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:11:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9DB6D38D;
-        Mon, 23 May 2022 10:10:55 -0700 (PDT)
+        Mon, 23 May 2022 13:11:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4745A1D0E9;
+        Mon, 23 May 2022 10:11:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE10FB81200;
-        Mon, 23 May 2022 17:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C092C385A9;
-        Mon, 23 May 2022 17:10:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA043614F8;
+        Mon, 23 May 2022 17:10:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFEEC385A9;
+        Mon, 23 May 2022 17:10:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325825;
-        bh=vZYbNpBChII0oRIX1BLAKFYLv3JkkDNMJvCZglPZv3g=;
+        s=korg; t=1653325848;
+        bh=ji1Im4iMP1zrb13n0zdNsFPRXFoeXoozTfdnd8YO1CM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BJEl5eOHAVXLbCMp7UOnoI2LbQINvQh208dAbM3M69Qfxw0F6Q3vBbhrWhNbNgXP2
-         A+uYuQOw6JIBjqix1W/YIkcKULh1NoKRhVLPTcN4nREIt6oRKbyKk5oAwkqQ9cfiTu
-         TtPdvXFzkc6e+X67HbczJ6tK0DEN5MbuIWGZzOco=
+        b=biVQD0YKTm0UN0bv+cScO0tLl1KpTCwOg2FfoOqhmQl06dxvDCYe5J1zKTnLG3v/d
+         im0YIi/FnyOp+k24PohJPz14NEEP4XYH64EItjuE3fypNDMU1LsdjhOFxwh5aHpt9y
+         ifLtOa+LUnHEvPn2vcgthTujQpqoTZRrUfoer4ME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 23/44] net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
-Date:   Mon, 23 May 2022 19:05:07 +0200
-Message-Id: <20220523165757.383602538@linuxfoundation.org>
+Subject: [PATCH 4.19 29/44] net: af_key: add check for pfkey_broadcast in function pfkey_process
+Date:   Mon, 23 May 2022 19:05:13 +0200
+Message-Id: <20220523165758.423249443@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -49,91 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 9e7fef9521e73ca8afd7da9e58c14654b02dfad8 ]
+[ Upstream commit 4dc2a5a8f6754492180741facf2a8787f2c415d7 ]
 
-In vmxnet3_rq_alloc_rx_buf(), when dma_map_single() fails, rbi->skb is
-freed immediately. Similarly, in another branch, when dma_map_page() fails,
-rbi->page is also freed. In the two cases, vmxnet3_rq_alloc_rx_buf()
-returns an error to its callers vmxnet3_rq_init() -> vmxnet3_rq_init_all()
--> vmxnet3_activate_dev(). Then vmxnet3_activate_dev() calls
-vmxnet3_rq_cleanup_all() in error handling code, and rbi->skb or rbi->page
-are freed again in vmxnet3_rq_cleanup_all(), causing use-after-free bugs.
+If skb_clone() returns null pointer, pfkey_broadcast() will
+return error.
+Therefore, it should be better to check the return value of
+pfkey_broadcast() and return error if fails.
 
-To fix these possible bugs, rbi->skb and rbi->page should be cleared after
-they are freed.
-
-The error log in our fault-injection testing is shown as follows:
-
-[   14.319016] BUG: KASAN: use-after-free in consume_skb+0x2f/0x150
-...
-[   14.321586] Call Trace:
-...
-[   14.325357]  consume_skb+0x2f/0x150
-[   14.325671]  vmxnet3_rq_cleanup_all+0x33a/0x4e0 [vmxnet3]
-[   14.326150]  vmxnet3_activate_dev+0xb9d/0x2ca0 [vmxnet3]
-[   14.326616]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.361675] Allocated by task 351:
-...
-[   14.362688]  __netdev_alloc_skb+0x1b3/0x6f0
-[   14.362960]  vmxnet3_rq_alloc_rx_buf+0x1b0/0x8d0 [vmxnet3]
-[   14.363317]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.363661]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.367309]
-[   14.367412] Freed by task 351:
-...
-[   14.368932]  __dev_kfree_skb_any+0xd2/0xe0
-[   14.369193]  vmxnet3_rq_alloc_rx_buf+0x71e/0x8d0 [vmxnet3]
-[   14.369544]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.369883]  vmxnet3_open+0x387/0x470 [vmxnet3]
-[   14.370174]  __dev_open+0x28a/0x420
-[   14.370399]  __dev_change_flags+0x192/0x590
-[   14.370667]  dev_change_flags+0x7a/0x180
-[   14.370919]  do_setlink+0xb28/0x3570
-[   14.371150]  rtnl_newlink+0x1160/0x1740
-[   14.371399]  rtnetlink_rcv_msg+0x5bf/0xa50
-[   14.371661]  netlink_rcv_skb+0x1cd/0x3e0
-[   14.371913]  netlink_unicast+0x5dc/0x840
-[   14.372169]  netlink_sendmsg+0x856/0xc40
-[   14.372420]  ____sys_sendmsg+0x8a7/0x8d0
-[   14.372673]  __sys_sendmsg+0x1c2/0x270
-[   14.372914]  do_syscall_64+0x41/0x90
-[   14.373145]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-...
-
-Fixes: 5738a09d58d5a ("vmxnet3: fix checks for dma mapping errors")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050656.2636588-1-r33s3n6@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/key/af_key.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index c004819bebe3..1df67c899d4f 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -595,6 +595,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					dev_kfree_skb_any(rbi->skb);
-+					rbi->skb = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
-@@ -619,6 +620,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					put_page(rbi->page);
-+					rbi->page = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index a416c0f90056..170960ef7e36 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2836,8 +2836,10 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
+ 
+-	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
++	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
++	if (err)
++		return err;
+ 
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
 
