@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F69C38A04
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54724C38A2B
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244175AbiEWR5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
+        id S244891AbiEWR6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240447AbiEWRah (ORCPT
+        with ESMTP id S242260AbiEWRcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:30:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EEE56228;
-        Mon, 23 May 2022 10:26:41 -0700 (PDT)
+        Mon, 23 May 2022 13:32:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526BE71A3F;
+        Mon, 23 May 2022 10:27:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68C4F61157;
-        Mon, 23 May 2022 17:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D35C385A9;
-        Mon, 23 May 2022 17:25:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94F27B81204;
+        Mon, 23 May 2022 17:27:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBC37C34115;
+        Mon, 23 May 2022 17:27:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326751;
-        bh=/JH+6tl8mOO2Ghltg6FIthcAiTbBr/VI69AtNQzSJlI=;
+        s=korg; t=1653326825;
+        bh=qnwdIkkYiFCRu6fRjyWwB/vxSHwpyJ8MWSzbKllOeWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JXLqRn008vGXImazNlylJJIV+J1zVW1B3o2WiABJ28iZt0YmrSHMKPPzJv9aRcQAr
-         ITLMOmPzPv/XQ/cbyBjZdfEmxdqGZ6kxp9+d0NOfYHdIX41VVxy1WurnP4/9JJjTtM
-         FPN8k1LRez+q9q7XKB+FtO6lWRldoOfMsZRANnd8=
+        b=K7fRZ7eINhnf5xDMYB5e0cN7qP1rbkc/uFX7g8IymnIBj6I3ADjMH9apV/m68z4N4
+         5PcU1871hMSZSdveyiy8Hdkv8MP24lu1LNGm5yr2LhIpJeACERGdKCk3SYPSbkYYui
+         IC6h4AlfLO2VGZK/HJCS+GYr1gSI6gNzR+Wd2qJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 048/158] ALSA: hda/realtek: Add quirk for TongFang devices with pop noise
-Date:   Mon, 23 May 2022 19:03:25 +0200
-Message-Id: <20220523165838.590763921@linuxfoundation.org>
+        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 071/158] ARM: dts: aspeed-g6: fix SPI1/SPI2 quad pin group
+Date:   Mon, 23 May 2022 19:03:48 +0200
+Message-Id: <20220523165842.676978574@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -48,40 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
 
-commit 8b3b2392ed68bcd17c7eb84ca615ce1e5f115b99 upstream.
+[ Upstream commit 890362d41b244536ab63591f813393f5fdf59ed7 ]
 
-When audio stops playing there is an audible "pop"-noise when using
-headphones on the TongFang GMxMRxx, GKxNRxx, GMxZGxx, GMxTGxx and GMxAGxx.
+Fix incorrect function mappings in pinctrl_qspi1_default and
+pinctrl_qspi2_default since their function should be SPI1 and
+SPI2 respectively.
 
-This quirk fixes this mostly.
-
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220512180956.281804-1-wse@tuxedocomputers.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f510f04c8c83 ("ARM: dts: aspeed: Add AST2600 pinmux nodes")
+Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Link: https://lore.kernel.org/r/20220329173932.2588289-8-quic_jaehyoo@quicinc.com
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9236,6 +9236,14 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1c06, 0x2013, "Lemote A1802", ALC269_FIXUP_LEMOTE_A1802),
- 	SND_PCI_QUIRK(0x1c06, 0x2015, "Lemote A190X", ALC269_FIXUP_LEMOTE_A190X),
- 	SND_PCI_QUIRK(0x1d05, 0x1132, "TongFang PHxTxX1", ALC256_FIXUP_SET_COEF_DEFAULTS),
-+	SND_PCI_QUIRK(0x1d05, 0x1096, "TongFang GMxMRxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1100, "TongFang GKxNRxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1111, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1119, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1129, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1147, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x115c, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x121b, "TongFang GMxAGxx", ALC269_FIXUP_NO_SHUTUP),
- 	SND_PCI_QUIRK(0x1d72, 0x1602, "RedmiBook", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1d72, 0x1701, "XiaomiNotebook Pro", ALC298_FIXUP_DELL1_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1d72, 0x1901, "RedmiBook 14", ALC256_FIXUP_ASUS_HEADSET_MIC),
+diff --git a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
+index 06d60a8540e9..ac07c240419a 100644
+--- a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
+@@ -648,12 +648,12 @@ pinctrl_pwm9g1_default: pwm9g1_default {
+ 	};
+ 
+ 	pinctrl_qspi1_default: qspi1_default {
+-		function = "QSPI1";
++		function = "SPI1";
+ 		groups = "QSPI1";
+ 	};
+ 
+ 	pinctrl_qspi2_default: qspi2_default {
+-		function = "QSPI2";
++		function = "SPI2";
+ 		groups = "QSPI2";
+ 	};
+ 
+-- 
+2.35.1
+
 
 
