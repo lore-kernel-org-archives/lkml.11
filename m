@@ -2,75 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F29FC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A1DC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiEWHYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        id S229685AbiEWHYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbiEWHXg (ORCPT
+        with ESMTP id S230086AbiEWHXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:23:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896F939696;
-        Mon, 23 May 2022 00:15:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 769D6B80F10;
-        Mon, 23 May 2022 07:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8469C385A9;
-        Mon, 23 May 2022 07:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653289816;
-        bh=IAOOiC06hudRZNZSQ1tFtrdnEBH2mP9eJjRcKNb1ZFo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=WTN7gamih7ocrr+IWwuOXn2dQwM32MoBNyoo6fsBOuIBeQ2w9BaMC3dPEzJHx8h5c
-         T0V9xFB5Hd5qFsxHNbiYYkPXoEBYddEZNttYTAxzCkCL4kHHrhZ8QU2T512xw8zvL/
-         5DSWJJJWLubg5J/jNfg18086HakZKQHOreZQKx4k4Iawl24fccWAgB2ppbB31aG82u
-         hT8I8WXyDf0pXmJRCU9YGtxz4lh/gQx+d/nJ2MHry9G/rsLQbqOkxPBSu9VA5/h8nl
-         bUASg6m+iflTREnbQWwbbsVB9XAS3uutXWismc8+mkiCWhjoh+JhFPZbZwslhzO+6V
-         YfHYrEVkEL84w==
-Date:   Mon, 23 May 2022 00:10:14 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-fscrypt@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Theodore Ts'o <tytso@mit.edu>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [GIT PULL] fsverity updates for 5.19
-Message-ID: <YoszVvtG55xJnUJ6@sol.localdomain>
+        Mon, 23 May 2022 03:23:37 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE13B7FD;
+        Mon, 23 May 2022 00:15:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653290155; x=1684826155;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ow9j/zlS+nPpHK9uJA1pcMosuC0zmgIRNB3sJevPSyc=;
+  b=HgljwizAKTiYr9dKAYh9vOiKP4mytpyZV1edAGT4LOE73k03FR3wSWlu
+   sR+uUGzuA6QaBowrDWG6VCdRYrCpa7yqi7bADXIlG1TkbqSHk0GI93aeT
+   ftFUd+m+9twKCnLL53mP3KGZSj7oS7vc23CMOYlWoLdbeFqW3GZJsUJJt
+   Y0WUisZ2OznYtvhg6NllU8BlmNaORg1XZlfshwzXGPO6rf0k4Ri4sh0mn
+   MAGLdNKXexVub8WONKqnkuhcsrLxD3/Z594xUB3oQi1G/6tOXSo2L08jP
+   eSv5p2W3ahLPuE/flSJHVNghWYBl3CV+ktaq2mI6tN2jK7UdKwOTHh9CL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="273125107"
+X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
+   d="scan'208";a="273125107"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:15:54 -0700
+X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
+   d="scan'208";a="600488927"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.56.27])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:15:50 -0700
+Message-ID: <79590e32-5505-7a0c-81b4-0efd5c8f156f@intel.com>
+Date:   Mon, 23 May 2022 10:15:45 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH V6 4/5] mmc: debugfs: Add debug fs error state entry for
+ mmc driver
+Content-Language: en-US
+To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        ulf.hansson@linaro.org, wsa+renesas@sang-engineering.com,
+        shawn.lin@rock-chips.com, yoshihiro.shimoda.uh@renesas.com,
+        digetx@gmail.com, quic_asutoshd@quicinc.com
+Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
+        Liangliang Lu <quic_luliang@quicinc.com>,
+        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
+References: <1652857340-6040-1-git-send-email-quic_c_sbhanu@quicinc.com>
+ <1652857340-6040-5-git-send-email-quic_c_sbhanu@quicinc.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <1652857340-6040-5-git-send-email-quic_c_sbhanu@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 42226c989789d8da4af1de0c31070c96726d990c:
+On 18/05/22 10:02, Shaik Sajida Bhanu wrote:
+> Add debug fs entry error state to query eMMC and SD card errors statistics.
+> If any errors occurred in eMMC and SD card driver level then
+> err_state value will be set to 1.
+> 
+> Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
+> Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
+> Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
 
-  Linux 5.18-rc7 (2022-05-15 18:08:58 -0700)
+Could use debugfs_create_file_unsafe() (see below)
 
-are available in the Git repository at:
+Otherwise:
 
-  https://git.kernel.org/pub/scm/fs/fscrypt/fscrypt.git tags/fsverity-for-linus
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 
-for you to fetch changes up to e6af1bb07704b53bad7771db1b05ee17abad11cb:
+> ---
+>  drivers/mmc/core/debugfs.c | 23 +++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+> 
+> diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
+> index 6aa5a60..3c7908d 100644
+> --- a/drivers/mmc/core/debugfs.c
+> +++ b/drivers/mmc/core/debugfs.c
+> @@ -223,6 +223,27 @@ static int mmc_clock_opt_set(void *data, u64 val)
+>  DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
+>  	"%llu\n");
+>  
+> +static int mmc_err_state_get(void *data, u64 *val)
+> +{
+> +	struct mmc_host *host = data;
+> +	int i;
+> +
+> +	if (!host)
+> +		return -EINVAL;
+> +
+> +	*val = 0;
+> +	for (i = 0; i < MMC_ERR_MAX; i++) {
+> +		if (host->err_stats[i]) {
+> +			*val = 1;
+> +			break;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +DEFINE_DEBUGFS_ATTRIBUTE(mmc_err_state, mmc_err_state_get, NULL, "%llu\n");
+> +
+>  static int mmc_err_stats_show(struct seq_file *file, void *data)
+>  {
+>  	struct mmc_host *host = (struct mmc_host *)file->private;
+> @@ -289,6 +310,8 @@ void mmc_add_host_debugfs(struct mmc_host *host)
+>  	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
+>  				   &mmc_clock_fops);
+>  
+> +	debugfs_create_file("err_state", 0600, root, host,
+> +			    &mmc_err_state);
 
-  fs-verity: Use struct_size() helper in enable_verity() (2022-05-19 09:53:33 -0700)
+This could use debugfs_create_file_unsafe()
 
-----------------------------------------------------------------
+>  	debugfs_create_file("err_stats", 0600, root, host,
+>  			    &mmc_err_stats_fops);
+>  
 
-A couple small cleanups for fs/verity/.
-
-----------------------------------------------------------------
-Zhang Jianhua (2):
-      fs-verity: remove unused parameter desc_size in fsverity_create_info()
-      fs-verity: Use struct_size() helper in enable_verity()
-
- fs/verity/enable.c           |  4 ++--
- fs/verity/fsverity_private.h |  6 ++----
- fs/verity/open.c             | 12 ++++--------
- fs/verity/read_metadata.c    |  5 ++---
- 4 files changed, 10 insertions(+), 17 deletions(-)
