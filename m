@@ -2,92 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C3B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6050C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231916AbiEWT5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46450 "EHLO
+        id S231925AbiEWT7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231907AbiEWT5O (ORCPT
+        with ESMTP id S229555AbiEWT7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:57:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783CB7628C;
-        Mon, 23 May 2022 12:57:12 -0700 (PDT)
+        Mon, 23 May 2022 15:59:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BCE7890D;
+        Mon, 23 May 2022 12:59:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D179B8126A;
-        Mon, 23 May 2022 19:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 790D7C385A9;
-        Mon, 23 May 2022 19:57:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 477F86140D;
+        Mon, 23 May 2022 19:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A9F2C385AA;
+        Mon, 23 May 2022 19:59:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653335830;
-        bh=A4gS5DooQHW8mU6WB8eeAhPzch3QOAZAAKjJZpPtATU=;
+        s=k20201202; t=1653335942;
+        bh=ud5Q/1QhrPDGlv6dQdDPoIxkp3EA8jcR1Hd6nj1gp08=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uyphQ3jQalnYg8Po0U8N7AVhNUPmbVwvWw1NaBFB0lQFIPmRdPvOdj6/JWrdFrfvk
-         7uODr420H4u5a+NY1RteUWX4UmFSB1C5DdUp1aojDN/dmBUahD9N0YvnizKaWHOujY
-         PHaZsxhR+6Cv7UruuR2HB8rPu1ntDsGbdqslbzVQ6KzGCDqImYc9WMcIn+MlbTLs0Z
-         fcNV5VhvHoNMmvYUnEX/mXX6vBTu8kILf8R2lCCpNfy6SzfwjCyBBShnqILkjHw+Ut
-         YpVfgOo8+mbeaSuIzjyS7AHuPHlKpMSu1rW3DFiUZSdUQxYCEgT5Hyyk19nz0H08nr
-         P24gu3/aRAwVQ==
-Date:   Mon, 23 May 2022 22:55:28 +0300
+        b=D72Ht9YY2Hp4/RJAt+daNZjCRg4xXJsw7S5wfeWwtqOZojOBnvMrtvJCaLSDaL7vJ
+         EAaUf3z2/UENUCDoYMQLOXvTQ0mPW6DQLRrhYIsDrKGsFl4i9El6n/xoI4Z+1JQFDk
+         NnvwOcUGCW9wwl8YS6+qaa+/U8BNh3CTsTQIpIYRwdrEMKqkC1s2ard1uPQ1v1zuxx
+         Av+ChXwVii7EQFOcImDCFOWZ+nCM3ugRoj1UVKEBUWpGJN24FeuchH7KZ+Qf45UiGE
+         jSkasldeUD/h24Q0yLpiCQN2PoHAUaY+TjJpWXxoMZd+soG+3mlnchhMe2npl533Z+
+         KiR3u3BK4uhcg==
+Date:   Mon, 23 May 2022 22:57:21 +0300
 From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v7 01/25] kallsyms: avoid hardcoding the buffer size
-Message-ID: <YovmsLwb1c6uzdSx@kernel.org>
-References: <20220523020209.11810-1-ojeda@kernel.org>
- <20220523020209.11810-2-ojeda@kernel.org>
- <YovkR56ZYsPhDW4q@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto List <linux-crypto@vger.kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Meenakshi Aggarwal <meenakshi.aggarwal@nxp.com>,
+        Steffen Trumtrar <s.trumtrar@pengutronix.de>
+Subject: Re: linux-next: manual merge of the tpmdd tree with the crypto tree
+Message-ID: <YovnISBB4Y3DGYiW@kernel.org>
+References: <20220520165701.14224ddb@canb.auug.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YovkR56ZYsPhDW4q@kernel.org>
+In-Reply-To: <20220520165701.14224ddb@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 10:45:11PM +0300, Jarkko Sakkinen wrote:
-> On Mon, May 23, 2022 at 04:01:14AM +0200, Miguel Ojeda wrote:
-> > From: Boqun Feng <boqun.feng@gmail.com>
-> > 
-> > This makes it easier to update the size later on.
-> > 
+On Fri, May 20, 2022 at 04:57:01PM +1000, Stephen Rothwell wrote:
+> Hi all,
 > 
-> This does not really conform to [1].
+> Today's linux-next merge of the tpmdd tree got a conflict in:
 > 
-> E.g.
+>   drivers/crypto/caam/Kconfig
 > 
-> "Declare KSY_NAME_LEN, which describes the maximum length for a kernel
-> symbol read by kallsyms from the input.  In read_symbol(), define the 
-> buffer to be of length "KSY_NAME_LEN + 1", which includes the terminator
-> character."
+> between commit:
 > 
-> would be better.
+>   0aa6ac7795ca ("crypto: caam/rng - Add support for PRNG")
 > 
-> > Furthermore, a static assert is added to ensure both are updated
-> > when that happens. The relationship used is one that keeps the new
-> > size (512+1) close to the original buffer size (500).
+> from the crypto tree and commit:
 > 
-> You must split this then into two patches:
+>   5e785783ddb0 ("crypto: caam - add in-kernel interface for blob generator")
 > 
-> 1. A patch that re-defines the length with KSYM_NAME_LEN, i.e.
->    #define KSYM_NAME_LEN 499
-> 2. A patch which increases the size and reasoning for that.
+> from the tpmdd tree.
 > 
-> Right now bundles two separate changes, which does not conform to [2].
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
 > 
-> BR, Jarkko
+> -- 
+> Cheers,
+> Stephen Rothwell
+> 
+> diff --cc drivers/crypto/caam/Kconfig
+> index 0aa52b612a01,ea9f8b1ae981..000000000000
+> --- a/drivers/crypto/caam/Kconfig
+> +++ b/drivers/crypto/caam/Kconfig
+> @@@ -151,14 -151,9 +151,17 @@@ config CRYPTO_DEV_FSL_CAAM_RNG_AP
+>   	  Selecting this will register the SEC4 hardware rng to
+>   	  the hw_random API for supplying the kernel entropy pool.
+>   
+>  +config CRYPTO_DEV_FSL_CAAM_PRNG_API
+>  +	bool "Register Pseudo random number generation implementation with Crypto API"
+>  +	default y
+>  +	select CRYPTO_RNG
+>  +	help
+>  +	  Selecting this will register the SEC hardware prng to
+>  +	  the Crypto API.
+>  +
+> + config CRYPTO_DEV_FSL_CAAM_BLOB_GEN
+> + 	bool
+> + 
+>   endif # CRYPTO_DEV_FSL_CAAM_JR
+>   
+>   endif # CRYPTO_DEV_FSL_CAAM
 
-The URL's:
+Herbert, so I pulled the whole patch set. How should we work out this?
 
-[1] https://www.kernel.org/doc/html/latest/process/submitting-patches.html#describe-changes
-[2] https://www.kernel.org/doc/html/latest/process/submitting-patches.html#separate-your-changes
+I sent PR before seeing this:
+
+https://lore.kernel.org/linux-integrity/20220523165744.48234-1-jarkko@kernel.org/T/#u
 
 BR, Jarkko
