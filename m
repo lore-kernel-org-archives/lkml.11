@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B96C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4BCC38A05
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242138AbiEWRcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
+        id S242048AbiEWRbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242079AbiEWRWw (ORCPT
+        with ESMTP id S241911AbiEWRWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:52 -0400
+        Mon, 23 May 2022 13:22:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3DC7CDFB;
-        Mon, 23 May 2022 10:19:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F9D7CDEE;
+        Mon, 23 May 2022 10:19:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED2A9B811FB;
-        Mon, 23 May 2022 17:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B340C385A9;
-        Mon, 23 May 2022 17:19:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16E44B81205;
+        Mon, 23 May 2022 17:18:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE57C385A9;
+        Mon, 23 May 2022 17:18:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326393;
-        bh=5T70yuxBUh77ixBohRtBgJFO6qBe6dkIdLWu7q7eP0U=;
+        s=korg; t=1653326306;
+        bh=z+Jn+M7wh7vmsuLFk1mgAF1yMw1bwX154BNorZBOq6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C1C9sC4iA/vIAFaOQYfGLCcPOaaPV5nkUCmYKRuXYYhYcFM3ugWmQoGWg9N0fpF6L
-         vKrdmLbFlQmVnMbLH/pk+k6lxbS61RC+2lEX8hOXbpha9mrUgcVh43gpoUfQASjF0B
-         eDQZXxsJk2mc0RII00ntB61W5xFSt4j50Nq5tOVk=
+        b=Fw2QqYsOKoIOE1UkTpQW/gRaEGZC/BwKuwXwEtHPxwh8Aglaot1rhk7Bimr9tLa9M
+         xGJ33wFpIzjHLgAy6U3fKW2ejcWwGxDGHEVU6M44QL3gtFX/IfWhWnMmWpW4cMdEyf
+         Xcnk5ihnHTolWXNPBkxeADKmnzfnvcVdPF0lIgnc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Howard Chiu <howard_chiu@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/132] ARM: dts: aspeed: Add video engine to g6
-Date:   Mon, 23 May 2022 19:04:36 +0200
-Message-Id: <20220523165834.327044759@linuxfoundation.org>
+        stable@vger.kernel.org, Lin Yujun <linyujun809@huawei.com>,
+        He Ying <heying24@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 041/132] ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
+Date:   Mon, 23 May 2022 19:04:10 +0200
+Message-Id: <20220523165830.190374934@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,43 +50,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Howard Chiu <howard_chiu@aspeedtech.com>
+From: linyujun <linyujun809@huawei.com>
 
-[ Upstream commit 32e62d1beab70d485980013312e747a25c4e13f7 ]
+[ Upstream commit 9be4c88bb7924f68f88cfd47d925c2d046f51a73 ]
 
-This node was accidentally removed by commit 645afe73f951 ("ARM: dts:
-aspeed: ast2600: Update XDMA engine node").
+The following KASAN warning is detected by QEMU.
 
-Fixes: 645afe73f951 ("ARM: dts: aspeed: ast2600: Update XDMA engine node")
-Signed-off-by: Howard Chiu <howard_chiu@aspeedtech.com>
-Link: https://lore.kernel.org/r/SG2PR06MB2315C57600A0132FEF40F21EE61E9@SG2PR06MB2315.apcprd06.prod.outlook.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+==================================================================
+BUG: KASAN: stack-out-of-bounds in unwind_frame+0x508/0x870
+Read of size 4 at addr c36bba90 by task cat/163
+
+CPU: 1 PID: 163 Comm: cat Not tainted 5.10.0-rc1 #40
+Hardware name: ARM-Versatile Express
+[<c0113fac>] (unwind_backtrace) from [<c010e71c>] (show_stack+0x10/0x14)
+[<c010e71c>] (show_stack) from [<c0b805b4>] (dump_stack+0x98/0xb0)
+[<c0b805b4>] (dump_stack) from [<c0b7d658>] (print_address_description.constprop.0+0x58/0x4bc)
+[<c0b7d658>] (print_address_description.constprop.0) from [<c031435c>] (kasan_report+0x154/0x170)
+[<c031435c>] (kasan_report) from [<c0113c44>] (unwind_frame+0x508/0x870)
+[<c0113c44>] (unwind_frame) from [<c010e298>] (__save_stack_trace+0x110/0x134)
+[<c010e298>] (__save_stack_trace) from [<c01ce0d8>] (stack_trace_save+0x8c/0xb4)
+[<c01ce0d8>] (stack_trace_save) from [<c0313520>] (kasan_set_track+0x38/0x60)
+[<c0313520>] (kasan_set_track) from [<c0314cb8>] (kasan_set_free_info+0x20/0x2c)
+[<c0314cb8>] (kasan_set_free_info) from [<c0313474>] (__kasan_slab_free+0xec/0x120)
+[<c0313474>] (__kasan_slab_free) from [<c0311e20>] (kmem_cache_free+0x7c/0x334)
+[<c0311e20>] (kmem_cache_free) from [<c01c35dc>] (rcu_core+0x390/0xccc)
+[<c01c35dc>] (rcu_core) from [<c01013a8>] (__do_softirq+0x180/0x518)
+[<c01013a8>] (__do_softirq) from [<c0135214>] (irq_exit+0x9c/0xe0)
+[<c0135214>] (irq_exit) from [<c01a40e4>] (__handle_domain_irq+0xb0/0x110)
+[<c01a40e4>] (__handle_domain_irq) from [<c0691248>] (gic_handle_irq+0xa0/0xb8)
+[<c0691248>] (gic_handle_irq) from [<c0100b0c>] (__irq_svc+0x6c/0x94)
+Exception stack(0xc36bb928 to 0xc36bb970)
+b920:                   c36bb9c0 00000000 c0126919 c0101228 c36bb9c0 b76d7730
+b940: c36b8000 c36bb9a0 c3335b00 c01ce0d8 00000003 c36bba3c c36bb940 c36bb978
+b960: c010e298 c011373c 60000013 ffffffff
+[<c0100b0c>] (__irq_svc) from [<c011373c>] (unwind_frame+0x0/0x870)
+[<c011373c>] (unwind_frame) from [<00000000>] (0x0)
+
+The buggy address belongs to the page:
+page:(ptrval) refcount:0 mapcount:0 mapping:00000000 index:0x0 pfn:0x636bb
+flags: 0x0()
+raw: 00000000 00000000 ef867764 00000000 00000000 00000000 ffffffff 00000000
+page dumped because: kasan: bad access detected
+
+addr c36bba90 is located in stack of task cat/163 at offset 48 in frame:
+ stack_trace_save+0x0/0xb4
+
+this frame has 1 object:
+ [32, 48) 'trace'
+
+Memory state around the buggy address:
+ c36bb980: f1 f1 f1 f1 00 04 f2 f2 00 00 f3 f3 00 00 00 00
+ c36bba00: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+>c36bba80: 00 00 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
+                 ^
+ c36bbb00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ c36bbb80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+There is a same issue on x86 and has been resolved by the commit f7d27c35ddff
+("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to arm architecture too.
+
+Signed-off-by: Lin Yujun <linyujun809@huawei.com>
+Reported-by: He Ying <heying24@huawei.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/aspeed-g6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm/kernel/stacktrace.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index 8f947ed47fc5..e5724b1a2e20 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -389,6 +389,16 @@ sbc: secure-boot-controller@1e6f2000 {
- 				reg = <0x1e6f2000 0x1000>;
- 			};
+diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
+index db798eac7431..824774999825 100644
+--- a/arch/arm/kernel/stacktrace.c
++++ b/arch/arm/kernel/stacktrace.c
+@@ -53,17 +53,17 @@ int notrace unwind_frame(struct stackframe *frame)
+ 		return -EINVAL;
  
-+			video: video@1e700000 {
-+				compatible = "aspeed,ast2600-video-engine";
-+				reg = <0x1e700000 0x1000>;
-+				clocks = <&syscon ASPEED_CLK_GATE_VCLK>,
-+					 <&syscon ASPEED_CLK_GATE_ECLK>;
-+				clock-names = "vclk", "eclk";
-+				interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+				status = "disabled";
-+			};
-+
- 			gpio0: gpio@1e780000 {
- 				#gpio-cells = <2>;
- 				gpio-controller;
+ 	frame->sp = frame->fp;
+-	frame->fp = *(unsigned long *)(fp);
+-	frame->pc = *(unsigned long *)(fp + 4);
++	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
++	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 4));
+ #else
+ 	/* check current frame pointer is within bounds */
+ 	if (fp < low + 12 || fp > high - 4)
+ 		return -EINVAL;
+ 
+ 	/* restore the registers from the stack frame */
+-	frame->fp = *(unsigned long *)(fp - 12);
+-	frame->sp = *(unsigned long *)(fp - 8);
+-	frame->pc = *(unsigned long *)(fp - 4);
++	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 12));
++	frame->sp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 8));
++	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 4));
+ #endif
+ 
+ 	return 0;
 -- 
 2.35.1
 
