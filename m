@@ -2,185 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D15DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:37:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 403C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbiEWHhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
+        id S230235AbiEWHjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiEWHgl (ORCPT
+        with ESMTP id S229952AbiEWHjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:36:41 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E8964D3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:36:36 -0700 (PDT)
-Received: from [192.168.1.107] ([37.4.249.139]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MlbPO-1nSArI0Q0w-00iluk; Mon, 23 May 2022 08:19:46 +0200
-Message-ID: <e0503433-615d-3834-4392-d0868caf47cf@i2se.com>
-Date:   Mon, 23 May 2022 08:19:41 +0200
+        Mon, 23 May 2022 03:39:07 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D818F13DF9;
+        Mon, 23 May 2022 00:39:04 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id w200so12924942pfc.10;
+        Mon, 23 May 2022 00:39:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FDKEez4LL/T5vz5sGrr37Im2D5hBP4Hr0638TS/hH4w=;
+        b=qWlHQua1NGt2HLFYqYJKMsocOeNT5XL7JjMoe7VhhejqbWyffuDbiIez8cPfKAxmM9
+         zDzEZFcT2zR4bCq+EWZsWu1QtweEij42nIPNEFCbFcGVcQWCXteZnFWG395yQ+qTUkW7
+         fyPoux3wi9J8M0JJ5ASaZx/VXgyGTNvg6xcuVt59pyFzXc0O5pXG0PlSEONemYH2Q8zI
+         fHZk8/2mkBkogsgh1+hEcGkBr8jlGLOOsNSkS/YQicDZEEkucvUvaO0qY1ckiB4qUmF+
+         p+MyyiacObjIhVqW82sEBPtfXxNe7XF3RPLShb3OKc/hzDIrX/oHw/nzHDqYnWxOHtSN
+         ARZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FDKEez4LL/T5vz5sGrr37Im2D5hBP4Hr0638TS/hH4w=;
+        b=jAq0E6xaiOxYu+DrCX6bwVPp03TEfMWW47RToubd/jJBJGx5BXGhsqO5gH1dV1Em3Q
+         YQacqGneqVE8a3meBbQUzdKzHywA/RR87nz89TbSZBxfAECBIgoxLLfZJrMadlUFIVZq
+         KdqhcKUNzmBPAGeDLIFXJ4hPeMGYTdKBJEZUEGx/uMRqhznUMUtWRKqpv+6k6j0qT49d
+         C0fxMshEoYO2ZE/OWeM8yb2vyp71oyIb3uOf9p5V57nMZ0fh4e1bMWn8FQtGD+HuU/i4
+         oNWasB9vNRQSFlWy9jqWHChKGKwbnz3yYrSj7eVTTBhRELOj4VfhBY1LXHeZGkyhHX0S
+         wRnw==
+X-Gm-Message-State: AOAM5333lIvDZZ+1nwZVS7WRUjdVh10mbRaXk6ODaSkqnozKEPgSQzAG
+        +MqKjtKv59XjNKkioDjlM/o=
+X-Google-Smtp-Source: ABdhPJxFCqI8Rwlcssa1BNjfxrK8HpuSbbIopph7tby9Jp/NcYLy0dbo9U6k2v/Tq/lyxQUdkq/4xA==
+X-Received: by 2002:a63:e017:0:b0:3f2:543b:8402 with SMTP id e23-20020a63e017000000b003f2543b8402mr19085100pgh.209.1653291544335;
+        Mon, 23 May 2022 00:39:04 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.21])
+        by smtp.gmail.com with ESMTPSA id d13-20020a170902e14d00b0015e8d4eb204sm4360048pla.78.2022.05.23.00.39.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 00:39:03 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>,
+        Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: [PATCH] bpf: fix probe read error in ___bpf_prog_run()
+Date:   Mon, 23 May 2022 15:37:32 +0800
+Message-Id: <20220523073732.296247-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: vchiq: Performance regression since 5.18-rc1
-Content-Language: en-US
-To:     paulmck@kernel.org, Phil Elwell <phil@raspberrypi.com>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Minchan Kim <minchan@kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        regressions@lists.linux.dev, riel@surriel.com,
-        viro@zeniv.linux.org.uk
-References: <77d6d498-7dd9-03eb-60f2-d7e682bb1b20@i2se.com>
- <20220521234616.GO1790663@paulmck-ThinkPad-P17-Gen-1>
- <bfad3d08-3268-5528-17c1-c17ef3949d96@i2se.com>
- <20220523044818.GS1790663@paulmck-ThinkPad-P17-Gen-1>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <20220523044818.GS1790663@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:TSDqooD2qpB0H55oseeE5i/UKDv81lLRHUSkMpF+f6pSH2efkxU
- EU1yOKtb2vv2XBeZV3Z7rj2N+rYHqjAVfDIQZINjoMrt2oFSMCeDKZzYpZMzO4+eh1XlMCL
- EbgZilH5dplMtxW9j4NPfAfbUvgy9HZiKPFs3sP5lpcGKSJ266604KhH7wxBK4GbrFDJNpd
- zOc/AR8e3w/D9hnZ80PLw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:DOH6rhxMbGg=:SbR34AbzDQsY1Vt0oPmlko
- e1LAFIMgaQ4gVDMsppuotOnUCHQPZP8a0U0HzpCzAtwmrBJe9+FpLRYz6MrnojkxlsDgHYn4M
- lUYmJ7XBKnC+kBIfdXsqNHNn3XBBIsVCESAtMi0djj/+cTY77P3tgyEcGXRlMJDXu7toRHqy8
- 8BxlDClEEFVRgMt+KHRClfIEnEEMK2rsC9WSjEgKFyoAgxZvaUHxGsAEZf2ZU8P8sTKOJGmqA
- 7VGgRmXqlBCXYVaUabVpg0Nc4Pp4HijUZOsScZiXwDLdoUWZsUUkVOwqUp+dLDYoy4yNJlgvT
- y5+XadRMHQhA0Jwg2MX5PufTa3mnDYNZ8E5bgW3sSrEg4GXpZSbL9osVR16nesvW3xzdUw6z5
- lrjoUPDMq+nkzScVusJgtPuvhYQN8uG19vJBH6se7CONc+L0h/tYPm8uuaeRE7rPDqDfb0TTR
- oENGc8pWqr8J3Vk98S4+LjNZj8ylLF/Y6Wi/4wMXsBmXyGoiMn2GKpcRygnVop2+xveh3+ThB
- dFrhw9ii3bQKQ5Zntbd8mUEADrREj3hsiV3eIpmWmkF6HVAHTkX/8VzcSPuKwZd2PaSVKJK3/
- o8OHN40F3dqAJSD6RyqaNMk3m3OwlRuxjgHbCoP07+pTodtiTRfe+miAkH1GlzFAHviUu8vug
- UFgjL8bQcSKeLhcFy07WCwvqh5xhKL+M7HXSr29U62F6q8FzHO3wuGeRpj83YkB/Ut/BQcCkM
- s9Ef0yOBs3Rhzg6R1aD4FIvIz+eCcXMOjjWnnYd2XzPLkAllP2P8PVO1OXc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+From: Menglong Dong <imagedong@tencent.com>
 
-Am 23.05.22 um 06:48 schrieb Paul E. McKenney:
-> On Sun, May 22, 2022 at 05:11:36PM +0200, Stefan Wahren wrote:
->> Hi Paul,
->>
->> Am 22.05.22 um 01:46 schrieb Paul E. McKenney:
->>> On Sun, May 22, 2022 at 01:22:00AM +0200, Stefan Wahren wrote:
->>>> Hi,
->>>>
->>>> while testing the staging/vc04_services/interface/vchiq_arm driver with my
->>>> Raspberry Pi 3 B+ (multi_v7_defconfig) i noticed a huge performance
->>>> regression since [ff042f4a9b050895a42cae893cc01fa2ca81b95c] mm:
->>>> lru_cache_disable: replace work queue synchronization with synchronize_rcu
->>>>
->>>> Usually i run "vchiq_test -f 1" to see the driver is still working [1].
->>>>
->>>> Before commit:
->>>>
->>>> real    0m1,500s
->>>> user    0m0,068s
->>>> sys    0m0,846s
->>>>
->>>> After commit:
->>>>
->>>> real    7m11,449s
->>>> user    0m2,049s
->>>> sys    0m0,023s
->>>>
->>>> Best regards
->>>>
->>>> [1] - https://github.com/raspberrypi/userland
->>> Please feel free to try the patch shown below.  Or the pair of patches
->>> from Rik here:
->>>
->>> https://lore.kernel.org/lkml/20220218183114.2867528-2-riel@surriel.com/
->>> https://lore.kernel.org/lkml/20220218183114.2867528-3-riel@surriel.com/
->> I tried your patch and Rik's patches but in both cases vchiq_test runs 7
->> minutes instead of ~ 1 second.
-> That is surprising.  Do you boot with rcupdate.rcu_normal=1?
-No, not explicit.
->    That would
-> nullify my patch, but I would expect that Rik's patch would still provide
-> increased performance even in that case.
-I will retest with a fresh SD card image.
->
-> Could you please characterize where the slowdown is occurring?
+I think there is something wrong with BPF_PROBE_MEM in ___bpf_prog_run()
+in big-endian machine. Let's make a test and see what will happen if we
+want to load a 'u16' with BPF_PROBE_MEM.
 
-Unfortunately i don't have a deep insight into driver and vchiq_test 
-tool. Just a user view.
+Let's make the src value '0x0001', the value of dest register will become
+0x0001000000000000, as the value will be loaded to the first 2 byte of
+DST with following code:
 
-Do you think an strace would be a good starting point?
+  bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));
 
-@Phil Any advices to analyse this issue?
+Obviously, the value in DST is not correct. In fact, we can compare
+BPF_PROBE_MEM with LDX_MEM_H:
 
->
-> 							Thanx, Paul
->
->> Best regards
->>
->>> There is work ongoing to produce something better, but ongoing slowly.
->>> Especially my part of that work.
->>>
->>> 							Thanx, Paul
->>>
->>> ------------------------------------------------------------------------
->>>
->>>   From paulmck@kernel.org Mon Feb 14 11:05:49 2022
->>> Date: Mon, 14 Feb 2022 11:05:49 -0800
->>> From: "Paul E. McKenney" <paulmck@kernel.org>
->>> To: clm@fb.com
->>> Cc: riel@surriel.com, viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org,
->>> 	linux-fsdevel@vger.kernel.org, kernel-team@fb.com
->>> Subject: [PATCH RFC fs/namespace] Make kern_unmount() use
->>>    synchronize_rcu_expedited()
->>> Message-ID: <20220214190549.GA2815154@paulmck-ThinkPad-P17-Gen-1>
->>> Reply-To: paulmck@kernel.org
->>> MIME-Version: 1.0
->>> Content-Type: text/plain; charset=us-ascii
->>> Content-Disposition: inline
->>> Status: RO
->>> Content-Length: 1036
->>> Lines: 32
->>>
->>> Experimental.  Not for inclusion.  Yet, anyway.
->>>
->>> Freeing large numbers of namespaces in quick succession can result in
->>> a bottleneck on the synchronize_rcu() invoked from kern_unmount().
->>> This patch applies the synchronize_rcu_expedited() hammer to allow
->>> further testing and fault isolation.
->>>
->>> Hey, at least there was no need to change the comment!  ;-)
->>>
->>> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
->>> Cc: <linux-fsdevel@vger.kernel.org>
->>> Cc: <linux-kernel@vger.kernel.org>
->>> Not-yet-signed-off-by: Paul E. McKenney <paulmck@kernel.org>
->>>
->>> ---
->>>
->>>    namespace.c |    2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/fs/namespace.c b/fs/namespace.c
->>> index 40b994a29e90d..79c50ad0ade5b 100644
->>> --- a/fs/namespace.c
->>> +++ b/fs/namespace.c
->>> @@ -4389,7 +4389,7 @@ void kern_unmount(struct vfsmount *mnt)
->>>    	/* release long term mount so mount point can be released */
->>>    	if (!IS_ERR_OR_NULL(mnt)) {
->>>    		real_mount(mnt)->mnt_ns = NULL;
->>> -		synchronize_rcu();	/* yecchhh... */
->>> +		synchronize_rcu_expedited();	/* yecchhh... */
->>>    		mntput(mnt);
->>>    	}
->>>    }
->>>
+  DST = *(SIZE *)(unsigned long) (SRC + insn->off);
+
+If the memory load is done by LDX_MEM_H, the value in DST will be 0x1 now.
+
+And I think this error results in the test case 'test_bpf_sk_storage_map'
+failing:
+
+  test_bpf_sk_storage_map:PASS:bpf_iter_bpf_sk_storage_map__open_and_load 0 nsec
+  test_bpf_sk_storage_map:PASS:socket 0 nsec
+  test_bpf_sk_storage_map:PASS:map_update 0 nsec
+  test_bpf_sk_storage_map:PASS:socket 0 nsec
+  test_bpf_sk_storage_map:PASS:map_update 0 nsec
+  test_bpf_sk_storage_map:PASS:socket 0 nsec
+  test_bpf_sk_storage_map:PASS:map_update 0 nsec
+  test_bpf_sk_storage_map:PASS:attach_iter 0 nsec
+  test_bpf_sk_storage_map:PASS:create_iter 0 nsec
+  test_bpf_sk_storage_map:PASS:read 0 nsec
+  test_bpf_sk_storage_map:FAIL:ipv6_sk_count got 0 expected 3
+  $10/26 bpf_iter/bpf_sk_storage_map:FAIL
+
+The code of the test case is simply, it will load sk->sk_family to the
+register with BPF_PROBE_MEM and check if it is AF_INET6. With this patch,
+now the test case 'bpf_iter' can pass:
+
+  $10  bpf_iter:OK
+
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ kernel/bpf/core.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 13e9dbeeedf3..09e3f374739a 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1945,14 +1945,15 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ 	LDST(W,  u32)
+ 	LDST(DW, u64)
+ #undef LDST
+-#define LDX_PROBE(SIZEOP, SIZE)							\
++#define LDX_PROBE(SIZEOP, SIZE, TYPE)						\
+ 	LDX_PROBE_MEM_##SIZEOP:							\
+ 		bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));	\
++		DST = *((TYPE *)&DST);						\
+ 		CONT;
+-	LDX_PROBE(B,  1)
+-	LDX_PROBE(H,  2)
+-	LDX_PROBE(W,  4)
+-	LDX_PROBE(DW, 8)
++	LDX_PROBE(B,  1, u8)
++	LDX_PROBE(H,  2, u16)
++	LDX_PROBE(W,  4, u32)
++	LDX_PROBE(DW, 8, u64)
+ #undef LDX_PROBE
+ 
+ #define ATOMIC_ALU_OP(BOP, KOP)						\
+-- 
+2.36.1
+
