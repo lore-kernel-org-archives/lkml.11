@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2054AC4707F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AC9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244280AbiEWRr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
+        id S242120AbiEWRsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242289AbiEWR1f (ORCPT
+        with ESMTP id S242081AbiEWR1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:35 -0400
+        Mon, 23 May 2022 13:27:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F4F7CB06;
-        Mon, 23 May 2022 10:22:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A147A82D;
+        Mon, 23 May 2022 10:22:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AECDB811FF;
-        Mon, 23 May 2022 17:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE1DEC385A9;
-        Mon, 23 May 2022 17:22:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECE27B80FF4;
+        Mon, 23 May 2022 17:22:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A4A7C385A9;
+        Mon, 23 May 2022 17:22:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326571;
-        bh=IoJRm/i4IXJI9no6CdAXI1whNbfhbv4o8gGiDQE+UGs=;
+        s=korg; t=1653326555;
+        bh=2G3O/BeuOB/LP+pXY8WjpNyQcb0iZ9J+DrQIeLIcGXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CqileH+NIjjQ61Y/7U6SpKKmRtCZ74T5WC84TjyTjWXmygepIGOZ6BQ8JAA8EHgUJ
-         KeS6/S8lW3yWHi+YrnfliIqcrrpQdrzAq0EHVLJ2hOm4MmghxY6lcYeQgwwx3TyeDh
-         rH8pPT5qa+tkQ0nGjWVpZA8EirEsWKa1Y/ERr9Mw=
+        b=J9vC7aQ0f02A5Hx26xNjH4gR+V9HRbJKu9Yu3oLqZ3rk6QJ3iapPzdJ/i6uIwLZ/8
+         imxu1IzhFCuqss70uUtUPaVMzbi3G1kJZv6905ApdqMsr3pLfbLZ6KAr1gg0etwAzs
+         FsmxJT8Cwt8lCSt+kG/pxNe545WkKdZxJm/z5NJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 105/132] riscv: dts: sifive: fu540-c000: align dma node name with dtschema
-Date:   Mon, 23 May 2022 19:05:14 +0200
-Message-Id: <20220523165840.886090758@linuxfoundation.org>
+Subject: [PATCH 5.15 118/132] fbdev: Prevent possible use-after-free in fb_release()
+Date:   Mon, 23 May 2022 19:05:27 +0200
+Message-Id: <20220523165843.109124190@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,36 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit b17410182b6f98191fbf7f42d3b4a78512769d29 ]
+[ Upstream commit 89bfd4017e58faaf70411555e7f508495114e90b ]
 
-Fixes dtbs_check warnings like:
+Most fbdev drivers have issues with the fb_info lifetime, because call to
+framebuffer_release() from their driver's .remove callback, rather than
+doing from fbops.fb_destroy callback.
 
-  dma@3000000: $nodename:0: 'dma@3000000' does not match '^dma-controller(@.*)?$'
+Doing that will destroy the fb_info too early, while references to it may
+still exist, leading to a use-after-free error.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20220407193856.18223-1-krzysztof.kozlowski@linaro.org
-Fixes: c5ab54e9945b ("riscv: dts: add support for PDMA device of HiFive Unleashed Rev A00")
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+To prevent this, check the fb_info reference counter when attempting to
+kfree the data structure in framebuffer_release(). That will leak it but
+at least will prevent the mentioned error.
+
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220505220413.365977-1-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbsysfs.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-index 7db861053483..64c06c9b41dc 100644
---- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-+++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-@@ -166,7 +166,7 @@ uart0: serial@10010000 {
- 			clocks = <&prci PRCI_CLK_TLCLK>;
- 			status = "disabled";
- 		};
--		dma: dma@3000000 {
-+		dma: dma-controller@3000000 {
- 			compatible = "sifive,fu540-c000-pdma";
- 			reg = <0x0 0x3000000 0x0 0x8000>;
- 			interrupt-parent = <&plic0>;
+diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+index 65dae05fff8e..ce699396d6ba 100644
+--- a/drivers/video/fbdev/core/fbsysfs.c
++++ b/drivers/video/fbdev/core/fbsysfs.c
+@@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
+ {
+ 	if (!info)
+ 		return;
++
++	if (WARN_ON(refcount_read(&info->count)))
++		return;
++
+ 	kfree(info->apertures);
+ 	kfree(info);
+ }
 -- 
 2.35.1
 
