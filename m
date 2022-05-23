@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A964C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E35DAC38A04
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243757AbiEWRrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
+        id S244218AbiEWRri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242401AbiEWR1m (ORCPT
+        with ESMTP id S243033AbiEWR2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:42 -0400
+        Mon, 23 May 2022 13:28:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906EF7CB2E;
-        Mon, 23 May 2022 10:23:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E2D84A10;
+        Mon, 23 May 2022 10:25:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D072608C0;
-        Mon, 23 May 2022 17:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 877E5C385AA;
-        Mon, 23 May 2022 17:23:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8973A608C0;
+        Mon, 23 May 2022 17:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B00DC385A9;
+        Mon, 23 May 2022 17:25:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326584;
-        bh=IUN29lJ+JAwPbvxgjq8dqn4ODUTyFTt6/A5kJgrGy2w=;
+        s=korg; t=1653326712;
+        bh=xEVNdeNhZjk77i/I9aZlNN5jc8Dr99dJMo/hpb7T4e0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w3L7ICqeDr3ICLA9u03pyMWD7iYHuuJbhR59nI/NE0YHYnWTGz59jZHScW8shnbRn
-         Xj5rruSqSLDYyBgUWmkbDDtsH3WDZah9t8dE5H1csE/W+qHmbtINhtjDOycXgSJOvW
-         ayZ+dBj18IxcOkSZ+9hHyBdJsfvf4iNWSijltCTY=
+        b=GIreRv9C9UcBgpnFfRDaXhBRFagSdeNXprz7l6wGTBFE3rTAvCnXh7+p0F+w3TfCD
+         kYQp62FX2t2ztsbMYwhLa/oCBiZdOkajJgjaQXIfAK/5lvXlXnJxFd0R+EXIG6YmjG
+         LCJR7kjINobmMAOQHLlXu87/twpGWi7AJUS75pDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>,
-        Grant Grundler <grundler@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 126/132] net: atlantic: verify hw_head_ lies within TX buffer ring
-Date:   Mon, 23 May 2022 19:05:35 +0200
-Message-Id: <20220523165844.539556765@linuxfoundation.org>
+        Greg Thelen <gthelen@google.com>, Yu Liao <liaoyu15@huawei.com>
+Subject: [PATCH 5.17 016/158] Revert "drm/i915/opregion: check port number bounds for SWSCI display power state"
+Date:   Mon, 23 May 2022 19:02:53 +0200
+Message-Id: <20220523165833.326212639@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grant Grundler <grundler@chromium.org>
+From: Greg Thelen <gthelen@google.com>
 
-[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
+This reverts commit b84857c06ef9e72d09fadafdbb3ce9af64af954f.
 
-Bounds check hw_head index provided by NIC to verify it lies
-within the TX buffer ring.
+5.10 stable contains 2 identical commits:
+1. commit eb7bf11e8ef1 ("drm/i915/opregion: check port number bounds for SWSCI display power state")
+2. commit b84857c06ef9 ("drm/i915/opregion: check port number bounds for SWSCI display power state")
 
-Reported-by: Aashay Shringarpure <aashay@google.com>
-Reported-by: Yi Chou <yich@google.com>
-Reported-by: Shervin Oloumi <enlightened@google.com>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Both commits add separate checks for the same condition. Revert the 2nd
+redundant check to match upstream, which only has one check.
+
+Signed-off-by: Greg Thelen <gthelen@google.com>
+Signed-off-by: Yu Liao <liaoyu15@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/gpu/drm/i915/display/intel_opregion.c |   15 ---------------
+ 1 file changed, 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 9f1b15077e7d..45c17c585d74 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -889,6 +889,13 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
- 		err = -ENXIO;
- 		goto err_exit;
+--- a/drivers/gpu/drm/i915/display/intel_opregion.c
++++ b/drivers/gpu/drm/i915/display/intel_opregion.c
+@@ -375,21 +375,6 @@ int intel_opregion_notify_encoder(struct
+ 		return -EINVAL;
  	}
-+
-+	/* Validate that the new hw_head_ is reasonable. */
-+	if (hw_head_ >= ring->size) {
-+		err = -ENXIO;
-+		goto err_exit;
-+	}
-+
- 	ring->hw_head = hw_head_;
- 	err = aq_hw_err_from_flags(self);
  
--- 
-2.35.1
-
+-	/*
+-	 * The port numbering and mapping here is bizarre. The now-obsolete
+-	 * swsci spec supports ports numbered [0..4]. Port E is handled as a
+-	 * special case, but port F and beyond are not. The functionality is
+-	 * supposed to be obsolete for new platforms. Just bail out if the port
+-	 * number is out of bounds after mapping.
+-	 */
+-	if (port > 4) {
+-		drm_dbg_kms(&dev_priv->drm,
+-			    "[ENCODER:%d:%s] port %c (index %u) out of bounds for display power state notification\n",
+-			    intel_encoder->base.base.id, intel_encoder->base.name,
+-			    port_name(intel_encoder->port), port);
+-		return -EINVAL;
+-	}
+-
+ 	if (!enable)
+ 		parm |= 4 << 8;
+ 
 
 
