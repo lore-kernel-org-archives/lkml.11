@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B29FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D88E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241701AbiEWRp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
+        id S241661AbiEWRpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242877AbiEWR2I (ORCPT
+        with ESMTP id S242882AbiEWR2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:28:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098908B0B6;
-        Mon, 23 May 2022 10:24:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FB88DDC1;
+        Mon, 23 May 2022 10:24:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04539B811FB;
-        Mon, 23 May 2022 17:24:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C11C385A9;
-        Mon, 23 May 2022 17:24:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12011B81204;
+        Mon, 23 May 2022 17:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 575ECC385A9;
+        Mon, 23 May 2022 17:24:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326679;
-        bh=BjLUN4csdZCLrnYxSslxYpcdSADwEQFWK4CgIkLut9g=;
+        s=korg; t=1653326682;
+        bh=9znBeQPirLwcHxKfvMKWkwzveHY1EuEg7yKV4L2fLe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vQMCPerhEVrYwOGMPR5V+ui/4IdiKi2YdOm6FuKhnWXbIkVD8Hp+FX+DkSLqFY1k7
-         NykmRTqTK0OTH6PghVartW+G/fxC2kCpNbOowum5jDNgYLQlU/OaiUTzcLEam3a7Iz
-         t0zjzeSIQZXPyHYKO1Ze0H95eY+zm7Hng6mil5+M=
+        b=NKzMCV6sN2kK03gOQOTKqo64StEAUGeSKE3jvcZP8rzEy6vVZSdrIR8DB3+XHQkgw
+         r2LmfYbVMyNO/09ugWVxf2e8kK0nGPmou86gLK5L8fG+eHeTk1BZV/on3pXkKciEHB
+         QpaqY5h+ALTY9bj5R6QJvIDxFCzU6q2cU9/v4cG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 026/158] gfs2: Disable page faults during lockless buffered reads
-Date:   Mon, 23 May 2022 19:03:03 +0200
-Message-Id: <20220523165834.860951526@linuxfoundation.org>
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.17 009/158] i2c: piix4: Add EFCH MMIO support to SMBus base address detect
+Date:   Mon, 23 May 2022 19:02:46 +0200
+Message-Id: <20220523165832.115073589@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -48,50 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Terry Bowman <terry.bowman@amd.com>
 
-[ Upstream commit 52f3f033a5dbd023307520af1ff551cadfd7f037 ]
+commit 46967bc1ee93acd1d8953c87dc16f43de4076f93 upstream.
 
-During lockless buffered reads, filemap_read() holds page cache page
-references while trying to copy data to the user-space buffer.  The
-calling process isn't holding the inode glock, but the page references
-it holds prevent those pages from being removed from the page cache, and
-that prevents the underlying inode glock from being moved to another
-node.  Thus, we can end up in the same kinds of distributed deadlock
-situations as with normal (non-lockless) buffered reads.
+The EFCH SMBus controller's base address is determined using details in
+FCH::PM::DECODEEN[smbusasfiobase] and FCH::PM::DECODEEN[smbusasfioen].These
+register fields were accessed using cd6h/cd7h port I/O. cd6h/cd7h port I/O
+is no longer available in later AMD processors. Change base address
+detection to use MMIO instead of port I/O cd6h/cd7h.
 
-Fix that by disabling page faults during lockless reads as well.
-
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/gfs2/file.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-piix4.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
-index fa071d738c78..c781c19303db 100644
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -956,14 +956,16 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 			return ret;
- 		iocb->ki_flags &= ~IOCB_DIRECT;
- 	}
-+	pagefault_disable();
- 	iocb->ki_flags |= IOCB_NOIO;
- 	ret = generic_file_read_iter(iocb, to);
- 	iocb->ki_flags &= ~IOCB_NOIO;
-+	pagefault_enable();
- 	if (ret >= 0) {
- 		if (!iov_iter_count(to))
- 			return ret;
- 		written = ret;
--	} else {
-+	} else if (ret != -EFAULT) {
- 		if (ret != -EAGAIN)
- 			return ret;
- 		if (iocb->ki_flags & IOCB_NOWAIT)
--- 
-2.35.1
-
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -344,10 +344,15 @@ static int piix4_setup_sb800_smba(struct
+ 	if (retval)
+ 		return retval;
+ 
+-	outb_p(smb_en, SB800_PIIX4_SMB_IDX);
+-	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
+-	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
+-	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
++	if (mmio_cfg.use_mmio) {
++		smba_en_lo = ioread8(mmio_cfg.addr);
++		smba_en_hi = ioread8(mmio_cfg.addr + 1);
++	} else {
++		outb_p(smb_en, SB800_PIIX4_SMB_IDX);
++		smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
++		outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
++		smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
++	}
+ 
+ 	piix4_sb800_region_release(&PIIX4_dev->dev, &mmio_cfg);
+ 
 
 
