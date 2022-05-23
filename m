@@ -2,162 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5614FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D55C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231712AbiEWTnk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37052 "EHLO
+        id S231637AbiEWTnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232049AbiEWTlC (ORCPT
+        with ESMTP id S233999AbiEWTmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:41:02 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A2C5D5FC
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:33:56 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso200686pjb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:33:56 -0700 (PDT)
+        Mon, 23 May 2022 15:42:19 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64C711A18
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:39:15 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d22so13981392plr.9
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=NVlDB1s2Fp2J9VDbXvgnpB1s+l1LaAHQJIkv95Bbp4U=;
-        b=AaPjm62hzgtHtsCiRk8NxmY0FjLUROgL0G36RUr8lfkeaA2wUD5eina47R/s7YJt6E
-         pHrVK15DGCRLPBjz7KXMDl+GxHAjpaDRUfe6nAoKnf6DM9yyExZGmd2Eewy6tJSocNl+
-         mkmGP1ENSTHRKb0gMJcXJsGXMhOJUbyTYF/qc=
+        bh=9i0mf5EWjId+dJhDG42zI0t8gO1U5xR/fPTtg8h/guQ=;
+        b=G67mgEOcbKAzzfRqWT2tyqM6K9pitcq9pbTVcwT0LjmKZNi0oiqVsX8V97hEFwl2hf
+         AMnpF3tfbp0thJvNCE4CX5dI4O8ELTGwmxs1K5fhCNP737yCqZGbfIr/xW9c33Xf+LOK
+         scdJ+18kS7hWnfRSUS9ItgijmeteaopgZF3uU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=NVlDB1s2Fp2J9VDbXvgnpB1s+l1LaAHQJIkv95Bbp4U=;
-        b=sVCz57/mBXdTP+HieFPA3dMNtZXR0e15WcWCzrEKCsZ8TDlxh2faJevo5jcYdWivg1
-         1Q1aZdMCz3fxOARkQNiobJyyXLKGI5p/gEw//ygcCQUlhzqNsir3sq3KJYVCz+oBlDr/
-         KqmFpN0RoXHrFhOdUvzF9MDrzMr5pTLcRnlq9ES4er9ktGyQwxvusGdCaxfNjvei/+dT
-         Jo0NEbY9jmoQN2ULgG9G4E39mJy9PvmTaArTX7uDXJG0NYBK1+Jv0Vm0zFw+cUI5zs03
-         /HYm44Qz7xu31adhxIpYz0RXQLJC1lyXoV3Val43HxFjckMqfhvMh1F8CYlOyit+Trjg
-         Rv0Q==
-X-Gm-Message-State: AOAM533IVLLY7swDezHP7lpvn+gG9lkguAnMO0jDgIGYgsvQu5gn5Vva
-        8uGqwWvvSl0EOrUq+bY4WYCO1A==
-X-Google-Smtp-Source: ABdhPJyrw40mQ/7xNmPTJBBnF6TdtovH/QjNKowLyGB0h5EmZKiLK0YHQtEUVSMAn+MKVewMfm3OyA==
-X-Received: by 2002:a17:90b:1a81:b0:1e0:3314:2447 with SMTP id ng1-20020a17090b1a8100b001e033142447mr538738pjb.121.1653334436133;
-        Mon, 23 May 2022 12:33:56 -0700 (PDT)
+        bh=9i0mf5EWjId+dJhDG42zI0t8gO1U5xR/fPTtg8h/guQ=;
+        b=PaF8FlnIAnr8dIxtRr0O97CjHd0qMxWCQVYK0lW6ukO9Rea2z1qQs85bJX+chTy27d
+         53vFFZrDsf71yIwirUxTJsopDC2y/mGtEzxtdEcprRXAeVIBsHXOYuDXMPLtVSzm7gIl
+         evQx6q/9fF4R/JdnG2+2Vi3sL7s/bK3ymyOdkFKtE7F5VYYttxCBzJ/3g/tROdqqJx1u
+         qG9SpjVOFc1VfXyt2Lffa3JE53rLpi52Nh47RVeLELKYf3DpcFyvPKamtJydFDEJXx4L
+         Cs/oO+A9OEyiPe9NuSR7euYHC7VheCPgCT1vOuiKrH7sIuTxdJdQ+vc7gWeaO0popd4b
+         kLxQ==
+X-Gm-Message-State: AOAM530Ply5dzJpjc5/kOMkCKQHd+U14wZxMAWMa/7CMqWAClximN0/T
+        JdgLIz99MVw9af2MyPQPFKlUoA==
+X-Google-Smtp-Source: ABdhPJwpmlrfLvCqOEAWUHk/iFb9vTBCFvDV+XiSslGuIShWmQMdDaruCMB2aTz4o4uZEjpK38rAug==
+X-Received: by 2002:a17:902:f605:b0:14d:9e11:c864 with SMTP id n5-20020a170902f60500b0014d9e11c864mr24236615plg.54.1653334755308;
+        Mon, 23 May 2022 12:39:15 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id pl15-20020a17090b268f00b001df4b919937sm74596pjb.16.2022.05.23.12.33.55
+        by smtp.gmail.com with ESMTPSA id a9-20020a62bd09000000b0051827128aeasm7543246pff.131.2022.05.23.12.39.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 12:33:55 -0700 (PDT)
-Date:   Mon, 23 May 2022 12:33:53 -0700
+        Mon, 23 May 2022 12:39:14 -0700 (PDT)
+Date:   Mon, 23 May 2022 12:39:12 -0700
 From:   Kees Cook <keescook@chromium.org>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        willy@infradead.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>
-Subject: Re: [PATCH v2] sysctl: handle table->maxlen properly for proc_dobool
-Message-ID: <202205231233.EE3AB926@keescook>
-References: <20220522052624.21493-1-songmuchun@bytedance.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Maninder Singh <maninder1.s@samsung.com>, pmladek@suse.com,
+        bcain@quicinc.com, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, satishkh@cisco.com, sebaddel@cisco.com,
+        kartilak@cisco.com, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        mcgrof@kernel.org, jason.wessel@windriver.com,
+        daniel.thompson@linaro.org, dianders@chromium.org,
+        naveen.n.rao@linux.ibm.com, anil.s.keshavamurthy@intel.com,
+        davem@davemloft.net, mhiramat@kernel.org, peterz@infradead.org,
+        mingo@redhat.com, will@kernel.org, longman@redhat.com,
+        boqun.feng@gmail.com, rostedt@goodmis.org,
+        senozhatsky@chromium.org, andriy.shevchenko@linux.intel.com,
+        linux@rasmusvillemoes.dk, akpm@linux-foundation.org, arnd@arndb.de,
+        linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-modules@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, v.narang@samsung.com,
+        onkarnath.1@samsung.com
+Subject: Re: [PATCH 0/5] kallsyms: make kallsym APIs more safe with scnprintf
+Message-ID: <202205231238.FAF6D28@keescook>
+References: <CGME20220520083715epcas5p400b11adef4d540756c985feb20ba29bc@epcas5p4.samsung.com>
+ <20220520083701.2610975-1-maninder1.s@samsung.com>
+ <YonTOL4zC4CytVrn@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220522052624.21493-1-songmuchun@bytedance.com>
+In-Reply-To: <YonTOL4zC4CytVrn@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 01:26:24PM +0800, Muchun Song wrote:
-> Setting ->proc_handler to proc_dobool at the same time setting ->maxlen
-> to sizeof(int) is counter-intuitive, it is easy to make mistakes.  For
-> robustness, fix it by reimplementing proc_dobool() properly.
+On Sat, May 21, 2022 at 11:07:52PM -0700, Christoph Hellwig wrote:
+> On Fri, May 20, 2022 at 02:06:56PM +0530, Maninder Singh wrote:
+> > kallsyms functionality depends on KSYM_NAME_LEN directly.
+> > but if user passed array length lesser than it, sprintf
+> > can cause issues of buffer overflow attack.
+> > 
+> > So changing *sprint* and *lookup* APIs in this patch set
+> > to have buffer size as an argument and replacing sprintf with
+> > scnprintf.
 > 
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> Cc: Luis Chamberlain <mcgrof@kernel.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Iurii Zaikin <yzaikin@google.com>
-> ---
-> v2:
->  - Reimplementing proc_dobool().
-> 
->  fs/lockd/svc.c  |  2 +-
->  kernel/sysctl.c | 38 +++++++++++++++++++-------------------
->  2 files changed, 20 insertions(+), 20 deletions(-)
-> 
-> diff --git a/fs/lockd/svc.c b/fs/lockd/svc.c
-> index 59ef8a1f843f..6e48ee787f49 100644
-> --- a/fs/lockd/svc.c
-> +++ b/fs/lockd/svc.c
-> @@ -496,7 +496,7 @@ static struct ctl_table nlm_sysctls[] = {
->  	{
->  		.procname	= "nsm_use_hostnames",
->  		.data		= &nsm_use_hostnames,
-> -		.maxlen		= sizeof(int),
-> +		.maxlen		= sizeof(nsm_use_hostnames),
->  		.mode		= 0644,
->  		.proc_handler	= proc_dobool,
->  	},
+> This is still a pretty horrible API.  Passing something like
+> a struct seq_buf seems like the much better API here.  Also with
+> the amount of arguments and by reference passing it might be worth
+> to pass them as a structure while you're at it.
 
-This hunk is fine -- it's a reasonable fix-up.
-
-> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-> index e52b6e372c60..50a2c29efc94 100644
-> --- a/kernel/sysctl.c
-> +++ b/kernel/sysctl.c
-> @@ -423,21 +423,6 @@ static void proc_put_char(void **buf, size_t *size, char c)
->  	}
->  }
->  
-> -static int do_proc_dobool_conv(bool *negp, unsigned long *lvalp,
-> -				int *valp,
-> -				int write, void *data)
-> -{
-> -	if (write) {
-> -		*(bool *)valp = *lvalp;
-> -	} else {
-> -		int val = *(bool *)valp;
-> -
-> -		*lvalp = (unsigned long)val;
-> -		*negp = false;
-> -	}
-> -	return 0;
-> -}
-> -
->  static int do_proc_dointvec_conv(bool *negp, unsigned long *lvalp,
->  				 int *valp,
->  				 int write, void *data)
-> @@ -708,16 +693,31 @@ int do_proc_douintvec(struct ctl_table *table, int write,
->   * @lenp: the size of the user buffer
->   * @ppos: file position
->   *
-> - * Reads/writes up to table->maxlen/sizeof(unsigned int) integer
-> - * values from/to the user buffer, treated as an ASCII string.
-> + * Reads/writes up to table->maxlen/sizeof(bool) bool values from/to
-> + * the user buffer, treated as an ASCII string.
->   *
->   * Returns 0 on success.
->   */
->  int proc_dobool(struct ctl_table *table, int write, void *buffer,
->  		size_t *lenp, loff_t *ppos)
->  {
-> -	return do_proc_dointvec(table, write, buffer, lenp, ppos,
-> -				do_proc_dobool_conv, NULL);
-> +	struct ctl_table tmp = *table;
-> +	bool *data = table->data;
-> +	unsigned int val = READ_ONCE(*data);
-> +	int ret;
-> +
-> +	/* Do not support arrays yet. */
-> +	if (table->maxlen != sizeof(bool))
-> +		return -EINVAL;
-> +
-> +	tmp.maxlen = sizeof(val);
-> +	tmp.data = &val;
-> +	ret = do_proc_douintvec(&tmp, write, buffer, lenp, ppos, NULL, NULL);
-> +	if (ret)
-> +		return ret;
-> +	if (write)
-> +		WRITE_ONCE(*data, val ? true : false);
-> +	return 0;
->  }
-
-This part I don't understand -- it just inlines do_proc_dobool_conv(),
-and I think detracts from readability.
+Yeah, I agree. It really seems like seq_buf would be nicer.
 
 -- 
 Kees Cook
