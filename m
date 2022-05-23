@@ -2,86 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E672BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94AF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351841AbiEWBfO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 21:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
+        id S244170AbiEWBhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 21:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233232AbiEWBfL (ORCPT
+        with ESMTP id S232679AbiEWBg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 21:35:11 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A493238BF6;
-        Sun, 22 May 2022 18:35:10 -0700 (PDT)
-Received: from kwepemi500025.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L60H85zpdzjWvg;
-        Mon, 23 May 2022 09:34:12 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- kwepemi500025.china.huawei.com (7.221.188.170) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 09:35:08 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
- 2022 09:35:08 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <miklos@szeredi.hu>
-CC:     <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
-        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
-Subject: [PATCH -next,v2] fuse: return the more nuanced writeback error on close()
-Date:   Mon, 23 May 2022 09:48:38 +0800
-Message-ID: <20220523014838.1647498-1-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 22 May 2022 21:36:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091AD2F399
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:36:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D36660FA9
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:36:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1AAEC341C6
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:36:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653269812;
+        bh=L6h6qT+8nc10xaEUPypDDnsnQ4L6qOJI2IkYaR1N0QA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=O/fVkXaQICAKI8TeLh/3g55975QrYytC9Zj8DgRPCvgtKljx0u5I6uvOuBSBA8+bQ
+         4BjFse2W6uERi0GXiYtNbBiH7cJiej2DETjY8V+nFt03WAcsFqedhfgeld1YUDCGC4
+         G5tbKz+hBO/hde9oUtaCbuYH0LjqR5Rh2Zr5VIOo00u6DWqvbNbmCN5XJYVKCa8dmg
+         +DnbTnN7dDDaJhYfWwH0velWxUkKZKZT/7XyvsMi1ppdA+Tcs7vZ98ufHodArkXj2t
+         UqoMfLbhgMWEzBQtAOxYyeKcaK5ilFq4kHmcGKRlT+a2iuzuUztB4gFCY8Z/3+1Hsg
+         bj1ywxNlY1KUQ==
+Received: by mail-lf1-f48.google.com with SMTP id p22so23066490lfo.10
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:36:52 -0700 (PDT)
+X-Gm-Message-State: AOAM531CQ5TNXLxlo77CAMNT7sIysttIzJRa4jZw0chO75xIvfZ0v6Hj
+        9Uu7i8ntqn13IYtm4nM0DCO8HFZ6UjaaS9D1uyfCYQ==
+X-Google-Smtp-Source: ABdhPJzNMfUSnjPL4tskSLO9/0qH0Iujngwr3hBiPy5ZdMwuNLZtASCMVPJR2EEsK4dUQC+cUo0tl+kZ2sYROe7TD1o=
+X-Received: by 2002:a05:6512:3a84:b0:472:6384:4de0 with SMTP id
+ q4-20020a0565123a8400b0047263844de0mr14237606lfu.456.1653269810602; Sun, 22
+ May 2022 18:36:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+References: <20220518131638.3401509-1-xukuohai@huawei.com> <20220518131638.3401509-6-xukuohai@huawei.com>
+In-Reply-To: <20220518131638.3401509-6-xukuohai@huawei.com>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Mon, 23 May 2022 03:36:39 +0200
+X-Gmail-Original-Message-ID: <CACYkzJ7r=hP_w_brOv3_d1JAta1_Obi2-EvMu4TEQTyBQMSs6g@mail.gmail.com>
+Message-ID: <CACYkzJ7r=hP_w_brOv3_d1JAta1_Obi2-EvMu4TEQTyBQMSs6g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 5/6] bpf, arm64: bpf trampoline for arm64
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As filemap_check_errors() only report -EIO or -ENOSPC, we return more nuanced
-writeback error -(file->f_mapping->wb_err & MAX_ERRNO).
+On Wed, May 18, 2022 at 3:54 PM Xu Kuohai <xukuohai@huawei.com> wrote:
+>
+> Add bpf trampoline support for arm64. Most of the logic is the same as
+> x86.
+>
+> Tested on raspberry pi 4b and qemu with KASLR disabled (avoid long jump),
+> result:
+>  #9  /1     bpf_cookie/kprobe:OK
+>  #9  /2     bpf_cookie/multi_kprobe_link_api:FAIL
+>  #9  /3     bpf_cookie/multi_kprobe_attach_api:FAIL
+>  #9  /4     bpf_cookie/uprobe:OK
+>  #9  /5     bpf_cookie/tracepoint:OK
+>  #9  /6     bpf_cookie/perf_event:OK
+>  #9  /7     bpf_cookie/trampoline:OK
+>  #9  /8     bpf_cookie/lsm:OK
+>  #9         bpf_cookie:FAIL
+>  #18 /1     bpf_tcp_ca/dctcp:OK
+>  #18 /2     bpf_tcp_ca/cubic:OK
+>  #18 /3     bpf_tcp_ca/invalid_license:OK
+>  #18 /4     bpf_tcp_ca/dctcp_fallback:OK
+>  #18 /5     bpf_tcp_ca/rel_setsockopt:OK
+>  #18        bpf_tcp_ca:OK
+>  #51 /1     dummy_st_ops/dummy_st_ops_attach:OK
+>  #51 /2     dummy_st_ops/dummy_init_ret_value:OK
+>  #51 /3     dummy_st_ops/dummy_init_ptr_arg:OK
+>  #51 /4     dummy_st_ops/dummy_multiple_args:OK
+>  #51        dummy_st_ops:OK
+>  #55        fentry_fexit:OK
+>  #56        fentry_test:OK
+>  #57 /1     fexit_bpf2bpf/target_no_callees:OK
+>  #57 /2     fexit_bpf2bpf/target_yes_callees:OK
+>  #57 /3     fexit_bpf2bpf/func_replace:OK
+>  #57 /4     fexit_bpf2bpf/func_replace_verify:OK
+>  #57 /5     fexit_bpf2bpf/func_sockmap_update:OK
+>  #57 /6     fexit_bpf2bpf/func_replace_return_code:OK
+>  #57 /7     fexit_bpf2bpf/func_map_prog_compatibility:OK
+>  #57 /8     fexit_bpf2bpf/func_replace_multi:OK
+>  #57 /9     fexit_bpf2bpf/fmod_ret_freplace:OK
+>  #57        fexit_bpf2bpf:OK
+>  #58        fexit_sleep:OK
+>  #59        fexit_stress:OK
+>  #60        fexit_test:OK
+>  #67        get_func_args_test:OK
+>  #68        get_func_ip_test:OK
+>  #104       modify_return:OK
+>  #237       xdp_bpf2bpf:OK
+>
+> bpf_cookie/multi_kprobe_link_api and bpf_cookie/multi_kprobe_attach_api
+> failed due to lack of multi_kprobe on arm64.
+>
+> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
 
-  filemap_write_and_wait
-    filemap_write_and_wait_range
-      filemap_check_errors
-        -ENOSPC or -EIO
-  filemap_check_wb_err
-    errseq_check
-      return -(file->f_mapping->wb_err & MAX_ERRNO)
+Acked-by: KP Singh <kpsingh@kernel.org>
 
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- fs/fuse/file.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/fs/fuse/file.c b/fs/fuse/file.c
-index f18d14d5fea1..9917bc2795e6 100644
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -488,10 +488,10 @@ static int fuse_flush(struct file *file, fl_owner_t id)
- 	inode_unlock(inode);
- 
- 	err = filemap_check_errors(file->f_mapping);
-+	/* return more nuanced writeback errors */
- 	if (err)
--		return err;
-+		return filemap_check_wb_err(file->f_mapping, 0);
- 
--	err = 0;
- 	if (fm->fc->no_flush)
- 		goto inval_attr_out;
- 
--- 
-v2: remove redundant code: err = 0
-
-2.31.1
-
+Thanks! This is exciting.
