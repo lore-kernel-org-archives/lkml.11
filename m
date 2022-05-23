@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E191C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F5BC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244137AbiEWSCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35788 "EHLO
+        id S244074AbiEWSCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241679AbiEWRdz (ORCPT
+        with ESMTP id S241646AbiEWRdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:33:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78817CB41;
-        Mon, 23 May 2022 10:28:04 -0700 (PDT)
+        Mon, 23 May 2022 13:33:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A497CB0C;
+        Mon, 23 May 2022 10:28:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4BDB608C0;
-        Mon, 23 May 2022 17:28:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95D3C385A9;
-        Mon, 23 May 2022 17:28:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A45F608C0;
+        Mon, 23 May 2022 17:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BAD3C385A9;
+        Mon, 23 May 2022 17:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326883;
-        bh=DpiMKSUnLxhXsBTF7zVyd2dd1Go1TMiq4kSzb6WHBI8=;
+        s=korg; t=1653326879;
+        bh=FLGBvZEt3C6XRU8TTupFkhcQcgUGvRduW1/jt4Oz7N0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PyRa1Xm9bD6UbOsVhKNDxgz19oMqc17HO/XFR6v0/lmm2ixms0aaDldwEA8GklPV4
-         Dqo8Cs+ITeUOXS7GcO4xWJ37qnG0qr6IT6n+4Z45JRne/3PMG0Fut0nhPK5Pd77Dvw
-         hZvAEfs0ZF4rQkuUtE2OvJWG1t94mS924Vlwg6n0=
+        b=p0nRWpmnPMbLZ6kokjBrweV3r28Xhc5bAsnLVNC4E5yyvw5LNcR9U8sQPLqKfQlEy
+         K375Qofd0v8/Lud3vxa+fb76nqhhuJYkeEGKgRgPN+O8XqYgTR4eTcvfpUrIKDo0AQ
+         a5sRtKoGkHcJqqFf1VaiqH48SXvCxt0eLtV3+X+U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 088/158] netfilter: nft_flow_offload: fix offload with pppoe + vlan
-Date:   Mon, 23 May 2022 19:04:05 +0200
-Message-Id: <20220523165845.748878507@linuxfoundation.org>
+Subject: [PATCH 5.17 087/158] net: fix dev_fill_forward_path with pppoe + bridge
+Date:   Mon, 23 May 2022 19:04:04 +0200
+Message-Id: <20220523165845.565547962@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,34 +51,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 2456074935003b66c40f78df6adfc722435d43ea ]
+[ Upstream commit cf2df74e202d81b09f09d84c2d8903e0e87e9274 ]
 
-When running a combination of PPPoE on top of a VLAN, we need to set
-info->outdev to the PPPoE device, otherwise PPPoE encap is skipped
-during software offload.
+When calling dev_fill_forward_path on a pppoe device, the provided destination
+address is invalid. In order for the bridge fdb lookup to succeed, the pppoe
+code needs to update ctx->daddr to the correct value.
+Fix this by storing the address inside struct net_device_path_ctx
 
-Fixes: 72efd585f714 ("netfilter: flowtable: add pppoe support")
+Fixes: f6efc675c9dd ("net: ppp: resolve forwarding path for bridge pppoe devices")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_flow_offload.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ppp/pppoe.c   | 1 +
+ include/linux/netdevice.h | 2 +-
+ net/core/dev.c            | 2 +-
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index dd824193c920..12145a80ef03 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -123,7 +123,8 @@ static void nft_dev_path_info(const struct net_device_path_stack *stack,
- 				info->indev = NULL;
- 				break;
- 			}
--			info->outdev = path->dev;
-+			if (!info->outdev)
-+				info->outdev = path->dev;
- 			info->encap[info->num_encaps].id = path->encap.id;
- 			info->encap[info->num_encaps].proto = path->encap.proto;
- 			info->num_encaps++;
+diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
+index 3619520340b7..e172743948ed 100644
+--- a/drivers/net/ppp/pppoe.c
++++ b/drivers/net/ppp/pppoe.c
+@@ -988,6 +988,7 @@ static int pppoe_fill_forward_path(struct net_device_path_ctx *ctx,
+ 	path->encap.proto = htons(ETH_P_PPP_SES);
+ 	path->encap.id = be16_to_cpu(po->num);
+ 	memcpy(path->encap.h_dest, po->pppoe_pa.remote, ETH_ALEN);
++	memcpy(ctx->daddr, po->pppoe_pa.remote, ETH_ALEN);
+ 	path->dev = ctx->dev;
+ 	ctx->dev = dev;
+ 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index f53ea7038441..dadd4d2f6d8a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -891,7 +891,7 @@ struct net_device_path_stack {
+ 
+ struct net_device_path_ctx {
+ 	const struct net_device *dev;
+-	const u8		*daddr;
++	u8			daddr[ETH_ALEN];
+ 
+ 	int			num_vlans;
+ 	struct {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 91cf709c98b3..5f1ac4812277 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -663,11 +663,11 @@ int dev_fill_forward_path(const struct net_device *dev, const u8 *daddr,
+ 	const struct net_device *last_dev;
+ 	struct net_device_path_ctx ctx = {
+ 		.dev	= dev,
+-		.daddr	= daddr,
+ 	};
+ 	struct net_device_path *path;
+ 	int ret = 0;
+ 
++	memcpy(ctx.daddr, daddr, sizeof(ctx.daddr));
+ 	stack->num_paths = 0;
+ 	while (ctx.dev && ctx.dev->netdev_ops->ndo_fill_forward_path) {
+ 		last_dev = ctx.dev;
 -- 
 2.35.1
 
