@@ -2,159 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D476C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7848C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235480AbiEWFhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 01:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
+        id S1349084AbiEWFio (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 01:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237949AbiEWFhM (ORCPT
+        with ESMTP id S231639AbiEWFik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 01:37:12 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD8621265
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 22:37:08 -0700 (PDT)
-Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220523053704epoutp03630fdb8f3f0bcee6951e34634facc2f8~xpT4v_-fC2233422334epoutp03o
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:37:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220523053704epoutp03630fdb8f3f0bcee6951e34634facc2f8~xpT4v_-fC2233422334epoutp03o
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1653284224;
-        bh=nvsl+YDNSD25J27UmI22kYRLW5G9VeRNNKiYPPDwC0g=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=jGsQEFULGIUnMTNtxkMq0VN5+axr6WkuYqq0p8RF6V5dSCkiq0rcWkOGauCzlKYSY
-         7u3SDZ8AWS3/uhVzNkfuVe1F6GNapBI1gFZou0fbO9J62pggb+/t+1wuqKky//hK5z
-         8aquVq3BtwkEfgFe7o5gDudQGIeF6/fWS38ddOl8=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220523053703epcas2p419ff7582a3c43c4f092d0bafdec1b0ee~xpT4CoaVE2886028860epcas2p44;
-        Mon, 23 May 2022 05:37:03 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.70]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4L65gK45sHz4x9Pw; Mon, 23 May
-        2022 05:37:01 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        7B.1E.10028.A7D1B826; Mon, 23 May 2022 14:36:58 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220523053658epcas2p2400c4c92126baa05d5fb4b5d6ed7e274~xpTyy1Twt0582905829epcas2p2G;
-        Mon, 23 May 2022 05:36:58 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220523053658epsmtrp18475f5df623d61d6f147d76da960c0e3~xpTyx7oVh1003610036epsmtrp1N;
-        Mon, 23 May 2022 05:36:58 +0000 (GMT)
-X-AuditID: b6c32a47-573ff7000000272c-d1-628b1d7a06a4
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F0.D3.08924.A7D1B826; Mon, 23 May 2022 14:36:58 +0900 (KST)
-Received: from rack03.dsn.sec.samsung.com (unknown [10.229.95.126]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220523053658epsmtip28545488884d487133517520ffa5783c9~xpTyl9IDR0665706657epsmtip2Y;
-        Mon, 23 May 2022 05:36:58 +0000 (GMT)
-From:   SEO HOYOUNG <hy50.seo@samsung.com>
-To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, beanhuo@micron.com,
-        asutoshd@codeaurora.org, cang@codeaurora.org, bvanassche@acm.org,
-        bhoon95.kim@samsung.com, kwmad.kim@samsung.com
-Cc:     SEO HOYOUNG <hy50.seo@samsung.com>
-Subject: [RESEND PATCH v1] scsi: ufs: Change the shutting_down flag setting
- position
-Date:   Mon, 23 May 2022 02:18:47 +0900
-Message-Id: <20220522171847.66373-1-hy50.seo@samsung.com>
-X-Mailer: git-send-email 2.26.0
+        Mon, 23 May 2022 01:38:40 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8502018F
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 22:38:39 -0700 (PDT)
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 24N5c6tX016050;
+        Mon, 23 May 2022 14:38:06 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 24N5c6tX016050
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653284286;
+        bh=8k0/bkhtuM/BaYqS5/Paa+cIIhtF8ZJBatVMjJ7NYMk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ncCjg6BqdAPQQVB7Tnaa9iyoMCid23CmMHKF2DfcVUMF38oWckgbuF1xpQvLgLFjf
+         SImQYh7/jqMtDlZkzn/IzULgSuJyU7A5Q32gCKLzAsaKGk/IPOddlqUDNjM59KfR/J
+         luUd3Jtg7lrcDR8HrWwPpk7YS5wo7GBQVw3xcbdfLtrN8EF22Rnr24KM9eBTHozRL7
+         Yw/qitH4qRQIqjXyxrqCwjzc+V9s2N1AmOc3bG37M0E9DaPskHyAoHyLB+aYBxD+h0
+         SaEE3td+rq4Q12+Q2voPj/IorLF3nLfYGx2GnzSzhQq9TFyT/K4UdTDSq8BbpK9rqR
+         pJCXxBSTWWkxw==
+X-Nifty-SrcIP: [209.85.215.172]
+Received: by mail-pg1-f172.google.com with SMTP id 31so12742698pgp.8;
+        Sun, 22 May 2022 22:38:06 -0700 (PDT)
+X-Gm-Message-State: AOAM5321FzyIQgbr/e1mYbnYjpDd4YFbrzn6hYNkyFWaFTSZYUSmwRSM
+        sJ8/yc/IQhpT1wBn9QrrGsO4r7u5B+Ao80LSAOQ=
+X-Google-Smtp-Source: ABdhPJzG1VZG3WAjvz75BL+VNo9jo0YV4zcGj4QGDXFHIDPBgYuDI5HvMgqvfHfhyFCLrc2AuDCK0FwDUu/P1z3R/ZA=
+X-Received: by 2002:a63:fc5e:0:b0:3db:5804:f3b with SMTP id
+ r30-20020a63fc5e000000b003db58040f3bmr19090498pgk.126.1653284285678; Sun, 22
+ May 2022 22:38:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrFJsWRmVeSWpSXmKPExsWy7bCmhW6VbHeSwbTLhhYP5m1js9jbdoLd
-        4uXPq2wWBx92slh8XfqM1WLah5/MFp/WL2O1WL34AYvFohvbmCxubjnKYnF51xw2i+7rO9gs
-        lh//x+TA63H5irfH5b5eJo8Jiw4wenxf38Hm8fHpLRaPvi2rGD0+b5LzaD/QzRTAEZVtk5Ga
-        mJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hpYa6kkJeYm2qr5OIToOuWmQN0spJCWWJOKVAo
-        ILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwLxArzgxt7g0L10vL7XEytDAwMgUqDAhO+PD6vNM
-        BZ3cFc+uXWNrYFzI2cXIySEhYCLxuWELcxcjF4eQwA5GiX2PGtlBEkICnxgl/vwMgkh8ZpTo
-        6pvMAtPRNGk1C0RiF6PE9y+fGCGcH4wSF05PYgapYhPQkFhz7BATSEJEYAWTRM+mT0wgCWYB
-        NYnPd5eBjRIWCJO4d+MZWxcjBweLgKrE+U+sIGFeAUuJU82NjBDb5CUWNfxmgogLSpyc+YQF
-        Yoy8RPPW2WB3SwhM5ZB49f4oO0SDi8T0SdfZIGxhiVfHt0DFpSRe9rdB2cUSP96sZoJobmCU
-        WNp+jBkiYSwx61k7I8hBzAKaEut36YOYEgLKEkduQe3lk+g4/JcdIswr0dEmBNGoJHFm7m2o
-        sITEwdk5EGEPiRl7zkIDNFaipXUnywRG+VlInpmF5JlZCGsXMDKvYhRLLSjOTU8tNiowhsdp
-        cn7uJkZwotVy38E44+0HvUOMTByMhxglOJiVRHi3J3YkCfGmJFZWpRblxxeV5qQWH2I0BYbu
-        RGYp0eR8YKrPK4k3NLE0MDEzMzQ3MjUwVxLn9UrZkCgkkJ5YkpqdmlqQWgTTx8TBKdXAlHGq
-        Jq9ArSnveRHnlZu9t5c8Kvhu3noq6BDPy1O1O5zrOmv99iTJ9128vuZcQ89Os8ZXDw6+iZvg
-        F8Uz63a6v+Vk35tyhm0H5jnHcoknLuU3viH36dYK8xkPY+6x+jperP6/YLa4wnL9C536hh6L
-        NXeKTLW1frGinZP5hkfCjJLJZaYy60sdRS8np/+2CtwqNY9r18UZ+yb9dF1rW1qaoPhjwu6D
-        DRM8eKoaXhzgvjUr9qLGZ7VV5+IdljUJf599+eOu6V5/Hpq26pro/Jh8O2ftC92bD3/4iZ/6
-        ZPwlrmVj2xp5IVv7yYxyO7bsXCRhoX+s3z/B9MrOdw6/rvjz1xh/tRQzLD6WGf/fYstvfiWW
-        4oxEQy3mouJEAKGMJSc9BAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNLMWRmVeSWpSXmKPExsWy7bCSvG6VbHeSwcFt/BYP5m1js9jbdoLd
-        4uXPq2wWBx92slh8XfqM1WLah5/MFp/WL2O1WL34AYvFohvbmCxubjnKYnF51xw2i+7rO9gs
-        lh//x+TA63H5irfH5b5eJo8Jiw4wenxf38Hm8fHpLRaPvi2rGD0+b5LzaD/QzRTAEcVlk5Ka
-        k1mWWqRvl8CV8WH1eaaCTu6KZ9eusTUwLuTsYuTkkBAwkWiatJqli5GLQ0hgB6PE11t9rBAJ
-        CYn/i5uYIGxhifstR1ghir4xSrx6OJEdJMEmoCGx5tghJpCEiMA2Jom7H06ygSSYBdQkPt9d
-        xgJiCwuESKzdM5uxi5GDg0VAVeL8J7AFvAKWEqeaGxkhFshLLGr4zQQRF5Q4OfMJC8QYeYnm
-        rbOZJzDyzUKSmoUktYCRaRWjZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnD4a2ntYNyz
-        6oPeIUYmDsZDjBIczEoivNsTO5KEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKa
-        nZpakFoEk2Xi4JRqYFq8YfbmvGO6p1Nn9dzOVKgqPBLhNXWXMUfBpY0vN727wnWyeGKY6Mvq
-        629u1E3607wkxn4nu+rrxfaGruWz/mk9SPXLU2mqcgl6OmOP2qePv6Vcn9ybylOxcsHCKfvl
-        WDJ2KSR0WGz1qTzbN9Vd+oNgVsm2bvurlnse7br2801QwzWpj1fvRS5ytNDe93wu11HDixWC
-        lz8w2Ccpbj9w8VMKX11o4tdJKa0Fbo4/Znz58US4ucUvWtPuyrW711ke/F4/fdq6viOxl5pe
-        dHfb72M48DWnur1FUmHS/APcby9+zHvyS9VYbZZJpUrYKwmffRpdFfw2GjEyVtvzC4xnXZMN
-        Ezq1dGalnMiEr6eOHXimxFKckWioxVxUnAgAc+mxf+4CAAA=
-X-CMS-MailID: 20220523053658epcas2p2400c4c92126baa05d5fb4b5d6ed7e274
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220523053658epcas2p2400c4c92126baa05d5fb4b5d6ed7e274
-References: <CGME20220523053658epcas2p2400c4c92126baa05d5fb4b5d6ed7e274@epcas2p2.samsung.com>
+References: <20220523142431.10ff2f77@canb.auug.org.au>
+In-Reply-To: <20220523142431.10ff2f77@canb.auug.org.au>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 23 May 2022 14:37:28 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQcRsuKrepsMiV20D+SSQQYWRqeoWqpo4UoQMtdW2A8SQ@mail.gmail.com>
+Message-ID: <CAK7LNAQcRsuKrepsMiV20D+SSQQYWRqeoWqpo4UoQMtdW2A8SQ@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the tip tree with the kbuild tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When System shutdown, will called ufshcd_wl_shutdown().
-Then the shutting_down falg set to 1 at ufshcd_wl_shutdown().
-And send to SSU cmd at ufshcd_wl_shutdown()->__ufshcd_wl_suspend()->
-ufshcd_set_dev_pwr_mode() function.
+On Mon, May 23, 2022 at 1:24 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> Today's linux-next merge of the tip tree got a conflict in:
+>
+>   scripts/Makefile.build
+>
+> between commit:
+>
+>   0212301af7bb ("kbuild: do not create *.prelink.o for Clang LTO or IBT")
+>
+> from the kbuild tree and commit:
+>
+>   753da4179d08 ("objtool: Remove --lto and --vmlinux in favor of --link")
+>
+> from the tip tree.
+>
+> I am not sure if I fixed this up correctly, please check the final result
+> when linux-next is released.
+>
+> I fixed it up (I used the former version) and can carry the fix as
+> necessary. This is now fixed as far as linux-next is concerned, but any
+> non trivial conflicts should be mentioned to your upstream maintainer
+> when your tree is submitted for merging.  You may also want to consider
+> cooperating with the maintainer of the conflicting tree to minimise any
+> particularly complex conflicts.
+>
+> --
+> Cheers,
+> Stephen Rothwell
 
-If occurred fail during send SSU cmd,
-then will called ufshcd_err_handler for recovery.
-But already set shutting_down to 1, so ufs driver could not recovery.
-Then System wait for SSU cmd to be completed and
-eventaully it will tak Hang.
-So changed the position where shutting_down is set.
 
-Signed-off-by: SEO HOYOUNG <hy50.seo@samsung.com>
----
- drivers/scsi/ufs/ufshcd.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+I think you can fix up around line 420
+of scripts/Makefile.build
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 1fb3a8b9b03e..65d47cd5afbe 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -9235,10 +9235,6 @@ static void ufshcd_wl_shutdown(struct device *dev)
- 
- 	hba = shost_priv(sdev->host);
- 
--	down(&hba->host_sem);
--	hba->shutting_down = true;
--	up(&hba->host_sem);
--
- 	/* Turn on everything while shutting down */
- 	ufshcd_rpm_get_sync(hba);
- 	scsi_device_quiesce(sdev);
-@@ -9248,6 +9244,10 @@ static void ufshcd_wl_shutdown(struct device *dev)
- 		scsi_device_quiesce(sdev);
- 	}
- 	__ufshcd_wl_suspend(hba, UFS_SHUTDOWN_PM);
-+
-+	down(&hba->host_sem);
-+	hba->shutting_down = true;
-+	up(&hba->host_sem);
- }
- 
- /**
+
+$(multi-obj-m): objtool-enabled := $(delay-objtool)
+$(multi-obj-m): part-of-module := y
+$(multi-obj-m): linked-object := y                        <--- Add this
+$(multi-obj-m): %.o: %.mod FORCE
+        $(call if_changed_rule,ld_multi_m)
+
+
+
+
 -- 
-2.26.0
-
+Best Regards
+Masahiro Yamada
