@@ -2,141 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 892C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:28:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0759BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbiEWH1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50528 "EHLO
+        id S231171AbiEWH2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:28:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbiEWH1L (ORCPT
+        with ESMTP id S230093AbiEWH1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:27:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD7E72E3D;
-        Mon, 23 May 2022 00:23:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E344460F4E;
-        Mon, 23 May 2022 06:28:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F074C34119;
-        Mon, 23 May 2022 06:28:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653287299;
-        bh=+G6QN37JBeeDecpF0Mn6rMG3fkWXm5EFAcnK5EHnUos=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=lORFfpXzkhH/bu/UwmD76CQVKYdEetkF8PMqoh8KdzXC0VMmc62qZl5bz0pGOBtMk
-         OlWoGM+rHfYdDDQrlrqP/ZCIzgZ2/OP6k4/nZ3skYErVnarM3fFMJlnCX8m8EzICZA
-         YKeppLZ4UIAxpT7R1p8RU5w4qwyoCMe1jEPX4nX34te+xaHDPv3a1pu0xaicPobghX
-         P212NapsDkC0mqRMplaW4HDz3cHt8uD6QFlROAUg+OEJBqxVtO7RnDl0x47deY7xDr
-         PTTyOh0E5Mpew3udOnESmT9kHNDJgPm9nqFDA8eVM3pNzkP9Tx+rfUxyHVhFOvi9qI
-         3oEZUaJMLEyNA==
-Received: by mail-yb1-f176.google.com with SMTP id q135so23643634ybg.10;
-        Sun, 22 May 2022 23:28:19 -0700 (PDT)
-X-Gm-Message-State: AOAM532G+rQojoR0syFUuWPDQqemENa3jc/pTAZ7BTIw4SDWiA5UvJn4
-        kVbBppkSAIqvvqFNTqJIRgSTGX2oQO7M31BLal8=
-X-Google-Smtp-Source: ABdhPJwtNsXeDoCOnv7u39/J737486gnlczLh5EYBIMuDgvFwyVZDTBioltB3E1L75tfs0MX3rEvRGubB3Z9OQf6P5s=
-X-Received: by 2002:a25:1e56:0:b0:64e:a226:6f6b with SMTP id
- e83-20020a251e56000000b0064ea2266f6bmr20102847ybe.322.1653287298271; Sun, 22
- May 2022 23:28:18 -0700 (PDT)
+        Mon, 23 May 2022 03:27:15 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C2D33E3D
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:24:25 -0700 (PDT)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220523065837epoutp023e1137a7d74fdf4141b34fc344eef2ca~xqbFXQhcD2375623756epoutp02W
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:58:37 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220523065837epoutp023e1137a7d74fdf4141b34fc344eef2ca~xqbFXQhcD2375623756epoutp02W
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1653289117;
+        bh=WDjbzKlFHJB4sNanoPbt5VssymzXrSnoMfG86YXbq3w=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=rJOFNixxEX7VcjZSjGXFhpO6+8NxkQR+57AjTqbc6xPx5wjsfvlgR4jCmIBAzIsoo
+         GER41wL7tVSpsfeGQ0LohxhX7mGT7SCBzrkkyGo8RoYKJ91QTh4x7B7Xg+K1jMv+85
+         n21keX3g+WNbjGblwgBtjF573iE+Y2DE4PFhUx5o=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20220523065836epcas5p1fef7a2c0339055c59ace6c8fa87fa4d0~xqbEyCxKD0407604076epcas5p1r;
+        Mon, 23 May 2022 06:58:36 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.174]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4L67TM6QBQz4x9QB; Mon, 23 May
+        2022 06:58:31 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        C7.10.10063.5903B826; Mon, 23 May 2022 15:58:29 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220523065829epcas5p3dc6257c87391637c95a251116f933573~xqa969YP62530425304epcas5p35;
+        Mon, 23 May 2022 06:58:29 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220523065829epsmtrp14d4bbe44494aa140143c1dafae1b5834~xqa96DHv72471324713epsmtrp17;
+        Mon, 23 May 2022 06:58:29 +0000 (GMT)
+X-AuditID: b6c32a49-4b5ff7000000274f-fb-628b30957858
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        C9.92.11276.5903B826; Mon, 23 May 2022 15:58:29 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220523065827epsmtip19ab668bc9e5ad6999d0703c70729f506~xqa8oOKJS1230912309epsmtip18;
+        Mon, 23 May 2022 06:58:27 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'Juerg Haefliger'" <juerg.haefliger@canonical.com>,
+        <krzysztof.kozlowski@linaro.org>, <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>
+Cc:     <linux-kernel@vger.kernel.org>,
+        "'Juerg Haefliger'" <juergh@canonical.com>
+In-Reply-To: <20220523064252.11938-3-juergh@canonical.com>
+Subject: RE: [PATCH 2/3] ARM: s3c: Kconfig.s3c24xx: Fix indentation and
+ replace some tabs
+Date:   Mon, 23 May 2022 12:28:26 +0530
+Message-ID: <000c01d86e72$81c02510$85406f30$@samsung.com>
 MIME-Version: 1.0
-References: <20220519191311.17119-1-logang@deltatee.com>
-In-Reply-To: <20220519191311.17119-1-logang@deltatee.com>
-From:   Song Liu <song@kernel.org>
-Date:   Sun, 22 May 2022 23:28:07 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5NPE-kkLdJ74LXa7-udOEf=KwDyep1QeANhTxNoWKZOg@mail.gmail.com>
-Message-ID: <CAPhsuW5NPE-kkLdJ74LXa7-udOEf=KwDyep1QeANhTxNoWKZOg@mail.gmail.com>
-Subject: Re: [PATCH v1 00/15] Bug fixes for mdadm tests
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiao Ni <xni@redhat.com>, Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQJIkmbzPzFb+hSyrD8PLJObOMqOwQHZGnlqAeCa8lmsLfFAwA==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJJsWRmVeSWpSXmKPExsWy7bCmlu5Ug+4kgy2HVS2WTXnMbHFl7gJW
+        i72vt7JbbHp8jdXi8q45bBYzzu9jsjg0dS+jA7vH5WsXmT1mNfSyedy5tofNY/OSeo/Pm+QC
+        WKOybTJSE1NSixRS85LzUzLz0m2VvIPjneNNzQwMdQ0tLcyVFPISc1NtlVx8AnTdMnOArlBS
+        KEvMKQUKBSQWFyvp29kU5ZeWpCpk5BeX2CqlFqTkFJgU6BUn5haX5qXr5aWWWBkaGBiZAhUm
+        ZGcs7rzAWNAkW/H4y0rWBsaF4l2MnBwSAiYSLyY8ZOti5OIQEtjNKHHn+3EmCOcTo8Thr3tZ
+        IJxvjBLX9x1mg2k5veILVMteRomLa3ZCVb1klOh5+osRpIpNQFdix+I2sCoRgcOMEh8mzAaq
+        4uBgFgiQmNQoAFLDKWAlcWFzFxOILSwQLbHzeCPYBhYBVYlZk9rZQWxeAUuJ59svMUHYghIn
+        Zz5hAbGZBeQltr+dwwxxkYLEz6fLWEFsEQEniWXv5rFD1IhLvDx6hB3kBgmBmRwS2+dPgmpw
+        kbg7p5EdwhaWeHV8C5QtJfGyv40d5E4JAQ+JRX+kIMIZEm+Xr2eEsO0lDlyZA/WKpsT6XfoQ
+        q/gken8/YYLo5JXoaBOCqFaVaH53lQXClpaY2N3NCmF7SEw6+5R5AqPiLCSPzULy2CwkD8xC
+        WLaAkWUVo2RqQXFuemqxaYFhXmo5PL6T83M3MYLTqJbnDsa7Dz7oHWJk4mA8xCjBwawkwrs9
+        sSNJiDclsbIqtSg/vqg0J7X4EKMpMLQnMkuJJucDE3leSbyhiaWBiZmZmYmlsZmhkjivwP/G
+        JCGB9MSS1OzU1ILUIpg+Jg5OqQYmsz9G7zR5Wr8/aLvCuc0uLeRpW20cv4qV3H2/i5Wz2hou
+        V+kvTeAUinkxW9aw7SvX8hOGr7fY2c57fDDtuGnxjE3Rcoe6v6aFyjIHzdvnM33TxJQ/ovKl
+        Ac0Waj802WcscQk/27PnkQbrovVXbh7Yu+XDn5fuk2onnNy19sB/5vvbpnfa3NzmcP9qUMqn
+        nZpvPh6f8Hvmo3yRnhu5Vdw3TR5OWvQmM+CoV9PpTXXh255fEgu9+rPhAeOLwzMlP/nE3RLV
+        qP0grnBZcJ6f2tOzL7XLUl/fSq+VXbBE5UaN9ba73aWnD4ZdeXqnYPHDky8XHVs4rXrT7rq+
+        78f6V/5qi4hxF1hWOKVWduGS1CsLrW8osRRnJBpqMRcVJwIAQZOLCiwEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpikeLIzCtJLcpLzFFi42LZdlhJTneqQXeSwfvpvBbLpjxmtrgydwGr
+        xd7XW9ktNj2+xmpxedccNosZ5/cxWRyaupfRgd3j8rWLzB6zGnrZPO5c28PmsXlJvcfnTXIB
+        rFFcNimpOZllqUX6dglcGYs7LzAWNMlWPP6ykrWBcaF4FyMnh4SAicTpFV/Yuhi5OIQEdjNK
+        dDV+YoZISEtc3ziBHcIWllj57zk7RNFzRonbkxeBFbEJ6ErsWNwG1i0icJxR4t7hz2wgCWaB
+        AImlfbOZIDp2MkpcnLeMBSTBKWAlcWFzFxOILSwQKTFr3RuwBhYBVYlZk9rB1vEKWEo8336J
+        CcIWlDg58wlQLwfQUD2Jto2MEPPlJba/nQN1qYLEz6fLWEFsEQEniWXv5rFD1IhLvDx6hH0C
+        o/AsJJNmIUyahWTSLCQdCxhZVjFKphYU56bnFhsWGOallusVJ+YWl+al6yXn525iBEeTluYO
+        xu2rPugdYmTiYDzEKMHBrCTCuz2xI0mINyWxsiq1KD++qDQntfgQozQHi5I474Wuk/FCAumJ
+        JanZqakFqUUwWSYOTqkGJg5vSRP+aKn6XY4L98l8Xb3id6hJWH3mE8b9y0p65v1STLl2dj7X
+        Kb20xIeSlbdjNXRnnvd6/3gqz6fgnrz9ZY6HUnxqjX7NSNkquVZLcv6sO8+WFi3lCNbV/7JV
+        08k47Pv8tHUvGXZU7C+QKOxOn3p+3kplD8lt7/qF90wxe/WPfeGeOyfutDLLrJNc9GDRmqWN
+        c89/W+CYOPewy7RV/0vz91o6RL2cVKaUzyUcqrOt2jVs9YHaEo9Fb2brNLxNNxZNXvm7YvMW
+        /gKjk3wVqQxbL0X+2H41NreUt3XNOwXz9eltR9wWtLOwnpz5vyZhwjQ15eMTmu8amSz8PPXs
+        7kO/u8q3Hyt7KbVljbN3uoUSS3FGoqEWc1FxIgDrdfKmFQMAAA==
+X-CMS-MailID: 20220523065829epcas5p3dc6257c87391637c95a251116f933573
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220523064307epcas5p4c0c80598c5565b10df20eb471cea6890
+References: <20220523064252.11938-1-juergh@canonical.com>
+        <CGME20220523064307epcas5p4c0c80598c5565b10df20eb471cea6890@epcas5p4.samsung.com>
+        <20220523064252.11938-3-juergh@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 12:13 PM Logan Gunthorpe <logang@deltatee.com> wrote:
->
-> Hi,
->
-> This series includes fixes to fix all the kernel panics in the mdadm
-> tests and some, related, sparse issues. The first 10 patches
-> clean refactor the raid5-cache code so that the RCU usage of conf->log
-> can be cleaned up which is done in patches 11 and 12 -- fixing some
-> actual kernel NULL pointer dereference crashes in the mdadm test.
->
-> Patch 13 fixes some of the remaining sparse warnings that are just
-> missing __rcu annotations.
->
-> Patches 14 and 15 fix a couple additional hangs in an mdadm test.
->
-> This series also originally included a patch[1] to fix the
-> mddev->private=NULL issue in raid0. That bug caused an mdadm tests to
-> crash, but it seems Xiao beat me to the fix by a few days. Hopefully,
-> this work to improve mdadm tests will mean these types of bugs will
-> be caught much sooner, before merging.
+Thanks Juerg for your patch.
 
-Thanks for the fix! The set looks good overall. Please address feedback
-from Christoph and Donald. We should be able to ship it soon.
+>-----Original Message-----
+>From: Juerg Haefliger [mailto:juerg.haefliger@canonical.com]
+>Sent: Monday, May 23, 2022 12:13 PM
+>To: krzysztof.kozlowski@linaro.org; alim.akhtar@samsung.com;
+>linux@armlinux.org.uk; linux-arm-kernel@lists.infradead.org; linux-samsung-
+>soc@vger.kernel.org
+>Cc: linux-kernel@vger.kernel.org; Juerg Haefliger <juergh@canonical.com>
+>Subject: [PATCH 2/3] ARM: s3c: Kconfig.s3c24xx: Fix indentation and replace
+>some tabs
+>
+>The convention for indentation seems to be a single tab. Help text is
+further
+>indented by an additional two whitespaces. Fix the lines that violate these
+>rules.
+>
+>While add it, replace tabs before comments with whitespaces and squeeze
+>multiple empty lines.
+>
+>Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+>---
+> arch/arm/mach-s3c/Kconfig.s3c24xx | 26 ++++++++++++--------------
+> 1 file changed, 12 insertions(+), 14 deletions(-)
+>
+>diff --git a/arch/arm/mach-s3c/Kconfig.s3c24xx b/arch/arm/mach-
+>s3c/Kconfig.s3c24xx
+>index 000e3e234f71..a7625e772905 100644
+>--- a/arch/arm/mach-s3c/Kconfig.s3c24xx
+>+++ b/arch/arm/mach-s3c/Kconfig.s3c24xx
+>@@ -17,8 +17,6 @@ config PLAT_S3C24XX
+> 	help
+> 	  Base platform code for any Samsung S3C24XX device
+>
+>-
+>-
+> menu "Samsung S3C24XX SoCs Support"
+>
+> comment "S3C24XX SoCs"
+>@@ -268,7 +266,7 @@ config MACH_VR1000
+> 	help
+> 	  Say Y here if you are using the Thorcom VR1000 board.
+>
+>-endif	# CPU_S3C2410
+>+endif # CPU_S3C2410
+>
+> config S3C2412_PM_SLEEP
+> 	bool
+>@@ -342,7 +340,7 @@ config MACH_VSTMS
+> 	help
+> 	  Say Y here if you are using an VSTMS board
+>
+>-endif	# CPU_S3C2412
+>+endif # CPU_S3C2412
+>
+> if CPU_S3C2416
+>
+>@@ -390,7 +388,7 @@ config MACH_S3C2416_DT
+> 	  Note: This is under development and not all peripherals can be
+>supported
+> 	  with this machine file.
+>
+>-endif	# CPU_S3C2416
+>+endif # CPU_S3C2416
+>
+> if CPU_S3C2440 || CPU_S3C2442
+>
+>@@ -419,7 +417,7 @@ config S3C2440_PLL_16934400
+> 	default y if S3C24XX_PLL
+> 	help
+> 	  PLL tables for S3C2440 or S3C2442 CPUs with 16.934MHz crystals.
+>-endif
+>+endif # CPU_S3C2440 || CPU_S3C2442
+>
 
-Thanks,
-Song
+This change is more then what commit message tells, so please mention these
+in the commit message as well
+Rest looks fine to me.
 
+
+> if CPU_S3C2440
 >
-> This series will be followed by another series for mdadm which fixes
-> the segfaults and annotates some failing tests to make mdadm tests
-> runnable fairly reliably, but I'll wait for a stable hash for this
-> series to note the kernel version tested against. Following that,
-> v3 of my lock contention series will be sent with more confidence
-> of its correctness.
+>@@ -515,7 +513,7 @@ config SMDK2440_CPU2440
+> 	default y if ARCH_S3C2440
+> 	select S3C2440_XTAL_16934400
 >
-> This series is based on the current md/md-next branch as of today
-> (6ad84d559b8c). A git branch is available here:
+>-endif	# CPU_S3C2440
+>+endif # CPU_S3C2440
 >
->   https://github.com/sbates130272/linux-p2pmem md-bug
+> if CPU_S3C2442
 >
-> Thanks,
+>@@ -535,7 +533,7 @@ config MACH_NEO1973_GTA02
+> 	select S3C24XX_PWM
+> 	select S3C_DEV_USB_HOST
+> 	help
+>-	   Say Y here if you are using the Openmoko GTA02 / Freerunner GSM
+>Phone
+>+	  Say Y here if you are using the Openmoko GTA02 / Freerunner GSM
+>+Phone
 >
-> Logan
+> config MACH_RX1950
+> 	bool "HP iPAQ rx1950"
+>@@ -547,9 +545,9 @@ config MACH_RX1950
+> 	select S3C24XX_PWM
+> 	select S3C_DEV_NAND
+> 	help
+>-	   Say Y here if you're using HP iPAQ rx1950
+>+	  Say Y here if you're using HP iPAQ rx1950
 >
-> [1] https://github.com/sbates130272/linux-p2pmem/commit/5a538f9f48d77cba111773759256bbc3ccaaa74a
+>-endif	# CPU_S3C2442
+>+endif # CPU_S3C2442
 >
-> --
+> if CPU_S3C2443 || CPU_S3C2416
 >
-> Logan Gunthorpe (15):
->   md/raid5-log: Drop extern decorators for function prototypes
->   md/raid5-cache: Refactor r5c_is_writeback() to take a struct r5conf
->   md/raid5-cache: Refactor r5l_start() to take a struct r5conf
->   md/raid5-cache: Refactor r5l_flush_stripe_to_raid() to take a struct
->     r5conf
->   md/raid5-cache: Refactor r5l_wake_reclaim() to take a struct r5conf
->   md/raid5-cache: Refactor remaining functions to take a r5conf
->   md/raid5-ppl: Drop unused argument from ppl_handle_flush_request()
->   md/raid5-cache: Pass the log through to r5c_finish_cache_stripe()
->   md/raid5-cache: Don't pass conf to r5c_calculate_new_cp()
->   md/raid5-cache: Take struct r5l_log in
->     r5c_log_required_to_flush_cache()
->   md/raid5: Ensure array is suspended for calls to log_exit()
->   md/raid5-cache: Add RCU protection to conf->log accesses
->   md/raid5-cache: Annotate pslot with __rcu notation
->   md: Ensure resync is reported after it starts
->   md: Notify sysfs sync_completed in md_reap_sync_thread()
+>@@ -558,7 +556,7 @@ config S3C2443_SETUP_SPI
+> 	help
+> 	  Common setup code for SPI GPIO configurations
 >
->  drivers/md/md.c          |  13 ++-
->  drivers/md/raid5-cache.c | 240 ++++++++++++++++++++++++---------------
->  drivers/md/raid5-log.h   | 103 ++++++++---------
->  drivers/md/raid5-ppl.c   |   2 +-
->  drivers/md/raid5.c       |  50 ++++----
->  drivers/md/raid5.h       |   2 +-
->  6 files changed, 231 insertions(+), 179 deletions(-)
+>-endif	# CPU_S3C2443 || CPU_S3C2416
+>+endif # CPU_S3C2443 || CPU_S3C2416
 >
+> if CPU_S3C2443
 >
-> base-commit: 6ad84d559b8cbce9ab27a3a2658c438de867c98e
-> --
-> 2.30.2
+>@@ -571,13 +569,13 @@ config MACH_SMDK2443
+> 	help
+> 	  Say Y here if you are using an SMDK2443
+>
+>-endif	# CPU_S3C2443
+>+endif # CPU_S3C2443
+>
+> config PM_H1940
+> 	bool
+> 	help
+> 	  Internal node for H1940 and related PM
+>
+>-endmenu	# Samsung S3C24XX SoCs Support
+>+endmenu # "Samsung S3C24XX SoCs Support"
+>
+>-endif	# ARCH_S3C24XX
+>+endif # ARCH_S3C24XX
+>--
+>2.32.0
+
+
