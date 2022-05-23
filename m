@@ -2,84 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D36C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DDFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235056AbiEWLx0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
+        id S235067AbiEWLxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235043AbiEWLxZ (ORCPT
+        with ESMTP id S235043AbiEWLxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:53:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAE4425E98
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653306803;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7F3S847gNoYJomgUoUZV18TXMjCkXEdtxQeLaDBDuhM=;
-        b=R6MM9teEuZ4e4PX647ku+P04aPnoq25kpPVIGHcRpK6fGqwrzXlfJlV/lQycT81b9ldgAS
-        Uo2WN/ATsx+kMeZlyrzEdmPf07lxpcRrQmnagA3qyVdsls7BOfpiWL16szaok8YyRfxdtF
-        u4EXFDOs+6n09hDnXjh72MLX1RNKLqs=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-7-FllGObz-PQOjGLViKr_Rdw-1; Mon, 23 May 2022 07:53:22 -0400
-X-MC-Unique: FllGObz-PQOjGLViKr_Rdw-1
-Received: by mail-ed1-f71.google.com with SMTP id s9-20020aa7c549000000b0042ab6ab62f0so10459525edr.14
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:53:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7F3S847gNoYJomgUoUZV18TXMjCkXEdtxQeLaDBDuhM=;
-        b=j1GxZaNbfVKziH6xt5L69P2ufBNZaITRtVi3humR0LZCF4SZRSwDFoffNMzlthmtdy
-         wNP4SEoz2FRsAcwMHYnafoXwPAJp/xPHsEXzljRP1tcm4rMu1KKOlXNOGddowL1PlI0L
-         /h6eJzWuYLvOBrARivOd0khkBblYEbeKIQR4ywOYLnKRjt9ZmdHLew1d23QmAY159shp
-         xnAxru32AE1CYZY56Qgm4/uPInB5mK2qIHfQtAC9tcwWHmQhaRpMc+Ycm4SLX7UrqcTN
-         qOqxuGHqdj5HvaBFczRlgqph7t8PqD5i4HPxQDAj9RsGWCEA7IkPOuZD5h82FjQNuZv3
-         DFcQ==
-X-Gm-Message-State: AOAM533YPUyeaIcvfv+imyERvKRfNe84h0bdLRAgp0acR98889zNiK9g
-        H+wGgoYKqIpKWZAU8oIpA4vV944E/sdq1KEJGwzCUOpDbNHQAhnycVVitDx5dcwa+VCNWMAovrp
-        DsDsYm6sxR7vukmU0YC8i9B+0
-X-Received: by 2002:aa7:cc01:0:b0:42a:402b:b983 with SMTP id q1-20020aa7cc01000000b0042a402bb983mr23397825edt.257.1653306801373;
-        Mon, 23 May 2022 04:53:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyZQC9f79vxf9n/pVL1esanudk6sncq8ii/E3gyGPk2KhpEeJpKzIAHGD8JrKhZmVEi+x9pKw==
-X-Received: by 2002:aa7:cc01:0:b0:42a:402b:b983 with SMTP id q1-20020aa7cc01000000b0042a402bb983mr23397812edt.257.1653306801228;
-        Mon, 23 May 2022 04:53:21 -0700 (PDT)
-Received: from [172.18.228.53] ([46.183.103.8])
-        by smtp.gmail.com with ESMTPSA id 11-20020a17090602cb00b006f3ef214e59sm6076484ejk.191.2022.05.23.04.53.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 04:53:20 -0700 (PDT)
-Message-ID: <74b7b668-a1f6-596f-8000-041f9ca7b181@redhat.com>
-Date:   Mon, 23 May 2022 13:53:18 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] x86, olpc: Avoid leak OF node on error
-Content-Language: en-US
-To:     cgel.zte@gmail.com, dvhart@infradead.org
-Cc:     andy@infradead.org, tglx@linutronix.de,
+        Mon, 23 May 2022 07:53:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D6224F06;
+        Mon, 23 May 2022 04:53:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F130B8109D;
+        Mon, 23 May 2022 11:53:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C50DC385A9;
+        Mon, 23 May 2022 11:53:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653306811;
+        bh=yZuk3d4cZKnVqTh4bOMLEpn25pDviA0vilD33AxQFpM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LUYR96xFWGzXcDZBDX2pg0s/9kwtDuE4XDSLUrJHQAkJyaXVrbdmPRICWwrvWGS+c
+         RW0BQH9RPek5YS662qI2/bh2Bw93P8Znp4u8/kjG3yvwQFdCVv9sKUmLXZ+nIqxBT3
+         MVwwzzDCddoez26k340Y+HXqtAfJ1LwPy9M5/sSVWaBXZNgb/g7TH08ZCdNJUvo6HE
+         2G4rCMs7XgucWyoXv3fGDCyUtGtBjfeg834leBb4BdBQ/1KSwDpj8V//Ra/isr/fEI
+         AIg7rim+PjncaTqjbCgcrAoJo/fBVhUxqX/dN6Sp57e9v0FMER1UAzf+PXmvqVEwH4
+         ZPC/gK8aKVFHw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nt6cq-00030k-Jb; Mon, 23 May 2022 13:53:28 +0200
+Date:   Mon, 23 May 2022 13:53:28 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     cgel.zte@gmail.com
+Cc:     dvhart@infradead.org, andy@infradead.org, tglx@linutronix.de,
         platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
         Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] x86, olpc: Avoid leak OF node on error
+Message-ID: <Yot1uKb0TRnUPcz9@hovoldconsulting.com>
 References: <20220523111253.3114-1-chi.minghao@zte.com.cn>
-From:   Hans de Goede <hdegoede@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20220523111253.3114-1-chi.minghao@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 5/23/22 13:12, cgel.zte@gmail.com wrote:
+On Mon, May 23, 2022 at 11:12:53AM +0000, cgel.zte@gmail.com wrote:
 > From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
 > The OF node should be put before returning error in xo1_rtc_init(),
@@ -103,17 +77,14 @@ On 5/23/22 13:12, cgel.zte@gmail.com wrote:
 >  	if (!node)
 >  		return 0;
 > -	of_node_put(node);
->  
+
+Is this a joke? Don't you guys even try to understand the code your
+"robot" tells you to change?
+
+Please don't send any more patches until you've figured out how you
+messed up here.
+
 >  	pr_info("olpc-xo1-rtc: Initializing OLPC XO-1 RTC\n");
 >  	rdmsrl(MSR_RTC_DOMA_OFFSET, rtc_info.rtc_day_alarm);
 
-of_node_put on a NULL node is a no-op, so this patch
-does not make any functional difference and it makes the
-code harder to read.
-
-nack.
-
-Regards,
-
-Hans
-
+Johan
