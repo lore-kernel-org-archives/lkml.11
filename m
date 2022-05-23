@@ -2,86 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B97C5C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81751C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237590AbiEWR6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
+        id S236820AbiEWR6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242207AbiEWRcP (ORCPT
+        with ESMTP id S242379AbiEWRc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:15 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2C1753737
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:27:06 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A3E61FB;
-        Mon, 23 May 2022 10:17:07 -0700 (PDT)
-Received: from pluto.guestnet.cambridge.arm.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5BC6B3F73D;
-        Mon, 23 May 2022 10:17:05 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Heiko Stuebner <heiko@sntech.de>, Liang Chen <cl@rock-chips.com>,
-        Kever Yang <kever.yang@rock-chips.com>,
-        Jeffy Chen <jeffy.chen@rock-chips.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Etienne Carriere <etienne.carriere@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>
-Subject: [PATCH] firmware: arm_scmi: Relax BASE protocol sanity checks on protocol list
-Date:   Mon, 23 May 2022 18:15:59 +0100
-Message-Id: <20220523171559.472112-1-cristian.marussi@arm.com>
+        Mon, 23 May 2022 13:32:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB4D72E1A;
+        Mon, 23 May 2022 10:27:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7772660AB8;
+        Mon, 23 May 2022 17:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 806E4C385AA;
+        Mon, 23 May 2022 17:27:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326831;
+        bh=7y2CQznIYaNLnJfzqbrtnBIEIajSKZwOQDySGCkC2mA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=g2SOlOHaAsz4Y0GT5+n/UfFWTr8aXZB010Jkx8UXG3wGFK0OUb7hVYWD+lsHcLGHn
+         mBoC3d9KyQWi5CMgmmQuwkK6PRSoslimOMaOnmgtAo5uBDzHxSe24F+/ft6tUAB3Yy
+         AcvngXc0y51LcinLmQODbDvVhrxL0SyKzMm4a1wc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 073/158] pinctrl: ocelot: Fix for lan966x alt mode
+Date:   Mon, 23 May 2022 19:03:50 +0200
+Message-Id: <20220523165843.050863028@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Even though malformed replies from firmware must be treated carefully to
-avoid memory corruption Kernel side, some out-of-spec SCMI replies can
-be tolerated to avoid breaking existing deployed system, as long as they
-won't cause memory issues.
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-Reported-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-Cc: Etienne Carriere <etienne.carriere@linaro.org>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+[ Upstream commit d3683eeb9d2b4aa5256f830721655ef2ee97e324 ]
+
+For lan966x, the GPIO 35 has the wrong function for alternate mode 2.
+The mode is not none but is PTP sync.
+
+Fixes: 531d6ab36571c2 ("pinctrl: ocelot: Extend support for lan966x")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Reviewed-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Link: https://lore.kernel.org/r/20220413192918.3777234-1-horatiu.vultur@microchip.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_scmi/base.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/pinctrl/pinctrl-ocelot.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
-index 20fba7370f4e..d0ac96da1ddf 100644
---- a/drivers/firmware/arm_scmi/base.c
-+++ b/drivers/firmware/arm_scmi/base.c
-@@ -221,11 +221,17 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
- 		calc_list_sz = (1 + (loop_num_ret - 1) / sizeof(u32)) *
- 				sizeof(u32);
- 		if (calc_list_sz != real_list_sz) {
--			dev_err(dev,
--				"Malformed reply - real_sz:%zd  calc_sz:%u\n",
--				real_list_sz, calc_list_sz);
--			ret = -EPROTO;
--			break;
-+			dev_warn(dev,
-+				 "Malformed reply - real_sz:%zd  calc_sz:%u  (loop_num_ret:%d)\n",
-+				 real_list_sz, calc_list_sz, loop_num_ret);
-+			/*
-+			 * Bail out if the expected list size is bigger than the
-+			 * total payload size of the received reply.
-+			 */
-+			if (calc_list_sz > real_list_sz) {
-+				ret = -EPROTO;
-+				break;
-+			}
- 		}
- 
- 		for (loop = 0; loop < loop_num_ret; loop++)
+diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+index 370459243007..61e3844cddbf 100644
+--- a/drivers/pinctrl/pinctrl-ocelot.c
++++ b/drivers/pinctrl/pinctrl-ocelot.c
+@@ -129,6 +129,7 @@ enum {
+ 	FUNC_PTP1,
+ 	FUNC_PTP2,
+ 	FUNC_PTP3,
++	FUNC_PTPSYNC_0,
+ 	FUNC_PTPSYNC_1,
+ 	FUNC_PTPSYNC_2,
+ 	FUNC_PTPSYNC_3,
+@@ -252,6 +253,7 @@ static const char *const ocelot_function_names[] = {
+ 	[FUNC_PTP1]		= "ptp1",
+ 	[FUNC_PTP2]		= "ptp2",
+ 	[FUNC_PTP3]		= "ptp3",
++	[FUNC_PTPSYNC_0]	= "ptpsync_0",
+ 	[FUNC_PTPSYNC_1]	= "ptpsync_1",
+ 	[FUNC_PTPSYNC_2]	= "ptpsync_2",
+ 	[FUNC_PTPSYNC_3]	= "ptpsync_3",
+@@ -891,7 +893,7 @@ LAN966X_P(31,   GPIO,   FC3_c,     CAN1,      NONE,   OB_TRG,   RECO_b,      NON
+ LAN966X_P(32,   GPIO,   FC3_c,     NONE,   SGPIO_a,     NONE,  MIIM_Sa,      NONE,        R);
+ LAN966X_P(33,   GPIO,   FC1_b,     NONE,   SGPIO_a,     NONE,  MIIM_Sa,    MIIM_b,        R);
+ LAN966X_P(34,   GPIO,   FC1_b,     NONE,   SGPIO_a,     NONE,  MIIM_Sa,    MIIM_b,        R);
+-LAN966X_P(35,   GPIO,   FC1_b,     NONE,   SGPIO_a,   CAN0_b,     NONE,      NONE,        R);
++LAN966X_P(35,   GPIO,   FC1_b,  PTPSYNC_0, SGPIO_a,   CAN0_b,     NONE,      NONE,        R);
+ LAN966X_P(36,   GPIO,    NONE,  PTPSYNC_1,    NONE,   CAN0_b,     NONE,      NONE,        R);
+ LAN966X_P(37,   GPIO, FC_SHRD0, PTPSYNC_2, TWI_SLC_GATE_AD, NONE, NONE,      NONE,        R);
+ LAN966X_P(38,   GPIO,    NONE,  PTPSYNC_3,    NONE,     NONE,     NONE,      NONE,        R);
 -- 
-2.36.1
+2.35.1
+
+
 
