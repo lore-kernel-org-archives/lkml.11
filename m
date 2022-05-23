@@ -2,78 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C448DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238336AbiEWP4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
+        id S238352AbiEWP4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238282AbiEWPz6 (ORCPT
+        with ESMTP id S238371AbiEWP4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:55:58 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E87652B2A;
-        Mon, 23 May 2022 08:55:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653321356; x=1684857356;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/SvgtnbrTcyFxT3V8Yw8Zvk25pwqcKM3FaWkynyJDfQ=;
-  b=WlxGJpYnCeBl+dxVHJKGBLGDwlKl3ZaHHChNLggdUchh1pMZn1EwgmYI
-   6MOvMeetGjjiumYPSCBVN4iY6Ppo8QWW2tHtmqtp5f/A9KdBM4hGDLbWV
-   BCcvg7bSFO/eviJsbhtP+gbLeocwqSvsW4Jr+lIFINNQs1FC928RNr9Qb
-   k9pHrfI/TfRLJZnWi/pfIu93LO+fSbzLc12MfI6hj8WdjVdEknhiSNdzZ
-   5EXtB5RxVTvcQrm6PuIEqUp2XNbQKoLRyKt7YpLU3j1n+RHVbCenkU5Mi
-   ZLB90pcmzdN0WmOURHe3qgpKppVvsIpRccI55Lte6S4AS4oicEApxqhbS
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="359657217"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="359657217"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 08:54:51 -0700
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="600718969"
-Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.209.116.169]) ([10.209.116.169])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 08:54:51 -0700
-Message-ID: <2ff19ce9-98e3-7867-9762-ffae049f1d9b@linux.intel.com>
-Date:   Mon, 23 May 2022 08:54:51 -0700
+        Mon, 23 May 2022 11:56:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8A4DF20;
+        Mon, 23 May 2022 08:56:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2FE461355;
+        Mon, 23 May 2022 15:56:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F8BC385A9;
+        Mon, 23 May 2022 15:56:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653321365;
+        bh=E8znbfnYp3hj4yVUa36i9d31HFMgOoy/ZnyA7xRjy6w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Bz2lnVk1HYUjbGFYGkq0ZM/0tYV7dJ4EfjXajHtUYiKcsLg8BpuMFtRp3lmTHz0j3
+         /2FEFKq7aBjBuDWJsQjD0YLsjQFb+qwUxtfoIE9NQR5/s3g/B1skRQmtR7HeJGmkLK
+         XTRy2oc2E0nlMQOFWLJ268HLsLeyFEyLPgV3aSRjsk8+9qAg0OYL2+XKsaGdAaRT6a
+         VddQD8F57du5qq9yXcxrEnVvu85cF5r5itTF1wgAVpltPds7W/Xn6Ox2OPMeW4N2X+
+         6TXu0BIYwvvBnocSJ40KMwbpTcI+e9nPwayEqGNfAchnNrmgD5+Hg0e+r5+AKMepDR
+         xSDJBI/4QoF0g==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1ntAPb-0007k4-4K; Mon, 23 May 2022 17:56:03 +0200
+Date:   Mon, 23 May 2022 17:56:03 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     frank zago <frank@zago.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, linux-usb@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] mfd: ch341: add core driver for the WCH CH341 in
+ I2C/SPI/GPIO mode
+Message-ID: <Youukx+7oieeDVCE@hovoldconsulting.com>
+References: <20220401023306.79532-1-frank@zago.net>
+ <20220401023306.79532-2-frank@zago.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH V2 5/6] perf kvm report: Add guest_code support
-Content-Language: en-US
-To:     Adrian Hunter <adrian.hunter@intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>, Leo Yan <leo.yan@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <20220517131011.6117-1-adrian.hunter@intel.com>
- <20220517131011.6117-6-adrian.hunter@intel.com>
-From:   Andi Kleen <ak@linux.intel.com>
-In-Reply-To: <20220517131011.6117-6-adrian.hunter@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401023306.79532-2-frank@zago.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 31, 2022 at 09:33:04PM -0500, frank zago wrote:
+> The CH341 is a multifunction chip, presenting 3 different USB PID. One
+> of these functions is for I2C/SPI/GPIO. This new set of drivers will
+> manage I2C and GPIO.
+> 
+> Signed-off-by: frank zago <frank@zago.net>
+> ---
 
-On 5/17/2022 6:10 AM, Adrian Hunter wrote:
-> Add an option to indicate that guest code can be found in the hypervisor
-> process
+> +static int ch341_usb_probe(struct usb_interface *iface,
+> +			   const struct usb_device_id *usb_id)
+> +{
+> +	struct usb_host_endpoint *endpoints;
+> +	struct ch341_device *dev;
+> +	int rc;
+> +
+> +	dev = devm_kzalloc(&iface->dev, sizeof(*dev), GFP_KERNEL);
+> +	if (!dev)
+> +		return -ENOMEM;
+> +
+> +	dev->usb_dev = usb_get_dev(interface_to_usbdev(iface));
 
-Sorry for harping on this, but is it correct that this assumes that the 
-code is still at the original location at decode time?
+No need to grab a reference unless you're going to hold on to it past
+disconnect().
 
-If yes we need some warnings for this, something like:
+> +	dev->iface = iface;
+> +	mutex_init(&dev->usb_lock);
+> +
+> +	if (iface->cur_altsetting->desc.bNumEndpoints != 3) {
+> +		rc = -ENODEV;
+> +		goto free_dev;
+> +	}
+> +
+> +	endpoints = iface->cur_altsetting->endpoint;
+> +	if (!usb_endpoint_is_bulk_in(&endpoints[0].desc) ||
+> +	    !usb_endpoint_is_bulk_out(&endpoints[1].desc) ||
+> +	    !usb_endpoint_xfer_int(&endpoints[2].desc)) {
+> +		rc = -ENODEV;
+> +		goto free_dev;
+> +	}
 
-This only works when the code is still available in the riginal memory 
-location at decode time. This is typically the case for kernel code 
-(unless modules are unloaded). For user programs it only works as long 
-as there is no memory pressure which might cause the memory to be 
-reused. For dynamically generated (JITed) code it might be rather 
-unreliable unless the hypervisor is SIGSTOPed during decoding.
+Please use usb_find_common_endpoints() for the above.
 
+> +
+> +	dev->ep_in = endpoints[0].desc.bEndpointAddress;
+> +	dev->ep_out = endpoints[1].desc.bEndpointAddress;
+> +	dev->ep_intr = endpoints[2].desc.bEndpointAddress;
+> +	dev->ep_intr_interval = endpoints[2].desc.bInterval;
+> +
+> +	usb_set_intfdata(iface, dev);
+> +
+> +	rc = mfd_add_hotplug_devices(&iface->dev, ch341_devs,
+> +				     ARRAY_SIZE(ch341_devs));
+> +	if (rc) {
+> +		rc = dev_err_probe(&iface->dev, rc,
+> +				   "Failed to add mfd devices to core\n");
+> +		goto free_dev;
+> +	}
+> +
+> +	return 0;
+> +
+> +free_dev:
+> +	usb_put_dev(dev->usb_dev);
+> +
+> +	return rc;
+> +}
+> +
+> +static void ch341_usb_disconnect(struct usb_interface *usb_if)
+> +{
+> +	struct ch341_device *dev = usb_get_intfdata(usb_if);
+> +
+> +	mfd_remove_devices(&usb_if->dev);
+> +	usb_put_dev(dev->usb_dev);
+> +}
+
+Johan
