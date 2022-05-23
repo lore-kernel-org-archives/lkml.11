@@ -2,138 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F183C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35469C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243671AbiEWS1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
+        id S241467AbiEWS1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245494AbiEWS1I (ORCPT
+        with ESMTP id S245497AbiEWS1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 14:27:08 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ADCD4105;
-        Mon, 23 May 2022 11:02:38 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id gi33so21973406ejc.3;
-        Mon, 23 May 2022 11:02:38 -0700 (PDT)
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1F1B0D0A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:02:34 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NHE1E0005485;
+        Mon, 23 May 2022 18:01:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : in-reply-to : references : date : message-id : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=qS+eAq3+c4pMrMKjoUTidEUfoR/bJiJmXX3pF672aw0=;
+ b=wLhz2FoAxkDkEqstjGLevPtxMqU4DV8pxQeTi4frORyxpLcL7XG/lZldc3/vb9KE/rqF
+ 7DHjyxhz3wuqtOFYUhHtWKg2p8yvLWKjRU6B+Oj/paYwdPkXnZb+KMHbnV0O5yruruWf
+ 9Ko+xxy2dFbJ+sNveFYROPHn0UAj5dyRd5octJeka60QKQ24NQ+paGR6tzdM+25UEwGB
+ f7QMtwdFWGOTd9/VkRyGGqJNxzUlv5Uw4AsPZqCPOZykPbaKsvXDX7c9KoZaAghkyfrk
+ y6T3NHFGTjm9aEIj47ep3OtXtjno/2a6TlYz0aEGfK5LGCFAqbHPMxa9sjFafJeLGXgP PA== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g6pgbm7q0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 18:01:00 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24NI0eBk035804;
+        Mon, 23 May 2022 18:01:00 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2102.outbound.protection.outlook.com [104.47.70.102])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g6ph1u1bq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 18:00:59 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MDOnAjbrworMXEC2t667OxoCOwm9rsmhXsxoI26+71MyawXKQQGwCuNagGyxdV7WGBXK0M5Fg/8n8d4e/RJAV8luxHLZgRxNMSguKKVZz72ENJtbFlEj7hJ9PBjA5Nhrp1LCVvayqlGsS76rcDsiuvjwPOwGSvVdFA0lfUs8/lUsFtnRYd/DR/i9ua4w+6oHlIRurjiAxu4urh0+kX/WEU4f0W+oRR+LtoRmSqoWCyMCJQeersUiE80kH+5dSMT8/96e49ImDjVlmotUUS1iSxZ5kn/ld//diTzVouC2iXUwa3XUAJuxlpzIhz3/dAiHbRKboDc2qIvKieK2+5XkKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qS+eAq3+c4pMrMKjoUTidEUfoR/bJiJmXX3pF672aw0=;
+ b=YRoCs48MzrSd1S/+ZvdzWnzmEhnww6vka61AZsORWc1UuibFo9XZxBaERh4IvKxRSq4+8mxP+Mo7b1Rky3meHHIKdTBla6wzYmm96Bb1fP1BfnxXpPORukoQFMckQVRYk6SyDVN8E/IDjFLK+0E8QYwzVRMEQTROGHaCeIt0T2VI4wwHgLygRo7Xw+A5UdT0HP4ldx53Spu7xdUuJsAkpseIItvKWxQLzw0OfknsedqPAF8jqiyOh7ekWlcYTQf2gpVwhqoAGgPG+d+khE4E5G8zZ1RtaurcDee5HxS33n29nHN5LgRimso+YSTkJWvQB072csrCXJed2i5aaR5yMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=X00UxJiG29OHM/sXI3MtHY1xp0KAlUMcsiInYqLUawo=;
-        b=n5V1x8nfknwiuZ01vBCWBJp2SDBg3zi23hvJdOeG1ukUA5q0CI/AGiNS1Aw76smWTR
-         i0m0FQVyyc4hFwDPIg5ElEbnyUp5Ei/cAjCU9hY1/V0ytPv8h4VZexApyqWhBUvX2SCc
-         qjC9pB3PR1dE5B952JAsq13Z5EUHKPBulwhFBbYP4M7Il7td63xkuXPTMHgXxxrDN9Vy
-         4SGaUQxOHHFeiFjA8KdbSMkFpjud0qeHvQEY/6MXBUinCtXkIT3QmWpV3u2Zc2kgo9/0
-         7TxD+0oacgozB26oHS53DHBnk8Y65gXwdJHJo0IaTnN5mBorkhprNt2OFIJrxzZtAL1o
-         Jhxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=X00UxJiG29OHM/sXI3MtHY1xp0KAlUMcsiInYqLUawo=;
-        b=veHGgUDPAexLTuWrrUkEkHx6KRKtPxPec8C7yjUhn+j2PRt+04TrgxEm60U3w/vApz
-         zHYleAeE9HCnnVQmS7bh+F9Cf6NWZwrfAF0FOfb9hUpros9BJ6BqIg39i5+UOiRyzMrK
-         oWYuMn/V7Qt44r4HvFAT4ZJWtuo8YzXlxjyhc/lylYS0axA3YYW/8r8hLvcOpwKRbxpS
-         ZNfMqkpg27sec1FTlcYJhYkcxNTM59Y/CjSePQN3ZOQu64z+uMkrAAXZ4VrhZZQchqjf
-         09QfiUTkg47AomKcSSoHabbZbyQ0ltW6U3Dv4NoMn++pa0Lg/OC50paas0WOjSJOTsZ7
-         nkwA==
-X-Gm-Message-State: AOAM533xe/pBEqkWtqEkulxdI66Y/tJPmRnH/00jlBFtdjctgOmQnR3C
-        4dS2xSyfjqysXKJGcbY9h40UcxitiLRxAA==
-X-Google-Smtp-Source: ABdhPJzGrq2mVI+VKEC0mJ7HKWpkQWD0eyzh6iKDuBcdWU+6lo4lBEBoetokGgCNwOO/7NdTKhgcOg==
-X-Received: by 2002:a2e:b88a:0:b0:253:e7f5:c0e9 with SMTP id r10-20020a2eb88a000000b00253e7f5c0e9mr5076231ljp.38.1653328478170;
-        Mon, 23 May 2022 10:54:38 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id x9-20020a056512078900b0047255d211f9sm2087743lfr.296.2022.05.23.10.54.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 10:54:37 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org, jic23@kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH 4/5] proximity: vl53l0x: Handle the reset GPIO
-Date:   Mon, 23 May 2022 20:53:43 +0300
-Message-Id: <20220523175344.5845-5-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523175344.5845-1-markuss.broks@gmail.com>
-References: <20220523175344.5845-1-markuss.broks@gmail.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qS+eAq3+c4pMrMKjoUTidEUfoR/bJiJmXX3pF672aw0=;
+ b=RmZSbX+jVzlNqz7Y85Kb0A7BY/6jiosyOMjMCyapJ9vmOSWKX+UQ//7WBlwtLjFFTtLGx4JV8PIQyaF6uFyUgWsuzIBJMuDGdFHo3IrsbultWhJDBZtPPiCZBKg/vSCfajXYFv2b4S+eMyyMm2KFl6Vbtwj3+6L6dZNgTjphZQM=
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com (2603:10b6:610:78::20)
+ by DM6PR10MB2987.namprd10.prod.outlook.com (2603:10b6:5:66::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17; Mon, 23 May
+ 2022 18:00:57 +0000
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4421:897e:e867:679c]) by CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4421:897e:e867:679c%8]) with mapi id 15.20.5273.023; Mon, 23 May 2022
+ 18:00:57 +0000
+From:   Stephen Brennan <stephen.s.brennan@oracle.com>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
+        akpm@linux-foundation.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dave Young <dyoung@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bixuan Cui <cuibixuan@huawei.com>,
+        David Vernet <void@manifault.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH 0/2] Expose kallsyms data in vmcoreinfo note
+In-Reply-To: <YoTIMEPAxLF9t2eo@MiWiFi-R3L-srv>
+References: <20220517000508.777145-1-stephen.s.brennan@oracle.com>
+ <YoTIMEPAxLF9t2eo@MiWiFi-R3L-srv>
+Date:   Mon, 23 May 2022 11:00:55 -0700
+Message-ID: <878rqs163s.fsf@stepbren-lnx.us.oracle.com>
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR07CA0046.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::23) To CH2PR10MB4166.namprd10.prod.outlook.com
+ (2603:10b6:610:78::20)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 549f65b0-227d-4a31-4a80-08da3ce63015
+X-MS-TrafficTypeDiagnostic: DM6PR10MB2987:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB2987F7C681A13811BD7F7269DBD49@DM6PR10MB2987.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x2l8Q0sq3LagFq/AxxGmABgYm6J4kcTPFugHad5JO1vqHKOpltFA7QhJqBNNB6p8owsZG2K/4LoyM1C3qrpGIwfgHhTEA4DKgDrhgfAFQtTgH/jlzgUwWRPP4mkIu4E8D2opKoiODB5sGqR6nTr2pKBEWE1FLh9I8PWgG6jFmIPLGCypfBKQeVCJ+nUaQq/lfF/echGD85YjgXAh7jYGuvGWQyRWUTU1BLryP+YKgHSFloRPrfy0ND9fEcN3/HuEYchEzP9x7kPSFKcHK19+3PZzsp2UxgwmCMk/xgtHymLCJ1rIJb9GfBV96HSx0Obvi9goaNra+rPFiZAD6oWh5SDv0QlXNyeFlQB8AtuVTeCooaL5rf/keLdxlL4SK6uMCqwI+kDWMu7CmCXX2WZ67JgWTEyTYYssqVZpj/eb7vRhe3KfYMWX7OtBtTTFiCtoqfx+pHhb48lRAXC/X44LKMqjZURLEByXylvacJ2qaRj60/ysgbEttufSQw9K3P0dnPKTZyY5Mc1LKE8nnrZjkhSzjoyOYXsJ284+TTdFk5o+zsLsS90hBXF/V2zXEPWiF3utTESu7YUq+cJ6R1c2uX8D0SkZ6E4Zw7FdoKne4YBMW6wIJdA52+EUAKQaSD43n1wmPtzxRjBmGV4A3kG0KxNB90hRHuzmOiNxD8n1r0uRg7j/Bpg3FPOeL85UElUrpbSwihfKmialGSWhihC7ZA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4166.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(86362001)(83380400001)(508600001)(316002)(186003)(2906002)(6486002)(38350700002)(38100700002)(7416002)(26005)(6512007)(8676002)(6506007)(6916009)(8936002)(5660300002)(52116002)(4326008)(54906003)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zEMbj1rol3TqUBCfsD3wZ/EWqS8rR/pOp3UqrYwdtfdBAVww7CgRPqUSm4fF?=
+ =?us-ascii?Q?vYLvMZjSVsUGT6RusXhL4vh92iNY+k2YDGP/5LAbhzdX82eViMwbDcwryZE3?=
+ =?us-ascii?Q?DxA+PmfErsfjsQLUCeb5Cij7CSsOBWFqykQmN3tGLZWPQYljRz991uwQAa90?=
+ =?us-ascii?Q?GK947P5M6Vzoi99YPHkijwZxIS0x/b8tmV1/gouNToA2yW+39TLR6kMRXmm2?=
+ =?us-ascii?Q?N5Xtzt2TPmZWr2srTQWwgnJqx1a5FxrBY+XKafhODSW+NTmvHS8iplHrzL7T?=
+ =?us-ascii?Q?Hhi03J9Ux8LWAi14ldRbuSx9dWOMKVouOlHT21eDFa+5wkuqRBYeJ5VeuBjg?=
+ =?us-ascii?Q?M3p4wbITpRp1VYVq7XEfGzRxaPDKWRQmkIGY088r+plCDPeMvOzCUWx8VlTe?=
+ =?us-ascii?Q?D6QncH8yKO1aO1dyXIRh8IpLAtOsGtuaMFTicEg4qgKbkz5MGs/2DiyqtIaI?=
+ =?us-ascii?Q?OVUSEZvP9I/zw9fQffg9441wXfx/89hqA7kxJLMk4Z6I5py55GkY2OBiqXkb?=
+ =?us-ascii?Q?Ig6a5Sf03asu3mTGwJXnd+dIHL61G8+8Tn23C1GaAOMKfDqsu8u074oSQMkP?=
+ =?us-ascii?Q?4c4MtpepZHygGqJxikoLCBFWUKQCw46rHnbD4C0VDvGjiPi+pneOMPlhpvUQ?=
+ =?us-ascii?Q?ksUKp57Qexjigb0KN9xKP+81BCfR6Z47uSsf51slgcqepTIk9dICAzMccwGh?=
+ =?us-ascii?Q?L3qrXWcdlxWLwV+ACiiK8Fka2TCOe2Ju0OHvluFS0XrGAtzUjiLSzI8rsSfE?=
+ =?us-ascii?Q?sL+QZhYDS9fWups3VLxG16g0qSQvdLxpwFJLj9f2amKphioCV2wcUq1W8SR5?=
+ =?us-ascii?Q?RkOg4gvnA6A3Cj4aqhhlZ28zS2E5VIPe8Q1apn5URk3tKALNruvSPAgP/Ezw?=
+ =?us-ascii?Q?Atz2B1OTdHN7CCpvWZIm0s9ZFTJyuHrnmp+kaFYfgqOTbvXY78Zjn0Y0XLv7?=
+ =?us-ascii?Q?/aU4aE7eHmzNNYbC8+YpcqGE4oR330qP7vwmA9G+j1EPHQmBGAEiggn0BrHw?=
+ =?us-ascii?Q?UNlvsmde6i7sm1R9u3JThyc8pI7Q1aWdvGpTb4DHP/9bTWDaUq/sIEgBIX2/?=
+ =?us-ascii?Q?b8vk3s6Kt176zL9qsJEsFm0gj2l7wdnFeh5Egv2+zwrcPjbKnab/00yZoXJc?=
+ =?us-ascii?Q?BUFzJUEhfKxUn/AVVFVfqhn3FcU645Ad0DafutRU/wzv1DvM7FnyPJYLxL1Z?=
+ =?us-ascii?Q?+k/GkrS0lPu25j9wyPc/FTbpt4J6+OvuvThS0pSgFpoLhgxiPeIrGrixlMAY?=
+ =?us-ascii?Q?rQwEIosQVe2GjqKyJzLJZSWcJJ2mx72QLs0S/IB5xpNEJFMxyQM0V6IFREfk?=
+ =?us-ascii?Q?isEX0Gn+bZjFg/Sk3E+0Gi7qMhEizS3mNUL/RJfes6nkjfEAXYxOqktmwXWv?=
+ =?us-ascii?Q?AMTTG3FixvsruU+r/bCDVSO2cggjKvdLcjOcGDwV5ktiAbxzfcIBOUMJtUcm?=
+ =?us-ascii?Q?LJ49KCuMocwmLEyqECLSnEQG0YyZbZA8JacfEiXoNzWFpnJI4do2lPWRQcl7?=
+ =?us-ascii?Q?3nomKX5eUxgewxIWDYPTorvvrptfhuMBbGywY46ZmoQyeUqC6buM4XhRlTxf?=
+ =?us-ascii?Q?8hShJrvJ4BfEQxKCTK+W0+1S3B5Z3GTI+GX2nfOl1daXSP8fEvC6k06P9KdI?=
+ =?us-ascii?Q?6KfAd4k5WEP9gvNREP+bm1Xaa9HVXWe4NkNOju+lX63yrnZ1MJxLUVgG1q5F?=
+ =?us-ascii?Q?xwA46GmH2CjPV4/6dL6XxtHwum4OUTC1gKuLB4jL+RKabbkibTi+DrXxrUsc?=
+ =?us-ascii?Q?4cT1mpZWYYpYThoQiO0a6PCXoT99Vlw=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 549f65b0-227d-4a31-4a80-08da3ce63015
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4166.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 18:00:57.5067
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NZy2gPd3ufjKYnm3vKITdTotC9Sl1bIa0qRtZ6NQa5KBimVafKjQkaMRSrSZaxlHrcbd+9Xb5tcXgq2GxlNnXKV1kRpIlrKZqfzcrtyoREw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2987
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
+ definitions=2022-05-23_07:2022-05-23,2022-05-23 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 mlxscore=0
+ phishscore=0 mlxlogscore=727 adultscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205230102
+X-Proofpoint-ORIG-GUID: SaL7w5T4TTy9ucPjoJ8StLRLAPN622um
+X-Proofpoint-GUID: SaL7w5T4TTy9ucPjoJ8StLRLAPN622um
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Handle the GPIO connected to the XSHUT/RST_N pin of VL53L0X.
+Baoquan He <bhe@redhat.com> writes:
+> On 05/16/22 at 05:05pm, Stephen Brennan wrote:
+>> The kernel can be configured to contain a lot of introspection or
+>> debugging information built-in, such as ORC for unwinding stack traces,
+>> BTF for type information, and of course kallsyms. Debuggers could use
+>> this information to navigate a core dump or live system, but they need
+>> to be able to find it.
+>> 
+>> This patch series adds the necessary symbols into vmcoreinfo, which
+>> would allow a debugger to find and interpret the kallsyms table. Using
+>> the kallsyms data, the debugger can then lookup any symbol, allowing it
+>> to find ORC, BTF, or any other useful data.
+>> 
+>> This would allow a live kernel, or core dump, to be debugged without
+>> any DWARF debuginfo. This is useful for many cases: the debuginfo may
+>> not have been generated, or you may not want to deploy the large files
+>> everywhere you need them.
+>> 
+>> I've demonstrated a proof of concept for this at LSF/MM+BPF during a
+>> lighting talk. Using a work-in-progress branch of the drgn debugger, and
+>> an extended set of BTF generated by a patched version of dwarves, I've
+>> been able to open a core dump without any DWARF info and do basic tasks
+>> such as enumerating slab caches, block devices, tasks, and doing
+>> backtraces. I hope this series can be a first step toward a new
+>> possibility of "DWARFless debugging".
+>
+> Thanks. Seems no reason to reject, even though I haven't tried drgn.
+> And hope it has no security issue, e.g info leakage, at least I don't
+> see it has. So,
+>
+> Acked-by: Baoquan He <bhe@redhat.com>
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- drivers/iio/proximity/vl53l0x-i2c.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Thanks Baoquan! I don't believe we have any worries regarding security,
+since the kallsyms data itself is already available to root via
+/proc/kallsyms, and core dumps should already be treated as highly
+sensitive data by anybody handling them.
 
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index 8581a873919f..36c48a824725 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -15,6 +15,7 @@
-  */
- 
- #include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/irq.h>
- #include <linux/interrupt.h>
-@@ -44,6 +45,7 @@ struct vl53l0x_data {
- 	struct i2c_client *client;
- 	struct completion completion;
- 	struct regulator *vdd_supply;
-+	struct gpio_desc *reset_gpio;
- };
- 
- static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-@@ -197,6 +199,8 @@ static void vl53l0x_power_off(void *_data)
- {
- 	struct vl53l0x_data *data = _data;
- 
-+	gpiod_set_value_cansleep(data->reset_gpio, 1);
-+
- 	regulator_disable(data->vdd_supply);
- }
- 
-@@ -208,6 +212,8 @@ static int vl53l0x_power_on(struct vl53l0x_data *data)
- 	if (ret)
- 		return ret;
- 
-+	gpiod_set_value_cansleep(data->reset_gpio, 0);
-+
- 	usleep_range(3200, 5000);
- 
- 	return 0;
-@@ -237,6 +243,11 @@ static int vl53l0x_probe(struct i2c_client *client)
- 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
- 				     "Unable to get VDD regulator\n");
- 
-+	data->reset_gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(data->reset_gpio))
-+		return dev_err_probe(&client->dev, PTR_ERR(data->reset_gpio),
-+				     "Cannot get reset GPIO\n");
-+
- 	error = vl53l0x_power_on(data);
- 	if (error)
- 		return dev_err_probe(&client->dev, error,
--- 
-2.36.1
+Do you know which tree this patch will go through?
 
+Thanks,
+Stephen
