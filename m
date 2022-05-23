@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3671C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A313AC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241032AbiEWR0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
+        id S242972AbiEWR2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240521AbiEWRQZ (ORCPT
+        with ESMTP id S239605AbiEWRSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AD56FA1E;
-        Mon, 23 May 2022 10:15:10 -0700 (PDT)
+        Mon, 23 May 2022 13:18:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4998213F60;
+        Mon, 23 May 2022 10:17:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 462AA6153C;
-        Mon, 23 May 2022 17:15:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44867C385A9;
-        Mon, 23 May 2022 17:15:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1BFDB81201;
+        Mon, 23 May 2022 17:16:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17783C385A9;
+        Mon, 23 May 2022 17:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326101;
-        bh=dc9g7pKCCXGPpvSZYkwOO+GtH7VnkiFJIONPj6O+gdk=;
+        s=korg; t=1653326204;
+        bh=SXxfUZXxy9Sp3/Xhlyd1o0WTRjDyDdREmjlFOXUQG7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YiCzndnzS5uoorZgC8sk2MqYLKFacLygMTF40aB6DbXU7wgKh/w8xz2a1Oqbc4DNS
-         2be/UkCzuySyZU/ImGEl7Y2GGm/kRsWcJslytL7EHsSKShhUGmg1KIPcV1qWY1vTR3
-         WagTEQgcqSYlePP6JnKt7eZKJ/cHGoqU0zcS2A2s=
+        b=xC52FqfgV84vpigUEyt8NTDK0FHP1bWR+PgXlMBGFLiU5zAXmQmh9lmZMsfW5qdgJ
+         sy0euiiVWPq5lmuc5ahRXEUGuYzpPmmM5mIKF4NNnfZOfjQIPqALI0zBtcaajK/Ucx
+         izHB+rsnuU+7+rsgGPHrML+EP5lcPjA9QmfuKgQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 13/97] nvme-pci: add quirks for Samsung X5 SSDs
-Date:   Mon, 23 May 2022 19:05:17 +0200
-Message-Id: <20220523165814.453433514@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>, Ong@vger.kernel.org
+Subject: [PATCH 5.4 61/68] net: stmmac: disable Split Header (SPH) for Intel platforms
+Date:   Mon, 23 May 2022 19:05:28 +0200
+Message-Id: <20220523165812.534588696@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +52,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Monish Kumar R <monish.kumar.r@intel.com>
+From: Tan Tee Min <tee.min.tan@linux.intel.com>
 
-[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
+commit 47f753c1108e287edb3e27fad8a7511a9d55578e upstream.
 
-Add quirks to not fail the initialization and to have quick resume
-latency after cold/warm reboot.
+Based on DesignWare Ethernet QoS datasheet, we are seeing the limitation
+of Split Header (SPH) feature is not supported for Ipv4 fragmented packet.
+This SPH limitation will cause ping failure when the packets size exceed
+the MTU size. For example, the issue happens once the basic ping packet
+size is larger than the configured MTU size and the data is lost inside
+the fragmented packet, replaced by zeros/corrupted values, and leads to
+ping fail.
 
-Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So, disable the Split Header for Intel platforms.
+
+v2: Add fixes tag in commit message.
+
+Fixes: 67afd6d1cfdf("net: stmmac: Add Split Header support and enable it in XGMAC cores")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Suggested-by: Ong, Boon Leong <boon.leong.ong@intel.com>
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/pci.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c  |    1 +
+ include/linux/stmmac.h                            |    1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 6939b03a16c5..a36db0701d17 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3265,7 +3265,10 @@ static const struct pci_device_id nvme_id_table[] = {
- 				NVME_QUIRK_128_BYTES_SQES |
- 				NVME_QUIRK_SHARED_TAGS |
- 				NVME_QUIRK_SKIP_CID_GEN },
--
-+	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
-+		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
-+				NVME_QUIRK_NO_DEEPEST_PS |
-+				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
- 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
- 	{ 0, }
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4531,7 +4531,7 @@ int stmmac_dvr_probe(struct device *devi
+ 		dev_info(priv->device, "TSO feature enabled\n");
+ 	}
+ 
+-	if (priv->dma_cap.sphen) {
++	if (priv->dma_cap.sphen && !priv->plat->sph_disable) {
+ 		ndev->hw_features |= NETIF_F_GRO;
+ 		priv->sph = true;
+ 		dev_info(priv->device, "SPH feature enabled\n");
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -119,6 +119,7 @@ static int intel_mgbe_common_data(struct
+ 	plat->has_gmac4 = 1;
+ 	plat->force_sf_dma_mode = 0;
+ 	plat->tso_en = 1;
++	plat->sph_disable = 1;
+ 
+ 	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
+ 
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -179,5 +179,6 @@ struct plat_stmmacenet_data {
+ 	int mac_port_sel_speed;
+ 	bool en_tx_lpi_clockgating;
+ 	int has_xgmac;
++	bool sph_disable;
  };
--- 
-2.35.1
-
+ #endif
 
 
