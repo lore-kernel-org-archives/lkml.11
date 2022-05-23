@@ -2,130 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87955C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B41C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236783AbiEWOA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
+        id S236766AbiEWOBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236765AbiEWOA0 (ORCPT
+        with ESMTP id S236960AbiEWOBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:00:26 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B51657143
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:00:22 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-d39f741ba0so18504501fac.13
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:00:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EHMcsEmvvJZ5YK4UB7JWYPJGU7GAR4VtM9LZecjaIGM=;
-        b=11twM4BMmaOPhFAaXF/uaQnE1kug/8X8jA6QhynRe0XODvM8jdj11tEDBvAGtXCDL9
-         7qZLKTDRy7CyFvVnRq0C2ydmN5RKk+Vkhku4NVlKnchmFt7ZfXCUsLqnfjagoY1ffCjH
-         oPF0qL/RyrCVmp/VRdaTvf1zVsHRScgVlftwAa6qI2MkWGf2x2ts7QjIclVMzgKBNjys
-         acC1ScNwKzgsyEHY9Th2z41PCfetEJHPLKluwZy1WuS48APoq82b0Qr/+5h7fPM/szz/
-         6DWWglnJv5WmOYrtW37c2VCAwKMw7iMSBTA3Whr1xl0z13AvVjDUHxqaZ3ZkZpGtm0Wh
-         +pfA==
-X-Gm-Message-State: AOAM532vTBAsGbM1qUaRP4pMpc1+X0rNvTC0WDbGnTuhhG0MZPe99Pgf
-        3pcD1/EANlz6ubl90nCDM2IPJG0vjTSevg==
-X-Google-Smtp-Source: ABdhPJye//7SNjkYO5SOP/qMnpB89GgsP7Yh4W378RqS8lRstSPiu1nUrvAx1w9mqPnyjlnv1WaFpw==
-X-Received: by 2002:a05:6870:ecac:b0:f1:a98e:f2ed with SMTP id eo44-20020a056870ecac00b000f1a98ef2edmr11706747oab.159.1653314420091;
-        Mon, 23 May 2022 07:00:20 -0700 (PDT)
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com. [209.85.210.53])
-        by smtp.gmail.com with ESMTPSA id y199-20020a4a45d0000000b0040e699e8d8asm3556397ooa.45.2022.05.23.07.00.19
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 07:00:19 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id c15-20020a9d684f000000b0060b097c71ecso3238053oto.10
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:00:19 -0700 (PDT)
-X-Received: by 2002:a81:2143:0:b0:2fb:1274:247e with SMTP id
- h64-20020a812143000000b002fb1274247emr23349727ywh.384.1653313941447; Mon, 23
- May 2022 06:52:21 -0700 (PDT)
+        Mon, 23 May 2022 10:01:17 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905902FFD0;
+        Mon, 23 May 2022 07:01:15 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 05F02200013;
+        Mon, 23 May 2022 14:01:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653314474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W1NPvyjhdf9eXZ6AbxiRj9NJrA2YlhQRfNigWpsbM1Q=;
+        b=WKpZpo3Pd2Q2yr+469kQijTpFQwiCoiAhEaoRgJsKXVppSlsKqwNBX1iwpb5iqCq1bLVKJ
+        73tb2iYkXMsTkr/zxbZX9YmNhx5AmU2UfNu3DJ9qivA1jqpOa++4uG7evU5L4FMnZVoswM
+        5KOo7FZtm6b7Jc1BLYvr/vzTbgDcqvm7oqtGpkL7rfOk4riRD3cvgZrRclkY6eHTA3hr0b
+        wRBahEnAJbUYagavquNFEmVmEkdJaGTMrtyLgCQl6JcoMAESTwrsabTBA4ZrEsFVT0O6sH
+        Vtfviho/NTi1qheOibxNIkgdGH+e5sJ+Q2mUVcVemOVwhUAj+Z3iyjhZwQ8G5g==
+Date:   Mon, 23 May 2022 16:00:04 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] net: ocelot: fix wrong time_after usage
+Message-ID: <20220523160004.6d285609@fixe.home>
+In-Reply-To: <20220521162108.bact3sn4z2yuysdt@skbuf>
+References: <YoeMW+/KGk8VpbED@lunn.ch>
+        <20220520213115.7832-1-paskripkin@gmail.com>
+        <YojvUsJ090H/wfEk@lunn.ch>
+        <20220521162108.bact3sn4z2yuysdt@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220523132353.1767614-1-Vsujithkumar.Reddy@amd.com> <20220523132353.1767614-2-Vsujithkumar.Reddy@amd.com>
-In-Reply-To: <20220523132353.1767614-2-Vsujithkumar.Reddy@amd.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 23 May 2022 15:52:10 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUY1MPGT4QO0aL1m+NHrs0eQ357YEOcjKpt0fQ4KSekWg@mail.gmail.com>
-Message-ID: <CAMuHMdUY1MPGT4QO0aL1m+NHrs0eQ357YEOcjKpt0fQ4KSekWg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] ASoC: amd: acp: Add support for nau8825 and
- max98360 card
-To:     V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Vijendar.Mukunda@amd.com, Basavaraj.Hiregoudar@amd.com,
-        Sunil-kumar.Dommati@amd.com, ajitkumar.pandey@amd.com,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@intel.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Akihiko Odaki <akihiko.odaki@gmail.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Bard Liao <bard.liao@intel.com>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sujith,
+Le Sat, 21 May 2022 16:21:09 +0000,
+Vladimir Oltean <vladimir.oltean@nxp.com> a =C3=A9crit :
 
-On Mon, May 23, 2022 at 3:24 PM V sujith kumar Reddy
-<Vsujithkumar.Reddy@amd.com> wrote:
-> We have new platform with nau8825 as a primary codec and max98360 as an
-> amp codec. Add machine struct to register sof audio based sound card
-> on such Chrome machine.
->
-> Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+> On Sat, May 21, 2022 at 03:55:30PM +0200, Andrew Lunn wrote:
+> > On Sat, May 21, 2022 at 12:31:15AM +0300, Pavel Skripkin wrote: =20
+> > > Accidentally noticed, that this driver is the only user of
+> > > while (time_after(jiffies...)).
+> > >=20
+> > > It looks like typo, because likely this while loop will finish after =
+1st
+> > > iteration, because time_after() returns true when 1st argument _is af=
+ter_
+> > > 2nd one.
+> > >=20
+> > > There is one possible problem with this poll loop: the scheduler coul=
+d put
+> > > the thread to sleep, and it does not get woken up for
+> > > OCELOT_FDMA_CH_SAFE_TIMEOUT_US. During that time, the hardware has do=
+ne
+> > > its thing, but you exit the while loop and return -ETIMEDOUT.
+> > >=20
+> > > Fix it by using sane poll API that avoids all problems described above
+> > >=20
+> > > Fixes: 753a026cfec1 ("net: ocelot: add FDMA support")
+> > > Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> > > Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> > > ---
+> > >=20
+> > > I can't say if 0 is a good choise for 5th readx_poll_timeout() argume=
+nt,
+> > > so this patch is build-tested only. =20
+> >  =20
+> > > Testing and suggestions are welcomed! =20
+> >=20
+> > If you had the hardware, i would suggest you profile how often it does
+> > complete on the first iteration. And when it does not complete on the
+> > first iteration, how many more iterations it needs.
+> >=20
+> > Tobias made an interesting observation with the mv88e6xxx switch. He
+> > found that two tight polls was enough 99% of the time. Putting a sleep
+> > in there doubles the time it took to setup the switch. So he ended up
+> > with a hybrid of open coded polling twice, followed by iopoll with a
+> > timer value set.
+> >=20
+> > That was with a heavily used poll function. How often is this function
+> > used? No point in overly optimising this if it is not used much. =20
+>=20
+> If you're looking at me, I don't have the hardware to test, sorry.
+> Frame DMA is one of the components NXP removed when building their DSA
+> variants of these switches. But the function is called once or twice per
+> NAPI poll cycle, so it's worth optimizing as much as possible.
+>=20
+> Clement, could you please do some testing? The patch that Andrew is
+> talking about is 35da1dfd9484 ("net: dsa: mv88e6xxx: Improve performance
+> of busy bit polling").
 
-Thanks for your patch!
+Ok, I'll have to wake up that ocelot board but I'll try to do
+that.
 
-> --- a/sound/soc/amd/acp-config.c
-> +++ b/sound/soc/amd/acp-config.c
-> @@ -130,4 +130,25 @@ struct snd_soc_acpi_mach snd_soc_acpi_amd_sof_machines[] = {
->  };
->  EXPORT_SYMBOL(snd_soc_acpi_amd_sof_machines);
->
-> +struct snd_soc_acpi_mach snd_soc_acpi_amd_rmb_sof_machines[] = {
-> +       {
-> +               .id = "AMDI1019",
-> +               .drv_name = "rmb-dsp",
-> +               .pdata = (void *)&acp_quirk_data,
-
-You can assign an arbitrary pointer type to "void *" without casting.
-In fact the cast makes the code less safe, as it prevents the compiler
-from informing you in case a future patch changes types.
-
-The same applies to below, and to the existing casts.
-
-> +               .fw_filename = "sof-rmb.ri",
-> +               .sof_tplg_filename = "sof-acp-rmb.tplg",
-> +       },
-> +       {
-> +               .id = "10508825",
-> +               .drv_name = "nau8825-max",
-> +               .pdata = (void *)&acp_quirk_data,
-> +               .machine_quirk = snd_soc_acpi_codec_list,
-> +               .quirk_data = &amp_max,
-> +               .fw_filename = "sof-rmb.ri",
-> +               .sof_tplg_filename = "sof-acp-rmb.tplg",
-> +       },
-> +       {},
-> +};
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
