@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E05D6C38A06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A8BC38A04
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243682AbiEWRiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
+        id S243298AbiEWRiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241735AbiEWR1F (ORCPT
+        with ESMTP id S241677AbiEWR1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E7C975200;
-        Mon, 23 May 2022 10:22:14 -0700 (PDT)
+        Mon, 23 May 2022 13:27:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC5676285;
+        Mon, 23 May 2022 10:22:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E55061149;
-        Mon, 23 May 2022 17:21:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A84C385A9;
-        Mon, 23 May 2022 17:21:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8655B81218;
+        Mon, 23 May 2022 17:16:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 428F5C385AA;
+        Mon, 23 May 2022 17:16:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326491;
-        bh=b1f3Xs/RdsG4s/2l3MGwmQkavIui4Nkfu8c/7GVi37E=;
+        s=korg; t=1653326188;
+        bh=+bwDGyDJKCF8LB9fJwHxTM4vlvD9HScCpYl69iObhuI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ssi+FhIjAkuhXZzVCT2HFfNJ5TSsVPknWN5kYpnbx7rI7vrIbSQHw57ECxee00lje
-         e0yZuOWsHQvvY2ChT0h/Oih/LEGd3VeiQTSHJePviOkMg1+C48aMYW3Icu1T5EJHWP
-         8ndljjV82m0lpekL7QJP/1ZtLhtEI5E2VSa1SPrw=
+        b=XoTkpakr/hBhlmNEyFCpvy9ZgZV13CiTjMwz7g0Sn9U88Rp5lFOdYcFLX6wxNcAfr
+         G501rj22fnrkm18LD7AIQOYAQYLuHGxiiqH6efv2mQATsBnbqfglf4m75AnnBLD7VG
+         gAGv7Lj9LEVfaJZIo380KVwCRyiNAuOq2ckb4ULY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Martin Willi <martin@strongswan.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 097/132] mptcp: fix checksum byte order
-Date:   Mon, 23 May 2022 19:05:06 +0200
-Message-Id: <20220523165839.452698115@linuxfoundation.org>
+Subject: [PATCH 5.10 17/97] crypto: x86/chacha20 - Avoid spurious jumps to other functions
+Date:   Mon, 23 May 2022 19:05:21 +0200
+Message-Id: <20220523165815.020280320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
+References: <20220523165812.244140613@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,151 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit ba2c89e0ea74a904d5231643245753d77422e7f5 ]
+[ Upstream commit 4327d168515fd8b5b92fa1efdf1d219fb6514460 ]
 
-The MPTCP code typecasts the checksum value to u16 and
-then converts it to big endian while storing the value into
-the MPTCP option.
+The chacha_Nblock_xor_avx512vl() functions all have their own,
+identical, .LdoneN label, however in one particular spot {2,4} jump to
+the 8 version instead of their own. Resulting in:
 
-As a result, the wire encoding for little endian host is
-wrong, and that causes interoperabilty interoperability
-issues with other implementation or host with different endianness.
+  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_2block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
+  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_4block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
 
-Address the issue writing in the packet the unmodified __sum16 value.
+Make each function consistently use its own done label.
 
-MPTCP checksum is disabled by default, interoperating with systems
-with bad mptcp-level csum encoding should cause fallback to TCP.
-
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/275
-Fixes: c5b39e26d003 ("mptcp: send out checksum for DSS")
-Fixes: 390b95a5fb84 ("mptcp: receive checksum for DSS")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Martin Willi <martin@strongswan.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/options.c  | 36 ++++++++++++++++++++++++------------
- net/mptcp/protocol.h |  2 +-
- net/mptcp/subflow.c  |  2 +-
- 3 files changed, 26 insertions(+), 14 deletions(-)
+ arch/x86/crypto/chacha-avx512vl-x86_64.S | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index d158f53d3bc3..193f0fcce8d8 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -107,7 +107,7 @@ static void mptcp_parse_option(const struct sk_buff *skb,
- 			ptr += 2;
- 		}
- 		if (opsize == TCPOLEN_MPTCP_MPC_ACK_DATA_CSUM) {
--			mp_opt->csum = (__force __sum16)get_unaligned_be16(ptr);
-+			mp_opt->csum = get_unaligned((__force __sum16 *)ptr);
- 			mp_opt->suboptions |= OPTION_MPTCP_CSUMREQD;
- 			ptr += 2;
- 		}
-@@ -221,7 +221,7 @@ static void mptcp_parse_option(const struct sk_buff *skb,
+diff --git a/arch/x86/crypto/chacha-avx512vl-x86_64.S b/arch/x86/crypto/chacha-avx512vl-x86_64.S
+index bb193fde123a..8713c16c2501 100644
+--- a/arch/x86/crypto/chacha-avx512vl-x86_64.S
++++ b/arch/x86/crypto/chacha-avx512vl-x86_64.S
+@@ -172,7 +172,7 @@ SYM_FUNC_START(chacha_2block_xor_avx512vl)
+ 	# xor remaining bytes from partial register into output
+ 	mov		%rcx,%rax
+ 	and		$0xf,%rcx
+-	jz		.Ldone8
++	jz		.Ldone2
+ 	mov		%rax,%r9
+ 	and		$~0xf,%r9
  
- 			if (opsize == expected_opsize + TCPOLEN_MPTCP_DSS_CHECKSUM) {
- 				mp_opt->suboptions |= OPTION_MPTCP_CSUMREQD;
--				mp_opt->csum = (__force __sum16)get_unaligned_be16(ptr);
-+				mp_opt->csum = get_unaligned((__force __sum16 *)ptr);
- 				ptr += 2;
- 			}
+@@ -438,7 +438,7 @@ SYM_FUNC_START(chacha_4block_xor_avx512vl)
+ 	# xor remaining bytes from partial register into output
+ 	mov		%rcx,%rax
+ 	and		$0xf,%rcx
+-	jz		.Ldone8
++	jz		.Ldone4
+ 	mov		%rax,%r9
+ 	and		$~0xf,%r9
  
-@@ -1214,7 +1214,7 @@ static void mptcp_set_rwin(const struct tcp_sock *tp)
- 		WRITE_ONCE(msk->rcv_wnd_sent, ack_seq);
- }
- 
--u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
-+__sum16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
- {
- 	struct csum_pseudo_header header;
- 	__wsum csum;
-@@ -1230,15 +1230,25 @@ u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
- 	header.csum = 0;
- 
- 	csum = csum_partial(&header, sizeof(header), sum);
--	return (__force u16)csum_fold(csum);
-+	return csum_fold(csum);
- }
- 
--static u16 mptcp_make_csum(const struct mptcp_ext *mpext)
-+static __sum16 mptcp_make_csum(const struct mptcp_ext *mpext)
- {
- 	return __mptcp_make_csum(mpext->data_seq, mpext->subflow_seq, mpext->data_len,
- 				 ~csum_unfold(mpext->csum));
- }
- 
-+static void put_len_csum(u16 len, __sum16 csum, void *data)
-+{
-+	__sum16 *sumptr = data + 2;
-+	__be16 *ptr = data;
-+
-+	put_unaligned_be16(len, ptr);
-+
-+	put_unaligned(csum, sumptr);
-+}
-+
- void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
- 			 struct mptcp_out_options *opts)
- {
-@@ -1315,8 +1325,9 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
- 			put_unaligned_be32(mpext->subflow_seq, ptr);
- 			ptr += 1;
- 			if (opts->csum_reqd) {
--				put_unaligned_be32(mpext->data_len << 16 |
--						   mptcp_make_csum(mpext), ptr);
-+				put_len_csum(mpext->data_len,
-+					     mptcp_make_csum(mpext),
-+					     ptr);
- 			} else {
- 				put_unaligned_be32(mpext->data_len << 16 |
- 						   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
-@@ -1364,11 +1375,12 @@ void mptcp_write_options(__be32 *ptr, const struct tcp_sock *tp,
- 			goto mp_capable_done;
- 
- 		if (opts->csum_reqd) {
--			put_unaligned_be32(opts->data_len << 16 |
--					   __mptcp_make_csum(opts->data_seq,
--							     opts->subflow_seq,
--							     opts->data_len,
--							     ~csum_unfold(opts->csum)), ptr);
-+			put_len_csum(opts->data_len,
-+				     __mptcp_make_csum(opts->data_seq,
-+						       opts->subflow_seq,
-+						       opts->data_len,
-+						       ~csum_unfold(opts->csum)),
-+				     ptr);
- 		} else {
- 			put_unaligned_be32(opts->data_len << 16 |
- 					   TCPOPT_NOP << 8 | TCPOPT_NOP, ptr);
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 6bcdaf01f483..72a259a74b57 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -718,7 +718,7 @@ void mptcp_token_destroy(struct mptcp_sock *msk);
- void mptcp_crypto_key_sha(u64 key, u32 *token, u64 *idsn);
- 
- void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac);
--u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum);
-+__sum16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum);
- 
- void __init mptcp_pm_init(void);
- void mptcp_pm_data_init(struct mptcp_sock *msk);
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 04afead7316f..9c7deffe7cb6 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -846,7 +846,7 @@ static enum mapping_status validate_data_csum(struct sock *ssk, struct sk_buff *
- {
- 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
- 	u32 offset, seq, delta;
--	u16 csum;
-+	__sum16 csum;
- 	int len;
- 
- 	if (!csum_reqd)
 -- 
 2.35.1
 
