@@ -2,102 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 387B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC81C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232622AbiEWJFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        id S232604AbiEWJHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232548AbiEWJFB (ORCPT
+        with ESMTP id S232883AbiEWJGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:05:01 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB8944A05;
-        Mon, 23 May 2022 02:04:59 -0700 (PDT)
-X-UUID: cbdf82729d794524968bd4854db456d0-20220523
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:d6312937-23ca-41a3-9be8-ee1933e87b25,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:2a19b09,CLOUDID:4baa36e3-edbf-4bd4-8a34-dfc5f7bb086d,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: cbdf82729d794524968bd4854db456d0-20220523
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 424833378; Mon, 23 May 2022 17:04:56 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 23 May 2022 17:04:54 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 23 May 2022 17:04:54 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Mon, 23 May 2022 17:04:53 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Mathias Nyman" <mathias.nyman@intel.com>,
-        <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [PATCH 3/4] usb: xhci-mtk: add support optional controller reset
-Date:   Mon, 23 May 2022 17:04:48 +0800
-Message-ID: <20220523090449.14430-3-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220523090449.14430-1-chunfeng.yun@mediatek.com>
-References: <20220523090449.14430-1-chunfeng.yun@mediatek.com>
+        Mon, 23 May 2022 05:06:23 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C902F9;
+        Mon, 23 May 2022 02:06:20 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id 1so3055670ljh.8;
+        Mon, 23 May 2022 02:06:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=c31VgxAPOxEUsROXeBcUQluD+gl7iW0O4zV+RmQn2l4=;
+        b=VzeQybxfmt+mm9PPUb3UHtTpQKpSuDC/a9OVBfno9GR6vKLUGb4Pg4AjBLUNMWYTuy
+         grgMIhNKERZ0dMKDNFL+KfdUIyK+8XxOh0w2JhcZ+MMjzatt8Wb10lxMces8JKUD2my8
+         JdCgZHdUi4J0CdGGJfHcHaJXd7KvCpHpEDLm4sz+qmLjCR5rIHSsYWG5gfgU3Qcey6ym
+         PJiciL2cQd+eRBmxKuE/OIc0mkdgtiyEhE+gdEZH7YfWX2wm1Cb3MVfldijAYlA2Tlj9
+         Fz34w1fMiuZS9OsNY98EsFaBnu9lLEplLLp5wdpQou/0fSNnWTLkmCf+Oi12BjKoTlux
+         sGcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=c31VgxAPOxEUsROXeBcUQluD+gl7iW0O4zV+RmQn2l4=;
+        b=jfrw/n/vFc4K2F/HlQNpQwtFB/UFARxQO0K/51s6wHBBfTGs8RtSXTMERchw1hbnNj
+         JLg1Zf0GmHEx4joFyKR/A9g0U4g5mHLd2lwwWr/KD+poY6sfkgtkPo3PGJN+69Qr3XUq
+         s5ubPBfYiBgUkKiSad9tisNUsiqC6P+e/YqLyZ8H2lYyEbXVs2isE5/nPsj5MrLrxvoS
+         MNcDYYEMQ2Lx/tKwnwqvIh2Kusq/viOFZeOlSNYFRSY4ftjtxxm5SvTS77mWaZY589FD
+         AiPxGJWALcf3wbnMXWILh4vlmAP8OxbEjWhM1LMcvVPs80YohGOAbDbjgQcF/uo/XBCi
+         nrpA==
+X-Gm-Message-State: AOAM532N/OCbREF1+0hMn8NHA5P3VtZDVjgGOpdyWLNUFZisgTniArnh
+        I9Me1Ptv1lbBKbkDnKyFlAQ5hXuTnwXT54WHwM5XyeF7oCMdYg==
+X-Google-Smtp-Source: ABdhPJzQV4IXbyzcOthbMe7j41Fs7BnkjjlQ4eONXsKw18HGNDtmbpONBK22qWAVgeySQWNNUCwIXjvZj4PeAs2AJos=
+X-Received: by 2002:a2e:8691:0:b0:253:def8:ed29 with SMTP id
+ l17-20020a2e8691000000b00253def8ed29mr8503892lji.423.1653296779214; Mon, 23
+ May 2022 02:06:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+References: <20220510031056.1657-1-ctcchien@nuvoton.com> <20220510031056.1657-2-ctcchien@nuvoton.com>
+ <YoUwe6Tj4Uh6ukc8@zn.tnic> <CAHpyw9fjThEP4NuU08aNJ_raHpq9-j9KgBb8YuZ_shXTjhm3JA@mail.gmail.com>
+ <YoYPGWreQuF9QZzc@zn.tnic> <CAHpyw9es-n+bW9SsGBmmr3ghBFk8Q8E6ZTbE42BpU-6p8LfHtw@mail.gmail.com>
+ <YoeE8cBhUkF3K44/@zn.tnic>
+In-Reply-To: <YoeE8cBhUkF3K44/@zn.tnic>
+From:   Medad Young <medadyoung@gmail.com>
+Date:   Mon, 23 May 2022 17:06:07 +0800
+Message-ID: <CAHpyw9fAfNf8j++JtLhuudSWj6N1-KAxA_fxEGL998WNVXTPdQ@mail.gmail.com>
+Subject: Re: [PATCH v9 1/3] ARM: dts: nuvoton: Add memory controller node
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     rric@kernel.org, James Morse <james.morse@arm.com>,
+        tony.luck@intel.com, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Patrick Venture <venture@google.com>, KWLIU@nuvoton.com,
+        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING <KFTING@nuvoton.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>, ctcchien@nuvoton.com,
+        linux-edac <linux-edac@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support controller reset via a reset-controller usually in infracfg,
-it's different with the software reset by IPPC which only used to reset MAC,
-and it will also reset IPPC meanwhile.
+Dear Borislav,
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
- drivers/usb/host/xhci-mtk.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+thanks for your comments.
 
-diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
-index b1045f534a4b..01705e559c42 100644
---- a/drivers/usb/host/xhci-mtk.c
-+++ b/drivers/usb/host/xhci-mtk.c
-@@ -18,6 +18,7 @@
- #include <linux/pm_wakeirq.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/reset.h>
- 
- #include "xhci.h"
- #include "xhci-mtk.h"
-@@ -550,6 +551,12 @@ static int xhci_mtk_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto disable_ldos;
- 
-+	ret = device_reset_optional(dev);
-+	if (ret) {
-+		dev_err_probe(dev, ret, "failed to reset controller\n");
-+		goto disable_clk;
-+	}
-+
- 	hcd = usb_create_hcd(driver, dev, dev_name(dev));
- 	if (!hcd) {
- 		ret = -ENOMEM;
--- 
-2.18.0
+Borislav Petkov <bp@alien8.de> =E6=96=BC 2022=E5=B9=B45=E6=9C=8820=E6=97=A5=
+ =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=888:09=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On Fri, May 20, 2022 at 10:31:05AM +0800, Medad Young wrote:
+> > for the second warning, I did upadate my .git/config according to your
+> > advise. but I thought I met orthe problem, I will try to fix it
+>
+> You need to do "git commit --amend" on the patch so that it updates the
+> author.
 
+I did do "git commit --amend",
+I beleve the issue is about the mail server I used,
+I use gmail to send the mail due to the mail server of my company
+does't support smtp
+so now I should sign the commit with my gmail account.
+
+>
+> > for the first warning, did I really need to fix it?
+>
+> Yes, you need to fix both.
+>
+> Again, before you send, run checkpatch on your patches, one by one.
+
+OK
+
+>
+> --
+> Regards/Gruss,
+>     Boris.
+>
+> https://people.kernel.org/tglx/notes-about-netiquette
+
+B.R.
+Medad
