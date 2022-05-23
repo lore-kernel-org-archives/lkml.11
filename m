@@ -2,187 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD41FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C241C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231822AbiEWI2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38458 "EHLO
+        id S231939AbiEWId7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiEWI1z (ORCPT
+        with ESMTP id S231942AbiEWIdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:27:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8497DD4
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:27:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653294472;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Mon, 23 May 2022 04:33:53 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D82937025;
+        Mon, 23 May 2022 01:33:51 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 67EE91F383;
+        Mon, 23 May 2022 08:33:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653294830; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=T/1kwIlur/LWGYGUmdTrROiOtB3QTQUmvrtaI59KDYw=;
-        b=Sakfvnrh/YIde8cp08rqzVdAkMf35/bkuFH3XdtLkLj9IiBbKMydeVMs0nzWbpp+vrqSi2
-        oI38VSENnjWdyMsbuuabeHgkbbLVLT8QQs5CON61f65zSgWgtqS7sLlaQMT2OwOJreFZM1
-        RWy+pDVz9OcQ6a1NAJwsLRmgKg6UBzI=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-127-OunGr0llOuS8mG_ynO3rbQ-1; Mon, 23 May 2022 04:27:50 -0400
-X-MC-Unique: OunGr0llOuS8mG_ynO3rbQ-1
-Received: by mail-qk1-f199.google.com with SMTP id v14-20020a05620a0f0e00b00699f4ea852cso10906122qkl.9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:27:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=T/1kwIlur/LWGYGUmdTrROiOtB3QTQUmvrtaI59KDYw=;
-        b=QDT5kT5I+FMmiyZcZqvmljcczI2Ahlw/u0UAcHJ1UcYF2DP82vGlz88YIA43kvpRSN
-         plqiIQnGnFKHagr+CMoSTN4T7KwFk7m9C9UvigWdiTR4gJWJOYAPf0tlYTXr7Hu/l4C2
-         wGvDHkJrIWUcka/JZWsaNavs50iUmbeTWVmgumTeV/fcOYn+BU6pGA/54iExQxArIEzg
-         i2pibKAkmIVD9IuRd22UevtkKtrCAzeyle13/tlMU8RUpq5PKVdJ5ieOKTB66qoB4aRp
-         EHHtUi8ZyiDD/J1qs/mUvUYPHbtLNA/PxqBJqGp9hz2VBTfwLDDrC3f7HSlFE6o7t/dU
-         dKKg==
-X-Gm-Message-State: AOAM532huGHahu519XWpedmwpEm1rtET1acmqnD0EONQXKlsGZroa+8u
-        ilzoS7F5u/W/uecWwN9t0wWgbvwSFpUjlEV7lehk46FGf4J5Llt9Z+/sdnEKVFFAMT8oOEGeqPj
-        vBDu/qvditurpuuimFmYLXTJw
-X-Received: by 2002:ad4:5bef:0:b0:462:3068:9225 with SMTP id k15-20020ad45bef000000b0046230689225mr4664792qvc.26.1653294470036;
-        Mon, 23 May 2022 01:27:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxext/h6oF1JgzqF6JvJzAca18yRqrepSqFHtMgfDdKHE+p8QYTPMkUbIPydmmw9aPdDAkBCw==
-X-Received: by 2002:ad4:5bef:0:b0:462:3068:9225 with SMTP id k15-20020ad45bef000000b0046230689225mr4664769qvc.26.1653294469789;
-        Mon, 23 May 2022 01:27:49 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
-        by smtp.gmail.com with ESMTPSA id m24-20020ac866d8000000b002f932d920ccsm2544399qtp.64.2022.05.23.01.27.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 01:27:49 -0700 (PDT)
-Date:   Mon, 23 May 2022 10:27:38 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Longpeng <longpeng2@huawei.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>, martinh@xilinx.com,
-        hanand@xilinx.com, Si-Wei Liu <si-wei.liu@oracle.com>,
-        dinang@xilinx.com, Eli Cohen <elic@nvidia.com>, lvivier@redhat.com,
-        pabloc@xilinx.com, gautam.dawar@amd.com,
-        Xie Yongji <xieyongji@bytedance.com>, habetsm.xilinx@gmail.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        tanuj.kamde@amd.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        martinpo@xilinx.com, lulu@redhat.com, ecree.xilinx@gmail.com,
-        Parav Pandit <parav@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Subject: Re: [PATCH 4/4] vdpa_sim: Implement stop vdpa op
-Message-ID: <20220523082738.h7lvwkysnqhynf37@sgarzare-redhat>
-References: <20220520172325.980884-1-eperezma@redhat.com>
- <20220520172325.980884-5-eperezma@redhat.com>
+        bh=HGRKxMXzRmZxPbqeCp3nH/JisTTafTR7VNUx1nyPrA0=;
+        b=Fw4PPATbwIAM/+syB+5pNwbui6zzq48ItTTCRJoCdZxsq1oeLi5HUjJKkrHQrYOXiy6R17
+        +bqvRSVTHw/Y39VQRaeeBUmpmR9qt0hE+UyJ/+X1a4TgPBvLPcIIB0sxPok9Tx4Bv0fXn6
+        kTeFy5M9c1ROaqtzP+uCIdCFqncmFrs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653294830;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HGRKxMXzRmZxPbqeCp3nH/JisTTafTR7VNUx1nyPrA0=;
+        b=w1UJ/lv2rM4pTCF88m3xyXaSpKqwbsTOVq4QJVvJSftW4VhvLptpMJJebYswy7a/fb5RBS
+        BC3ow6030YTwz3Dw==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4FA872C141;
+        Mon, 23 May 2022 08:33:50 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id E652760294; Mon, 23 May 2022 10:33:49 +0200 (CEST)
+Date:   Mon, 23 May 2022 10:33:49 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: REGRESSION (?) (Re: [PATCH] net: af_key: add check for
+ pfkey_broadcast in function pfkey_process)
+Message-ID: <20220523083349.zzgdmoq2bzstxla6@lion.mk-sys.cz>
+References: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
+ <20220523022438.ofhehjievu2alj3h@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="r6vmbsg4u3vtaqzd"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220520172325.980884-5-eperezma@redhat.com>
+In-Reply-To: <20220523022438.ofhehjievu2alj3h@lion.mk-sys.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 07:23:25PM +0200, Eugenio Pérez wrote:
->Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
->that backend feature and userspace can effectively stop the device.
->
->This is a must before get virtqueue indexes (base) for live migration,
->since the device could modify them after userland gets them. There are
->individual ways to perform that action for some devices
->(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
->way to perform it for any vhost device (and, in particular, vhost-vdpa).
->
->Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
->---
-> drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++++++
-> drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
-> drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
-> 3 files changed, 25 insertions(+)
->
->diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
->index 50d721072beb..0515cf314bed 100644
->--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
->+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
->@@ -107,6 +107,7 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
-> 	for (i = 0; i < vdpasim->dev_attr.nas; i++)
-> 		vhost_iotlb_reset(&vdpasim->iommu[i]);
->
->+	vdpasim->running = true;
-> 	spin_unlock(&vdpasim->iommu_lock);
->
-> 	vdpasim->features = 0;
->@@ -505,6 +506,24 @@ static int vdpasim_reset(struct vdpa_device *vdpa)
-> 	return 0;
-> }
->
->+static int vdpasim_stop(struct vdpa_device *vdpa, bool stop)
->+{
->+	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
->+	int i;
->+
->+	spin_lock(&vdpasim->lock);
->+	vdpasim->running = !stop;
->+	if (vdpasim->running) {
->+		/* Check for missed buffers */
->+		for (i = 0; i < vdpasim->dev_attr.nvqs; ++i)
->+			vdpasim_kick_vq(vdpa, i);
->+
->+	}
->+	spin_unlock(&vdpasim->lock);
->+
->+	return 0;
->+}
->+
-> static size_t vdpasim_get_config_size(struct vdpa_device *vdpa)
-> {
-> 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
->@@ -694,6 +713,7 @@ static const struct vdpa_config_ops vdpasim_config_ops = {
-> 	.get_status             = vdpasim_get_status,
-> 	.set_status             = vdpasim_set_status,
-> 	.reset			= vdpasim_reset,
->+	.stop			= vdpasim_stop,
-> 	.get_config_size        = vdpasim_get_config_size,
-> 	.get_config             = vdpasim_get_config,
-> 	.set_config             = vdpasim_set_config,
->@@ -726,6 +746,7 @@ static const struct vdpa_config_ops vdpasim_batch_config_ops = {
-> 	.get_status             = vdpasim_get_status,
-> 	.set_status             = vdpasim_set_status,
-> 	.reset			= vdpasim_reset,
->+	.stop			= vdpasim_stop,
-> 	.get_config_size        = vdpasim_get_config_size,
-> 	.get_config             = vdpasim_get_config,
-> 	.set_config             = vdpasim_set_config,
->diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdpa_sim.h
->index 622782e92239..061986f30911 100644
->--- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
->+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
->@@ -66,6 +66,7 @@ struct vdpasim {
-> 	u32 generation;
-> 	u64 features;
-> 	u32 groups;
->+	bool running;
-> 	/* spinlock to synchronize iommu table */
-> 	spinlock_t iommu_lock;
-> };
->diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
->index 5125976a4df8..886449e88502 100644
->--- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
->+++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
->@@ -154,6 +154,9 @@ static void vdpasim_net_work(struct work_struct *work)
->
-> 	spin_lock(&vdpasim->lock);
->
->+	if (!vdpasim->running)
->+		goto out;
->+
 
-It would be nice to do the same for vdpa_sim_blk as well.
+--r6vmbsg4u3vtaqzd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thanks,
-Stefano
+On Mon, May 23, 2022 at 04:24:38AM +0200, Michal Kubecek wrote:
+> After upgrading from 5.18-rc7 to 5.18 final, my racoon daemon refuses to
+> start because it cannot find some algorithms (it says "aes"). I have not
+> finished the debugging completely but this patch, mainline commit
+> 4dc2a5a8f675 ("net: af_key: add check for pfkey_broadcast in function
+> pfkey_process"), seems to be the most promising candidate.
 
+Tested now, reverting commit 4dc2a5a8f675 ("net: af_key: add check for
+pfkey_broadcast in function pfkey_process") seems to fix the issue,
+after rebuilding the af_key module with this commit reverted and
+reloading it, racoon daemon starts and works and /proc/crypto shows
+algrorithms it did not without the revert.
+
+We might get away with changing the test to
+
+	if (err && err != -ESRCH)
+		return err;
+
+but I'm not sure if bailing up on failed notification broadcast is
+really what we want. Also, most other calling sites of pfkey_broadcast()
+do not check the return value either so if we want to add the check, it
+should probably be done more consistently. So for now, a revert is IMHO
+more appropriate.
+
+Michal
+
+--r6vmbsg4u3vtaqzd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmKLRuIACgkQ538sG/LR
+dpWMpwgA0INRLLZ4ZINyjhZoeu1j1yh4Mwtsb/aGEW3OB2E+pZHsWwqDwoq++1vH
+um5qLGrN6mrKIi9X3LhVKuXry2RGNW8rbTUaXihcg0JFl72XAXySQUwEh13Rn7D9
+MgvSq4MznjNLuvfFBEWvkNaYbZ6NTVtlG2thTKi4GfftwsYsDWVQisCI4z2ZZ0Pn
+Pd1j8thJreCJSNxoK8ylNyNkCAzLksItEivKz/UM+Y7HMpkI3nYZJLVAUVYZQKO6
+97qCnqcMriy3XpDz6IVn6nVUHfGay8bmlfet67IOCrxYghyR47Wy147LP8+tVzrb
+O46GqysFnczjK0px39AqsMrgUkp9sQ==
+=ZgNq
+-----END PGP SIGNATURE-----
+
+--r6vmbsg4u3vtaqzd--
