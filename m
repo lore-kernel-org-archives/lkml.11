@@ -2,112 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E601BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1550BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235546AbiEWMbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 08:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        id S235410AbiEWMcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 08:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235547AbiEWMbb (ORCPT
+        with ESMTP id S235401AbiEWMcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 08:31:31 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB202D1C9
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:31:29 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id 202so6557191pfu.0
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:31:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=drc5LnU//nothzoPqQ8d1G4VXl7oy7LH+bWASwffyS0=;
-        b=cUjzWmvkn1g+Ctnqb9MUltJvIF5FuQsDRBOLVuQ/2DACJACoScCPORIK0YNVEvtYJW
-         7mnjzKll6XZsFk9zw0VVRjk+GagEMU1q1FQvFN/qMWvY9SQ2+58l9+WcPpN5ix29NgGi
-         u4Xo4WZXPKpkd5RcyH7ClkcGPRfSEYtuskl+1oSh6sezlpOlByJQ/Aypi7bUJO2mhgLv
-         bYMaAOyvdXmmHNNgMOnY7f9Wi/bvXJZKBPJ3S6Xs/5mMvjwOF21UH7F6qGOHwpt2c9N1
-         EK5FTv6xjaUIz9dNJRsle5vJmw3rwCWHp4zT2F48v9wMPTqHpoDaYiQseopL6Xq4PswJ
-         ZqYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=drc5LnU//nothzoPqQ8d1G4VXl7oy7LH+bWASwffyS0=;
-        b=E2ao3soaOJNQ1s+7OKfV/KHC3c4syu1dyKJnQOGKIdzPRNf9ZEV+Wfjygpvwd50Cpi
-         0RnSlBkBtWTWKalynfAYYXSym6xD5mwSqyUBs6Kf2nKoiKmpHip9hsi9dGfBomItiLpE
-         8P12rdWx+py4jnVaSfnCZIhFAclERwxjt/gHS6dsqx1OZ1z8Es0pBxjE6cx95WkY5x5c
-         JMembMOcRva4QkiVU1+ak5/cJqGe+xpwZp6wz9LaQwQ6f6dMPXOj1YT9SH0h/ZXLKfyW
-         srSekfJ5qTzk1YVN4VOvhO0ALl9eaUbYbSMknbCs2zfofXLg5vkcIJ+50P8R7ZscqNPu
-         S9aw==
-X-Gm-Message-State: AOAM530cXtLiNHOv7h7wJeQA4zeGeihxYA+uv6q+chDMDA/5441jqiHN
-        AxCLmZz7WTTwRIHd2h+kP32jkA==
-X-Google-Smtp-Source: ABdhPJwgWclUcyvYUV+ZStu0nHJ4/FYeTiOk1bWWebykY/Rdx+WsX/KSJ4QAglqBV2Jfvlj9RLHc4Q==
-X-Received: by 2002:a63:3194:0:b0:3f6:a28:77cf with SMTP id x142-20020a633194000000b003f60a2877cfmr19688940pgx.264.1653309089024;
-        Mon, 23 May 2022 05:31:29 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id b16-20020a170902b61000b0015ec71f72d6sm4995468pls.253.2022.05.23.05.31.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 05:31:28 -0700 (PDT)
-Message-ID: <b12eb111-ea5f-e396-d7b3-249bf1e45e9d@kernel.dk>
-Date:   Mon, 23 May 2022 06:31:27 -0600
+        Mon, 23 May 2022 08:32:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E80B869;
+        Mon, 23 May 2022 05:32:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BD6161303;
+        Mon, 23 May 2022 12:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0CD5C385A9;
+        Mon, 23 May 2022 12:32:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653309128;
+        bh=kFxFcM5U7DCGygs0xc9/IorhdzyDD33c1AOEJSIDPxI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dwi1CRSYrd3+5S93sveEHTjANFjxe/hxsE95ccumwnmZ250ozaMe52yPEOcxQfhtE
+         MuMxPEoXIIB+bdV7aaQHLUAqURCaA83aIXoqMdgKckhNa4tPgEH2iTkTMR5VxHBpHa
+         CtYiqhUsVS6+gLOpCmHDw0iICCWMO4d+MLH2DuuU=
+Date:   Mon, 23 May 2022 14:32:05 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Mark Brown <broonie@kernel.org>, jirislaby@kernel.org,
+        matthias.bgg@gmail.com, zhiyong.tao@mediatek.com,
+        colin.king@intel.com, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wenst@chromium.org
+Subject: Re: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right
+ FEATURE_SEL"
+Message-ID: <Yot+xTBus04O9TUu@kroah.com>
+References: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
+ <YnpeYGbo7JJK0lDk@sirena.org.uk>
+ <b13b019f-f766-60df-3764-d375f64ea7d3@collabora.com>
+ <YnphFjs4E4EYafT4@sirena.org.uk>
+ <63169e65-cbfa-d495-754f-023dc8befa42@collabora.com>
+ <d91977d2-ebc6-de6e-5eeb-61c25ba0cc64@collabora.com>
+ <Yot5uls/3vLzZu7I@kroah.com>
+ <da1e4b31-de71-1fda-eff7-2e70fe1331ac@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: linux-next: build failure after merge of the block tree
-Content-Language: en-US
-To:     Coly Li <colyli@suse.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <20220523124921.7d6bbf34@canb.auug.org.au>
- <df3ffbac-2f4e-df03-8b29-8e2e4bb69fac@kernel.dk>
- <f1a9c46e-59a6-7b68-fd17-6f2563e24e98@suse.de>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <f1a9c46e-59a6-7b68-fd17-6f2563e24e98@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <da1e4b31-de71-1fda-eff7-2e70fe1331ac@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 12:05 AM, Coly Li wrote:
-> On 5/23/22 10:52 AM, Jens Axboe wrote:
->> On 5/22/22 8:49 PM, Stephen Rothwell wrote:
->>> Hi all,
->>>
->>> After merging the block tree, today's linux-next build (x86_64
->>> allmodconfig) failed like this:
->>>
->>> drivers/md/bcache/btree.c: In function 'bch_btree_check':
->>> drivers/md/bcache/btree.c:2073:1: error: the frame size of 2184 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
->>>   2073 | }
->>>        | ^
->>>
->>> Caused by commit
->>>
->>>    c766acd3d78e ("bcache: improve multithreaded bch_btree_check()")
->>>
->>> struct btree_check_state is very large to put on the stack :-(
->>>
->>> I have reverted that commit for today.
+On Mon, May 23, 2022 at 02:13:35PM +0200, AngeloGioacchino Del Regno wrote:
+> Il 23/05/22 14:10, Greg KH ha scritto:
+> > On Mon, May 23, 2022 at 12:17:06PM +0200, AngeloGioacchino Del Regno wrote:
+> > > Il 10/05/22 17:29, AngeloGioacchino Del Regno ha scritto:
+> > > > Il 10/05/22 14:56, Mark Brown ha scritto:
+> > > > > On Tue, May 10, 2022 at 02:46:28PM +0200, AngeloGioacchino Del Regno wrote:
+> > > > > 
+> > > > > > Sorry for missing this tag, and also I'm sorry for the noise.
+> > > > > 
+> > > > > Hey, if nobody broke anything all this testing stuff wouldn't be worth
+> > > > > it!
+> > > > 
+> > > > 
+> > > > Haha! That's true :-)
+> > > > 
+> > > > Thank you!
+> > > 
+> > > 
+> > > Hello Mark, Greg
+> > > 
+> > > I've just noticed that v5.18 was released, but without this revert.
+> > 
+> > What is "this revert"?
+> > 
 > 
-> Hi Jens,
+> "this revert" == "this commit", reverting
 > 
->> Thanks, I'll drop it. It's not part of the initial request sent to
->> Linus, exactly because it arrived late.
->>
->> Coly, I'm dropping this series.
+> 6f81fdded0d0 ("serial: 8250_mtk: Make sure to select the right FEATURE_SEL")
 > 
-> Yes please. Should I re-submit the fixed series to you in later -RC
-> round, or wait for 5.20 merge window?
+> > > Can you schedule this for backport on v5.18?
+> > 
+> > I need more context here, sorry.
+> > 
+> 
+> As stated in the commit description, some MediaTek SoCs are incompatible with
+> this change, hence it's actually breaking late serial for some machines.
 
-Just resubmit it when it's been fixed, then we'll figure it out at that
-point. As mentioned in the original email, at the very least it needs a
-linux-next soak for a weeks time. If the patches are simple enough and
-don't cause odd build errors/warnings, then we can still make this
-release if need be.
+Did I already apply this change to my tree?  If so, once it hits Linus's
+tree we can backport it to 5.18.1.
 
--- 
-Jens Axboe
+thanks,
 
+greg k-h
