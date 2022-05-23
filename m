@@ -2,101 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758E0C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231684AbiEWTnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38520 "EHLO
+        id S229923AbiEWTnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234307AbiEWTm3 (ORCPT
+        with ESMTP id S233161AbiEWTlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:42:29 -0400
-Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A682FFFC;
-        Mon, 23 May 2022 12:39:52 -0700 (PDT)
-Received: by mail-vs1-xe2a.google.com with SMTP id h5so8134989vsq.5;
-        Mon, 23 May 2022 12:39:52 -0700 (PDT)
+        Mon, 23 May 2022 15:41:46 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D2B1084
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:35:54 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gi33so22450920ejc.3
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:35:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rdaOtEJzlEI4rkC5/eExmfsw3plPJUfdC5HwNnDdrl8=;
-        b=ls+NfBeWK6+RxG8ca3EQRNTT3yplKi3fChJbujgJK3CbJJDIoJPHk4Ev2xPWMfQ3UQ
-         4/3OhdIsuwT2+wTRoCDZIVGul70Iv2hTQHHRBNW0qqWIQrvdJf0OeDCH/xOr2DmGz9I/
-         ZG7oDy5uZpNdDM6p3D/WL/jWOfRF21NDIHlg3rzRJxZjHPkrdmZbMWT8FYMoGzGnkdsd
-         hYQr3w1DJETirktof+iE4+F2Y82LwoRI+4bQ2v7TEnfnimu3lE0kVJRQbtDAEfx4vp/8
-         PKZuuJV5Jvdsl0iiULvkfE6cB8RkoVrr3nlFVPiEjpiXwKrXrzeMvGTTULrXKheM4PXY
-         eIJA==
+         :cc:content-transfer-encoding;
+        bh=LW25NSTQI4crBK2YwHHSQC3zzTXMP62tjU83/8uLCds=;
+        b=UEFeXxCNbRpI46/QElKf5Oc+lGtL2Zq8b580qymrLS2hT1gN2x2k4YLnGaHhIflRda
+         FTlC2aJa+Wf5tTV15adNd+RSH+3YiKMkzFSSFPLIjn0WHXuB8jmS+5Z0A7qT0dDpCM09
+         9dtVDguxK+rz77qtO/pQkWy7NzRnvT6pLcNKCOYlSZxkU/FYbFHQXJiWxGWSUpCED+L0
+         7DBFrie6eD34D34RZ8x+KAOfnOSfWHdtmvzRB46q7Giek85VU9jS8CrqNbWDNnO1qkGq
+         hNWHt+E9Cdy+aL9nAdW54T7kWSFU3JZKfHOZ8r7OOx56cqxzfKT/EQznLJ041nE+cu7G
+         Pl7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rdaOtEJzlEI4rkC5/eExmfsw3plPJUfdC5HwNnDdrl8=;
-        b=g1HbdD7jjK35ESo6RkbLQUVaZ+ZHOqqp6nOMPlWNjk7rZ/lciEXNHmkd2vgoyY6H92
-         bQvMsmGmudN+fMUg/tzOXzPBx50Z1KJHGAZEqOJuGjWPXPwU4Pk38gGeWIxzHp7YOJva
-         Ug8YMf3FDrtbaaRtk6936Uc1zMa3n1OilgPLersXU2bRqYlaVYTiAJrt25QWSnLXgqgh
-         nUgSOGCdyGU3ejQTo8G0EnLXJJ2Lj/fphvHTHhJdV8F9QDuCtmNpXqHR31TriEy/3xin
-         bb2LXXxP+fW1hKorYZNt1dJwX2pH2C6+g6dojc1VjBMyZewGAeduGvO/VWF2cedueTqA
-         fBNg==
-X-Gm-Message-State: AOAM531xFPzzj/tGuTPC/co5hljve2bQ3bZoT963T0FplTUmSVmTdmdm
-        940B+pWgtpftNBYhCOrkKWaXcV27zpKgq8gIF13iA8i45N4=
-X-Google-Smtp-Source: ABdhPJxiCGD1HM0L3J2KBiNOFPU+Aw2Qa2Kb9zDMgIIPHpmwII13aUMzattuzW3qu8Mz1+vUUf7DJTgQD/WZUF0qyOk=
-X-Received: by 2002:a05:6102:4b6:b0:335:f244:2286 with SMTP id
- r22-20020a05610204b600b00335f2442286mr7503887vsa.54.1653334792037; Mon, 23
- May 2022 12:39:52 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LW25NSTQI4crBK2YwHHSQC3zzTXMP62tjU83/8uLCds=;
+        b=x8KclGb+lamkVy8vujIssSylBpjkhRfLK0OTCHuCrSZHihXLGPNhPIyeDaBMB5/LWZ
+         n1i3rs7K2fIH4U65AxWP/sQq3FeK2GV0r1li5lP4MreoSx0rEN0HuDpvU2pdbD/bQL+y
+         R0rg+KxFOJFAwiPEAGjsO0SA2tDCxgbGFYz+/2krMw4CAJ4rJ9bTrWbHbsXikEOHGoTE
+         cKg5TVpj+/pQtWc30ZENOiARwP4b1eOxuCbdhkM6uCpqMbrNnWGm2I4uISyq83gNlOis
+         oOt7vCUQ9pQ/F+4CAGauOFKdBk/yozIKIPIkM/qN8a/XVnEPlc9/YAHfrWH69+lpY+Bo
+         2UrA==
+X-Gm-Message-State: AOAM5303cGq1WPdUxmzow3XAlHdGFOzgiQdfTwHdJvPcNVLP7KoHLv9E
+        ycPb58xVQsNb68T2jQl5U0H3kV9NZYODLdEfArhCrzw7
+X-Google-Smtp-Source: ABdhPJz/ho+Kaa4avSAR0bfqhdwldrIQfb0oR6uTFN8xWIOnG1xNe6bXn+MeClR+DbyZjaxZRIC1KOlwhMPdT4CTA0A=
+X-Received: by 2002:a17:906:7f89:b0:6fe:8e6b:f16c with SMTP id
+ f9-20020a1709067f8900b006fe8e6bf16cmr20874969ejr.390.1653334552777; Mon, 23
+ May 2022 12:35:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220521000921.8337-1-ruijian63@gmail.com>
-In-Reply-To: <20220521000921.8337-1-ruijian63@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 May 2022 12:39:41 -0700
-Message-ID: <CAEf4BzZkfc4ivfewD4Bo8ngfcg-evOjYPwyyL1zcc3oH7rUDyQ@mail.gmail.com>
-Subject: Re: [PATCH] samples: fix compile failure error
-To:     Ruijian Li <ruijian63@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, 798073189@qq.com
+References: <20220331070115.29421-1-bjorn.ardo@axis.com> <CABb+yY1zrHYLBjY_EoC7bkTsWcKOhzCjp-5vgvqP0HEAJicdXQ@mail.gmail.com>
+ <c4aa28b2-5550-ed39-3869-556b451ff54b@axis.com> <CABb+yY1BNsdMq7CNOBDk3sn7uvpL4=-fT7eOcbuL-+Yjz+iqHw@mail.gmail.com>
+ <487bbd00-d763-0a86-9984-1dfd957fbb38@axis.com> <e3abb8c0-a42c-4eea-993e-3c8fcce0ae64@axis.com>
+In-Reply-To: <e3abb8c0-a42c-4eea-993e-3c8fcce0ae64@axis.com>
+From:   Jassi Brar <jassisinghbrar@gmail.com>
+Date:   Mon, 23 May 2022 14:35:41 -0500
+Message-ID: <CABb+yY2EXGFK-ayV=-VRmEv5YFQWO5X+Xu2=mgcVegkx8MDogg@mail.gmail.com>
+Subject: Re: [PATCH] mailbox: forward the hrtimer if not queued and under a lock
+To:     Bjorn Ardo <bjorn.ardo@axis.com>
+Cc:     kernel <kernel@axis.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 5:09 PM Ruijian Li <ruijian63@gmail.com> wrote:
+On Mon, May 23, 2022 at 6:56 AM Bjorn Ardo <bjorn.ardo@axis.com> wrote:
 >
-> Because compile samples/bpf/test_lru_dist failure, I remove the
-> declaration of the struct list_head.
+> Hi again,
 >
-> Signed-off-by: Ruijian Li <ruijian63@gmail.com>
-> ---
->  samples/bpf/test_lru_dist.c | 4 ----
->  1 file changed, 4 deletions(-)
 >
-> diff --git a/samples/bpf/test_lru_dist.c b/samples/bpf/test_lru_dist.c
-> index 75e877853596..dd7eb470653b 100644
-> --- a/samples/bpf/test_lru_dist.c
-> +++ b/samples/bpf/test_lru_dist.c
-> @@ -33,10 +33,6 @@ static int nr_cpus;
->  static unsigned long long *dist_keys;
->  static unsigned int dist_key_counts;
+> On 4/20/22 10:28, Bjorn Ardo wrote:
+> >
+> >
+> > Our current solution are using 4 different mailbox channels
+> > asynchronously. The code is part of a larger system, but I can put
+> > down some time and try and extract the relevant parts if you still
+> > think this is a client issue? But with my current understanding of the
+> > code, the race between msg_submit() and txdone_hrtimer() is quite
+> > clear, and with my proposed patch that removes this race we have be
+> > able to run for very long time without any problems (that is several
+> > days). Without the fix we get the race after 5-10 min.
+> >
+> >
+> >
 >
-> -struct list_head {
-> -       struct list_head *next, *prev;
-> -};
-> -
+> I do not know if you have had any time to review my comments yet, but we
+> have created some examples to trigger the error.
+>
+Thanks, but your last explanation was enough. The logic seems fine.
+I was hoping someone impacted by the commit may chime in with a tested/acke=
+d by.
+I think I'll pick it up now.
 
-this struct is used right there one line below, how removing it fixes
-compilation issues? What was the error in the first place? Did you run
-`make headers_install` before building samples/bpf? Please provide a
-bit more information.
+Thanks.
 
->  static inline void INIT_LIST_HEAD(struct list_head *list)
->  {
->         list->next = list;
-> --
-> 2.32.0
+
+
+
+>
+> With the attached testmodule mailbox-loadtest.c I can trigger the error
+> by attaching it to the two sides of an mailbox with the following
+> devicetree code:
+>
+>          mboxtest1 {
+>                  compatible =3D "mailbox-loadtest";
+>                  mbox-names =3D "ping", "pong";
+>                  mboxes =3D <&mbox_loop_pri 0 &mbox_loop_pri 1>;
+>          };
+>
+>          mboxtest2 {
+>                  compatible =3D "mailbox-loadtest";
+>                  mbox-names =3D "pong", "ping";
+>                  mboxes =3D <&mbox_loop_scd 0 &mbox_loop_scd 1>;
+>          };
+>
+>
+> After that I create load on the mailbox by running (or respectively
+> system) the following:
+>
+> while echo 1 > /sys/kernel/debug/mboxtest1/ping ; do
+> usleep 1
+> done
+>
+> while echo 1 > /sys/kernel/debug/mboxtest2/ping ; do
+> usleep 50000
+> done
+>
+> After a few minutes (normally 2-5) I get errors.
+>
+>
+> Using the patch I sent earlier the errors goes away.
+>
+>
+> We also have created a mailbox-loopback.c that is a loopback mailbox
+> that can be used on the same system (to make testing easier on systems
+> that does not have a hardware mailbox), it is also attached. This can be
+> probed by the following devicetree code:
+>
+>          mbox_loop_pri: mailbox_loop_pri {
+>                  compatible =3D "mailbox-loopback";
+>                  #mbox-cells =3D <1>;
+>                  side =3D <0>;
+>          };
+>          mbox_loop_scd: mailbox_loop_scd {
+>                  compatible =3D "mailbox-loopback";
+>                  #mbox-cells =3D <1>;
+>                  side =3D <1>;
+>          };
+>
+> And with this loopback mailbox we have also been able to reproduce the
+> errors without the patch applied.
+>
+>
+> Best Regards,
+>
+> Bj=C3=B6rn
 >
