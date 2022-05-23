@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35394C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F80C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241101AbiEWRe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
+        id S241298AbiEWRfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240660AbiEWRZN (ORCPT
+        with ESMTP id S240648AbiEWRZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:25:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D716D4DA;
-        Mon, 23 May 2022 10:12:25 -0700 (PDT)
+        Mon, 23 May 2022 13:25:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CDB3EA89;
+        Mon, 23 May 2022 10:12:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B30561506;
-        Mon, 23 May 2022 17:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923D2C385A9;
-        Mon, 23 May 2022 17:11:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34BCEB8120F;
+        Mon, 23 May 2022 17:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9495AC385A9;
+        Mon, 23 May 2022 17:11:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325870;
-        bh=DOzl2i/fZq1TM8XTi6mtuKhgW3PJ9qE7juRr+ueh0u4=;
+        s=korg; t=1653325902;
+        bh=AuNJiLT2mmTuKkv5FyUijn+gb+NPPAPZlGfZWgzy4Bo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WX2MW8V02jOSr+rD3onEb2xBSIkX4JLb6bE2cwKsl6q7VdKIxjS2EjAgmb8VH003X
-         Ly9Cdh65WJ4OqhTXkxHJtmC46eA4G3mNeTKkj6n4LgKf05sbC/SVRPqM42suOcLVds
-         okbaCM9n8LriqWsuM19f2kZryrEaMqEBCmaY1e/E=
+        b=gCBUAc646cHqWnD/71RO5rqnn2VDcnVmRvnJxHmsai0OYiQ7zm8CPOGrte5D8E6LA
+         eubvNEVumIwhF7vuaASMmZwbbBHf2iXJIvxsadQsaVbOMpbROB8jkag9oIEO1E26FX
+         tgabjBaZSWa1g106kdgST1RONFy5hNSPAy7aD6J8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Gottwald <gottwald@igel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 4.19 14/44] PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
-Date:   Mon, 23 May 2022 19:04:58 +0200
-Message-Id: <20220523165755.854177532@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Jeff LaBundy <jeff@labundy.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 06/68] Input: add bounds checking to input_set_capability()
+Date:   Mon, 23 May 2022 19:04:33 +0200
+Message-Id: <20220523165803.609691673@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
-References: <20220523165752.797318097@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Jeff LaBundy <jeff@labundy.com>
 
-commit 92597f97a40bf661bebceb92e26ff87c76d562d4 upstream.
+[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
 
-If a Root Port on Elo i2 is put into D3cold and then back into D0, the
-downstream device becomes permanently inaccessible, so add a bridge D3 DMI
-quirk for that system.
+Update input_set_capability() to prevent kernel panic in case the
+event code exceeds the bitmap for the given event type.
 
-This was exposed by 14858dcc3b35 ("PCI: Use pci_update_current_state() in
-pci_enable_device_flags()"), but before that commit the Root Port in
-question had never been put into D3cold for real due to a mismatch between
-its power state retrieved from the PCI_PM_CTRL register (which was
-accessible even though the platform firmware indicated that the port was in
-D3cold) and the state of an ACPI power resource involved in its power
-management.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
-Link: https://lore.kernel.org/r/11980172.O9o76ZdvQC@kreacher
-Reported-by: Stefan Gottwald <gottwald@igel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org	# v5.15+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pci.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/input/input.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2517,6 +2517,16 @@ static const struct dmi_system_id bridge
- 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
- 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
- 		},
-+		/*
-+		 * Downstream device is not accessible after putting a root port
-+		 * into D3cold and back into D0 on Elo i2.
-+		 */
-+		.ident = "Elo i2",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
-+		},
- 	},
- #endif
- 	{ }
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index e2eb9b9b8363..0e16a9980c6a 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
+ 
+ static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
+ 
++static const unsigned int input_max_code[EV_CNT] = {
++	[EV_KEY] = KEY_MAX,
++	[EV_REL] = REL_MAX,
++	[EV_ABS] = ABS_MAX,
++	[EV_MSC] = MSC_MAX,
++	[EV_SW] = SW_MAX,
++	[EV_LED] = LED_MAX,
++	[EV_SND] = SND_MAX,
++	[EV_FF] = FF_MAX,
++};
++
+ static inline int is_event_supported(unsigned int code,
+ 				     unsigned long *bm, unsigned int max)
+ {
+@@ -1978,6 +1989,14 @@ EXPORT_SYMBOL(input_get_timestamp);
+  */
+ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
+ {
++	if (type < EV_CNT && input_max_code[type] &&
++	    code > input_max_code[type]) {
++		pr_err("%s: invalid code %u for type %u\n", __func__, code,
++		       type);
++		dump_stack();
++		return;
++	}
++
+ 	switch (type) {
+ 	case EV_KEY:
+ 		__set_bit(code, dev->keybit);
+-- 
+2.35.1
+
 
 
