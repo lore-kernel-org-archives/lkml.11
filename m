@@ -2,120 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B0DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 22:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2547CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 22:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231842AbiEWWyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 18:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36390 "EHLO
+        id S230372AbiEWW4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 18:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbiEWWyl (ORCPT
+        with ESMTP id S231989AbiEWW4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 18:54:41 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06D29BAC9;
-        Mon, 23 May 2022 15:54:39 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6XhY3wCJz4xD9;
-        Tue, 24 May 2022 08:54:37 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1653346478;
-        bh=kQ61I5q06RiORbU81KMm+TpsZhtefb8NNgB/lmR8l2g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lzrZmzIvKCl7FIvSIrwPZF+wpdULBxluYlM9pb7GqXEcczEV2iYkvgo4RuQWkXgkU
-         VUbzSOAjW5ZwIhPZolENAmDoIANDubDW5YtO2Kv0Rmf9kzZj0YQVeSo+TSXNJeRjn3
-         hr0tNsTYc0NIPVYokD/aHEL3VkcEXw2oaw5w54lmfoBERAG314borKFWku6NoLG4V5
-         7BbPCISE4RflTeBKwCUW/rFG77leDQtHseR/kd3Mp/n7HFSxa9pB7x9WZLp1hushpi
-         ro4U2EcafDe6kNV2yduvqclPMfxfL8To+3Jj1lMvkPE1o6Gc9Fcuu8tBjw7v4mSZJV
-         xQnWMH6R5snLw==
-Date:   Tue, 24 May 2022 08:54:35 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Jens Axboe <axboe@kernel.dk>, Dylan Yudaken <dylany@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the block tree with the vfs tree
-Message-ID: <20220524085435.1763fcfb@canb.auug.org.au>
-In-Reply-To: <20220523122827.657f2ab8@canb.auug.org.au>
-References: <20220523122827.657f2ab8@canb.auug.org.au>
+        Mon, 23 May 2022 18:56:24 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F87BCA9
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 15:56:22 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id p74so13171281iod.8
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 15:56:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8IkeMFpxJap9iRNlZOWaqDw2lZTtvovlAlgCcbHJF40=;
+        b=LlregArFTPBIO/O9VGixT3FvwF1GpeuFbzm0b77/+P3VvZwrojQj/TbOczcN8pwqtg
+         ER9n4xU2Kfj/hJcj0C3g0WRc1UBKrJ+r48LoVBTMsEq6Lc7MDoDtZmGdwjpDQt2tQ6aQ
+         y1Q6k4W1MV6QMssFMcmUmq3cAl3ltq+oci+00=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8IkeMFpxJap9iRNlZOWaqDw2lZTtvovlAlgCcbHJF40=;
+        b=FT+fssKr72TOz5vwa+SQc7ktYk/xnhX3/37ID0o4ZE8PStoV0RxNxBZaI86VVKrYCf
+         cGyTGLAuDSNpRYF0jY2pimR6qxBjObsUlGubkFtM72unzGn+SegaiKUTddxAnqruCfE6
+         IsJOXOn5SnJytes1/rU3RQu6TkOIxXjc9FAxZcscZ93OuImdZNikhz/tZXhsX0Vmx2Bg
+         C5LU1rBOGlpKQpbmyw4bFlBficmPquuL8my87mdBpG4IhurbUvYasAvIJ40lZcHp79kz
+         HDXeL3Bv5K7MS43aj6Z9jEGVhOfwZuy1KPWa4ikKnMNnJXqe2sFdXMHOvttkAlJ20jJG
+         7eJw==
+X-Gm-Message-State: AOAM531rmmFqAMErCXL0Icm2FzRISlUG6v6SDPV0awABel31LvmafbDg
+        uf4GBJOX+TjvVOGyFuM0sHgCUw==
+X-Google-Smtp-Source: ABdhPJzWMaKhgKkfN18pAF/PsAzLVa92H2TqCZJuPdFvHy+0A0QC8Oao+IrQw7s2wr/dGKchalIM6w==
+X-Received: by 2002:a05:6638:b81:b0:32e:5009:192d with SMTP id b1-20020a0566380b8100b0032e5009192dmr12212751jad.28.1653346581939;
+        Mon, 23 May 2022 15:56:21 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id q16-20020a02c8d0000000b0032ee3870122sm210085jao.48.2022.05.23.15.56.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 15:56:21 -0700 (PDT)
+Subject: Re: [PATCH 5.15 000/132] 5.15.42-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <9bf829b3-e6a8-d151-d81d-51262995c428@linuxfoundation.org>
+Date:   Mon, 23 May 2022 16:56:20 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_//s_58=aJ5yUnfz4Eu5betNS";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_//s_58=aJ5yUnfz4Eu5betNS
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 5/23/22 11:03 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.42 release.
+> There are 132 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.42-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Hi all,
+Compiled and booted on my test system. No dmesg regressions.
 
-On Mon, 23 May 2022 12:28:27 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the block tree got a conflict in:
->=20
->   fs/io_uring.c
->=20
-> between commit:
->=20
->   4329490a78b6 ("io_uring_enter(): don't leave f.flags uninitialized")
->=20
-> from the vfs tree and commit:
->=20
->   3e813c902672 ("io_uring: rework io_uring_enter to simplify return value=
-")
->=20
-> from the block tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> diff --cc fs/io_uring.c
-> index 82a1eac73de7,fd47002e669d..000000000000
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@@ -10840,8 -12060,9 +12060,8 @@@ iopoll_locked
->   out:
->   	percpu_ref_put(&ctx->refs);
->   out_fput:
->  -	if (!(flags & IORING_ENTER_REGISTERED_RING))
->  -		fdput(f);
->  +	fdput(f);
-> - 	return submitted ? submitted : ret;
-> + 	return ret;
->   }
->  =20
->   #ifdef CONFIG_PROC_FS
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-
-This is now a conflict between Linus' tree and the vfs tree.
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_//s_58=aJ5yUnfz4Eu5betNS
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKMEKsACgkQAVBC80lX
-0GxzvggAgUZBYeFC28p6bDG6SAJfv/uowSl8o0GYst0PvoolGwemW4EdM7mfZola
-f1k2fBWa3wcoQVkSFxTBtadDyHzjhOQHdo4RL2I0wXprdD44Zsh1lWIGwez8GscJ
-4U26TwRr2QZy9sxX7eFafoKH4FeoKkjFnp6dWkEijLtQT0QaTzW1G0WvSJLs3+rx
-haAyq/cqLuceN7Dj3sJFcILKTW6JADbNGxKbY0MtokcrZB3AEQhYjenD4MzAumDO
-I7cyb6Bn0DtbRGEIScWP/i8krHRUDnywxnhpZSSH425Hl4okBSUWj/oRyB5rL9LA
-GJYyTOk+/Wyx2HF71ga+MyF754wWVA==
-=wgrv
------END PGP SIGNATURE-----
-
---Sig_//s_58=aJ5yUnfz4Eu5betNS--
+thanks,
+-- Shuah
