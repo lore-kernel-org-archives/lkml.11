@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FC6C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 619F1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240353AbiEWRL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
+        id S240187AbiEWRLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239728AbiEWRK3 (ORCPT
+        with ESMTP id S239647AbiEWRKT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:10:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DB66B7F8;
-        Mon, 23 May 2022 10:10:00 -0700 (PDT)
+        Mon, 23 May 2022 13:10:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350C26CA8A;
+        Mon, 23 May 2022 10:09:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DE00614CC;
-        Mon, 23 May 2022 17:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60EA5C385A9;
-        Mon, 23 May 2022 17:08:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 824D4B811F6;
+        Mon, 23 May 2022 17:09:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A3EC385A9;
+        Mon, 23 May 2022 17:09:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325737;
-        bh=1W2LW1qZ7oq6x4+GTpFCSF5m4dT2h7TD7pOzJu6tlbQ=;
+        s=korg; t=1653325779;
+        bh=UodYB9RZCKj8YDl/NrPyDzZlEGObUwSATbKP+WigtdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JQj1qBKE0BysRV3ZXof16V06wU+nYt1HDw5lyD8+HAEUb6av/JfDDm+ArEvTBuhsr
-         T6xwgB4sxPCy9bP7PZM025VwJVnCOM8bN68mLoiAajB2U/df62ApZ9xv+BAkmQOyAB
-         DZkUceRBaj1/x5nStamvu8Vy2kCxzNy+Zw+xHjTA=
+        b=L5RnQaCZNQ2gvFAj4+rLrej47IetSO/y65mwOMhuN4dPnGIQi+cEQ1kpn+Zlsl9al
+         n0GI+8rAjnty0JCdbDJSWTPacFHScP1hVSqryOhS1aTxjW4XBfQ2rrNdOaY+phRiGn
+         N5FcCXF8Jw+huJM+Z0B9o/oq1L3X7ZoriHLrPvvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Gleb Chesnokov <Chesnokov.G@raidix.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 27/33] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
-Date:   Mon, 23 May 2022 19:05:16 +0200
-Message-Id: <20220523165752.843430355@linuxfoundation.org>
+Subject: [PATCH 4.14 20/33] ARM: 9196/1: spectre-bhb: enable for Cortex-A15
+Date:   Mon, 23 May 2022 19:05:09 +0200
+Message-Id: <20220523165751.433712311@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
 References: <20220523165746.957506211@linuxfoundation.org>
@@ -51,49 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gleb Chesnokov <Chesnokov.G@raidix.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
+[ Upstream commit 0dc14aa94ccd8ba35eb17a0f9b123d1566efd39e ]
 
-Aborting commands that have already been sent to the firmware can
-cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
+The Spectre-BHB mitigations were inadvertently left disabled for
+Cortex-A15, due to the fact that cpu_v7_bugs_init() is not called in
+that case. So fix that.
 
-For instance:
-
- - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
-
- - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
-
- - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
-
- - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
-   unmapped
-
-Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
-
-Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/mm/proc-v7-bugs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
-index 97a0c2384aee..4b431ca55c96 100644
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -3639,6 +3639,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index 1b6e770bc1cd..8b78694d56b8 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -297,6 +297,7 @@ void cpu_v7_ca15_ibe(void)
+ {
+ 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
+ 		cpu_v7_spectre_v2_init();
++	cpu_v7_spectre_bhb_init();
+ }
  
- 	spin_lock_irqsave(&cmd->cmd_lock, flags);
- 	if (cmd->aborted) {
-+		if (cmd->sg_mapped)
-+			qlt_unmap_sg(vha, cmd);
-+
- 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
- 		/*
- 		 * It's normal to see 2 calls in this path:
+ void cpu_v7_bugs_init(void)
 -- 
 2.35.1
 
