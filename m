@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F258EC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E6AC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243337AbiEWR4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
+        id S243437AbiEWR46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240950AbiEWR0L (ORCPT
+        with ESMTP id S240318AbiEWRZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708243E5D4;
-        Mon, 23 May 2022 10:21:16 -0700 (PDT)
+        Mon, 23 May 2022 13:25:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3697282168;
+        Mon, 23 May 2022 10:20:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37A92B81204;
-        Mon, 23 May 2022 17:19:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A788C385A9;
-        Mon, 23 May 2022 17:19:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4147610E8;
+        Mon, 23 May 2022 17:20:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE4BC385A9;
+        Mon, 23 May 2022 17:20:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326380;
-        bh=qnwdIkkYiFCRu6fRjyWwB/vxSHwpyJ8MWSzbKllOeWU=;
+        s=korg; t=1653326452;
+        bh=VJK7TwURwrK0TLfXEBbhNwto/77OQeC3hI0AX6HaA5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Au/SqaJ9+S2OaCLzbkinyiQ0b4fctDsfPLRCyGk+zW50mbu8k855Yv7DcKiJKBdP9
-         Ym147LEms95JFZa8Cl2xJIzjqdjE3c6zMxdfW4gLcwJowZsfeL7eCmxitEADhJa4Yk
-         qUTqU083fTAqi1a47g35bKvArvR9++/kqxQhJuao=
+        b=zxT4/8DpmMnJnPp/puMFT5p97iVPSckChdMDo2cJFOOSos+z2b6qLydEO5K8tbxhQ
+         tNuqql1GGy2d+UIQZX4qNdKTci63TkXnybqZyEaWceFElFKMCflC+vgy5V56nP/J2C
+         7RO8ouHQTnNfxu87sVKYE9Urpa8Aewkzmt6/7Uws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 064/132] ARM: dts: aspeed-g6: fix SPI1/SPI2 quad pin group
-Date:   Mon, 23 May 2022 19:04:33 +0200
-Message-Id: <20220523165833.855707916@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michal Wilczynski <michal.wilczynski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 086/132] ice: Fix interrupt moderation settings getting cleared
+Date:   Mon, 23 May 2022 19:04:55 +0200
+Message-Id: <20220523165837.348246556@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,42 +51,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+From: Michal Wilczynski <michal.wilczynski@intel.com>
 
-[ Upstream commit 890362d41b244536ab63591f813393f5fdf59ed7 ]
+[ Upstream commit bf13502ed5f941b0777b3fd1e24dac5d93f3886c ]
 
-Fix incorrect function mappings in pinctrl_qspi1_default and
-pinctrl_qspi2_default since their function should be SPI1 and
-SPI2 respectively.
+Adaptive-rx and Adaptive-tx are interrupt moderation settings
+that can be enabled/disabled using ethtool:
+ethtool -C ethX adaptive-rx on/off adaptive-tx on/off
 
-Fixes: f510f04c8c83 ("ARM: dts: aspeed: Add AST2600 pinmux nodes")
-Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-Link: https://lore.kernel.org/r/20220329173932.2588289-8-quic_jaehyoo@quicinc.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Unfortunately those settings are getting cleared after
+changing number of queues, or in ethtool world 'channels':
+ethtool -L ethX rx 1 tx 1
+
+Clearing was happening due to introduction of bit fields
+in ice_ring_container struct. This way only itr_setting
+bits were rebuilt during ice_vsi_rebuild_set_coalesce().
+
+Introduce an anonymous struct of bitfields and create a
+union to refer to them as a single variable.
+This way variable can be easily saved and restored.
+
+Fixes: 61dc79ced7aa ("ice: Restore interrupt throttle settings after VSI rebuild")
+Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_lib.c  | 16 ++++++++--------
+ drivers/net/ethernet/intel/ice/ice_txrx.h | 11 ++++++++---
+ 2 files changed, 16 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
-index 06d60a8540e9..ac07c240419a 100644
---- a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
-@@ -648,12 +648,12 @@ pinctrl_pwm9g1_default: pwm9g1_default {
- 	};
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 653996e8fd30..4417238b0e64 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -2980,8 +2980,8 @@ ice_vsi_rebuild_get_coalesce(struct ice_vsi *vsi,
+ 	ice_for_each_q_vector(vsi, i) {
+ 		struct ice_q_vector *q_vector = vsi->q_vectors[i];
  
- 	pinctrl_qspi1_default: qspi1_default {
--		function = "QSPI1";
-+		function = "SPI1";
- 		groups = "QSPI1";
- 	};
+-		coalesce[i].itr_tx = q_vector->tx.itr_setting;
+-		coalesce[i].itr_rx = q_vector->rx.itr_setting;
++		coalesce[i].itr_tx = q_vector->tx.itr_settings;
++		coalesce[i].itr_rx = q_vector->rx.itr_settings;
+ 		coalesce[i].intrl = q_vector->intrl;
  
- 	pinctrl_qspi2_default: qspi2_default {
--		function = "QSPI2";
-+		function = "SPI2";
- 		groups = "QSPI2";
- 	};
+ 		if (i < vsi->num_txq)
+@@ -3037,21 +3037,21 @@ ice_vsi_rebuild_set_coalesce(struct ice_vsi *vsi,
+ 		 */
+ 		if (i < vsi->alloc_rxq && coalesce[i].rx_valid) {
+ 			rc = &vsi->q_vectors[i]->rx;
+-			rc->itr_setting = coalesce[i].itr_rx;
++			rc->itr_settings = coalesce[i].itr_rx;
+ 			ice_write_itr(rc, rc->itr_setting);
+ 		} else if (i < vsi->alloc_rxq) {
+ 			rc = &vsi->q_vectors[i]->rx;
+-			rc->itr_setting = coalesce[0].itr_rx;
++			rc->itr_settings = coalesce[0].itr_rx;
+ 			ice_write_itr(rc, rc->itr_setting);
+ 		}
+ 
+ 		if (i < vsi->alloc_txq && coalesce[i].tx_valid) {
+ 			rc = &vsi->q_vectors[i]->tx;
+-			rc->itr_setting = coalesce[i].itr_tx;
++			rc->itr_settings = coalesce[i].itr_tx;
+ 			ice_write_itr(rc, rc->itr_setting);
+ 		} else if (i < vsi->alloc_txq) {
+ 			rc = &vsi->q_vectors[i]->tx;
+-			rc->itr_setting = coalesce[0].itr_tx;
++			rc->itr_settings = coalesce[0].itr_tx;
+ 			ice_write_itr(rc, rc->itr_setting);
+ 		}
+ 
+@@ -3065,12 +3065,12 @@ ice_vsi_rebuild_set_coalesce(struct ice_vsi *vsi,
+ 	for (; i < vsi->num_q_vectors; i++) {
+ 		/* transmit */
+ 		rc = &vsi->q_vectors[i]->tx;
+-		rc->itr_setting = coalesce[0].itr_tx;
++		rc->itr_settings = coalesce[0].itr_tx;
+ 		ice_write_itr(rc, rc->itr_setting);
+ 
+ 		/* receive */
+ 		rc = &vsi->q_vectors[i]->rx;
+-		rc->itr_setting = coalesce[0].itr_rx;
++		rc->itr_settings = coalesce[0].itr_rx;
+ 		ice_write_itr(rc, rc->itr_setting);
+ 
+ 		vsi->q_vectors[i]->intrl = coalesce[0].intrl;
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+index 69f78a1c234f..4adc3dff04ba 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.h
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+@@ -345,9 +345,14 @@ struct ice_ring_container {
+ 	/* this matches the maximum number of ITR bits, but in usec
+ 	 * values, so it is shifted left one bit (bit zero is ignored)
+ 	 */
+-	u16 itr_setting:13;
+-	u16 itr_reserved:2;
+-	u16 itr_mode:1;
++	union {
++		struct {
++			u16 itr_setting:13;
++			u16 itr_reserved:2;
++			u16 itr_mode:1;
++		};
++		u16 itr_settings;
++	};
+ 	enum ice_container_type type;
+ };
  
 -- 
 2.35.1
