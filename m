@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9116C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D687C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239887AbiEWROl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37832 "EHLO
+        id S239840AbiEWROz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240482AbiEWRM3 (ORCPT
+        with ESMTP id S240563AbiEWRMb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:12:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1849583AB;
-        Mon, 23 May 2022 10:11:36 -0700 (PDT)
+        Mon, 23 May 2022 13:12:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5344B60BA2;
+        Mon, 23 May 2022 10:11:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABF29614EB;
-        Mon, 23 May 2022 17:09:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CFBC34115;
-        Mon, 23 May 2022 17:09:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CA43B811FF;
+        Mon, 23 May 2022 17:11:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7125FC385AA;
+        Mon, 23 May 2022 17:11:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325786;
-        bh=4rBaSOrIJjKLFiIam8gz65RXThh97E5diUSE/kUbUD4=;
+        s=korg; t=1653325866;
+        bh=mIrxIdqoTQfm7qfFoiKZRdd3OAc4KQn/QZdNTNqz1kU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DuogWZftBiuZAFqxiVk4hXngnMU431IQq3vTdL4hKfndcL3DXqB4C1UgvLEEIodP/
-         CRGyCHE8TnGLNJdDRtmxv7M+Lv9SwUUE1eybSoXFFIqoodzem8K9s6ExjbEI+NT5+V
-         N4u1NKEmo0kySmNG0fYcJvH4Ky5FKABE52r5/mx8=
+        b=lQE2ZYynSnGxbHRE5foCTDQstlhUyqafecow08DuefAP37i8N7sdnxvmCmYiy1JpQ
+         Qbe2MtrgYcHRt3MR0Z0SeqGxc8Wl4joEGTdELFbrVtu8couBvEDh30x0GAhcPE+7WE
+         PN7mDGc+cRqs35ildbo17jRm/clpLzcdQCL2X2uI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Jeff LaBundy <jeff@labundy.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 03/44] Input: add bounds checking to input_set_capability()
-Date:   Mon, 23 May 2022 19:04:47 +0200
-Message-Id: <20220523165754.069303666@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH 4.19 13/44] Fix double fget() in vhost_net_set_backend()
+Date:   Mon, 23 May 2022 19:04:57 +0200
+Message-Id: <20220523165755.705046505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -51,62 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff LaBundy <jeff@labundy.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
+commit fb4554c2232e44d595920f4d5c66cf8f7d13f9bc upstream.
 
-Update input_set_capability() to prevent kernel panic in case the
-event code exceeds the bitmap for the given event type.
+Descriptor table is a shared resource; two fget() on the same descriptor
+may return different struct file references.  get_tap_ptr_ring() is
+called after we'd found (and pinned) the socket we'll be using and it
+tries to find the private tun/tap data structures associated with it.
+Redoing the lookup by the same file descriptor we'd used to get the
+socket is racy - we need to same struct file.
 
-Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Thanks to Jason for spotting a braino in the original variant of patch -
+I'd missed the use of fd == -1 for disabling backend, and in that case
+we can end up with sock == NULL and sock != oldsock.
+
+Cc: stable@kernel.org
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/input.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/vhost/net.c |   15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index a0d90022fcf7..dcbf53b5b2bc 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -50,6 +50,17 @@ static DEFINE_MUTEX(input_mutex);
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -1209,13 +1209,9 @@ err:
+ 	return ERR_PTR(r);
+ }
  
- static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
+-static struct ptr_ring *get_tap_ptr_ring(int fd)
++static struct ptr_ring *get_tap_ptr_ring(struct file *file)
+ {
+ 	struct ptr_ring *ring;
+-	struct file *file = fget(fd);
+-
+-	if (!file)
+-		return NULL;
+ 	ring = tun_get_tx_ring(file);
+ 	if (!IS_ERR(ring))
+ 		goto out;
+@@ -1224,7 +1220,6 @@ static struct ptr_ring *get_tap_ptr_ring
+ 		goto out;
+ 	ring = NULL;
+ out:
+-	fput(file);
+ 	return ring;
+ }
  
-+static const unsigned int input_max_code[EV_CNT] = {
-+	[EV_KEY] = KEY_MAX,
-+	[EV_REL] = REL_MAX,
-+	[EV_ABS] = ABS_MAX,
-+	[EV_MSC] = MSC_MAX,
-+	[EV_SW] = SW_MAX,
-+	[EV_LED] = LED_MAX,
-+	[EV_SND] = SND_MAX,
-+	[EV_FF] = FF_MAX,
-+};
-+
- static inline int is_event_supported(unsigned int code,
- 				     unsigned long *bm, unsigned int max)
- {
-@@ -1915,6 +1926,14 @@ EXPORT_SYMBOL(input_free_device);
-  */
- void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
- {
-+	if (type < EV_CNT && input_max_code[type] &&
-+	    code > input_max_code[type]) {
-+		pr_err("%s: invalid code %u for type %u\n", __func__, code,
-+		       type);
-+		dump_stack();
-+		return;
-+	}
-+
- 	switch (type) {
- 	case EV_KEY:
- 		__set_bit(code, dev->keybit);
--- 
-2.35.1
-
+@@ -1311,8 +1306,12 @@ static long vhost_net_set_backend(struct
+ 		r = vhost_net_enable_vq(n, vq);
+ 		if (r)
+ 			goto err_used;
+-		if (index == VHOST_NET_VQ_RX)
+-			nvq->rx_ring = get_tap_ptr_ring(fd);
++		if (index == VHOST_NET_VQ_RX) {
++			if (sock)
++				nvq->rx_ring = get_tap_ptr_ring(sock->file);
++			else
++				nvq->rx_ring = NULL;
++		}
+ 
+ 		oldubufs = nvq->ubufs;
+ 		nvq->ubufs = ubufs;
 
 
