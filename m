@@ -2,54 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28186C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91FEC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbiEWHYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
+        id S229633AbiEWHX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiEWHWT (ORCPT
+        with ESMTP id S229684AbiEWHWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:22:19 -0400
-Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C1610575
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:14:03 -0700 (PDT)
-Received: by mail-vk1-xa30.google.com with SMTP id t12so6660749vkt.5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:14:03 -0700 (PDT)
+        Mon, 23 May 2022 03:22:17 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA95FD13
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:13:52 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id j7so1999652vsp.12
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:13:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HDi9xEtp8+cj5bsf5JN5+R5BFytv9jkvX5VZGd9dnU0=;
-        b=UxqkeG4TS7Vls3G5OKJGYepxuYjCZ6IqBoXYMtw9AN7M89IC4p4tPHJspPyVwwNDPz
-         bYcgjDax771MYz9EiTay7QZhCfg2Pvkqx1v/ArsV2Sxu74SUvjVz2R6Eo8P7Gd8o/X5d
-         FpFXd96eS2on1YHqFDjZE6a9RnvvkboSSOBSo=
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9UkTAjLMqC/CtrhNDarVLoFGGkUR7Tt19k80EOtxRE8=;
+        b=aCBkVFsRWNr28CopDM73cM4KAj/85Qvxiq/tyeO6j+KIX3qtRIlj77OOTO1H5iyuBr
+         1ujVpwRhiY8hHDUIMvwvWUKLmcx5PFqk086fZw1OFbRs/YfJaCS8FLFHpXVuSZf1vuBi
+         Nr2Q2NUjAOCd/29ZtcpurW2Z3vrh8AWQDS5TE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HDi9xEtp8+cj5bsf5JN5+R5BFytv9jkvX5VZGd9dnU0=;
-        b=FcBiM7bTgdjRDaYFlTXY2TuwgI9eVFhvTkTEmrRCJGqyPnnUkSV2dDSAX+5AtTmIWe
-         k63tra1umI2weSfE8ZU/OHHW77WR36HJLyxACp5sZXR++LKodVFRjotfHr6odpTgWCUn
-         X4/MJiZtOHE3KCufcAi8LJr+Lxr1B8fSpIgJ77QWvJ4Wny8hunM3h8vELIjfRTNUlR3Q
-         61xmtOMZhSJLmuoLGyFsn1SliqoL+QtU7yxjL/J+YzGTYVklFHIMsX5iQcfdSNy7l6LK
-         1AW/Akrt2839U/gMXFSe2UoJnsRuIkKAl+0jzH1E0ZogvyG/lEA2cupi8H7q29Cqg9+W
-         hBeA==
-X-Gm-Message-State: AOAM533Y0wwFIHHg9xoHRg6QBJZjv/gDdrS+yTx4ZamXvhLHXHiY0qRd
-        Qjo9esEHo3a+TpFZHUkWxDcbm2OWBB5XiQ==
-X-Google-Smtp-Source: ABdhPJxTXxgVtmCDvjsu+UF9iPAHjiAob+1BBg8pK++x+mFwZJSzqMQrBWqk7s5ILPFs5E8RXtjNgQ==
-X-Received: by 2002:a05:6a00:8cb:b0:510:9ec4:8f85 with SMTP id s11-20020a056a0008cb00b005109ec48f85mr22585467pfu.24.1653289191034;
-        Sun, 22 May 2022 23:59:51 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:76d5:494d:1690:d003])
-        by smtp.gmail.com with ESMTPSA id m2-20020a629402000000b005180f4733a8sm3099527pfe.106.2022.05.22.23.59.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:59:50 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9UkTAjLMqC/CtrhNDarVLoFGGkUR7Tt19k80EOtxRE8=;
+        b=2Lg/VsgbMsmN1/WXOD298aJ4ddY7hVPsPMogNBCmQ6KHfbVQhar28NzdIWAalnXJlb
+         n15/Uvi8EcF0ZN2pMod6pMpuhvV8T3ep89xOzMHs5d9IKHZY0mE/d/oVcGecJf3MJe+c
+         0Q8vcReWpkbSMCqkYKR4REpCNfbp/2XP9gpJUvJL88yAtNjENGGQImcgE2aUW6rD8YFp
+         ESbCUNxywFSUc6XxQVaAi62N12OdMWvnDmHg0tWzzhPz8+iIZiR0TddIGsNU9UO815oF
+         SLYvVypjCUhJie1NsAIAf8npvKAA2xCSJi7kTFKUNBf42UdvBiBGmZAXXQveGab1a7jG
+         hAFg==
+X-Gm-Message-State: AOAM531MzRWiiFLHRSBjReF+tUI076VJ5ku3Px7Q1yrpKqv+nBUNynJ1
+        hMFeiSEvuwWlhGxstKVjAaJ3xjj4/p9A9ek8YPt2ef6kIsY=
+X-Google-Smtp-Source: ABdhPJy9l+YhOoCiDVJ0wj7674V7uWHHjjYFhjHGb8DHefA9ivXx6WBJL+51nXOC0KR40/bGgLA0JGRrTGlzinaxFMI=
+X-Received: by 2002:a67:d488:0:b0:337:ad51:776a with SMTP id
+ g8-20020a67d488000000b00337ad51776amr1637380vsj.80.1653289284739; Mon, 23 May
+ 2022 00:01:24 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220517082650.2005840-1-hsinyi@chromium.org> <20220517082650.2005840-4-hsinyi@chromium.org>
+ <CAJMQK-hovwXsuVUDD6-eueD05srWVdx1OWZ9vBdp-bT6De25ig@mail.gmail.com>
+ <eef04b7d-6778-ef7e-07a8-a2c916d21fdb@squashfs.org.uk> <CAJMQK-ig4QiTP-JqyuSLzWLrOCTKh4tb6D45ksqwMk2bvjkNsQ@mail.gmail.com>
+ <8ac07f00-2e9e-ef98-f808-bcf62539d2da@squashfs.org.uk>
+In-Reply-To: <8ac07f00-2e9e-ef98-f808-bcf62539d2da@squashfs.org.uk>
 From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>
-Cc:     Zheng Liang <zhengliang6@huawei.com>,
+Date:   Mon, 23 May 2022 15:00:58 +0800
+Message-ID: <CAJMQK-iBYwb6q6ZQosRdLMfHgpaCpbq39yPOc3WUH+18UcE5ag@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] squashfs: implement readahead
+To:     Phillip Lougher <phillip@squashfs.org.uk>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Xiongwei Song <Xiongwei.Song@windriver.com>,
+        Zheng Liang <zhengliang6@huawei.com>,
         Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
         Miao Xie <miaoxie@huawei.com>,
         Andrew Morton <akpm@linux-foundation.org>,
@@ -57,87 +63,305 @@ Cc:     Zheng Liang <zhengliang6@huawei.com>,
         "squashfs-devel @ lists . sourceforge . net" 
         <squashfs-devel@lists.sourceforge.net>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/3] Revert "squashfs: provide backing_dev_info in order to disable read-ahead"
-Date:   Mon, 23 May 2022 14:59:09 +0800
-Message-Id: <20220523065909.883444-2-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <20220523065909.883444-1-hsinyi@chromium.org>
-References: <20220523065909.883444-1-hsinyi@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 9eec1d897139e5de287af5d559a02b811b844d82.
+On Sat, May 21, 2022 at 4:22 AM Phillip Lougher <phillip@squashfs.org.uk> wrote:
+>
+> On 20/05/2022 08:38, Hsin-Yi Wang wrote:
+> > On Fri, May 20, 2022 at 11:02 AM Phillip Lougher
+> > <phillip@squashfs.org.uk> wrote:
+> >>
+> >> On 19/05/2022 09:09, Hsin-Yi Wang wrote:
+> >>> On Tue, May 17, 2022 at 4:28 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
+> >>>>
+> >>>> Implement readahead callback for squashfs. It will read datablocks
+> >>>> which cover pages in readahead request. For a few cases it will
+> >>>> not mark page as uptodate, including:
+> >>>> - file end is 0.
+> >>>> - zero filled blocks.
+> >>>> - current batch of pages isn't in the same datablock or not enough in a
+> >>>>     datablock.
+> >>>> Otherwise pages will be marked as uptodate. The unhandled pages will be
+> >>>> updated by readpage later.
+> >>>>
+> >>>> Suggested-by: Matthew Wilcox <willy@infradead.org>
+> >>>> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> >>>> Reported-by: Matthew Wilcox <willy@infradead.org>
+> >>>> Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
+> >>>> Reported-by: Xiongwei Song <sxwjean@gmail.com>
+> >>>> ---
+> >>>> v1->v2: remove unused check on readahead_expand().
+> >>>> v1: https://lore.kernel.org/lkml/20220516105100.1412740-3-hsinyi@chromium.org/
+> >>>> ---
+> >>>
+> >>> Hi Phillip and Matthew,
+> >>>
+> >>> Regarding the performance issue of this patch, I saw a possible
+> >>> performance gain if we only read the first block instead of reading
+> >>> until nr_pages == 0.
+> >>>
+> >>> To be more clear, apply the following diff (Please ignore the skipping
+> >>> of nr_pages check first. This is a demonstration of "only read and
+> >>> update the first block per readahead call"):
+> >>>
+> >>> diff --git a/fs/squashfs/file.c b/fs/squashfs/file.c
+> >>> index aad6823f0615..c52f7c4a7cfe 100644
+> >>> --- a/fs/squashfs/file.c
+> >>> +++ b/fs/squashfs/file.c
+> >>> @@ -524,10 +524,8 @@ static void squashfs_readahead(struct
+> >>> readahead_control *ractl)
+> >>>           if (!actor)
+> >>>                   goto out;
+> >>>
+> >>> -       for (;;) {
+> >>> +       {
+> >>>                   nr_pages = __readahead_batch(ractl, pages, max_pages);
+> >>> -               if (!nr_pages)
+> >>> -                       break;
+> >>>
+> >>>                   if (readahead_pos(ractl) >= i_size_read(inode) ||
+> >>>                       nr_pages < max_pages)
+> >>>
+> >>>
+> >>> All the performance numbers:
+> >>> 1. original: 39s
+> >>> 2. revert "mm: put readahead pages in cache earlier": 2.8s
+> >>> 3. v2 of this patch: 2.7s
+> >>> 4. v2 of this patch and apply the diff: 1.8s
+> >>>
+> >>> In my testing data, normally it reads and updates 1~2 blocks per
+> >>> readahead call. The change might not make sense since the performance
+> >>> improvement may only happen in certain cases.
+> >>> What do you think? Or is the performance of the current patch
+> >>> considered reasonable?
+> >>
+> >> It entirely depends on where the speed improvement comes from.
+> >>
+> >>   From experience, the speed improvement is probably worthwhile,
+> >> and probably isn't gained at the expense of worse performance
+> >> on other work-loads.
+> >>
+> >> But this is a guestimate, based on the fact timings 2 and 3
+> >> (2.8s v 2.7s) are almost identical.  Which implies the v2
+> >> patch isn't now doing any more work than the previous
+> >> baseline before the "mm: put readahead pages in cache earlier"
+> >> patch (*).
+> >>
+> >> As such the speed improvement must be coming from increased
+> >> parallelism.  Such as moving from serially reading the
+> >> readahead blocks to parallel reading.
+> >>
+> > Thanks for the idea. I checked this by offlining other cores until
+> > only one core exists. Removing loops still results in less time.
+> >
+> > But after counting the #traces lines in squashfs_read_data():
+> > If we remove the for loop (timings 4), the logs are less: 2.3K lines,
+> > while v2 (timings 3) has 3.7K (other timings are also around 3.7K), so
+> > removing loop doesn't look right.
+>
+> If a lot less data is being read than the other timings, then this does
+> look incorrect.
+>
+> >
+> > I think v2 should be fine considering the slightly to none regression
+> > compared to before.
+> >
+>
+> The fact the timings are almost identical implies all that needs
+> to be done to remove the performance regression has been done.
+>
+> There are two things missing from the patch which need to
+> be handled.  These are not related to performance but error
+> handling and correctness.  So I have waited until now to
+> raise it.
+>
+> If you look at the code for file_direct.c::squashfs_readpage_block()
+>
+> https://elixir.bootlin.com/linux/latest/source/fs/squashfs/file_direct.c#L93
+>
+> ****
+>         res = squashfs_read_data(inode->i_sb, block, bsize, NULL, actor);
+>         if (res < 0)
+>                 goto mark_errored;
+>
+>         if (res != expected) {
+>                 res = -EIO;
+>                 goto mark_errored;
+>         }
+> ****
+>
+> You will see that it checks for two return conditions from
+> squashfs_read_data().
+>
+> If the decompressor returns error, or if the decompressed block
+> is different in size to that expected, then this is an error situation
+> (e.g. corrupted filesystem), and the read is marked as bad.
+>
+> The current V2 patch doesn't check that the block decompressed
+> to the correct size (res != expected), and this could mean
+> filesystem corruption is not detected, which will be an
+> error handling regression.
+>
+Thanks for the review. In v3:
 
-Revert closing the readahead to squashfs since the readahead callback
-for squashfs is implemented.
+Added the check to see if the returned size is expected too. Since we
+didn't mark error pages here (in readahead), if the size wasn't
+expected, we just don't mark the page as Uptodate.
 
-Suggested-by: Xiongwei Song <Xiongwei.Song@windriver.com>
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
----
- fs/squashfs/super.c | 33 ---------------------------------
- 1 file changed, 33 deletions(-)
+> Secondly, if you look at
+> https://elixir.bootlin.com/linux/latest/source/fs/squashfs/file_direct.c#L102
+>
+> ****
+>         /* Last page may have trailing bytes not filled */
+>         bytes = res % PAGE_SIZE;
+>         if (bytes) {
+>                 pageaddr = kmap_atomic(page[pages - 1]);
+>                 memset(pageaddr + bytes, 0, PAGE_SIZE - bytes);
+>                 kunmap_atomic(pageaddr);
+>         }
+> ****
+>
+> The V2 patch is always reading max_pages, but at the
+> end of a file the last page may not be a full page.  This
+> is because the last block may not be complete (i.e. it is
+> only 126 Kbytes rather than the block_size of 128 Kbytes).
+>
+> This will leave part of the last page unfilled by the decompressor,
+> and it should be zero filled, to avoid leaking data to user-space.
 
-diff --git a/fs/squashfs/super.c b/fs/squashfs/super.c
-index 6d594ba2ed28..32565dafa7f3 100644
---- a/fs/squashfs/super.c
-+++ b/fs/squashfs/super.c
-@@ -29,7 +29,6 @@
- #include <linux/module.h>
- #include <linux/magic.h>
- #include <linux/xattr.h>
--#include <linux/backing-dev.h>
- 
- #include "squashfs_fs.h"
- #include "squashfs_fs_sb.h"
-@@ -113,24 +112,6 @@ static const struct squashfs_decompressor *supported_squashfs_filesystem(
- 	return decompressor;
- }
- 
--static int squashfs_bdi_init(struct super_block *sb)
--{
--	int err;
--	unsigned int major = MAJOR(sb->s_dev);
--	unsigned int minor = MINOR(sb->s_dev);
--
--	bdi_put(sb->s_bdi);
--	sb->s_bdi = &noop_backing_dev_info;
--
--	err = super_setup_bdi_name(sb, "squashfs_%u_%u", major, minor);
--	if (err)
--		return err;
--
--	sb->s_bdi->ra_pages = 0;
--	sb->s_bdi->io_pages = 0;
--
--	return 0;
--}
- 
- static int squashfs_fill_super(struct super_block *sb, struct fs_context *fc)
- {
-@@ -146,20 +127,6 @@ static int squashfs_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- 	TRACE("Entered squashfs_fill_superblock\n");
- 
--	/*
--	 * squashfs provides 'backing_dev_info' in order to disable read-ahead. For
--	 * squashfs, I/O is not deferred, it is done immediately in read_folio,
--	 * which means the user would always have to wait their own I/O. So the effect
--	 * of readahead is very weak for squashfs. squashfs_bdi_init will set
--	 * sb->s_bdi->ra_pages and sb->s_bdi->io_pages to 0 and close readahead for
--	 * squashfs.
--	 */
--	err = squashfs_bdi_init(sb);
--	if (err) {
--		errorf(fc, "squashfs init bdi failed");
--		return err;
--	}
--
- 	sb->s_fs_info = kzalloc(sizeof(*msblk), GFP_KERNEL);
- 	if (sb->s_fs_info == NULL) {
- 		ERROR("Failed to allocate squashfs_sb_info\n");
--- 
-2.36.1.124.g0e6072fb45-goog
+If the size was expected, further check if it's not a full page. If
+so, fill it with zeros at the end.
 
+Performance is the same as v2.
+
+
+>
+> Phillip
+>
+>
+> > Hi Matthew, what do you think? Do you have other comments? If not,
+> > should I send a v3 to change Xiongwei Song's email address or can you
+> > help modify it?
+> >
+> > Thanks
+> >
+> >> But, without looking at any trace output, that is just a
+> >> guestimate.
+> >>
+> >> Phillip
+> >>
+> >> (*) multiply decompressing the same blocks, which
+> >>       is the cause of the performance regression.
+> >>>
+> >>> Thanks.
+> >>>
+> >>> testing env:
+> >>> - arm64 on kernel 5.10
+> >>> - data: ~ 300K pack file contains some android files
+> >>>
+> >>>>    fs/squashfs/file.c | 77 +++++++++++++++++++++++++++++++++++++++++++++-
+> >>>>    1 file changed, 76 insertions(+), 1 deletion(-)
+> >>>>
+> >>>> diff --git a/fs/squashfs/file.c b/fs/squashfs/file.c
+> >>>> index a8e495d8eb86..e10a55c5b1eb 100644
+> >>>> --- a/fs/squashfs/file.c
+> >>>> +++ b/fs/squashfs/file.c
+> >>>> @@ -39,6 +39,7 @@
+> >>>>    #include "squashfs_fs_sb.h"
+> >>>>    #include "squashfs_fs_i.h"
+> >>>>    #include "squashfs.h"
+> >>>> +#include "page_actor.h"
+> >>>>
+> >>>>    /*
+> >>>>     * Locate cache slot in range [offset, index] for specified inode.  If
+> >>>> @@ -495,7 +496,81 @@ static int squashfs_read_folio(struct file *file, struct folio *folio)
+> >>>>           return 0;
+> >>>>    }
+> >>>>
+> >>>> +static void squashfs_readahead(struct readahead_control *ractl)
+> >>>> +{
+> >>>> +       struct inode *inode = ractl->mapping->host;
+> >>>> +       struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
+> >>>> +       size_t mask = (1UL << msblk->block_log) - 1;
+> >>>> +       size_t shift = msblk->block_log - PAGE_SHIFT;
+> >>>> +       loff_t start = readahead_pos(ractl) &~ mask;
+> >>>> +       size_t len = readahead_length(ractl) + readahead_pos(ractl) - start;
+> >>>> +       struct squashfs_page_actor *actor;
+> >>>> +       unsigned int nr_pages = 0;
+> >>>> +       struct page **pages;
+> >>>> +       u64 block = 0;
+> >>>> +       int bsize, res, i, index;
+> >>>> +       int file_end = i_size_read(inode) >> msblk->block_log;
+> >>>> +       unsigned int max_pages = 1UL << shift;
+> >>>> +
+> >>>> +       readahead_expand(ractl, start, (len | mask) + 1);
+> >>>> +
+> >>>> +       if (file_end == 0)
+> >>>> +               return;
+> >>>> +
+> >>>> +       pages = kmalloc_array(max_pages, sizeof(void *), GFP_KERNEL);
+> >>>> +       if (!pages)
+> >>>> +               return;
+> >>>> +
+> >>>> +       actor = squashfs_page_actor_init_special(pages, max_pages, 0);
+> >>>> +       if (!actor)
+> >>>> +               goto out;
+> >>>> +
+> >>>> +       for (;;) {
+> >>>> +               nr_pages = __readahead_batch(ractl, pages, max_pages);
+> >>>> +               if (!nr_pages)
+> >>>> +                       break;
+> >>>> +
+> >>>> +               if (readahead_pos(ractl) >= i_size_read(inode) ||
+> >>>> +                   nr_pages < max_pages)
+> >>>> +                       goto skip_pages;
+> >>>> +
+> >>>> +               index = pages[0]->index >> shift;
+> >>>> +               if ((pages[nr_pages - 1]->index >> shift) != index)
+> >>>> +                       goto skip_pages;
+> >>>> +
+> >>>> +               bsize = read_blocklist(inode, index, &block);
+> >>>> +               if (bsize == 0)
+> >>>> +                       goto skip_pages;
+> >>>> +
+> >>>> +               res = squashfs_read_data(inode->i_sb, block, bsize, NULL,
+> >>>> +                                        actor);
+> >>>> +
+> >>>> +               if (res >= 0)
+> >>>> +                       for (i = 0; i < nr_pages; i++)
+> >>>> +                               SetPageUptodate(pages[i]);
+> >>>> +
+> >>>> +               for (i = 0; i < nr_pages; i++) {
+> >>>> +                       unlock_page(pages[i]);
+> >>>> +                       put_page(pages[i]);
+> >>>> +               }
+> >>>> +       }
+> >>>> +
+> >>>> +       kfree(actor);
+> >>>> +       kfree(pages);
+> >>>> +       return;
+> >>>> +
+> >>>> +skip_pages:
+> >>>> +       for (i = 0; i < nr_pages; i++) {
+> >>>> +               unlock_page(pages[i]);
+> >>>> +               put_page(pages[i]);
+> >>>> +       }
+> >>>> +
+> >>>> +       kfree(actor);
+> >>>> +out:
+> >>>> +       kfree(pages);
+> >>>> +}
+> >>>>
+> >>>>    const struct address_space_operations squashfs_aops = {
+> >>>> -       .read_folio = squashfs_read_folio
+> >>>> +       .read_folio = squashfs_read_folio,
+> >>>> +       .readahead = squashfs_readahead
+> >>>>    };
+> >>>> --
+> >>>> 2.36.0.550.gb090851708-goog
+> >>>>
+> >>
+>
