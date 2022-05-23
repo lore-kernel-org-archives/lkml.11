@@ -2,91 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 776AFC38A2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B97C5C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244996AbiEWR61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S237590AbiEWR6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242317AbiEWRcZ (ORCPT
+        with ESMTP id S242207AbiEWRcP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D5272E05;
-        Mon, 23 May 2022 10:27:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1005B608C0;
-        Mon, 23 May 2022 17:27:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BBFAC385AA;
-        Mon, 23 May 2022 17:27:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326828;
-        bh=5bH7H4zGMBgeHEFbaAZv0/6QAQAaX1t2ZSNtFSywXWA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0SSeH+ferziS38n6Uk7cU2wyWyXxnmwoes33aNAVHLEFFBBC4OEdmk24OLC9SRl5s
-         xdiLSJTFuStXtHpZ3i4i/aI3iVIhq8Vk6wwaiJbeem3oHVHx4MsP1C/ppHmR2bxLEu
-         nSia9HtOJKxg2WINtpHY/zJvKwqG/QQfEC4oderQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Howard Chiu <howard_chiu@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 072/158] ARM: dts: aspeed: Add video engine to g6
-Date:   Mon, 23 May 2022 19:03:49 +0200
-Message-Id: <20220523165842.883024624@linuxfoundation.org>
+        Mon, 23 May 2022 13:32:15 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2C1753737
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:27:06 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A3E61FB;
+        Mon, 23 May 2022 10:17:07 -0700 (PDT)
+Received: from pluto.guestnet.cambridge.arm.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5BC6B3F73D;
+        Mon, 23 May 2022 10:17:05 -0700 (PDT)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Heiko Stuebner <heiko@sntech.de>, Liang Chen <cl@rock-chips.com>,
+        Kever Yang <kever.yang@rock-chips.com>,
+        Jeffy Chen <jeffy.chen@rock-chips.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Etienne Carriere <etienne.carriere@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Subject: [PATCH] firmware: arm_scmi: Relax BASE protocol sanity checks on protocol list
+Date:   Mon, 23 May 2022 18:15:59 +0100
+Message-Id: <20220523171559.472112-1-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Howard Chiu <howard_chiu@aspeedtech.com>
+Even though malformed replies from firmware must be treated carefully to
+avoid memory corruption Kernel side, some out-of-spec SCMI replies can
+be tolerated to avoid breaking existing deployed system, as long as they
+won't cause memory issues.
 
-[ Upstream commit 32e62d1beab70d485980013312e747a25c4e13f7 ]
-
-This node was accidentally removed by commit 645afe73f951 ("ARM: dts:
-aspeed: ast2600: Update XDMA engine node").
-
-Fixes: 645afe73f951 ("ARM: dts: aspeed: ast2600: Update XDMA engine node")
-Signed-off-by: Howard Chiu <howard_chiu@aspeedtech.com>
-Link: https://lore.kernel.org/r/SG2PR06MB2315C57600A0132FEF40F21EE61E9@SG2PR06MB2315.apcprd06.prod.outlook.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Cc: Etienne Carriere <etienne.carriere@linaro.org>
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
- arch/arm/boot/dts/aspeed-g6.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/firmware/arm_scmi/base.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..aac55b3aeded 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -389,6 +389,16 @@ sbc: secure-boot-controller@1e6f2000 {
- 				reg = <0x1e6f2000 0x1000>;
- 			};
+diff --git a/drivers/firmware/arm_scmi/base.c b/drivers/firmware/arm_scmi/base.c
+index 20fba7370f4e..d0ac96da1ddf 100644
+--- a/drivers/firmware/arm_scmi/base.c
++++ b/drivers/firmware/arm_scmi/base.c
+@@ -221,11 +221,17 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
+ 		calc_list_sz = (1 + (loop_num_ret - 1) / sizeof(u32)) *
+ 				sizeof(u32);
+ 		if (calc_list_sz != real_list_sz) {
+-			dev_err(dev,
+-				"Malformed reply - real_sz:%zd  calc_sz:%u\n",
+-				real_list_sz, calc_list_sz);
+-			ret = -EPROTO;
+-			break;
++			dev_warn(dev,
++				 "Malformed reply - real_sz:%zd  calc_sz:%u  (loop_num_ret:%d)\n",
++				 real_list_sz, calc_list_sz, loop_num_ret);
++			/*
++			 * Bail out if the expected list size is bigger than the
++			 * total payload size of the received reply.
++			 */
++			if (calc_list_sz > real_list_sz) {
++				ret = -EPROTO;
++				break;
++			}
+ 		}
  
-+			video: video@1e700000 {
-+				compatible = "aspeed,ast2600-video-engine";
-+				reg = <0x1e700000 0x1000>;
-+				clocks = <&syscon ASPEED_CLK_GATE_VCLK>,
-+					 <&syscon ASPEED_CLK_GATE_ECLK>;
-+				clock-names = "vclk", "eclk";
-+				interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+				status = "disabled";
-+			};
-+
- 			gpio0: gpio@1e780000 {
- 				#gpio-cells = <2>;
- 				gpio-controller;
+ 		for (loop = 0; loop < loop_num_ret; loop++)
 -- 
-2.35.1
-
-
+2.36.1
 
