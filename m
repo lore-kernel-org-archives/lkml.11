@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D759AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231777AbiEWRJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        id S239517AbiEWRJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239562AbiEWRH6 (ORCPT
+        with ESMTP id S239448AbiEWRJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:07:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400185BE5F;
-        Mon, 23 May 2022 10:07:54 -0700 (PDT)
+        Mon, 23 May 2022 13:09:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108F26C0E6;
+        Mon, 23 May 2022 10:08:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0A84B81201;
-        Mon, 23 May 2022 17:07:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06EC4C385A9;
-        Mon, 23 May 2022 17:07:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C80A2B81200;
+        Mon, 23 May 2022 17:08:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 253EEC385A9;
+        Mon, 23 May 2022 17:08:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325671;
-        bh=0naOMxH3Ws/cN6Gr0znKiOXtUMhUhuBDe3no0f3cIO8=;
+        s=korg; t=1653325704;
+        bh=sr/B4d37/4qkj9pTFmmpK3Nokr8z6fDzlyR7FE+yYD0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZHEsn36XfNd1dCLzp9rC0Fmi1jVRcR0QBf0HA6qfGGsc8JdZAKBTgrc3MLT9Irfmy
-         WmcB2SPHGkxAM4Bp2vgQBhyBIHvBb20eeSnu/OTVp6dSmIPuwRBkl4H4OBcHJA2+Kf
-         1AoCMhHRqkScm3/PoweB3oJG1uISRP+rN8Pbwh+M=
+        b=BNGwyC4iBm4+tf/TJZ4871IUxN7ij9PMYLrdtdFAOFgeeeov5VbEUXrwAKrC1s07i
+         K5KISfy/wq4Rmx/kaLGhhKWIdj1BeoHW9DhIneMmvAhrOz43wDiHAQUCuyyzRXDqea
+         CULxv45B/44d2gDjt4d0XoCrodSgt0mrImFksjXQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 04/33] Input: stmfts - fix reference leak in stmfts_input_open
-Date:   Mon, 23 May 2022 19:04:53 +0200
-Message-Id: <20220523165747.818755611@linuxfoundation.org>
+        stable@vger.kernel.org, Norbert Slusarek <nslusarek@gmx.net>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 09/33] perf: Fix sys_perf_event_open() race against self
+Date:   Mon, 23 May 2022 19:04:58 +0200
+Message-Id: <20220523165748.703871602@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
 References: <20220523165746.957506211@linuxfoundation.org>
@@ -49,53 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
+commit 3ac6487e584a1eb54071dbe1212e05b884136704 upstream.
 
-pm_runtime_get_sync() will increment pm usage counter even it
-failed. Forgetting to call pm_runtime_put_noidle will result
-in reference leak in stmfts_input_open, so we should fix it.
+Norbert reported that it's possible to race sys_perf_event_open() such
+that the looser ends up in another context from the group leader,
+triggering many WARNs.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The move_group case checks for races against itself, but the
+!move_group case doesn't, seemingly relying on the previous
+group_leader->ctx == ctx check. However, that check is racy due to not
+holding any locks at that time.
+
+Therefore, re-check the result after acquiring locks and bailing
+if they no longer match.
+
+Additionally, clarify the not_move_group case from the
+move_group-vs-move_group race.
+
+Fixes: f63a8daa5812 ("perf: Fix event->ctx locking")
+Reported-by: Norbert Slusarek <nslusarek@gmx.net>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/touchscreen/stmfts.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/events/core.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index d9e93dabbca2..9007027a7ad9 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -344,11 +344,11 @@ static int stmfts_input_open(struct input_dev *dev)
- 
- 	err = pm_runtime_get_sync(&sdata->client->dev);
- 	if (err < 0)
--		return err;
-+		goto out;
- 
- 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	mutex_lock(&sdata->mutex);
- 	sdata->running = true;
-@@ -371,7 +371,9 @@ static int stmfts_input_open(struct input_dev *dev)
- 				 "failed to enable touchkey\n");
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -10228,6 +10228,9 @@ SYSCALL_DEFINE5(perf_event_open,
+ 		 * Do not allow to attach to a group in a different task
+ 		 * or CPU context. If we're moving SW events, we'll fix
+ 		 * this up later, so allow that.
++		 *
++		 * Racy, not holding group_leader->ctx->mutex, see comment with
++		 * perf_event_ctx_lock().
+ 		 */
+ 		if (!move_group && group_leader->ctx != ctx)
+ 			goto err_context;
+@@ -10277,11 +10280,22 @@ SYSCALL_DEFINE5(perf_event_open,
+ 			} else {
+ 				perf_event_ctx_unlock(group_leader, gctx);
+ 				move_group = 0;
++				goto not_move_group;
+ 			}
+ 		}
+ 	} else {
+ 		mutex_lock(&ctx->mutex);
++
++		/*
++		 * Now that we hold ctx->lock, (re)validate group_leader->ctx == ctx,
++		 * see the group_leader && !move_group test earlier.
++		 */
++		if (group_leader && group_leader->ctx != ctx) {
++			err = -EINVAL;
++			goto err_locked;
++		}
  	}
++not_move_group:
  
--	return 0;
-+out:
-+	pm_runtime_put_noidle(&sdata->client->dev);
-+	return err;
- }
- 
- static void stmfts_input_close(struct input_dev *dev)
--- 
-2.35.1
-
+ 	if (ctx->task == TASK_TOMBSTONE) {
+ 		err = -ESRCH;
 
 
