@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A73C2C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D923C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243953AbiEWRvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
+        id S243321AbiEWRvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241473AbiEWR0r (ORCPT
+        with ESMTP id S240803AbiEWR3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AD574DEC;
-        Mon, 23 May 2022 10:21:54 -0700 (PDT)
+        Mon, 23 May 2022 13:29:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D312D377DD;
+        Mon, 23 May 2022 10:26:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 706DBB81215;
-        Mon, 23 May 2022 17:14:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2701C385A9;
-        Mon, 23 May 2022 17:14:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D5A1B81211;
+        Mon, 23 May 2022 17:14:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B7D2C385A9;
+        Mon, 23 May 2022 17:14:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326057;
-        bh=+WFmj9pEOkElDu91VIYgVARgNcx+u9/+kVf7ayfMqQE=;
+        s=korg; t=1653326054;
+        bh=N6jF/zf8eE9gSsnVR0cuxYXWWX2t6nRC2iwKobuSLnE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkjkbBvrKlPy2GmrgzaIIiUUPibz/LTEkhgbqsqoZL+eqP3LFuKZiK23Javt5ESOJ
-         MF5AljDa4DUAzjbzJSe8zV9rqO2BfkcHQgKgGDnZa5ZwX1zUMywW+eDBXxunm7HgLG
-         /QgoiaCT1RM7rT/PMVvdsUwYK8Nr+S6Fx781DuBE=
+        b=BcueUzLOXnX9n9k4ktqWkYeaXz42QUykPDm2E2aLWvFkbHpwzKXb+ZutfayNR0mS2
+         y5t7iJiPR3piDt79UuDsICd/Sf7GfbBx8q5oU8yNTL4e6S9L9Cn5J8/PwsYItZjs75
+         vr1voLgSQmYfbRrMQLc8oGgXv2hVATAdDTyTD03A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        stable@vger.kernel.org, Kevin Mitchell <kevmitch@arista.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH 5.10 07/97] igc: Update I226_K device ID
-Date:   Mon, 23 May 2022 19:05:11 +0200
-Message-Id: <20220523165813.521480921@linuxfoundation.org>
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.4 48/68] igb: skip phy status check where unavailable
+Date:   Mon, 23 May 2022 19:05:15 +0200
+Message-Id: <20220523165810.476425316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,32 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Kevin Mitchell <kevmitch@arista.com>
 
-commit 79cc8322b6d82747cb63ea464146c0bf5b5a6bc1 upstream.
+[ Upstream commit 942d2ad5d2e0df758a645ddfadffde2795322728 ]
 
-The device ID for I226_K was incorrectly assigned, update the device
-ID to the correct one.
+igb_read_phy_reg() will silently return, leaving phy_data untouched, if
+hw->ops.read_reg isn't set. Depending on the uninitialized value of
+phy_data, this led to the phy status check either succeeding immediately
+or looping continuously for 2 seconds before emitting a noisy err-level
+timeout. This message went out to the console even though there was no
+actual problem.
 
-Fixes: bfa5e98c9de4 ("igc: Add new device ID")
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Instead, first check if there is read_reg function pointer. If not,
+proceed without trying to check the phy status register.
+
+Fixes: b72f3f72005d ("igb: When GbE link up, wait for Remote receiver status condition")
+Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_hw.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/igc/igc_hw.h
-+++ b/drivers/net/ethernet/intel/igc/igc_hw.h
-@@ -22,6 +22,7 @@
- #define IGC_DEV_ID_I220_V			0x15F7
- #define IGC_DEV_ID_I225_K			0x3100
- #define IGC_DEV_ID_I225_K2			0x3101
-+#define IGC_DEV_ID_I226_K			0x3102
- #define IGC_DEV_ID_I225_LMVP			0x5502
- #define IGC_DEV_ID_I225_IT			0x0D9F
- #define IGC_DEV_ID_I226_LM			0x125B
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 3df25b231ab5..26c8d09ad4dd 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -5318,7 +5318,8 @@ static void igb_watchdog_task(struct work_struct *work)
+ 				break;
+ 			}
+ 
+-			if (adapter->link_speed != SPEED_1000)
++			if (adapter->link_speed != SPEED_1000 ||
++			    !hw->phy.ops.read_reg)
+ 				goto no_wait;
+ 
+ 			/* wait for Remote receiver status OK */
+-- 
+2.35.1
+
 
 
