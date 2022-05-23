@@ -2,131 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D76C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236069AbiEWNUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
+        id S236140AbiEWNVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236015AbiEWNU3 (ORCPT
+        with ESMTP id S236160AbiEWNVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:20:29 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FF12CE3B
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:20:27 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2fee9fe48c2so147901407b3.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IEQmaNNUUGULv1/BZVbeKyFXlK9ef3Jq4e2jfX8ne/8=;
-        b=ITSEKXkNy+WkGjl07bzn1gW5tL8hFVuZo8CtHyHMxj15PrnXlzwJblUdMJq6Kw2A7I
-         dWxzl45wH+L3Yc+lAztbclYUd1sx65t9cGSABKZ224wmI+GWKh1WBmD2h23j+jr9lwNW
-         FreG9cvmggglYolcLKnAUHGgdx1VRBaoHb6g9WHO+X4ql5N7l380/Zt5bwHK4T/mhGNT
-         i4WXXUQlxOMDSanxAjHHeBJxssoK3aCEYx0BniRLdps+Xbi1h/3KjXUEBjBCfuRIJx3H
-         MwPbhYulG2vMVrmUKPD/U/uXHK/B00Aau3v6V6FkteTXR4pT94cVc1dvUqFYUC7YqN7j
-         yIIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IEQmaNNUUGULv1/BZVbeKyFXlK9ef3Jq4e2jfX8ne/8=;
-        b=NM4EJMzGc5zpeqJyq7qeandQIe3X/bh/cNlD/me7Wsvkc1jBo73Kpp9Uh28zHOKri8
-         WQzuoHzjZtdk/McAGgKhw916PrP1I6zjFhTx13pD46T/JA83GgNabyCaINbRmv/wGaAW
-         UCjKmP+Kl/ayI5KhH8aSpR3nU2//yRiUmptqMDdwZUEYKjACJn/J0TPkyXANU61JhWDx
-         cwTs1caBi/jv9v/14RGvUE+Or0YMQBwzIDTrSI/CNhho88rw6Nlkq0lpaw6ZyELV4akR
-         ypN4w/aPiLJ0G6zVfwAsK9n0o7GsD7xGnrSVKnNmB+CYB3u4UqX9IHCV9ygquyXMlDpy
-         fDGw==
-X-Gm-Message-State: AOAM531Y+bRs5BeYZ+b7a4rjGBPVRS6OWGPBflbWrzPDCt5sYhd5BpEw
-        TGTRqKM1xWv08jWOtp7uGCoGcBLV1phZZjdE2L4=
-X-Google-Smtp-Source: ABdhPJxzgVyBKiSG8eHjW62fuIdgWjXdW4+EOTHt2zpp1s5dpUfHDL0SFozE6xgD8N5bHMsrNr14bsQIN1FOmM0XWG0=
-X-Received: by 2002:a81:d4a:0:b0:2ff:1edb:7492 with SMTP id
- 71-20020a810d4a000000b002ff1edb7492mr22660737ywn.58.1653312026778; Mon, 23
- May 2022 06:20:26 -0700 (PDT)
+        Mon, 23 May 2022 09:21:13 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FC063DE
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:21:12 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id CDF3A21AD6;
+        Mon, 23 May 2022 13:21:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653312070; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=ewYw1fRxVPzaahbUqFNs5STtZWay9ceigZCWA51wXME=;
+        b=J5zwYsGflaUsl4B6PY4vfyuGwRyQ3hR4LH0PNF3GLk4MwilRuPFQnqp32ms6P1PL5R9Dep
+        9WV8zjlw/DeWcVE5LhQslKdA9w3X8wKARwdlVa4Mio/pMPAsWVj5niCC9yZZ32q6BrwPTt
+        f4O5FLAnzAj85rX9O6cR1UejKi/ypCI=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 682362C141;
+        Mon, 23 May 2022 13:21:10 +0000 (UTC)
+Date:   Mon, 23 May 2022 15:21:07 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] printk for 5.19
+Message-ID: <YouKQw72H7y9EJQK@alley>
 MIME-Version: 1.0
-References: <20220523130144.444225-1-net147@gmail.com> <868d010c-9fca-3fac-7657-faaa2f271c14@denx.de>
-In-Reply-To: <868d010c-9fca-3fac-7657-faaa2f271c14@denx.de>
-From:   Jonathan Liu <net147@gmail.com>
-Date:   Mon, 23 May 2022 23:20:15 +1000
-Message-ID: <CANwerB30qwH4pe1wMqAvRgi6gAntZX=AqAh67dEvg4+D1jcnfQ@mail.gmail.com>
-Subject: Re: [PATCH v2] drm: bridge: icn6211: Adjust clock phase using SYS_CTRL_1
-To:     Marek Vasut <marex@denx.de>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marek,
+Hi Linus,
 
-On Mon, 23 May 2022 at 23:15, Marek Vasut <marex@denx.de> wrote:
->
-> On 5/23/22 15:01, Jonathan Liu wrote:
-> > The code from [1] sets SYS_CTRL_1 to different values depending on the
-> > desired clock phase (0, 1/4, 1/2 or 3/4). A clock phase of 0 aligns the
-> > positive edge of the clock with the pixel data while other values delay
-> > the clock by a fraction of the clock period. A clock phase of 1/2 aligns
-> > the negative edge of the clock with the pixel data.
-> >
-> > The driver currently hard codes SYS_CTRL_1 to 0x88 which corresponds to
-> > aligning the positive edge of the clock with the pixel data. This won't
-> > work correctly for panels that require aligning the negative edge of the
-> > clock with the pixel data.
-> >
-> > Adjust the clock phase to 0 if DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE is
-> > present in bus_flags, otherwise adjust the clock phase to 1/2 as
-> > appropriate for DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE.
-> >
-> > [1] https://github.com/tdjastrzebski/ICN6211-Configurator
-> >
-> > Signed-off-by: Jonathan Liu <net147@gmail.com>
-> > ---
-> > V2: Use GENMASK and FIELD_PREP macros
-> > ---
-> >   drivers/gpu/drm/bridge/chipone-icn6211.c | 18 ++++++++++++++++--
-> >   1 file changed, 16 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/bridge/chipone-icn6211.c b/drivers/gpu/drm/bridge/chipone-icn6211.c
-> > index 47dea657a752..f1538fb5f8a9 100644
-> > --- a/drivers/gpu/drm/bridge/chipone-icn6211.c
-> > +++ b/drivers/gpu/drm/bridge/chipone-icn6211.c
-> > @@ -9,6 +9,8 @@
-> >   #include <drm/drm_print.h>
-> >   #include <drm/drm_mipi_dsi.h>
-> >
-> > +#include <linux/bitfield.h>
-> > +#include <linux/bits.h>
-> >   #include <linux/delay.h>
-> >   #include <linux/gpio/consumer.h>
-> >   #include <linux/i2c.h>
-> > @@ -26,6 +28,11 @@
-> >   #define PD_CTRL(n)          (0x0a + ((n) & 0x3)) /* 0..3 */
-> >   #define RST_CTRL(n)         (0x0e + ((n) & 0x1)) /* 0..1 */
-> >   #define SYS_CTRL(n)         (0x10 + ((n) & 0x7)) /* 0..4 */
-> > +#define SYS_CTRL_1_CLK_PHASE_MSK     GENMASK(5, 4)
->
-> This should be GENMASK(7, 6) , no ?
+please pull the latest printk changes from
 
-Clock phase 0 = 0b_1000_1000 = 0x88
-Clock phase 1/4 = 0b_1001_1000 = 0x98
-Clock phase 1/2 = 0b_1010_1000 = 0xA8
-Clock phase 3/4 = 0b_1011_1000 = 0xB8
+  git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.19
 
-The clock phase bits are 5:4 not 7:6. The upper 2 bits and lower 4
-bits are unknown.
+================================================
 
-Regards,
-Jonathan
+- Offload writing printk() messages on consoles to per-console kthreads.
+
+  It prevents soft-lockups when an extensive amount of messages is printed.
+  It was observed, for example, during boot of large systems with a lot
+  of peripherals like disks or network interfaces.
+
+  It prevents live-lockups that were observed, for example, when messages
+  about allocation failures were reported and a CPU handled consoles
+  instead of reclaiming the memory. It was hard to solve even with
+  rate limiting because it would need to take into account the amount
+  of messages and the speed of all consoles.
+
+  It is a must to have for real time. Otherwise, any printk() might break
+  latency guarantees.
+
+  The per-console kthreads allow to handle each console on its own speed.
+  Slow consoles do not longer slow down faster ones. And printk() does
+  not longer unpredictably slows down various code paths.
+
+  There are situations when the kthreads are either not available or
+  not reliable, for example, early boot, suspend, or panic. In these
+  situations, printk() uses the legacy mode and tries to handle consoles
+  immediately.
+
+
+- Add documentation for the printk index.
+
+
+===============================================
+
+Risk:
+
+There was always fear that messages might not reach the console when
+the kthreads could not be scheduled. It blocked introducing the kthreads
+for nearly a decade.
+
+It is clear that the kthreads adds some risk that the messages will
+not reach consoles. But the original solution was just the best
+effort either.
+
+The kthreads fix some real bugs as mentioned above. Also they allow
+to see the messages on other consoles when other consoles are slow
+or get stuck.
+
+The patchset has been in linux-next for nearly one month since April 26.
+It helped to find one already existing race when initializing
+a console device. It made the race more visible, see
+https://lore.kernel.org/r/20220508103547.626355-1-john.ogness@linutronix.de
+
+Nobody reported problems with missing messages. Of course, it just
+a good sign but it is not proof of anything. Let's see how it
+works when it gets more testing in the mainline. I am afraid
+that we won't find without trying.
+
+
+----------------------------------------------------------------
+Chris Down (1):
+      MAINTAINERS: Add printk indexing maintainers on mention of printk_index
+
+John Ogness (15):
+      printk: rename cpulock functions
+      printk: cpu sync always disable interrupts
+      printk: add missing memory barrier to wake_up_klogd()
+      printk: wake up all waiters
+      printk: wake waiters for safe and NMI contexts
+      printk: get caller_id/timestamp after migration disable
+      printk: call boot_delay_msec() in printk_delay()
+      printk: add con_printk() macro for console details
+      printk: refactor and rework printing logic
+      printk: move buffer definitions into console_emit_next_record() caller
+      printk: add pr_flush()
+      printk: add functions to prefer direct printing
+      printk: add kthread console printers
+      printk: extend console_lock for per-console locking
+      printk: remove @console_locked
+
+Marco Elver (1):
+      printk, tracing: fix console tracepoint
+
+Petr Mladek (2):
+      printk/index: Printk index feature documentation
+      Merge branch 'rework/kthreads' into for-linus
+
+ Documentation/core-api/index.rst        |    1 +
+ Documentation/core-api/printk-index.rst |  137 ++++
+ MAINTAINERS                             |    2 +
+ drivers/tty/sysrq.c                     |    2 +
+ include/linux/console.h                 |   19 +
+ include/linux/printk.h                  |   82 ++-
+ kernel/hung_task.c                      |   11 +-
+ kernel/panic.c                          |    4 +
+ kernel/printk/printk.c                  | 1205 +++++++++++++++++++++++--------
+ kernel/rcu/tree_stall.h                 |    2 +
+ kernel/reboot.c                         |   14 +-
+ kernel/watchdog.c                       |    4 +
+ kernel/watchdog_hld.c                   |    4 +
+ lib/dump_stack.c                        |    4 +-
+ lib/nmi_backtrace.c                     |    4 +-
+ 15 files changed, 1174 insertions(+), 321 deletions(-)
+ create mode 100644 Documentation/core-api/printk-index.rst
