@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE131C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A219C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242882AbiEWRqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
+        id S243132AbiEWRqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242696AbiEWR14 (ORCPT
+        with ESMTP id S242669AbiEWR14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4746C81488;
-        Mon, 23 May 2022 10:24:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC7C8B08C;
+        Mon, 23 May 2022 10:24:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50B47B81215;
-        Mon, 23 May 2022 17:23:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABABFC385AA;
-        Mon, 23 May 2022 17:23:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 930A760C1D;
+        Mon, 23 May 2022 17:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950D9C385A9;
+        Mon, 23 May 2022 17:24:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326625;
-        bh=2OzM6rEcWN/cA/RcLcQIr0U+4Ibha4TEetcG9LyMk2E=;
+        s=korg; t=1653326641;
+        bh=cLb5gKpb3Emt5UyYxqpjSOJ5CM5YoWj2BbF49iH0I7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ryCiWfIc/dNovL5I93xWRQpekZn+1/sWEWL+irV/2Kn6yIzuoVNJ9ijLPtYWs7x61
-         cMklXHR/z7HjNymuHorqK/5cZ7GxPudMhPV4XMoFTiy9Is4qfFzWkVgK9Ko2/qKakm
-         tsiN48mrKM1yKET7/6DyXxcx5JIcLHbBl58RyaAY=
+        b=MVRBtGcZda+/yDXSU3KzbDQmJtq/xPMG1o7Pa64PmDYbOgN3JBiP8HMSdyMk9G4/2
+         kV0DEwf/BKZJjr9dSV6SjoszvdZIrb+ZkvNpLfJVBNEu/jLkd8l4z0TPIrdIyGxMZ7
+         xPaA15ETtRviDiy6NkwdDHx6joFKx4DlM5xaVwfc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Markus Suvanto <markus.suvanto@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        kafs-testing+fedora34_64checkkafs-build-496@auristor.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 132/132] afs: Fix afs_getattr() to refetch file status if callback break occurred
-Date:   Mon, 23 May 2022 19:05:41 +0200
-Message-Id: <20220523165845.636166274@linuxfoundation.org>
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.17 006/158] i2c: piix4: Move SMBus controller base address detect into function
+Date:   Mon, 23 May 2022 19:02:43 +0200
+Message-Id: <20220523165831.605365798@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,77 +50,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Terry Bowman <terry.bowman@amd.com>
 
-[ Upstream commit 2aeb8c86d49967552394d5e723f87454cb53f501 ]
+commit 0a59a24e14e9b21dcbb6b8ea41422e2fdfa437fd upstream.
 
-If a callback break occurs (change notification), afs_getattr() needs to
-issue an FS.FetchStatus RPC operation to update the status of the file
-being examined by the stat-family of system calls.
+Move SMBus controller base address detection into function. Refactor
+is in preparation for following MMIO changes.
 
-Fix afs_getattr() to do this if AFS_VNODE_CB_PROMISED has been cleared
-on a vnode by a callback break.  Skip this if AT_STATX_DONT_SYNC is set.
-
-This can be tested by appending to a file on one AFS client and then
-using "stat -L" to examine its length on a machine running kafs.  This
-can also be watched through tracing on the kafs machine.  The callback
-break is seen:
-
-     kworker/1:1-46      [001] .....   978.910812: afs_cb_call: c=0000005f YFSCB.CallBack
-     kworker/1:1-46      [001] ...1.   978.910829: afs_cb_break: 100058:23b4c:242d2c2 b=2 s=1 break-cb
-     kworker/1:1-46      [001] .....   978.911062: afs_call_done:    c=0000005f ret=0 ab=0 [0000000082994ead]
-
-And then the stat command generated no traffic if unpatched, but with
-this change a call to fetch the status can be observed:
-
-            stat-4471    [000] .....   986.744122: afs_make_fs_call: c=000000ab 100058:023b4c:242d2c2 YFS.FetchStatus
-            stat-4471    [000] .....   986.745578: afs_call_done:    c=000000ab ret=0 ab=0 [0000000087fc8c84]
-
-Fixes: 08e0e7c82eea ("[AF_RXRPC]: Make the in-kernel AFS filesystem use AF_RXRPC.")
-Reported-by: Markus Suvanto <markus.suvanto@gmail.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Tested-by: Markus Suvanto <markus.suvanto@gmail.com>
-Tested-by: kafs-testing+fedora34_64checkkafs-build-496@auristor.com
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216010
-Link: https://lore.kernel.org/r/165308359800.162686.14122417881564420962.stgit@warthog.procyon.org.uk/ # v1
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/afs/inode.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-piix4.c |   69 ++++++++++++++++++++++++++---------------
+ 1 file changed, 44 insertions(+), 25 deletions(-)
 
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index 8fcffea2daf5..a47666ba48f5 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -728,10 +728,22 @@ int afs_getattr(struct user_namespace *mnt_userns, const struct path *path,
- {
- 	struct inode *inode = d_inode(path->dentry);
- 	struct afs_vnode *vnode = AFS_FS_I(inode);
--	int seq = 0;
-+	struct key *key;
-+	int ret, seq = 0;
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -282,11 +282,51 @@ static int piix4_setup(struct pci_dev *P
+ 	return piix4_smba;
+ }
  
- 	_enter("{ ino=%lu v=%u }", inode->i_ino, inode->i_generation);
- 
-+	if (!(query_flags & AT_STATX_DONT_SYNC) &&
-+	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
-+		key = afs_request_key(vnode->volume->cell);
-+		if (IS_ERR(key))
-+			return PTR_ERR(key);
-+		ret = afs_validate(vnode, key);
-+		key_put(key);
-+		if (ret < 0)
-+			return ret;
++static int piix4_setup_sb800_smba(struct pci_dev *PIIX4_dev,
++				  u8 smb_en,
++				  u8 aux,
++				  u8 *smb_en_status,
++				  unsigned short *piix4_smba)
++{
++	u8 smba_en_lo;
++	u8 smba_en_hi;
++	int retval;
++
++	retval = piix4_sb800_region_request(&PIIX4_dev->dev);
++	if (retval)
++		return retval;
++
++	outb_p(smb_en, SB800_PIIX4_SMB_IDX);
++	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
++	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
++	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
++
++	piix4_sb800_region_release(&PIIX4_dev->dev);
++
++	if (!smb_en) {
++		*smb_en_status = smba_en_lo & 0x10;
++		*piix4_smba = smba_en_hi << 8;
++		if (aux)
++			*piix4_smba |= 0x20;
++	} else {
++		*smb_en_status = smba_en_lo & 0x01;
++		*piix4_smba = ((smba_en_hi << 8) | smba_en_lo) & 0xffe0;
 +	}
 +
- 	do {
- 		read_seqbegin_or_lock(&vnode->cb_lock, &seq);
- 		generic_fillattr(&init_user_ns, inode, stat);
--- 
-2.35.1
-
++	if (!*smb_en_status) {
++		dev_err(&PIIX4_dev->dev,
++			"SMBus Host Controller not enabled!\n");
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
+ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
+ 			     const struct pci_device_id *id, u8 aux)
+ {
+ 	unsigned short piix4_smba;
+-	u8 smba_en_lo, smba_en_hi, smb_en, smb_en_status, port_sel;
++	u8 smb_en, smb_en_status, port_sel;
+ 	u8 i2ccfg, i2ccfg_offset = 0x10;
+ 	int retval;
+ 
+@@ -310,33 +350,12 @@ static int piix4_setup_sb800(struct pci_
+ 	else
+ 		smb_en = (aux) ? 0x28 : 0x2c;
+ 
+-	retval = piix4_sb800_region_request(&PIIX4_dev->dev);
++	retval = piix4_setup_sb800_smba(PIIX4_dev, smb_en, aux, &smb_en_status,
++					&piix4_smba);
++
+ 	if (retval)
+ 		return retval;
+ 
+-	outb_p(smb_en, SB800_PIIX4_SMB_IDX);
+-	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
+-	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
+-	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
+-
+-	piix4_sb800_region_release(&PIIX4_dev->dev);
+-
+-	if (!smb_en) {
+-		smb_en_status = smba_en_lo & 0x10;
+-		piix4_smba = smba_en_hi << 8;
+-		if (aux)
+-			piix4_smba |= 0x20;
+-	} else {
+-		smb_en_status = smba_en_lo & 0x01;
+-		piix4_smba = ((smba_en_hi << 8) | smba_en_lo) & 0xffe0;
+-	}
+-
+-	if (!smb_en_status) {
+-		dev_err(&PIIX4_dev->dev,
+-			"SMBus Host Controller not enabled!\n");
+-		return -ENODEV;
+-	}
+-
+ 	if (acpi_check_region(piix4_smba, SMBIOSIZE, piix4_driver.name))
+ 		return -ENODEV;
+ 
 
 
