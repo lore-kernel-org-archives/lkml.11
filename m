@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB7F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236531AbiEWNaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
+        id S236536AbiEWNa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236232AbiEWN3Z (ORCPT
+        with ESMTP id S236261AbiEWN3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 09:29:25 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA5D240AA;
-        Mon, 23 May 2022 06:29:21 -0700 (PDT)
-X-UUID: a24253252fa84fdb9f51317b073231a3-20220523
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDA822512;
+        Mon, 23 May 2022 06:29:19 -0700 (PDT)
+X-UUID: 88c62c11dc454ff7b682674d8917ccaa-20220523
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:dd463a7f-e09e-4d9a-a651-3189397d4183,OB:0,LO
-        B:0,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:20
-X-CID-META: VersionHash:2a19b09,CLOUDID:06f24d7a-5ef6-470b-96c9-bdb8ced32786,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: a24253252fa84fdb9f51317b073231a3-20220523
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.5,REQID:5cc152be-2639-47e1-bf92-796140604be6,OB:50,L
+        OB:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:75
+X-CID-INFO: VERSION:1.1.5,REQID:5cc152be-2639-47e1-bf92-796140604be6,OB:50,LOB
+        :0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:75
+X-CID-META: VersionHash:2a19b09,CLOUDID:b5f14d7a-5ef6-470b-96c9-bdb8ced32786,C
+        OID:8478b14cce28,Recheck:0,SF:28|17|19|48,TC:nil,Content:1,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 88c62c11dc454ff7b682674d8917ccaa-20220523
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1194186212; Mon, 23 May 2022 21:29:18 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1457831560; Mon, 23 May 2022 21:29:11 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 23 May 2022 21:29:16 +0800
+ 15.2.792.15; Mon, 23 May 2022 21:29:09 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 23 May 2022 21:29:15 +0800
+ Transport; Mon, 23 May 2022 21:29:08 +0800
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
 To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
         <angelogioacchino.delregno@collabora.com>
@@ -46,11 +49,10 @@ CC:     <aaronyu@google.com>, <matthias.bgg@gmail.com>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Jiaxin Yu <jiaxin.yu@mediatek.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v5 16/20] dt-bindings: mediatek: mt8186: add audio afe document
-Date:   Mon, 23 May 2022 21:28:54 +0800
-Message-ID: <20220523132858.22166-17-jiaxin.yu@mediatek.com>
+        Jiaxin Yu <jiaxin.yu@mediatek.com>
+Subject: [PATCH v5 09/20] ASoC: mediatek: mt8186: support src in platform driver
+Date:   Mon, 23 May 2022 21:28:47 +0800
+Message-ID: <20220523132858.22166-10-jiaxin.yu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220523132858.22166-1-jiaxin.yu@mediatek.com>
 References: <20220523132858.22166-1-jiaxin.yu@mediatek.com>
@@ -62,196 +64,715 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mt8186 audio afe document.
+Add mt8186 src dai driver
 
 Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/sound/mt8186-afe-pcm.yaml        | 175 ++++++++++++++++++
- 1 file changed, 175 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml
+ sound/soc/mediatek/mt8186/mt8186-dai-src.c | 695 +++++++++++++++++++++
+ 1 file changed, 695 insertions(+)
+ create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-src.c
 
-diff --git a/Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml b/Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml
+diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-src.c b/sound/soc/mediatek/mt8186/mt8186-dai-src.c
 new file mode 100644
-index 000000000000..88f82d096443
+index 000000000000..67989ffd67ca
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml
-@@ -0,0 +1,175 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/mt8186-afe-pcm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/sound/soc/mediatek/mt8186/mt8186-dai-src.c
+@@ -0,0 +1,695 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++//  MediaTek ALSA SoC Audio DAI SRC Control
++//
++// Copyright (c) 2022 MediaTek Inc.
++// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
 +
-+title: Mediatek AFE PCM controller for mt8186
++#include <linux/regmap.h>
++#include "mt8186-afe-common.h"
++#include "mt8186-interconnection.h"
 +
-+maintainers:
-+  - Jiaxin Yu <jiaxin.yu@mediatek.com>
++struct mtk_afe_src_priv {
++	int dl_rate;
++	int ul_rate;
++};
 +
-+properties:
-+  compatible:
-+    const: mediatek,mt8186-sound
++static const unsigned int src_iir_coeff_32_to_16[] = {
++	0x0dbae6, 0xff9b0a, 0x0dbae6, 0x05e488, 0xe072b9, 0x000002,
++	0x0dbae6, 0x000f3b, 0x0dbae6, 0x06a537, 0xe17d79, 0x000002,
++	0x0dbae6, 0x01246a, 0x0dbae6, 0x087261, 0xe306be, 0x000002,
++	0x0dbae6, 0x03437d, 0x0dbae6, 0x0bc16f, 0xe57c87, 0x000002,
++	0x0dbae6, 0x072981, 0x0dbae6, 0x111dd3, 0xe94f2a, 0x000002,
++	0x0dbae6, 0x0dc4a6, 0x0dbae6, 0x188611, 0xee85a0, 0x000002,
++	0x0dbae6, 0x168b9a, 0x0dbae6, 0x200e8f, 0xf3ccf1, 0x000002,
++	0x000000, 0x1b75cb, 0x1b75cb, 0x2374a2, 0x000000, 0x000001
++};
 +
-+  reg:
-+    maxItems: 1
++static const unsigned int src_iir_coeff_44_to_16[] = {
++	0x09ae28, 0xf7d97d, 0x09ae28, 0x212a3d, 0xe0ac3a, 0x000002,
++	0x09ae28, 0xf8525a, 0x09ae28, 0x216d72, 0xe234be, 0x000002,
++	0x09ae28, 0xf980f5, 0x09ae28, 0x22a057, 0xe45a81, 0x000002,
++	0x09ae28, 0xfc0a08, 0x09ae28, 0x24d3bd, 0xe7752d, 0x000002,
++	0x09ae28, 0x016162, 0x09ae28, 0x27da01, 0xeb6ea8, 0x000002,
++	0x09ae28, 0x0b67df, 0x09ae28, 0x2aca4a, 0xef34c4, 0x000002,
++	0x000000, 0x135c50, 0x135c50, 0x2c1079, 0x000000, 0x000001
++};
 +
-+  interrupts:
-+    maxItems: 1
++static const unsigned int src_iir_coeff_44_to_32[] = {
++	0x096966, 0x0c4d35, 0x096966, 0xedee81, 0xf05070, 0x000003,
++	0x12d2cc, 0x193910, 0x12d2cc, 0xddbf4f, 0xe21e1d, 0x000002,
++	0x12d2cc, 0x1a9e60, 0x12d2cc, 0xe18916, 0xe470fd, 0x000002,
++	0x12d2cc, 0x1d06e0, 0x12d2cc, 0xe8a4a6, 0xe87b24, 0x000002,
++	0x12d2cc, 0x207578, 0x12d2cc, 0xf4fe62, 0xef5917, 0x000002,
++	0x12d2cc, 0x24055f, 0x12d2cc, 0x05ee2b, 0xf8b502, 0x000002,
++	0x000000, 0x25a599, 0x25a599, 0x0fabe2, 0x000000, 0x000001
++};
 +
-+  resets:
-+    maxItems: 1
++static const unsigned int src_iir_coeff_48_to_16[] = {
++	0x0296a4, 0xfd69dd, 0x0296a4, 0x209439, 0xe01ff9, 0x000002,
++	0x0f4ff3, 0xf0d6d4, 0x0f4ff3, 0x209bc9, 0xe076c3, 0x000002,
++	0x0e8490, 0xf1fe63, 0x0e8490, 0x20cfd6, 0xe12124, 0x000002,
++	0x14852f, 0xed794a, 0x14852f, 0x21503d, 0xe28b32, 0x000002,
++	0x136222, 0xf17677, 0x136222, 0x225be1, 0xe56964, 0x000002,
++	0x0a8d85, 0xfc4a97, 0x0a8d85, 0x24310c, 0xea6952, 0x000002,
++	0x05eff5, 0x043455, 0x05eff5, 0x4ced8f, 0xe134d6, 0x000001,
++	0x000000, 0x3aebe6, 0x3aebe6, 0x04f3b0, 0x000000, 0x000004
++};
 +
-+  reset-names:
-+    const: audiosys
++static const unsigned int src_iir_coeff_48_to_32[] = {
++	0x10c1b8, 0x10a7df, 0x10c1b8, 0xe7514e, 0xe0b41f, 0x000002,
++	0x10c1b8, 0x116257, 0x10c1b8, 0xe9402f, 0xe25aaa, 0x000002,
++	0x10c1b8, 0x130c89, 0x10c1b8, 0xed3cc3, 0xe4dddb, 0x000002,
++	0x10c1b8, 0x1600dd, 0x10c1b8, 0xf48000, 0xe90c55, 0x000002,
++	0x10c1b8, 0x1a672e, 0x10c1b8, 0x00494c, 0xefa807, 0x000002,
++	0x10c1b8, 0x1f38e6, 0x10c1b8, 0x0ee076, 0xf7c5f3, 0x000002,
++	0x000000, 0x218370, 0x218370, 0x168b40, 0x000000, 0x000001
++};
 +
-+  mediatek,apmixedsys:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: The phandle of the mediatek apmixedsys controller
++static const unsigned int src_iir_coeff_48_to_44[] = {
++	0x0bf71c, 0x170f3f, 0x0bf71c, 0xe3a4c8, 0xf096cb, 0x000003,
++	0x0bf71c, 0x17395e, 0x0bf71c, 0xe58085, 0xf210c8, 0x000003,
++	0x0bf71c, 0x1782bd, 0x0bf71c, 0xe95ef6, 0xf4c899, 0x000003,
++	0x0bf71c, 0x17cd97, 0x0bf71c, 0xf1608a, 0xfa3b18, 0x000003,
++	0x000000, 0x2fdc6f, 0x2fdc6f, 0xf15663, 0x000000, 0x000001
++};
 +
-+  mediatek,infracfg:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: The phandle of the mediatek infracfg controller
++static const unsigned int src_iir_coeff_96_to_16[] = {
++	0x0805a1, 0xf21ae3, 0x0805a1, 0x3840bb, 0xe02a2e, 0x000002,
++	0x0d5dd8, 0xe8f259, 0x0d5dd8, 0x1c0af6, 0xf04700, 0x000003,
++	0x0bb422, 0xec08d9, 0x0bb422, 0x1bfccc, 0xf09216, 0x000003,
++	0x08fde6, 0xf108be, 0x08fde6, 0x1bf096, 0xf10ae0, 0x000003,
++	0x0ae311, 0xeeeda3, 0x0ae311, 0x37c646, 0xe385f5, 0x000002,
++	0x044089, 0xfa7242, 0x044089, 0x37a785, 0xe56526, 0x000002,
++	0x00c75c, 0xffb947, 0x00c75c, 0x378ba3, 0xe72c5f, 0x000002,
++	0x000000, 0x0ef76e, 0x0ef76e, 0x377fda, 0x000000, 0x000001,
++};
 +
-+  mediatek,topckgen:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: The phandle of the mediatek topckgen controller
++static const unsigned int src_iir_coeff_96_to_44[] = {
++	0x08b543, 0xfd80f4, 0x08b543, 0x0e2332, 0xe06ed0, 0x000002,
++	0x1b6038, 0xf90e7e, 0x1b6038, 0x0ec1ac, 0xe16f66, 0x000002,
++	0x188478, 0xfbb921, 0x188478, 0x105859, 0xe2e596, 0x000002,
++	0x13eff3, 0xffa707, 0x13eff3, 0x13455c, 0xe533b7, 0x000002,
++	0x0dc239, 0x03d458, 0x0dc239, 0x17f120, 0xe8b617, 0x000002,
++	0x0745f1, 0x05d790, 0x0745f1, 0x1e3d75, 0xed5f18, 0x000002,
++	0x05641f, 0x085e2b, 0x05641f, 0x48efd0, 0xe3e9c8, 0x000001,
++	0x000000, 0x28f632, 0x28f632, 0x273905, 0x000000, 0x000001,
++};
 +
-+  clocks:
-+    items:
-+      - description: audio infra sys clock
-+      - description: audio infra 26M clock
-+      - description: audio top mux
-+      - description: audio intbus mux
-+      - description: mainpll 136.5M clock
-+      - description: faud1 mux
-+      - description: apll1 clock
-+      - description: faud2 mux
-+      - description: apll2 clock
-+      - description: audio engen1 mux
-+      - description: apll1_d8 22.5792M clock
-+      - description: audio engen2 mux
-+      - description: apll2_d8 24.576M clock
-+      - description: i2s0 mclk mux
-+      - description: i2s1 mclk mux
-+      - description: i2s2 mclk mux
-+      - description: i2s4 mclk mux
-+      - description: tdm mclk mux
-+      - description: i2s0_mck divider
-+      - description: i2s1_mck divider
-+      - description: i2s2_mck divider
-+      - description: i2s4_mck divider
-+      - description: tdm_mck divider
-+      - description: audio hires mux
-+      - description: 26M clock
++static unsigned int mtk_get_src_freq_mode(struct mtk_base_afe *afe, int rate)
++{
++	switch (rate) {
++	case 8000:
++		return 0x50000;
++	case 11025:
++		return 0x6e400;
++	case 12000:
++		return 0x78000;
++	case 16000:
++		return 0xa0000;
++	case 22050:
++		return 0xdc800;
++	case 24000:
++		return 0xf0000;
++	case 32000:
++		return 0x140000;
++	case 44100:
++		return 0x1b9000;
++	case 48000:
++		return 0x1e0000;
++	case 88200:
++		return 0x372000;
++	case 96000:
++		return 0x3c0000;
++	case 176400:
++		return 0x6e4000;
++	case 192000:
++		return 0x780000;
++	default:
++		dev_err(afe->dev, "%s(), rate %d invalid!!!\n",
++			__func__, rate);
++		return 0;
++	}
++}
 +
-+  clock-names:
-+    items:
-+      - const: aud_infra_clk
-+      - const: mtkaif_26m_clk
-+      - const: top_mux_audio
-+      - const: top_mux_audio_int
-+      - const: top_mainpll_d2_d4
-+      - const: top_mux_aud_1
-+      - const: top_apll1_ck
-+      - const: top_mux_aud_2
-+      - const: top_apll2_ck
-+      - const: top_mux_aud_eng1
-+      - const: top_apll1_d8
-+      - const: top_mux_aud_eng2
-+      - const: top_apll2_d8
-+      - const: top_i2s0_m_sel
-+      - const: top_i2s1_m_sel
-+      - const: top_i2s2_m_sel
-+      - const: top_i2s4_m_sel
-+      - const: top_tdm_m_sel
-+      - const: top_apll12_div0
-+      - const: top_apll12_div1
-+      - const: top_apll12_div2
-+      - const: top_apll12_div4
-+      - const: top_apll12_div_tdm
-+      - const: top_mux_audio_h
-+      - const: top_clk26m_clk
++static const unsigned int *get_iir_coeff(unsigned int rate_in,
++					 unsigned int rate_out,
++					 unsigned int *param_num)
++{
++	if (rate_in == 32000 && rate_out == 16000) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_32_to_16);
++		return src_iir_coeff_32_to_16;
++	} else if (rate_in == 44100 && rate_out == 16000) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_44_to_16);
++		return src_iir_coeff_44_to_16;
++	} else if (rate_in == 44100 && rate_out == 32000) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_44_to_32);
++		return src_iir_coeff_44_to_32;
++	} else if ((rate_in == 48000 && rate_out == 16000) ||
++		   (rate_in == 96000 && rate_out == 32000)) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_48_to_16);
++		return src_iir_coeff_48_to_16;
++	} else if (rate_in == 48000 && rate_out == 32000) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_48_to_32);
++		return src_iir_coeff_48_to_32;
++	} else if (rate_in == 48000 && rate_out == 44100) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_48_to_44);
++		return src_iir_coeff_48_to_44;
++	} else if (rate_in == 96000 && rate_out == 16000) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_96_to_16);
++		return src_iir_coeff_96_to_16;
++	} else if ((rate_in == 96000 && rate_out == 44100) ||
++		   (rate_in == 48000 && rate_out == 22050)) {
++		*param_num = ARRAY_SIZE(src_iir_coeff_96_to_44);
++		return src_iir_coeff_96_to_44;
++	}
 +
-+required:
-+  - compatible
-+  - interrupts
-+  - resets
-+  - reset-names
-+  - mediatek,apmixedsys
-+  - mediatek,infracfg
-+  - mediatek,topckgen
-+  - clocks
-+  - clock-names
++	*param_num = 0;
++	return NULL;
++}
 +
-+additionalProperties: false
++static int mtk_set_src_1_param(struct mtk_base_afe *afe, int id)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	struct mtk_afe_src_priv *src_priv = afe_priv->dai_priv[id];
++	unsigned int iir_coeff_num;
++	unsigned int iir_stage;
++	int rate_in = src_priv->dl_rate;
++	int rate_out = src_priv->ul_rate;
++	unsigned int out_freq_mode = mtk_get_src_freq_mode(afe, rate_out);
++	unsigned int in_freq_mode = mtk_get_src_freq_mode(afe, rate_in);
 +
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
++	/* set out freq mode */
++	regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON3,
++			   G_SRC_ASM_FREQ_4_MASK_SFT,
++			   out_freq_mode << G_SRC_ASM_FREQ_4_SFT);
 +
-+    afe: mt8186-afe-pcm@11210000 {
-+        compatible = "mediatek,mt8186-sound";
-+        reg = <0x11210000 0x2000>;
-+        interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>;
-+        resets = <&watchdog 17>; //MT8186_TOPRGU_AUDIO_SW_RST
-+        reset-names = "audiosys";
-+        mediatek,apmixedsys = <&apmixedsys>;
-+        mediatek,infracfg = <&infracfg>;
-+        mediatek,topckgen = <&topckgen>;
-+        clocks = <&infracfg_ao 44>, //CLK_INFRA_AO_AUDIO
-+                 <&infracfg_ao 54>, //CLK_INFRA_AO_AUDIO_26M_BCLK
-+                 <&topckgen 15>, //CLK_TOP_AUDIO
-+                 <&topckgen 16>, //CLK_TOP_AUD_INTBUS
-+                 <&topckgen 70>, //CLK_TOP_MAINPLL_D2_D4
-+                 <&topckgen 17>, //CLK_TOP_AUD_1
-+                 <&apmixedsys 12>, //CLK_APMIXED_APLL1
-+                 <&topckgen 18>, //CLK_TOP_AUD_2
-+                 <&apmixedsys 13>, //CLK_APMIXED_APLL2
-+                 <&topckgen 19>, //CLK_TOP_AUD_ENGEN1
-+                 <&topckgen 101>, //CLK_TOP_APLL1_D8
-+                 <&topckgen 20>, //CLK_TOP_AUD_ENGEN2
-+                 <&topckgen 104>, //CLK_TOP_APLL2_D8
-+                 <&topckgen 63>, //CLK_TOP_APLL_I2S0_MCK_SEL
-+                 <&topckgen 64>, //CLK_TOP_APLL_I2S1_MCK_SEL
-+                 <&topckgen 65>, //CLK_TOP_APLL_I2S2_MCK_SEL
-+                 <&topckgen 66>, //CLK_TOP_APLL_I2S4_MCK_SEL
-+                 <&topckgen 67>, //CLK_TOP_APLL_TDMOUT_MCK_SEL
-+                 <&topckgen 131>, //CLK_TOP_APLL12_CK_DIV0
-+                 <&topckgen 132>, //CLK_TOP_APLL12_CK_DIV1
-+                 <&topckgen 133>, //CLK_TOP_APLL12_CK_DIV2
-+                 <&topckgen 134>, //CLK_TOP_APLL12_CK_DIV4
-+                 <&topckgen 135>, //CLK_TOP_APLL12_CK_DIV_TDMOUT_M
-+                 <&topckgen 44>, //CLK_TOP_AUDIO_H
-+                 <&clk26m>;
-+        clock-names = "aud_infra_clk",
-+                      "mtkaif_26m_clk",
-+                      "top_mux_audio",
-+                      "top_mux_audio_int",
-+                      "top_mainpll_d2_d4",
-+                      "top_mux_aud_1",
-+                      "top_apll1_ck",
-+                      "top_mux_aud_2",
-+                      "top_apll2_ck",
-+                      "top_mux_aud_eng1",
-+                      "top_apll1_d8",
-+                      "top_mux_aud_eng2",
-+                      "top_apll2_d8",
-+                      "top_i2s0_m_sel",
-+                      "top_i2s1_m_sel",
-+                      "top_i2s2_m_sel",
-+                      "top_i2s4_m_sel",
-+                      "top_tdm_m_sel",
-+                      "top_apll12_div0",
-+                      "top_apll12_div1",
-+                      "top_apll12_div2",
-+                      "top_apll12_div4",
-+                      "top_apll12_div_tdm",
-+                      "top_mux_audio_h",
-+                      "top_clk26m_clk";
-+    };
++	/* set in freq mode */
++	regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON4,
++			   G_SRC_ASM_FREQ_5_MASK_SFT,
++			   in_freq_mode << G_SRC_ASM_FREQ_5_SFT);
 +
-+...
++	regmap_write(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON5, 0x3f5986);
++	regmap_write(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON5, 0x3f5987);
++	regmap_write(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON6, 0x1fbd);
++	regmap_write(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON2, 0);
++
++	/* set iir if in_rate > out_rate */
++	if (rate_in > rate_out) {
++		int i;
++		const unsigned int *iir_coeff = get_iir_coeff(rate_in, rate_out,
++							      &iir_coeff_num);
++
++		if (iir_coeff_num == 0 || !iir_coeff) {
++			dev_err(afe->dev, "%s(), iir coeff error, num %d, coeff %p\n",
++				__func__, iir_coeff_num, iir_coeff);
++			return -EINVAL;
++		}
++
++		/* COEFF_SRAM_CTRL */
++		regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON0,
++				   G_SRC_COEFF_SRAM_CTRL_MASK_SFT,
++				   BIT(G_SRC_COEFF_SRAM_CTRL_SFT));
++		/* Clear coeff history to r/w coeff from the first position */
++		regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON13,
++				   G_SRC_COEFF_SRAM_ADR_MASK_SFT, 0);
++		/* Write SRC coeff, should not read the reg during write */
++		for (i = 0; i < iir_coeff_num; i++)
++			regmap_write(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON12,
++				     iir_coeff[i]);
++		/* disable sram access */
++		regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON0,
++				   G_SRC_COEFF_SRAM_CTRL_MASK_SFT, 0);
++		/* CHSET_IIR_STAGE */
++		iir_stage = (iir_coeff_num / 6) - 1;
++		regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON2,
++				   G_SRC_CHSET_IIR_STAGE_MASK_SFT,
++				   iir_stage << G_SRC_CHSET_IIR_STAGE_SFT);
++		/* CHSET_IIR_EN */
++		regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON2,
++				   G_SRC_CHSET_IIR_EN_MASK_SFT,
++				   BIT(G_SRC_CHSET_IIR_EN_SFT));
++	} else {
++		/* CHSET_IIR_EN off */
++		regmap_update_bits(afe->regmap, AFE_GENERAL1_ASRC_2CH_CON2,
++				   G_SRC_CHSET_IIR_EN_MASK_SFT, 0);
++	}
++
++	return 0;
++}
++
++static int mtk_set_src_2_param(struct mtk_base_afe *afe, int id)
++{
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	struct mtk_afe_src_priv *src_priv = afe_priv->dai_priv[id];
++	unsigned int iir_coeff_num;
++	unsigned int iir_stage;
++	int rate_in = src_priv->dl_rate;
++	int rate_out = src_priv->ul_rate;
++	unsigned int out_freq_mode = mtk_get_src_freq_mode(afe, rate_out);
++	unsigned int in_freq_mode = mtk_get_src_freq_mode(afe, rate_in);
++
++	/* set out freq mode */
++	regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON3,
++			   G_SRC_ASM_FREQ_4_MASK_SFT,
++			   out_freq_mode << G_SRC_ASM_FREQ_4_SFT);
++
++	/* set in freq mode */
++	regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON4,
++			   G_SRC_ASM_FREQ_5_MASK_SFT,
++			   in_freq_mode << G_SRC_ASM_FREQ_5_SFT);
++
++	regmap_write(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON5, 0x3f5986);
++	regmap_write(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON5, 0x3f5987);
++	regmap_write(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON6, 0x1fbd);
++	regmap_write(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON2, 0);
++
++	/* set iir if in_rate > out_rate */
++	if (rate_in > rate_out) {
++		int i;
++		const unsigned int *iir_coeff = get_iir_coeff(rate_in, rate_out,
++							      &iir_coeff_num);
++
++		if (iir_coeff_num == 0 || !iir_coeff) {
++			dev_err(afe->dev, "%s(), iir coeff error, num %d, coeff %p\n",
++				 __func__, iir_coeff_num, iir_coeff);
++			return -EINVAL;
++		}
++
++		/* COEFF_SRAM_CTRL */
++		regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON0,
++				   G_SRC_COEFF_SRAM_CTRL_MASK_SFT,
++				   BIT(G_SRC_COEFF_SRAM_CTRL_SFT));
++		/* Clear coeff history to r/w coeff from the first position */
++		regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON13,
++				   G_SRC_COEFF_SRAM_ADR_MASK_SFT, 0);
++		/* Write SRC coeff, should not read the reg during write */
++		for (i = 0; i < iir_coeff_num; i++)
++			regmap_write(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON12,
++				     iir_coeff[i]);
++		/* disable sram access */
++		regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON0,
++				   G_SRC_COEFF_SRAM_CTRL_MASK_SFT, 0);
++		/* CHSET_IIR_STAGE */
++		iir_stage = (iir_coeff_num / 6) - 1;
++		regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON2,
++				   G_SRC_CHSET_IIR_STAGE_MASK_SFT,
++				   iir_stage << G_SRC_CHSET_IIR_STAGE_SFT);
++		/* CHSET_IIR_EN */
++		regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON2,
++				   G_SRC_CHSET_IIR_EN_MASK_SFT,
++				   BIT(G_SRC_CHSET_IIR_EN_SFT));
++	} else {
++		/* CHSET_IIR_EN off */
++		regmap_update_bits(afe->regmap, AFE_GENERAL2_ASRC_2CH_CON2,
++				   G_SRC_CHSET_IIR_EN_MASK_SFT, 0);
++	}
++
++	return 0;
++}
++
++#define HW_SRC_1_EN_W_NAME "HW_SRC_1_Enable"
++#define HW_SRC_2_EN_W_NAME "HW_SRC_2_Enable"
++
++static int mtk_hw_src_event(struct snd_soc_dapm_widget *w,
++			    struct snd_kcontrol *kcontrol,
++			    int event)
++{
++	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
++	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int id;
++	struct mtk_afe_src_priv *src_priv;
++	unsigned int reg;
++
++	if (strcmp(w->name, HW_SRC_1_EN_W_NAME) == 0)
++		id = MT8186_DAI_SRC_1;
++	else
++		id = MT8186_DAI_SRC_2;
++
++	src_priv = afe_priv->dai_priv[id];
++
++	dev_dbg(afe->dev,
++		"%s(), name %s, event 0x%x, id %d, src_priv %p, dl_rate %d, ul_rate %d\n",
++		__func__, w->name, event, id, src_priv,
++		src_priv->dl_rate, src_priv->ul_rate);
++
++	switch (event) {
++	case SND_SOC_DAPM_PRE_PMU:
++		if (id == MT8186_DAI_SRC_1)
++			mtk_set_src_1_param(afe, id);
++		else
++			mtk_set_src_2_param(afe, id);
++		break;
++	case SND_SOC_DAPM_POST_PMU:
++		reg = (id == MT8186_DAI_SRC_1) ?
++		      AFE_GENERAL1_ASRC_2CH_CON0 : AFE_GENERAL2_ASRC_2CH_CON0;
++		/* ASM_ON */
++		regmap_update_bits(afe->regmap, reg,
++				   G_SRC_ASM_ON_MASK_SFT,
++				   BIT(G_SRC_ASM_ON_SFT));
++		/* CHSET_ON */
++		regmap_update_bits(afe->regmap, reg,
++				   G_SRC_CHSET_ON_MASK_SFT,
++				   BIT(G_SRC_CHSET_ON_SFT));
++		/* CHSET_STR_CLR */
++		regmap_update_bits(afe->regmap, reg,
++				   G_SRC_CHSET_STR_CLR_MASK_SFT,
++				   BIT(G_SRC_CHSET_STR_CLR_SFT));
++		break;
++	case SND_SOC_DAPM_PRE_PMD:
++		reg = (id == MT8186_DAI_SRC_1) ?
++		      AFE_GENERAL1_ASRC_2CH_CON0 : AFE_GENERAL2_ASRC_2CH_CON0;
++		/* ASM_OFF */
++		regmap_update_bits(afe->regmap, reg, G_SRC_ASM_ON_MASK_SFT, 0);
++		/* CHSET_OFF */
++		regmap_update_bits(afe->regmap, reg, G_SRC_CHSET_ON_MASK_SFT, 0);
++		/* CHSET_STR_CLR */
++		regmap_update_bits(afe->regmap, reg, G_SRC_CHSET_STR_CLR_MASK_SFT, 0);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++/* dai component */
++static const struct snd_kcontrol_new mtk_hw_src_1_in_ch1_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1 Switch", AFE_CONN40,
++				    I_DL1_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH1 Switch", AFE_CONN40,
++				    I_DL2_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH1 Switch", AFE_CONN40,
++				    I_DL3_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH1 Switch", AFE_CONN40_1,
++				    I_DL4_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH1 Switch", AFE_CONN40_1,
++				    I_DL6_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I2S0_CH1 Switch", AFE_CONN40,
++				    I_I2S0_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH1 Switch", AFE_CONN40_1,
++				    I_DL5_CH1, 1, 0),
++};
++
++static const struct snd_kcontrol_new mtk_hw_src_1_in_ch2_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH2 Switch", AFE_CONN41,
++				    I_DL1_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH2 Switch", AFE_CONN41,
++				    I_DL2_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH2 Switch", AFE_CONN41,
++				    I_DL3_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH2 Switch", AFE_CONN41_1,
++				    I_DL4_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH2 Switch", AFE_CONN41_1,
++				    I_DL6_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I2S0_CH2 Switch", AFE_CONN41,
++				    I_I2S0_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH2 Switch", AFE_CONN41_1,
++				    I_DL5_CH2, 1, 0),
++};
++
++static const struct snd_kcontrol_new mtk_hw_src_2_in_ch1_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1 Switch", AFE_CONN42,
++				    I_DL1_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH1 Switch", AFE_CONN42,
++				    I_DL2_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH1 Switch", AFE_CONN42,
++				    I_DL3_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH1 Switch", AFE_CONN42,
++				    I_DL4_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH1 Switch", AFE_CONN42_1,
++				    I_DL5_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH1 Switch", AFE_CONN42_1,
++				    I_DL6_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("HW_GAIN2_OUT_CH1 Switch", AFE_CONN42,
++				    I_GAIN2_OUT_CH1, 1, 0),
++};
++
++static const struct snd_kcontrol_new mtk_hw_src_2_in_ch2_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH2 Switch", AFE_CONN43,
++				    I_DL1_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH2 Switch", AFE_CONN43,
++				    I_DL2_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL3_CH2 Switch", AFE_CONN43,
++				    I_DL3_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH2 Switch", AFE_CONN43,
++				    I_DL4_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL5_CH2 Switch", AFE_CONN43_1,
++				    I_DL5_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH2 Switch", AFE_CONN43_1,
++				    I_DL6_CH2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("HW_GAIN2_OUT_CH2 Switch", AFE_CONN43,
++				    I_GAIN2_OUT_CH2, 1, 0),
++};
++
++static const struct snd_soc_dapm_widget mtk_dai_src_widgets[] = {
++	/* inter-connections */
++	SND_SOC_DAPM_MIXER("HW_SRC_1_IN_CH1", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_src_1_in_ch1_mix,
++			   ARRAY_SIZE(mtk_hw_src_1_in_ch1_mix)),
++	SND_SOC_DAPM_MIXER("HW_SRC_1_IN_CH2", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_src_1_in_ch2_mix,
++			   ARRAY_SIZE(mtk_hw_src_1_in_ch2_mix)),
++	SND_SOC_DAPM_MIXER("HW_SRC_2_IN_CH1", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_src_2_in_ch1_mix,
++			   ARRAY_SIZE(mtk_hw_src_2_in_ch1_mix)),
++	SND_SOC_DAPM_MIXER("HW_SRC_2_IN_CH2", SND_SOC_NOPM, 0, 0,
++			   mtk_hw_src_2_in_ch2_mix,
++			   ARRAY_SIZE(mtk_hw_src_2_in_ch2_mix)),
++
++	SND_SOC_DAPM_SUPPLY(HW_SRC_1_EN_W_NAME,
++			    GENERAL_ASRC_EN_ON, GENERAL1_ASRC_EN_ON_SFT, 0,
++			    mtk_hw_src_event,
++			    SND_SOC_DAPM_PRE_PMU |
++			    SND_SOC_DAPM_POST_PMU |
++			    SND_SOC_DAPM_PRE_PMD),
++
++	SND_SOC_DAPM_SUPPLY(HW_SRC_2_EN_W_NAME,
++			    GENERAL_ASRC_EN_ON, GENERAL2_ASRC_EN_ON_SFT, 0,
++			    mtk_hw_src_event,
++			    SND_SOC_DAPM_PRE_PMU |
++			    SND_SOC_DAPM_POST_PMU |
++			    SND_SOC_DAPM_PRE_PMD),
++
++	SND_SOC_DAPM_INPUT("HW SRC 1 Out Endpoint"),
++	SND_SOC_DAPM_INPUT("HW SRC 2 Out Endpoint"),
++	SND_SOC_DAPM_OUTPUT("HW SRC 1 In Endpoint"),
++	SND_SOC_DAPM_OUTPUT("HW SRC 2 In Endpoint"),
++};
++
++static int mtk_afe_src_en_connect(struct snd_soc_dapm_widget *source,
++				  struct snd_soc_dapm_widget *sink)
++{
++	struct snd_soc_dapm_widget *w = source;
++	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
++	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	struct mtk_afe_src_priv *src_priv;
++
++	if (strcmp(w->name, HW_SRC_1_EN_W_NAME) == 0)
++		src_priv = afe_priv->dai_priv[MT8186_DAI_SRC_1];
++	else
++		src_priv = afe_priv->dai_priv[MT8186_DAI_SRC_2];
++
++	dev_dbg(afe->dev,
++		"%s(), source %s, sink %s, dl_rate %d, ul_rate %d\n",
++		__func__, source->name, sink->name,
++		src_priv->dl_rate, src_priv->ul_rate);
++
++	return (src_priv->dl_rate > 0 && src_priv->ul_rate > 0) ? 1 : 0;
++}
++
++static const struct snd_soc_dapm_route mtk_dai_src_routes[] = {
++	{"HW_SRC_1_IN_CH1", "DL1_CH1 Switch", "DL1"},
++	{"HW_SRC_1_IN_CH2", "DL1_CH2 Switch", "DL1"},
++	{"HW_SRC_2_IN_CH1", "DL1_CH1 Switch", "DL1"},
++	{"HW_SRC_2_IN_CH2", "DL1_CH2 Switch", "DL1"},
++	{"HW_SRC_1_IN_CH1", "DL2_CH1 Switch", "DL2"},
++	{"HW_SRC_1_IN_CH2", "DL2_CH2 Switch", "DL2"},
++	{"HW_SRC_2_IN_CH1", "DL2_CH1 Switch", "DL2"},
++	{"HW_SRC_2_IN_CH2", "DL2_CH2 Switch", "DL2"},
++	{"HW_SRC_1_IN_CH1", "DL3_CH1 Switch", "DL3"},
++	{"HW_SRC_1_IN_CH2", "DL3_CH2 Switch", "DL3"},
++	{"HW_SRC_2_IN_CH1", "DL3_CH1 Switch", "DL3"},
++	{"HW_SRC_2_IN_CH2", "DL3_CH2 Switch", "DL3"},
++	{"HW_SRC_1_IN_CH1", "DL6_CH1 Switch", "DL6"},
++	{"HW_SRC_1_IN_CH2", "DL6_CH2 Switch", "DL6"},
++	{"HW_SRC_2_IN_CH1", "DL6_CH1 Switch", "DL6"},
++	{"HW_SRC_2_IN_CH2", "DL6_CH2 Switch", "DL6"},
++	{"HW_SRC_1_IN_CH1", "DL5_CH1 Switch", "DL5"},
++	{"HW_SRC_1_IN_CH2", "DL5_CH2 Switch", "DL5"},
++	{"HW_SRC_2_IN_CH1", "DL5_CH1 Switch", "DL5"},
++	{"HW_SRC_2_IN_CH2", "DL5_CH2 Switch", "DL5"},
++	{"HW_SRC_1_IN_CH1", "DL4_CH1 Switch", "DL4"},
++	{"HW_SRC_1_IN_CH2", "DL4_CH2 Switch", "DL4"},
++	{"HW_SRC_2_IN_CH1", "DL4_CH1 Switch", "DL4"},
++	{"HW_SRC_2_IN_CH2", "DL4_CH2 Switch", "DL4"},
++
++	{"HW_SRC_1_In", NULL, "HW_SRC_1_IN_CH1"},
++	{"HW_SRC_1_In", NULL, "HW_SRC_1_IN_CH2"},
++
++	{"HW_SRC_2_In", NULL, "HW_SRC_2_IN_CH1"},
++	{"HW_SRC_2_In", NULL, "HW_SRC_2_IN_CH2"},
++
++	{"HW_SRC_1_In", NULL, HW_SRC_1_EN_W_NAME, mtk_afe_src_en_connect},
++	{"HW_SRC_1_Out", NULL, HW_SRC_1_EN_W_NAME, mtk_afe_src_en_connect},
++	{"HW_SRC_2_In", NULL, HW_SRC_2_EN_W_NAME, mtk_afe_src_en_connect},
++	{"HW_SRC_2_Out", NULL, HW_SRC_2_EN_W_NAME, mtk_afe_src_en_connect},
++
++	{"HW SRC 1 In Endpoint", NULL, "HW_SRC_1_In"},
++	{"HW SRC 2 In Endpoint", NULL, "HW_SRC_2_In"},
++	{"HW_SRC_1_Out", NULL, "HW SRC 1 Out Endpoint"},
++	{"HW_SRC_2_Out", NULL, "HW SRC 2 Out Endpoint"},
++};
++
++/* dai ops */
++static int mtk_dai_src_hw_params(struct snd_pcm_substream *substream,
++				 struct snd_pcm_hw_params *params,
++				 struct snd_soc_dai *dai)
++{
++	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int id = dai->id;
++	struct mtk_afe_src_priv *src_priv = afe_priv->dai_priv[id];
++	unsigned int sft, mask;
++	unsigned int rate = params_rate(params);
++	unsigned int rate_reg = mt8186_rate_transform(afe->dev, rate, id);
++
++	dev_dbg(afe->dev, "%s(), id %d, stream %d, rate %d\n",
++		__func__, id, substream->stream, rate);
++
++	/* rate */
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
++		src_priv->dl_rate = rate;
++		if (id == MT8186_DAI_SRC_1) {
++			sft = GENERAL1_ASRCIN_MODE_SFT;
++			mask = GENERAL1_ASRCIN_MODE_MASK;
++		} else {
++			sft = GENERAL2_ASRCIN_MODE_SFT;
++			mask = GENERAL2_ASRCIN_MODE_MASK;
++		}
++	} else {
++		src_priv->ul_rate = rate;
++		if (id == MT8186_DAI_SRC_1) {
++			sft = GENERAL1_ASRCOUT_MODE_SFT;
++			mask = GENERAL1_ASRCOUT_MODE_MASK;
++		} else {
++			sft = GENERAL2_ASRCOUT_MODE_SFT;
++			mask = GENERAL2_ASRCOUT_MODE_MASK;
++		}
++	}
++
++	regmap_update_bits(afe->regmap, GENERAL_ASRC_MODE, mask << sft, rate_reg << sft);
++
++	return 0;
++}
++
++static int mtk_dai_src_hw_free(struct snd_pcm_substream *substream,
++			       struct snd_soc_dai *dai)
++{
++	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
++	struct mt8186_afe_private *afe_priv = afe->platform_priv;
++	int id = dai->id;
++	struct mtk_afe_src_priv *src_priv = afe_priv->dai_priv[id];
++
++	dev_dbg(afe->dev, "%s(), id %d, stream %d\n",
++		__func__, id, substream->stream);
++
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
++		src_priv->dl_rate = 0;
++	else
++		src_priv->ul_rate = 0;
++
++	return 0;
++}
++
++static const struct snd_soc_dai_ops mtk_dai_src_ops = {
++	.hw_params = mtk_dai_src_hw_params,
++	.hw_free = mtk_dai_src_hw_free,
++};
++
++/* dai driver */
++#define MTK_SRC_RATES (SNDRV_PCM_RATE_8000_48000 |\
++		       SNDRV_PCM_RATE_88200 |\
++		       SNDRV_PCM_RATE_96000 |\
++		       SNDRV_PCM_RATE_176400 |\
++		       SNDRV_PCM_RATE_192000)
++
++#define MTK_SRC_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
++			 SNDRV_PCM_FMTBIT_S24_LE |\
++			 SNDRV_PCM_FMTBIT_S32_LE)
++
++static struct snd_soc_dai_driver mtk_dai_src_driver[] = {
++	{
++		.name = "HW_SRC_1",
++		.id = MT8186_DAI_SRC_1,
++		.playback = {
++			.stream_name = "HW_SRC_1_In",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_SRC_RATES,
++			.formats = MTK_SRC_FORMATS,
++		},
++		.capture = {
++			.stream_name = "HW_SRC_1_Out",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_SRC_RATES,
++			.formats = MTK_SRC_FORMATS,
++		},
++		.ops = &mtk_dai_src_ops,
++	},
++	{
++		.name = "HW_SRC_2",
++		.id = MT8186_DAI_SRC_2,
++		.playback = {
++			.stream_name = "HW_SRC_2_In",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_SRC_RATES,
++			.formats = MTK_SRC_FORMATS,
++		},
++		.capture = {
++			.stream_name = "HW_SRC_2_Out",
++			.channels_min = 1,
++			.channels_max = 2,
++			.rates = MTK_SRC_RATES,
++			.formats = MTK_SRC_FORMATS,
++		},
++		.ops = &mtk_dai_src_ops,
++	},
++};
++
++int mt8186_dai_src_register(struct mtk_base_afe *afe)
++{
++	struct mtk_base_afe_dai *dai;
++	int ret;
++
++	dai = devm_kzalloc(afe->dev, sizeof(*dai), GFP_KERNEL);
++	if (!dai)
++		return -ENOMEM;
++
++	list_add(&dai->list, &afe->sub_dais);
++
++	dai->dai_drivers = mtk_dai_src_driver;
++	dai->num_dai_drivers = ARRAY_SIZE(mtk_dai_src_driver);
++
++	dai->dapm_widgets = mtk_dai_src_widgets;
++	dai->num_dapm_widgets = ARRAY_SIZE(mtk_dai_src_widgets);
++	dai->dapm_routes = mtk_dai_src_routes;
++	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_src_routes);
++
++	/* set dai priv */
++	ret = mt8186_dai_set_priv(afe, MT8186_DAI_SRC_1,
++				  sizeof(struct mtk_afe_src_priv), NULL);
++	if (ret)
++		return ret;
++
++	ret = mt8186_dai_set_priv(afe, MT8186_DAI_SRC_2,
++				  sizeof(struct mtk_afe_src_priv), NULL);
++	if (ret)
++		return ret;
++
++	return 0;
++}
 -- 
 2.18.0
 
