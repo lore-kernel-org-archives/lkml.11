@@ -2,116 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9071C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13089C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243047AbiEWSAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
+        id S238320AbiEWSA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241189AbiEWRcr (ORCPT
+        with ESMTP id S241220AbiEWRcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:47 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4427982A;
-        Mon, 23 May 2022 10:27:28 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-30007f11f88so24447917b3.7;
-        Mon, 23 May 2022 10:27:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sTAZGlEUmX/o2HerHezmpZJYpBk/Tk//TO+SFL1h0zA=;
-        b=pN4ceqx3jRqPDNbZxMO8S9NplGCGhu5NZGlEejwVpgTIpU/7Eyj86+mcv240DqoKIB
-         TPReO8r/4SM21FZvUgntCTTdurUlJ5mLo9g7bqG2ocJDosfEmIwHXyrGOCjbU6wDOs83
-         fG+rkIVl2t+Wktu9X0gBXqVOb6OuX/sxcB1Tg84f8HyAyOknb8mjSP/YMihayC/Qx7NP
-         fuFYzJxMzGEv7uzFInqftcmOkkT9vmmRLaOns7cghOZG5ZeJcBheQyROBJE9eWAN0EMF
-         +DsJDJdA3qPlMOz334GBPaxozXAt7G7i852jHnf7qWw6v0Rv3Ozp3qB31ZCsWZ22wW2M
-         B/CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sTAZGlEUmX/o2HerHezmpZJYpBk/Tk//TO+SFL1h0zA=;
-        b=fM4WvityEK09LtVeUHKX7MRRqGhtDxoXenIoCogx6bicGf5m511pZfKIx4oe+8HUyz
-         bJKgsKUPaxsOvxh4zUGE3Yk/gzzO+YRuc6FPkmSXrjo7lmZpTIIQfv65yf/Khof2r6Ue
-         3h1kIh8qXwVKWCleBFZPrbwmMs/1dVuMWqFl9lD6eQGXmcKhyI1iy+7HyDqDpNLXG3Cf
-         +3aUHR+H3WZhsYQvTcDUgo55p7IGI84/GN9DlJXmjwpQv7NvAfJNFkq6qpnxTpQJJxOf
-         MyfKzwdejX+xdlsg+eSngjUTu0BZReI/YJM0FKo/JJNv5DxxVQ0zkrR/qdZUMPocNAPr
-         TSag==
-X-Gm-Message-State: AOAM530RLopEba7IH4Wh/08EUH9tfM/RCXnPugXdUft0Iz8UFOPknU/J
-        T5nJz69PrMBW6K4uI6zxZpZGQM/SqLtdFqMXiOeMeIlvjt4=
-X-Google-Smtp-Source: ABdhPJyfb8N3rzOUX/Kjr0IcB2wzgmkTx8SdieSrc6hUMHn9O6f7sUVSBxw6MHCLQeIkZi6lnS9ZRTgE+qAWFNZBBrU=
-X-Received: by 2002:a0d:e2ca:0:b0:2ff:369c:a3ee with SMTP id
- l193-20020a0de2ca000000b002ff369ca3eemr25119387ywe.292.1653326847797; Mon, 23
- May 2022 10:27:27 -0700 (PDT)
+        Mon, 23 May 2022 13:32:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E9471DBC;
+        Mon, 23 May 2022 10:27:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 396F4B81202;
+        Mon, 23 May 2022 17:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C4F6C385A9;
+        Mon, 23 May 2022 17:27:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326851;
+        bh=hHwpGVFOCzcAb6kK80DX/WytmbzrJxxdTixdRTHd6co=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IBmxYySBBylRMvYVrBJfwXsD8QWtR6K0K8PXsedc/Vd06yo/IJ/tDnx6UP9M4W2P4
+         BKABpS+gvXoQa4oMOEhe2OVtfsj32RJKP8lAU/OWRj600jYUuOJ0F7VFJ/Gm7RY430
+         npwqsbEil49zwQMp98jhJsTXG9wSS/Gaa6GrKe6A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Jean Rene Dawin <jdawin@math.uni-bielefeld.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.17 061/158] mmc: core: Fix busy polling for MMC_SEND_OP_COND again
+Date:   Mon, 23 May 2022 19:03:38 +0200
+Message-Id: <20220523165840.951671796@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220518192924.20948-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220518192924.20948-4-prabhakar.mahadev-lad.rj@bp.renesas.com> <CACRpkda1pfL8tk0S_0bHvj4kWYrLTTeOz3b_A9qK5DJwHWeTXw@mail.gmail.com>
-In-Reply-To: <CACRpkda1pfL8tk0S_0bHvj4kWYrLTTeOz3b_A9qK5DJwHWeTXw@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 23 May 2022 18:27:01 +0100
-Message-ID: <CA+V-a8uR6EHr9ZqbBkLLKwLTPO4asthYaWTYE8c4NGFUt9Gmcg@mail.gmail.com>
-Subject: Re: [PATCH v4 3/7] gpio: gpiolib: Add ngirq member to struct gpio_irq_chip
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-Thank you for the review.
+commit e949dee3625e1b0ef2e40d9aa09c2995281b12f6 upstream.
 
-On Thu, May 19, 2022 at 2:26 PM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Wed, May 18, 2022 at 9:30 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> > Supported GPIO IRQs by the chip is not always equal to the number of GPIO
-> > pins. For example on Renesas RZ/G2L SoC where it has GPIO0-122 pins but at
-> > a given point a maximum of only 32 GPIO pins can be used as IRQ lines in
-> > the IRQC domain.
-> >
-> > This patch adds ngirq member to struct gpio_irq_chip and passes this as a
-> > size to irq_domain_create_hierarchy()/irq_domain_create_simple() if it is
-> > being set in the driver otherwise fallbacks to using ngpio.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> NAK
->
-> As pointed out this is a property of the hardware and thus you should
-> derive this property of the hardware from the compatible string.
->
-> For example by passing per-variant .data in struct of_device_id.
->
-> Unique hardware properties means unique hardware means it should
-> have a unique compatible string. Otherwise something is wrong
-> with the compatibles.
->
-Agreed, I will drop this.
+It turned out that polling period for MMC_SEND_OP_COND, that currently is
+set to 1ms, still isn't sufficient. In particular a Micron eMMC on a
+Beaglebone platform, is reported to sometimes fail to initialize.
 
-Cheers,
-Prabhakar
+Additional test, shows that extending the period to 4ms is working fine, so
+let's make that change.
+
+Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+Tested-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+Fixes: 1760fdb6fe9f (mmc: core: Restore (almost) the busy polling for MMC_SEND_OP_COND")
+Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220517101046.27512-1-ulf.hansson@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/mmc/core/mmc_ops.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -21,7 +21,7 @@
+ 
+ #define MMC_BKOPS_TIMEOUT_MS		(120 * 1000) /* 120s */
+ #define MMC_SANITIZE_TIMEOUT_MS		(240 * 1000) /* 240s */
+-#define MMC_OP_COND_PERIOD_US		(1 * 1000) /* 1ms */
++#define MMC_OP_COND_PERIOD_US		(4 * 1000) /* 4ms */
+ #define MMC_OP_COND_TIMEOUT_MS		1000 /* 1s */
+ 
+ static const u8 tuning_blk_pattern_4bit[] = {
+
+
