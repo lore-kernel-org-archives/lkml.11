@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243721AbiEWSKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35942 "EHLO
+        id S244407AbiEWSLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242812AbiEWRhr (ORCPT
+        with ESMTP id S242768AbiEWRhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1762E5D64F;
-        Mon, 23 May 2022 10:31:47 -0700 (PDT)
+        Mon, 23 May 2022 13:37:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E29C59962;
+        Mon, 23 May 2022 10:31:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6ADF5B811F6;
-        Mon, 23 May 2022 17:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1E9C385A9;
-        Mon, 23 May 2022 17:29:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C520F60B35;
+        Mon, 23 May 2022 17:28:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB343C385A9;
+        Mon, 23 May 2022 17:28:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326979;
-        bh=jMIzHqt1QTdiyQEd3y75sOxgA5an0wZmedRi1HIY8/U=;
+        s=korg; t=1653326938;
+        bh=6SklDtGidVgIZZp/oP4XYbzfN+cbzLZbmoMisEZPbdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tk5d1bpdVlIm63C+Mu9T+hO84mn/u1N/jvlGL0c10vebak2efFxQT+hSRXVKtV4pi
-         AjGFg0G7wdHF4k2lujESn86bZYIlOKb9QE8FgQb+5PwkKia9wfiuKsS5bHXTtdpVS7
-         B3gOQCPS2KJ7HfVNuKf85PyAYK8ACbEdojUKPJME=
+        b=dId8sHd+2oQYEs5lgdpKMorTecin1Iwx3CrLKztB7yGTfMM1JrMTi9ojDRkMkUEqS
+         dJPb1YtqsXjj9Q+D/s6Giu5dT7ypRnC4m5AKhGdHsFozczdpQO9AibcCmejmcbKj7m
+         2uvKoQwBQJJRtK4dirrs/KecwKQX6+jR2DCsNskk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 118/158] netfilter: flowtable: pass flowtable to nf_flow_table_iterate()
-Date:   Mon, 23 May 2022 19:04:35 +0200
-Message-Id: <20220523165850.431058428@linuxfoundation.org>
+Subject: [PATCH 5.17 106/158] net/mlx5e: Properly block LRO when XDP is enabled
+Date:   Mon, 23 May 2022 19:04:23 +0200
+Message-Id: <20220523165848.759289169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -48,88 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 217cff36e885627c41a14e803fc44f9cbc945767 ]
+[ Upstream commit cf6e34c8c22fba66bd21244b95ea47e235f68974 ]
 
-The flowtable object is already passed as argument to
-nf_flow_table_iterate(), do use not data pointer to pass flowtable.
+LRO is incompatible and mutually exclusive with XDP. However, the needed
+checks are only made when enabling XDP. If LRO is enabled when XDP is
+already active, the command will succeed, and XDP will be skipped in the
+data path, although still enabled.
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+This commit fixes the bug by checking the XDP status in
+mlx5e_fix_features and disabling LRO if XDP is enabled.
+
+Fixes: 86994156c736 ("net/mlx5e: XDP fast RX drop bpf programs support")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_flow_table_core.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 58f3f77b3eb2..de783c9094d7 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -382,7 +382,8 @@ EXPORT_SYMBOL_GPL(flow_offload_lookup);
- 
- static int
- nf_flow_table_iterate(struct nf_flowtable *flow_table,
--		      void (*iter)(struct flow_offload *flow, void *data),
-+		      void (*iter)(struct nf_flowtable *flowtable,
-+				   struct flow_offload *flow, void *data),
- 		      void *data)
- {
- 	struct flow_offload_tuple_rhash *tuplehash;
-@@ -406,7 +407,7 @@ nf_flow_table_iterate(struct nf_flowtable *flow_table,
- 
- 		flow = container_of(tuplehash, struct flow_offload, tuplehash[0]);
- 
--		iter(flow, data);
-+		iter(flow_table, flow, data);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index d468daa7dc20..1f8fc8d77bc3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3865,6 +3865,13 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
+ 		}
  	}
- 	rhashtable_walk_stop(&hti);
- 	rhashtable_walk_exit(&hti);
-@@ -434,10 +435,9 @@ static bool nf_flow_has_stale_dst(struct flow_offload *flow)
- 	       flow_offload_stale_dst(&flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple);
- }
  
--static void nf_flow_offload_gc_step(struct flow_offload *flow, void *data)
-+static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
-+				    struct flow_offload *flow, void *data)
- {
--	struct nf_flowtable *flow_table = data;
--
- 	if (nf_flow_has_expired(flow) ||
- 	    nf_ct_is_dying(flow->ct) ||
- 	    nf_flow_has_stale_dst(flow))
-@@ -462,7 +462,7 @@ static void nf_flow_offload_work_gc(struct work_struct *work)
- 	struct nf_flowtable *flow_table;
- 
- 	flow_table = container_of(work, struct nf_flowtable, gc_work.work);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
-+	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	queue_delayed_work(system_power_efficient_wq, &flow_table->gc_work, HZ);
- }
- 
-@@ -578,7 +578,8 @@ int nf_flow_table_init(struct nf_flowtable *flowtable)
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_init);
- 
--static void nf_flow_table_do_cleanup(struct flow_offload *flow, void *data)
-+static void nf_flow_table_do_cleanup(struct nf_flowtable *flow_table,
-+				     struct flow_offload *flow, void *data)
- {
- 	struct net_device *dev = data;
- 
-@@ -620,11 +621,10 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
- 
- 	cancel_delayed_work_sync(&flow_table->gc_work);
- 	nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, NULL);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
-+	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	nf_flow_table_offload_flush(flow_table);
- 	if (nf_flowtable_hw_offload(flow_table))
--		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step,
--				      flow_table);
-+		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	rhashtable_destroy(&flow_table->rhashtable);
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_free);
++	if (params->xdp_prog) {
++		if (features & NETIF_F_LRO) {
++			netdev_warn(netdev, "LRO is incompatible with XDP\n");
++			features &= ~NETIF_F_LRO;
++		}
++	}
++
+ 	if (MLX5E_GET_PFLAG(params, MLX5E_PFLAG_RX_CQE_COMPRESS)) {
+ 		features &= ~NETIF_F_RXHASH;
+ 		if (netdev->features & NETIF_F_RXHASH)
 -- 
 2.35.1
 
