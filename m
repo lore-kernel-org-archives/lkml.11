@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2057C352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F3CC38A04
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244369AbiEWSCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        id S244443AbiEWSDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241228AbiEWRej (ORCPT
+        with ESMTP id S241330AbiEWRfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:34:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849187CB06;
-        Mon, 23 May 2022 10:28:17 -0700 (PDT)
+        Mon, 23 May 2022 13:35:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8998217E;
+        Mon, 23 May 2022 10:28:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2FEF60AB8;
-        Mon, 23 May 2022 17:28:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2971C385A9;
-        Mon, 23 May 2022 17:28:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF7DBB81219;
+        Mon, 23 May 2022 17:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F53CC3411D;
+        Mon, 23 May 2022 17:28:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326896;
-        bh=vos7HQtzitOQyk2ED8TgNzrVfaTcR+2ug2+cBt23yW0=;
+        s=korg; t=1653326899;
+        bh=6/+AtATp5I5eZRQNupUjuNlrDcvNHti0LxiGEAq67F8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V1QNtneMjl3GoC7LPXFX+R3xUjCM8O7a2e8rHy9qPWy2feike4FyQJHAYayjrJMum
-         /Uj1kEBxk52lG6oase4NP7iRyz665l97E8MXWZ483/gE9J+jyYEKhwTUoE1HSDclFQ
-         ztMKU3VSG6cMlce12ofiaQSCpjpNZVGGIdBVaboc=
+        b=fLUWKHweqyRjr3j3g0sckes1SuFVsKXbXLvUmmsGVBi3ZkW56comfZsdNgxIJ0vYx
+         7QB3zKMX2dtECl7nh5MEfsxeFZeRzqauGXmKxI3OmszJB1SQ8Dkg2ECGDur2tZQERd
+         4MroTt5gdjjFVp3zvhenW1zPwusQ98qI43AbXoAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 091/158] net: lan966x: Fix assignment of the MAC address
-Date:   Mon, 23 May 2022 19:04:08 +0200
-Message-Id: <20220523165846.254861069@linuxfoundation.org>
+Subject: [PATCH 5.17 092/158] net: systemport: Fix an error handling path in bcm_sysport_probe()
+Date:   Mon, 23 May 2022 19:04:09 +0200
+Message-Id: <20220523165846.444642721@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,88 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit af8ca6eaa9b24a90484218e356f959a94bff22fa ]
+[ Upstream commit ef6b1cd11962aec21c58d137006ab122dbc8d6fd ]
 
-The following two scenarios were failing for lan966x.
-1. If the port had the address X and then trying to assign the same
-   address, then the HW was just removing this address because first it
-   tries to learn new address and then delete the old one. As they are
-   the same the HW remove it.
-2. If the port eth0 was assigned the same address as one of the other
-   ports eth1 then when assigning back the address to eth0 then the HW
-   was deleting the address of eth1.
+if devm_clk_get_optional() fails, we still need to go through the error
+handling path.
 
-The case 1. is fixed by checking if the port has already the same
-address while case 2. is fixed by checking if the address is used by any
-other port.
+Add the missing goto.
 
-Fixes: e18aba8941b40b ("net: lan966x: add mactable support")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Link: https://lore.kernel.org/r/20220513180030.3076793-1-horatiu.vultur@microchip.com
+Fixes: 6328a126896ea ("net: systemport: Manage Wake-on-LAN clock")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/99d70634a81c229885ae9e4ee69b2035749f7edc.1652634040.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/microchip/lan966x/lan966x_main.c | 28 +++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/net/ethernet/broadcom/bcmsysport.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 1f60fd125a1d..fee148bbf13e 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -100,6 +100,24 @@ static int lan966x_create_targets(struct platform_device *pdev,
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index 60dde29974bf..df51be3cbe06 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -2585,8 +2585,10 @@ static int bcm_sysport_probe(struct platform_device *pdev)
+ 		device_set_wakeup_capable(&pdev->dev, 1);
  
-+static bool lan966x_port_unique_address(struct net_device *dev)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	int p;
-+
-+	for (p = 0; p < lan966x->num_phys_ports; ++p) {
-+		port = lan966x->ports[p];
-+		if (!port || port->dev == dev)
-+			continue;
-+
-+		if (ether_addr_equal(dev->dev_addr, port->dev->dev_addr))
-+			return false;
+ 	priv->wol_clk = devm_clk_get_optional(&pdev->dev, "sw_sysportwol");
+-	if (IS_ERR(priv->wol_clk))
+-		return PTR_ERR(priv->wol_clk);
++	if (IS_ERR(priv->wol_clk)) {
++		ret = PTR_ERR(priv->wol_clk);
++		goto err_deregister_fixed_link;
 +	}
-+
-+	return true;
-+}
-+
- static int lan966x_port_set_mac_address(struct net_device *dev, void *p)
- {
- 	struct lan966x_port *port = netdev_priv(dev);
-@@ -107,16 +125,26 @@ static int lan966x_port_set_mac_address(struct net_device *dev, void *p)
- 	const struct sockaddr *addr = p;
- 	int ret;
  
-+	if (ether_addr_equal(addr->sa_data, dev->dev_addr))
-+		return 0;
-+
- 	/* Learn the new net device MAC address in the mac table. */
- 	ret = lan966x_mac_cpu_learn(lan966x, addr->sa_data, HOST_PVID);
- 	if (ret)
- 		return ret;
- 
-+	/* If there is another port with the same address as the dev, then don't
-+	 * delete it from the MAC table
-+	 */
-+	if (!lan966x_port_unique_address(dev))
-+		goto out;
-+
- 	/* Then forget the previous one. */
- 	ret = lan966x_mac_cpu_forget(lan966x, dev->dev_addr, HOST_PVID);
- 	if (ret)
- 		return ret;
- 
-+out:
- 	eth_hw_addr_set(dev, addr->sa_data);
- 	return ret;
- }
+ 	/* Set the needed headroom once and for all */
+ 	BUILD_BUG_ON(sizeof(struct bcm_tsb) != 8);
 -- 
 2.35.1
 
