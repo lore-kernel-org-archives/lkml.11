@@ -2,115 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97645C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B9BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236202AbiEWNZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52018 "EHLO
+        id S236229AbiEWNZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236084AbiEWNZK (ORCPT
+        with ESMTP id S236213AbiEWNZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:25:10 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E56C00;
-        Mon, 23 May 2022 06:25:10 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 6C1771F4332B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653312309;
-        bh=nLAJ424Uh7yMOyPhA731RzWvn1haYM2Coj+CudAs2+Y=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ELuPVjRgeU7fvOefU/93dWvHT9RvQXDhlfrvyvSOBx7OCnrs9Qw38ANsJw4WFy7gQ
-         vP/NVcbI3bieA25MAsuxB8XnLIV2NpX8ZHW6JuaxybYTLUI7UOKms82XLOHV7g82G4
-         EkMVZbBoYLYTEPQZ5CQVHWSQb/WooQ/t0befGVCpE/HWKYlbHoROZrKmQXmKNNEMH6
-         e6zgrWDnd0vGzdrCD1V74GrwI3Uk7yw/zBgWDLLYSxG4VIR7q/ZAGMNbUvVd/3BBqE
-         E1D3lUfjas7PPKQ6uFQsBBPtD0YnUlIws+FJKwLZkTWXJ0maFBN+RhIsH73CxHVXXp
-         m3g4U2FcNLXNA==
-Message-ID: <8a027bdc-0fc3-a41e-4142-0033706d3da6@collabora.com>
-Date:   Mon, 23 May 2022 15:25:05 +0200
+        Mon, 23 May 2022 09:25:33 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF0803586F;
+        Mon, 23 May 2022 06:25:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653312332; x=1684848332;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=EW9q/Cvw2jkobQ73y88ztoczGNs8Sdg5pZ9/RmN9nZs=;
+  b=DshTQ/kTyQv0uT1tcBo4W3SOvUTPKJ7nLWQUgJB8Cicb2qDIwsmBgIV6
+   Ku0yn3jN6TZ2oO7bwFCOwwWddj31eJJnaJAMfPARPV40P4ym4/fPupuDw
+   J5qZT0tZu8L8XndvyhIN2z0/UC6iFKtxc8t2wnmIi+JTJ5SXry1QlP1Zt
+   SDJVuodSeSIUpYocgwOhdtiNr8Ny88toa7NVUywN8mBuKqmClOOYUPmDk
+   BymNq9i0BZ6iTE18/s3yw+rIb32kIR/Y5NSZ44omKJdzSdDrbQL+fEbwl
+   O3MnP5r7JxqE3fLFFYchJSXGwigWO8RmE2HeDzSX1hQq+DbpD1SqXke08
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="272940238"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="272940238"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 06:25:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="608195288"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by orsmga001.jf.intel.com with ESMTP; 23 May 2022 06:25:20 -0700
+Date:   Mon, 23 May 2022 21:21:54 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Andy Lutomirski <luto@kernel.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
+        david@redhat.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
+Subject: Re: [PATCH v6 4/8] KVM: Extend the memslot to support fd-based
+ private memory
+Message-ID: <20220523132154.GA947536@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
+ <20220519153713.819591-5-chao.p.peng@linux.intel.com>
+ <8840b360-cdb2-244c-bfb6-9a0e7306c188@kernel.org>
+ <YofeZps9YXgtP3f1@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right
- FEATURE_SEL"
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Mark Brown <broonie@kernel.org>, jirislaby@kernel.org,
-        matthias.bgg@gmail.com, zhiyong.tao@mediatek.com,
-        colin.king@intel.com, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wenst@chromium.org
-References: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
- <YnpeYGbo7JJK0lDk@sirena.org.uk>
- <b13b019f-f766-60df-3764-d375f64ea7d3@collabora.com>
- <YnphFjs4E4EYafT4@sirena.org.uk>
- <63169e65-cbfa-d495-754f-023dc8befa42@collabora.com>
- <d91977d2-ebc6-de6e-5eeb-61c25ba0cc64@collabora.com>
- <Yot5uls/3vLzZu7I@kroah.com>
- <da1e4b31-de71-1fda-eff7-2e70fe1331ac@collabora.com>
- <Yot+xTBus04O9TUu@kroah.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <Yot+xTBus04O9TUu@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YofeZps9YXgtP3f1@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 23/05/22 14:32, Greg KH ha scritto:
-> On Mon, May 23, 2022 at 02:13:35PM +0200, AngeloGioacchino Del Regno wrote:
->> Il 23/05/22 14:10, Greg KH ha scritto:
->>> On Mon, May 23, 2022 at 12:17:06PM +0200, AngeloGioacchino Del Regno wrote:
->>>> Il 10/05/22 17:29, AngeloGioacchino Del Regno ha scritto:
->>>>> Il 10/05/22 14:56, Mark Brown ha scritto:
->>>>>> On Tue, May 10, 2022 at 02:46:28PM +0200, AngeloGioacchino Del Regno wrote:
->>>>>>
->>>>>>> Sorry for missing this tag, and also I'm sorry for the noise.
->>>>>>
->>>>>> Hey, if nobody broke anything all this testing stuff wouldn't be worth
->>>>>> it!
->>>>>
->>>>>
->>>>> Haha! That's true :-)
->>>>>
->>>>> Thank you!
->>>>
->>>>
->>>> Hello Mark, Greg
->>>>
->>>> I've just noticed that v5.18 was released, but without this revert.
->>>
->>> What is "this revert"?
->>>
->>
->> "this revert" == "this commit", reverting
->>
->> 6f81fdded0d0 ("serial: 8250_mtk: Make sure to select the right FEATURE_SEL")
->>
->>>> Can you schedule this for backport on v5.18?
->>>
->>> I need more context here, sorry.
->>>
->>
->> As stated in the commit description, some MediaTek SoCs are incompatible with
->> this change, hence it's actually breaking late serial for some machines.
+On Fri, May 20, 2022 at 06:31:02PM +0000, Sean Christopherson wrote:
+> On Fri, May 20, 2022, Andy Lutomirski wrote:
+> > The alternative would be to have some kind of separate table or bitmap (part
+> > of the memslot?) that tells KVM whether a GPA should map to the fd.
+> > 
+> > What do you all think?
 > 
-> Did I already apply this change to my tree?
-
-Yes you have applied it to tty-next.
-
- >
->  If so, once it hits Linus's
-> tree we can backport it to 5.18.1.
+> My original proposal was to have expolicit shared vs. private memslots, and punch
+> holes in KVM's memslots on conversion, but due to the way KVM (and userspace)
+> handle memslot updates, conversions would be painfully slow.  That's how we ended
+> up with the current propsoal.
 > 
+> But a dedicated KVM ioctl() to add/remove shared ranges would be easy to implement
+> and wouldn't necessarily even need to interact with the memslots.  It could be a
+> consumer of memslots, e.g. if we wanted to disallow registering regions without an
+> associated memslot, but I think we'd want to avoid even that because things will
+> get messy during memslot updates, e.g. if dirty logging is toggled or a shared
+> memory region is temporarily removed then we wouldn't want to destroy the tracking.
 
-Okay, sounds good, thank you!
+Even we don't tight that to memslots, that info can only be effective
+for private memslot, right? Setting this ioctl to memory ranges defined
+in a traditional non-private memslots just makes no sense, I guess we can
+comment that in the API document.
 
-Regards,
-Angelo
+> 
+> I don't think we'd want to use a bitmap, e.g. for a well-behaved guest, XArray
+> should be far more efficient.
 
+What about the mis-behaved guest? I don't want to design for the worst
+case, but people may raise concern on the attack from such guest.
 
+> 
+> One benefit to explicitly tracking this in KVM is that it might be useful for
+> software-only protected VMs, e.g. KVM could mark a region in the XArray as "pending"
+> based on guest hypercalls to share/unshare memory, and then complete the transaction
+> when userspace invokes the ioctl() to complete the share/unshare.
+
+OK, then this can be another field of states/flags/attributes. Let me
+dig up certain level of details:
+
+First, introduce below KVM ioctl
+
+KVM_SET_MEMORY_ATTR
+
+struct kvm_memory_attr {
+	__u64 addr;	/* page aligned */
+	__u64 size;	/* page aligned */
+#define KVM_MEMORY_ATTR_SHARED		(1 << 0)
+#define KVM_MEMORY_ATTR_PRIVATE		(1 << 1)
+	__u64 flags;
+}
+
+Second, check the KVM maintained guest memory attributes in page fault
+handler (instead of checking memory existence in private fd)
+
+Third, the memfile_notifier_ops (populate/invalidate) will be removed
+from current code, the old mapping zapping can be directly handled in
+this new KVM ioctl().
+ 
+Thought?
+
+Since this info is stored in KVM, which I think is reasonable. But for
+other potential memfile_notifier users like VFIO, some KVM-to-VFIO APIs
+might be needed depends on the implementaion.
+
+It is also possible to maintain this info purely in userspace. The only
+trick bit is implicit conversion support that has to be checked in KVM
+page fault handler and is in the fast path.
+
+Thanks,
+Chao
