@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B90C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FAAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241305AbiEWRja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43412 "EHLO
+        id S241632AbiEWRji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242115AbiEWR10 (ORCPT
+        with ESMTP id S242120AbiEWR10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5372E79802;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8397B9E7;
         Mon, 23 May 2022 10:22:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 827ACB81212;
-        Mon, 23 May 2022 17:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B15F3C385A9;
-        Mon, 23 May 2022 17:22:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 448E8608C0;
+        Mon, 23 May 2022 17:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45745C385A9;
+        Mon, 23 May 2022 17:22:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326539;
-        bh=gyaOyE+b+/ZmSKL5VDSV4RHRE+86ekHfm27E14h51Ww=;
+        s=korg; t=1653326558;
+        bh=59034JlVFmmJqNI8BkjyG9GauHmmps4h9zRtuWOswGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hIK0qOYRmkpqJ6ZZiKvvS6ZTvMhJU5W+gYuzRKiFu+8J8e7/XCTurkhXpvOVHbHEO
-         m9ZqCmJomQxbbr/ulh6WsfpVnj3wVcXHVm35VmHjehNdNirFOyV5rh+RO2zfAXG322
-         C279g/njUsLz9XmEzGepwMK0mvbN2Yu6xjUkDsu0=
+        b=RdGqb1jFhmmmQ3hsUV9Yl2oIfqJaAyg+nkfJOSnvsUmTX1NbIjd/1MGAedwBGTNw5
+         D4C5QPOmiHeLg1YmnNyfK3LLjJ63E4P8WpVC0ccF5hC/ljFMVlts+27gQdMsqGJ9G7
+         JyMS5GjOG4v5QE2Z4Q5UQWWt5cimsyzl2wHgwk7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Gleb Chesnokov <Chesnokov.G@raidix.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Lina Wang <lina.wang@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 113/132] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
-Date:   Mon, 23 May 2022 19:05:22 +0200
-Message-Id: <20220523165842.265434495@linuxfoundation.org>
+Subject: [PATCH 5.15 119/132] net: fix wrong network header length
+Date:   Mon, 23 May 2022 19:05:28 +0200
+Message-Id: <20220523165843.283511092@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -51,49 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gleb Chesnokov <Chesnokov.G@raidix.com>
+From: Lina Wang <lina.wang@mediatek.com>
 
-[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
+[ Upstream commit cf3ab8d4a797960b4be20565abb3bcd227b18a68 ]
 
-Aborting commands that have already been sent to the firmware can
-cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
+When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+network_header\transport_header\mac_header have been updated as ipv4 acts,
+but other skbs in frag_list didnot update anything, just ipv6 packets.
 
-For instance:
+udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+frag_list and make sure right udp payload is delivered to user space.
+Unfortunately, other skbs in frag_list who are still ipv6 packets are
+updated like the first skb and will have wrong transport header length.
 
- - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
+e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
+has the same network_header(24)& transport_header(64), after
+bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
+skb's network_header is 44,transport_header is 64, other skbs in frag_list
+didnot change.After skb_segment_list, the other skbs in frag_list has
+different network_header(24) and transport_header(44), so there will be 20
+bytes different from original,that is difference between ipv6 header and
+ipv4 header. Just change transport_header to be the same with original.
 
- - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
+Actually, there are two solutions to fix it, one is traversing all skbs
+and changing every skb header in bpf_skb_proto_6_to_4, the other is
+modifying frag_list skb's header in skb_segment_list. Considering
+efficiency, adopt the second one--- when the first skb and other skbs in
+frag_list has different network_header length, restore them to make sure
+right udp payload is delivered to user space.
 
- - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
-
- - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
-   unmapped
-
-Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
-
-Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/core/skbuff.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
-index f5d32d830a9b..ae5eaa4a9283 100644
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -3837,6 +3837,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index e4badc189e37..7ef0f5a8ab03 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3873,7 +3873,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 	unsigned int delta_len = 0;
+ 	struct sk_buff *tail = NULL;
+ 	struct sk_buff *nskb, *tmp;
+-	int err;
++	int len_diff, err;
  
- 	spin_lock_irqsave(&cmd->cmd_lock, flags);
- 	if (cmd->aborted) {
-+		if (cmd->sg_mapped)
-+			qlt_unmap_sg(vha, cmd);
-+
- 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
- 		/*
- 		 * It's normal to see 2 calls in this path:
+ 	skb_push(skb, -skb_network_offset(skb) + offset);
+ 
+@@ -3913,9 +3913,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 		skb_push(nskb, -skb_network_offset(nskb) + offset);
+ 
+ 		skb_release_head_state(nskb);
++		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
+ 		__copy_skb_header(nskb, skb);
+ 
+ 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
++		nskb->transport_header += len_diff;
+ 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+ 						 nskb->data - tnl_hlen,
+ 						 offset + tnl_hlen);
 -- 
 2.35.1
 
