@@ -2,100 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9116C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239804AbiEWROe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35454 "EHLO
+        id S239887AbiEWROl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240343AbiEWRL6 (ORCPT
+        with ESMTP id S240482AbiEWRM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:11:58 -0400
+        Mon, 23 May 2022 13:12:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33F62F007;
-        Mon, 23 May 2022 10:11:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1849583AB;
+        Mon, 23 May 2022 10:11:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69294614DA;
-        Mon, 23 May 2022 17:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F42DC34119;
-        Mon, 23 May 2022 17:09:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653325779;
-        bh=49TG0H75Ya9Io/9Ra/lmXTl1jm17VfmzpHpMWj3rv+E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b6xEBdre8qQxI4OPS0gvtMDU6OupCLO/qTN0Vdp+kRmb/+GNJjBaHIyrlHP14WTRN
-         2lN++TK4jQREtckUKH2NUto/WNrjF3u22KWjdyG5QZ3ptVF85LQqQcWR8HJyavvj9y
-         jYdoQxoRXO1X2PkTLqTbuvxNVwJALvnBfwOpjXTCUtffsQYXN8Qm/cflYXjBDXkVY2
-         P9FTgBolGOA95VyUeWovObgqdvfUhtAT4FD6eNdwCaUHf71zffDAih/Go/Bf6oXSvp
-         hnX5DoGCEvOugX/b6oXjNfeW8ZhOGscpvroLH2D6AMZIlZYDpNPdvknFAoxPn+TH0w
-         RTZdx64qsf5kg==
-Date:   Mon, 23 May 2022 19:09:31 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     frank zago <frank@zago.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        linux-usb@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] i2c: ch341: add I2C MFD cell driver for the CH341
-Message-ID: <You/y4Go+7ZvXgTz@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Johan Hovold <johan@kernel.org>, frank zago <frank@zago.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        linux-usb@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
-References: <20220401023306.79532-1-frank@zago.net>
- <20220401023306.79532-4-frank@zago.net>
- <YojVHBofkBOFVYap@shikoro>
- <Youtgr7a3dw58KT0@hovoldconsulting.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABF29614EB;
+        Mon, 23 May 2022 17:09:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CFBC34115;
+        Mon, 23 May 2022 17:09:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653325786;
+        bh=4rBaSOrIJjKLFiIam8gz65RXThh97E5diUSE/kUbUD4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DuogWZftBiuZAFqxiVk4hXngnMU431IQq3vTdL4hKfndcL3DXqB4C1UgvLEEIodP/
+         CRGyCHE8TnGLNJdDRtmxv7M+Lv9SwUUE1eybSoXFFIqoodzem8K9s6ExjbEI+NT5+V
+         N4u1NKEmo0kySmNG0fYcJvH4Ky5FKABE52r5/mx8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Jeff LaBundy <jeff@labundy.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 03/44] Input: add bounds checking to input_set_capability()
+Date:   Mon, 23 May 2022 19:04:47 +0200
+Message-Id: <20220523165754.069303666@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+References: <20220523165752.797318097@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qOyTUoqo6Ka2qIM3"
-Content-Disposition: inline
-In-Reply-To: <Youtgr7a3dw58KT0@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jeff LaBundy <jeff@labundy.com>
 
---qOyTUoqo6Ka2qIM3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
+
+Update input_set_capability() to prevent kernel panic in case the
+event code exceeds the bitmap for the given event type.
+
+Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/input/input.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index a0d90022fcf7..dcbf53b5b2bc 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -50,6 +50,17 @@ static DEFINE_MUTEX(input_mutex);
+ 
+ static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
+ 
++static const unsigned int input_max_code[EV_CNT] = {
++	[EV_KEY] = KEY_MAX,
++	[EV_REL] = REL_MAX,
++	[EV_ABS] = ABS_MAX,
++	[EV_MSC] = MSC_MAX,
++	[EV_SW] = SW_MAX,
++	[EV_LED] = LED_MAX,
++	[EV_SND] = SND_MAX,
++	[EV_FF] = FF_MAX,
++};
++
+ static inline int is_event_supported(unsigned int code,
+ 				     unsigned long *bm, unsigned int max)
+ {
+@@ -1915,6 +1926,14 @@ EXPORT_SYMBOL(input_free_device);
+  */
+ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
+ {
++	if (type < EV_CNT && input_max_code[type] &&
++	    code > input_max_code[type]) {
++		pr_err("%s: invalid code %u for type %u\n", __func__, code,
++		       type);
++		dump_stack();
++		return;
++	}
++
+ 	switch (type) {
+ 	case EV_KEY:
+ 		__set_bit(code, dev->keybit);
+-- 
+2.35.1
 
 
-> There's no (longer) any difference. See bf7fbeeae6db ("module: Cure the
-> MODULE_LICENSE "GPL" vs. "GPL v2" bogosity").
 
-Wow, cool. Thanks for the heads up! Sidenote: just from the title of
-this commit I guessed the author correctly ;)
-
-
---qOyTUoqo6Ka2qIM3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKLv8cACgkQFA3kzBSg
-KbY4RQ/+Ieko2JdoUgZRAjmlX7cy2lxd8StL9yenYst/u9weA/o82dLUA//dpudn
-ym8yTzgPIA0my2AL3k4tC+WkSaWBiUTThJvOxwtaD5HrlvhAaP/zwnjWJQUnY1zu
-aOWscNepDIN1yXPda3osYeuTO/jq0pfKzO7k/4A8Kn4aFWlkozx4TiPhj6s72Puu
-IJGoDbwNbGcmLcoyMFCUalOYUI5mbVbR3Mle2w1uMFIuCR16wP+5TnOlW6GVqm4R
-7KBHa7efxQ09DgYzk11JmO5ztGbQ96taI5TSbUjdAaEUOrU4MDCISrLo9poniAB1
-ZgW4c1aWFKZvBl/MZ5IxcFK52DpwZWfk+WVNM281javS6gUvDh0tzAZmGzw1kOek
-pwnNDV9IzWvfGhlcawbtKjqV0yoYFAtzK1cQzpauS8TLj35piYkdJVnuCmj/6+yc
-qJYhXSM5Et8PGXPiWgxd1Umtt+YFwLgyxtas6dV2LUCDtBxRbxhdIg8L4MYBxd9n
-zVWZNIpELd3rD8E1HKDDtOaiF5N0wYH8rOzFxQXq9ObgCvxHeElXrSoROg7VQMId
-c8+21NWHYFJ0I024N/usdhrsPGxNpobgZhvhD15gF90R3hDQ80ySR7Y3MYRyCpWG
-BdvDMl8A4rC5JEaxLYESS/9Hy2kWH+83BkIjC6PZVJSvAZGaVAQ=
-=KYIA
------END PGP SIGNATURE-----
-
---qOyTUoqo6Ka2qIM3--
