@@ -2,69 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D518BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbiEWHj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
+        id S230189AbiEWHkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiEWHjy (ORCPT
+        with ESMTP id S230098AbiEWHkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:39:54 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828E81ADB7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:39:50 -0700 (PDT)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        Mon, 23 May 2022 03:40:19 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8401D329
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:40:17 -0700 (PDT)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 716BE3F175
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:45:21 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 64B6A402E2
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:42:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653288321;
-        bh=Gs7nkhQpjKgLYfigMkBppO9/Q0SxQAi+BOTu7LkmDEk=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=Q3FRq/S64K3ocwrKVDP/h+7kTfyiPMbUDN5bLeEaQri7YW75k9+1LENny/7lAyqqh
-         gZR/trzltQiZBv0ZUTA/zA+qs/NNnSenDdQqwO7TR1V58vzwlFSz5RxqUG3xiShQE8
-         lpNEXRm0/SjI1sb97tBPtQC3oYD0/QVkxC/J8GIhlXRDXlVDeBsINVpZ2i8BRnPgyn
-         01t/kwngOkvfRR8WjEdAe4BJbx1y8VI/C3eooErlKAk6h4VRMsy9hWi2AKIDGKQIiV
-         CjtpP0Y36OFLRRjIDnN23NKxjSgrnFO/UnEpLQEu+AZZ8x1I9d/7XjPRt2ow9tGwBX
-         qylmI7CuxP4gg==
-Received: by mail-ej1-f69.google.com with SMTP id gs6-20020a170906f18600b006fe7a9ffacbso5422613ejb.3
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:45:21 -0700 (PDT)
+        s=20210705; t=1653288179;
+        bh=0Fn1JXeiAOQvsSv4ME7qjx3lVZQDLG08r06uAlMp+Ak=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=VwotHgaE7w/Amt4r89/nHIdkiB1CtGb94DcG+fWcPoyQgYpOVZc9CXuoMLCA7cdZD
+         eq6RctMSBc6YQUzt3nvLa3gK4JGVmZ3VVghMHUzbbJ3gB36ABdpFVwSWJxbUYdU+PA
+         3u5fErE+tOYCCzSBcKri1zzoVuAZ7xu0atpIvKvAhNzvBi04vdGACWKGQ+qUucslfF
+         649nvTUS1SxKLxTZa3AtZzXQnX9RDpWlCXceMMYi/Y4xUFjxpx7n7zlFuAUVC3Y0eh
+         +APF3v97Mzt5OpY0i/vbtlUPVd8h70n4w2YEAR5X6MMLX5smoguirVv3cXkFP319dm
+         gG5DsvJYACV+g==
+Received: by mail-ed1-f69.google.com with SMTP id w23-20020aa7da57000000b0042acd76347bso9981323eds.2
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:42:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Gs7nkhQpjKgLYfigMkBppO9/Q0SxQAi+BOTu7LkmDEk=;
-        b=ae8suNJcAWaZYalZnH5nzKLdcfoHR/+jE/dWI244XHX21M0n2hYVbl8dQ+7HqzuJfi
-         dzHqto+jNj7BXB+6ChXzPLyys6huMFYOaRnLT8BaN/mR59SEWytioutJroxCNaqJ9Q/v
-         S0qoNCqCSgISkQuLZ7FOGYGtbkMWzQP4ysm1BY8XmpHPKLSUtX3oAB6wZPUhOHQRl2IK
-         AS79FYAJYDnkqqW08PbuhkhG2OfXR954qxO3jOO3H9v1k8XjSOF5479aQ9QN6pwk/gJG
-         B6prvfjRppLc8/Ih6/dDyG6Po/UybKWl+s87aRXqU7ooHIizaQ8JfXJYdL+cA3xZchVD
-         /XmQ==
-X-Gm-Message-State: AOAM530v3o/xKpgxpFez2T1uo2/4aXR3+QYcGNUk3vvAOFYGAkBGqm/u
-        WqCKRdLqSAmrMEI8TQc4eC0r2eGYCoWGKXB3frEN64NcnLlPeK8imMDeN6O3BOH1TCWQu8G+i/l
-        H7lpG6g2IKo/MdWJ5RnUg3KJ+RGv0T6xtpSDo8JA6XA==
-X-Received: by 2002:a17:906:5941:b0:6fe:9277:8fe with SMTP id g1-20020a170906594100b006fe927708femr18208133ejr.749.1653288321108;
-        Sun, 22 May 2022 23:45:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxxQ5t8hnZvZAibglgBrx6pCuhjRthEKjfwHqEG1khpI628VBjfFTFTpluxVJOUTUBtdAHrVA==
-X-Received: by 2002:a17:906:5941:b0:6fe:9277:8fe with SMTP id g1-20020a170906594100b006fe927708femr18208123ejr.749.1653288320946;
-        Sun, 22 May 2022 23:45:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0Fn1JXeiAOQvsSv4ME7qjx3lVZQDLG08r06uAlMp+Ak=;
+        b=kWzbohCtzFfgbyCjoic/hLsmWafvDZmeMpj5IEG+RvQadrOAVMVu2wmp0+K8TJIMy0
+         zNBg+bByrWKB9IhVKffBS04uB8Pz0r1+Uf0jpRtH6d4Yg9abNqhjezwSvgrykhAXVnA/
+         nvbt0iKOGeYsCxITb11yjd2qR+SkuEYwf2B7IAZXbvyLaZgjjqmPj6kpsKHEVfoGA8E+
+         wZ5xjTkZZBoleJvl4xC5kj3OSVWwwT2m2FQRciPOTEgeqRzCryVnzNdT7FyUR1v7vyJy
+         8V/xi5MWLcwXgYQbT/vt6m8ACWVaflF/Ju+OOjBZI520AnVtacmL0HZT1jNtiuOp17m/
+         NKPA==
+X-Gm-Message-State: AOAM533JMYWbjfMpp/80vatY2RO0rtmasNWzD94+89NQ0hQfmcBmeJ+D
+        rb0kYdyB3sshR7E/hex7+zRUUpQZQ0imFLkHesKnhXSMQvpkWwpCfVCa38ARm3I4fqcCQFJX8bX
+        BeKiZzLXe/kgweGnBzgoq5m32cjZb6g53hfhkSpeJUA==
+X-Received: by 2002:a05:6402:174c:b0:42a:b4df:3aa7 with SMTP id v12-20020a056402174c00b0042ab4df3aa7mr22241465edx.263.1653288178997;
+        Sun, 22 May 2022 23:42:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyXGU3a9rNtXp1i8dxNZ2qWALsHyrukZ0RD+lIEHrPJw1VeHxe4hbjKgVr8+47QB60PgYV82Q==
+X-Received: by 2002:a05:6402:174c:b0:42a:b4df:3aa7 with SMTP id v12-20020a056402174c00b0042ab4df3aa7mr22241456edx.263.1653288178851;
+        Sun, 22 May 2022 23:42:58 -0700 (PDT)
 Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id u15-20020a170906068f00b006febc86b8besm2366194ejb.117.2022.05.22.23.45.19
+        by smtp.gmail.com with ESMTPSA id p3-20020a056402074300b0042617ba63a5sm7792416edy.47.2022.05.22.23.42.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:45:20 -0700 (PDT)
+        Sun, 22 May 2022 23:42:58 -0700 (PDT)
 From:   Juerg Haefliger <juerg.haefliger@canonical.com>
 X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
+To:     krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
+        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] ARM: mm: Kconfig: Fix indentation
-Date:   Mon, 23 May 2022 08:45:18 +0200
-Message-Id: <20220523064518.12327-1-juergh@canonical.com>
+Subject: [PATCH 2/3] ARM: s3c: Kconfig.s3c24xx: Fix indentation and replace some tabs
+Date:   Mon, 23 May 2022 08:42:51 +0200
+Message-Id: <20220523064252.11938-3-juergh@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220523064252.11938-1-juergh@canonical.com>
+References: <20220523064252.11938-1-juergh@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -75,88 +80,119 @@ The convention for indentation seems to be a single tab. Help text is
 further indented by an additional two whitespaces. Fix the lines that
 violate these rules.
 
+While add it, replace tabs before comments with whitespaces and squeeze
+multiple empty lines.
+
 Signed-off-by: Juerg Haefliger <juergh@canonical.com>
 ---
- arch/arm/mm/Kconfig | 48 ++++++++++++++++++++++-----------------------
- 1 file changed, 24 insertions(+), 24 deletions(-)
+ arch/arm/mach-s3c/Kconfig.s3c24xx | 26 ++++++++++++--------------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
-diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
-index d30ee26ccc87..950f67220caf 100644
---- a/arch/arm/mm/Kconfig
-+++ b/arch/arm/mm/Kconfig
-@@ -123,13 +123,13 @@ config CPU_ARM925T
- 	select CPU_PABRT_LEGACY
- 	select CPU_THUMB_CAPABLE
- 	select CPU_TLB_V4WBI if MMU
-- 	help
-- 	  The ARM925T is a mix between the ARM920T and ARM926T, but with
-+	help
-+	  The ARM925T is a mix between the ARM920T and ARM926T, but with
- 	  different instruction and data caches. It is used in TI's OMAP
-- 	  device family.
-+	  device family.
- 
-- 	  Say Y if you want support for the ARM925T processor.
-- 	  Otherwise, say N.
-+	  Say Y if you want support for the ARM925T processor.
-+	  Otherwise, say N.
- 
- # ARM926T
- config CPU_ARM926T
-@@ -838,19 +838,19 @@ config HARDEN_BRANCH_PREDICTOR
- 	depends on CPU_SPECTRE
- 	default y
+diff --git a/arch/arm/mach-s3c/Kconfig.s3c24xx b/arch/arm/mach-s3c/Kconfig.s3c24xx
+index 000e3e234f71..a7625e772905 100644
+--- a/arch/arm/mach-s3c/Kconfig.s3c24xx
++++ b/arch/arm/mach-s3c/Kconfig.s3c24xx
+@@ -17,8 +17,6 @@ config PLAT_S3C24XX
  	help
--	   Speculation attacks against some high-performance processors rely
--	   on being able to manipulate the branch predictor for a victim
--	   context by executing aliasing branches in the attacker context.
--	   Such attacks can be partially mitigated against by clearing
--	   internal branch predictor state and limiting the prediction
--	   logic in some situations.
-+	  Speculation attacks against some high-performance processors rely
-+	  on being able to manipulate the branch predictor for a victim
-+	  context by executing aliasing branches in the attacker context.
-+	  Such attacks can be partially mitigated against by clearing
-+	  internal branch predictor state and limiting the prediction
-+	  logic in some situations.
+ 	  Base platform code for any Samsung S3C24XX device
  
--	   This config option will take CPU-specific actions to harden
--	   the branch predictor against aliasing attacks and may rely on
--	   specific instruction sequences or control bits being set by
--	   the system firmware.
-+	  This config option will take CPU-specific actions to harden
-+	  the branch predictor against aliasing attacks and may rely on
-+	  specific instruction sequences or control bits being set by
-+	  the system firmware.
+-
+-
+ menu "Samsung S3C24XX SoCs Support"
  
--	   If unsure, say Y.
-+	  If unsure, say Y.
- 
- config HARDEN_BRANCH_HISTORY
- 	bool "Harden Spectre style attacks against branch history" if EXPERT
-@@ -1005,14 +1005,14 @@ if CACHE_L2X0
- config PL310_ERRATA_588369
- 	bool "PL310 errata: Clean & Invalidate maintenance operations do not invalidate clean lines"
+ comment "S3C24XX SoCs"
+@@ -268,7 +266,7 @@ config MACH_VR1000
  	help
--	   The PL310 L2 cache controller implements three types of Clean &
--	   Invalidate maintenance operations: by Physical Address
--	   (offset 0x7F0), by Index/Way (0x7F8) and by Way (0x7FC).
--	   They are architecturally defined to behave as the execution of a
--	   clean operation followed immediately by an invalidate operation,
--	   both performing to the same memory location. This functionality
--	   is not correctly implemented in PL310 prior to r2p0 (fixed in r2p0)
--	   as clean lines are not invalidated as a result of these operations.
-+	  The PL310 L2 cache controller implements three types of Clean &
-+	  Invalidate maintenance operations: by Physical Address
-+	  (offset 0x7F0), by Index/Way (0x7F8) and by Way (0x7FC).
-+	  They are architecturally defined to behave as the execution of a
-+	  clean operation followed immediately by an invalidate operation,
-+	  both performing to the same memory location. This functionality
-+	  is not correctly implemented in PL310 prior to r2p0 (fixed in r2p0)
-+	  as clean lines are not invalidated as a result of these operations.
+ 	  Say Y here if you are using the Thorcom VR1000 board.
  
- config PL310_ERRATA_727915
- 	bool "PL310 errata: Background Clean & Invalidate by Way operation can cause data corruption"
+-endif	# CPU_S3C2410
++endif # CPU_S3C2410
+ 
+ config S3C2412_PM_SLEEP
+ 	bool
+@@ -342,7 +340,7 @@ config MACH_VSTMS
+ 	help
+ 	  Say Y here if you are using an VSTMS board
+ 
+-endif	# CPU_S3C2412
++endif # CPU_S3C2412
+ 
+ if CPU_S3C2416
+ 
+@@ -390,7 +388,7 @@ config MACH_S3C2416_DT
+ 	  Note: This is under development and not all peripherals can be supported
+ 	  with this machine file.
+ 
+-endif	# CPU_S3C2416
++endif # CPU_S3C2416
+ 
+ if CPU_S3C2440 || CPU_S3C2442
+ 
+@@ -419,7 +417,7 @@ config S3C2440_PLL_16934400
+ 	default y if S3C24XX_PLL
+ 	help
+ 	  PLL tables for S3C2440 or S3C2442 CPUs with 16.934MHz crystals.
+-endif
++endif # CPU_S3C2440 || CPU_S3C2442
+ 
+ if CPU_S3C2440
+ 
+@@ -515,7 +513,7 @@ config SMDK2440_CPU2440
+ 	default y if ARCH_S3C2440
+ 	select S3C2440_XTAL_16934400
+ 
+-endif	# CPU_S3C2440
++endif # CPU_S3C2440
+ 
+ if CPU_S3C2442
+ 
+@@ -535,7 +533,7 @@ config MACH_NEO1973_GTA02
+ 	select S3C24XX_PWM
+ 	select S3C_DEV_USB_HOST
+ 	help
+-	   Say Y here if you are using the Openmoko GTA02 / Freerunner GSM Phone
++	  Say Y here if you are using the Openmoko GTA02 / Freerunner GSM Phone
+ 
+ config MACH_RX1950
+ 	bool "HP iPAQ rx1950"
+@@ -547,9 +545,9 @@ config MACH_RX1950
+ 	select S3C24XX_PWM
+ 	select S3C_DEV_NAND
+ 	help
+-	   Say Y here if you're using HP iPAQ rx1950
++	  Say Y here if you're using HP iPAQ rx1950
+ 
+-endif	# CPU_S3C2442
++endif # CPU_S3C2442
+ 
+ if CPU_S3C2443 || CPU_S3C2416
+ 
+@@ -558,7 +556,7 @@ config S3C2443_SETUP_SPI
+ 	help
+ 	  Common setup code for SPI GPIO configurations
+ 
+-endif	# CPU_S3C2443 || CPU_S3C2416
++endif # CPU_S3C2443 || CPU_S3C2416
+ 
+ if CPU_S3C2443
+ 
+@@ -571,13 +569,13 @@ config MACH_SMDK2443
+ 	help
+ 	  Say Y here if you are using an SMDK2443
+ 
+-endif	# CPU_S3C2443
++endif # CPU_S3C2443
+ 
+ config PM_H1940
+ 	bool
+ 	help
+ 	  Internal node for H1940 and related PM
+ 
+-endmenu	# Samsung S3C24XX SoCs Support
++endmenu # "Samsung S3C24XX SoCs Support"
+ 
+-endif	# ARCH_S3C24XX
++endif # ARCH_S3C24XX
 -- 
 2.32.0
 
