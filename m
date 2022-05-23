@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0174EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD69C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241552AbiEWRxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
+        id S241912AbiEWRxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241562AbiEWRaW (ORCPT
+        with ESMTP id S240668AbiEWRaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:30:22 -0400
+        Mon, 23 May 2022 13:30:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6234C405;
-        Mon, 23 May 2022 10:26:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD4A39177;
+        Mon, 23 May 2022 10:26:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0BEB60916;
-        Mon, 23 May 2022 17:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0189C385A9;
-        Mon, 23 May 2022 17:25:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B64E2611CE;
+        Mon, 23 May 2022 17:26:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0E2CC385A9;
+        Mon, 23 May 2022 17:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326748;
-        bh=GBc26s17BmQw9HacxvTdrlw6HMMuVI1jH1R6N3f3C/I=;
+        s=korg; t=1653326771;
+        bh=COq4E386Kj6CEmG7VcQHWL7EBg1abKP2T8YeYMjuBuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prlwEDAGCQtTtE9x50vS9oauUMA7z5rArJyvc5vZsscBLvCiqCDEluN2ksTueRMiA
-         uNobb7CKo3Z2vyJPA4DVGSQ+MR+q7cYxo1FfN+tkA8pJ51yWEXIsBFFHOZfCotrJDA
-         bUB/uvZxo0oT5N7saLUGZRlUT3xcJX5w7Neda2c8=
+        b=I8PXs7bG21zY48a2H2cITHLFLV5n9OLqMUIhu8TTSQmEg6Ig0dUElMhkb6qEt+Nvg
+         YfzgT/26w0oM+0Cq+UOPuri6wsavb93lxEF/m2Qjckd9RCDjmMelqAio3fJ0W11WFU
+         2JlIgFKUhCRrT4R/IdJ0og894REKDpu2jtzh0+Do=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 047/158] ALSA: wavefront: Proper check of get_user() error
-Date:   Mon, 23 May 2022 19:03:24 +0200
-Message-Id: <20220523165838.439180604@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Gottwald <gottwald@igel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5.17 053/158] PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
+Date:   Mon, 23 May 2022 19:03:30 +0200
+Message-Id: <20220523165839.526959442@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,36 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit a34ae6c0660d3b96b0055f68ef74dc9478852245 upstream.
+commit 92597f97a40bf661bebceb92e26ff87c76d562d4 upstream.
 
-The antient ISA wavefront driver reads its sample patch data (uploaded
-over an ioctl) via __get_user() with no good reason; likely just for
-some performance optimizations in the past.  Let's change this to the
-standard get_user() and the error check for handling the fault case
-properly.
+If a Root Port on Elo i2 is put into D3cold and then back into D0, the
+downstream device becomes permanently inaccessible, so add a bridge D3 DMI
+quirk for that system.
 
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510103626.16635-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+This was exposed by 14858dcc3b35 ("PCI: Use pci_update_current_state() in
+pci_enable_device_flags()"), but before that commit the Root Port in
+question had never been put into D3cold for real due to a mismatch between
+its power state retrieved from the PCI_PM_CTRL register (which was
+accessible even though the platform firmware indicated that the port was in
+D3cold) and the state of an ACPI power resource involved in its power
+management.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
+Link: https://lore.kernel.org/r/11980172.O9o76ZdvQC@kreacher
+Reported-by: Stefan Gottwald <gottwald@igel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org	# v5.15+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/isa/wavefront/wavefront_synth.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pci/pci.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/sound/isa/wavefront/wavefront_synth.c
-+++ b/sound/isa/wavefront/wavefront_synth.c
-@@ -1094,7 +1094,8 @@ wavefront_send_sample (snd_wavefront_t *
- 
- 			if (dataptr < data_end) {
- 		
--				__get_user (sample_short, dataptr);
-+				if (get_user(sample_short, dataptr))
-+					return -EFAULT;
- 				dataptr += skip;
- 		
- 				if (data_is_unsigned) { /* GUS ? */
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2920,6 +2920,16 @@ static const struct dmi_system_id bridge
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+ 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+ 		},
++		/*
++		 * Downstream device is not accessible after putting a root port
++		 * into D3cold and back into D0 on Elo i2.
++		 */
++		.ident = "Elo i2",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
++		},
+ 	},
+ #endif
+ 	{ }
 
 
