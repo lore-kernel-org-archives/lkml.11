@@ -2,123 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E38C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 540EEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231596AbiEWIFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
+        id S231550AbiEWILl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbiEWIFU (ORCPT
+        with ESMTP id S231906AbiEWILX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:05:20 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7390A12A8E
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:05:18 -0700 (PDT)
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0F3A83F1EC
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:05:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653285944;
-        bh=Gc6m3XcjXFZK4IY7snllrwp4xXxt/PdhQGyQJtEizR4=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=dvcNdE11ez702Nsv4FB75AjyX1x5/RXtYrz1zQHN+PCyuaqm6Cco7a5B+4fCjTuvS
-         XIaTT5wiIP1RJRR2qLZ5q4c6HImEUy2jWIX+AMTUXo7Fa04aFv6wdmduN8ZP3MACWP
-         HHeRcR+uvBZcOjHujMGsEvgBnTGQHl66ZbLXolQoPWaLe4R9VZPz3RKr6ZBBCaI8d7
-         t++fuzWuvi8GMpRUlbwFnuJmN9nIcdEdukYaEe4ZZ7ci7/QQVbhWkK5Bitij5C2BaE
-         floF359WPem5lXAIWXhIcLwJFJKhZAOiZCC2vNBgz2l51GEhEiwNcE4Hcz8gtaLpI9
-         dKZtxvGyLGUWw==
-Received: by mail-ed1-f70.google.com with SMTP id n12-20020aa7c44c000000b0042ab2159b3eso9995865edr.8
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:05:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Gc6m3XcjXFZK4IY7snllrwp4xXxt/PdhQGyQJtEizR4=;
-        b=X19BMT37al/LuM8j3YyqODL6L3AP6LWlfTAUHUulIyksomBHZ5VaggV+Svs44V8hym
-         VDj4rAlW0J/xuqiU0dh37e78eQv0smOgUefNyS4QE2wqRZMWmLWBen+5+KiRm+aMNYmx
-         YtHtkr6/HlTqIFrD6ZL/I707hNLjVj7vd2Xe++T3FsWXwCU58HWxnkmcF4IydQe57PPg
-         FSMM8hkVUiF15dLb6LFBvz27c1C8h9ive54Sfj1DG8obDVWhvU90F4rgseeD4FXsDaGN
-         +dMTybuaBMLDH4SQiJhAer0a/LPQ9pH+lsZbwi5RVwtCO/YvQFqiZQBNSuB0uIqnx7JN
-         1r0g==
-X-Gm-Message-State: AOAM533iJC0vRM8xXqhBYrxo9Su5wWffp/OhmKuHER3CG7wuGtxM1GwG
-        PrHgJbQx1326PH4K2wsqXw6DJysuJKDS8qrSTOm+IKXy3AyyL0bPcjsASciqhACGAdVkBl1qpvl
-        Ns2MHXjHbbI1o8xnmHJpN7eOjeLczvSTmOecRuHjARg==
-X-Received: by 2002:a05:6402:84c:b0:428:4cc4:8212 with SMTP id b12-20020a056402084c00b004284cc48212mr22595230edz.171.1653285942132;
-        Sun, 22 May 2022 23:05:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxkKR2r8E8Xx1iDAMXOgaBNrjjlnaFEXjGXVWac/Tu0AG+RwTJpLHCbpRGuD2/bKTDllS5fTA==
-X-Received: by 2002:a05:6402:84c:b0:428:4cc4:8212 with SMTP id b12-20020a056402084c00b004284cc48212mr22595217edz.171.1653285941934;
-        Sun, 22 May 2022 23:05:41 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id p23-20020a056402155700b0042617ba6389sm7777293edx.19.2022.05.22.23.05.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:05:41 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     linux@armlinux.org.uk, joel@jms.id.au, andrew@aj.id.au,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] ARM: aspeed: Kconfig: Fix indentation
-Date:   Mon, 23 May 2022 08:05:32 +0200
-Message-Id: <20220523060532.7864-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 23 May 2022 04:11:23 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF2BF6F;
+        Mon, 23 May 2022 01:11:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653293481; x=1684829481;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=22iblQjLmvajfejVT7Ta1hWWhwDRz6x7UvvPJFylOWw=;
+  b=HvqywCByYlsr1lsn6o34/ERkHmr/4JhhXL/HIVyiGtzDXHsJJRJr26aT
+   bryCH0J1k8SVKfjuOQHFFx1FVMB//nbjRuxUPesSRpFZfNVzElv14CkmP
+   J3ZktHYY2sIDS+7PFCbhEMHPRRv4b9LDg8VeYawuSvaXFCP/Iza9+h8Cv
+   yNCKV/9Jkac9Yv/KPUWo0z7jFD7vkm26S86Hz0E9w+JbUcOFw7EOS43U2
+   +hQSR2Ut/4QPcW6IGDthb8fLuGv0SVK9/dlVfGeWklHI1+4sPVnhMzFxx
+   JKe9Bzsft5nxXB0Perq3hlO3w+guf0zRW4le2odzu5I6IBvGmFQ2sqrvg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="272851202"
+X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
+   d="scan'208";a="272851202"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:15:27 -0700
+X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; 
+   d="scan'208";a="600488729"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.56.27])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 00:15:22 -0700
+Message-ID: <210f8557-7735-a83f-7ebb-e8e8dc612b02@intel.com>
+Date:   Mon, 23 May 2022 10:15:17 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH V6 3/5] mmc: debugfs: Add debug fs entry for mmc driver
+Content-Language: en-US
+To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        ulf.hansson@linaro.org, wsa+renesas@sang-engineering.com,
+        shawn.lin@rock-chips.com, yoshihiro.shimoda.uh@renesas.com,
+        digetx@gmail.com, quic_asutoshd@quicinc.com
+Cc:     linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rampraka@quicinc.com,
+        quic_pragalla@quicinc.com, quic_sartgarg@quicinc.com,
+        quic_nitirawa@quicinc.com, quic_sayalil@quicinc.com,
+        Liangliang Lu <quic_luliang@quicinc.com>,
+        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
+References: <1652857340-6040-1-git-send-email-quic_c_sbhanu@quicinc.com>
+ <1652857340-6040-4-git-send-email-quic_c_sbhanu@quicinc.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <1652857340-6040-4-git-send-email-quic_c_sbhanu@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+On 18/05/22 10:02, Shaik Sajida Bhanu wrote:
+> Add debug fs entry to query eMMC and SD card errors statistics
+> 
+> Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
+> Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
+> Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/arm/mach-aspeed/Kconfig | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 
-diff --git a/arch/arm/mach-aspeed/Kconfig b/arch/arm/mach-aspeed/Kconfig
-index ea96d11b8502..e05997ec2f82 100644
---- a/arch/arm/mach-aspeed/Kconfig
-+++ b/arch/arm/mach-aspeed/Kconfig
-@@ -19,9 +19,9 @@ config MACH_ASPEED_G4
- 	select PINCTRL_ASPEED_G4
- 	select FTTMR010_TIMER
- 	help
--	 Say yes if you intend to run on an Aspeed ast2400 or similar
--	 fourth generation BMCs, such as those used by OpenPower Power8
--	 systems.
-+	  Say yes if you intend to run on an Aspeed ast2400 or similar
-+	  fourth generation BMCs, such as those used by OpenPower Power8
-+	  systems.
- 
- config MACH_ASPEED_G5
- 	bool "Aspeed SoC 5th Generation"
-@@ -29,8 +29,8 @@ config MACH_ASPEED_G5
- 	select PINCTRL_ASPEED_G5
- 	select FTTMR010_TIMER
- 	help
--	 Say yes if you intend to run on an Aspeed ast2500 or similar
--	 fifth generation Aspeed BMCs.
-+	  Say yes if you intend to run on an Aspeed ast2500 or similar
-+	  fifth generation Aspeed BMCs.
- 
- config MACH_ASPEED_G6
- 	bool "Aspeed SoC 6th Generation"
-@@ -40,7 +40,7 @@ config MACH_ASPEED_G6
- 	select ARM_GIC
- 	select HAVE_ARM_ARCH_TIMER
- 	help
--	 Say yes if you intend to run on an Aspeed ast2600 or similar
--	 sixth generation Aspeed BMCs.
-+	  Say yes if you intend to run on an Aspeed ast2600 or similar
-+	  sixth generation Aspeed BMCs.
- 
- endif
--- 
-2.32.0
+> ---
+>  drivers/mmc/core/debugfs.c | 56 ++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 56 insertions(+)
+> 
+> diff --git a/drivers/mmc/core/debugfs.c b/drivers/mmc/core/debugfs.c
+> index 3fdbc80..6aa5a60 100644
+> --- a/drivers/mmc/core/debugfs.c
+> +++ b/drivers/mmc/core/debugfs.c
+> @@ -223,6 +223,59 @@ static int mmc_clock_opt_set(void *data, u64 val)
+>  DEFINE_DEBUGFS_ATTRIBUTE(mmc_clock_fops, mmc_clock_opt_get, mmc_clock_opt_set,
+>  	"%llu\n");
+>  
+> +static int mmc_err_stats_show(struct seq_file *file, void *data)
+> +{
+> +	struct mmc_host *host = (struct mmc_host *)file->private;
+> +	const char *desc[MMC_ERR_MAX] = {
+> +		[MMC_ERR_CMD_TIMEOUT] = "Command Timeout Occurred",
+> +		[MMC_ERR_CMD_CRC] = "Command CRC Errors Occurred",
+> +		[MMC_ERR_DAT_TIMEOUT] = "Data Timeout Occurred",
+> +		[MMC_ERR_DAT_CRC] = "Data CRC Errors Occurred",
+> +		[MMC_ERR_AUTO_CMD] = "Auto-Cmd Error Occurred",
+> +		[MMC_ERR_ADMA] = "ADMA Error Occurred",
+> +		[MMC_ERR_TUNING] = "Tuning Error Occurred",
+> +		[MMC_ERR_CMDQ_RED] = "CMDQ RED Errors",
+> +		[MMC_ERR_CMDQ_GCE] = "CMDQ GCE Errors",
+> +		[MMC_ERR_CMDQ_ICCE] = "CMDQ ICCE Errors",
+> +		[MMC_ERR_REQ_TIMEOUT] = "Request Timedout",
+> +		[MMC_ERR_CMDQ_REQ_TIMEOUT] = "CMDQ Request Timedout",
+> +		[MMC_ERR_ICE_CFG] = "ICE Config Errors",
+> +		[MMC_ERR_CTRL_TIMEOUT] = "Controller Timedout errors",
+> +		[MMC_ERR_UNEXPECTED_IRQ] = "Unexpected IRQ errors",
+> +	};
+> +	int i;
+> +
+> +	for (i = 0; i < MMC_ERR_MAX; i++) {
+> +		if (desc[i])
+> +			seq_printf(file, "# %s:\t %d\n",
+> +					desc[i], host->err_stats[i]);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int mmc_err_stats_open(struct inode *inode, struct file *file)
+> +{
+> +	return single_open(file, mmc_err_stats_show, inode->i_private);
+> +}
+> +
+> +static ssize_t mmc_err_stats_write(struct file *filp, const char __user *ubuf,
+> +				   size_t cnt, loff_t *ppos)
+> +{
+> +	struct mmc_host *host = filp->f_mapping->host->i_private;
+> +
+> +	pr_debug("%s: Resetting MMC error statistics\n", __func__);
+> +	memset(host->err_stats, 0, sizeof(host->err_stats));
+> +
+> +	return cnt;
+> +}
+> +
+> +static const struct file_operations mmc_err_stats_fops = {
+> +	.open	= mmc_err_stats_open,
+> +	.read	= seq_read,
+> +	.write	= mmc_err_stats_write,
+> +};
+> +
+>  void mmc_add_host_debugfs(struct mmc_host *host)
+>  {
+>  	struct dentry *root;
+> @@ -236,6 +289,9 @@ void mmc_add_host_debugfs(struct mmc_host *host)
+>  	debugfs_create_file_unsafe("clock", S_IRUSR | S_IWUSR, root, host,
+>  				   &mmc_clock_fops);
+>  
+> +	debugfs_create_file("err_stats", 0600, root, host,
+> +			    &mmc_err_stats_fops);
+> +
+>  #ifdef CONFIG_FAIL_MMC_REQUEST
+>  	if (fail_request)
+>  		setup_fault_attr(&fail_default_attr, fail_request);
 
