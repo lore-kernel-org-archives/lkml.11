@@ -2,139 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D343C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A536DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbiEWHzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
+        id S231387AbiEWH46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiEWHzV (ORCPT
+        with ESMTP id S231360AbiEWH4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:55:21 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2180266B
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:55:17 -0700 (PDT)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0789F402DE
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:28:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653287294;
-        bh=mhLady9xJOsYFKdyyp5cJp4wqz+mfmHOLOYqLp7Vdvc=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=Y/GQluuTelR9yUAumOjQcJs/zirOtE+t4bnpBwKc5Djn3z9nFZB/u74CmFb5NETaR
-         k3y027yTH8AF7KwzpdNoVpl/X2N6qRl6n5A8s6KYaTEMsS6VfvnvPZBw8DE5WolgHE
-         6n71BoqWtYs4klryCZRc/wmy2CPxpwdFeiUIjBdacBs88ARMfpzJznfaFajcD1IH5F
-         ujqNarceRDAPjazpEFd1mNhEmWiXvnptfn6R0+hAmpXBTkDWLoM8XFI+cmkg/4FvQG
-         /UDV3eV+8XY5BstXF2nMKsDif/s7IPVMUhqys4eBLQDmkHSrECcNW6HL8NXqzlPpJ1
-         IXZkiHMD7wgBQ==
-Received: by mail-ed1-f72.google.com with SMTP id u1-20020aa7d981000000b0042acd1f2253so9961510eds.4
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:28:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mhLady9xJOsYFKdyyp5cJp4wqz+mfmHOLOYqLp7Vdvc=;
-        b=1q0hO/PTOjk3Qowv+QndJeG37qn+TCWjyECB/thhnAirbg3t4L0UbHBXb1v2mNPPrD
-         Gi7Av09/qOeZbSKEVIevvQ9YEJ6sSfRprH8x9c8UTDZaNWJ6b9qy15DQjRL54Y+6bM4Y
-         AGZfhWMlgj/FljwAILdslF5BAb1FT2eb7pkSNzDzdOIuK1Emh26s8nM6Bzny3Xkukks0
-         QeSRRFG0qi+ktJFykKQueSEoflAbuwPskyPYQin7Tp7b8wIbnc2d9HJjrusZKU080HZI
-         d4OtJdDCiGX3nEdI90MgULW+Hqd0ttvQa5fq2Lj7R18HlughfJywkKQVLamw6NmenyDM
-         9Msg==
-X-Gm-Message-State: AOAM532mKQI8M6iBLqrqTXB9cV8QHaM/wV9MqtulUiaIAIdw7EUziu3o
-        E893aGYvdrB4RFlZWWT1GuK3DOhjAnMjZaP1lHtjn+TmYfFePx6uuwyknGUPqnr8nKnOK8kMRSo
-        71JtXgj8JFBfLsPAnkpDHzganZD/0OEPNnwmkce4geQ==
-X-Received: by 2002:a17:907:7242:b0:6f5:2904:5354 with SMTP id ds2-20020a170907724200b006f529045354mr18968654ejc.452.1653287289985;
-        Sun, 22 May 2022 23:28:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyCe9Yjq1im7YJA39o3/MAHjexYIKNJaEWJo31J3DrHB1x7uDcNtM3+yNSeKZzO3xMwortHbg==
-X-Received: by 2002:a17:907:7242:b0:6f5:2904:5354 with SMTP id ds2-20020a170907724200b006f529045354mr18968639ejc.452.1653287289739;
-        Sun, 22 May 2022 23:28:09 -0700 (PDT)
-Received: from gollum.fritz.box ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id 11-20020a17090602cb00b006f3ef214e59sm5785652ejk.191.2022.05.22.23.28.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:28:09 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     aaro.koskinen@iki.fi, tony@atomide.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] ARM: omap1: Kconfig: Fix indentation
-Date:   Mon, 23 May 2022 08:28:07 +0200
-Message-Id: <20220523062807.10544-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 23 May 2022 03:56:55 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3719D63D6;
+        Mon, 23 May 2022 00:56:50 -0700 (PDT)
+Received: from mail-yw1-f179.google.com ([209.85.128.179]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MNwXA-1oCt6f109o-00OF7f; Mon, 23 May 2022 09:56:49 +0200
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2ff90e0937aso63921027b3.4;
+        Mon, 23 May 2022 00:56:48 -0700 (PDT)
+X-Gm-Message-State: AOAM533Y62GrmqaiDndOYhBi01Hclk8LmXDmzwBvebKeknX+mb0RprIn
+        PSahQrxOqjnW8SaOMfg/W7UGMF7rRbKxLI5eQHU=
+X-Google-Smtp-Source: ABdhPJw2LHiHqq0/Y/VzFvweK5WuNCUQUczMcSAr5ygjJFwwWwAtTaZ+A1Uu9aWWOiGiwQN+ltRnCtbf6WnrGsZfDuY=
+X-Received: by 2002:a0d:e64b:0:b0:2ff:8745:8a75 with SMTP id
+ p72-20020a0de64b000000b002ff87458a75mr14867694ywe.495.1653292607699; Mon, 23
+ May 2022 00:56:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220517032710.451537-1-Mr.Bossman075@gmail.com>
+In-Reply-To: <20220517032710.451537-1-Mr.Bossman075@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 23 May 2022 09:56:31 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0OKQYq-LPxjtRCNoD+coEcEcJD0eL_SV3aQ01BpyQVKA@mail.gmail.com>
+Message-ID: <CAK8P3a0OKQYq-LPxjtRCNoD+coEcEcJD0eL_SV3aQ01BpyQVKA@mail.gmail.com>
+Subject: Re: [PATCH v3 00/15] Add support for the i.MXRT1170-evk
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     NXP Linux Team <linux-imx@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Stefan Agner <stefan@agner.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        SoC Team <soc@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Abel Vesa <abel.vesa@nxp.com>, dev@lynxeye.de,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Leo Li <leoyang.li@nxp.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        clin@suse.com,
+        Giulio Benetti <giulio.benetti@benettiengineering.com>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:/3lm2tyMCrqyIBUbjN1ELnaTuqSU2rlf93Z2B9sKQ8qXUNHw14I
+ 9mlt94OMk/N8pmuvdnAr0xCnSfd/HQm8HWbczKlRG+wur8EAc5nO3cPCuZcE4vxo2u8DU7t
+ 1Vmc1HIXEqmN7X14/bwWm5Z+IG5q5b2ycww7kBvXpuXiKIDI22I4qD3V1rrx7Z2NM3sDkY1
+ mk8pI6cWCn0F7PA5VLMFw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TgmQeTMQ71s=:5meSiiP1er72SQ+7NxR7Hb
+ 9PyBQspNrPit0h334iUaGgdkp7c0Nbzlytyd+wKITSWopE07r5MjbyZvgfxTsjl4OgFlYJqM/
+ fVYIBLRSicVJefdRkbN7Wr0HyxE7mQens/xGTp181L4T8GDBcg+wMxMXBbnW6DyNbxI0gPuV4
+ dxHdGeCS1+lSIv5x56IpBsmQCAwY5/6ehv45CR269GQkUY81beYsP3ugPRyeR8DH7Bi2+YH+E
+ uxUg1rDCwalAGVva9SffAP0D8yJvHwsJcLnOxMlyGjdV5Rh/sw0jxzNO2n+9zTByXGDPRReTw
+ TJhl5HwAEGr5zwTzJGmMpA8CNoImNKVd0CwyiUryYCPlNSY+QSGFhP1xGpaL3fMQ67Gz28wwy
+ mL77ufHDF3K59TRy/B8N/mU6wHhBw4tbGCedWZEl8fKxaPmyjBDQ5lt8b9j13r30PF7UE8P5K
+ k83IS6e3xUzNenPadPYDaxrAoSuu8702aNbO0cMCCE5Ph2L4kEzDlIUuDtc23vB6ohlgKZCEU
+ 0rynYZctG0ffU28cn4HDLtPAuhrfWhYzSw5glBHc9VI6yI7lKk05mDIXcBrVhGm/MWbNVDBxt
+ i4N9b62WqM3jKx5aU2kfFhtAXZ9lEk96V/4ypxg389GlMKXmt4XQIz/G7dOWdG+hvHLujOvXS
+ C5UYdarOVHNnt72pUHJYpbs3rAqhNTK9zCUWVKi38nnEd6TLYemsVA2P6ZovbJxSbL4OCe+gC
+ rOChFYox60U/6t7uV3C9t+DF1ur8i0Tw4ZNaAYei2NA9OucM9B1UvFU5JfbOBRhPT3pjO203R
+ GxunHtowWJ9XB/LWaHszkiWQW2zJPG15oltnVxbLCMUhHhsVHgyLzbJvRXzBy1Rxf9EG2au/i
+ +HG0PcLLU1lfdEpt/mAg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The convention for indentation seems to be a single tab. Help text is
-further indented by an additional two whitespaces. Fix the lines that
-violate these rules.
+On Tue, May 17, 2022 at 5:26 AM Jesse Taube <mr.bossman075@gmail.com> wrote:
+>
+> This patch continues support for the imxrt series now with the imxrt1170
+>
+> This patch contains:
+> - Update to imxrt_defconfig
+> - Devicetree
+> - Clock driver
+> - Pinctrl driver
+> - New pll
+>
+> This patch also updates some documentation for both imxrt1170 an 1050.
+>
+> The i.MXRT1170 has a vast array of features including two cores. 2 Ethernet, 2 USB phy, and a 2d gpu.
+>
+> It also is featured in a new google coral board
+> https://coral.ai/products/dev-board-micro
+> Not affiliated unfortunately.
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- arch/arm/mach-omap1/Kconfig | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+Hi Jesse,
 
-diff --git a/arch/arm/mach-omap1/Kconfig b/arch/arm/mach-omap1/Kconfig
-index 208c700c2455..f7088beec7ef 100644
---- a/arch/arm/mach-omap1/Kconfig
-+++ b/arch/arm/mach-omap1/Kconfig
-@@ -59,8 +59,8 @@ config MACH_OMAP_INNOVATOR
- 	bool "TI Innovator"
- 	depends on ARCH_OMAP15XX || ARCH_OMAP16XX
- 	help
--          TI OMAP 1510 or 1610 Innovator board support. Say Y here if you
--          have such a board.
-+	  TI OMAP 1510 or 1610 Innovator board support. Say Y here if you
-+	  have such a board.
- 
- config MACH_OMAP_H2
- 	bool "TI H2 Support"
-@@ -87,7 +87,7 @@ config MACH_OMAP_OSK
- 	depends on ARCH_OMAP16XX
- 	help
- 	  TI OMAP 5912 OSK (OMAP Starter Kit) board support. Say Y here
--          if you have such a board.
-+	  if you have such a board.
- 
- config OMAP_OSK_MISTRAL
- 	bool "Mistral QVGA board Support"
-@@ -124,10 +124,10 @@ config MACH_OMAP_PALMZ71
- 	bool "Palm Zire71"
- 	depends on ARCH_OMAP15XX
- 	help
--	 Support for the Palm Zire71 PDA. To boot the kernel,
--	 you'll need a PalmOS compatible bootloader; check out
--	 http://hackndev.com/palm/z71 for more information.
--	 Say Y here if you have such a PDA, say N otherwise.
-+	  Support for the Palm Zire71 PDA. To boot the kernel,
-+	  you'll need a PalmOS compatible bootloader; check out
-+	  http://hackndev.com/palm/z71 for more information.
-+	  Say Y here if you have such a PDA, say N otherwise.
- 
- config MACH_OMAP_PALMTT
- 	bool "Palm Tungsten|T"
-@@ -173,10 +173,10 @@ config MACH_OMAP_GENERIC
- 	bool "Generic OMAP board"
- 	depends on ARCH_OMAP15XX || ARCH_OMAP16XX
- 	help
--          Support for generic OMAP-1510, 1610 or 1710 board with
--          no FPGA. Can be used as template for porting Linux to
--          custom OMAP boards. Say Y here if you have a custom
--          board.
-+	  Support for generic OMAP-1510, 1610 or 1710 board with
-+	  no FPGA. Can be used as template for porting Linux to
-+	  custom OMAP boards. Say Y here if you have a custom
-+	  board.
- 
- endmenu
- 
--- 
-2.32.0
+As you have added soc@kernel.org to Cc in this series, it made it into our
+patchwork instance at https://patchwork.kernel.org/project/linux-soc/list/
+and I'll at least reply.
 
+I expect the i.MX maintainers to pick up the patches into the individual
+branches in the future, and not keep them as a single branch for your
+platform, with the pinctrl and clock patches going through the respective
+subsystem trees.
+
+I have marked the patches as "Not applicable" in patchwork because
+I don't plan to apply them, but they otherwise seem fine. Please drop
+the Cc:soc@kernel.org in the future.
+
+      Arnd
