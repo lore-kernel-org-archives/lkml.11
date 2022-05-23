@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C506C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDBDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239148AbiEWRKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        id S239635AbiEWRKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239434AbiEWRJP (ORCPT
+        with ESMTP id S239524AbiEWRJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:09:15 -0400
+        Mon, 23 May 2022 13:09:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271CD6B665;
-        Mon, 23 May 2022 10:08:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8273E4EA07;
+        Mon, 23 May 2022 10:09:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 749A6B811FF;
-        Mon, 23 May 2022 17:08:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD346C385A9;
-        Mon, 23 May 2022 17:08:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FCD0B811F6;
+        Mon, 23 May 2022 17:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD06DC385A9;
+        Mon, 23 May 2022 17:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325701;
-        bh=UnaGk7lT++MCESMYYRcly019jpbFLcXmscxoXEMCt6Q=;
+        s=korg; t=1653325750;
+        bh=cKXq3/EbTX8YVQiuqecQn9SX4Ky7zX2DwSuQqg0oBr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r9bBtUkcCAG+G7m5kDRY2x7ZHK96SRBY45cBvxnr3qg7p0w6z/8FlUvEVXF6ECrHz
-         diqTrHOA5D+9jxAGBcPb8LiZluEHYo5CM6Ur3+xNK7t3xOgr4myfaTHKqY0oknoMeA
-         aI6/62yeEIQds1tagsnE3a69n867sGlMsVtI2Bhc=
+        b=jxg88mqbLUpQ16rUg0IM4Ac3GchGfiA1jn6ysy5QI9Ng4iwgwXbblM9WNPGPBO5/e
+         wIUkSMU67wOBi8fmU3ZA/g8CrRIJccsm4EJbwNX2MfIN6QkSDq5nfCOU0MdLM8onFT
+         +DdAd6dg4wjZgrwdEG3JNLEtd8ew9wkkHLIHmhtg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 08/33] ALSA: wavefront: Proper check of get_user() error
-Date:   Mon, 23 May 2022 19:04:57 +0200
-Message-Id: <20220523165748.551633480@linuxfoundation.org>
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 4.14 13/33] mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
+Date:   Mon, 23 May 2022 19:05:02 +0200
+Message-Id: <20220523165750.023556838@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
 References: <20220523165746.957506211@linuxfoundation.org>
@@ -49,36 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-commit a34ae6c0660d3b96b0055f68ef74dc9478852245 upstream.
+commit 533a6cfe08f96a7b5c65e06d20916d552c11b256 upstream
 
-The antient ISA wavefront driver reads its sample patch data (uploaded
-over an ioctl) via __get_user() with no good reason; likely just for
-some performance optimizations in the past.  Let's change this to the
-standard get_user() and the error check for handling the fault case
-properly.
+All callers of __mmc_switch() should now be specifying a valid timeout for
+the CMD6 command. However, just to be sure, let's print a warning and
+default to use the generic_cmd6_time in case the provided timeout_ms
+argument is zero.
 
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510103626.16635-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+In this context, let's also simplify some of the corresponding code and
+clarify some related comments.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20200122142747.5690-4-ulf.hansson@linaro.org
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/isa/wavefront/wavefront_synth.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/mmc/core/mmc_ops.c |   18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
---- a/sound/isa/wavefront/wavefront_synth.c
-+++ b/sound/isa/wavefront/wavefront_synth.c
-@@ -1092,7 +1092,8 @@ wavefront_send_sample (snd_wavefront_t *
+--- a/drivers/mmc/core/mmc_ops.c
++++ b/drivers/mmc/core/mmc_ops.c
+@@ -458,10 +458,6 @@ static int mmc_poll_for_busy(struct mmc_
+ 	bool expired = false;
+ 	bool busy = false;
  
- 			if (dataptr < data_end) {
- 		
--				__get_user (sample_short, dataptr);
-+				if (get_user(sample_short, dataptr))
-+					return -EFAULT;
- 				dataptr += skip;
- 		
- 				if (data_is_unsigned) { /* GUS ? */
+-	/* We have an unspecified cmd timeout, use the fallback value. */
+-	if (!timeout_ms)
+-		timeout_ms = MMC_OPS_TIMEOUT_MS;
+-
+ 	/*
+ 	 * In cases when not allowed to poll by using CMD13 or because we aren't
+ 	 * capable of polling by using ->card_busy(), then rely on waiting the
+@@ -534,14 +530,20 @@ int __mmc_switch(struct mmc_card *card,
+ 
+ 	mmc_retune_hold(host);
+ 
++	if (!timeout_ms) {
++		pr_warn("%s: unspecified timeout for CMD6 - use generic\n",
++			mmc_hostname(host));
++		timeout_ms = card->ext_csd.generic_cmd6_time;
++	}
++
+ 	/*
+ 	 * If the cmd timeout and the max_busy_timeout of the host are both
+ 	 * specified, let's validate them. A failure means we need to prevent
+ 	 * the host from doing hw busy detection, which is done by converting
+ 	 * to a R1 response instead of a R1B.
+ 	 */
+-	if (timeout_ms && host->max_busy_timeout &&
+-		(timeout_ms > host->max_busy_timeout))
++	if (host->max_busy_timeout &&
++	    (timeout_ms > host->max_busy_timeout))
+ 		use_r1b_resp = false;
+ 
+ 	cmd.opcode = MMC_SWITCH;
+@@ -552,10 +554,6 @@ int __mmc_switch(struct mmc_card *card,
+ 	cmd.flags = MMC_CMD_AC;
+ 	if (use_r1b_resp) {
+ 		cmd.flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
+-		/*
+-		 * A busy_timeout of zero means the host can decide to use
+-		 * whatever value it finds suitable.
+-		 */
+ 		cmd.busy_timeout = timeout_ms;
+ 	} else {
+ 		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
 
 
