@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0E8C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243481AbiEWSI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
+        id S242542AbiEWSJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243568AbiEWRiS (ORCPT
+        with ESMTP id S243558AbiEWRiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6BB6E8E4;
-        Mon, 23 May 2022 10:32:29 -0700 (PDT)
+        Mon, 23 May 2022 13:38:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15BC92D3F;
+        Mon, 23 May 2022 10:32:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E5BEB81218;
-        Mon, 23 May 2022 17:31:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE38C385AA;
-        Mon, 23 May 2022 17:31:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6502661148;
+        Mon, 23 May 2022 17:31:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69CA2C385A9;
+        Mon, 23 May 2022 17:31:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327066;
-        bh=kxOZ5QqWCnpmv5KQaoJ4TOsadG16Vztf+q4rTiMkJ3E=;
+        s=korg; t=1653327098;
+        bh=KMJw0XGdeFrhnpx31BYQkcRwZavS3EmcsQkFOgcVIGw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nSRRIbTERNdMxPeLkWXeZDO2DDskToEHFexAVzjg/rJ7jqAMqwk45tETCQgBs0OuS
-         E1OqUxB5cl69cGWixw5KHahh+sm8ImvlpcVEUl7OJZ31I5DThG9muYDWQBQdiLAW+K
-         BjbppH3dI+R25RMmAYD4932CzoX0V7daAm7NlXfg=
+        b=GroUAV+3v2UGpKiPqa335qPbF8Ufz/AdH90lmQ35thd6fpo3AE/S46tkc65vd1rlZ
+         l0KLLCh2StZf2tKeGaEAm2HRnkksKhYUSa2eP6XCS6pT5ABGTlwgoRrBq5xPMujN/G
+         3oTo2Y6Z42DfR6s27NVP1TcrXCjUiCYVt1Om38sk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lina Wang <lina.wang@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 146/158] net: fix wrong network header length
-Date:   Mon, 23 May 2022 19:05:03 +0200
-Message-Id: <20220523165854.407189203@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.17 155/158] Input: ili210x - fix reset timing
+Date:   Mon, 23 May 2022 19:05:12 +0200
+Message-Id: <20220523165855.871483935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,71 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lina Wang <lina.wang@mediatek.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit cf3ab8d4a797960b4be20565abb3bcd227b18a68 ]
+commit e4920d42ce0e9c8aafb7f64b6d9d4ae02161e51e upstream.
 
-When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-network_header\transport_header\mac_header have been updated as ipv4 acts,
-but other skbs in frag_list didnot update anything, just ipv6 packets.
+According to Ilitek "231x & ILI251x Programming Guide" Version: 2.30
+"2.1. Power Sequence", "T4 Chip Reset and discharge time" is minimum
+10ms and "T2 Chip initial time" is maximum 150ms. Adjust the reset
+timings such that T4 is 12ms and T2 is 160ms to fit those figures.
 
-udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-frag_list and make sure right udp payload is delivered to user space.
-Unfortunately, other skbs in frag_list who are still ipv6 packets are
-updated like the first skb and will have wrong transport header length.
+This prevents sporadic touch controller start up failures when some
+systems with at least ILI251x controller boot, without this patch
+the systems sometimes fail to communicate with the touch controller.
 
-e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-has the same network_header(24)& transport_header(64), after
-bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-skb's network_header is 44,transport_header is 64, other skbs in frag_list
-didnot change.After skb_segment_list, the other skbs in frag_list has
-different network_header(24) and transport_header(44), so there will be 20
-bytes different from original,that is difference between ipv6 header and
-ipv4 header. Just change transport_header to be the same with original.
-
-Actually, there are two solutions to fix it, one is traversing all skbs
-and changing every skb header in bpf_skb_proto_6_to_4, the other is
-modifying frag_list skb's header in skb_segment_list. Considering
-efficiency, adopt the second one--- when the first skb and other skbs in
-frag_list has different network_header length, restore them to make sure
-right udp payload is delivered to user space.
-
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 201f3c803544c ("Input: ili210x - add reset GPIO support")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Link: https://lore.kernel.org/r/20220518204901.93534-1-marex@denx.de
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/skbuff.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/input/touchscreen/ili210x.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 180fa6a26ad4..708cc9b1b176 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3896,7 +3896,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 	unsigned int delta_len = 0;
- 	struct sk_buff *tail = NULL;
- 	struct sk_buff *nskb, *tmp;
--	int err;
-+	int len_diff, err;
+--- a/drivers/input/touchscreen/ili210x.c
++++ b/drivers/input/touchscreen/ili210x.c
+@@ -951,9 +951,9 @@ static int ili210x_i2c_probe(struct i2c_
+ 		if (error)
+ 			return error;
  
- 	skb_push(skb, -skb_network_offset(skb) + offset);
+-		usleep_range(50, 100);
++		usleep_range(12000, 15000);
+ 		gpiod_set_value_cansleep(reset_gpio, 0);
+-		msleep(100);
++		msleep(160);
+ 	}
  
-@@ -3936,9 +3936,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
- 		skb_release_head_state(nskb);
-+		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
- 		__copy_skb_header(nskb, skb);
- 
- 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		nskb->transport_header += len_diff;
- 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
- 						 nskb->data - tnl_hlen,
- 						 offset + tnl_hlen);
--- 
-2.35.1
-
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 
 
