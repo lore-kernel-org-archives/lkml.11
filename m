@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D759AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A559C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239517AbiEWRJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
+        id S239656AbiEWRJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239448AbiEWRJQ (ORCPT
+        with ESMTP id S239450AbiEWRJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:09:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108F26C0E6;
-        Mon, 23 May 2022 10:08:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBBA6C54E;
+        Mon, 23 May 2022 10:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C80A2B81200;
-        Mon, 23 May 2022 17:08:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 253EEC385A9;
-        Mon, 23 May 2022 17:08:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E9D614CA;
+        Mon, 23 May 2022 17:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78D14C385A9;
+        Mon, 23 May 2022 17:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325704;
-        bh=sr/B4d37/4qkj9pTFmmpK3Nokr8z6fDzlyR7FE+yYD0=;
+        s=korg; t=1653325708;
+        bh=ftxdWj3rbiElIFxqTAQAWauSR4gy98WNczgs3M9/a0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BNGwyC4iBm4+tf/TJZ4871IUxN7ij9PMYLrdtdFAOFgeeeov5VbEUXrwAKrC1s07i
-         K5KISfy/wq4Rmx/kaLGhhKWIdj1BeoHW9DhIneMmvAhrOz43wDiHAQUCuyyzRXDqea
-         CULxv45B/44d2gDjt4d0XoCrodSgt0mrImFksjXQ=
+        b=yBXYVV4xbiXnlTS1VlczQQpyJrWur5tJpvQgMnPt7cWD/WPUrXh8uv/6+2lveaEvN
+         3mAVas7VkinNOaCP671grRd3NuoKHgCeoC1FZEcy2eJ96EESwGklINl6wlCfS0Gj0w
+         ACx1kvHdZDxm7RUvvp3DRwO/PSgn7SXcLVBjY1mI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Norbert Slusarek <nslusarek@gmx.net>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 09/33] perf: Fix sys_perf_event_open() race against self
-Date:   Mon, 23 May 2022 19:04:58 +0200
-Message-Id: <20220523165748.703871602@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 4.14 10/33] drm/dp/mst: fix a possible memory leak in fetch_monitor_name()
+Date:   Mon, 23 May 2022 19:04:59 +0200
+Message-Id: <20220523165748.819779721@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
 References: <20220523165746.957506211@linuxfoundation.org>
@@ -49,68 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 3ac6487e584a1eb54071dbe1212e05b884136704 upstream.
+commit 6e03b13cc7d9427c2c77feed1549191015615202 upstream.
 
-Norbert reported that it's possible to race sys_perf_event_open() such
-that the looser ends up in another context from the group leader,
-triggering many WARNs.
+drm_dp_mst_get_edid call kmemdup to create mst_edid. So mst_edid need to be
+freed after use.
 
-The move_group case checks for races against itself, but the
-!move_group case doesn't, seemingly relying on the previous
-group_leader->ctx == ctx check. However, that check is racy due to not
-holding any locks at that time.
-
-Therefore, re-check the result after acquiring locks and bailing
-if they no longer match.
-
-Additionally, clarify the not_move_group case from the
-move_group-vs-move_group race.
-
-Fixes: f63a8daa5812 ("perf: Fix event->ctx locking")
-Reported-by: Norbert Slusarek <nslusarek@gmx.net>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: stable@vger.kernel.org
+Link: https://patchwork.freedesktop.org/patch/msgid/20220516032042.13166-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/events/core.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/gpu/drm/drm_dp_mst_topology.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -10228,6 +10228,9 @@ SYSCALL_DEFINE5(perf_event_open,
- 		 * Do not allow to attach to a group in a different task
- 		 * or CPU context. If we're moving SW events, we'll fix
- 		 * this up later, so allow that.
-+		 *
-+		 * Racy, not holding group_leader->ctx->mutex, see comment with
-+		 * perf_event_ctx_lock().
- 		 */
- 		if (!move_group && group_leader->ctx != ctx)
- 			goto err_context;
-@@ -10277,11 +10280,22 @@ SYSCALL_DEFINE5(perf_event_open,
- 			} else {
- 				perf_event_ctx_unlock(group_leader, gctx);
- 				move_group = 0;
-+				goto not_move_group;
- 			}
- 		}
- 	} else {
- 		mutex_lock(&ctx->mutex);
-+
-+		/*
-+		 * Now that we hold ctx->lock, (re)validate group_leader->ctx == ctx,
-+		 * see the group_leader && !move_group test earlier.
-+		 */
-+		if (group_leader && group_leader->ctx != ctx) {
-+			err = -EINVAL;
-+			goto err_locked;
-+		}
- 	}
-+not_move_group:
+--- a/drivers/gpu/drm/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/drm_dp_mst_topology.c
+@@ -2910,6 +2910,7 @@ static void fetch_monitor_name(struct dr
  
- 	if (ctx->task == TASK_TOMBSTONE) {
- 		err = -ESRCH;
+ 	mst_edid = drm_dp_mst_get_edid(port->connector, mgr, port);
+ 	drm_edid_get_monitor_name(mst_edid, name, namelen);
++	kfree(mst_edid);
+ }
+ 
+ /**
 
 
