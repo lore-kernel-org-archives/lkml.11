@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD69C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58042C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241912AbiEWRxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
+        id S240947AbiEWRxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240668AbiEWRaJ (ORCPT
+        with ESMTP id S241343AbiEWRaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:30:09 -0400
+        Mon, 23 May 2022 13:30:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD4A39177;
-        Mon, 23 May 2022 10:26:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A6443ADD;
+        Mon, 23 May 2022 10:26:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B64E2611CE;
-        Mon, 23 May 2022 17:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0E2CC385A9;
-        Mon, 23 May 2022 17:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ABB861117;
+        Mon, 23 May 2022 17:26:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D0DC385AA;
+        Mon, 23 May 2022 17:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326771;
-        bh=COq4E386Kj6CEmG7VcQHWL7EBg1abKP2T8YeYMjuBuY=;
+        s=korg; t=1653326761;
+        bh=cHKye3APs63Crox8rXLhOAyrVrl02kQX/7/MG+LcMoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I8PXs7bG21zY48a2H2cITHLFLV5n9OLqMUIhu8TTSQmEg6Ig0dUElMhkb6qEt+Nvg
-         YfzgT/26w0oM+0Cq+UOPuri6wsavb93lxEF/m2Qjckd9RCDjmMelqAio3fJ0W11WFU
-         2JlIgFKUhCRrT4R/IdJ0og894REKDpu2jtzh0+Do=
+        b=j7GStGQjVVGHeoz416/6UN4moQsFlXukgPsXLQq24bUs3nwGUucMkDih9ZFHK4qXj
+         qErZN6vVYsfdVeGgMxWYa9p2NoZwRxdY6OqduT2ZeoCd61pN5jtun75Pu3VxF7xIyj
+         7uqZv7a3+XAwYd+6gA6w89AQV5oOz24A6DGt3d6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Gottwald <gottwald@igel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 5.17 053/158] PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
-Date:   Mon, 23 May 2022 19:03:30 +0200
-Message-Id: <20220523165839.526959442@linuxfoundation.org>
+        stable@vger.kernel.org, Wander Lairson Costa <wander@redhat.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.17 050/158] selinux: fix bad cleanup on error in hashtab_duplicate()
+Date:   Mon, 23 May 2022 19:03:27 +0200
+Message-Id: <20220523165838.999000773@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,51 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-commit 92597f97a40bf661bebceb92e26ff87c76d562d4 upstream.
+commit 6254bd3db316c9ccb3b05caa8b438be63245466f upstream.
 
-If a Root Port on Elo i2 is put into D3cold and then back into D0, the
-downstream device becomes permanently inaccessible, so add a bridge D3 DMI
-quirk for that system.
+The code attempts to free the 'new' pointer using kmem_cache_free(),
+which is wrong because this function isn't responsible of freeing it.
+Instead, the function should free new->htable and clear the contents of
+*new (to prevent double-free).
 
-This was exposed by 14858dcc3b35 ("PCI: Use pci_update_current_state() in
-pci_enable_device_flags()"), but before that commit the Root Port in
-question had never been put into D3cold for real due to a mismatch between
-its power state retrieved from the PCI_PM_CTRL register (which was
-accessible even though the platform firmware indicated that the port was in
-D3cold) and the state of an ACPI power resource involved in its power
-management.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
-Link: https://lore.kernel.org/r/11980172.O9o76ZdvQC@kreacher
-Reported-by: Stefan Gottwald <gottwald@igel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org	# v5.15+
+Cc: stable@vger.kernel.org
+Fixes: c7c556f1e81b ("selinux: refactor changing booleans")
+Reported-by: Wander Lairson Costa <wander@redhat.com>
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ security/selinux/ss/hashtab.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2920,6 +2920,16 @@ static const struct dmi_system_id bridge
- 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
- 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
- 		},
-+		/*
-+		 * Downstream device is not accessible after putting a root port
-+		 * into D3cold and back into D0 on Elo i2.
-+		 */
-+		.ident = "Elo i2",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
-+		},
- 	},
- #endif
- 	{ }
+--- a/security/selinux/ss/hashtab.c
++++ b/security/selinux/ss/hashtab.c
+@@ -179,7 +179,8 @@ int hashtab_duplicate(struct hashtab *ne
+ 			kmem_cache_free(hashtab_node_cachep, cur);
+ 		}
+ 	}
+-	kmem_cache_free(hashtab_node_cachep, new);
++	kfree(new->htable);
++	memset(new, 0, sizeof(*new));
+ 	return -ENOMEM;
+ }
+ 
 
 
