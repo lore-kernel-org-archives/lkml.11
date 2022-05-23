@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C78C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242497AbiEWRut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
+        id S242627AbiEWRu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241656AbiEWR04 (ORCPT
+        with ESMTP id S241645AbiEWR04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:26:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F17074DF7;
-        Mon, 23 May 2022 10:22:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B938AE48;
+        Mon, 23 May 2022 10:22:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4BA6B81212;
-        Mon, 23 May 2022 17:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37BD4C385A9;
-        Mon, 23 May 2022 17:22:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1AC0B80FF4;
+        Mon, 23 May 2022 17:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1387DC385AA;
+        Mon, 23 May 2022 17:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326526;
-        bh=qNHebJRGb8uPHTrOIkZkAqrNApxnintuF7GRvK2g2j0=;
+        s=korg; t=1653326442;
+        bh=Jp8whgaOG+SNcEazAWN5Wo37zx2wduu0qsJXCRd8VhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LdcfPcxKoiXSLLzYoby1ZFgcTcBlY4lzUvENuMSGeW4lK4fZ/QPYLChruHK5gcj9l
-         rSPQtxT01T0v5pUD73sZyLpFOWRGtd+KCvwve8+OARam7xg8vH11hQwNvsGKPLob2j
-         CXbZex3veR8/WYDyM/8bs0K9ub6fnVykMAe/hucA=
+        b=2MevLPd+6sqJ+DAGx8J3CJjXRwebZFWM7LbJitaNPEjjdC4NAv+NH5W2KbT6mgjmK
+         GFY0o2wNvfyy8BjWUQTTlsTkR6y7VkbL3uufpvmUVkG5hLmdn5fZ9ZkBh0Mxt8ZwFb
+         5p1ADdm54XTLC4FAe5l82GoKbSZEIadpXAfKZTg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 081/132] net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
-Date:   Mon, 23 May 2022 19:04:50 +0200
-Message-Id: <20220523165836.529172539@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Michal Schmidt <mschmidt@redhat.com>,
+        Dave Cain <dcain@redhat.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 083/132] ice: fix crash when writing timestamp on RX rings
+Date:   Mon, 23 May 2022 19:04:52 +0200
+Message-Id: <20220523165836.880950264@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,91 +53,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 
-[ Upstream commit 9e7fef9521e73ca8afd7da9e58c14654b02dfad8 ]
+[ Upstream commit 4503cc7fdf9a84cd631b0cb8ecb3c9b1bdbf3594 ]
 
-In vmxnet3_rq_alloc_rx_buf(), when dma_map_single() fails, rbi->skb is
-freed immediately. Similarly, in another branch, when dma_map_page() fails,
-rbi->page is also freed. In the two cases, vmxnet3_rq_alloc_rx_buf()
-returns an error to its callers vmxnet3_rq_init() -> vmxnet3_rq_init_all()
--> vmxnet3_activate_dev(). Then vmxnet3_activate_dev() calls
-vmxnet3_rq_cleanup_all() in error handling code, and rbi->skb or rbi->page
-are freed again in vmxnet3_rq_cleanup_all(), causing use-after-free bugs.
+Do not allow to write timestamps on RX rings if PF is being configured.
+When PF is being configured RX rings can be freed or rebuilt. If at the
+same time timestamps are updated, the kernel will crash by dereferencing
+null RX ring pointer.
 
-To fix these possible bugs, rbi->skb and rbi->page should be cleared after
-they are freed.
+PID: 1449   TASK: ff187d28ed658040  CPU: 34  COMMAND: "ice-ptp-0000:51"
+ #0 [ff1966a94a713bb0] machine_kexec at ffffffff9d05a0be
+ #1 [ff1966a94a713c08] __crash_kexec at ffffffff9d192e9d
+ #2 [ff1966a94a713cd0] crash_kexec at ffffffff9d1941bd
+ #3 [ff1966a94a713ce8] oops_end at ffffffff9d01bd54
+ #4 [ff1966a94a713d08] no_context at ffffffff9d06bda4
+ #5 [ff1966a94a713d60] __bad_area_nosemaphore at ffffffff9d06c10c
+ #6 [ff1966a94a713da8] do_page_fault at ffffffff9d06cae4
+ #7 [ff1966a94a713de0] page_fault at ffffffff9da0107e
+    [exception RIP: ice_ptp_update_cached_phctime+91]
+    RIP: ffffffffc076db8b  RSP: ff1966a94a713e98  RFLAGS: 00010246
+    RAX: 16e3db9c6b7ccae4  RBX: ff187d269dd3c180  RCX: ff187d269cd4d018
+    RDX: 0000000000000000  RSI: 0000000000000000  RDI: 0000000000000000
+    RBP: ff187d269cfcc644   R8: ff187d339b9641b0   R9: 0000000000000000
+    R10: 0000000000000002  R11: 0000000000000000  R12: ff187d269cfcc648
+    R13: ffffffff9f128784  R14: ffffffff9d101b70  R15: ff187d269cfcc640
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #8 [ff1966a94a713ea0] ice_ptp_periodic_work at ffffffffc076dbef [ice]
+ #9 [ff1966a94a713ee0] kthread_worker_fn at ffffffff9d101c1b
+ #10 [ff1966a94a713f10] kthread at ffffffff9d101b4d
+ #11 [ff1966a94a713f50] ret_from_fork at ffffffff9da0023f
 
-The error log in our fault-injection testing is shown as follows:
-
-[   14.319016] BUG: KASAN: use-after-free in consume_skb+0x2f/0x150
-...
-[   14.321586] Call Trace:
-...
-[   14.325357]  consume_skb+0x2f/0x150
-[   14.325671]  vmxnet3_rq_cleanup_all+0x33a/0x4e0 [vmxnet3]
-[   14.326150]  vmxnet3_activate_dev+0xb9d/0x2ca0 [vmxnet3]
-[   14.326616]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.361675] Allocated by task 351:
-...
-[   14.362688]  __netdev_alloc_skb+0x1b3/0x6f0
-[   14.362960]  vmxnet3_rq_alloc_rx_buf+0x1b0/0x8d0 [vmxnet3]
-[   14.363317]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.363661]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.367309]
-[   14.367412] Freed by task 351:
-...
-[   14.368932]  __dev_kfree_skb_any+0xd2/0xe0
-[   14.369193]  vmxnet3_rq_alloc_rx_buf+0x71e/0x8d0 [vmxnet3]
-[   14.369544]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.369883]  vmxnet3_open+0x387/0x470 [vmxnet3]
-[   14.370174]  __dev_open+0x28a/0x420
-[   14.370399]  __dev_change_flags+0x192/0x590
-[   14.370667]  dev_change_flags+0x7a/0x180
-[   14.370919]  do_setlink+0xb28/0x3570
-[   14.371150]  rtnl_newlink+0x1160/0x1740
-[   14.371399]  rtnetlink_rcv_msg+0x5bf/0xa50
-[   14.371661]  netlink_rcv_skb+0x1cd/0x3e0
-[   14.371913]  netlink_unicast+0x5dc/0x840
-[   14.372169]  netlink_sendmsg+0x856/0xc40
-[   14.372420]  ____sys_sendmsg+0x8a7/0x8d0
-[   14.372673]  __sys_sendmsg+0x1c2/0x270
-[   14.372914]  do_syscall_64+0x41/0x90
-[   14.373145]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-...
-
-Fixes: 5738a09d58d5a ("vmxnet3: fix checks for dma mapping errors")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050656.2636588-1-r33s3n6@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 77a781155a65 ("ice: enable receive hardware timestamping")
+Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Reviewed-by: Michal Schmidt <mschmidt@redhat.com>
+Tested-by: Dave Cain <dcain@redhat.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 5b0215b7c176..8ab86bbdbf5e 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -589,6 +589,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					dev_kfree_skb_any(rbi->skb);
-+					rbi->skb = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
-@@ -613,6 +614,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					put_page(rbi->page);
-+					rbi->page = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index ef26ff351b57..9b50e9e6042a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -254,12 +254,19 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
+  * This function must be called periodically to ensure that the cached value
+  * is never more than 2 seconds old. It must also be called whenever the PHC
+  * time has been changed.
++ *
++ * Return:
++ * * 0 - OK, successfully updated
++ * * -EAGAIN - PF was busy, need to reschedule the update
+  */
+-static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
++static int ice_ptp_update_cached_phctime(struct ice_pf *pf)
+ {
+ 	u64 systime;
+ 	int i;
+ 
++	if (test_and_set_bit(ICE_CFG_BUSY, pf->state))
++		return -EAGAIN;
++
+ 	/* Read the current PHC time */
+ 	systime = ice_ptp_read_src_clk_reg(pf, NULL);
+ 
+@@ -282,6 +289,9 @@ static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
+ 			WRITE_ONCE(vsi->rx_rings[j]->cached_phctime, systime);
+ 		}
+ 	}
++	clear_bit(ICE_CFG_BUSY, pf->state);
++
++	return 0;
+ }
+ 
+ /**
+@@ -1418,17 +1428,18 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
+ {
+ 	struct ice_ptp *ptp = container_of(work, struct ice_ptp, work.work);
+ 	struct ice_pf *pf = container_of(ptp, struct ice_pf, ptp);
++	int err;
+ 
+ 	if (!test_bit(ICE_FLAG_PTP, pf->flags))
+ 		return;
+ 
+-	ice_ptp_update_cached_phctime(pf);
++	err = ice_ptp_update_cached_phctime(pf);
+ 
+ 	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
+ 
+-	/* Run twice a second */
++	/* Run twice a second or reschedule if phc update failed */
+ 	kthread_queue_delayed_work(ptp->kworker, &ptp->work,
+-				   msecs_to_jiffies(500));
++				   msecs_to_jiffies(err ? 10 : 500));
+ }
+ 
+ /**
 -- 
 2.35.1
 
