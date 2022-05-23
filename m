@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36453C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EABC38A2E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244134AbiEWRix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
+        id S244213AbiEWRi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241965AbiEWR1V (ORCPT
+        with ESMTP id S239937AbiEWRZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BC07980E;
-        Mon, 23 May 2022 10:22:27 -0700 (PDT)
+        Mon, 23 May 2022 13:25:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AD787A0C;
+        Mon, 23 May 2022 10:20:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C235CB81201;
-        Mon, 23 May 2022 17:21:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A80DC385A9;
-        Mon, 23 May 2022 17:21:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D477B60AB8;
+        Mon, 23 May 2022 17:18:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC807C385AA;
+        Mon, 23 May 2022 17:18:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326507;
-        bh=jMIzHqt1QTdiyQEd3y75sOxgA5an0wZmedRi1HIY8/U=;
+        s=korg; t=1653326326;
+        bh=YpVawoi7xCkGSEtVaEEqrpuhvW6Am6CjBJvohnMHpGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zyaIX/JUoyhzOoykZIY4+aSFe7AbNrcTyoaNRU8jXjzc/dp0irpoi2awiZnDkfph3
-         WItKM7WEoTSC7dmn39MMGmXcRCvsI0xqiEqnTlrujneBqqGm5iDg8FFgt5NlYm9Wgl
-         Q4zO6f0hTB+E9j0QpbYSO+HEn1ZDCP3tYp0/0a/Q=
+        b=svx/qtRHKfKBUwelJ7TyWdu5fCrUYksj53mUXAllR9Qiwj05uEDhIG9v682AJWo1t
+         KU652p4YgDZdqG7Oul0oyTCg3pKe5th/mvSf8oh57qGLDNFLOQB+si7NcBxbjMaOvR
+         slt5/NCUiL1ut8AtR6Gl+hWVLpofXa1SB7bdl5W4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 102/132] netfilter: flowtable: pass flowtable to nf_flow_table_iterate()
-Date:   Mon, 23 May 2022 19:05:11 +0200
-Message-Id: <20220523165840.354963658@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 046/132] ALSA: hda/realtek: Add quirk for TongFang devices with pop noise
+Date:   Mon, 23 May 2022 19:04:15 +0200
+Message-Id: <20220523165830.886991583@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,90 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-[ Upstream commit 217cff36e885627c41a14e803fc44f9cbc945767 ]
+commit 8b3b2392ed68bcd17c7eb84ca615ce1e5f115b99 upstream.
 
-The flowtable object is already passed as argument to
-nf_flow_table_iterate(), do use not data pointer to pass flowtable.
+When audio stops playing there is an audible "pop"-noise when using
+headphones on the TongFang GMxMRxx, GKxNRxx, GMxZGxx, GMxTGxx and GMxAGxx.
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This quirk fixes this mostly.
+
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220512180956.281804-1-wse@tuxedocomputers.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_flow_table_core.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ sound/pci/hda/patch_realtek.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 58f3f77b3eb2..de783c9094d7 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -382,7 +382,8 @@ EXPORT_SYMBOL_GPL(flow_offload_lookup);
- 
- static int
- nf_flow_table_iterate(struct nf_flowtable *flow_table,
--		      void (*iter)(struct flow_offload *flow, void *data),
-+		      void (*iter)(struct nf_flowtable *flowtable,
-+				   struct flow_offload *flow, void *data),
- 		      void *data)
- {
- 	struct flow_offload_tuple_rhash *tuplehash;
-@@ -406,7 +407,7 @@ nf_flow_table_iterate(struct nf_flowtable *flow_table,
- 
- 		flow = container_of(tuplehash, struct flow_offload, tuplehash[0]);
- 
--		iter(flow, data);
-+		iter(flow_table, flow, data);
- 	}
- 	rhashtable_walk_stop(&hti);
- 	rhashtable_walk_exit(&hti);
-@@ -434,10 +435,9 @@ static bool nf_flow_has_stale_dst(struct flow_offload *flow)
- 	       flow_offload_stale_dst(&flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple);
- }
- 
--static void nf_flow_offload_gc_step(struct flow_offload *flow, void *data)
-+static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
-+				    struct flow_offload *flow, void *data)
- {
--	struct nf_flowtable *flow_table = data;
--
- 	if (nf_flow_has_expired(flow) ||
- 	    nf_ct_is_dying(flow->ct) ||
- 	    nf_flow_has_stale_dst(flow))
-@@ -462,7 +462,7 @@ static void nf_flow_offload_work_gc(struct work_struct *work)
- 	struct nf_flowtable *flow_table;
- 
- 	flow_table = container_of(work, struct nf_flowtable, gc_work.work);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
-+	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	queue_delayed_work(system_power_efficient_wq, &flow_table->gc_work, HZ);
- }
- 
-@@ -578,7 +578,8 @@ int nf_flow_table_init(struct nf_flowtable *flowtable)
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_init);
- 
--static void nf_flow_table_do_cleanup(struct flow_offload *flow, void *data)
-+static void nf_flow_table_do_cleanup(struct nf_flowtable *flow_table,
-+				     struct flow_offload *flow, void *data)
- {
- 	struct net_device *dev = data;
- 
-@@ -620,11 +621,10 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
- 
- 	cancel_delayed_work_sync(&flow_table->gc_work);
- 	nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, NULL);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
-+	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	nf_flow_table_offload_flush(flow_table);
- 	if (nf_flowtable_hw_offload(flow_table))
--		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step,
--				      flow_table);
-+		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	rhashtable_destroy(&flow_table->rhashtable);
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_free);
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9076,6 +9076,14 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1c06, 0x2013, "Lemote A1802", ALC269_FIXUP_LEMOTE_A1802),
+ 	SND_PCI_QUIRK(0x1c06, 0x2015, "Lemote A190X", ALC269_FIXUP_LEMOTE_A190X),
+ 	SND_PCI_QUIRK(0x1d05, 0x1132, "TongFang PHxTxX1", ALC256_FIXUP_SET_COEF_DEFAULTS),
++	SND_PCI_QUIRK(0x1d05, 0x1096, "TongFang GMxMRxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1100, "TongFang GKxNRxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1111, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1119, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1129, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1147, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x115c, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x121b, "TongFang GMxAGxx", ALC269_FIXUP_NO_SHUTUP),
+ 	SND_PCI_QUIRK(0x1d72, 0x1602, "RedmiBook", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1d72, 0x1701, "XiaomiNotebook Pro", ALC298_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1d72, 0x1901, "RedmiBook 14", ALC256_FIXUP_ASUS_HEADSET_MIC),
 
 
