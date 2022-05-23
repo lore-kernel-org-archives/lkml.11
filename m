@@ -2,151 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2136EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:05:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241319AbiEWSFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
+        id S242945AbiEWSFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242971AbiEWRhv (ORCPT
+        with ESMTP id S243086AbiEWRhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:51 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238E85D5E6
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:31:56 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id b135so2562397pfb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oCNJML7eA2j9L8f72NkyeKZiPIyN20wsxD5r9Tzx9cA=;
-        b=VQuspDaagiDbr8zDGAJevmwHk6IYCwXe0OQNbOee7Tu2IHo33cYxokGiFfbrhTIFD6
-         62hu7cw8t4yvx3aEBc40atCX/ZCXQYPABJD3A7WMv5dpWaPn1sujmMA8KBgCJG/jH4eb
-         Smd147syr5WmIcn7pwELo2ONgSQiNPsmRFuoyQ1Iuk1z/gxUK17CLFKinM4+1W81nEFo
-         hEWLTqC7ODI5yO9MfnJOT+geXR0KYCSJNoxov70DOAkLXuLYrQlTnAq0q3/2sT9qy69d
-         B46Q3eeaiIlELv+ptqM+emBDuE/X1ivWqBecmrCvvRl7jwiPmbCsJ3mCYHkXRYTX9XnL
-         9ZeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oCNJML7eA2j9L8f72NkyeKZiPIyN20wsxD5r9Tzx9cA=;
-        b=058I9JufCLo/z+RcXgadaYPlwXpIIN+mTa9oS4WcPc6qKPgDdEWt+HGRN2wh5K8hg5
-         zCNBkuPZFXjSY1N3Lm3cJYRnRJHEwKgTvbYY+Da7iD9ah9doXRrY4Ph8Hca3HP7ahT2l
-         z2urgEeMbpcodmHXrsLUpmvfRqsDdV+fUO7GOFxoritQGpU/lncFoBJPRBUFS6DtkbzK
-         uUEv943kRxbQqhd5wP6x3O2Ui9uREY8fsO5mC+YyLPQuYJxM8FKtqt1WKjN1HjbB5Wu0
-         ADPQ9uMC2xXhfE3RwwCpYDHFtLmYMK2o1xcuBH9bV3bqNdNMKBo+xKyIbT51k/awq0ah
-         N6Tw==
-X-Gm-Message-State: AOAM530jwPyZI57/EiBV/TVjl+EKTUPhi+5L23IiZi+aFHiTMfbPazXg
-        xr0vh1YhZRY51wcm9Uu8yoV5gg==
-X-Google-Smtp-Source: ABdhPJyVqMoEcjNxptyUgqa9Zdq5WQzejBZ0z6wMNkkE4awFtw8fhM9i8OBMVMolSAtdF+aG4aq6XQ==
-X-Received: by 2002:a05:6a00:140a:b0:4e0:54d5:d01 with SMTP id l10-20020a056a00140a00b004e054d50d01mr24742544pfu.20.1653327068687;
-        Mon, 23 May 2022 10:31:08 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id ru13-20020a17090b2bcd00b001df4a0e9357sm7512221pjb.12.2022.05.23.10.31.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 10:31:08 -0700 (PDT)
-Date:   Mon, 23 May 2022 17:31:04 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>, kvm@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, Zhi Wang <zhi.a.wang@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [RFC PATCH v3 02/19] KVM: x86: inhibit APICv/AVIC when the guest
- and/or host changes apic id/base from the defaults.
-Message-ID: <YovE2A67XobRyHc/@google.com>
-References: <20220427200314.276673-1-mlevitsk@redhat.com>
- <20220427200314.276673-3-mlevitsk@redhat.com>
- <YoZrG3n5fgMp4LQl@google.com>
- <e32f6c904c92e9e9efabcc697917a232f5e88881.camel@redhat.com>
- <CALMp9eSVji2CPW1AjFoSbWZ_b-r3y67HyatgdqXEqSyUaD1_BQ@mail.gmail.com>
- <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
+        Mon, 23 May 2022 13:37:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56D46B7D3;
+        Mon, 23 May 2022 10:32:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E6927CE1736;
+        Mon, 23 May 2022 17:31:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8955C385A9;
+        Mon, 23 May 2022 17:31:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653327085;
+        bh=8QN6ZDxAXXalgKOCm82pX3l1ONLJOdJsMwDCWD9vdA4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qZ2qQJnjr3GaWJAGG+3c86mcopAWDu2DQ1D1/EoFVv7Y9B8NPdlt/MT+nm//BjKPM
+         Xg7HMME4Tu/NzWTAkj6QkcPrEIG13+S4cpDlvWBkWGbYpr2xUnJrFfcw63jUok6KX2
+         wBu4ns2iAFkWeX8UgYBkCUwY1I71gkDh3fKkunV4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Gleb Chesnokov <Chesnokov.G@raidix.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 134/158] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
+Date:   Mon, 23 May 2022 19:04:51 +0200
+Message-Id: <20220523165852.558260265@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <65991ac329a32cf4128400b643d5b5ccf3918cfe.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022, Maxim Levitsky wrote:
-> On Sun, 2022-05-22 at 07:47 -0700, Jim Mattson wrote:
-> > On Sun, May 22, 2022 at 2:03 AM Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > > On Thu, 2022-05-19 at 16:06 +0000, Sean Christopherson wrote:
-> > > > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
-> > > > > Neither of these settings should be changed by the guest and it is
-> > > > > a burden to support it in the acceleration code, so just inhibit
-> > > > > it instead.
-> > > > > 
-> > > > > Also add a boolean 'apic_id_changed' to indicate if apic id ever changed.
-> > > > > 
-> > > > > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > > > > ---
-> > > > > +           return;
-> > > > > +
-> > > > > +   pr_warn_once("APIC ID change is unsupported by KVM");
-> > > > 
-> > > > It's supported (modulo x2APIC shenanigans), otherwise KVM wouldn't need to disable
-> > > > APICv.
-> > > 
-> > > Here, as I said, it would be nice to see that warning if someone complains.
-> > > Fact is that AVIC code was totally broken in this regard, and there are probably more,
-> > > so it would be nice to see if anybody complains.
-> > > 
-> > > If you insist, I'll remove this warning.
-> > 
-> > This may be fine for a hobbyist, but it's a terrible API in an
-> > enterprise environment. To be honest, I have no way of propagating
-> > this warning from /var/log/messages on a particular host to a
-> > potentially impacted customer. Worse, if they're not the first
-> > impacted customer since the last host reboot, there's no warning to
-> > propagate. I suppose I could just tell every later customer, "Your VM
-> > was scheduled to run on a host that previously reported, 'APIC ID
-> > change is unsupported by KVM.' If you notice any unusual behavior,
-> > that might be the reason for it," but that isn't going to inspire
-> > confidence. I could schedule a drain and reboot of the host, but that
-> > defeats the whole point of the "_once" suffix.
-> 
-> Mostly agree, and I read alrady few discussions about exactly this,
-> those warnings are mostly useless, but they are used in the
-> cases where we don't have the courage to just exit with KVM_EXIT_INTERNAL_ERROR.
-> 
-> I do not thing though that the warning is completely useless, 
-> as we often have the kernel log of the target machine when things go wrong, 
-> so *we* can notice it.
-> In other words a kernel warning is mostly useless but better that nothing.
+From: Gleb Chesnokov <Chesnokov.G@raidix.com>
 
-IMO, it's worse than doing nothing.  Us developers become desensitized to the
-kernel message due to running tests, the existence of these message propagates
-the notion that they are a good thing (and we keep rehashing these discussions...),
-users may not realize it's a _once() printk and so think they _aren't_ affected
-when re-running a workload, etc...
+[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
 
-And in this case, "APIC ID change is unsupported by KVM" is partly wrong.  KVM
-fully models Intel's behavior where the ID change isn't carried across x2APIC
-enabling, the only unsupported behavior is that the guest will lose APICv
-acceleration.
+Aborting commands that have already been sent to the firmware can
+cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
 
-> About KVM_EXIT_WARNING, this is IMHO a very good idea, probably combined
-> with some form of taint flag, which could be read by qemu and then shown
-> over hmp/qmp interfaces.
+For instance:
+
+ - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
+
+ - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
+
+ - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
+
+ - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
+   unmapped
+
+Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
+
+Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/qla2xxx/qla_target.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index b109716d44fb..7ab3c9e4d478 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -3837,6 +3837,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+ 
+ 	spin_lock_irqsave(&cmd->cmd_lock, flags);
+ 	if (cmd->aborted) {
++		if (cmd->sg_mapped)
++			qlt_unmap_sg(vha, cmd);
++
+ 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
+ 		/*
+ 		 * It's normal to see 2 calls in this path:
+-- 
+2.35.1
+
+
+
