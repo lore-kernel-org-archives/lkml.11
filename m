@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1E0C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73CC8C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241310AbiEWR0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
+        id S241855AbiEWR1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240216AbiEWRRc (ORCPT
+        with ESMTP id S240254AbiEWRQL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:17:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCC569CEF;
-        Mon, 23 May 2022 10:17:19 -0700 (PDT)
+        Mon, 23 May 2022 13:16:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8FD694AD;
+        Mon, 23 May 2022 10:12:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C9A6B8121C;
-        Mon, 23 May 2022 17:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81529C385A9;
-        Mon, 23 May 2022 17:15:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB96E614F5;
+        Mon, 23 May 2022 17:12:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 002B4C385A9;
+        Mon, 23 May 2022 17:12:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326117;
-        bh=riyIxm/6DV0D51V6qS4eIgtQ8gmXffvMp6/SrgHtugg=;
+        s=korg; t=1653325966;
+        bh=AEH/dvMVbcFeYDvFezpfR84pX6HTZhUBNCCoNrj0aKI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zhnelaajp4yDkd4ycE2hYvINNjzVR9L1vQhhoVxjZ1yKldvoovSaIg6fsKPPm7QOb
-         3ARTSQ6v9stH7tlI4XHSCXnez+x2mRXpqwvoQKe8xWVRa0nuXSG6QDZSbQ7Uew7Elx
-         QjjE+A7JR6++iVPWvsLd1mu/8QgVMvyxvA2V8DPY=
+        b=eA+oX7x3fwZjy11SHoctd9a6H/bF9ur1u97pBx+Befi0yZI4BGyu4jdclyHv3Qfys
+         qL7AKXMbn5NDoEweWO0FufZYonGmB1pN7tJt0seNYQUhD261HcdnKEpay1DTLa4YDR
+         Z//vLS3P4t5YAXjX4KwdjcvjpHZSEaO/c9+y82Eo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Gottwald <gottwald@igel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 5.4 29/68] PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
-Date:   Mon, 23 May 2022 19:04:56 +0200
-Message-Id: <20220523165807.394701006@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Gleb Chesnokov <Chesnokov.G@raidix.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 37/44] scsi: qla2xxx: Fix missed DMA unmap for aborted commands
+Date:   Mon, 23 May 2022 19:05:21 +0200
+Message-Id: <20220523165800.168103002@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+References: <20220523165752.797318097@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Gleb Chesnokov <Chesnokov.G@raidix.com>
 
-commit 92597f97a40bf661bebceb92e26ff87c76d562d4 upstream.
+[ Upstream commit 26f9ce53817a8fd84b69a73473a7de852a24c897 ]
 
-If a Root Port on Elo i2 is put into D3cold and then back into D0, the
-downstream device becomes permanently inaccessible, so add a bridge D3 DMI
-quirk for that system.
+Aborting commands that have already been sent to the firmware can
+cause BUG in qlt_free_cmd(): BUG_ON(cmd->sg_mapped)
 
-This was exposed by 14858dcc3b35 ("PCI: Use pci_update_current_state() in
-pci_enable_device_flags()"), but before that commit the Root Port in
-question had never been put into D3cold for real due to a mismatch between
-its power state retrieved from the PCI_PM_CTRL register (which was
-accessible even though the platform firmware indicated that the port was in
-D3cold) and the state of an ACPI power resource involved in its power
-management.
+For instance:
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
-Link: https://lore.kernel.org/r/11980172.O9o76ZdvQC@kreacher
-Reported-by: Stefan Gottwald <gottwald@igel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org	# v5.15+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ - Command passes rdx_to_xfer state, maps sgl, sends to the firmware
+
+ - Reset occurs, qla2xxx performs ISP error recovery, aborts the command
+
+ - Target stack calls qlt_abort_cmd() and then qlt_free_cmd()
+
+ - BUG_ON(cmd->sg_mapped) in qlt_free_cmd() occurs because sgl was not
+   unmapped
+
+Thus, unmap sgl in qlt_abort_cmd() for commands with the aborted flag set.
+
+Link: https://lore.kernel.org/r/AS8PR10MB4952D545F84B6B1DFD39EC1E9DEE9@AS8PR10MB4952.EURPRD10.PROD.OUTLOOK.COM
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Gleb Chesnokov <Chesnokov.G@raidix.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pci.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/scsi/qla2xxx/qla_target.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2613,6 +2613,16 @@ static const struct dmi_system_id bridge
- 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
- 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
- 		},
-+		/*
-+		 * Downstream device is not accessible after putting a root port
-+		 * into D3cold and back into D0 on Elo i2.
-+		 */
-+		.ident = "Elo i2",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
-+		},
- 	},
- #endif
- 	{ }
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index 09c52ef66887..27d3293eadf5 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -3753,6 +3753,9 @@ int qlt_abort_cmd(struct qla_tgt_cmd *cmd)
+ 
+ 	spin_lock_irqsave(&cmd->cmd_lock, flags);
+ 	if (cmd->aborted) {
++		if (cmd->sg_mapped)
++			qlt_unmap_sg(vha, cmd);
++
+ 		spin_unlock_irqrestore(&cmd->cmd_lock, flags);
+ 		/*
+ 		 * It's normal to see 2 calls in this path:
+-- 
+2.35.1
+
 
 
