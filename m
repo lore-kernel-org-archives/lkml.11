@@ -2,136 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD35BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234829AbiEWLYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52924 "EHLO
+        id S234888AbiEWL1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234804AbiEWLYF (ORCPT
+        with ESMTP id S234851AbiEWL1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:24:05 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2040.outbound.protection.outlook.com [40.107.220.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887864C7B5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:24:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y+RtbdKRSOa0EpxkMShDFWWglES8PzUCh4TYJopP2ZgwAw842LzynqIV524O+Tn4Hdp8V/SFXi2QFpeCk6frCH4Z/sXFvPNapnsQeVapFVJIt5GRs4bWbz+QjtxF73SIY4c4dyTVdPGAZ7RnhQl/cP9J6bMAnz8IoBMaht3UT+aj56XnjbEnLg+Kmuh/A7DiGXU/nFiQqFMyvPyrkyUDSDwf4DXGBWEI2x1s/gvg3MnJkqLCOv14/uTZgCv/UdRqUt69bNHUhVMdwUqoT0DWeOUZTDLtPCgJsv85Rn5tV0+y8fTF5LwKrW6lZW3zHLkQBT0WJuauI0f2ZDVGaJQ4Qg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=higz6ZAS7M6qi/IPX06VS2uYoWJbsXQ50yA2ijYcUwo=;
- b=CU6RC7QwUSjO9lhwhQWRtGg6r3JZ5c46Ej3ig6+8pbQ9FeNmguT95s93bpfj/tCMKLaJ6P6GVU/wEMwnaTxSMFSKi8r6yK0uq1zXft0CWcab0r6eHCb81QWLe8EF5+nLd5zMJW8KPZk0HbEaP/lMXxINLlDJVLUBwvl6yp9fgoKy9ZLcRhCFGVz4Rwt+4+CXUWg8P0HWDdLtK0faIS4XOI7awCdCkD+QEPHOv89A+cX5Ns53dXxYgVPwFrH8VyRqxQTWw2mzpCOzuUw5ZZiBCjOFfekDhu1+iGEwLz5cA3XV6qTCGNBzw5V4fPaEEHyQiNevIgE5H/9COzptkjS6vQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=higz6ZAS7M6qi/IPX06VS2uYoWJbsXQ50yA2ijYcUwo=;
- b=YM5Ao3Ck4srcAqnBsdJU50bcJBW7tPx7dFaKE7Umw0Eo6TOvJc9OU0zPAhGJ5t/TtmsA2KNzV6FbfcCb8KMhZ/VEu59t9ANa4BNFoyDg511NDEF+gFZCPrZYQfjgGw32Mp2VBaQpmSEFYraRAMvGbEeHWJDwaACbAKkJWFeeLEo=
-Received: from BN6PR11CA0065.namprd11.prod.outlook.com (2603:10b6:404:f7::27)
- by MW3PR12MB4571.namprd12.prod.outlook.com (2603:10b6:303:5c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Mon, 23 May
- 2022 11:23:59 +0000
-Received: from BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:f7:cafe::f2) by BN6PR11CA0065.outlook.office365.com
- (2603:10b6:404:f7::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.18 via Frontend
- Transport; Mon, 23 May 2022 11:23:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT053.mail.protection.outlook.com (10.13.177.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5273.14 via Frontend Transport; Mon, 23 May 2022 11:23:58 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
- 2022 06:23:58 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
- 2022 04:23:58 -0700
-Received: from amd-B450M-DS3H.amd.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 23 May 2022 06:23:49 -0500
-From:   Syed Saba kareem <ssabakar@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
-        <Sunil-kumar.Dommati@amd.com>, <ajitkumar.pandey@amd.com>,
-        Syed Saba kareem <ssabakar@amd.com>,
-        kernel test robot <lkp@intel.com>,
-        Syed Saba Kareem <ssbakar@amd.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ASoC: SOF: amd: Fixed Build error
-Date:   Mon, 23 May 2022 16:53:08 +0530
-Message-ID: <20220523112311.3087070-1-ssabakar@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 23 May 2022 07:27:14 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3CDE48
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:27:14 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id l3-20020a05660227c300b0065a8c141580so7959891ios.19
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:27:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=QCQ9Rx5sOF+d7lMeZPRORn2gtYhkl1yNXHf4o1NXpaI=;
+        b=hijwc1ftQuL7IKRWHd92ifzo0ts+0TRmgbZWjuGG2b+sWuszSxjlwPhqU1fIzoGSxh
+         S3lROqawq7gbDOcaXkVRW255Jx8MO78zxPU+NRhojmx8/inmirmK9/ipLlaC3XQ8COno
+         bKGUlJqIQzUTpr4ysUyXwLsmmuBNSFn8VDiu/hzCg/tOyB+y+lat8gbTTJ218ppk6WUl
+         cq1n22EPk39WZ4wlO0uIVDoC1dK0jftmValMHKvzo2B3oMj4lnmk5256RFiSuxeIUwa8
+         eUpcR4qPNkrWMbo+1pGmWo7WdAP6BJZtid2TYAyoONV7k9h/x3cMZODxtsKlwWVP9kjF
+         Cbyw==
+X-Gm-Message-State: AOAM5329Z/VB7rsP63LiFzy47I/Bwf56RVbn6JIT/mvu7FaVVrRcWCUC
+        2rF5zVVKM6i4dl2F2FhgoGIwx39YAY/kr/N95s6o6oAo6e+v
+X-Google-Smtp-Source: ABdhPJwRxk1Tzo+/dKxoCvKqxpreusTr+39AyxXTczOmfbO+jVHhyPNVPaqfGzwYu4BE6Em2vcbjUX3PNZMWCHt5jb2Y510FfFnt
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1faec6cd-abb3-4041-9f09-08da3caebb33
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4571:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR12MB45711433B55A666A8F95D899FCD49@MW3PR12MB4571.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hRTyYzYvWgrb8eYVeaitFtYPzyo2z1GW/CFUtrVGpQ+ggelCbEdEBq15deKYPMDMKRTF5IEoWEMNvig0tW5FzdGrM2CfqZ2Hj7w9q8G0yW3/AX7atG2i+tu0Wt+odBxkcXyU8wB7rdNrrV3I0PUCIlkY2MozTv5FDYn0036621amP9NmrkajS8+l3opK3KKeKfivFfGVmPUl27F4u2YalNEIwlN+1/04WKzCC7VuDO+q2hBhXxnkjYNQsh7F15Ub5L4RyGVoaC3h6FHzIxxnlSbXfdAOXNsO4uIJcCfWUOV5CPT2POjmXlyBzgQLW4Yu8nyJSKbQ97UmDk7uBJKrRgQqFeV/lNufxGI1jsjYHOh+AyKn82ei9HPbzUwz3IYINK0FWA8eaXJCCDbe3ENvOInrky2AfhSHc7gLyKzu9TmVPJrmCEB7OKFOElA1kjW9yFP8WEZxPiMMIj5cFJDRgrT1MhktQQMNc55BKJC/UsO4reLH/UhwmluGKqMYHd3Dc5kM0GXsIVTRSayqSb3GFW5ue3MHIk5uf6Qmz7YZ/LZbXQJ71btBY+lV977Okf0FlfKmUPlJQ9sxzDzOn/RtZLPXTqo7Gb2vo0MGZcvvhMs3akIltQWSz7inLnVaGk5LitjJ3pCxRWTwwrFp/ja0hFARZBAl9r+mdnoYyPQOcH7KKHRAeqIvQDIImn5M4SewhdznAaCkZXlukBLag1pEUw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(1076003)(4326008)(8936002)(82310400005)(356005)(81166007)(8676002)(7696005)(26005)(508600001)(70206006)(6666004)(40460700003)(2616005)(70586007)(4744005)(47076005)(36860700001)(2906002)(5660300002)(316002)(186003)(336012)(110136005)(54906003)(426003)(36756003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 11:23:58.8420
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1faec6cd-abb3-4041-9f09-08da3caebb33
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT053.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4571
+X-Received: by 2002:a05:6638:dcc:b0:32e:bfe7:95c6 with SMTP id
+ m12-20020a0566380dcc00b0032ebfe795c6mr3003419jaj.245.1653305233439; Mon, 23
+ May 2022 04:27:13 -0700 (PDT)
+Date:   Mon, 23 May 2022 04:27:13 -0700
+In-Reply-To: <20220523110657.3142-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000025031405dfac1fa0@google.com>
+Subject: Re: [syzbot] general protection fault in ath9k_hif_usb_rx_cb (2)
+From:   syzbot <syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add linux/module.h in acp-pci.c to solve the below dependency
+Hello,
 
-All error/warnings (new ones prefixed by >>):
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+general protection fault in ath9k_hif_usb_rx_cb
 
->> sound/soc/amd/acp/acp-pci.c:148:1: warning: data definition has no type or storage class
-148 | MODULE_DEVICE_TABLE(pci, acp_pci_ids);
-| ^~~~~~~~~~~~~~~~~~~
->> sound/soc/amd/acp/acp-pci.c:148:1: error: type defaults to 'int' in declaration of 'MODULE_DEVICE_TABLE' [-Werror=implicit-int]
-...
+general protection fault, probably for non-canonical address 0xdffffc00000001f6: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000fb0-0x0000000000000fb7]
+CPU: 3 PID: 33 Comm: ksoftirqd/3 Not tainted 5.18.0-syzkaller-00380-g4b0986a3613c-dirty #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:589 [inline]
+RIP: 0010:ath9k_hif_usb_rx_cb+0xcfd/0x10d0 drivers/net/wireless/ath/ath9k/hif_usb.c:687
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 cc 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 08 48 8d bb b4 0f 00 00 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 09 84 d2 74 05 e8
+RSP: 0018:ffffc900007cf808 EFLAGS: 00010007
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 00000000000001f6 RSI: ffffffff8526ff89 RDI: 0000000000000fb4
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff8526fcef R11: 0000000000004e00 R12: 0000000000000000
+R13: ffff88804dc60000 R14: ffff88802c54f000 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88802cd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055d696b46600 CR3: 00000000247b2000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1670
+ usb_hcd_giveback_urb+0x367/0x410 drivers/usb/core/hcd.c:1747
+ dummy_timer+0x11f9/0x32b0 drivers/usb/gadget/udc/dummy_hcd.c:1988
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+ expire_timers kernel/time/timer.c:1466 [inline]
+ __run_timers.part.0+0x679/0xa80 kernel/time/timer.c:1737
+ __run_timers kernel/time/timer.c:1715 [inline]
+ run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1750
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ run_ksoftirqd kernel/softirq.c:921 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:589 [inline]
+RIP: 0010:ath9k_hif_usb_rx_cb+0xcfd/0x10d0 drivers/net/wireless/ath/ath9k/hif_usb.c:687
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 cc 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 08 48 8d bb b4 0f 00 00 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 09 84 d2 74 05 e8
+RSP: 0018:ffffc900007cf808 EFLAGS: 00010007
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 00000000000001f6 RSI: ffffffff8526ff89 RDI: 0000000000000fb4
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff8526fcef R11: 0000000000004e00 R12: 0000000000000000
+R13: ffff88804dc60000 R14: ffff88802c54f000 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88802cd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055d696b46600 CR3: 00000000247b2000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	48 c1 ea 03          	shr    $0x3,%rdx
+   4:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
+   8:	0f 85 cc 03 00 00    	jne    0x3da
+   e:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  15:	fc ff df
+  18:	48 8b 5b 08          	mov    0x8(%rbx),%rbx
+  1c:	48 8d bb b4 0f 00 00 	lea    0xfb4(%rbx),%rdi
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx <-- trapping instruction
+  2e:	48 89 f8             	mov    %rdi,%rax
+  31:	83 e0 07             	and    $0x7,%eax
+  34:	83 c0 03             	add    $0x3,%eax
+  37:	38 d0                	cmp    %dl,%al
+  39:	7c 09                	jl     0x44
+  3b:	84 d2                	test   %dl,%dl
+  3d:	74 05                	je     0x44
+  3f:	e8                   	.byte 0xe8
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Syed Saba Kareem<ssbakar@amd.com>
----
- sound/soc/amd/acp/acp-pci.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/amd/acp/acp-pci.c b/sound/soc/amd/acp/acp-pci.c
-index 340e39d7f420..c893963ee2d0 100644
---- a/sound/soc/amd/acp/acp-pci.c
-+++ b/sound/soc/amd/acp/acp-pci.c
-@@ -16,6 +16,7 @@
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-+#include <linux/module.h>
- 
- #include "amd.h"
- #include "../mach-config.h"
--- 
-2.25.1
+Tested on:
+
+commit:         4b0986a3 Linux 5.18
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17a7f4e5f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=55eba09345624206
+dashboard link: https://syzkaller.appspot.com/bug?extid=c6dde1f690b60e0b9fbe
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=177a69c3f00000
 
