@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241438AbiEWRk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
+        id S241211AbiEWRkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242228AbiEWR1c (ORCPT
+        with ESMTP id S242407AbiEWR1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:32 -0400
+        Mon, 23 May 2022 13:27:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0AF7C15D;
-        Mon, 23 May 2022 10:22:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FE87CB5C;
+        Mon, 23 May 2022 10:23:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DAAE60916;
-        Mon, 23 May 2022 17:22:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87147C385A9;
-        Mon, 23 May 2022 17:22:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF4CF60919;
+        Mon, 23 May 2022 17:23:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10A7C385AA;
+        Mon, 23 May 2022 17:23:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326568;
-        bh=CjDagl7s1yUewHYXWMFrzcpaB6LIIM2ZSZMxbuBP6VU=;
+        s=korg; t=1653326587;
+        bh=bmNDXt0dhhCHvZC50SZNQe0bZ4XDsvewzFJ1e8Dm0K0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CXsvun6XPw6eSeF5Qx5Tx8Y78+eAqqIuftr5c5fCOR78OEKZQoMfU6ywWaueC+POy
-         ISLN79rQKhtXNAGZ0SuPhX83f4+US/F+CQN21/TLzQXOLh8HeHN7MQp1CpQwoNDl+l
-         6NiDaWlH89A26yC3LcS5pjO8ZwP3xVweaVYUiiJg=
+        b=RCpRHU0D2zoJKaB8Q4CY9MqZpiuB1/HSeqqAC9gxS0fnQiosYEdFzw6+ArFkAO7rT
+         5EIywzvamlL7OyNMV2B8LZGfhPc8Pl3bzhzPiCsGdhIdHHqDh9sGONJ7+uoeqPX4ZX
+         VNWoRVITQbkAvomWEQ7ecoFY/ZMTJbI8Czm8mNzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 122/132] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
-Date:   Mon, 23 May 2022 19:05:31 +0200
-Message-Id: <20220523165843.852129969@linuxfoundation.org>
+        stable@vger.kernel.org, Shreyas K K <quic_shrekk@quicinc.com>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 127/132] arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs
+Date:   Mon, 23 May 2022 19:05:36 +0200
+Message-Id: <20220523165844.724849103@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,43 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Shreyas K K <quic_shrekk@quicinc.com>
 
-[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
+[ Upstream commit 51f559d66527e238f9a5f82027bff499784d4eac ]
 
-Switch to using pcim_enable_device() to avoid missing pci_disable_device().
+Add KRYO4XX gold/big cores to the list of CPUs that need the
+repeat TLBI workaround. Apply this to the affected
+KRYO4XX cores (rcpe to rfpe).
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The variant and revision bits are implementation defined and are
+different from the their Cortex CPU counterparts on which they are
+based on, i.e., (r0p0 to r3p0) is equivalent to (rcpe to rfpe).
+
+Signed-off-by: Shreyas K K <quic_shrekk@quicinc.com>
+Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Link: https://lore.kernel.org/r/20220512110134.12179-1-quic_shrekk@quicinc.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ Documentation/arm64/silicon-errata.rst | 3 +++
+ arch/arm64/kernel/cpu_errata.c         | 2 ++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index fcf17d8a0494..644bb54f5f02 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -181,7 +181,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 		return -ENOMEM;
- 
- 	/* Enable pci device */
--	ret = pci_enable_device(pdev);
-+	ret = pcim_enable_device(pdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
- 			__func__);
-@@ -241,8 +241,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
- 		pcim_iounmap_regions(pdev, BIT(i));
- 		break;
- 	}
--
--	pci_disable_device(pdev);
- }
- 
- static int __maybe_unused stmmac_pci_suspend(struct device *dev)
+diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
+index d410a47ffa57..7c1750bcc5bd 100644
+--- a/Documentation/arm64/silicon-errata.rst
++++ b/Documentation/arm64/silicon-errata.rst
+@@ -163,6 +163,9 @@ stable kernels.
+ +----------------+-----------------+-----------------+-----------------------------+
+ | Qualcomm Tech. | Kryo4xx Silver  | N/A             | ARM64_ERRATUM_1024718       |
+ +----------------+-----------------+-----------------+-----------------------------+
++| Qualcomm Tech. | Kryo4xx Gold    | N/A             | ARM64_ERRATUM_1286807       |
+++----------------+-----------------+-----------------+-----------------------------+
++
+ +----------------+-----------------+-----------------+-----------------------------+
+ | Fujitsu        | A64FX           | E#010001        | FUJITSU_ERRATUM_010001      |
+ +----------------+-----------------+-----------------+-----------------------------+
+diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+index a33d7b8f3b93..c67c19d70159 100644
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -208,6 +208,8 @@ static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
+ #ifdef CONFIG_ARM64_ERRATUM_1286807
+ 	{
+ 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
++		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
++		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
+ 	},
+ #endif
+ 	{},
 -- 
 2.35.1
 
