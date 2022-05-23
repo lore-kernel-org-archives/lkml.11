@@ -2,127 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0140FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E80C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235721AbiEWMuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 08:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        id S235758AbiEWMvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 08:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235586AbiEWMuv (ORCPT
+        with ESMTP id S235725AbiEWMu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 08:50:51 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA50952B36;
-        Mon, 23 May 2022 05:50:48 -0700 (PDT)
-Received: from mail-yw1-f172.google.com ([209.85.128.172]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mati7-1nGlZ70whv-00cQzz; Mon, 23 May 2022 14:50:46 +0200
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2ff7b90e635so80780387b3.5;
-        Mon, 23 May 2022 05:50:45 -0700 (PDT)
-X-Gm-Message-State: AOAM530bAXl9t4Hzbe9v5JY5cO/6lvaaPeSjyuThuFEXDJeQit53Tyim
-        SgMl8fNwet3fHZWd3i1BLbLfT5w47sEUeTTuMTA=
-X-Google-Smtp-Source: ABdhPJyqjPsR93O8bEZfKn1LjeLHCihh45zQ1Mr1qQw14IvDN5ocnYJL5dcCtpO+Xne2awi9LLac8uF0fnyJWzxzk0g=
-X-Received: by 2002:a81:6283:0:b0:2ff:2443:6f3c with SMTP id
- w125-20020a816283000000b002ff24436f3cmr23147031ywb.135.1653310244891; Mon, 23
- May 2022 05:50:44 -0700 (PDT)
+        Mon, 23 May 2022 08:50:58 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F7D1AA
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:50:57 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id 31so13578598pgp.8
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:50:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=Ilj++Ggb7llLz57zgVX1b/Z8NvW2D80Wu/CN7999mMc=;
+        b=B/SsoT/+byAK0AaxCAVGEG6xRk+crrJBE0uiDdtI5grAW03H7hT9qJzmgI8VhBzp+Q
+         Va3elBHMweP63hMtDOR+m+DtbeuKRb5nGVeCeWOrTP8UPqwpcH1k2FDpepJ7P5sGvOhG
+         zFOU6f1Viw40N7nCcUWy9d07hq5uc/eXA3rXjiqvrP8G3moSMDgt15/MR9pNSJzuUQ8+
+         XlDaPIxkGwZAiZSUDcpLUwHDPq8tr09TqlXdfGr8A04VjLS9VFgqD7BQWl/iCJppElD8
+         OZ1jpoXPnWAruKbl73m2f6EYC6zz3aNX66d3R1aWeWdIywfZnKJiatMF6BIdJieo738z
+         092g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=Ilj++Ggb7llLz57zgVX1b/Z8NvW2D80Wu/CN7999mMc=;
+        b=DAevjIYGAESup/iptyI6/YZ0Baglz9quD7mjU/OkIAYWq4yXmiAYQUEcZPvwP/ZjPC
+         Uj+vGgFotmuv2zwmffH2+a3i61wK23j5OLafeFi5mryoPbz/hfjzZoGZfI77/oFKwcih
+         0Koci0fYTvITf6FxFqVEGEqal6BrHVr5o7LGSnA/iLUS2xtP7ftDfv281vHkNPUXhrlP
+         XoecPH39N6pJ1vKChBBny5z26Q5WgRvciSSEnrZvWUm6/+WQkPy+zZLHzdmeItJUxudk
+         NI8KuXGBbuFuua31Pe5/qYyBpfTZj62fOq0r5q8kjJW1xd3mWlSKVRnJVHJOg0QR0EPN
+         OWUw==
+X-Gm-Message-State: AOAM530RCQ7J/W5BFZfJt3nojBShVJtWkMas0tsxBZianSuWZJvyyvlX
+        8KEGqKP94LbcCFlp2Cy14CTW+o6U8hnZelrf6rAw/A==
+X-Google-Smtp-Source: ABdhPJyLSJ2440TIxfxfmgkgMC3GqHEF0cfFCLR88/BeyvY07y92xOk7gPrXsnjmllmXOES0I0RbHdLmMeWivM7EtDs=
+X-Received: by 2002:a63:d04a:0:b0:3c1:65f2:5d09 with SMTP id
+ s10-20020a63d04a000000b003c165f25d09mr20154616pgi.201.1653310257217; Mon, 23
+ May 2022 05:50:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <23e0ba7863d51ab629498762a97d477645aeafea.1653123744.git.christophe.jaillet@wanadoo.fr>
- <CAK7LNASHGyzKS-d+S1GYz_L0pBxxSwk05YfvV+LK4ghZ5xx=cA@mail.gmail.com> <20220523123436.b5gwj55xacc2hxcv@mail.google.com>
-In-Reply-To: <20220523123436.b5gwj55xacc2hxcv@mail.google.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 23 May 2022 14:50:28 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2N=azrGfJUShkBkkQerMZ1TZKKbdd_7ZArLrUXNsEPDQ@mail.gmail.com>
-Message-ID: <CAK8P3a2N=azrGfJUShkBkkQerMZ1TZKKbdd_7ZArLrUXNsEPDQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] kbuild: Add an option to enable -O1 and speed-up
- compilation time
-To:     Changbin Du <changbin.du@gmail.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
+References: <20220523084615.13510-1-robert.foss@linaro.org> <20220523084615.13510-2-robert.foss@linaro.org>
+In-Reply-To: <20220523084615.13510-2-robert.foss@linaro.org>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 23 May 2022 14:50:46 +0200
+Message-ID: <CAG3jFyt=wjbvgGOqgDZDk5ayChBaf6JcdVwv3L6wkGejbjrG4A@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] Revert "dt-bindings:drm/bridge:anx7625: add port@0 property"
+To:     andrzej.hajda@intel.com, narmstrong@baylibre.com,
+        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, xji@analogixsemi.com,
+        hsinyi@chromium.org, sam@ravnborg.org, tzimmermann@suse.de,
+        maxime@cerno.tech, jose.exposito89@gmail.com,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:MGFWA6flb0MLYld3aELzP48+i18MpuBPJmWkvuT764OGuIkb00Q
- jk1Wk658Gg6eH7+7+H8cZGHCkyE6iYiMQvDihmjrdFpTan+BahmCFvHnxsRkE3roQY1Pa59
- I3QXW5yQlsKtxMUddz3V+4NuGLc25lYZZ1LqywjQnRBx+434Ag7uoz9JARRde/b3/XZ+nak
- BjdlsRnnWmfPmWiZSQ7mQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3gsa5Q2sNtc=:1JBeKhJ1m1S59ZKFLFLip0
- whJ5Vkm47nA6hX2uKhEIUBoDSD/fHA/hG2CX21jODmAiVQNTbjndETBLw0YczMPTPAl8DweWk
- t7Bssknos/KeqeJv7IlPRzspD9CsebWs8ltCf3+FbTUgchS1wwB6pXxqs96TIWJUkjCvU8IW4
- zOoAq/48q8cT0a5gbUeUTr7LjYS12PAI6L+keyBoTpG8rNiiLHVp0LjsH7k/6bgHYLsuYISib
- 7KhMYWdBJtj1+IPLGRXSZY8XooYduVEnOuQbI+m1Jjbx5EUMvur1cs7lYVMVkvZISu/0/rK2M
- 1WjAxSsXupTSwTuBprn0fLLuaCpTyCcHH2WgqX5kuatwRUvDPDDHBjUGyiZxlE2a0YHLMqeb8
- hbA95FYRAzRPKYReLFzZ3NfGu9TKV6+IBrS0l7gv9UPqUWyHCfTC19dMIrO5gq4i3Shcl5UBc
- /Sob7WBlGxhPVGYgI540OTtUJq5NSHkP0qETbpEHkVnbBV1F8iCuMIr3TzgAjoMku2K52kNaV
- Tub0RXz8FSyCwSQgpcT5b/djCg+4a2lq+sjFoL2WS5Gs+MCGYOU6rckFat0SO7X0NbpWlB/Ql
- no3E7xPAQqfnDWTr5pkQFpPWdJY/cyuwqXwY+6brnQwB+swWsRoBJsHMafWIdC15T7UgY9MRa
- n7ENsbsaZCyjaeSRvecuJgIuI7O5Qyc5qxOYU5Qrej4T/suzateio45vUVWC77fVJWX83UQyv
- pKGQju8uW362+oR6uZxkS/ufuw2ch0tYE636Jw1EqI8OPz+YTkyrJin6x1wdkJ+Odv0NzY9dy
- lupXXnJjmIZzww7OdtTiaG+frMli0wNlJBanOj2eJFAMJIpsygHpKhnJtJAPpzVUZo6x3sLaD
- QFRXZuh/ADB8z7np5mU1pts6bgNuasckm7hgm+raI=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 2:34 PM Changbin Du <changbin.du@gmail.com> wrote:
-> On Sun, May 22, 2022 at 12:38:17AM +0900, Masahiro Yamada wrote:
-> > (+CC: Arnd, Changbin Du)
-> >
-> >
-> > If -O1 support does not require additional effort,
-> > I have no objection to this patch.
-> >
-> > (but I do not have enough insight about
-> > the compiler's inlining heuristic)
-> >
-> >
-> >
-> > BTW, when we attempted to add the -Og support,
-> > we fixed various parts, and Linus rejected it.
-> >
-> > https://lore.kernel.org/linux-kbuild/CAK7LNARQggM3aKEPRKJqa4tunFAfmfErMZuS-rrnRv6UB1VpPQ@mail.gmail.com/
-> >
-> >
-> >
-> >
-> >
-> >
-> >
-> I am afraid that '-O1' has the same situation with '-Og'. As described in GCC
-> mannual:
+On Mon, 23 May 2022 at 10:46, Robert Foss <robert.foss@linaro.org> wrote:
 >
-> Like -O0, -Og completely disables a number of optimization passes so that
-> individual options controlling them have no effect. Otherwise -Og enables all
-> -O1 optimization flags except for those that may interfere with debugging:
->  -fbranch-count-reg  -fdelayed-branch
->  -fdse  -fif-conversion  -fif-conversion2
->  -finline-functions-called-once
->  -fmove-loop-invariants  -fmove-loop-stores  -fssa-phiopt
->  -ftree-bit-ccp  -ftree-dse  -ftree-pta  -ftree-sra
+> This reverts commit 7328736d270aa4fa6fcd033ade02acc2874a2db5.
+> ---
+>  .../display/bridge/analogix,anx7625.yaml      | 19 +------------------
+>  1 file changed, 1 insertion(+), 18 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> index 4590186c4a0b..35a48515836e 100644
+> --- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> +++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> @@ -94,22 +94,7 @@ properties:
+>          $ref: /schemas/graph.yaml#/$defs/port-base
+>          unevaluatedProperties: false
+>          description:
+> -          MIPI DSI/DPI input.
+> -
+> -        properties:
+> -          endpoint:
+> -            $ref: /schemas/media/video-interfaces.yaml#
+> -            type: object
+> -            additionalProperties: false
+> -
+> -            properties:
+> -              remote-endpoint: true
+> -
+> -              bus-type:
+> -                enum: [7]
+> -                default: 1
+> -
+> -              data-lanes: true
+> +          Video port for MIPI DSI input.
+>
+>        port@1:
+>          $ref: /schemas/graph.yaml#/properties/port
+> @@ -158,8 +143,6 @@ examples:
+>                      reg = <0>;
+>                      anx7625_in: endpoint {
+>                          remote-endpoint = <&mipi_dsi>;
+> -                        bus-type = <7>;
+> -                        data-lanes = <0 1 2 3>;
+>                      };
+>                  };
+>
+> --
+> 2.34.1
+>
 
-Correct, I'm fairly sure this never worked. It may be possible to narrow down
-the individual optimization flags to have something that works inbetween
--O1 and -O2, but that requires a lot of testing work, and it is questionable
-whether there are any practical upsides.
-
-Note that we already disable some optimizations for certain configurations,
-e.g. CONFIG_READABLE_ASM, CONFIG_FRAME_POINTER or
-CONFIG_DEBUG_SECTION_MISMATCH. The gcc manual suggests
-listing all optimization flags with
-
-$ gcc -c -Q -O1 --help=optimizers > O1-opts
-$ gcc -c -Q -O2 --help=optimizers > O2-opts
-$ diff -u O1-opts O2-opts
-
-If the goal is to speed up compilation, there may be value in trying
-which of the various options make the most difference here and
-still produce a working kernel when disabled. I know we need the
-inlining to happen or things go badly wrong, but I don't know if e.g.
--fno-expensive-optimizations would work.
-
-       Arnd
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
