@@ -2,180 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2CCAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F666C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbiEWIBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
+        id S231513AbiEWICN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231452AbiEWIBm (ORCPT
+        with ESMTP id S231494AbiEWICL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:01:42 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D91E09A
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:01:39 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id p22so24121083lfo.10
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:01:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=543COb3o10G2My0ILa7Mc1EXCIR7+2EdAMRpl+m6Qc4=;
-        b=M3CdKej+MktkXxivYsN8g3EgibTEUvvBGZhUzFY4w3N4jlqXyLoNwuLPkLLPvsbVre
-         02b8zWugPSC3SY7m5bGzwtdpwgWbHfUad0hV+/sAegsA0QTLeyfmzIrQSveuYsk2C94B
-         xLQo5QMY+vuzXxNCLE666vUovTYlHom9lh+TSsp8sItbzDA3nxz/E92zqTZh8hZC5aux
-         LW8dnY8ArT1mPYGlDLcSY1vSoZfWvq67C4qpi7zdpvIIt4nZ+kq0wQix3YKCuJucPdaq
-         /LJC99LAB45Ki8AWD/gfORh5cpHn6sr4QH2EKUWbdNJkn8UUgCKL/UsGsJc58mWF3dSc
-         TGtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=543COb3o10G2My0ILa7Mc1EXCIR7+2EdAMRpl+m6Qc4=;
-        b=TNDPZIIJyB1Y6aM56DQTOMOPpih1y+eMDehIifqlPfceKSO04XGiW2V1jpllLX5Iu8
-         pY5nVuSIyKnwr3AxZxu4YeERHHVbF0e0CfXegF/UeEhygF3oNqpnz1uEm4hxdPiyexLZ
-         dsqodof1KY5nl7oNjoCtxTDPUKkjO/YBfLqJPRyY8pz5g8wAOC6xdxTu4iv1Mc0mpyed
-         sZHeog8GTh2JedshHTPn9mu+qGFCi3DENC1+GWtM/+9Tk6ssYkWh7ipeaxO5sxsPKCpB
-         XtRzkxWSnymFwcif7Mon84TWtlWqxn/VCi0tfEeZvtNq4s0MGgzEktP2JbUlWZ0VZeP3
-         YWyA==
-X-Gm-Message-State: AOAM5308JyM2hwQxUIHcey7KHMSrUN3En0f/nlcqjn2SE6Ud220UyAiy
-        MQEsR3vF1hSS06cGcOTK8eY=
-X-Google-Smtp-Source: ABdhPJy+plyamPb+mRkp5yqHA+/150ABo1h6lqMIHD+1xmIDn67Td1m5dQjX9LYEPle5LLVd5br8Cw==
-X-Received: by 2002:ac2:46e8:0:b0:477:ba2c:a68b with SMTP id q8-20020ac246e8000000b00477ba2ca68bmr15390881lfo.55.1653292897804;
-        Mon, 23 May 2022 01:01:37 -0700 (PDT)
-Received: from octofox.metropolis ([212.58.114.186])
-        by smtp.gmail.com with ESMTPSA id k1-20020ac24561000000b0047255d21143sm1772209lfm.114.2022.05.23.01.01.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 01:01:37 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
+        Mon, 23 May 2022 04:02:11 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1194C17043
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:02:10 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1653292928;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=De6fE+5zaqZacnGfO6NGKcPy43hfV1easliwHk0nhyk=;
+        b=RADbQepIzoPuHRSgonToprkI3RSDhVNsRksC/NOrmf2vCuSEWwJh/+BsNktMfIMMjlLJ5U
+        sw9paHGDqULqAqq1Fr+rZYHoQhpZBgDfn3eDUbEicsmYcGtkKRafIWc5kZk8UXPCr8epf7
+        BmfPHVGC60Lzzmc5kE8f3p6xFUFNzgrgEKIZKJ4bkzwotdRzQQ/iKNEPoshSDfMwH/FZSU
+        SYNhCxCs8HhsCe9WZnrnomWqfSv0ClRRvnC/aY5Hqd2mqmV9v7otXTMorrTr6/jy5Jcq0F
+        HbtiWLUAZwpn8lOPP5LJ4TFdmYeRHcQLbDvPe386K6WN+ON+ai9ZIX+yUGJmVw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1653292928;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=De6fE+5zaqZacnGfO6NGKcPy43hfV1easliwHk0nhyk=;
+        b=3o8Uc5rAKy7WhtrxrepER9U+ZrDpQ0Pe2ranjzG2GoQ7ZafH/eAxfe7vfrUHKEnp5aW53w
+        fb6UMsdtSpcGtUBw==
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PULL 00/36] xtensa updates for v5.19
-Date:   Mon, 23 May 2022 01:01:07 -0700
-Message-Id: <20220523080107.720784-1-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org
+Subject: [GIT pull] smp/core for 5.19-rc1
+References: <165329267741.3801280.534077656528571075.tglx@xen13>
+Message-ID: <165329268192.3801280.7168389137324540940.tglx@xen13>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date:   Mon, 23 May 2022 10:02:08 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Linus,
 
-please pull the following updates for the xtensa architecture.
+please pull the latest smp/core branch from:
 
-The following changes since commit 672c0c5173427e6b3e2a9bbb7be51ceeec78093a:
+   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git smp-core-2022-05=
+-23
 
-  Linux 5.18-rc5 (2022-05-01 13:57:58 -0700)
+up to:  d308077e5e4d: cpu/hotplug: Initialise all cpuhp_cpu_state structs ear=
+lier
 
-are available in the Git repository at:
 
-  https://github.com/jcmvbkbc/linux-xtensa.git tags/xtensa-20220523
+Updates for CPU hotplug:
 
-for you to fetch changes up to dc60001e1a305ad8bba1ddaf09484e0e150aba60:
+  - Initialize the per CPU structures during early boot so that the state
+    is consistent from the very beginning.
 
-  xtensa: Return true/false (not 1/0) from bool function (2022-05-23 00:33:05 -0700)
+  - Make the virtualization hotplug state handling more robust and let the
+    core bringup CPUs which timed out in an earlier attempt again.
 
-----------------------------------------------------------------
-Xtensa updates for v5.19
+  - Make the x86/XEN CPU state tracking consistent on a failed online
+    attempt, so a consecutive bringup does not fall over the inconsistent
+    state.
 
-- support coprocessors on SMP
-- support KCSAN
-- support handling protection faults in noMMU configurations
-- support using coprocessors in the kernel mode
-- support hibernation
-- enable context tracking
-- enable HAVE_VIRT_CPU_ACCOUNTING_GEN
-- support division by 0 exception on cores without HW division option
-- clean up locking in the ISS network driver
-- clean up kernel entry assemly code
-- various minor fixes
 
-----------------------------------------------------------------
-Jason Wang (1):
-      xtensa: no need to initialise statics to 0
+Thanks,
 
-Max Filippov (33):
-      xtensa: localize labels used in memmove
-      xtensa: iss: drop opened_list logic from the network driver
-      xtensa: iss: replace iss_net_set_mac with eth_mac_addr
-      xtensa: iss: clean up per-device locking in network driver
-      xtensa: iss: extract and constify network callbacks
-      xtensa: move asid_cache from fault.c to mmu.c
-      xtensa: extract vmalloc_fault code into a function
-      xtensa: noMMU: allow handling protection faults
-      xtensa: drop dead code from entry.S
-      xtensa: move trace_hardirqs_off call back to entry.S
-      xtensa: use abi_* register names in the kernel exit code
-      xtensa: enable context tracking
-      xtensa: enable HAVE_VIRT_CPU_ACCOUNTING_GEN
-      xtensa: enable KCSAN
-      xtensa: clean up function declarations in traps.c
-      xtensa: clean up exception handler prototypes
-      xtensa: clean up declarations in coprocessor.h
-      xtensa: clean up excsave1 initialization
-      xtensa: use callx0 opcode in fast_coprocessor
-      xtensa: handle coprocessor exceptions in kernel mode
-      xtensa: add xtensa_xsr macro
-      xtensa: merge SAVE_CP_REGS_TAB and LOAD_CP_REGS_TAB
-      xtensa: get rid of stack frame in coprocessor_flush
-      xtensa: support coprocessors on SMP
-      xtensa: add hibernation support
-      xtensa: enable ARCH_HAS_DEBUG_VM_PGTABLE
-      irqchip: irq-xtensa-mx: fix initial IRQ affinity
-      xtensa: fix declaration of _SecondaryResetVector_text_*
-      xtensa: don't leave invalid TLB entry in fast_store_prohibited
-      xtensa: clean up labels in the kernel entry assembly
-      xtensa: add trap handler for division by zero
-      xtensa: support artificial division by 0 exception
-      xtensa: improve call0 ABI probing
+	tglx
 
-Yang Li (1):
-      xtensa: Return true/false (not 1/0) from bool function
+------------------>
+Boris Ostrovsky (1):
+      x86/xen: Allow to retry if cpu_initialize_context() failed.
 
-Yi Yang (1):
-      xtensa/simdisk: fix proc_read_simdisk()
+Longpeng(Mike) (1):
+      cpu/hotplug: Allow the CPU in CPU_UP_PREPARE state to be brought up aga=
+in.
 
- .../debug/debug-vm-pgtable/arch-support.txt        |   2 +-
- .../time/context-tracking/arch-support.txt         |   2 +-
- .../features/time/virt-cpuacct/arch-support.txt    |   2 +-
- arch/xtensa/Kconfig                                |  18 ++
- arch/xtensa/boot/lib/Makefile                      |   1 +
- arch/xtensa/include/asm/barrier.h                  |  12 +-
- arch/xtensa/include/asm/bitops.h                   |  10 +-
- arch/xtensa/include/asm/coprocessor.h              |  11 +-
- arch/xtensa/include/asm/processor.h                |   7 +
- arch/xtensa/include/asm/sections.h                 |   2 +-
- arch/xtensa/include/asm/thread_info.h              |  11 +-
- arch/xtensa/include/asm/traps.h                    |  40 ++-
- arch/xtensa/kernel/Makefile                        |   1 +
- arch/xtensa/kernel/asm-offsets.c                   |  19 +-
- arch/xtensa/kernel/coprocessor.S                   | 230 ++++++++------
- arch/xtensa/kernel/entry.S                         | 335 ++++++++++++++-------
- arch/xtensa/kernel/hibernate.c                     |  25 ++
- arch/xtensa/kernel/process.c                       | 112 +++++--
- arch/xtensa/kernel/ptrace.c                        |   3 +-
- arch/xtensa/kernel/s32c1i_selftest.c               |   7 +-
- arch/xtensa/kernel/signal.c                        |   3 +-
- arch/xtensa/kernel/smp.c                           |   7 +
- arch/xtensa/kernel/traps.c                         | 143 +++++----
- arch/xtensa/lib/Makefile                           |   2 +
- arch/xtensa/lib/kcsan-stubs.c                      |  54 ++++
- arch/xtensa/lib/memcopy.S                          |  20 +-
- arch/xtensa/mm/Makefile                            |   3 +-
- arch/xtensa/mm/fault.c                             | 112 +++----
- arch/xtensa/mm/mmu.c                               |   2 +
- arch/xtensa/platforms/iss/network.c                | 150 ++++-----
- arch/xtensa/platforms/iss/simdisk.c                |  18 +-
- arch/xtensa/platforms/xt2000/setup.c               |   2 +-
- drivers/irqchip/irq-xtensa-mx.c                    |  18 +-
- 33 files changed, 896 insertions(+), 488 deletions(-)
- create mode 100644 arch/xtensa/kernel/hibernate.c
- create mode 100644 arch/xtensa/lib/kcsan-stubs.c
+Steven Price (1):
+      cpu/hotplug: Initialise all cpuhp_cpu_state structs earlier
 
--- 
-Thanks.
--- Max
+
+ arch/x86/xen/smp_pv.c |  5 ++++-
+ kernel/cpu.c          | 22 +++++++++++++---------
+ kernel/smpboot.c      |  7 +++++++
+ 3 files changed, 24 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
+index 688aa8b6ae29..ba7af2eca755 100644
+--- a/arch/x86/xen/smp_pv.c
++++ b/arch/x86/xen/smp_pv.c
+@@ -260,8 +260,11 @@ cpu_initialize_context(unsigned int cpu, struct task_str=
+uct *idle)
+ 		return 0;
+=20
+ 	ctxt =3D kzalloc(sizeof(*ctxt), GFP_KERNEL);
+-	if (ctxt =3D=3D NULL)
++	if (ctxt =3D=3D NULL) {
++		cpumask_clear_cpu(cpu, xen_cpu_initialized_map);
++		cpumask_clear_cpu(cpu, cpu_callout_mask);
+ 		return -ENOMEM;
++	}
+=20
+ 	gdt =3D get_cpu_gdt_rw(cpu);
+=20
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index d0a9aa0b42e8..02a77ac08399 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -716,14 +716,6 @@ static int cpuhp_up_callbacks(unsigned int cpu, struct c=
+puhp_cpu_state *st,
+ /*
+  * The cpu hotplug threads manage the bringup and teardown of the cpus
+  */
+-static void cpuhp_create(unsigned int cpu)
+-{
+-	struct cpuhp_cpu_state *st =3D per_cpu_ptr(&cpuhp_state, cpu);
+-
+-	init_completion(&st->done_up);
+-	init_completion(&st->done_down);
+-}
+-
+ static int cpuhp_should_run(unsigned int cpu)
+ {
+ 	struct cpuhp_cpu_state *st =3D this_cpu_ptr(&cpuhp_state);
+@@ -883,15 +875,27 @@ static int cpuhp_kick_ap_work(unsigned int cpu)
+=20
+ static struct smp_hotplug_thread cpuhp_threads =3D {
+ 	.store			=3D &cpuhp_state.thread,
+-	.create			=3D &cpuhp_create,
+ 	.thread_should_run	=3D cpuhp_should_run,
+ 	.thread_fn		=3D cpuhp_thread_fun,
+ 	.thread_comm		=3D "cpuhp/%u",
+ 	.selfparking		=3D true,
+ };
+=20
++static __init void cpuhp_init_state(void)
++{
++	struct cpuhp_cpu_state *st;
++	int cpu;
++
++	for_each_possible_cpu(cpu) {
++		st =3D per_cpu_ptr(&cpuhp_state, cpu);
++		init_completion(&st->done_up);
++		init_completion(&st->done_down);
++	}
++}
++
+ void __init cpuhp_threads_init(void)
+ {
++	cpuhp_init_state();
+ 	BUG_ON(smpboot_register_percpu_thread(&cpuhp_threads));
+ 	kthread_unpark(this_cpu_read(cpuhp_state.thread));
+ }
+diff --git a/kernel/smpboot.c b/kernel/smpboot.c
+index f6bc0bc8a2aa..b9f54544e749 100644
+--- a/kernel/smpboot.c
++++ b/kernel/smpboot.c
+@@ -392,6 +392,13 @@ int cpu_check_up_prepare(int cpu)
+ 		 */
+ 		return -EAGAIN;
+=20
++	case CPU_UP_PREPARE:
++		/*
++		 * Timeout while waiting for the CPU to show up. Allow to try
++		 * again later.
++		 */
++		return 0;
++
+ 	default:
+=20
+ 		/* Should not happen.  Famous last words. */
+
