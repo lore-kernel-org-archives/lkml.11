@@ -2,161 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A067FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232747AbiEWJN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57706 "EHLO
+        id S232774AbiEWJOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbiEWJNZ (ORCPT
+        with ESMTP id S232732AbiEWJOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:13:25 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457A646B22;
-        Mon, 23 May 2022 02:13:24 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Mon, 23 May 2022 05:14:05 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E467446B3B;
+        Mon, 23 May 2022 02:14:03 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id F3E9C1F383;
-        Mon, 23 May 2022 09:13:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1653297203; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0Y2Ex2p3xYeIQtWgsuVl2u04XTMMjyKG5O//mXwBVns=;
-        b=YWPX8eetsAikeLM0ncOHJ0+FdZSZUZf2v9Sv7nfATaoGWRjt2VjvcGGBlp9BGZsynta90g
-        CCQiWSHnZBtMj0zvcy0JPcclzgSscJxRYIo4wQgEwY7HcNqNEREmEOu4lerZ7hXqhFkI4+
-        F/RX5zPpyQHQzoyxAz3J53DMX3vk6Gc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1653297203;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0Y2Ex2p3xYeIQtWgsuVl2u04XTMMjyKG5O//mXwBVns=;
-        b=9NoetH1vlQTaU/vRR5XqAWK/tcHPrYXhPRcY12zzJNy51B7vFaJTisS3dFRHGmR6vxMdDX
-        ap5InnH7DH+1XhCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E6FB1139F5;
-        Mon, 23 May 2022 09:13:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id vtlQODJQi2IlWwAAMHmgww
-        (envelope-from <bp@suse.de>); Mon, 23 May 2022 09:13:22 +0000
-Date:   Mon, 23 May 2022 11:13:18 +0200
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-edac <linux-edac@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] EDAC updates for 5.19
-Message-ID: <YotQLlwVatMzp6Ow@zn.tnic>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6BTk2zSqz4xXg;
+        Mon, 23 May 2022 19:14:02 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1653297242;
+        bh=bAqoIMEuQquPVKkfMuxks/eKt3v5juteOw3qBcvys58=;
+        h=Date:From:To:Cc:Subject:From;
+        b=M4DRqq3qZTNlqaGQoFdIShgUnBPZxKxEgWUf1nYChNxef9tF0SEpH4Fwmvmb5EZ6s
+         RW9zy0seuf7HoYimzNCAgb/2KaF8mka2LoI/VaVvXWBI/b88bXJHnXNjvoutm1TvpY
+         Aw0aCBinpqsdgOa/Ygv2WdVmamN5Ocph9+gJEqhL6tiO69uH03l/WZPtSOzU1pYCGt
+         uZVWLeplsry+V2S8uzyc1AZfY0LUpC6YCP2l6GA0mDxwhfesCDWBemOK2thqoaiSrG
+         6OLuIcB5gcwK9cSvYHE2g83BILDfXy/edwVjgcbdf1sgO+lCmjo5BCxqW6QfsfhQ+c
+         Lx+d29ZCx/t7w==
+Date:   Mon, 23 May 2022 19:14:01 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: linux-next: manual merge of the bitmap tree with Linus' tree
+Message-ID: <20220523191401.2fccbdd6@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/8vnJZJq2krq+Nj4hTh=PJWZ";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+--Sig_/8vnJZJq2krq+Nj4hTh=PJWZ
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-please pull a bunch of EDAC updates for 5.19.
+Hi all,
 
-Thx.
+Today's linux-next merge of the bitmap tree got a conflict in:
 
----
+  arch/x86/kvm/hyperv.c
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+between commit:
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+  ea8c66fe8d8f ("KVM: x86: hyper-v: fix type of valid_bank_mask")
 
-are available in the Git repository at:
+from Linus' tree and commit:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/ras/ras.git tags/edac_updates_for_v5.19_rc1
+  017a983d0ecf ("KVM: x86: hyper-v: replace bitmap_weight() with hweight64(=
+)")
 
-for you to fetch changes up to be80a1ca5119c5d31b6019d5e6dc6d9123bda959:
+from the bitmap tree.
 
-  Merge branches 'edac-misc' and 'edac-alloc-cleanup' into edac-updates-for-v5.19 (2022-05-23 10:19:30 +0200)
+I fixed it up (I just used the latter) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
 
-----------------------------------------------------------------
-- Switch ghes_edac to use the CPER error reporting routines and simplify
-the code considerably this way
+--=20
+Cheers,
+Stephen Rothwell
 
-- Rip out the silly edac_align_ptr() contraption which was computing the
-size of the private structures of each driver and thus allowing for a
-one-shot memory allocation. This was clearly unnecessary and confusing
-so switch to simple and boring kmalloc* calls.
+--Sig_/8vnJZJq2krq+Nj4hTh=PJWZ
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-- Last but not least, the usual garden variety of fixes, cleanups and
-improvements all over EDAC land
+-----BEGIN PGP SIGNATURE-----
 
-----------------------------------------------------------------
-Borislav Petkov (7):
-      EDAC/mc: Get rid of silly one-shot struct allocation in edac_mc_alloc()
-      EDAC/pci: Get rid of the silly one-shot memory allocation in edac_pci_alloc_ctl_info()
-      EDAC/device: Get rid of the silly one-shot memory allocation in edac_device_alloc_ctl_info()
-      EDAC/device: Sanitize edac_device_alloc_ctl_info() definition
-      EDAC/mc: Get rid of edac_align_ptr()
-      EDAC: Use kcalloc()
-      Merge branches 'edac-misc' and 'edac-alloc-cleanup' into edac-updates-for-v5.19
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKLUFkACgkQAVBC80lX
+0GxdMAf+KQJMtqsd9fpEWss5ITLmbWRZ+ui4Z3Z/jibPYF63fHneeX1hM54ZOI+b
+UCYPbfOUwJbn+vCUI/mibD6xfudTW42fd+1bSJssuZLthUl0I5Lgc9bYZnJb0Oq3
+KsCUH8VQD/ZaXyWmTnhOb+CMI2ed0vS+IIc6JfHfV0NN+nyqq7rLnhH5b4I8v8nD
+8ku5s+Hk3oMGXxTgSPiPcNVM2JwYmnJFxEScFGCxz0Cn86TGOst0sgOnZAS4QrBJ
+gB6+eQ/UCI6zOxSHCoTNlboIN2NtY4Zr82rRE/pGD03mY0OFZpgRPpfBav9nYlm0
+S3NeFMH68fcUshx9wooUzpRVnshXpw==
+=3Jks
+-----END PGP SIGNATURE-----
 
-Christophe Leroy (1):
-      powerpc/85xx: Remove fsl,85... bindings
-
-Julia Lawall (1):
-      EDAC/xgene: Fix typo processsors -> processors
-
-Lv Ruyi (1):
-      EDAC/armada_xp: Use devm_platform_ioremap_resource()
-
-Sherry Sun (1):
-      EDAC/synopsys: Add driver support for i.MX platforms
-
-Shuai Xue (3):
-      efi/cper: Add a cper_mem_err_status_str() to decode error description
-      EDAC/ghes: Unify CPER memory error location reporting
-      efi/cper: Reformat CPER memory error location to more readable
-
-Shubhrajyoti Datta (1):
-      EDAC/synopsys: Add a SPDX identifier
-
-Tom Rix (1):
-      EDAC/ghes: Change ghes_hw from global to static
-
-Tyler Hicks (1):
-      EDAC/dmc520: Don't print an error for each unconfigured interrupt line
-
-YueHaibing (1):
-      EDAC/i5100: Remove unused inline function i5100_nrecmema_dm_buf_id()
-
- .../bindings/memory-controllers/fsl/fsl,ddr.yaml   |   6 -
- .../devicetree/bindings/powerpc/fsl/l2cache.txt    |   6 -
- drivers/edac/Kconfig                               |   3 +-
- drivers/edac/armada_xp_edac.c                      |  18 +-
- drivers/edac/dmc520_edac.c                         |   2 +-
- drivers/edac/edac_device.c                         | 130 +++++--------
- drivers/edac/edac_device.h                         |  14 ++
- drivers/edac/edac_device_sysfs.c                   |   5 +-
- drivers/edac/edac_mc.c                             |  96 ++--------
- drivers/edac/edac_module.h                         |   2 -
- drivers/edac/edac_pci.c                            |  25 ++-
- drivers/edac/ghes_edac.c                           | 202 ++++-----------------
- drivers/edac/i5100_edac.c                          |   5 -
- drivers/edac/mpc85xx_edac.c                        |  14 --
- drivers/edac/synopsys_edac.c                       |  15 +-
- drivers/edac/xgene_edac.c                          |   2 +-
- drivers/firmware/efi/cper.c                        |  64 +++++--
- include/linux/cper.h                               |   3 +
- 18 files changed, 184 insertions(+), 428 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
-(HRB 36809, AG Nürnberg)
+--Sig_/8vnJZJq2krq+Nj4hTh=PJWZ--
