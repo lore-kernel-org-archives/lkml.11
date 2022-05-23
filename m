@@ -2,108 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04605C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C155C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbiEWGMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
+        id S230407AbiEWGMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236374AbiEWGMF (ORCPT
+        with ESMTP id S236841AbiEWGML (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:12:05 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7518AE3D;
-        Sun, 22 May 2022 23:12:04 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 968A71F383;
-        Mon, 23 May 2022 06:05:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1653285913; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Mon, 23 May 2022 02:12:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB4051E3D2
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 23:12:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653286326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=A48QX/vupAuDBBHOJLZZB2SN4uoXt1Za4zzMoiIYE6M=;
-        b=NUPGG7/Cyb8PISM5MQxuSK/EtfR77Nk33xy/KVu+F1Y55Kruti902KJPmGMnxMWEzCwe3Z
-        OojVdGzwPekil0h+LKdnJ2ZLrDrZ8bBpm4rbDCUvVCPQIWwlBM3MS4KkS6CA7NRd/Yse0I
-        ENeLjrrNb+U5ef1j9y7FD0KvuSX5tNo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1653285913;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=A48QX/vupAuDBBHOJLZZB2SN4uoXt1Za4zzMoiIYE6M=;
-        b=AZLHrLi9ozj4GGOxPypKkh9E2+zcGbXAWjfJzhE2IDXmfNR4y7bw0+qvaL5pEATHPz2oHS
-        QXXScIvxSgAQyFCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        bh=zdXvbxe9TBvQlL5k5IXJSGdtX0v6lNlLaY17sAtSeoo=;
+        b=FVPod1deVecH71AtwoZUY8pstKjlm3edVysChbJtpdktFCMq7fYIvQk1rKvDVsipsIVnkG
+        D29e+68uwgl2wKbXDFQ9RAUMszZ8lbR2YVNq3ZX9I2qnYZ4pQAxW41CghcFsEk5t+pGCRj
+        eIY/rmiH3/K2/fXAHlbD8BKlq16dFJQ=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-520--Ln86PXDPeW6kkOhtvqsjg-1; Mon, 23 May 2022 02:08:52 -0400
+X-MC-Unique: -Ln86PXDPeW6kkOhtvqsjg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5C93D13AA5;
-        Mon, 23 May 2022 06:05:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 9YIHCBgki2IHdwAAMHmgww
-        (envelope-from <colyli@suse.de>); Mon, 23 May 2022 06:05:12 +0000
-Message-ID: <f1a9c46e-59a6-7b68-fd17-6f2563e24e98@suse.de>
-Date:   Mon, 23 May 2022 14:05:08 +0800
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9F6C7384F801;
+        Mon, 23 May 2022 06:08:51 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C42B2C27E97;
+        Mon, 23 May 2022 06:08:49 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <e5f6fee5518ce8e1b4fc5aa7038de1617a341c2f.camel@kernel.org>
+References: <e5f6fee5518ce8e1b4fc5aa7038de1617a341c2f.camel@kernel.org> <165296980082.3595490.3561111064004493810.stgit@warthog.procyon.org.uk>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>
+Cc:     dhowells@redhat.com, Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        David Wysochanski <dwysocha@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        v9fs-developer@lists.sourceforge.net, ceph-devel@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] netfs: ->cleanup() op is always given a rreq pointer now
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: linux-next: build failure after merge of the block tree
-Content-Language: en-US
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <20220523124921.7d6bbf34@canb.auug.org.au>
- <df3ffbac-2f4e-df03-8b29-8e2e4bb69fac@kernel.dk>
-From:   Coly Li <colyli@suse.de>
-In-Reply-To: <df3ffbac-2f4e-df03-8b29-8e2e4bb69fac@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <460692.1653286129.1@warthog.procyon.org.uk>
+Date:   Mon, 23 May 2022 07:08:49 +0100
+Message-ID: <460693.1653286129@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 10:52 AM, Jens Axboe wrote:
-> On 5/22/22 8:49 PM, Stephen Rothwell wrote:
->> Hi all,
->>
->> After merging the block tree, today's linux-next build (x86_64
->> allmodconfig) failed like this:
->>
->> drivers/md/bcache/btree.c: In function 'bch_btree_check':
->> drivers/md/bcache/btree.c:2073:1: error: the frame size of 2184 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
->>   2073 | }
->>        | ^
->>
->> Caused by commit
->>
->>    c766acd3d78e ("bcache: improve multithreaded bch_btree_check()")
->>
->> struct btree_check_state is very large to put on the stack :-(
->>
->> I have reverted that commit for today.
+Jeff Layton <jlayton@kernel.org> wrote:
 
-Hi Jens,
+> Do we need free_subrequest? It looks like nothing defines it in this
+> series.
 
-> Thanks, I'll drop it. It's not part of the initial request sent to
-> Linus, exactly because it arrived late.
->
-> Coly, I'm dropping this series.
+These two patches add stuff that's used by stuff on my netfs-lib branch, but
+that's not going to be pushed this window, so I won't push these two patches
+for now.
 
-Yes please. Should I re-submit the fixed series to you in later -RC 
-round, or wait for 5.20 merge window?
-
-
-Thanks.
-
-Coly Li
-
-
+David
 
