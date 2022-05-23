@@ -2,195 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DA92C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238206AbiEWPwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54586 "EHLO
+        id S238185AbiEWPxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238285AbiEWPwg (ORCPT
+        with ESMTP id S238286AbiEWPwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:52:36 -0400
-Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5943C26119
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:52:33 -0700 (PDT)
-Received: by mail-wr1-x449.google.com with SMTP id r25-20020adfb1d9000000b0020fc56e3f67so1299685wra.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:52:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=R7iSMDrHCjZU8l/ZZxQ47txPpE97XpwHqtaDcuYbgX0=;
-        b=pXInn71KUKTiBBzGtLWoB//IMJMIJDpyymaOEBOLrB/SaivRePszcY5ccm190kE8YH
-         NQH4V+QG0I5QpPutuvKdOjG3kQaCwOTXlViNKG6eClQo86g5ef0Y6UqLxmXEDlfSun31
-         OUkQzFdgFeoNPOS4Z9BLYpi/9thQji05JEkYHr3zoG5IlzkaQT0nK3SBE6yHu3MWLu6v
-         pOuzi0jnQZNCK2UBaTWCNRAr17uCfEboBneCXJa0DFXddnb0a5ruZcYnXWD3psdQdFlZ
-         h9mRu+CT+fqYGdwgVjuVT4sD4YDLWYVBRBpCouDiF4tCs9XNXT3Y/psgRYiPCJZ6AhKm
-         bY6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=R7iSMDrHCjZU8l/ZZxQ47txPpE97XpwHqtaDcuYbgX0=;
-        b=0THbajBimeuXcRw/IkFZF2PF3OObC+XF95OKHK82vFnPsyJJLllR6y8w0QbDe9FpEz
-         /hV2qVe0d3LWETzpmAEPCc24GhPMpEn6XTBlSbAt0/U+cqGVhLBUG7QHI964SM5d3N69
-         MwR+TAdu9fnCIsf/9fU5cRHC/Q3oKRzXlbGv++fQac6fvQaZfs1t5EYzNP1Hdmv8gzQ/
-         kLX7K7aLa3dNcmbKVC+Cq6WiBuxn5BUUhRrYT+j8YYFxdCCGKkRcIsM3qbDmr5ZisP/c
-         EEZ+7veUE8qAPlkdH5uZg4wNgP715tg8FppZKaWiUMWYNWDJRcbKqtlxiMAkTAkwRQCu
-         tbvg==
-X-Gm-Message-State: AOAM531TT1zxJHy7A3pb7dPSZzgMXhdU7N7+H4Y8AgFgcZPKWovmUwjQ
-        3LoedC1jES5dJfmWTlnWPolmEAp2xS2yHtJS
-X-Google-Smtp-Source: ABdhPJxwc7ufM1KRlXPFtj0gW6tN2HDdsY1Bc1DGX1BSV/730l2S2x3lF6ZD+5Hb4Hbyhe7UXbv4l0ix7URfwDm/
-X-Received: from vdonnefort.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:2eea])
- (user=vdonnefort job=sendgmr) by 2002:a05:6000:16c4:b0:20f:cd5d:4797 with
- SMTP id h4-20020a05600016c400b0020fcd5d4797mr8686062wrf.193.1653321151498;
- Mon, 23 May 2022 08:52:31 -0700 (PDT)
-Date:   Mon, 23 May 2022 16:51:33 +0100
-Message-Id: <20220523155140.2878563-1-vdonnefort@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-Subject: [PATCH v9 0/7] feec() energy margin removal
-From:   Vincent Donnefort <vdonnefort@google.com>
-To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, tao.zhou@linux.dev, kernel-team@android.com,
-        vdonnefort@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 23 May 2022 11:52:37 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9204C26570
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:52:34 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id 31D9D1F43999
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1653321153;
+        bh=BRBPt5ET+rgbs/sHyY5rXpb/IZ19k3OSJSYokuIVcs0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jTvwol6+oz4NF7k2PhH1jAJ5jyaw5XwD8cy6AmK2OWiXXd/5G4WjhHoMCcKmuymX2
+         L0oguiqyOdy498ZoipWwrSIXzQlIOoQe+17mZeIpkYVdRvhEjY4P1rWL8pAELoUggR
+         K444h8gjnmfUFKV33eeO9cMhQ9MLR/Z0iRQ/wDEAN4jneEJPrXG8PYdPOOivurDvbT
+         AizH9y/wmOmPDiGADNsIcUWxj20eQaSBG0z1p/bLEt2pREZCZRnvvVpezfChPosxZq
+         GFGWA0t2kdCdYKGT4yjB6d4+uCuw5Yh2JHZn+O7lVdOXnVIoq6R3s5s02ffWJ4E0zg
+         XrTU5+dJoSe8g==
+Message-ID: <bafcfe8f-3a19-a01c-8b46-9f2a44b1553c@collabora.com>
+Date:   Mon, 23 May 2022 16:52:30 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/4] drm/i915: add gen6 ppgtt dummy creation function
+Content-Language: en-US
+To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
+References: <20220503191316.1145124-1-bob.beckett@collabora.com>
+ <20220503191316.1145124-2-bob.beckett@collabora.com>
+ <3d08eb595c4a4eff02be5385c82d1e1d0e781c98.camel@linux.intel.com>
+From:   Robert Beckett <bob.beckett@collabora.com>
+In-Reply-To: <3d08eb595c4a4eff02be5385c82d1e1d0e781c98.camel@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-Here's a new version of the patch-set to get rid of the energy margin in
-feec(). Many thanks to all for the insightful comments I got.
 
-find_energy_efficient() (feec()) will migrate a task to save energy only if
-it saves at least 6% of the total energy consumed by the system. This
-conservative approach is a problem on a system where a lot of small tasks
-create a huge load on the overall: very few of them will be allowed to
-migrate to a smaller CPU, wasting a lot of energy. Instead of trying to
-determine yet another margin, let's try to remove it.
+On 11/05/2022 11:13, Thomas Hellström wrote:
+> Hi,
+> 
+> On Tue, 2022-05-03 at 19:13 +0000, Robert Beckett wrote:
+>> Internal gem objects will soon just be volatile system memory region
+>> objects.
+>> To enable this, create a separate dummy object creation function
+>> for gen6 ppgtt
+> 
+> 
+> It's not clear from the commit message why we need a special case for
+> this. Could you describe more in detail?
 
-The first elements of this patch-set are various fixes and improvement that
-stabilizes task_util and ensures energy comparison fairness across all CPUs
-of the topology. Only once those fixed, we can completely remove the margin
-and let feec() aggressively place task and save energy.
+it always was a special case, that used the internal backend but 
+provided it's own ops, so actually had no benefit from using the 
+internal backend. See b0b0f2d225da6fe58417fae37e3f797e2db27b62
 
-This has been validated by two different ways:
+I'll add some further explanation in the commit message for v2.
 
-First using LISA's eas_behaviour test suite. This is composed of a set of
-scenario and verify if the task placement is optimum. No failure have been
-observed and it also improved some tests such as Ramp-Down (as the
-placement is now more energy oriented) and *ThreeSmall (as no bouncing
-between clusters happen anymore).
-
-  * Hikey960: 100% PASSED
-  * DB-845C:  100% PASSED
-  * RB5:      100% PASSED
-
-Second, using an Android benchmark: PCMark2 on a Pixel4, with a lot of
-backports to have a scheduler as close as we can from mainline.
-
-  +------------+-----------------+-----------------+
-  |    Test    |      Perf       |    Energy [1]   |
-  +------------+-----------------+-----------------+
-  | Web2       | -0.3% pval 0.03 | -1.8% pval 0.00 |
-  | Video2     | -0.3% pval 0.13 | -5.6% pval 0.00 |
-  | Photo2 [2] | -3.8% pval 0.00 | -1%   pval 0.00 |
-  | Writing2   |  0%   pval 0.13 | -1%   pval 0.00 |
-  | Data2      |  0%   pval 0.8  | -0.43 pval 0.00 |
-  +------------+-----------------+-----------------+
-
-The margin removal let the kernel make the best use of the Energy Model,
-tasks are more likely to be placed where they fit and this saves a
-substantial amount of energy, while having a limited impact on
-performances.
-
-[1]=C2=A0This is an energy estimation based on the CPU activity and the Ene=
-rgy
-Model for this device. "All models are wrong but some are useful"; yes,
-this is an imperfect estimation that doesn't take into account some idle
-states and shared power rails. Nonetheless this is based on the information
-the kernel has during runtime and it proves the scheduler can take better
-decisions based solely on those data.
-
-[2] This is the only performance impact observed. The debugging of this
-test showed no issue with task placement. The better score was solely due
-to some critical threads held on better performing CPUs. If a thread needs
-a higher capacity CPU, the placement must result from a user input (with
-e.g. uclamp min) instead of being artificially held on less efficient CPUs
-by feec().  Notice also, the experiment didn't use the Android only
-latency_sensitive feature which would hide this problem on a real-life
-device.
-
-v8 -> v9:
-  - PELT migration decay: Fix barriers to prevent overestimation. (Vincent
-    G.)
-  - PELT migration decay: Fix CONFIG_GROUP_SCHED=3Dn build.
-  - Various readbility improvements. (Dietmar)
-  - Collect Reviewed-by tags.
-
-v7 -> v8:
-  - PELT migration decay: Refine estimation computation. (vincent G.)
-  - PELT migration decay: Do not apply estimation if load_avg is decayed
-    (Tao)
-  - PELT migration decay: throttled_pelt_idle update ordering for the
-    update_blocked_load case. (vincent G.)
-
-v6 -> v7:
-  - PELT migration decay: Add missing clock_pelt_idle updates.
-  - PELT migration decay: Fix PELT scaling delta for CONFIG_CFS_BANDWIDTH.
-
-v4 -> v5:
-  - PELT migration decay: timestamp only at idle time (Vincent G.)
-  - PELT migration decay: split timestamp values (enter_idle /
-    clock_pelt_idle) (Vincent G.)
-
-v3 -> v4:
-  - Minor cosmetic changes (Dietmar)
-
-v2 -> v3:
-  - feec(): introduce energy_env struct (Dietmar)
-  - PELT migration decay: Only apply when src CPU is idle (Vincent G.)
-  - PELT migration decay: Do not apply when cfs_rq is throttled
-  - PELT migration decay: Snapshot the lag at cfs_rq's level
-
-v1 -> v2:
-  - Fix PELT migration last_update_time (previously root cfs_rq's).
-  - Add Dietmar's patches to refactor feec()'s CPU loop.
-  - feec(): renaming busy time functions get_{pd,tsk}_busy_time()
-  - feec(): pd_cap computation in the first for_each_cpu loop.
-  - feec(): create get_pd_max_util() function (previously within
-    compute_energy())
-  - feec(): rename base_energy_pd to base_energy.
-
-Dietmar Eggemann (3):
-  sched, drivers: Remove max param from
-    effective_cpu_util()/sched_cpu_util()
-  sched/fair: Rename select_idle_mask to select_rq_mask
-  sched/fair: Use the same cpumask per-PD throughout
-    find_energy_efficient_cpu()
-
-Vincent Donnefort (4):
-  sched/fair: Provide u64 read for 32-bits arch helper
-  sched/fair: Decay task PELT values during wakeup migration
-  sched/fair: Remove task_util from effective utilization in feec()
-  sched/fair: Remove the energy margin in feec()
-
- drivers/powercap/dtpm_cpu.c       |  33 +--
- drivers/thermal/cpufreq_cooling.c |   6 +-
- include/linux/sched.h             |   2 +-
- kernel/sched/core.c               |  15 +-
- kernel/sched/cpufreq_schedutil.c  |   5 +-
- kernel/sched/fair.c               | 465 +++++++++++++++++++-----------
- kernel/sched/pelt.h               |  40 ++-
- kernel/sched/sched.h              |  53 +++-
- 8 files changed, 395 insertions(+), 224 deletions(-)
-
---=20
-2.36.1.124.g0e6072fb45-goog
-
+> 
+> Thanks,
+> Thomas
+> 
+> 
+>>
+>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+>> ---
+>>   drivers/gpu/drm/i915/gt/gen6_ppgtt.c | 43
+>> ++++++++++++++++++++++++++--
+>>   1 file changed, 40 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+>> b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+>> index 1bb766c79dcb..f3b660cfeb7f 100644
+>> --- a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+>> +++ b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+>> @@ -372,6 +372,45 @@ static const struct drm_i915_gem_object_ops
+>> pd_dummy_obj_ops = {
+>>          .put_pages = pd_dummy_obj_put_pages,
+>>   };
+>>   
+>> +static struct drm_i915_gem_object *
+>> +i915_gem_object_create_dummy(struct drm_i915_private *i915,
+>> phys_addr_t size)
+>> +{
+>> +       static struct lock_class_key lock_class;
+>> +       struct drm_i915_gem_object *obj;
+>> +       unsigned int cache_level;
+>> +
+>> +       GEM_BUG_ON(!size);
+>> +       GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
+>> +
+>> +       if (overflows_type(size, obj->base.size))
+>> +               return ERR_PTR(-E2BIG);
+>> +
+>> +       obj = i915_gem_object_alloc();
+>> +       if (!obj)
+>> +               return ERR_PTR(-ENOMEM);
+>> +
+>> +       drm_gem_private_object_init(&i915->drm, &obj->base, size);
+>> +       i915_gem_object_init(obj, &pd_dummy_obj_ops, &lock_class, 0);
+>> +       obj->mem_flags |= I915_BO_FLAG_STRUCT_PAGE;
+>> +
+>> +       /*
+>> +        * Mark the object as volatile, such that the pages are
+>> marked as
+>> +        * dontneed whilst they are still pinned. As soon as they are
+>> unpinned
+>> +        * they are allowed to be reaped by the shrinker, and the
+>> caller is
+>> +        * expected to repopulate - the contents of this object are
+>> only valid
+>> +        * whilst active and pinned.
+>> +        */
+>> +       i915_gem_object_set_volatile(obj);
+>> +
+>> +       obj->read_domains = I915_GEM_DOMAIN_CPU;
+>> +       obj->write_domain = I915_GEM_DOMAIN_CPU;
+>> +
+>> +       cache_level = HAS_LLC(i915) ? I915_CACHE_LLC :
+>> I915_CACHE_NONE;
+>> +       i915_gem_object_set_cache_coherency(obj, cache_level);
+>> +
+>> +       return obj;
+>> +}
+>> +
+>>   static struct i915_page_directory *
+>>   gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+>>   {
+>> @@ -383,9 +422,7 @@ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+>>          if (unlikely(!pd))
+>>                  return ERR_PTR(-ENOMEM);
+>>   
+>> -       pd->pt.base = __i915_gem_object_create_internal(ppgtt-
+>>> base.vm.gt->i915,
+>> -
+>>                                                         &pd_dummy_obj_o
+>> ps,
+>> -                                                       I915_PDES *
+>> SZ_4K);
+>> +       pd->pt.base = i915_gem_object_create_dummy(ppgtt->base.vm.gt-
+>>> i915, I915_PDES * SZ_4K);
+>>          if (IS_ERR(pd->pt.base)) {
+>>                  err = PTR_ERR(pd->pt.base);
+>>                  pd->pt.base = NULL;
+> 
+> 
