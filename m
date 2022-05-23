@@ -2,736 +2,307 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60863C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230504AbiEWTb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:31:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
+        id S230522AbiEWTcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbiEWTbB (ORCPT
+        with ESMTP id S230472AbiEWTau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:31:01 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C48131F00
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:12:38 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id q203so16357007iod.0
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:12:38 -0700 (PDT)
+        Mon, 23 May 2022 15:30:50 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F147356E;
+        Mon, 23 May 2022 12:12:06 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NHLD0S022813;
+        Mon, 23 May 2022 17:39:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : in-reply-to : references : date : message-id : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=PDdfso50z5cO1XN4KW2gBTNZay4Vb738O3aXncgc5d0=;
+ b=EhtABCg6rTVDdpKJ5bBHOV9n0Yr5vTVkt+jZ44IKRxnE39ukAOVUyQXEp5K2oMsXxXr7
+ DN3rlROV25O2d7+MKoEpD+Dp7eei9NQVqDMXbPwJ+S/i8Efbtyb0WnY+BbB1L0PGoX2F
+ h6TFLmwcktESMhwTTgQnIH+Q7DmpdAQJ+ccoyGTUGoRQSNI7vVcfyHHaEssWC7N1heRM
+ WsS62wFArULBid4nbhnqlB/rmr1krAJlziAikBmwzjVE7oRUHqyENNQUc3LsmhzTwmMU
+ ATkKUWBtd/1HQ9lw+YKOqylEBtMzjlujxMrf47nKjT7JCRcP6YtgEcOWt85J4YJEoiJa rA== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g6rmtv3hb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 17:39:32 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24NHa6if015137;
+        Mon, 23 May 2022 17:39:30 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2173.outbound.protection.outlook.com [104.47.58.173])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3g6ph815th-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 17:39:30 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n9jAhmb+es8arDaJXlLCHAxyRi+e9NGRSEhF4wiCBH6z5wkgYsa137pQgE0hp21AK7aKLJRUKxrQ98oIzr0xHVNjxVESssOIWKTsKi/H4g+t+/7z0YMqWvP5uqE1dxafTrHBQVJVny8G99VG6FGShTRA7/8AgJl37ChOIRkRziLx573u5OZEDlYdeKIiY+UXpd5l9CvycXYTX9hm5h+3Vvs7YlrwxrCp5LEmuUFb23I2AhIgsd9n7OTaIQaQCSh9IS/NlGLh55KQLDiTdI0j02JirbjodA0pQ6vnlZeZNoQzteMeEPKRz7dNTYrVd/HxfR2Krl8piywtuVmUTlPLpQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PDdfso50z5cO1XN4KW2gBTNZay4Vb738O3aXncgc5d0=;
+ b=FOYV/S1ufUmHa6So4zTd7LDhXyfi+T+prtvHO6vv6O6RDc3XkI7+WC61MwUKt59HrP1pmDzC1Xecg8AoKsNeHWr/1hRaP+zKYX7HHSg0VDRwYJO12Pqo/HxSfysAEI1W0GZy2+Xk1UoXdvDU5pa49IAmROMdZDHti5S9ACBGEmINKBvBr3WiB67Arkj9t5210lAFKTghiOoxawpzMn3L4MUiCOPkxtpSUKMyaQx/J3YsbmWAWLX9URQmWWLqx4kUxOyu4r52SDwNXeYN6PK4H2TcSZ1lVBVsWp7XBLMMtVlhLfpAl0vPWV/1ZkNvO5iwOM2LuTMhb1sEBbyzt4/Thg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language;
-        bh=JStlKIbKUC/PwbRbKFUm03f1smNJUGnmZn4JkjrBKHI=;
-        b=MXEDTErUlwgJ0Up/ol3sCEtsDgSeOfENC6COieHU5AcoyhfZjIvZdnLr4dG5FG+Zzi
-         uzipvOUSkaAW52M8lyzdSbHLWwNCyffOdFq4Bo4r0F+sMAD0kBOnnlv4DDuycv5H78Wp
-         XhS5hR5sMlS62RKmlgVEoM627AjP298OPDqis=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language;
-        bh=JStlKIbKUC/PwbRbKFUm03f1smNJUGnmZn4JkjrBKHI=;
-        b=qOyRPE8gt8P3E+ofCPRj+SBG0Axs/SdK6ybBQ53XFwK0nWQMqgKtjoyKM2bb/FwNWa
-         seeaH6utaLonjIf0NHfO43oE7/KWKxABnJb0u7X8rJmxaZTZXydwr3jkFh+ovS7vYXFI
-         Aik4cPgGKDdrhyuBCpytAK4AExbXbwgp9q0u2FAE1Aqn1N9o+aFkIrFdmjFKck74tPV0
-         3uNoBU/G7qeuMtfjLTg45Cyg4vp4ixAamsAZKWdPRl1vp9mNN0jrh+Q2xJoTo0RFjjuV
-         Ofz+fUXAUsYl4+Bx3oXO7fbSHfzKgwkw9qYQNsScp0lxeUtcJa/AIqM081YmDI04+h2b
-         4Ttg==
-X-Gm-Message-State: AOAM530DF8DzNQRAPUofCFibaK0KgT0aUPw8wqgCgEKIazDAuAM2t4d5
-        leQHWt16pv25dV/s+SWKdAry+qLcv9JhgQ==
-X-Google-Smtp-Source: ABdhPJykhobWUO8gltxzndD3H+IbINiGxzAhsv2NaC6iB12OAcroNEYq9/5OXu+NZupy3IKidaI0CA==
-X-Received: by 2002:a05:6638:4907:b0:32e:b8aa:325f with SMTP id cx7-20020a056638490700b0032eb8aa325fmr4931614jab.24.1653333158096;
-        Mon, 23 May 2022 12:12:38 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id c17-20020a023b11000000b0032e6f0d3796sm2893506jaa.145.2022.05.23.12.12.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 12:12:37 -0700 (PDT)
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, shuah <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Subject: [GIT PULL] Kselftest update for Linux 5.19-rc1
-Message-ID: <4ffe7200-734b-f1f9-fcab-6510b0ecbfa7@linuxfoundation.org>
-Date:   Mon, 23 May 2022 13:12:37 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PDdfso50z5cO1XN4KW2gBTNZay4Vb738O3aXncgc5d0=;
+ b=gCw3j0sfbib3orDoyAhjoZmLHlrkInb69F8sOetOQiSNzPL/wys8aZ/F9GSJ32Yd+MC4MVjulK9shc5Nlt+jW+O9p6bqdAROd99oMatKAVu9e/wHmS1n8bkRhalqXCTC7tIzqdlxoKPPYJuGnbi2N559qppbe0myi46CT25rCCc=
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com (2603:10b6:610:78::20)
+ by MN2PR10MB3181.namprd10.prod.outlook.com (2603:10b6:208:12e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Mon, 23 May
+ 2022 17:39:28 +0000
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4421:897e:e867:679c]) by CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4421:897e:e867:679c%8]) with mapi id 15.20.5273.023; Mon, 23 May 2022
+ 17:39:28 +0000
+From:   Stephen Brennan <stephen.s.brennan@oracle.com>
+To:     David Howells <dhowells@redhat.com>, torvalds@linux-foundation.org
+Cc:     stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        keyrings@vger.kernel.org, dhowells@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] assoc_array: Fix BUG_ON during garbage collect
+In-Reply-To: <165295023086.3361286.8662079860706628540.stgit@warthog.procyon.org.uk>
+References: <165295023086.3361286.8662079860706628540.stgit@warthog.procyon.org.uk>
+Date:   Mon, 23 May 2022 10:39:27 -0700
+Message-ID: <87ee0k173k.fsf@stepbren-lnx.us.oracle.com>
+Content-Type: text/plain
+X-ClientProxiedBy: SN7PR04CA0052.namprd04.prod.outlook.com
+ (2603:10b6:806:120::27) To CH2PR10MB4166.namprd10.prod.outlook.com
+ (2603:10b6:610:78::20)
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------8FE879EABC94246C693863F1"
-Content-Language: en-US
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1c166c87-6ca5-4ad2-7687-08da3ce32ff5
+X-MS-TrafficTypeDiagnostic: MN2PR10MB3181:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB318124D4948935D0C760096CDBD49@MN2PR10MB3181.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YzXChL33a+0WeeL9ETfWzBfW/eQLKmummTi+0tq6fQWI1hM+rEf2EyWQ9K2KksgjgCPgBDyRZKknjU/rSefp8h6jCh5K6SE/JSUKn0YGemtoLG1swkUbNP3Xj9mqUBvTstjBCZg7HXVvZnUevKBs4PoNWXhpWk+drRc1bVNWzUWXmOmZo0gzazUq32yPXcBidnt+/Kh2IdSMbS5CNHqp11EYhUmWLW8/IT2ZjgawOEtSEcP8ck/8duHFi9vDjDjgBvEzyKD1Suh8WGXYyXRMawC2xA/U/wezylEOhoI3ArvqyeXn5o6f3l/FlxlAahteXwNv4c+5Aarzj46P99F8LTsgEH49f8eliack7k6blNAXtS5VWrYCIy48TCOs+h2vezbIgsTmni/6AjEqiYjQsNwT5qvITY1f87HkPHs5fOF5Hz9TZ7ZtZsuqPkMPMZrQAIl0puuprTznT2ywGpdvDLHzOtzbzfrDQEU+r7eJ/ZZm3IP0tfcMAzYfxDTLSCf74cs14zJyTen4xoC8ygapDKAz3PIF3MIc3h3aQsEghN5XJnEoUx/4IcsrmQiup+9Zf1UJOCS+paLRerrhjlDATckdY476e0gA02FTVlYkFLi5FE1pO67buqtTx2eoTP4Kk1/Ij5yyxHDR5F1OYTAxB6vEJhrNCcwaJ+D4isP6J8ps1CsZwFuobplbh8hUzgxOM/zpwLW0MejiZ1FcqyHQDMAwlVY5aJIVUQRfnaNTxO1q9VqXseCDiVbKr+v0bJqQIrs3cXLa3p5PQ5fYxsguqNxmlqh3YZZ/EzCyqxU40B0BruBMH2Q7hxLFdAk+pfNouOGg4nY+kztm1wEfm5CAlw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4166.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(86362001)(966005)(83380400001)(508600001)(316002)(186003)(2906002)(6486002)(38350700002)(38100700002)(26005)(6512007)(8676002)(6506007)(8936002)(5660300002)(52116002)(4326008)(54906003)(66946007)(66556008)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8uqkXI8vBUqj9v6ZNJpN9F9zw0Tb2DVNGi34RehM42KtQa0RFkXofXULoh1y?=
+ =?us-ascii?Q?MWbnTEwaU5bH1ISsXBxR9nSn14VZUQZAVKGtRYuZJ658WvBM1CPy9vTklLeO?=
+ =?us-ascii?Q?HOMOQ1JZHnabnvVZSTJhu3ocwIiz573jvTS8braOeLxrXmWnAddCXB3XPGOF?=
+ =?us-ascii?Q?dUTQHDKL+k2rkiWMQrlNnI2Lu/HW4v9Xqldceq3wR+BoUoc2njBBbVuFbe+S?=
+ =?us-ascii?Q?UEuXF18UlJfIq7js9tRyjfU7eyz8HNwLSiopyeucsJDZ6BsicL7xIiVVEd9m?=
+ =?us-ascii?Q?iq1/9zQzZWLB5HUKlPelrLnFMhVPXDDusYpZfNM7s54Ms8GtlvvHpD9uhNfY?=
+ =?us-ascii?Q?aTWEEVrT5DslXu3oND1Vfi/FROM1QPsHRzW/D+0kLtwHo6ohajTkld+v9SAw?=
+ =?us-ascii?Q?QefhnJ+yvynq9M2cBY0QElX82nDurLbosZSsH8MxUEgpWRqDNuzB3VnISqCH?=
+ =?us-ascii?Q?X1UVJyVbqVyfvSNmVJyOymqSXLl4eKotcbUi6l/TP8T9ePsVay5PVaHuspLL?=
+ =?us-ascii?Q?HWLnTLIn9u8/rlzsrM42d4e+VWKEmfhvaOMnLUbB188MtO1fkz7CYGPAQYPd?=
+ =?us-ascii?Q?+muNtPKUHRxyC4pcnWnKlIy05ZFjDqwCuaIE8VfehjSxXguNrznkkXF4X49A?=
+ =?us-ascii?Q?+ttMkWgz34RoLcwLv6TEr0pNDnBHZZK5KVE5jM4DW1C7Vd8eCyio9BIYDkI4?=
+ =?us-ascii?Q?oURJl2vDTylzUtIR6oyIAanxXUtqQYFTIqKpbAh70q/Y3zxQh4oEcrm1ONHK?=
+ =?us-ascii?Q?F876CJoFbP6n2JtZv0rjApe2/JwY/P0ixw7u6YKHVyhfNGpley7PaTgMTji8?=
+ =?us-ascii?Q?PlOSdAP/J0bJhSPO+Q7veiBZrsltg9v7cnhZFYoqBiLb/lh0t9IB0dj/jWGj?=
+ =?us-ascii?Q?cnvC0yces1Hf6Z35DG0Rp7HScxsZACEJvzPaTfdgT5YPMsxiwRDfaedW69Ki?=
+ =?us-ascii?Q?i3HBP+GB7PG7bhQkxdfI5Tim/W4XtbphYfrji8nQAe9QafUjZQZc/RVjMatz?=
+ =?us-ascii?Q?5vj7SVidYn0Vex/pqxjt+dcvdFyu6DAQxmKZwb+3RcJWBHHkis4aGg3adcfz?=
+ =?us-ascii?Q?Tn200IXvlOLn24luBPooLaFv+8Rr1J06cwZlAhrMPVK8g2GclHlyUw64e/fS?=
+ =?us-ascii?Q?O2/c1xgW0XoaGUavkkXgyZcdxCiJpaVi+oDEqt6/AbcmyT2LvuDGz67aWOdK?=
+ =?us-ascii?Q?oVDc6MxxvZhg13fRpF8hlHgXgVsP3h5CYj7Xgqif5kwzaeS6sTKip4JRwO9T?=
+ =?us-ascii?Q?UAUPJy2teEO+daRLGYIXlYjLLlS7TVRE1KId+P9ZwNRUvbWf1FYghMUud4br?=
+ =?us-ascii?Q?blPv3Mn/4QsLd7EDtSkXna68B2C6D7rLEZWMNyBffV0ogzYcIwVukiCxjPFa?=
+ =?us-ascii?Q?zy9uu0n61Nzbqny5h3NsWiN5TmYKyjXRn2dM2DvCAxvIZBOcy3aB1PrIqc+F?=
+ =?us-ascii?Q?pIl26Fvy7LC9xryveUCYFXgOSIorMX0+asVX/7JoqdtHPDkrnk+yRlkOl/ll?=
+ =?us-ascii?Q?4d5V7CHN374sRCboi/4Kujdz6zlBzExCpJ6q8bL9ww2+GCSO6Z+gR9emIQpK?=
+ =?us-ascii?Q?0R1abuDoFZtiaXpjifJKoejxuPnHQIMQc5xPKrDQ0oz5SHhm2df/jE/fGqQW?=
+ =?us-ascii?Q?1aapwuPKgU7yzrjOYIKcziI929P24F9VJIB9iDtzSFH2zODgmMwEZQy13Tkr?=
+ =?us-ascii?Q?GXVL+UUTziUi6brRgKXPIITA6MrizDLGlGfCFnrI0M/1coVhiPa5zaAEezkN?=
+ =?us-ascii?Q?uRDemjiG55oeLqFxE2lQ0y+NKP5ZyVA=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c166c87-6ca5-4ad2-7687-08da3ce32ff5
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4166.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 17:39:28.7767
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6cxJSp2QNI8DjRWQ9nFZOlyOfatH7HEV6ZDG8Vk9L8gHPwve6cW6nuHqBtt1BMZQs9OdSFPKY1QvfWrw3AnOfyPyDzXIx6iNuPPEPLw8XVE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3181
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
+ definitions=2022-05-23_07:2022-05-23,2022-05-23 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 bulkscore=0 malwarescore=0 phishscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205230099
+X-Proofpoint-GUID: tAAlgkciGCPHJYBm4U_su7eZiMoaAKck
+X-Proofpoint-ORIG-GUID: tAAlgkciGCPHJYBm4U_su7eZiMoaAKck
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------8FE879EABC94246C693863F1
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+David Howells <dhowells@redhat.com> writes:
+> From: Stephen Brennan <stephen.s.brennan@oracle.com>
+>
+> A rare BUG_ON triggered in assoc_array_gc:
+>
+>     [3430308.818153] kernel BUG at lib/assoc_array.c:1609!
+>
+> Which corresponded to the statement currently at line 1593 upstream:
+>
+>     BUG_ON(assoc_array_ptr_is_meta(p));
+>
+> Using the data from the core dump, I was able to generate a userspace
+> reproducer[1] and determine the cause of the bug.
+>
+> [1]: https://github.com/brenns10/kernel_stuff/tree/master/assoc_array_gc
+>
+> After running the iterator on the entire branch, an internal tree node
+> looked like the following:
+>
+>     NODE (nr_leaves_on_branch: 3)
+>       SLOT [0] NODE (2 leaves)
+>       SLOT [1] NODE (1 leaf)
+>       SLOT [2..f] NODE (empty)
+>
+> In the userspace reproducer, the pr_devel output when compressing this
+> node was:
+>
+>     -- compress node 0x5607cc089380 --
+>     free=0, leaves=0
+>     [0] retain node 2/1 [nx 0]
+>     [1] fold node 1/1 [nx 0]
+>     [2] fold node 0/1 [nx 2]
+>     [3] fold node 0/2 [nx 2]
+>     [4] fold node 0/3 [nx 2]
+>     [5] fold node 0/4 [nx 2]
+>     [6] fold node 0/5 [nx 2]
+>     [7] fold node 0/6 [nx 2]
+>     [8] fold node 0/7 [nx 2]
+>     [9] fold node 0/8 [nx 2]
+>     [10] fold node 0/9 [nx 2]
+>     [11] fold node 0/10 [nx 2]
+>     [12] fold node 0/11 [nx 2]
+>     [13] fold node 0/12 [nx 2]
+>     [14] fold node 0/13 [nx 2]
+>     [15] fold node 0/14 [nx 2]
+>     after: 3
+>
+> At slot 0, an internal node with 2 leaves could not be folded into the
+> node, because there was only one available slot (slot 0). Thus, the
+> internal node was retained. At slot 1, the node had one leaf, and was
+> able to be folded in successfully. The remaining nodes had no leaves,
+> and so were removed. By the end of the compression stage, there were 14
+> free slots, and only 3 leaf nodes. The tree was ascended and then its
+> parent node was compressed. When this node was seen, it could not be
+> folded, due to the internal node it contained.
+>
+> The invariant for compression in this function is: whenever
+> nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT, the node should contain all
+> leaf nodes. The compression step currently cannot guarantee this, given
+> the corner case shown above.
+>
+> To fix this issue, retry compression whenever we have retained a node,
+> and yet nr_leaves_on_branch < ASSOC_ARRAY_FAN_OUT. This second
+> compression will then allow the node in slot 1 to be folded in,
+> satisfying the invariant. Below is the output of the reproducer once the
+> fix is applied:
+>
+>     -- compress node 0x560e9c562380 --
+>     free=0, leaves=0
+>     [0] retain node 2/1 [nx 0]
+>     [1] fold node 1/1 [nx 0]
+>     [2] fold node 0/1 [nx 2]
+>     [3] fold node 0/2 [nx 2]
+>     [4] fold node 0/3 [nx 2]
+>     [5] fold node 0/4 [nx 2]
+>     [6] fold node 0/5 [nx 2]
+>     [7] fold node 0/6 [nx 2]
+>     [8] fold node 0/7 [nx 2]
+>     [9] fold node 0/8 [nx 2]
+>     [10] fold node 0/9 [nx 2]
+>     [11] fold node 0/10 [nx 2]
+>     [12] fold node 0/11 [nx 2]
+>     [13] fold node 0/12 [nx 2]
+>     [14] fold node 0/13 [nx 2]
+>     [15] fold node 0/14 [nx 2]
+>     internal nodes remain despite enough space, retrying
+>     -- compress node 0x560e9c562380 --
+>     free=14, leaves=1
+>     [0] fold node 2/15 [nx 0]
+>     after: 3
+>
+> Changes
+> =======
+> DH:
+>  - Use false instead of 0.
+>  - Reorder the inserted lines in a couple of places to put retained before
+>    next_slot.
 
-Hi Linus,
+Thanks for the fixes, sorry I left so many loose ends on this fix! All
+looks good to me.
 
-Please pull the following Kselftest update for Linux 5.19-rc1
+Stephen
 
-This Kselftest update for Linux 5.19-rc1 consists of several fixes,
-cleanups, and enhancements to tests:
-
-- adds mips support for kprobe args string and syntax tests
-- updates to resctrl test to use kselftest framework
-- fixes, cleanups, and enhancements to tests
-
-diff is attached.
-
-thanks,
--- Shuah
-
-----------------------------------------------------------------
-The following changes since commit b2d229d4ddb17db541098b83524d901257e93845:
-
-   Linux 5.18-rc3 (2022-04-17 13:57:31 -0700)
-
-are available in the Git repository at:
-
-   git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-next-5.19-rc1
-
-for you to fetch changes up to 15477b31db104bc795dd1acccb3e9b89465fff01:
-
-   kselftests/ir : Improve readability of modprobe error message (2022-05-16 13:34:19 -0600)
-
-----------------------------------------------------------------
-linux-kselftest-next-5.19-rc1
-
-This Kselftest update for Linux 5.19-rc1 consists of several fixes,
-cleanups, and enhancements to tests:
-
-- adds mips support for kprobe args string and syntax tests
-- updates to resctrl test to use kselftest framework
-- fixes, cleanups, and enhancements to tests
-
-----------------------------------------------------------------
-Colin Ian King (1):
-       selftests/resctrl: Fix null pointer dereference on open failed
-
-Gautam Menghani (1):
-       kselftests/ir : Improve readability of modprobe error message
-
-Geliang Tang (1):
-       selftests: mqueue: drop duplicate min definition
-
-Karthik Alapati (1):
-       selftests/binderfs: Improve message to provide more info
-
-Reinette Chatre (4):
-       selftests: Provide local define of __cpuid_count()
-       selftests/vm/pkeys: Use provided __cpuid_count() macro
-       selftests/x86/amx: Use provided __cpuid_count() macro
-       selftests/x86/corrupt_xstate_header: Use provided __cpuid_count() macro
-
-Shaopeng Tan (8):
-       selftests/resctrl: Extend CPU vendor detection
-       selftests/resctrl: Print a message if the result of MBM&CMT tests is failed on Intel CPU
-       selftests/resctrl: Kill child process before parent process terminates if SIGTERM is received
-       selftests/resctrl: Change the default limited time to 120 seconds
-       selftests/resctrl: Fix resctrl_tests' return code to work with selftest framework
-       selftests/resctrl: Make resctrl_tests run using kselftest framework
-       selftests/resctrl: Update README about using kselftest framework to build/run resctrl_tests
-       selftests/resctrl: Add missing SPDX license to Makefile
-
-Yuanchu Xie (1):
-       selftests/damon: add damon to selftests root Makefile
-
-Ze Zhang (2):
-       selftests/ftrace: add mips support for kprobe args string tests
-       selftests/ftrace: add mips support for kprobe args syntax tests
-
-  tools/testing/selftests/Makefile                   |  2 +
-  .../selftests/filesystems/binderfs/binderfs_test.c |  3 +-
-  .../ftrace/test.d/kprobe/kprobe_args_string.tc     |  3 ++
-  .../ftrace/test.d/kprobe/kprobe_args_syntax.tc     |  4 ++
-  tools/testing/selftests/ir/ir_loopback.sh          |  2 +-
-  tools/testing/selftests/kselftest.h                | 15 +++++++
-  tools/testing/selftests/mqueue/mq_perf_tests.c     |  4 +-
-  tools/testing/selftests/resctrl/Makefile           | 19 +++------
-  tools/testing/selftests/resctrl/README             | 39 +++++++++++++----
-  tools/testing/selftests/resctrl/cat_test.c         |  2 +-
-  tools/testing/selftests/resctrl/fill_buf.c         |  4 +-
-  tools/testing/selftests/resctrl/resctrl.h          |  5 ++-
-  tools/testing/selftests/resctrl/resctrl_tests.c    | 49 +++++++++++++++-------
-  tools/testing/selftests/resctrl/resctrl_val.c      |  1 +
-  tools/testing/selftests/resctrl/resctrlfs.c        |  2 +-
-  tools/testing/selftests/resctrl/settings           |  3 ++
-  tools/testing/selftests/vm/pkey-x86.h              | 21 +---------
-  tools/testing/selftests/x86/amx.c                  | 24 ++++-------
-  .../testing/selftests/x86/corrupt_xstate_header.c  | 16 +------
-  19 files changed, 124 insertions(+), 94 deletions(-)
-  create mode 100644 tools/testing/selftests/resctrl/settings
-----------------------------------------------------------------
-
---------------8FE879EABC94246C693863F1
-Content-Type: text/x-patch; charset=UTF-8;
- name="linux-kselftest-next-5.19-rc1.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="linux-kselftest-next-5.19-rc1.diff"
-
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 2319ec87f53d..0aedcd76cf0f 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -9,6 +9,7 @@ TARGETS += clone3
- TARGETS += core
- TARGETS += cpufreq
- TARGETS += cpu-hotplug
-+TARGETS += damon
- TARGETS += drivers/dma-buf
- TARGETS += efivarfs
- TARGETS += exec
-@@ -52,6 +53,7 @@ TARGETS += proc
- TARGETS += pstore
- TARGETS += ptrace
- TARGETS += openat2
-+TARGETS += resctrl
- TARGETS += rlimits
- TARGETS += rseq
- TARGETS += rtc
-diff --git a/tools/testing/selftests/filesystems/binderfs/binderfs_test.c b/tools/testing/selftests/filesystems/binderfs/binderfs_test.c
-index 0315955ff0f4..bc1c407651fc 100644
---- a/tools/testing/selftests/filesystems/binderfs/binderfs_test.c
-+++ b/tools/testing/selftests/filesystems/binderfs/binderfs_test.c
-@@ -412,7 +412,8 @@ TEST(binderfs_stress)
- 
- 		ret = mount(NULL, binderfs_mntpt, "binder", 0, 0);
- 		ASSERT_EQ(ret, 0) {
--			TH_LOG("%s - Failed to mount binderfs", strerror(errno));
-+			TH_LOG("%s - Failed to mount binderfs, check if CONFIG_ANDROID_BINDERFS is enabled in the running kernel",
-+				strerror(errno));
- 		}
- 
- 		for (int i = 0; i < ARRAY_SIZE(fds); i++) {
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc
-index dc7ade196798..459741565222 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc
-@@ -25,6 +25,9 @@ ppc*)
- s390*)
-   ARG1=%r2
- ;;
-+mips*)
-+  ARG1=%r4
-+;;
- *)
-   echo "Please implement other architecture here"
-   exit_untested
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc
-index 47d84b5cb6ca..d4662c8cf407 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc
-@@ -36,6 +36,10 @@ s390*)
-   GOODREG=%r2
-   BADREG=%s2
- ;;
-+mips*)
-+  GOODREG=%r4
-+  BADREG=%r12
-+;;
- *)
-   echo "Please implement other architecture here"
-   exit_untested
-diff --git a/tools/testing/selftests/ir/ir_loopback.sh b/tools/testing/selftests/ir/ir_loopback.sh
-index b90dc9939f45..aff9299c9416 100755
---- a/tools/testing/selftests/ir/ir_loopback.sh
-+++ b/tools/testing/selftests/ir/ir_loopback.sh
-@@ -10,7 +10,7 @@ if [ $UID != 0 ]; then
- fi
- 
- if ! /sbin/modprobe -q -n rc-loopback; then
--        echo "ir_loopback: module rc-loopback is not found [SKIP]"
-+        echo "ir_loopback: module rc-loopback is not found in /lib/modules/`uname -r` [SKIP]"
-         exit $ksft_skip
- fi
- 
-diff --git a/tools/testing/selftests/kselftest.h b/tools/testing/selftests/kselftest.h
-index b8f248018174..33a0dbd26bd3 100644
---- a/tools/testing/selftests/kselftest.h
-+++ b/tools/testing/selftests/kselftest.h
-@@ -53,6 +53,21 @@
- #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
- #endif
- 
-+/*
-+ * gcc cpuid.h provides __cpuid_count() since v4.4.
-+ * Clang/LLVM cpuid.h provides  __cpuid_count() since v3.4.0.
-+ *
-+ * Provide local define for tests needing __cpuid_count() because
-+ * selftests need to work in older environments that do not yet
-+ * have __cpuid_count().
-+ */
-+#ifndef __cpuid_count
-+#define __cpuid_count(level, count, a, b, c, d)				\
-+	__asm__ __volatile__ ("cpuid\n\t"				\
-+			      : "=a" (a), "=b" (b), "=c" (c), "=d" (d)	\
-+			      : "0" (level), "2" (count))
-+#endif
-+
- /* define kselftest exit codes */
- #define KSFT_PASS  0
- #define KSFT_FAIL  1
-diff --git a/tools/testing/selftests/mqueue/mq_perf_tests.c b/tools/testing/selftests/mqueue/mq_perf_tests.c
-index 84fda3b49073..5c16159d0bcd 100644
---- a/tools/testing/selftests/mqueue/mq_perf_tests.c
-+++ b/tools/testing/selftests/mqueue/mq_perf_tests.c
-@@ -35,6 +35,7 @@
- #include <sys/time.h>
- #include <sys/resource.h>
- #include <sys/stat.h>
-+#include <sys/param.h>
- #include <mqueue.h>
- #include <popt.h>
- #include <error.h>
-@@ -73,7 +74,6 @@ static char *usage =
- char *MAX_MSGS = "/proc/sys/fs/mqueue/msg_max";
- char *MAX_MSGSIZE = "/proc/sys/fs/mqueue/msgsize_max";
- 
--#define min(a, b) ((a) < (b) ? (a) : (b))
- #define MAX_CPUS 64
- char *cpu_option_string;
- int cpus_to_pin[MAX_CPUS];
-@@ -560,7 +560,7 @@ int main(int argc, char *argv[])
- 			"require root in order to modify\nsystem settings.  "
- 			"Exiting.\n");
- 
--	cpus_online = min(MAX_CPUS, sysconf(_SC_NPROCESSORS_ONLN));
-+	cpus_online = MIN(MAX_CPUS, sysconf(_SC_NPROCESSORS_ONLN));
- 	cpu_set = CPU_ALLOC(cpus_online);
- 	if (cpu_set == NULL) {
- 		perror("CPU_ALLOC()");
-diff --git a/tools/testing/selftests/resctrl/Makefile b/tools/testing/selftests/resctrl/Makefile
-index 6bcee2ec91a9..73d53257df42 100644
---- a/tools/testing/selftests/resctrl/Makefile
-+++ b/tools/testing/selftests/resctrl/Makefile
-@@ -1,17 +1,10 @@
--CC = $(CROSS_COMPILE)gcc
--CFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2
--SRCS=$(wildcard *.c)
--OBJS=$(SRCS:.c=.o)
--
--all: resctrl_tests
-+# SPDX-License-Identifier: GPL-2.0
- 
--$(OBJS): $(SRCS)
--	$(CC) $(CFLAGS) -c $(SRCS)
-+CFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2
-+CFLAGS += $(KHDR_INCLUDES)
- 
--resctrl_tests: $(OBJS)
--	$(CC) $(CFLAGS) -o $@ $^
-+TEST_GEN_PROGS := resctrl_tests
- 
--.PHONY: clean
-+include ../lib.mk
- 
--clean:
--	$(RM) $(OBJS) resctrl_tests
-+$(OUTPUT)/resctrl_tests: $(wildcard *.c)
-diff --git a/tools/testing/selftests/resctrl/README b/tools/testing/selftests/resctrl/README
-index 3d2bbd4fa3aa..8d11ce7c2ee5 100644
---- a/tools/testing/selftests/resctrl/README
-+++ b/tools/testing/selftests/resctrl/README
-@@ -12,24 +12,49 @@ Allocation test on Intel RDT hardware. More tests will be added in the future.
- And the test suit can be extended to cover AMD QoS and ARM MPAM hardware
- as well.
- 
-+resctrl_tests can be run with or without kselftest framework.
-+
-+WITH KSELFTEST FRAMEWORK
-+=======================
-+
- BUILD
- -----
- 
--Run "make" to build executable file "resctrl_tests".
-+Build executable file "resctrl_tests" from top level directory of the kernel source:
-+ $ make -C tools/testing/selftests TARGETS=resctrl
- 
- RUN
- ---
- 
--To use resctrl_tests, root or sudoer privileges are required. This is because
--the test needs to mount resctrl file system and change contents in the file
--system.
-+Run resctrl_tests as sudo or root since the test needs to mount resctrl file
-+system and change contents in the file system.
-+Using kselftest framework will run all supported tests within resctrl_tests:
-+
-+ $ sudo make -C tools/testing/selftests TARGETS=resctrl run_tests
-+
-+More details about kselftest framework can be found in
-+Documentation/dev-tools/kselftest.rst.
-+
-+WITHOUT KSELFTEST FRAMEWORK
-+===========================
-+
-+BUILD
-+-----
-+
-+Build executable file "resctrl_tests" from this directory(tools/testing/selftests/resctrl/):
-+  $ make
-+
-+RUN
-+---
- 
-+Run resctrl_tests as sudo or root since the test needs to mount resctrl file
-+system and change contents in the file system.
- Executing the test without any parameter will run all supported tests:
- 
--	sudo ./resctrl_tests
-+ $ sudo ./resctrl_tests
- 
- OVERVIEW OF EXECUTION
-----------------------
-+=====================
- 
- A test case has four stages:
- 
-@@ -41,7 +66,7 @@ A test case has four stages:
-   - teardown: umount resctrl and clear temporary files.
- 
- ARGUMENTS
-----------
-+=========
- 
- Parameter '-h' shows usage information.
- 
-diff --git a/tools/testing/selftests/resctrl/cat_test.c b/tools/testing/selftests/resctrl/cat_test.c
-index cd4f68388e0f..1c5e90c63254 100644
---- a/tools/testing/selftests/resctrl/cat_test.c
-+++ b/tools/testing/selftests/resctrl/cat_test.c
-@@ -89,7 +89,7 @@ static int check_results(struct resctrl_val_param *param)
- 
- 	return show_cache_info(sum_llc_perf_miss, no_of_bits, param->span / 64,
- 			       MAX_DIFF, MAX_DIFF_PERCENT, NUM_OF_RUNS,
--			       !is_amd, false);
-+			       get_vendor() == ARCH_INTEL, false);
- }
- 
- void cat_test_cleanup(void)
-diff --git a/tools/testing/selftests/resctrl/fill_buf.c b/tools/testing/selftests/resctrl/fill_buf.c
-index 51e5cf22632f..56ccbeae0638 100644
---- a/tools/testing/selftests/resctrl/fill_buf.c
-+++ b/tools/testing/selftests/resctrl/fill_buf.c
-@@ -121,8 +121,10 @@ static int fill_cache_read(unsigned char *start_ptr, unsigned char *end_ptr,
- 
- 	/* Consume read result so that reading memory is not optimized out. */
- 	fp = fopen("/dev/null", "w");
--	if (!fp)
-+	if (!fp) {
- 		perror("Unable to write to /dev/null");
-+		return -1;
-+	}
- 	fprintf(fp, "Sum: %d ", ret);
- 	fclose(fp);
- 
-diff --git a/tools/testing/selftests/resctrl/resctrl.h b/tools/testing/selftests/resctrl/resctrl.h
-index 1ad10c47e31d..f0ded31fb3c7 100644
---- a/tools/testing/selftests/resctrl/resctrl.h
-+++ b/tools/testing/selftests/resctrl/resctrl.h
-@@ -34,6 +34,9 @@
- #define L3_MON_PATH		"/sys/fs/resctrl/info/L3_MON"
- #define L3_MON_FEATURES_PATH	"/sys/fs/resctrl/info/L3_MON/mon_features"
- 
-+#define ARCH_INTEL     1
-+#define ARCH_AMD       2
-+
- #define PARENT_EXIT(err_msg)			\
- 	do {					\
- 		perror(err_msg);		\
-@@ -75,8 +78,8 @@ struct resctrl_val_param {
- extern pid_t bm_pid, ppid;
- 
- extern char llc_occup_path[1024];
--extern bool is_amd;
- 
-+int get_vendor(void);
- bool check_resctrlfs_support(void);
- int filter_dmesg(void);
- int remount_resctrlfs(bool mum_resctrlfs);
-diff --git a/tools/testing/selftests/resctrl/resctrl_tests.c b/tools/testing/selftests/resctrl/resctrl_tests.c
-index 973f09a66e1e..df0d8d8526fc 100644
---- a/tools/testing/selftests/resctrl/resctrl_tests.c
-+++ b/tools/testing/selftests/resctrl/resctrl_tests.c
-@@ -13,25 +13,41 @@
- #define BENCHMARK_ARGS		64
- #define BENCHMARK_ARG_SIZE	64
- 
--bool is_amd;
--
--void detect_amd(void)
-+static int detect_vendor(void)
- {
- 	FILE *inf = fopen("/proc/cpuinfo", "r");
-+	int vendor_id = 0;
-+	char *s = NULL;
- 	char *res;
- 
- 	if (!inf)
--		return;
-+		return vendor_id;
- 
- 	res = fgrep(inf, "vendor_id");
- 
--	if (res) {
--		char *s = strchr(res, ':');
-+	if (res)
-+		s = strchr(res, ':');
-+
-+	if (s && !strcmp(s, ": GenuineIntel\n"))
-+		vendor_id = ARCH_INTEL;
-+	else if (s && !strcmp(s, ": AuthenticAMD\n"))
-+		vendor_id = ARCH_AMD;
- 
--		is_amd = s && !strcmp(s, ": AuthenticAMD\n");
--		free(res);
--	}
- 	fclose(inf);
-+	free(res);
-+	return vendor_id;
-+}
-+
-+int get_vendor(void)
-+{
-+	static int vendor = -1;
-+
-+	if (vendor == -1)
-+		vendor = detect_vendor();
-+	if (vendor == 0)
-+		ksft_print_msg("Can not get vendor info...\n");
-+
-+	return vendor;
- }
- 
- static void cmd_help(void)
-@@ -70,6 +86,8 @@ static void run_mbm_test(bool has_ben, char **benchmark_cmd, int span,
- 		sprintf(benchmark_cmd[5], "%s", MBA_STR);
- 	res = mbm_bw_change(span, cpu_no, bw_report, benchmark_cmd);
- 	ksft_test_result(!res, "MBM: bw change\n");
-+	if ((get_vendor() == ARCH_INTEL) && res)
-+		ksft_print_msg("Intel MBM may be inaccurate when Sub-NUMA Clustering is enabled. Check BIOS configuration.\n");
- 	mbm_test_cleanup();
- }
- 
-@@ -106,6 +124,8 @@ static void run_cmt_test(bool has_ben, char **benchmark_cmd, int cpu_no)
- 		sprintf(benchmark_cmd[5], "%s", CMT_STR);
- 	res = cmt_resctrl_val(cpu_no, 5, benchmark_cmd);
- 	ksft_test_result(!res, "CMT: test\n");
-+	if ((get_vendor() == ARCH_INTEL) && res)
-+		ksft_print_msg("Intel CMT may be inaccurate when Sub-NUMA Clustering is enabled. Check BIOS configuration.\n");
- 	cmt_test_cleanup();
- }
- 
-@@ -205,10 +225,7 @@ int main(int argc, char **argv)
- 	 * 2. We execute perf commands
- 	 */
- 	if (geteuid() != 0)
--		return ksft_exit_fail_msg("Not running as root, abort testing.\n");
--
--	/* Detect AMD vendor */
--	detect_amd();
-+		return ksft_exit_skip("Not running as root. Skipping...\n");
- 
- 	if (has_ben) {
- 		/* Extract benchmark command from command line. */
-@@ -235,16 +252,16 @@ int main(int argc, char **argv)
- 	sprintf(bm_type, "fill_buf");
- 
- 	if (!check_resctrlfs_support())
--		return ksft_exit_fail_msg("resctrl FS does not exist\n");
-+		return ksft_exit_skip("resctrl FS does not exist. Enable X86_CPU_RESCTRL config option.\n");
- 
- 	filter_dmesg();
- 
- 	ksft_set_plan(tests ? : 4);
- 
--	if (!is_amd && mbm_test)
-+	if ((get_vendor() == ARCH_INTEL) && mbm_test)
- 		run_mbm_test(has_ben, benchmark_cmd, span, cpu_no, bw_report);
- 
--	if (!is_amd && mba_test)
-+	if ((get_vendor() == ARCH_INTEL) && mba_test)
- 		run_mba_test(has_ben, benchmark_cmd, span, cpu_no, bw_report);
- 
- 	if (cmt_test)
-diff --git a/tools/testing/selftests/resctrl/resctrl_val.c b/tools/testing/selftests/resctrl/resctrl_val.c
-index 95224345c78e..b32b96356ec7 100644
---- a/tools/testing/selftests/resctrl/resctrl_val.c
-+++ b/tools/testing/selftests/resctrl/resctrl_val.c
-@@ -678,6 +678,7 @@ int resctrl_val(char **benchmark_cmd, struct resctrl_val_param *param)
- 	sigemptyset(&sigact.sa_mask);
- 	sigact.sa_flags = SA_SIGINFO;
- 	if (sigaction(SIGINT, &sigact, NULL) ||
-+	    sigaction(SIGTERM, &sigact, NULL) ||
- 	    sigaction(SIGHUP, &sigact, NULL)) {
- 		perror("# sigaction");
- 		ret = errno;
-diff --git a/tools/testing/selftests/resctrl/resctrlfs.c b/tools/testing/selftests/resctrl/resctrlfs.c
-index 5f5a166ade60..6f543e470ad4 100644
---- a/tools/testing/selftests/resctrl/resctrlfs.c
-+++ b/tools/testing/selftests/resctrl/resctrlfs.c
-@@ -106,7 +106,7 @@ int get_resource_id(int cpu_no, int *resource_id)
- 	char phys_pkg_path[1024];
- 	FILE *fp;
- 
--	if (is_amd)
-+	if (get_vendor() == ARCH_AMD)
- 		sprintf(phys_pkg_path, "%s%d/cache/index3/id",
- 			PHYS_ID_PATH, cpu_no);
- 	else
-diff --git a/tools/testing/selftests/resctrl/settings b/tools/testing/selftests/resctrl/settings
-new file mode 100644
-index 000000000000..a383f3d4565b
---- /dev/null
-+++ b/tools/testing/selftests/resctrl/settings
-@@ -0,0 +1,3 @@
-+# If running time is longer than 120 seconds when new tests are added in
-+# the future, increase timeout here.
-+timeout=120
-diff --git a/tools/testing/selftests/vm/pkey-x86.h b/tools/testing/selftests/vm/pkey-x86.h
-index e4a4ce2b826d..b078ce9c6d2a 100644
---- a/tools/testing/selftests/vm/pkey-x86.h
-+++ b/tools/testing/selftests/vm/pkey-x86.h
-@@ -80,19 +80,6 @@ static inline void __write_pkey_reg(u64 pkey_reg)
- 	assert(pkey_reg == __read_pkey_reg());
- }
- 
--static inline void __cpuid(unsigned int *eax, unsigned int *ebx,
--		unsigned int *ecx, unsigned int *edx)
--{
--	/* ecx is often an input as well as an output. */
--	asm volatile(
--		"cpuid;"
--		: "=a" (*eax),
--		  "=b" (*ebx),
--		  "=c" (*ecx),
--		  "=d" (*edx)
--		: "0" (*eax), "2" (*ecx));
--}
--
- /* Intel-defined CPU features, CPUID level 0x00000007:0 (ecx) */
- #define X86_FEATURE_PKU        (1<<3) /* Protection Keys for Userspace */
- #define X86_FEATURE_OSPKE      (1<<4) /* OS Protection Keys Enable */
-@@ -104,9 +91,7 @@ static inline int cpu_has_pkeys(void)
- 	unsigned int ecx;
- 	unsigned int edx;
- 
--	eax = 0x7;
--	ecx = 0x0;
--	__cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(0x7, 0x0, eax, ebx, ecx, edx);
- 
- 	if (!(ecx & X86_FEATURE_PKU)) {
- 		dprintf2("cpu does not have PKU\n");
-@@ -142,9 +127,7 @@ int pkey_reg_xstate_offset(void)
- 	/* assume that XSTATE_PKEY is set in XCR0 */
- 	leaf = XSTATE_PKEY_BIT;
- 	{
--		eax = XSTATE_CPUID;
--		ecx = leaf;
--		__cpuid(&eax, &ebx, &ecx, &edx);
-+		__cpuid_count(XSTATE_CPUID, leaf, eax, ebx, ecx, edx);
- 
- 		if (leaf == XSTATE_PKEY_BIT) {
- 			xstate_offset = ebx;
-diff --git a/tools/testing/selftests/x86/amx.c b/tools/testing/selftests/x86/amx.c
-index 2189f0322d8b..625e42901237 100644
---- a/tools/testing/selftests/x86/amx.c
-+++ b/tools/testing/selftests/x86/amx.c
-@@ -17,6 +17,8 @@
- #include <sys/syscall.h>
- #include <sys/wait.h>
- 
-+#include "../kselftest.h" /* For __cpuid_count() */
-+
- #ifndef __x86_64__
- # error This test is 64-bit only
- #endif
-@@ -45,13 +47,6 @@ static inline uint64_t xgetbv(uint32_t index)
- 	return eax + ((uint64_t)edx << 32);
- }
- 
--static inline void cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx)
--{
--	asm volatile("cpuid;"
--		     : "=a" (*eax), "=b" (*ebx), "=c" (*ecx), "=d" (*edx)
--		     : "0" (*eax), "2" (*ecx));
--}
--
- static inline void xsave(struct xsave_buffer *xbuf, uint64_t rfbm)
- {
- 	uint32_t rfbm_lo = rfbm;
-@@ -115,9 +110,7 @@ static inline void check_cpuid_xsave(void)
- 	 * support for the XSAVE feature set, including
- 	 * XGETBV.
- 	 */
--	eax = 1;
--	ecx = 0;
--	cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(1, 0, eax, ebx, ecx, edx);
- 	if (!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK))
- 		fatal_error("cpuid: no CPU xsave support");
- 	if (!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK))
-@@ -140,9 +133,8 @@ static void check_cpuid_xtiledata(void)
- {
- 	uint32_t eax, ebx, ecx, edx;
- 
--	eax = CPUID_LEAF_XSTATE;
--	ecx = CPUID_SUBLEAF_XSTATE_USER;
--	cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(CPUID_LEAF_XSTATE, CPUID_SUBLEAF_XSTATE_USER,
-+		      eax, ebx, ecx, edx);
- 
- 	/*
- 	 * EBX enumerates the size (in bytes) required by the XSAVE
-@@ -153,10 +145,8 @@ static void check_cpuid_xtiledata(void)
- 	 */
- 	xbuf_size = ebx;
- 
--	eax = CPUID_LEAF_XSTATE;
--	ecx = XFEATURE_XTILEDATA;
--
--	cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(CPUID_LEAF_XSTATE, XFEATURE_XTILEDATA,
-+		      eax, ebx, ecx, edx);
- 	/*
- 	 * eax: XTILEDATA state component size
- 	 * ebx: XTILEDATA state component offset in user buffer
-diff --git a/tools/testing/selftests/x86/corrupt_xstate_header.c b/tools/testing/selftests/x86/corrupt_xstate_header.c
-index ab8599c10ce5..cf9ce8fbb656 100644
---- a/tools/testing/selftests/x86/corrupt_xstate_header.c
-+++ b/tools/testing/selftests/x86/corrupt_xstate_header.c
-@@ -17,25 +17,13 @@
- #include <stdint.h>
- #include <sys/wait.h>
- 
--static inline void __cpuid(unsigned int *eax, unsigned int *ebx,
--			   unsigned int *ecx, unsigned int *edx)
--{
--	asm volatile(
--		"cpuid;"
--		: "=a" (*eax),
--		  "=b" (*ebx),
--		  "=c" (*ecx),
--		  "=d" (*edx)
--		: "0" (*eax), "2" (*ecx));
--}
-+#include "../kselftest.h" /* For __cpuid_count() */
- 
- static inline int xsave_enabled(void)
- {
- 	unsigned int eax, ebx, ecx, edx;
- 
--	eax = 0x1;
--	ecx = 0x0;
--	__cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(0x1, 0x0, eax, ebx, ecx, edx);
- 
- 	/* Is CR4.OSXSAVE enabled ? */
- 	return ecx & (1U << 27);
-
---------------8FE879EABC94246C693863F1--
+>
+> ver #2)
+>  - Fix typo in pr_devel, correct comparison to "<="
+>
+>
+> Fixes: 3cb989501c26 ("Add a generic associative array implementation.")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: Jarkko Sakkinen <jarkko@kernel.org>
+> cc: Andrew Morton <akpm@linux-foundation.org>
+> cc: keyrings@vger.kernel.org
+> Link: https://lore.kernel.org/r/20220511225517.407935-1-stephen.s.brennan@oracle.com/ # v1
+> Link: https://lore.kernel.org/r/20220512215045.489140-1-stephen.s.brennan@oracle.com/ # v2
+> ---
+>
+>  lib/assoc_array.c |    8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/lib/assoc_array.c b/lib/assoc_array.c
+> index 079c72e26493..ca0b4f360c1a 100644
+> --- a/lib/assoc_array.c
+> +++ b/lib/assoc_array.c
+> @@ -1461,6 +1461,7 @@ int assoc_array_gc(struct assoc_array *array,
+>  	struct assoc_array_ptr *cursor, *ptr;
+>  	struct assoc_array_ptr *new_root, *new_parent, **new_ptr_pp;
+>  	unsigned long nr_leaves_on_tree;
+> +	bool retained;
+>  	int keylen, slot, nr_free, next_slot, i;
+>  
+>  	pr_devel("-->%s()\n", __func__);
+> @@ -1536,6 +1537,7 @@ int assoc_array_gc(struct assoc_array *array,
+>  		goto descend;
+>  	}
+>  
+> +retry_compress:
+>  	pr_devel("-- compress node %p --\n", new_n);
+>  
+>  	/* Count up the number of empty slots in this node and work out the
+> @@ -1553,6 +1555,7 @@ int assoc_array_gc(struct assoc_array *array,
+>  	pr_devel("free=%d, leaves=%lu\n", nr_free, new_n->nr_leaves_on_branch);
+>  
+>  	/* See what we can fold in */
+> +	retained = false;
+>  	next_slot = 0;
+>  	for (slot = 0; slot < ASSOC_ARRAY_FAN_OUT; slot++) {
+>  		struct assoc_array_shortcut *s;
+> @@ -1602,9 +1605,14 @@ int assoc_array_gc(struct assoc_array *array,
+>  			pr_devel("[%d] retain node %lu/%d [nx %d]\n",
+>  				 slot, child->nr_leaves_on_branch, nr_free + 1,
+>  				 next_slot);
+> +			retained = true;
+>  		}
+>  	}
+>  
+> +	if (retained && new_n->nr_leaves_on_branch <= ASSOC_ARRAY_FAN_OUT) {
+> +		pr_devel("internal nodes remain despite enough space, retrying\n");
+> +		goto retry_compress;
+> +	}
+>  	pr_devel("after: %lu\n", new_n->nr_leaves_on_branch);
+>  
+>  	nr_leaves_on_tree = new_n->nr_leaves_on_branch;
