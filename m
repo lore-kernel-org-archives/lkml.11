@@ -2,157 +2,360 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0519C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbiEWINj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
+        id S231665AbiEWIOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbiEWINT (ORCPT
+        with ESMTP id S231616AbiEWIOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:13:19 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC0A635C
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:13:12 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24N549Hk031223;
-        Mon, 23 May 2022 06:27:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=IiCTImOl3TPYMScqFIRj3I/yfvrEQXjjqtFiw9YcQLI=;
- b=ygHCO6ZjmwYY8dasTXN4F8xZjd4dPBqr3MqeoONu7rMoGLZABGIviT+iKjZ4Hun1qDIo
- xi+iKXP/aIRcWMnNN8wOMxBnlh6s2biPRHQaS5Ci3Xwrk8HgNv1xJUxKJzWnDnhqvEYA
- 386z+Itfg3vA02JN3LfHD2740BKmeB/JbsbuxBN8sxwVfPndGvj5FQLF5lHhXWN2rBSe
- A802zYB/+mwpq0Dp2Nzq6dr2n7wCKHgLHryHV/n/RU2MhF2Gcp46bkIqIio+2Q61V2Lc
- K2Q1E4fzp6bW6aMDoVCOmuQxb2TJv0AJ5HUZfsvLKJaGx1lhg+Cg1aIeHjOXfFX/tkho WA== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3g6qps2bhe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 06:27:44 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24N6K2Lt032379;
-        Mon, 23 May 2022 06:27:43 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2177.outbound.protection.outlook.com [104.47.58.177])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3g6ph1a010-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 06:27:43 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Phn4cCg9/EJc/17mMza1yq7NfA8lhu15KdolvjgtEpdZFIqgU5LQU7x/DlhLqGULCvoh/55FGrsHpP34K6qDkDX0O+4A5NKizMkqt1RDmXXnyDg4PCZSqSLoCcljv7GgrQMstQCNMyf0SZKUoxpM01lNo4gECUq+H3Vm8eAmXMt5+aoZD2J70cM3IyC+gcEJ3Rr3bhPoRPKxJky5rHKd36+vtAEMvX0IcIYlBe2EOk5QfhqbkZJrqVYleyVvDfhEH6qyCFchkGL0PHBAhaBy9FhavTSVFQ9nRGsVs7K9hakexfUFIztQ6hTTrA8Y8NkHEj9cXb3+nLQqbHNLHFUExQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IiCTImOl3TPYMScqFIRj3I/yfvrEQXjjqtFiw9YcQLI=;
- b=dPqpMPN/76cLzEHtFLyP+F0hyjQz4ZEspAbJz89v4xMaspnP0F3M9kpqes+/KtlFanDZxqplfvCIpz5KZVsgiMgH/hRQV8VB2eoBLWlQGo18Xxz9vYuo3KT7OT2+bUABpwukNDwnya8IvBzc9Cly+qqJOEmIMZKiacy4JVV6FHfppX9OjkjmmrjUQEALBveKuYn1J5U/MPQSjZ0EK8D4RigaMnIUjtzuhpIGBhmRjK8CzdHH2FFlrjoyBOM6eD2cUyxz91Ms6SulzVrEXkrS7sBfthxhCSoxXERPm+LDHg47pYny/K3ArJu0MIFsgpAm3lkSRZNBCHmhVgZaa6Pl2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Mon, 23 May 2022 04:14:08 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA1A1AF0A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:14:06 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id n124-20020a1c2782000000b003972dfca96cso6234335wmn.4
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:14:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IiCTImOl3TPYMScqFIRj3I/yfvrEQXjjqtFiw9YcQLI=;
- b=MHa5iBrOC5Djt4RQeNXkWjBiqBd1bYuNX5JbaCzgGl/ordOzpEpZRkg9JZEb4kBDiVcbzdKZab/IT0rGudaXrK5xi93zE7GRtYxPZ9/wmi78bzSQWFNKYkLOQtUlpIeYHoxAHz0z8kszimVWlpmuJIujAyMfdqwIebTBy4jZkWE=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BL0PR10MB2867.namprd10.prod.outlook.com
- (2603:10b6:208:77::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Mon, 23 May
- 2022 06:27:41 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5273.022; Mon, 23 May 2022
- 06:27:41 +0000
-Date:   Mon, 23 May 2022 09:27:17 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Uri Arev <me@wantyapps.xyz>
-Cc:     Viresh Kumar <vireshk@kernel.org>, Johan Hovold <johan@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=F6KcD1PJVV651OHbadDhTTwGh57iEt1ZA0A/vLUP8H8=;
+        b=boxCIFm4cLrqz23LV3WS6nPPYpGwWflN9d7rpa4KqScm27wlVhYQVX1jkEHWTHsELW
+         94NAhUhQb01EiTUjtBzxoHiLLRccD9CtCS0o2Lyw3MpkQZDTFp8+6B3e6KXZFtkLuLIc
+         pvMswPyPPsCn+UGF4xhHwdXHQVvrawiQMl9kunHEUtGcsWf+nAZ/jaXEPi0bJbf5J/Al
+         /J/TyAZ4KoIsMhWGkL8OiVUQdWJimHGaHN9ndWiUEA6JxXG40S6DstliM5ssKZj3qPt5
+         zcHbBlj1Ufm4CVdgqffyYgo3raE1CngqrTWFN3IS+wn9AGbxyFfP7QrEaBi+u0hPCWgT
+         ZxmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F6KcD1PJVV651OHbadDhTTwGh57iEt1ZA0A/vLUP8H8=;
+        b=BSGhrVrVyd+k2ddSS3AExuUTTcon6xRM0X2vTE+oIZOPGsfGfgd9s1QMTzOx/xlstN
+         LaY/0bOe6BUvFumsUa7v0VjK6VY0yRRE7Wa8ATfJMRtLMo7jVT1/oWemjL+2UemGAKlL
+         ghjs7ghGa8gzHOPq2RhYZOi+WO+zH7YCYM4EQJizvY0DHx6WoNBl+b644SVy8dNnhSTb
+         afDYwmE3R1VxDwZQZCjxjOUw96xxoXwsodOdrpcttF5D28gIdr44DIQRs5p2Vw3jQ9BJ
+         PSJE6+ZevBMCI8yf+PS9etznzWZYtNWTxbgj4kjCPd8FIHqm6+E5x5oDS29HSQYq2xkb
+         TR9Q==
+X-Gm-Message-State: AOAM531AP4i3IBgmJFhoV5sEPUY9qxo/vCs1SSMNCOEpGjbRkb9WMXoK
+        3LKZU0VOXP2lkpKpW7ecfvTVWawv+WVsIA==
+X-Google-Smtp-Source: ABdhPJyURQCXsvTiFEqwoS4aMKCopjgk8iKEFp/wyS8kHAWSFGDzI7Q3FHR8MD5HiPfPXdTVOqscfQ==
+X-Received: by 2002:a05:600c:285:b0:395:b9bf:57 with SMTP id 5-20020a05600c028500b00395b9bf0057mr19542787wmk.21.1653293644768;
+        Mon, 23 May 2022 01:14:04 -0700 (PDT)
+Received: from krava (net-93-65-240-241.cust.vodafonedsl.it. [93.65.240.241])
+        by smtp.gmail.com with ESMTPSA id l8-20020a7bc448000000b003942a244f2esm8211221wmi.7.2022.05.23.01.14.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 01:14:04 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Mon, 23 May 2022 10:14:00 +0200
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: greybus: Fix indentation
-Message-ID: <20220523062717.GA4009@kadam>
-References: <20220522185157.151125-1-me@wantyapps.xyz>
+Subject: Re: [PATCH 3/5] perf inject: Keep some features sections from input
+ file
+Message-ID: <YotCSDje68aEyFRD@krava>
+References: <20220520132404.25853-1-adrian.hunter@intel.com>
+ <20220520132404.25853-4-adrian.hunter@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220522185157.151125-1-me@wantyapps.xyz>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0049.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::12)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 348239e9-e5f4-4ff9-0669-08da3c8556d9
-X-MS-TrafficTypeDiagnostic: BL0PR10MB2867:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR10MB2867C377603EDD5A1E934C028ED49@BL0PR10MB2867.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g7AMStujO0j/OOdiKKZ9KOxZstof352G0FKcjvZD0MWt2iiJ5FfZvyqgjS+KvUeWLDRpk7z+jjEbmuhdGN4qVxuDm3NPoZBUcAvJNDEiCd8kq8QUYd431iB53jNMdmW7eGwFW/8O377w8Ll0U8KZvNaLFLhkQ2KFUC4HvT06BxcICvgifqxCHcSlUGL0zo6prz8TBQZ2u8SPRQf9lcIEnj0fl94pS8myUX17hJ6NAw1wsyrSqjRy6zHqfgFu/bvqffIxCiIg/EekOL466HrUI+PESzm2HwdM35aUsPDZTpbRA2c2ZHvAVIorbGrwo7YAtZNz67ZVoScLglTwziUv8ABLuk2hxEV6i/0e2s52HFec+6Z8Asid1VdLV/lxMlFt2q+ZOniuwx6Ge9G3h8VC5lGVyxCX7yA38i/cKNwFruMVn7q+eSjEH/aB4OBEt0LOtMHrSAMUzNQcGk5ZKj+gb4beeqm+BNZ5r8Pn6vBZsf09OtVoyb9yPJA8QcbxwfypUORQ91nb0TxVDGDiQOJIbd0fAww6P3ReHxjkuMCzDbZs1AO7CJZKK+Vgcs6thpFS28dCpCv2NfA5DGvnnz2/p2DvEcLXCAD3uQJCgKp2BCTA9aT64ESujGV/YkMZ86T8xkDZvZ8EuwHl0ghX2ImlYYE/D99NOQmwNdXyiLdaXgPDtB+lEtEyWkqMolTYFcYtVDO8siubDr9/OhMvj4Ld4A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(5660300002)(8936002)(38100700002)(8676002)(4326008)(66556008)(38350700002)(44832011)(66476007)(66946007)(6916009)(6666004)(316002)(54906003)(1076003)(9686003)(6512007)(508600001)(6486002)(558084003)(186003)(33716001)(52116002)(2906002)(6506007)(86362001)(26005)(33656002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FjQmh3P3ZwQoUOT1UMaO/j+NC8ZbYkA6Yu6xipcLykan2Oz6VCCgwyNLmm1g?=
- =?us-ascii?Q?9bRBnLzMwPTCmUo0y7vfJ4NFd65aC7viJ3cOslWCrCcfM4QStBM0bBK7u2lM?=
- =?us-ascii?Q?xoAI3QSqMPVt7PGh3i7TAHIqj5HIa3KypRV8uFtPpbH0uQkNOAADjwU6I5je?=
- =?us-ascii?Q?2PXIfg1FuxkfNiwVGmYt4KhvRcAF595yhv9rvG2ExXOHj7AQMsr1M/IqwgQZ?=
- =?us-ascii?Q?hdowvK/ldbB51XFid6ugCK0xa9T3ZQRORjaYc5YBNIukyWDZpAVbbbnrdL8a?=
- =?us-ascii?Q?jRuaMBJaN4mbqeNvGHCS6KEGJhl8aaAMZRxXxbhLToWxUZKXf0VpQrf0IdN7?=
- =?us-ascii?Q?VeDD5DGYdjJKrY1nogC/0QworHjhMHxNeKH7X5oDRpKrsCLrwZ2LKeZ/2hgI?=
- =?us-ascii?Q?RSNKxH+91++bGLOcbEf0n9MkPZk59hPed1O+Hic34SoBh21ID+GDk2YXSFRo?=
- =?us-ascii?Q?jULcJr47dOOR/hWnNyM7N79QS9jNpRkPmyvE89bYCFqTeRTwUewHL1C8fLda?=
- =?us-ascii?Q?A2NlkVaJp+Ocjofj2L276XJXkOyT5uaExgwNFOv++FH46GxAAzgfc8IlxTk5?=
- =?us-ascii?Q?IipYfSMfVKGYWUj0V4tSmqPBk4g0D+Yh+ZVFpia9XpC6RLsTmEWVGVwVnM69?=
- =?us-ascii?Q?Ds55cCuMHiGVnd9BTv5iEVbBRGyxwZKNi3pperbPzAML2Losum5rE6Jis/AG?=
- =?us-ascii?Q?ZdUXGws3CN0U+TtXFNmotOpanqaoQ2egByMIXsojqFd8X7on0ueaKvyDcdCs?=
- =?us-ascii?Q?iTGP8fxAvZUi/64b8wdL2n0mxrI7DWGCpKPxtLEYo/iYdqEmD1JqdMp16QrK?=
- =?us-ascii?Q?J4WtdwaMjWjlGzYotrQs22UFc4e3coghJ2YqYYXjI4c0PCHpRgNlpf6nRick?=
- =?us-ascii?Q?hr7l/L3AE3Ie3grVP5oYADogfKWfO3Di/45c0JxfPftYvqgoAiVjBTMO/he3?=
- =?us-ascii?Q?aWEBluqILvUk+jEtrOJOrKHTolf8bfpbY0Cc4MiEThnOH4aqUfJ4bHtWmaHx?=
- =?us-ascii?Q?Xa8iBZvSV89l2oVekdqL02uPKJ+OF/RIpyuuTTGp6KL7ByWFvStd/gsGdIHU?=
- =?us-ascii?Q?phcPxO6bIZgNxsLnSH+dHZdLGgGKOJSOyyV9IWqsiVGhg2gcL3WUa7iLUghm?=
- =?us-ascii?Q?hoNHwrI6HDRDIYriWQqayoD1MtFsWcAeTUC0zRmQrmLNM8tI8YD9kNMF4fKK?=
- =?us-ascii?Q?n/Q3WpCOdzd3B9oiqsE4E1W7IEhVcOs6MW3Zgbj1hhxSvUc0A6u0C0oXklpH?=
- =?us-ascii?Q?oqy5xfD13QSxSq2kvA3zbaV9sxER/JX+H/OPV4E+z1q51xlhQxuuNw5vZ5u4?=
- =?us-ascii?Q?Qll6GRsKqbuxtx29NHV0kdmosZJ1JdbrwP2nT1KmXZmg6+b0RXttwmgm0N48?=
- =?us-ascii?Q?zt25SbHUd0fF0OIUmnopJDaG3JIF9a/rB6SiOoFedBgq0mwW+FJtooHmtPAM?=
- =?us-ascii?Q?Aa/f3nuFcrR6IcsAZym+6UwTCGFWdzks5U+Vm3bcx0e466RrfR/dW7ebNV7n?=
- =?us-ascii?Q?fA5SNh1qOZhUFsyiMXakxEWuiFnReupEYxDOpY+Z1wh2GT1HPOTMVehYaYRN?=
- =?us-ascii?Q?CtpMlJs9KVyunZm5vLkWgjfjBxA54plxahZdr2Aq4yVXEm3dSR7gsVpCJ/ps?=
- =?us-ascii?Q?Qk+YDaNVEFQL49FbwpFbpLlGMEWGD0yHZ0drgMIRDLjw+IUPp6Zu7zSGSpOH?=
- =?us-ascii?Q?rP1NiFTihT0icb7hQPvj2V0wPwO0ZD0aIzIt1plv7BL+SAtW5x1N3OZmroyM?=
- =?us-ascii?Q?IPCpSQheGHMEQ2Req/VNlIgFFkdHOeI=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 348239e9-e5f4-4ff9-0669-08da3c8556d9
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 06:27:41.5164
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mUcqsxuvERooSspMtzMxdd33aKotbHlmFGTz4H1nPtUWmDhn7g9vrEeLq7bmbjIjLbSVTbD2trkVDREyQczyJHxAXvx02VeCrqdDvrhr7pw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR10MB2867
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
- definitions=2022-05-23_01:2022-05-20,2022-05-23 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 bulkscore=0
- mlxlogscore=700 mlxscore=0 malwarescore=0 phishscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205230036
-X-Proofpoint-ORIG-GUID: 5Vla0ZxiwCFbmMeXmAyL5Fewu-Btbc5x
-X-Proofpoint-GUID: 5Vla0ZxiwCFbmMeXmAyL5Fewu-Btbc5x
+In-Reply-To: <20220520132404.25853-4-adrian.hunter@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 09:51:56PM +0300, Uri Arev wrote:
-> Reported by Checkpatch:
-> CHECK: Alignment should match open parenthesis
+On Fri, May 20, 2022 at 04:24:02PM +0300, Adrian Hunter wrote:
+> perf inject overwrites feature sections with information from the current
+> machine. It makes more sense to keep original information that describes
+> the machine or software when perf record was run.
 > 
-> - Uri
+> Example: perf.data from "Desktop" injected on "nuc11"
+> 
+>  Before:
+> 
+>   $ perf script --header-only -i perf.data-from-desktop | head -15
+>   # ========
+>   # captured on    : Thu May 19 09:55:50 2022
+>   # header version : 1
+>   # data offset    : 1208
+>   # data size      : 837480
+>   # feat offset    : 838688
+>   # hostname : Desktop
+>   # os release : 5.13.0-41-generic
+>   # perf version : 5.18.rc5.gac837f7ca7ed
+>   # arch : x86_64
+>   # nrcpus online : 28
+>   # nrcpus avail : 28
+>   # cpudesc : Intel(R) Core(TM) i9-9940X CPU @ 3.30GHz
+>   # cpuid : GenuineIntel,6,85,4
+>   # total memory : 65548656 kB
+> 
+>   $ perf inject -i perf.data-from-desktop -o injected-perf.data
+> 
+>   $ perf script --header-only -i injected-perf.data | head -15
+>   # ========
+>   # captured on    : Fri May 20 15:06:55 2022
+>   # header version : 1
+>   # data offset    : 1208
+>   # data size      : 837480
+>   # feat offset    : 838688
+>   # hostname : nuc11
+>   # os release : 5.17.5-local
+>   # perf version : 5.18.rc5.g0f828fdeb9af
+>   # arch : x86_64
+>   # nrcpus online : 8
+>   # nrcpus avail : 8
+>   # cpudesc : 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz
+>   # cpuid : GenuineIntel,6,140,1
+>   # total memory : 16012124 kB
+> 
+>  After:
+> 
+>   $ perf inject -i perf.data-from-desktop -o injected-perf.data
+> 
+>   $ perf script --header-only -i injected-perf.data | head -15
+>   # ========
+>   # captured on    : Fri May 20 15:08:54 2022
+
+too bad date is not in separate feature right?
+
+jirka
+
+>   # header version : 1
+>   # data offset    : 1208
+>   # data size      : 837480
+>   # feat offset    : 838688
+>   # hostname : Desktop
+>   # os release : 5.13.0-41-generic
+>   # perf version : 5.18.rc5.gac837f7ca7ed
+>   # arch : x86_64
+>   # nrcpus online : 28
+>   # nrcpus avail : 28
+>   # cpudesc : Intel(R) Core(TM) i9-9940X CPU @ 3.30GHz
+>   # cpuid : GenuineIntel,6,85,4
+>   # total memory : 65548656 kB
+> 
+> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 > ---
-
-This not how you format a patch.  Please run checkpatch.pl on your
-patches.  :P
-
-regards,
-dan carpenter
-
+>  tools/perf/builtin-inject.c | 129 +++++++++++++++++++++++++++++++++++-
+>  tools/perf/util/header.c    |   8 +++
+>  tools/perf/util/header.h    |   5 ++
+>  3 files changed, 141 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
+> index 5b50a4abf95f..71b6eafe4c19 100644
+> --- a/tools/perf/builtin-inject.c
+> +++ b/tools/perf/builtin-inject.c
+> @@ -27,6 +27,8 @@
+>  #include "util/namespaces.h"
+>  #include "util/util.h"
+>  
+> +#include <internal/lib.h>
+> +
+>  #include <linux/err.h>
+>  #include <subcmd/parse-options.h>
+>  #include <uapi/linux/mman.h> /* To get things like MAP_HUGETLB even on older libc headers */
+> @@ -55,6 +57,7 @@ struct perf_inject {
+>  	struct list_head	samples;
+>  	struct itrace_synth_opts itrace_synth_opts;
+>  	char			event_copy[PERF_SAMPLE_MAX_SIZE];
+> +	struct perf_file_section secs[HEADER_FEAT_BITS];
+>  };
+>  
+>  struct event_entry {
+> @@ -763,6 +766,120 @@ static int parse_vm_time_correlation(const struct option *opt, const char *str,
+>  	return inject->itrace_synth_opts.vm_tm_corr_args ? 0 : -ENOMEM;
+>  }
+>  
+> +static int save_section_info_cb(struct perf_file_section *section,
+> +				struct perf_header *ph __maybe_unused,
+> +				int feat, int fd __maybe_unused, void *data)
+> +{
+> +	struct perf_inject *inject = data;
+> +
+> +	inject->secs[feat] = *section;
+> +	return 0;
+> +}
+> +
+> +static int save_section_info(struct perf_inject *inject)
+> +{
+> +	struct perf_header *header = &inject->session->header;
+> +	int fd = perf_data__fd(inject->session->data);
+> +
+> +	return perf_header__process_sections(header, fd, inject, save_section_info_cb);
+> +}
+> +
+> +static bool keep_feat(int feat)
+> +{
+> +	switch (feat) {
+> +	/* Keep original information that describes the machine or software */
+> +	case HEADER_TRACING_DATA:
+> +	case HEADER_HOSTNAME:
+> +	case HEADER_OSRELEASE:
+> +	case HEADER_VERSION:
+> +	case HEADER_ARCH:
+> +	case HEADER_NRCPUS:
+> +	case HEADER_CPUDESC:
+> +	case HEADER_CPUID:
+> +	case HEADER_TOTAL_MEM:
+> +	case HEADER_CPU_TOPOLOGY:
+> +	case HEADER_NUMA_TOPOLOGY:
+> +	case HEADER_PMU_MAPPINGS:
+> +	case HEADER_CACHE:
+> +	case HEADER_MEM_TOPOLOGY:
+> +	case HEADER_CLOCKID:
+> +	case HEADER_BPF_PROG_INFO:
+> +	case HEADER_BPF_BTF:
+> +	case HEADER_CPU_PMU_CAPS:
+> +	case HEADER_CLOCK_DATA:
+> +	case HEADER_HYBRID_TOPOLOGY:
+> +	case HEADER_HYBRID_CPU_PMU_CAPS:
+> +		return true;
+> +	/* Information that can be updated */
+> +	case HEADER_BUILD_ID:
+> +	case HEADER_CMDLINE:
+> +	case HEADER_EVENT_DESC:
+> +	case HEADER_BRANCH_STACK:
+> +	case HEADER_GROUP_DESC:
+> +	case HEADER_AUXTRACE:
+> +	case HEADER_STAT:
+> +	case HEADER_SAMPLE_TIME:
+> +	case HEADER_DIR_FORMAT:
+> +	case HEADER_COMPRESSED:
+> +	default:
+> +		return false;
+> +	};
+> +}
+> +
+> +static int read_file(int fd, u64 offs, void *buf, size_t sz)
+> +{
+> +	ssize_t ret = preadn(fd, buf, sz, offs);
+> +
+> +	if (ret < 0)
+> +		return -errno;
+> +	if ((size_t)ret != sz)
+> +		return -EINVAL;
+> +	return 0;
+> +}
+> +
+> +static int feat_copy(struct perf_inject *inject, int feat, struct feat_writer *fw)
+> +{
+> +	int fd = perf_data__fd(inject->session->data);
+> +	u64 offs = inject->secs[feat].offset;
+> +	size_t sz = inject->secs[feat].size;
+> +	void *buf = malloc(sz);
+> +	int ret;
+> +
+> +	if (!buf)
+> +		return -ENOMEM;
+> +
+> +	ret = read_file(fd, offs, buf, sz);
+> +	if (ret)
+> +		goto out_free;
+> +
+> +	ret = fw->write(fw, buf, sz);
+> +out_free:
+> +	free(buf);
+> +	return ret;
+> +}
+> +
+> +struct inject_fc {
+> +	struct feat_copier fc;
+> +	struct perf_inject *inject;
+> +};
+> +
+> +static int feat_copy_cb(struct feat_copier *fc, int feat, struct feat_writer *fw)
+> +{
+> +	struct inject_fc *inj_fc = container_of(fc, struct inject_fc, fc);
+> +	struct perf_inject *inject = inj_fc->inject;
+> +	int ret;
+> +
+> +	if (!inject->secs[feat].offset ||
+> +	    !keep_feat(feat))
+> +		return 0;
+> +
+> +	ret = feat_copy(inject, feat, fw);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 1; /* Feature section copied */
+> +}
+> +
+>  static int output_fd(struct perf_inject *inject)
+>  {
+>  	return inject->in_place_update ? -1 : perf_data__fd(&inject->output);
+> @@ -848,6 +965,11 @@ static int __cmd_inject(struct perf_inject *inject)
+>  		return ret;
+>  
+>  	if (!inject->is_pipe && !inject->in_place_update) {
+> +		struct inject_fc inj_fc = {
+> +			.fc.copy = feat_copy_cb,
+> +			.inject = inject,
+> +		};
+> +
+>  		if (inject->build_ids)
+>  			perf_header__set_feat(&session->header,
+>  					      HEADER_BUILD_ID);
+> @@ -872,7 +994,7 @@ static int __cmd_inject(struct perf_inject *inject)
+>  		}
+>  		session->header.data_offset = output_data_offset;
+>  		session->header.data_size = inject->bytes_written;
+> -		perf_session__write_header(session, session->evlist, fd, true);
+> +		perf_session__inject_header(session, session->evlist, fd, &inj_fc.fc);
+>  	}
+>  
+>  	return ret;
+> @@ -1037,6 +1159,11 @@ int cmd_inject(int argc, const char **argv)
+>  	if (zstd_init(&(inject.session->zstd_data), 0) < 0)
+>  		pr_warning("Decompression initialization failed.\n");
+>  
+> +	/* Save original section info before feature bits change */
+> +	ret = save_section_info(&inject);
+> +	if (ret)
+> +		goto out_delete;
+> +
+>  	if (!data.is_pipe && inject.output.is_pipe) {
+>  		ret = perf_header__write_pipe(perf_data__fd(&inject.output));
+>  		if (ret < 0) {
+> diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
+> index b0c57a130d1e..53332da100e8 100644
+> --- a/tools/perf/util/header.c
+> +++ b/tools/perf/util/header.c
+> @@ -3686,6 +3686,14 @@ int perf_session__write_header(struct perf_session *session,
+>  	return perf_session__do_write_header(session, evlist, fd, at_exit, NULL);
+>  }
+>  
+> +int perf_session__inject_header(struct perf_session *session,
+> +				struct evlist *evlist,
+> +				int fd,
+> +				struct feat_copier *fc)
+> +{
+> +	return perf_session__do_write_header(session, evlist, fd, true, fc);
+> +}
+> +
+>  static int perf_header__getbuffer64(struct perf_header *header,
+>  				    int fd, void *buf, size_t size)
+>  {
+> diff --git a/tools/perf/util/header.h b/tools/perf/util/header.h
+> index e76ab02d5541..08563c1f1bff 100644
+> --- a/tools/perf/util/header.h
+> +++ b/tools/perf/util/header.h
+> @@ -131,6 +131,11 @@ struct feat_copier {
+>  	int (*copy)(struct feat_copier *fc, int feat, struct feat_writer *fw);
+>  };
+>  
+> +int perf_session__inject_header(struct perf_session *session,
+> +				struct evlist *evlist,
+> +				int fd,
+> +				struct feat_copier *fc);
+> +
+>  void perf_header__set_feat(struct perf_header *header, int feat);
+>  void perf_header__clear_feat(struct perf_header *header, int feat);
+>  bool perf_header__has_feat(const struct perf_header *header, int feat);
+> -- 
+> 2.25.1
+> 
