@@ -2,94 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A76A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236116AbiEWNRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
+        id S236007AbiEWNTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236058AbiEWNRX (ORCPT
+        with ESMTP id S235970AbiEWNTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:17:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C868E4C;
-        Mon, 23 May 2022 06:17:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3900E6135E;
-        Mon, 23 May 2022 13:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B130CC34100;
-        Mon, 23 May 2022 13:17:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653311841;
-        bh=7a4f/8QsblZThmyj+if9nUBQfdMZAwyozd8I6W8Kq40=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RbKDsydcvp0mc6eXKIzB00ki88V7g6i048hhWHWND/Oe4ZX17j9xOkS7db3nr2g4Z
-         EVB1sBT1kA3nlglPqC+ZoKZ0WBc+8VpMxJppsxOZvfH/p/L9N4eTCwkDhNp1DR9vjO
-         QCI5exa55LXT7UBBV7cm7Ip5qT53gFQa6D2Gz/ANkoPAu+RcropRvVYWXrBa5pkmst
-         bhvK4lAbX9ZeG5p51MBv0PVBboqtXn1jNpRv8ppOX47/5/NjVf14eFHJC+SGgB/3es
-         ZsjKYJ9YjchTJdR6rnKsftK1aIM0euZMihP/YXK2N2PohJw61H/yE6xpo+DSOJTdrj
-         P/609FmRmNMOg==
-Date:   Mon, 23 May 2022 14:17:14 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     andrew@lunn.ch, calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] regulator: Add regulator_bulk_get_all
-Message-ID: <YouJWnMQJWzLU9QR@sirena.org.uk>
-References: <20220523052807.4044800-1-clabbe@baylibre.com>
- <20220523052807.4044800-2-clabbe@baylibre.com>
+        Mon, 23 May 2022 09:19:31 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0A7E1FA68
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:19:30 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-317-xygOjhI6PEOklHKxx9crOw-1; Mon, 23 May 2022 14:19:27 +0100
+X-MC-Unique: xygOjhI6PEOklHKxx9crOw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 23 May 2022 14:19:26 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 23 May 2022 14:19:26 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Vincent Guittot' <vincent.guittot@linaro.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>
+CC:     Chris Hyser <chris.hyser@oracle.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "bsegall@google.com" <bsegall@google.com>,
+        "mgorman@suse.de" <mgorman@suse.de>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "vschneid@redhat.com" <vschneid@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "parth@linux.ibm.com" <parth@linux.ibm.com>,
+        "qais.yousef@arm.com" <qais.yousef@arm.com>,
+        "valentin.schneider@arm.com" <valentin.schneider@arm.com>,
+        "patrick.bellasi@matbug.net" <patrick.bellasi@matbug.net>,
+        "pjt@google.com" <pjt@google.com>, "pavel@ucw.cz" <pavel@ucw.cz>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "qperret@google.com" <qperret@google.com>,
+        "joshdon@google.com" <joshdon@google.com>,
+        "len.brown@intel.com" <len.brown@intel.com>
+Subject: RE: [PATCH v2 0/7] Add latency_nice priority
+Thread-Topic: [PATCH v2 0/7] Add latency_nice priority
+Thread-Index: AQHYbqP4zaEzexIx1U6fvq8Kco/Wm60scgmw
+Date:   Mon, 23 May 2022 13:19:26 +0000
+Message-ID: <d4467cd50d884b438dc8c2993669bed0@AcuMS.aculab.com>
+References: <20220512163534.2572-1-vincent.guittot@linaro.org>
+ <f1f50c52673aa1873b4a4d3b6b15250d4bf390f9.camel@linux.intel.com>
+ <CAKfTPtBEHyP202duKwJi+GVNTMza+L_PuK3hmUxcjKnODOuRjw@mail.gmail.com>
+ <9c0f9158-2d0c-dba9-1505-79ba4e642684@oracle.com>
+ <aa8746fbb27849ee34ddb0ff028d0a1ee064c506.camel@linux.intel.com>
+ <CAKfTPtAotgr+C1zXyWDSZt59NFX7Twb7gQLMcSv5hm6ywM85+Q@mail.gmail.com>
+In-Reply-To: <CAKfTPtAotgr+C1zXyWDSZt59NFX7Twb7gQLMcSv5hm6ywM85+Q@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="IaE4B5GdbTL8QUGo"
-Content-Disposition: inline
-In-Reply-To: <20220523052807.4044800-2-clabbe@baylibre.com>
-X-Cookie: Sales tax applies.
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+PiA+ID4gPiA+IG1lZGlhIHBsYXliYWNrICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IC0xNSB0byAtMTENCg0KSXNuJ3QgdGhhdCB3aGF0IHRoZSBSVCBzY2hlZHVsZXIgaXMgZm9yLi4u
+Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJv
+YWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24g
+Tm86IDEzOTczODYgKFdhbGVzKQ0K
 
---IaE4B5GdbTL8QUGo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, May 23, 2022 at 05:28:05AM +0000, Corentin Labbe wrote:
-
-> +	*consumers = NULL;
-> +
-> +/*
-> + * first pass: get numbers of xxx-supply
-> + * second pass: fill consumers
-> + * */
-> +restart:
-
-Please fix the identation of this comment so it looks less like an
-error.  TBH I'm not sure it isn't easier to just use krealloc() and have
-one loop here, or just write two separate loops given how little is
-shared.
-
---IaE4B5GdbTL8QUGo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKLiVkACgkQJNaLcl1U
-h9BwMwf+MijZTV5zm6UVWDR+lDg3thlPKizYFdm0ORirfhyPz1mOojb8dZVKFqfo
-EqyWBvVdP3rvimtQslIs1E3hG0ppjzv918+He7B4lvABrpEx6IBtXWMv9qQKNTz/
-/KLitIR9hZ9axRV4e600OXhw2Yg2ut8MbBesfPiCqGDirBt4bk8ghhMbYhnIgii6
-vuDPmr2YhTNRcuYyiVCVO3McrmWnJDSE9h2YUr0wsdtc1FuKJjwQPMSNAs2PvUsm
-K/AiRfovshtkzll2TCZukYkFObFRYCf/xbYnXG0IyfRWoXzJKspimwQF94SHMuK9
-DPMxLud0JF0QLM7X/MD08Njpb/4h7A==
-=r53l
------END PGP SIGNATURE-----
-
---IaE4B5GdbTL8QUGo--
