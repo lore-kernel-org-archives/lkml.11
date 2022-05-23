@@ -2,91 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A62C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232642AbiEWUM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
+        id S232512AbiEWUK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232624AbiEWUMs (ORCPT
+        with ESMTP id S231876AbiEWUKv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:12:48 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AE79CF7D
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:12:47 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id gi33so22637214ejc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:12:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EuG3WOfwg7N2zjjXVVXzvW7nWRrDlxN2WcRKWNRMyhE=;
-        b=mrGGDzsrU2CViHCIngHNzFab2RkysD3zDLUmKSfKQIzBeth56u1JarRpzXUsIZ1DOz
-         Coj5tjyBwiv2O6tafwNcLVfuOGqDQIckY2GMGrPm14EiCEUafsgJSMmUl0k7svyTjzJY
-         EIIpExGLw6hyzIL+hIhVjAFHh0egExaERVA08=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EuG3WOfwg7N2zjjXVVXzvW7nWRrDlxN2WcRKWNRMyhE=;
-        b=kw/FuNhNRCt3bIZk7vjoMUomjRTugaVsnf8XJvQRlAzHidIVPrZZJUK7dr3ClHuyj/
-         /YbqCzpkFxv+M5nuK5CHqaY4TdwoXUzVpw8/bQij42mONq25Jf+bchHPHW3oseq3cIj0
-         v/3BamndzTIQM2ZGu1Bmhud1wwHFmbKl/EWqMrhZ/0CsSa22sTuOij5hccUY8uzskuFS
-         qLC3cxlVC752456Q+05juxn/UR829FZZypBtKoOP5fkT8C7fYDGHn1+ynoGzUCNLhUaP
-         2JcQnDvwsxypgkZIVe145sKq97rWlXMp5bwYAnL7mrARMwHaHMzMzQlSw3Um8sqXRTVr
-         ku9Q==
-X-Gm-Message-State: AOAM531YNuOEF2YwY5AcQa4YUw0pvsMFXE99s8kf0kzU2rsNFAUBWOwK
-        pyEoGWrLY2B1trCrz/DkllENgkGBLtVns85NTb0=
-X-Google-Smtp-Source: ABdhPJxC/iuHGIT0Zp4M1T5l4yD+0WBGixcE6uuylDXSotE/JaRDeG/wE5af7oXda13Yvp2Qfd8wkQ==
-X-Received: by 2002:a17:906:4b55:b0:6fe:c52c:68c9 with SMTP id j21-20020a1709064b5500b006fec52c68c9mr9530334ejv.491.1653336765700;
-        Mon, 23 May 2022 13:12:45 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id b18-20020a056402139200b0042ab87ea713sm8539362edv.22.2022.05.23.13.12.43
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 13:12:44 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id u27so22071770wru.8
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:12:43 -0700 (PDT)
-X-Received: by 2002:a05:6000:1548:b0:20f:c4e3:637a with SMTP id
- 8-20020a056000154800b0020fc4e3637amr11198208wry.513.1653336763435; Mon, 23
- May 2022 13:12:43 -0700 (PDT)
+        Mon, 23 May 2022 16:10:51 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A44985B3;
+        Mon, 23 May 2022 13:10:50 -0700 (PDT)
+Received: from [192.168.100.1] ([82.142.8.70]) by mrelayeu.kundenserver.de
+ (mreue010 [213.165.67.103]) with ESMTPSA (Nemesis) id
+ 1McGp2-1nInAW3hzo-00cgOT; Mon, 23 May 2022 22:10:37 +0200
+Message-ID: <5caac943-5435-8603-9e84-a4da3792df1b@vivier.eu>
+Date:   Mon, 23 May 2022 22:10:31 +0200
 MIME-Version: 1.0
-References: <20220523123157.v2.1.I47ec78581907f7ef024f10bc085f970abf01ec11@changeid>
- <20220523123157.v2.2.I3d1b5a109675a0cc90e66a4e0b45cb823edbdee7@changeid>
-In-Reply-To: <20220523123157.v2.2.I3d1b5a109675a0cc90e66a4e0b45cb823edbdee7@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 23 May 2022 13:12:29 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U7qRbLc915tzhcYVmBd=r=YdwX6VQZebW9Ujy=FX24NA@mail.gmail.com>
-Message-ID: <CAD=FV=U7qRbLc915tzhcYVmBd=r=YdwX6VQZebW9Ujy=FX24NA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] arm64: dts: qcom: sc7280: Enable keyboard
- backlight for villager
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH next] m68k: virt: Switch to new sys-off handler API
+Content-Language: fr
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        noreply@ellerman.id.au
+References: <20220523175520.949681-1-geert@linux-m68k.org>
+From:   Laurent Vivier <laurent@vivier.eu>
+In-Reply-To: <20220523175520.949681-1-geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:vn8NH23Al85GwMr6Orne2SQ3M7HJm/sUBeSE1AA3PXgBPLDBX+z
+ lXy44bkYTekDYTqhi1KFHzjdUoNH3rZF1O619QP1qbhLnloVV9HdTcfXGqtWOfsGEc8zWWy
+ v8hcImjvtyU+ohKFTO9m6TclEdIRy1iAw4PY+mqFF7cubJ68bKYtg+/im/kaC+RQKXoUDhi
+ +ibXUVxkpmTbOGWRpOUKQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:AZ3WBmima6M=:Yv9KISoh5uRE5Qe7VoRdff
+ LBYWvxWz07+au4lExyKwj4l2H21xF4iB/toMXmhElxfg3BJc2VEZRB2d84DttKX1Z0ouwn025
+ qdnYbkmYnb8nRoL4OUHBJwUMRnfcnU2arkmWes3IxHs5+5ldUPmufCqzf1085wvpd7Khiyl7p
+ irEOvD/wU3SyNH5/MmWsjvOubsCxidSDZKmU70hWxkyYlOqrZpoFz4NMAHyPjsEvzG4+f67Y9
+ 7Kimju9mtc4xK4xodOLmSUCHoAYZvpy3H9v0mz24C3gZc8zGy2bnn4h/pF6+ergzG/SSui85X
+ zsyfftoL/aw4Yto1kaDbeY7TUo6WpfHi9CppiRjJYSJlkNvFSUmTRa0CSD4G2M09izaKivI0B
+ zZ3vARxb0sAOPquZiAuEFh5EMhe+zaSirq0o0pnELcRo7LRjuCURfaPgoQgIIM0cF4DASMwwu
+ 8gY2mvBg5E19e9X5W5y6bSCf1Yhqr5sr/RLbio6g40iCgQOTfXIWmKgycWRSXM0n2zQf+6Nfg
+ /r40fDBXNELdSzrEbVJEHaktkYX3aKRCqE/L3W34h2iAkny3CSo/2qPqkX7Z7eovb0iPATalk
+ 9I+L/7U4Nl/tsG0fkUKP4aSwoaH3Zwxqlw2Qdl7fDPYpylp9Kqw2kzK3GoXkFf2QquZHYtllM
+ mD3iVFeHLsRspcK8frQXbLvB+idL6zQQD/vzHDq5BxsXzDoiU1785Djm+exIyylJr0pZ3TXM5
+ V+XkITzbA1byz7JwwGi/K54aP59IcbCMlKJF5Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Mon, May 23, 2022 at 12:34 PM Matthias Kaehlcke <mka@chromium.org> wrote:
->
-> Villager has a backlit keyboard, enable support for the backlight.
->
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+Le 23/05/2022 à 19:55, Geert Uytterhoeven a écrit :
+> On m68k with CONFIG_VIRT=y (e.g. virt_defconfig or allmodconfig):
+> 
+>      arch/m68k/virt/config.c: In function ‘config_virt’:
+>      arch/m68k/virt/config.c:129:2: error: ‘mach_power_off’ undeclared (first use in this function); did you mean ‘pm_power_off’?
+>        129 |  mach_power_off = virt_halt;
+> 	  |  ^~~~~~~~~~~~~~
+> 	  |  pm_power_off
+> 
+> Commit 05d51e42df06f021 ("m68k: Introduce a virtual m68k machine")
+> introduced a new user of mach_power_off.
+> Convert it to the new sys-off handler API, too.
+> 
+> Reported-by: noreply@ellerman.id.au
+> Fixes: f0f7e5265b3b37b0 ("m68k: Switch to new sys-off handler API")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 > ---
->
-> (no changes since v1)
->
->  arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts | 4 ++++
->  1 file changed, 4 insertions(+)
+>   arch/m68k/virt/config.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/m68k/virt/config.c b/arch/m68k/virt/config.c
+> index 68d29c8b87e18840..632ba200ad425245 100644
+> --- a/arch/m68k/virt/config.c
+> +++ b/arch/m68k/virt/config.c
+> @@ -1,5 +1,6 @@
+>   // SPDX-License-Identifier: GPL-2.0
+>   
+> +#include <linux/reboot.h>
+>   #include <linux/serial_core.h>
+>   #include <clocksource/timer-goldfish.h>
+>   
+> @@ -126,5 +127,6 @@ void __init config_virt(void)
+>   	mach_get_model = virt_get_model;
+>   	mach_reset = virt_reset;
+>   	mach_halt = virt_halt;
+> -	mach_power_off = virt_halt;
+> +
+> +	register_platform_power_off(virt_halt);
+>   }
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+
+Reviewed-by: Laurent Vivier <laurent@vivier.eu>
