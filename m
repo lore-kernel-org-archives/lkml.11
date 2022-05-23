@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E7FC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E4EC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244267AbiEWRrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
+        id S243895AbiEWRrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243043AbiEWR2R (ORCPT
+        with ESMTP id S242990AbiEWR2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:28:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749D38E1B1;
-        Mon, 23 May 2022 10:25:16 -0700 (PDT)
+        Mon, 23 May 2022 13:28:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34778DDFA;
+        Mon, 23 May 2022 10:25:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E93EC60BD3;
-        Mon, 23 May 2022 17:25:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC2BC385A9;
-        Mon, 23 May 2022 17:25:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E847B81201;
+        Mon, 23 May 2022 17:24:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE0F4C385A9;
+        Mon, 23 May 2022 17:24:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326715;
-        bh=GvPy1TSq0hpYJR7v+A8xk20wsgXU7QBU18utSfY49Sc=;
+        s=korg; t=1653326657;
+        bh=cexE1aFde1gdOEfAfUUm4v7S/Vt5OzCWmuXeGZWXGpA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oL7hp7WNU4H8sQK5xkWggjSJbw9H1Hl39sK4SMLZ+iqZS74dHtb92kZycOkM1Bl+c
-         ChKMA+h4tNJ9BpFTzjuVE5KS3X5iaZVWlD1NM3x/quP0/JlAtD5lkTD+g8ZiSJVGDi
-         9HKWOUi2T10tMny/ifJQG7KhMBfsj3wRWrbKBK0A=
+        b=gzjHEAeZMmWmYXDUwbURDwpJFPC0VjUW/lsvcNwD2Y2sndAN5MGqtUKAne8XPTQR9
+         zcHDM7miOX8X7RkYdgo89XbEHbKknukq/9atcIMJTUgha1QnOrikpfZn990SyIfsUR
+         tAez/EKEPuwPDbscm5sN1sYvQ2wXankYxBeEkMBM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.17 007/158] i2c: piix4: Move SMBus port selection into function
-Date:   Mon, 23 May 2022 19:02:44 +0200
-Message-Id: <20220523165831.776332856@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 019/158] rtc: fix use-after-free on device removal
+Date:   Mon, 23 May 2022 19:02:56 +0200
+Message-Id: <20220523165833.811345525@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,76 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Terry Bowman <terry.bowman@amd.com>
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-commit fbafbd51bff52cb3a920fd98d4dae2a78dd433d0 upstream.
+[ Upstream commit c8fa17d9f08a448184f03d352145099b5beb618e ]
 
-Move port selection code into a separate function. Refactor is in
-preparation for following MMIO changes.
+If the irqwork is still scheduled or running while the RTC device is
+removed, a use-after-free occurs in rtc_timer_do_work().  Cleanup the
+timerqueue and ensure the work is stopped to fix this.
 
-Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Cc: Mario Limonciello <Mario.Limonciello@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ BUG: KASAN: use-after-free in mutex_lock+0x94/0x110
+ Write of size 8 at addr ffffff801d846338 by task kworker/3:1/41
+
+ Workqueue: events rtc_timer_do_work
+ Call trace:
+  mutex_lock+0x94/0x110
+  rtc_timer_do_work+0xec/0x630
+  process_one_work+0x5fc/0x1344
+  ...
+
+ Allocated by task 551:
+  kmem_cache_alloc_trace+0x384/0x6e0
+  devm_rtc_allocate_device+0xf0/0x574
+  devm_rtc_device_register+0x2c/0x12c
+  ...
+
+ Freed by task 572:
+  kfree+0x114/0x4d0
+  rtc_device_release+0x64/0x80
+  device_release+0x8c/0x1f4
+  kobject_put+0x1c4/0x4b0
+  put_device+0x20/0x30
+  devm_rtc_release_device+0x1c/0x30
+  devm_action_release+0x54/0x90
+  release_nodes+0x124/0x310
+  devres_release_group+0x170/0x240
+  i2c_device_remove+0xd8/0x314
+  ...
+
+ Last potentially related work creation:
+  insert_work+0x5c/0x330
+  queue_work_on+0xcc/0x154
+  rtc_set_time+0x188/0x5bc
+  rtc_dev_ioctl+0x2ac/0xbd0
+  ...
+
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20211210160951.7718-1-vincent.whitchurch@axis.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-piix4.c |   27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+ drivers/rtc/class.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/i2c/busses/i2c-piix4.c
-+++ b/drivers/i2c/busses/i2c-piix4.c
-@@ -698,6 +698,20 @@ static void piix4_imc_wakeup(void)
- 	release_region(KERNCZ_IMC_IDX, 2);
- }
- 
-+static int piix4_sb800_port_sel(u8 port)
-+{
-+	u8 smba_en_lo, val;
+diff --git a/drivers/rtc/class.c b/drivers/rtc/class.c
+index 4b460c61f1d8..40d504dac1a9 100644
+--- a/drivers/rtc/class.c
++++ b/drivers/rtc/class.c
+@@ -26,6 +26,15 @@ struct class *rtc_class;
+ static void rtc_device_release(struct device *dev)
+ {
+ 	struct rtc_device *rtc = to_rtc_device(dev);
++	struct timerqueue_head *head = &rtc->timerqueue;
++	struct timerqueue_node *node;
 +
-+	outb_p(piix4_port_sel_sb800, SB800_PIIX4_SMB_IDX);
-+	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
++	mutex_lock(&rtc->ops_lock);
++	while ((node = timerqueue_getnext(head)))
++		timerqueue_del(head, node);
++	mutex_unlock(&rtc->ops_lock);
 +
-+	val = (smba_en_lo & ~piix4_port_mask_sb800) | port;
-+	if (smba_en_lo != val)
-+		outb_p(val, SB800_PIIX4_SMB_IDX + 1);
-+
-+	return (smba_en_lo & piix4_port_mask_sb800);
-+}
-+
- /*
-  * Handles access to multiple SMBus ports on the SB800.
-  * The port is selected by bits 2:1 of the smb_en register (0x2c).
-@@ -714,8 +728,7 @@ static s32 piix4_access_sb800(struct i2c
- 	unsigned short piix4_smba = adapdata->smba;
- 	int retries = MAX_TIMEOUT;
- 	int smbslvcnt;
--	u8 smba_en_lo;
--	u8 port;
-+	u8 prev_port;
- 	int retval;
++	cancel_work_sync(&rtc->irqwork);
  
- 	retval = piix4_sb800_region_request(&adap->dev);
-@@ -775,18 +788,12 @@ static s32 piix4_access_sb800(struct i2c
- 		}
- 	}
- 
--	outb_p(piix4_port_sel_sb800, SB800_PIIX4_SMB_IDX);
--	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
--
--	port = adapdata->port;
--	if ((smba_en_lo & piix4_port_mask_sb800) != port)
--		outb_p((smba_en_lo & ~piix4_port_mask_sb800) | port,
--		       SB800_PIIX4_SMB_IDX + 1);
-+	prev_port = piix4_sb800_port_sel(adapdata->port);
- 
- 	retval = piix4_access(adap, addr, flags, read_write,
- 			      command, size, data);
- 
--	outb_p(smba_en_lo, SB800_PIIX4_SMB_IDX + 1);
-+	piix4_sb800_port_sel(prev_port);
- 
- 	/* Release the semaphore */
- 	outb_p(smbslvcnt | 0x20, SMBSLVCNT);
+ 	ida_simple_remove(&rtc_ida, rtc->id);
+ 	mutex_destroy(&rtc->ops_lock);
+-- 
+2.35.1
+
 
 
