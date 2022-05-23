@@ -2,261 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43943C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D38C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238925AbiEWQc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47964 "EHLO
+        id S238919AbiEWQdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:33:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238911AbiEWQcx (ORCPT
+        with ESMTP id S238906AbiEWQdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:32:53 -0400
-Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.248.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF0D36B71
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:32:50 -0700 (PDT)
-Received: from relay4.mymailcheap.com (relay4.mymailcheap.com [137.74.80.155])
-        by relay5.mymailcheap.com (Postfix) with ESMTPS id 66456267CE
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 16:32:49 +0000 (UTC)
-Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
-        by relay4.mymailcheap.com (Postfix) with ESMTPS id 0C9B920057;
-        Mon, 23 May 2022 16:32:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-        by filter1.mymailcheap.com (Postfix) with ESMTP id 63ECC2A3ED;
-        Mon, 23 May 2022 16:32:46 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
-Received: from filter1.mymailcheap.com ([127.0.0.1])
-        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ovGxMFm9Hgml; Mon, 23 May 2022 16:32:45 +0000 (UTC)
-Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by filter1.mymailcheap.com (Postfix) with ESMTPS;
-        Mon, 23 May 2022 16:32:45 +0000 (UTC)
-Received: from 127.0.0.1 (unknown [64.225.114.122])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail20.mymailcheap.com (Postfix) with ESMTPSA id AE38240052;
-        Mon, 23 May 2022 16:32:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
-        t=1653323564; bh=eMM2/LtD774HPGpt7c9+GCfHLaVlFZojZGyfHiFMXgc=;
-        h=Subject:From:To:Cc:In-Reply-To:References:Date:From;
-        b=rQP6QQMdXVt8a+M59gi/CGqj054PzWViKiKB+E2UK3QpNOb5azsnBVccs5pV9bTAF
-         EpLSLfeC3gM9CDU4RfvEE/0aIbSiMsfbA8odAmCq3TXiFFD3XVlvpWvibWtkSjQggZ
-         IVHrN8yGSMXC/j5+ViIn0Qh+QHJvJihInO2Wi1uE=
-Message-ID: <70b43ac2910ce9b3e3776d31eda7a791fbae5454.camel@aosc.io>
-Subject: Re: [PATCH] drm/sun4i: mixer: fix scanline for V3s and D1
-From:   Icenowy Zheng <icenowy@aosc.io>
-To:     Jernej =?gb2312?Q?=810=947krabec?= <jernej.skrabec@gmail.com>,
-        mripard@kernel.org, wens@csie.org, Genfu Pan <benlypan@gmail.com>
-Cc:     airlied@linux.ie, daniel@ffwll.ch, samuel@sholland.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <3173956.44csPzL39Z@jernej-laptop>
-References: <20220521133443.1114749-1-benlypan@gmail.com>
-         <3173956.44csPzL39Z@jernej-laptop>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 23 May 2022 12:33:06 -0400
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307CE64BD8
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:33:04 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout01.posteo.de (Postfix) with ESMTPS id 7F5CC24002B
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 18:33:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
+        t=1653323582; bh=E6iZA4QlAEqZYtAGHcnkUWkJeE0/rqfh0rH2XYscpAQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ozh1QoMER5nXrKBy1vPesgFS/Tr2uEFDx7yT+vJZ1RGSXs2r0fpU1+RYQRd/cw6K2
+         ud1S2ZBZUKE0hCjD8Iy368KLE0OjAr8FrzbaIYYfz9Sf8WD3newzuNfS8s2w5OjOZF
+         bcgeQ+AfRtQBkOaV+w15pcp1WiHLqOveFXZ/OOgCZSTYlkQ1Bm5YYfuufzWRqEUthQ
+         yl4l+gI4uJ8PlUmEBOyXVoUZD+QJAAmgt+U6XY3MGIyGrF9N/wMSrS+ayCjSYKTi8H
+         cK4v+KFHPvW1sXk/eeG6gD+PcTG1QQXqLr7oJBHhMdYzKx/2WVi6Xhp+s5RDU5juYK
+         rdwxaFNp9XAYA==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4L6ND84p99z6tmK;
+        Mon, 23 May 2022 18:32:55 +0200 (CEST)
+Date:   Mon, 23 May 2022 16:32:52 +0000
+From:   Daniel =?utf-8?Q?M=C3=BCller?= <deso@posteo.net>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] libbpf: fix typo in comment
+Message-ID: <20220523163030.uvauyhslqenc7m44@muellerd-fedora-MJ0AC3F3>
+References: <20220521111145.81697-71-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-Date:   Mon, 23 May 2022 21:14:45 +0800
-User-Agent: Evolution 3.40.4 
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220521111145.81697-71-Julia.Lawall@inria.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022-05-22星期日的 10:36 +0200，Jernej Škrabec写道：
-> Hi!
+On Sat, May 21, 2022 at 01:11:21PM +0200, Julia Lawall wrote:
+> Spelling mistake (triple letters) in comment.
+> Detected with the help of Coccinelle.
 > 
-> Dne sobota, 21. maj 2022 ob 15:34:43 CEST je Genfu Pan napisal(a):
-> > Accrording the SDK from Allwinner, the scanline value of yuv and
-> > rgb for
-> > V3s are both 1024.
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 > 
-> s/scanline value/scanline length/
+> ---
+>  tools/lib/bpf/libbpf.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Which SDK? All SDKs that I have or found on internet don't mention
-> YUV nor RGB 
-> scanline limit. That doesn't mean there is none, I'm just unable to
-> verify 
-> your claim. Did you test this by yourself? Also, please make YUV
-> scanline 
-> change separate patch with fixes tag.
-
-BTW I think chip manuals all say that the chip supports NxN resolution
-in DE2 chapter, e.g. the V3 datasheet says DE2 "Output size up to
-1024x1024".
-
-However there's no information about D1's second mixer.
-
-> 
-> > The is also the same for mixer 1 of D1. Currently the
-> > scanline value of rgb is hardcoded to 2048 for all SOCs.
-> > 
-> > Change the scanline_yuv property of V3s to 1024. > Add the
-> > scanline_rgb
-> > property to the mixer config and replace the hardcoded value with
-> > it before
-> > scaling.
-> 
-> I guess RGB scanline patch would also need fixes tag, since it fixes
-> existing 
-> bug.
-> 
-> > 
-> > Signed-off-by: Genfu Pan <benlypan@gmail.com>
-> > ---
-> >  drivers/gpu/drm/sun4i/sun8i_mixer.c    | 13 ++++++++++++-
-> >  drivers/gpu/drm/sun4i/sun8i_mixer.h    |  1 +
-> >  drivers/gpu/drm/sun4i/sun8i_vi_layer.c |  3 +--
-> >  3 files changed, 14 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c
-> > b/drivers/gpu/drm/sun4i/sun8i_mixer.c index 875a1156c..e64e08207
-> > 100644
-> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
-> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
-> > @@ -567,6 +567,7 @@ static const struct sun8i_mixer_cfg
-> > sun8i_a83t_mixer0_cfg = { .ccsc         = CCSC_MIXER0_LAYOUT,
-> >         .scaler_mask    = 0xf,
-> >         .scanline_yuv   = 2048,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 3,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -575,6 +576,7 @@ static const struct sun8i_mixer_cfg
-> > sun8i_a83t_mixer1_cfg = { .ccsc         = CCSC_MIXER1_LAYOUT,
-> >         .scaler_mask    = 0x3,
-> >         .scanline_yuv   = 2048,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 1,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -584,6 +586,7 @@ static const struct sun8i_mixer_cfg
-> > sun8i_h3_mixer0_cfg
-> > = { .mod_rate   = 432000000,
-> >         .scaler_mask    = 0xf,
-> >         .scanline_yuv   = 2048,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 3,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -593,6 +596,7 @@ static const struct sun8i_mixer_cfg
-> > sun8i_r40_mixer0_cfg
-> > = { .mod_rate   = 297000000,
-> >         .scaler_mask    = 0xf,
-> >         .scanline_yuv   = 2048,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 3,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -602,6 +606,7 @@ static const struct sun8i_mixer_cfg
-> > sun8i_r40_mixer1_cfg
-> > = { .mod_rate   = 297000000,
-> >         .scaler_mask    = 0x3,
-> >         .scanline_yuv   = 2048,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 1,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -610,7 +615,8 @@ static const struct sun8i_mixer_cfg
-> > sun8i_v3s_mixer_cfg
-> > = { .vi_num = 2,
-> >         .ui_num = 1,
-> >         .scaler_mask = 0x3,
-> > -       .scanline_yuv = 2048,
-> > +       .scanline_yuv = 1024,
-> > +       .scanline_rgb = 1024,
-> >         .ccsc = CCSC_MIXER0_LAYOUT,
-> >         .mod_rate = 150000000,
-> >  };
-> > @@ -620,6 +626,7 @@ static const struct sun8i_mixer_cfg
-> > sun20i_d1_mixer0_cfg
-> > = { .mod_rate   = 297000000,
-> >         .scaler_mask    = 0x3,
-> >         .scanline_yuv   = 2048,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 1,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -629,6 +636,7 @@ static const struct sun8i_mixer_cfg
-> > sun20i_d1_mixer1_cfg
-> > = { .mod_rate   = 297000000,
-> >         .scaler_mask    = 0x1,
-> >         .scanline_yuv   = 1024,
-> > +       .scanline_rgb   = 1024,
-> >         .ui_num         = 0,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -638,6 +646,7 @@ static const struct sun8i_mixer_cfg
-> > sun50i_a64_mixer0_cfg = { .mod_rate     = 297000000,
-> >         .scaler_mask    = 0xf,
-> >         .scanline_yuv   = 4096,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 3,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -647,6 +656,7 @@ static const struct sun8i_mixer_cfg
-> > sun50i_a64_mixer1_cfg = { .mod_rate     = 297000000,
-> >         .scaler_mask    = 0x3,
-> >         .scanline_yuv   = 2048,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 1,
-> >         .vi_num         = 1,
-> >  };
-> > @@ -657,6 +667,7 @@ static const struct sun8i_mixer_cfg
-> > sun50i_h6_mixer0_cfg
-> > = { .mod_rate   = 600000000,
-> >         .scaler_mask    = 0xf,
-> >         .scanline_yuv   = 4096,
-> > +       .scanline_rgb   = 2048,
-> >         .ui_num         = 3,
-> >         .vi_num         = 1,
-> >  };
-> > diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h
-> > b/drivers/gpu/drm/sun4i/sun8i_mixer.h index 85c94884f..c01b3e9d6
-> > 100644
-> > --- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
-> > +++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-> > @@ -172,6 +172,7 @@ struct sun8i_mixer_cfg {
-> >         unsigned long   mod_rate;
-> >         unsigned int    is_de3 : 1;
-> >         unsigned int    scanline_yuv;
-> > +       unsigned int    scanline_rgb;
-> 
-> This quirk needs to be documented above in the comment.
-> 
-> Best regards,
-> Jernej
-> 
-> >  };
-> > 
-> >  struct sun8i_mixer {
-> > diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
-> > b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c index f7d0b082d..30e6bde92
-> > 100644
-> > --- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
-> > +++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
-> > @@ -188,8 +188,7 @@ static int sun8i_vi_layer_update_coord(struct
-> > sun8i_mixer *mixer, int channel, src_h = vn;
-> >                 }
-> > 
-> > -               /* it seems that every RGB scaler has buffer for
-> > 2048 
-> pixels */
-> > -               scanline = subsampled ? mixer->cfg->scanline_yuv : 
-> 2048;
-> > +               scanline = subsampled ? mixer->cfg->scanline_yuv :
-> > mixer->cfg->scanline_rgb;
-> > 
-> >                 if (src_w > scanline) {
-> >                         DRM_DEBUG_DRIVER("Using horizontal coarse 
-> scaling\n");
-> 
-> 
-> 
-> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index ef7f302e542f..e89cc9c885b3 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -6873,7 +6873,7 @@ static int bpf_object_load_prog_instance(struct bpf_object *obj, struct bpf_prog
+>  	}
+>  
+>  retry_load:
+> -	/* if log_level is zero, we don't request logs initiallly even if
+> +	/* if log_level is zero, we don't request logs initially even if
+>  	 * custom log_buf is specified; if the program load fails, then we'll
+>  	 * bump log_level to 1 and use either custom log_buf or we'll allocate
+>  	 * our own and retry the load to get details on what failed
 > 
 
+Looks good to me, thanks!
 
+Acked-by: Daniel M�ller <deso@posteo.net>
