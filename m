@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF6D2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1C4C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244636AbiEWSLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
+        id S244498AbiEWSLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242420AbiEWRhi (ORCPT
+        with ESMTP id S242711AbiEWRhp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD94250020;
-        Mon, 23 May 2022 10:31:23 -0700 (PDT)
+        Mon, 23 May 2022 13:37:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAA15BE52;
+        Mon, 23 May 2022 10:31:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2849261117;
-        Mon, 23 May 2022 17:28:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 151E5C385A9;
-        Mon, 23 May 2022 17:28:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 299EB611CB;
+        Mon, 23 May 2022 17:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 265C8C34116;
+        Mon, 23 May 2022 17:28:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326909;
-        bh=ICOpqBu5adW1yGmT60gbTxzEdRQB8LpjWZum/HlBgtk=;
+        s=korg; t=1653326931;
+        bh=flgFXLXgvcqitHLhOUjyuhNpWRTcqrdXR5m+Cf7zjE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zSt6422Zk3PKt6zaocPjQEfarHoRsTvSQDMZmKuS+XlUpPTySt18V83dU5iwQ0U8+
-         +T32kl7SS5iaF2rdDhA4YNsXZznUdCL6Ifv46z27mErfNsKSJ9WjCHf70GimxSf5Hx
-         v/O0ns5C7fn7TDvYOPly3OdygRJ1hU6NbhJEAezc=
+        b=cy+NF8hOOMaSALvU0pnvTijh8pc85ziWAhvRZeUO04WrRLjo+y//xKr/eFZbv2rW/
+         c3GYaeLGq8pfHXCrG+vi9zqMbMwf8S/wcSEM8C2GaaqrChWoj8SNOHcylZ/5ibsmpH
+         hEN4YzLCZ/gdTqkaCuG79VfbaubZDq7QkMJyntEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas De Marchi <lucas.demarchi@intel.com>,
-        Anusha Srivatsa <anusha.srivatsa@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.17 064/158] drm/i915/dmc: Add MMIO range restrictions
-Date:   Mon, 23 May 2022 19:03:41 +0200
-Message-Id: <20220523165841.466221014@linuxfoundation.org>
+        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 104/158] net/mlx5: DR, Ignore modify TTL on RX if device doesnt support it
+Date:   Mon, 23 May 2022 19:04:21 +0200
+Message-Id: <20220523165848.485323933@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,122 +50,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anusha Srivatsa <anusha.srivatsa@intel.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-commit 54395a33718af1c04b5098203335b25382291a16 upstream.
+[ Upstream commit 785d7ed295513bd3374095304b7034fd65c123b0 ]
 
-Bspec has added some steps that check forDMC MMIO range before
-programming them
+When modifying TTL, packet's csum has to be recalculated.
+Due to HW issue in ConnectX-5, csum recalculation for modify
+TTL on RX is supported through a work-around that is specifically
+enabled by configuration.
+If the work-around isn't enabled, rather than adding an unsupported
+action the modify TTL action on RX should be ignored.
+Ignoring modify TTL action might result in zero actions, so in such
+cases we will not convert the match STE to modify STE, as it is done
+by FW in DMFS.
 
-v2: Fix for CI
-v3: move register defines to .h (Anusha)
-- Check MMIO restrictions per pipe
-- Add MMIO restricton for v1 dmc header as well (Lucas)
-v4: s/_PICK/_PICK_EVEN and use it only for Pipe DMC scenario.
-- clean up sanity check logic.(Lucas)
-- Add MMIO range for RKL as well.(Anusha)
-v5: Use DISPLAY_VER instead of per platform check (Lucas)
+This patch fixes an issue where modify TTL action was ignored both
+on RX and TX instead of only on RX.
 
-BSpec: 49193
-
-Cc: stable@vger.kernel.org
-Cc: Lucas De Marchi <lucas.demarchi@intel.com>
-Signed-off-by: Anusha Srivatsa <anusha.srivatsa@intel.com>
-Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220511000847.1068302-1-anusha.srivatsa@intel.com
-(cherry picked from commit 21c47196aec3a93f913a7515e1e7b30e6c54d6c6)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4ff725e1d4ad ("net/mlx5: DR, Ignore modify TTL if device doesn't support it")
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/display/intel_dmc.c |   44 +++++++++++++++++++++++++++++++
- drivers/gpu/drm/i915/i915_reg.h          |   16 +++++++++++
- 2 files changed, 60 insertions(+)
+ .../mellanox/mlx5/core/steering/dr_action.c   | 65 +++++++++++++------
+ .../mellanox/mlx5/core/steering/dr_ste_v0.c   |  4 +-
+ 2 files changed, 48 insertions(+), 21 deletions(-)
 
---- a/drivers/gpu/drm/i915/display/intel_dmc.c
-+++ b/drivers/gpu/drm/i915/display/intel_dmc.c
-@@ -367,6 +367,44 @@ static void dmc_set_fw_offset(struct int
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index 5d1caf97a8fc..8622af6d6bf8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -530,6 +530,37 @@ static int dr_action_handle_cs_recalc(struct mlx5dr_domain *dmn,
+ 	return 0;
  }
  
-+static bool dmc_mmio_addr_sanity_check(struct intel_dmc *dmc,
-+				       const u32 *mmioaddr, u32 mmio_count,
-+				       int header_ver, u8 dmc_id)
++static void dr_action_modify_ttl_adjust(struct mlx5dr_domain *dmn,
++					struct mlx5dr_ste_actions_attr *attr,
++					bool rx_rule,
++					bool *recalc_cs_required)
 +{
-+	struct drm_i915_private *i915 = container_of(dmc, typeof(*i915), dmc);
-+	u32 start_range, end_range;
-+	int i;
++	*recalc_cs_required = false;
 +
-+	if (dmc_id >= DMC_FW_MAX) {
-+		drm_warn(&i915->drm, "Unsupported firmware id %u\n", dmc_id);
-+		return false;
++	/* if device supports csum recalculation - no adjustment needed */
++	if (mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps))
++		return;
++
++	/* no adjustment needed on TX rules */
++	if (!rx_rule)
++		return;
++
++	if (!MLX5_CAP_ESW_FLOWTABLE(dmn->mdev, fdb_ipv4_ttl_modify)) {
++		/* Ignore the modify TTL action.
++		 * It is always kept as last HW action.
++		 */
++		attr->modify_actions--;
++		return;
 +	}
 +
-+	if (header_ver == 1) {
-+		start_range = DMC_MMIO_START_RANGE;
-+		end_range = DMC_MMIO_END_RANGE;
-+	} else if (dmc_id == DMC_FW_MAIN) {
-+		start_range = TGL_MAIN_MMIO_START;
-+		end_range = TGL_MAIN_MMIO_END;
-+	} else if (DISPLAY_VER(i915) >= 13) {
-+		start_range = ADLP_PIPE_MMIO_START;
-+		end_range = ADLP_PIPE_MMIO_END;
-+	} else if (DISPLAY_VER(i915) >= 12) {
-+		start_range = TGL_PIPE_MMIO_START(dmc_id);
-+		end_range = TGL_PIPE_MMIO_END(dmc_id);
-+	} else {
-+		drm_warn(&i915->drm, "Unknown mmio range for sanity check");
-+		return false;
-+	}
-+
-+	for (i = 0; i < mmio_count; i++) {
-+		if (mmioaddr[i] < start_range || mmioaddr[i] > end_range)
-+			return false;
-+	}
-+
-+	return true;
++	if (dmn->type == MLX5DR_DOMAIN_TYPE_FDB)
++		/* Due to a HW bug on some devices, modifying TTL on RX flows
++		 * will cause an incorrect checksum calculation. In such cases
++		 * we will use a FW table to recalculate the checksum.
++		 */
++		*recalc_cs_required = true;
 +}
 +
- static u32 parse_dmc_fw_header(struct intel_dmc *dmc,
- 			       const struct intel_dmc_header_base *dmc_header,
- 			       size_t rem_size, u8 dmc_id)
-@@ -436,6 +474,12 @@ static u32 parse_dmc_fw_header(struct in
- 		return 0;
+ static void dr_action_print_sequence(struct mlx5dr_domain *dmn,
+ 				     struct mlx5dr_action *actions[],
+ 				     int last_idx)
+@@ -649,8 +680,9 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
+ 		case DR_ACTION_TYP_MODIFY_HDR:
+ 			attr.modify_index = action->rewrite->index;
+ 			attr.modify_actions = action->rewrite->num_of_actions;
+-			recalc_cs_required = action->rewrite->modify_ttl &&
+-					     !mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps);
++			if (action->rewrite->modify_ttl)
++				dr_action_modify_ttl_adjust(dmn, &attr, rx_rule,
++							    &recalc_cs_required);
+ 			break;
+ 		case DR_ACTION_TYP_L2_TO_TNL_L2:
+ 		case DR_ACTION_TYP_L2_TO_TNL_L3:
+@@ -737,12 +769,7 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
+ 	*new_hw_ste_arr_sz = nic_matcher->num_of_builders;
+ 	last_ste = ste_arr + DR_STE_SIZE * (nic_matcher->num_of_builders - 1);
+ 
+-	/* Due to a HW bug in some devices, modifying TTL on RX flows will
+-	 * cause an incorrect checksum calculation. In this case we will
+-	 * use a FW table to recalculate.
+-	 */
+-	if (dmn->type == MLX5DR_DOMAIN_TYPE_FDB &&
+-	    rx_rule && recalc_cs_required && dest_action) {
++	if (recalc_cs_required && dest_action) {
+ 		ret = dr_action_handle_cs_recalc(dmn, dest_action, &attr.final_icm_addr);
+ 		if (ret) {
+ 			mlx5dr_err(dmn,
+@@ -1562,12 +1589,6 @@ dr_action_modify_check_is_ttl_modify(const void *sw_action)
+ 	return sw_field == MLX5_ACTION_IN_FIELD_OUT_IP_TTL;
+ }
+ 
+-static bool dr_action_modify_ttl_ignore(struct mlx5dr_domain *dmn)
+-{
+-	return !mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps) &&
+-	       !MLX5_CAP_ESW_FLOWTABLE(dmn->mdev, fdb_ipv4_ttl_modify);
+-}
+-
+ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
+ 					    u32 max_hw_actions,
+ 					    u32 num_sw_actions,
+@@ -1579,6 +1600,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
+ 	const struct mlx5dr_ste_action_modify_field *hw_dst_action_info;
+ 	const struct mlx5dr_ste_action_modify_field *hw_src_action_info;
+ 	struct mlx5dr_domain *dmn = action->rewrite->dmn;
++	__be64 *modify_ttl_sw_action = NULL;
+ 	int ret, i, hw_idx = 0;
+ 	__be64 *sw_action;
+ 	__be64 hw_action;
+@@ -1591,8 +1613,14 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
+ 	action->rewrite->allow_rx = 1;
+ 	action->rewrite->allow_tx = 1;
+ 
+-	for (i = 0; i < num_sw_actions; i++) {
+-		sw_action = &sw_actions[i];
++	for (i = 0; i < num_sw_actions || modify_ttl_sw_action; i++) {
++		/* modify TTL is handled separately, as a last action */
++		if (i == num_sw_actions) {
++			sw_action = modify_ttl_sw_action;
++			modify_ttl_sw_action = NULL;
++		} else {
++			sw_action = &sw_actions[i];
++		}
+ 
+ 		ret = dr_action_modify_check_field_limitation(action,
+ 							      sw_action);
+@@ -1601,10 +1629,9 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
+ 
+ 		if (!(*modify_ttl) &&
+ 		    dr_action_modify_check_is_ttl_modify(sw_action)) {
+-			if (dr_action_modify_ttl_ignore(dmn))
+-				continue;
+-
++			modify_ttl_sw_action = sw_action;
+ 			*modify_ttl = true;
++			continue;
+ 		}
+ 
+ 		/* Convert SW action to HW action */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+index 2d62950f7a29..134c8484c901 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v0.c
+@@ -419,7 +419,7 @@ dr_ste_v0_set_actions_tx(struct mlx5dr_domain *dmn,
+ 	 * encapsulation. The reason for that is that we support
+ 	 * modify headers for outer headers only
+ 	 */
+-	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR]) {
++	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR] && attr->modify_actions) {
+ 		dr_ste_v0_set_entry_type(last_ste, DR_STE_TYPE_MODIFY_PKT);
+ 		dr_ste_v0_set_rewrite_actions(last_ste,
+ 					      attr->modify_actions,
+@@ -511,7 +511,7 @@ dr_ste_v0_set_actions_rx(struct mlx5dr_domain *dmn,
+ 		}
  	}
  
-+	if (!dmc_mmio_addr_sanity_check(dmc, mmioaddr, mmio_count,
-+					dmc_header->header_ver, dmc_id)) {
-+		drm_err(&i915->drm, "DMC firmware has Wrong MMIO Addresses\n");
-+		return 0;
-+	}
-+
- 	for (i = 0; i < mmio_count; i++) {
- 		dmc_info->mmioaddr[i] = _MMIO(mmioaddr[i]);
- 		dmc_info->mmiodata[i] = mmiodata[i];
---- a/drivers/gpu/drm/i915/i915_reg.h
-+++ b/drivers/gpu/drm/i915/i915_reg.h
-@@ -7938,6 +7938,22 @@ enum {
- /* MMIO address range for DMC program (0x80000 - 0x82FFF) */
- #define DMC_MMIO_START_RANGE	0x80000
- #define DMC_MMIO_END_RANGE	0x8FFFF
-+#define DMC_V1_MMIO_START_RANGE	0x80000
-+#define TGL_MAIN_MMIO_START	0x8F000
-+#define TGL_MAIN_MMIO_END	0x8FFFF
-+#define _TGL_PIPEA_MMIO_START	0x92000
-+#define _TGL_PIPEA_MMIO_END	0x93FFF
-+#define _TGL_PIPEB_MMIO_START	0x96000
-+#define _TGL_PIPEB_MMIO_END	0x97FFF
-+#define ADLP_PIPE_MMIO_START	0x5F000
-+#define ADLP_PIPE_MMIO_END	0x5FFFF
-+
-+#define TGL_PIPE_MMIO_START(dmc_id)	_PICK_EVEN(((dmc_id) - 1), _TGL_PIPEA_MMIO_START,\
-+						_TGL_PIPEB_MMIO_START)
-+
-+#define TGL_PIPE_MMIO_END(dmc_id)	_PICK_EVEN(((dmc_id) - 1), _TGL_PIPEA_MMIO_END,\
-+						_TGL_PIPEB_MMIO_END)
-+
- #define SKL_DMC_DC3_DC5_COUNT	_MMIO(0x80030)
- #define SKL_DMC_DC5_DC6_COUNT	_MMIO(0x8002C)
- #define BXT_DMC_DC3_DC5_COUNT	_MMIO(0x80038)
+-	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR]) {
++	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR] && attr->modify_actions) {
+ 		if (dr_ste_v0_get_entry_type(last_ste) == DR_STE_TYPE_MODIFY_PKT)
+ 			dr_ste_v0_arr_init_next(&last_ste,
+ 						added_stes,
+-- 
+2.35.1
+
 
 
