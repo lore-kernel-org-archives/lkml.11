@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90888C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D60C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245210AbiEWSMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
+        id S245179AbiEWSMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242470AbiEWRhk (ORCPT
+        with ESMTP id S242652AbiEWRho (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EDC52E48;
-        Mon, 23 May 2022 10:31:27 -0700 (PDT)
+        Mon, 23 May 2022 13:37:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559AE57160;
+        Mon, 23 May 2022 10:31:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5A6861148;
-        Mon, 23 May 2022 17:31:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7141C385A9;
-        Mon, 23 May 2022 17:31:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09E35B80EB0;
+        Mon, 23 May 2022 17:29:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ADDCC34115;
+        Mon, 23 May 2022 17:29:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327082;
-        bh=QtFm/YePJogpPbhTBVQihthpmdFp/bsXcwx5js230EI=;
+        s=korg; t=1653326947;
+        bh=aQETEv3knpLMAwGuWM0fcNQn2UnC1ccPiguWubzSmgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M78v/RwF3ffohm/gg77jV3DgQqK5CZ6ok4TnERPy0UG7RXr0VLNYFlphoGPHPZz53
-         6q7Tr5qS36iNO6MvUX1dyH8GO1A+DCMl7m6TtjiZ5SO6MlA/mVWY36OjIMzHvpBHyS
-         mFVQvjENiKORZyuYX04HGKFnM1a1+PHR83sI6akE=
+        b=fREopRI1wMSnLCTFfRLmZppqVpcUrqkvYNOcv18cOpOx4tPHnrUhOs1jzsIYB3SX3
+         l5Vg5Ow4xwWy/RfZ7idF/dnJEPf7AcXt7C5/qJflvHLR/4h7EWEFOJHmb2LyiJI+QD
+         kTxEej9UCcyNK+k8ivXOaXR9EKEPJgx267MYkBcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Grant Grundler <grundler@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 151/158] net: atlantic: reduce scope of is_rsc_complete
-Date:   Mon, 23 May 2022 19:05:08 +0200
-Message-Id: <20220523165855.211777909@linuxfoundation.org>
+Subject: [PATCH 5.17 109/158] net/mlx5: Drain fw_reset when removing device
+Date:   Mon, 23 May 2022 19:04:26 +0200
+Message-Id: <20220523165849.146262802@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,66 +50,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grant Grundler <grundler@chromium.org>
+From: Shay Drory <shayd@nvidia.com>
 
-[ Upstream commit 79784d77ebbd3ec516b7a5ce555d979fb7946202 ]
+[ Upstream commit 16d42d313350946f4b9a8b74a13c99f0461a6572 ]
 
-Don't defer handling the err case outside the loop. That's pointless.
+In case fw sync reset is called in parallel to device removal, device
+might stuck in the following deadlock:
+         CPU 0                        CPU 1
+         -----                        -----
+                                  remove_one
+                                   uninit_one (locks intf_state_mutex)
+mlx5_sync_reset_now_event()
+work in fw_reset->wq.
+ mlx5_enter_error_state()
+  mutex_lock (intf_state_mutex)
+                                   cleanup_once
+                                    fw_reset_cleanup()
+                                     destroy_workqueue(fw_reset->wq)
 
-And since is_rsc_complete is only used inside this loop, declare
-it inside the loop to reduce it's scope.
+Drain the fw_reset WQ, and make sure no new work is being queued, before
+entering uninit_one().
+The Drain is done before devlink_unregister() since fw_reset, in some
+flows, is using devlink API devlink_remote_reload_actions_performed().
 
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 38b9f903f22b ("net/mlx5: Handle sync reset request event")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 25 ++++++++++++++++---
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  4 +++
+ 3 files changed, 27 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 440423b0e8ea..bc1952131799 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -346,7 +346,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		     int budget)
- {
- 	struct net_device *ndev = aq_nic_get_ndev(self->aq_nic);
--	bool is_rsc_completed = true;
- 	int err = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 862f5b7cb210..1c771287bee5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -8,7 +8,8 @@
+ enum {
+ 	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
+ 	MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST,
+-	MLX5_FW_RESET_FLAGS_PENDING_COMP
++	MLX5_FW_RESET_FLAGS_PENDING_COMP,
++	MLX5_FW_RESET_FLAGS_DROP_NEW_REQUESTS
+ };
  
- 	for (; (self->sw_head != self->hw_head) && budget;
-@@ -366,6 +365,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		if (!buff->is_eop) {
- 			buff_ = buff;
- 			do {
-+				bool is_rsc_completed = true;
+ struct mlx5_fw_reset {
+@@ -165,7 +166,10 @@ static void poll_sync_reset(struct timer_list *t)
+ 
+ 	if (fatal_error) {
+ 		mlx5_core_warn(dev, "Got Device Reset\n");
+-		queue_work(fw_reset->wq, &fw_reset->reset_reload_work);
++		if (!test_bit(MLX5_FW_RESET_FLAGS_DROP_NEW_REQUESTS, &fw_reset->reset_flags))
++			queue_work(fw_reset->wq, &fw_reset->reset_reload_work);
++		else
++			mlx5_core_err(dev, "Device is being removed, Drop new reset work\n");
+ 		return;
+ 	}
+ 
+@@ -390,9 +394,12 @@ static int fw_reset_event_notifier(struct notifier_block *nb, unsigned long acti
+ 	struct mlx5_fw_reset *fw_reset = mlx5_nb_cof(nb, struct mlx5_fw_reset, nb);
+ 	struct mlx5_eqe *eqe = data;
+ 
++	if (test_bit(MLX5_FW_RESET_FLAGS_DROP_NEW_REQUESTS, &fw_reset->reset_flags))
++		return NOTIFY_DONE;
 +
- 				if (buff_->next >= self->size) {
- 					err = -EIO;
- 					goto err_exit;
-@@ -377,18 +378,16 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 							    next_,
- 							    self->hw_head);
+ 	switch (eqe->sub_type) {
+ 	case MLX5_GENERAL_SUBTYPE_FW_LIVE_PATCH_EVENT:
+-			queue_work(fw_reset->wq, &fw_reset->fw_live_patch_work);
++		queue_work(fw_reset->wq, &fw_reset->fw_live_patch_work);
+ 		break;
+ 	case MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT:
+ 		mlx5_sync_reset_events_handle(fw_reset, eqe);
+@@ -436,6 +443,18 @@ void mlx5_fw_reset_events_stop(struct mlx5_core_dev *dev)
+ 	mlx5_eq_notifier_unregister(dev, &dev->priv.fw_reset->nb);
+ }
  
--				if (unlikely(!is_rsc_completed))
--					break;
-+				if (unlikely(!is_rsc_completed)) {
-+					err = 0;
-+					goto err_exit;
-+				}
++void mlx5_drain_fw_reset(struct mlx5_core_dev *dev)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++
++	set_bit(MLX5_FW_RESET_FLAGS_DROP_NEW_REQUESTS, &fw_reset->reset_flags);
++	cancel_work_sync(&fw_reset->fw_live_patch_work);
++	cancel_work_sync(&fw_reset->reset_request_work);
++	cancel_work_sync(&fw_reset->reset_reload_work);
++	cancel_work_sync(&fw_reset->reset_now_work);
++	cancel_work_sync(&fw_reset->reset_abort_work);
++}
++
+ int mlx5_fw_reset_init(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_fw_reset *fw_reset = kzalloc(sizeof(*fw_reset), GFP_KERNEL);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+index 7761ee5fc7d0..372046e173e7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+@@ -15,6 +15,7 @@ int mlx5_fw_reset_set_live_patch(struct mlx5_core_dev *dev);
+ int mlx5_fw_reset_wait_reset_done(struct mlx5_core_dev *dev);
+ void mlx5_fw_reset_events_start(struct mlx5_core_dev *dev);
+ void mlx5_fw_reset_events_stop(struct mlx5_core_dev *dev);
++void mlx5_drain_fw_reset(struct mlx5_core_dev *dev);
+ int mlx5_fw_reset_init(struct mlx5_core_dev *dev);
+ void mlx5_fw_reset_cleanup(struct mlx5_core_dev *dev);
  
- 				buff->is_error |= buff_->is_error;
- 				buff->is_cso_err |= buff_->is_cso_err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index f1437b6d4418..4e49dca94bc3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1628,6 +1628,10 @@ static void remove_one(struct pci_dev *pdev)
+ 	struct mlx5_core_dev *dev  = pci_get_drvdata(pdev);
+ 	struct devlink *devlink = priv_to_devlink(dev);
  
- 			} while (!buff_->is_eop);
- 
--			if (!is_rsc_completed) {
--				err = 0;
--				goto err_exit;
--			}
- 			if (buff->is_error ||
- 			    (buff->is_lro && buff->is_cso_err)) {
- 				buff_ = buff;
++	/* mlx5_drain_fw_reset() is using devlink APIs. Hence, we must drain
++	 * fw_reset before unregistering the devlink.
++	 */
++	mlx5_drain_fw_reset(dev);
+ 	devlink_unregister(devlink);
+ 	mlx5_crdump_disable(dev);
+ 	mlx5_drain_health_wq(dev);
 -- 
 2.35.1
 
