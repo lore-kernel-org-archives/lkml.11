@@ -2,138 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD35BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C30AEC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234888AbiEWL1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
+        id S234745AbiEWL2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234851AbiEWL1O (ORCPT
+        with ESMTP id S234762AbiEWL2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:27:14 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3CDE48
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:27:14 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id l3-20020a05660227c300b0065a8c141580so7959891ios.19
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:27:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=QCQ9Rx5sOF+d7lMeZPRORn2gtYhkl1yNXHf4o1NXpaI=;
-        b=hijwc1ftQuL7IKRWHd92ifzo0ts+0TRmgbZWjuGG2b+sWuszSxjlwPhqU1fIzoGSxh
-         S3lROqawq7gbDOcaXkVRW255Jx8MO78zxPU+NRhojmx8/inmirmK9/ipLlaC3XQ8COno
-         bKGUlJqIQzUTpr4ysUyXwLsmmuBNSFn8VDiu/hzCg/tOyB+y+lat8gbTTJ218ppk6WUl
-         cq1n22EPk39WZ4wlO0uIVDoC1dK0jftmValMHKvzo2B3oMj4lnmk5256RFiSuxeIUwa8
-         eUpcR4qPNkrWMbo+1pGmWo7WdAP6BJZtid2TYAyoONV7k9h/x3cMZODxtsKlwWVP9kjF
-         Cbyw==
-X-Gm-Message-State: AOAM5329Z/VB7rsP63LiFzy47I/Bwf56RVbn6JIT/mvu7FaVVrRcWCUC
-        2rF5zVVKM6i4dl2F2FhgoGIwx39YAY/kr/N95s6o6oAo6e+v
-X-Google-Smtp-Source: ABdhPJwRxk1Tzo+/dKxoCvKqxpreusTr+39AyxXTczOmfbO+jVHhyPNVPaqfGzwYu4BE6Em2vcbjUX3PNZMWCHt5jb2Y510FfFnt
+        Mon, 23 May 2022 07:28:47 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2062.outbound.protection.outlook.com [40.107.22.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2CB4D251;
+        Mon, 23 May 2022 04:28:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iqXtkfoir29OQBHFuqRWjZ2KJ4dImbZxBjt07F7XHbh1zV3zQu3o7rwoL8CQHBiE49678mXHZIXpPHsfZ8lp/atEXbbksprjN9vT37mSFJqs2GrZgRdREsoKe1KlVsyBDg/TBpUS2QFpaQuIL/4csBWFxnlbFvNaxaVNwGseJ/q9ZGgalHJrmcxpGL+fClinyfr62g5y0kq3rbkci4CsPQquGB6ZVFkQVpd8OwfOpjD6E+r23ZCpDYEorCyRINreROlpIUTerPdaz1ZNr/M+iYNhH8VzdLT46Be7V1A8Jyy5VxTuzlvJBnsVK4MC4UBLTSt2uGaVA3ZW+sKymeEBxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PZwImjOCqjHC02jp4G/HzBtKNYcrcKqYI+Fe5yxr60E=;
+ b=EQcS6dj3EBtmsQSkuCEFLhUg1EFaxLKUCuxQW8xSCVtRzY+4d02Cumv2Ec51osdsJkGZ0tcz+nNXbmjRKxqgsFAQ+ThxZgOYw58gcv7pBCc1NMhjBzRZUhCg1uPtWPxi/ZV6wJrcBXxnJzHt8jAc8zAFYnO++1gsCHranH8hRpzSiKlaolMb+DcTn8bYO7N7mqNYg5WLMPqNigVglBBRWxCFYQblXlRonczp2QFPznQYBTC1N75rWkyewoI7hpMn5xSx4gvnNnr+fRRhdmemLPlFfRrfPD08edrYXxl1DDgZsn0LoEp7gWNgzcapoy5AIFXTf7k6hsRKOTwfmYUypQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PZwImjOCqjHC02jp4G/HzBtKNYcrcKqYI+Fe5yxr60E=;
+ b=O6DZaJ6BA11dhve6AIYDwLH+YfLK9uozSnMda9BpobNl3uZWVGlGRgiflIf0lwQUH5jgMmayU9wkjw+vv3co7yiAqasN4WDFWJeluqqW1U8u3r8XoyYgK1f2KHDPkk6IQ/4qZqVYws/o8Zys0pxLc7DDMu5A+8UkAqWECZCGsXM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by AM6PR04MB6296.eurprd04.prod.outlook.com (2603:10a6:20b:b5::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.22; Mon, 23 May
+ 2022 11:28:42 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::a892:e4a9:4769:13a5]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::a892:e4a9:4769:13a5%7]) with mapi id 15.20.5273.020; Mon, 23 May 2022
+ 11:28:42 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        sboyd@kernel.org, mturquette@baylibre.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     aisheng.dong@nxp.com, l.stach@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH 0/7] imx: support i.MX93 SRC and mediamix blk ctrl
+Date:   Mon, 23 May 2022 19:30:22 +0800
+Message-Id: <20220523113029.842753-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR06CA0016.apcprd06.prod.outlook.com
+ (2603:1096:4:186::22) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:dcc:b0:32e:bfe7:95c6 with SMTP id
- m12-20020a0566380dcc00b0032ebfe795c6mr3003419jaj.245.1653305233439; Mon, 23
- May 2022 04:27:13 -0700 (PDT)
-Date:   Mon, 23 May 2022 04:27:13 -0700
-In-Reply-To: <20220523110657.3142-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000025031405dfac1fa0@google.com>
-Subject: Re: [syzbot] general protection fault in ath9k_hif_usb_rx_cb (2)
-From:   syzbot <syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 024296cf-a7d7-4373-1447-08da3caf63cb
+X-MS-TrafficTypeDiagnostic: AM6PR04MB6296:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM6PR04MB62966F41D7BFD02E256B87B6C9D49@AM6PR04MB6296.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YlMjPRg8VRNad2x63cLn4+vkwD2JU1n+79lDwFr7ik7GFeVqXUEUxJql5xJ6+Dmf3tUH131RMH6eONOSCMMPz8xDSeA5KpaD8apQcjgTNK8lmxRRzdYPilhN++W4rrDZWV3/MgWUIEHYhbLudI2vXSKGl9zeDISx7SlWLrfr2P3E8JSq6cDOudnDRNqJigHPjfAcpTBNfJWgEG1sNhjl6CIBpAATBuocq/NH2/oohdT5ZcxcE86+vx8SC9CxuCMI5Aq/ZkyvwE57z6itVLXXPkcsG2OQEdlJ9EILXlYGeM4URoeQ8f0EEUfPX83iJJQdBAyNKaZJoTgaRnLsw1qkhPvBZuaWjbSPnWsJ5S6GVmI9ILcvX6B2+3e5OLQ3IbOydkuDcpn6xKSrZHWwt9WNRsLejUkXy3iN0fMaraSsJ/+OGdRDolEERPjv/KaCyeN3xJIZSoWKQt08Bvop33Swq1qns+QsKFkQQAMxu/AyJO6FLYH9yXxYG8bwkhIF9+fJ4gtYclrifgolvZzDL9XsyzerMpNLrFMYURAFPMqWh1qhKftkoyMsiiMhhHZkULOsmyXKhXGWydgKs4j9D7GowjGYxiL+LSF3aFvM4Y9C2NZ3GDYpmfiHyHPwUH0y9KQbNiTFN7WK/iIAkmnrIFKTEtNuaQyIrJnjzzoUYdk0L3xlErHQhpyMBYqjDWLMi8Qem3Tp5QSTi17VL99PTku+nA09J7jxa7w0CiLLCqG5LT39z6/I2IajVE9bjaJjiTi73L6CBwun4CrF9zzHyV03oTZLiMQ1WyTBztMTHro2Qag=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(38350700002)(6512007)(6506007)(66946007)(6666004)(38100700002)(52116002)(8936002)(7416002)(26005)(66476007)(66556008)(186003)(316002)(2616005)(2906002)(1076003)(4326008)(8676002)(6486002)(966005)(83380400001)(86362001)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TQFWBl89Dsc0fMYlvWhNmD/adtI58BR78RrR64xHvR21HAzV4xOV9UfIaPf4?=
+ =?us-ascii?Q?NhUTCnGcBtDT38c3NRQ/c32BDKP7hPVbcjVOSJPh74UMYGDfVvHdff8EuGUG?=
+ =?us-ascii?Q?CqGQjAu6lLRDlUOGrVjrphadLs625haFcyWx2XBtkMi+DHLTWQcgBYuVD1tV?=
+ =?us-ascii?Q?RsKcymzGSBZYFaMj2o6Q3tyvRj9263KfWPp+tw6ZRvqlr1NaJqTa6oNd/8rC?=
+ =?us-ascii?Q?5B19V6WsrimnmH4y7byK+yUQQ22BRK9g/b4K2kBDK9aBogjnnDQw1A7eVMad?=
+ =?us-ascii?Q?geNOwTQ7HMbKAfqhluiayVCB5DPk9StWhpUCSvdioCLWHZxOk2ufFbfCPdNf?=
+ =?us-ascii?Q?4+tdXEkgSSMG9dHDIV/Kwiop+BxHvjRCOOigLsXK/THa0Bm5W96i6BxNTMuN?=
+ =?us-ascii?Q?SAoc+5JFdeZ1VNu99Tlus/LshZnDVlhS+5JBMj5WSIYXr2fKoP1rBsHzq94H?=
+ =?us-ascii?Q?k8cq7NU04JfcM9gSn/Ly97YjFfizNjuWGnqJ+sJTa3ox4si54ME6B1eFH7Lp?=
+ =?us-ascii?Q?qdJlJEyeVfX9Anj/Rtnqogj06fxiT37FEgi4ij2fbywbkrx1Oq8sKMQAwpPF?=
+ =?us-ascii?Q?3NQ2xMHq7XOTJHvmbW4+tERJLe5VZTWazFalMwDt66sokHZOXT1fCCC0SaG2?=
+ =?us-ascii?Q?Bq0j37rQqT0ZmcYUT9tESbVJ0sycA8yjtHfLSzqkK1mSZgOV3cS+p/xRlljA?=
+ =?us-ascii?Q?GqRLxB661BP7aVNyjCeSZjhc4Fk1mUir9SQRGtFU6dvYinT64liv7hbbt4uA?=
+ =?us-ascii?Q?Hf15IZlQmjp5FgVfwwNIyguXqQ8YQllbZzexY9J3d0xnWlKmawxkXO9yzRex?=
+ =?us-ascii?Q?+OLgyyCUAjs4GnWWcmE2/gbH8OG+r8oFJxI3ftRHTK8N6af8r9bMfFfld8uk?=
+ =?us-ascii?Q?mks3Ul/G7VjoaFYrhNE33bjFmDJRZGLUiSM7VAj2xO4mdrgTpUYQzI2Q4xYJ?=
+ =?us-ascii?Q?ZF4bE5dO9BWz/E2sJ2ZdCn4EPHoXCDjm+mNewDNOnRI7JrSK1Yfosr3JdMF2?=
+ =?us-ascii?Q?KTeMVvAPWNl1/YayKZ3VJc+EZ681P7Yl4WELNUZEVHcLfAr1NmmlMtPDNSwv?=
+ =?us-ascii?Q?V9ANb/vjN0a+aQjYHB9GGAFKPcMWiwOieLqxEEbRAWA2wQRQjFGVFTVU7B+5?=
+ =?us-ascii?Q?lfC6qZeavw+3J+42TcSTRIXTwLERJ+QgkM4uWahDblpp7r+ZHuxUY/cARqTr?=
+ =?us-ascii?Q?n8C+evjKgL18U53gg+KXUkK3kA320EkEtmLDKJxRerWcvdj/UbBrVv2W4Boc?=
+ =?us-ascii?Q?WVw7qrAJim2Rr90c/DKXsARmz9+SJOCNhQpreceXLEiZyRCWbNQrfKN97kAu?=
+ =?us-ascii?Q?U+dRAa74OigPk1uTK+NNix71Ph1xg9OoFF1JwiuJqrNQqB+VjZE9hBTVSxR/?=
+ =?us-ascii?Q?jGfCxnKF9fFMKTSmPi5ghDKmMZahHITy4mBOLcaWj+EfOArLstVFcg0OstgP?=
+ =?us-ascii?Q?8PnpO8MU9tVdI7jG9XridPN/r1nakljPiCZL84iuwhp8OI8NhwVSNSStHP8X?=
+ =?us-ascii?Q?uTP0BrkCRl/jkI3/fpLppCBD1V8ApXgWWHknwtn+ErnaohBQx5tVSRc4q/Bv?=
+ =?us-ascii?Q?6zKK6hCKvRq3TxR3XIGUeTyBAHgK9w3mBOkoHLYR88/3HpbmUejxpEY6dGrk?=
+ =?us-ascii?Q?m2iOkBZ1d6E004GR3l8mPuABPoc4PpG7xQz3jL0psubtOhopwlVX1QsYCZJ/?=
+ =?us-ascii?Q?mVMMqBMP0Wk74V+nd+WQ+nAIAqgu/rJ8NWU2kXOztXHUfH0eenWemm/BQHOh?=
+ =?us-ascii?Q?ZdO7wBNYVw=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 024296cf-a7d7-4373-1447-08da3caf63cb
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 11:28:42.0100
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7TeRJtSR3V0TvkNbp4NX0dS66kyR9eQNTFTvSblhf57hB/NIvp7fztdAqCxhEFqT1vdqDpqvBnasBOmcFVri3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6296
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Peng Fan <peng.fan@nxp.com>
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-general protection fault in ath9k_hif_usb_rx_cb
+This patchset is to support i.MX93 SRC and mediamix blk ctrl.
+SRC functions as power domain provider as i.MX8M GPC.
+mediamix blk ctrl is similar with i.MX8M blk ctrl, but much simplier from
+software view.
 
-general protection fault, probably for non-canonical address 0xdffffc00000001f6: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000fb0-0x0000000000000fb7]
-CPU: 3 PID: 33 Comm: ksoftirqd/3 Not tainted 5.18.0-syzkaller-00380-g4b0986a3613c-dirty #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:589 [inline]
-RIP: 0010:ath9k_hif_usb_rx_cb+0xcfd/0x10d0 drivers/net/wireless/ath/ath9k/hif_usb.c:687
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 cc 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 08 48 8d bb b4 0f 00 00 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 09 84 d2 74 05 e8
-RSP: 0018:ffffc900007cf808 EFLAGS: 00010007
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
-RDX: 00000000000001f6 RSI: ffffffff8526ff89 RDI: 0000000000000fb4
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff8526fcef R11: 0000000000004e00 R12: 0000000000000000
-R13: ffff88804dc60000 R14: ffff88802c54f000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff88802cd00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055d696b46600 CR3: 00000000247b2000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1670
- usb_hcd_giveback_urb+0x367/0x410 drivers/usb/core/hcd.c:1747
- dummy_timer+0x11f9/0x32b0 drivers/usb/gadget/udc/dummy_hcd.c:1988
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
- expire_timers kernel/time/timer.c:1466 [inline]
- __run_timers.part.0+0x679/0xa80 kernel/time/timer.c:1737
- __run_timers kernel/time/timer.c:1715 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1750
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- run_ksoftirqd kernel/softirq.c:921 [inline]
- run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
- smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:589 [inline]
-RIP: 0010:ath9k_hif_usb_rx_cb+0xcfd/0x10d0 drivers/net/wireless/ath/ath9k/hif_usb.c:687
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 cc 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 08 48 8d bb b4 0f 00 00 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 09 84 d2 74 05 e8
-RSP: 0018:ffffc900007cf808 EFLAGS: 00010007
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
-RDX: 00000000000001f6 RSI: ffffffff8526ff89 RDI: 0000000000000fb4
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff8526fcef R11: 0000000000004e00 R12: 0000000000000000
-R13: ffff88804dc60000 R14: ffff88802c54f000 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff88802cd00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055d696b46600 CR3: 00000000247b2000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	48 c1 ea 03          	shr    $0x3,%rdx
-   4:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   8:	0f 85 cc 03 00 00    	jne    0x3da
-   e:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  15:	fc ff df
-  18:	48 8b 5b 08          	mov    0x8(%rbx),%rbx
-  1c:	48 8d bb b4 0f 00 00 	lea    0xfb4(%rbx),%rdi
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx <-- trapping instruction
-  2e:	48 89 f8             	mov    %rdi,%rax
-  31:	83 e0 07             	and    $0x7,%eax
-  34:	83 c0 03             	add    $0x3,%eax
-  37:	38 d0                	cmp    %dl,%al
-  39:	7c 09                	jl     0x44
-  3b:	84 d2                	test   %dl,%dl
-  3d:	74 05                	je     0x44
-  3f:	e8                   	.byte 0xe8
+Export of_clk_bulk_get_all for driver usage.
 
+Add bindings and dts node
 
-Tested on:
+Based on:
+https://patchwork.kernel.org/project/linux-arm-kernel/cover/20220510124050.398891-1-peng.fan@oss.nxp.com/
 
-commit:         4b0986a3 Linux 5.18
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17a7f4e5f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=55eba09345624206
-dashboard link: https://syzkaller.appspot.com/bug?extid=c6dde1f690b60e0b9fbe
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=177a69c3f00000
+Peng Fan (7):
+  dt-bindings: soc: add bindings for i.MX93 SRC
+  dt-bindings: soc: add bindings for i.MX93 mediamix blk ctrl
+  clk: export of_clk_bulk_get_all
+  soc: imx: add i.MX93 SRC power domain driver
+  soc: imx: add i.MX93 media blk ctrl driver
+  arm64: dts: imx93: add src node
+  arm64: dts: imx93: add mediamix blk ctrl node
+
+ .../soc/imx/fsl,imx93-media-blk-ctrl.yaml     |  81 +++++
+ .../bindings/soc/imx/fsl,imx93-src.yaml       |  88 +++++
+ arch/arm64/boot/dts/freescale/imx93.dtsi      |  38 ++
+ drivers/clk/clk-bulk.c                        |   3 +-
+ drivers/soc/imx/Kconfig                       |  10 +
+ drivers/soc/imx/Makefile                      |   1 +
+ drivers/soc/imx/imx93-blk-ctrl.c              | 333 ++++++++++++++++++
+ drivers/soc/imx/imx93-pd.c                    | 271 ++++++++++++++
+ include/dt-bindings/power/imx93-power.h       |  17 +
+ include/linux/clk.h                           |   2 +
+ 10 files changed, 843 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx93-media-blk-ctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx93-src.yaml
+ create mode 100644 drivers/soc/imx/imx93-blk-ctrl.c
+ create mode 100644 drivers/soc/imx/imx93-pd.c
+ create mode 100644 include/dt-bindings/power/imx93-power.h
+
+-- 
+2.25.1
 
