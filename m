@@ -2,90 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A466C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9071C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242843AbiEWSAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S243047AbiEWSAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241103AbiEWRcl (ORCPT
+        with ESMTP id S241189AbiEWRcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0AB79825;
+        Mon, 23 May 2022 13:32:47 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4427982A;
         Mon, 23 May 2022 10:27:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 523B860919;
-        Mon, 23 May 2022 17:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50623C385A9;
-        Mon, 23 May 2022 17:27:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326847;
-        bh=z9KitDqnllZPX+NUcFczaCCn/qxRFGh1THplW/YBoOY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XI+BuiScBJwhH+5+JAPCFdfTl+uFr0mLanvAPGdluYzfmHwi7WiSvXBlZqsj2KbE+
-         0YePvuLudonDVrZpJnhC6cXtpeHOipIX48FLKF5AnFYjx6ogfG6qvNrBXTVwrYwy9P
-         /JK9R6AuE5L80pchYV+hokykgh87RaQ5po5QhpWE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Ming Lei <ming.lei@redhat.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 078/158] block/mq-deadline: Set the fifo_time member also if inserting at head
-Date:   Mon, 23 May 2022 19:03:55 +0200
-Message-Id: <20220523165843.956480333@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-30007f11f88so24447917b3.7;
+        Mon, 23 May 2022 10:27:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sTAZGlEUmX/o2HerHezmpZJYpBk/Tk//TO+SFL1h0zA=;
+        b=pN4ceqx3jRqPDNbZxMO8S9NplGCGhu5NZGlEejwVpgTIpU/7Eyj86+mcv240DqoKIB
+         TPReO8r/4SM21FZvUgntCTTdurUlJ5mLo9g7bqG2ocJDosfEmIwHXyrGOCjbU6wDOs83
+         fG+rkIVl2t+Wktu9X0gBXqVOb6OuX/sxcB1Tg84f8HyAyOknb8mjSP/YMihayC/Qx7NP
+         fuFYzJxMzGEv7uzFInqftcmOkkT9vmmRLaOns7cghOZG5ZeJcBheQyROBJE9eWAN0EMF
+         +DsJDJdA3qPlMOz334GBPaxozXAt7G7i852jHnf7qWw6v0Rv3Ozp3qB31ZCsWZ22wW2M
+         B/CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sTAZGlEUmX/o2HerHezmpZJYpBk/Tk//TO+SFL1h0zA=;
+        b=fM4WvityEK09LtVeUHKX7MRRqGhtDxoXenIoCogx6bicGf5m511pZfKIx4oe+8HUyz
+         bJKgsKUPaxsOvxh4zUGE3Yk/gzzO+YRuc6FPkmSXrjo7lmZpTIIQfv65yf/Khof2r6Ue
+         3h1kIh8qXwVKWCleBFZPrbwmMs/1dVuMWqFl9lD6eQGXmcKhyI1iy+7HyDqDpNLXG3Cf
+         +3aUHR+H3WZhsYQvTcDUgo55p7IGI84/GN9DlJXmjwpQv7NvAfJNFkq6qpnxTpQJJxOf
+         MyfKzwdejX+xdlsg+eSngjUTu0BZReI/YJM0FKo/JJNv5DxxVQ0zkrR/qdZUMPocNAPr
+         TSag==
+X-Gm-Message-State: AOAM530RLopEba7IH4Wh/08EUH9tfM/RCXnPugXdUft0Iz8UFOPknU/J
+        T5nJz69PrMBW6K4uI6zxZpZGQM/SqLtdFqMXiOeMeIlvjt4=
+X-Google-Smtp-Source: ABdhPJyfb8N3rzOUX/Kjr0IcB2wzgmkTx8SdieSrc6hUMHn9O6f7sUVSBxw6MHCLQeIkZi6lnS9ZRTgE+qAWFNZBBrU=
+X-Received: by 2002:a0d:e2ca:0:b0:2ff:369c:a3ee with SMTP id
+ l193-20020a0de2ca000000b002ff369ca3eemr25119387ywe.292.1653326847797; Mon, 23
+ May 2022 10:27:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220518192924.20948-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220518192924.20948-4-prabhakar.mahadev-lad.rj@bp.renesas.com> <CACRpkda1pfL8tk0S_0bHvj4kWYrLTTeOz3b_A9qK5DJwHWeTXw@mail.gmail.com>
+In-Reply-To: <CACRpkda1pfL8tk0S_0bHvj4kWYrLTTeOz3b_A9qK5DJwHWeTXw@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Mon, 23 May 2022 18:27:01 +0100
+Message-ID: <CA+V-a8uR6EHr9ZqbBkLLKwLTPO4asthYaWTYE8c4NGFUt9Gmcg@mail.gmail.com>
+Subject: Re: [PATCH v4 3/7] gpio: gpiolib: Add ngirq member to struct gpio_irq_chip
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+Hi Linus,
 
-[ Upstream commit 725f22a1477c9c15aa67ad3af96fe28ec4fe72d2 ]
+Thank you for the review.
 
-Before commit 322cff70d46c the fifo_time member of requests on a dispatch
-list was not used. Commit 322cff70d46c introduces code that reads the
-fifo_time member of requests on dispatch lists. Hence this patch that sets
-the fifo_time member when adding a request to a dispatch list.
+On Thu, May 19, 2022 at 2:26 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> On Wed, May 18, 2022 at 9:30 PM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> > Supported GPIO IRQs by the chip is not always equal to the number of GPIO
+> > pins. For example on Renesas RZ/G2L SoC where it has GPIO0-122 pins but at
+> > a given point a maximum of only 32 GPIO pins can be used as IRQ lines in
+> > the IRQC domain.
+> >
+> > This patch adds ngirq member to struct gpio_irq_chip and passes this as a
+> > size to irq_domain_create_hierarchy()/irq_domain_create_simple() if it is
+> > being set in the driver otherwise fallbacks to using ngpio.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> NAK
+>
+> As pointed out this is a property of the hardware and thus you should
+> derive this property of the hardware from the compatible string.
+>
+> For example by passing per-variant .data in struct of_device_id.
+>
+> Unique hardware properties means unique hardware means it should
+> have a unique compatible string. Otherwise something is wrong
+> with the compatibles.
+>
+Agreed, I will drop this.
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Ming Lei <ming.lei@redhat.com>
-Cc: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Fixes: 322cff70d46c ("block/mq-deadline: Prioritize high-priority requests")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Link: https://lore.kernel.org/r/20220513171307.32564-1-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- block/mq-deadline.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/block/mq-deadline.c b/block/mq-deadline.c
-index 3ed5eaf3446a..6ed602b2f80a 100644
---- a/block/mq-deadline.c
-+++ b/block/mq-deadline.c
-@@ -742,6 +742,7 @@ static void dd_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
- 
- 	if (at_head) {
- 		list_add(&rq->queuelist, &per_prio->dispatch);
-+		rq->fifo_time = jiffies;
- 	} else {
- 		deadline_add_rq_rb(per_prio, rq);
- 
--- 
-2.35.1
-
-
-
+Cheers,
+Prabhakar
