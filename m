@@ -2,110 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB157C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 196E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235096AbiEWLnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
+        id S235098AbiEWLom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235074AbiEWLnf (ORCPT
+        with ESMTP id S235072AbiEWLok (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:43:35 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F31506DA;
-        Mon, 23 May 2022 04:43:33 -0700 (PDT)
-Received: from mail-ot1-f42.google.com ([209.85.210.42]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M8yPu-1ny2QH3nh0-0066ng; Mon, 23 May 2022 13:43:32 +0200
-Received: by mail-ot1-f42.google.com with SMTP id e11-20020a9d6e0b000000b0060afcbafa80so4418465otr.3;
-        Mon, 23 May 2022 04:43:31 -0700 (PDT)
-X-Gm-Message-State: AOAM530VEDwel10v6P42dzQ6EV0W/ImJ2lYBPfS2Ob6jT5cD6s9b3rRk
-        rep+Z18t15/VrxXwa2LB9oh6NBm7p3HONc7O7mM=
-X-Google-Smtp-Source: ABdhPJxpUCa94Kh6HQKuK56biKlb3vDJKuICvFZFBgpVEpCuri5EfGLbRA6cBhu22Na5oqGEdTcIEn9+H34udGZY6o0=
-X-Received: by 2002:a25:75c5:0:b0:648:dccd:e1c with SMTP id
- q188-20020a2575c5000000b00648dccd0e1cmr21094709ybc.452.1653299785602; Mon, 23
- May 2022 02:56:25 -0700 (PDT)
+        Mon, 23 May 2022 07:44:40 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CE9506FD
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:44:39 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id h9so7754420qtx.2
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:reply-to:mime-version
+         :content-disposition;
+        bh=3aVJI5c5O7jSRmeZkmnQH6lIAVqqKmbO2pfiDyl8EZU=;
+        b=dhT1tTlWhGNbttlcLl4Y5fWajhOaXFyuZ2HHTqdyC4e4dN7K9VvWEl/jvuVKMbMEqr
+         hEqft0M9ImFSgiBn3uta3LM1IM7bY2hjUdpiX2Snqe1/fhgFbD/2kDpqmro2DliDsqNA
+         x942o9YqnV49E+C75zV2q81nwNAZIr1LQSTQRv0MDMM3S6r9H7EMHeoGghBbFR7whlYO
+         Vk9cdN4HNe9CmDMls2sZ/58f4weVHGYCj4s1nwKpscyTMv820QQ0CCQD3pyBhGdu6ZYt
+         R27WuJGXPw+5Pe+2DixQdTWPXtjuPLKtgES/BpXqsZ2/ogEB6n45l0i+3D5hoPbQL6Ps
+         CU4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :reply-to:mime-version:content-disposition;
+        bh=3aVJI5c5O7jSRmeZkmnQH6lIAVqqKmbO2pfiDyl8EZU=;
+        b=Vy1ztLsvGHOZy4WW3JsF6/QtWTk44XZqfj9EK4twhASu3A3FnBJ4C+UH3gaWQ5Qq8U
+         NHt4tbds160dDEkJyzca+DXfrqhtJl9Bgv93MEiSXK0uYgyy1yk11QVKWW0eUs1SlQxg
+         vQ5jyHfAaUf/lVp5Saf+BLBGCEXlcCvLI6ITi2X9Erit5LbohyARxJPZeSnEIPcQdHzL
+         93O/iMkAhmangKnZyJ0Qwfs2/mYk4FKKu9m5WLB0pAFgTdVNqAzGveci0pjiRIDGeSfY
+         Qiym8I1pXCoJDOcYOS9v7kvS6osDvnvMMqVrDymOO8q1bu8pXa8u3NIKORa51NH6RDXZ
+         vFBg==
+X-Gm-Message-State: AOAM532W7JaBRPY3OjxbtywKgrpY7kNG78TQq3HZZuKOrHtUb1TWwWaQ
+        o5hSIPwHNoHa2I8LmeZEtg==
+X-Google-Smtp-Source: ABdhPJwjG10A9KRoD/7HLjsZameMg7bZMBi1dJt3007qZj1gnTAlUB442LXftvJM1onztMZ0uIMPiQ==
+X-Received: by 2002:ac8:7fc4:0:b0:2f3:f174:e8c4 with SMTP id b4-20020ac87fc4000000b002f3f174e8c4mr16010968qtk.572.1653306278379;
+        Mon, 23 May 2022 04:44:38 -0700 (PDT)
+Received: from serve.minyard.net ([47.184.144.75])
+        by smtp.gmail.com with ESMTPSA id 131-20020a370989000000b0069fe1fc72e7sm4350941qkj.90.2022.05.23.04.44.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 04:44:37 -0700 (PDT)
+Sender: Corey Minyard <tcminyard@gmail.com>
+Received: from minyard.net (unknown [IPv6:2001:470:b8f6:1b:75dd:56d5:b937:8615])
+        by serve.minyard.net (Postfix) with ESMTPSA id A757F18000C;
+        Mon, 23 May 2022 11:44:36 +0000 (UTC)
+Date:   Mon, 23 May 2022 06:44:35 -0500
+From:   Corey Minyard <minyard@acm.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net
+Subject: [GIT PULL] IPMI bug fixes for 4.19
+Message-ID: <20220523114435.GH3767252@minyard.net>
+Reply-To: minyard@acm.org
 MIME-Version: 1.0
-References: <20220522155046.260146-1-tmaimon77@gmail.com> <20220522155046.260146-5-tmaimon77@gmail.com>
-In-Reply-To: <20220522155046.260146-5-tmaimon77@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 23 May 2022 11:56:09 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0Nh4m7O_WPe1DTWqwWU32C5khOPH0ir7r_=s106mLv5A@mail.gmail.com>
-Message-ID: <CAK8P3a0Nh4m7O_WPe1DTWqwWU32C5khOPH0ir7r_=s106mLv5A@mail.gmail.com>
-Subject: Re: [PATCH v1 04/19] tty: serial: 8250: Add NPCM845 UART support
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        robert.hancock@calian.com,
-        "nathan=20Neusch=C3=A4fer?=" <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>, SoC Team <soc@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Eh/qW2KznBfSE/OEBWqMPrKe6wGQVBqS5SXsFUcXmZEqSSuDHwT
- 72VMZAhZPMIqmh+H6lMwP5qwnaEjve33ZMwxkio1HwuhLe3vPgbpqAog7NGZVs3/TT2oIMr
- eLUmXk8B4w648y9F7Bu1gvCHI+0N3M/eyZ0k53KwRmUDovnzg2msAvsumZTmJi6s5Ya1U3b
- XfeBYBqjpRFHOFSgvC5YQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MX/kDM8qFJQ=:CvgCpZv4G2zKoUj2z9ehBD
- q317uwNL18N9Picka94IqPCTYd3CmtXvDVrZ9rwdHuwNOfOByunvQOyYEl5G8UQfzgImVWQBY
- D2Yk6dIUB06pWAOExUyI9NYclahQzC4GJDaRKjYHAZu+iYEzlL52xKUvBX6ZZGlmZHTPGN8YX
- Y/5RUBanuZtJvJ3iqaVWmUtMVIHC1WfhHtvERDNttfphhBU/c3itCrYebF2hY4d41zw4KBDkT
- VwFMXAaE1xna2GBc+ty/P+JeIl+zwKF3spkzznm8v3zF0gKEkK96NRflU70ymEbIXkMlosfa4
- /L7WeQkkTK3JvD6BDaeGnZMFBbTCwZHTtAefhAKghRvOBIPwyn+k5Xf+ohYGEMt6HOWRLJoLV
- sMYIWGyABqjBjoF2fu8Bhd4Z/GzoffvZlG5hEUyOiOaXt+LbNNxrFHXrn2ac34cWnfFoQKO7b
- G/j4oZ1S89kseAeIDBc3zq2pjCdnmeh2aT5VBDIO9EqV7QQNBsGLqHCq6Br+bSWTqOgNqFRiI
- GYuJRIitstsn3UA3Mg3fSmvVvA5S8zK34xsP4Ig9SNK1InEcSdsHPntJvV0R5CDVYUFHVzpLW
- 5TL6tb0Qt79u4jxBCx/txPyQ4vCoPHVuj6/UyE13epLYHMwsTW/lbdmg6GxFOoVpPNtKTs2Dt
- rCVhULYuwi2udYEMOPaNzoEEUAAzZp2AgFWVYAXgWuddQ5uBtMvy3DbQEtX8YYqNOwskHC9Tu
- ZESP5no+BZ2x6s/vpQD5d2oZmYZ4wWiTMydWlWTqt8UDE1ugbhNkqcKztxF/zTHf/0BIFZrRp
- 6kpLar02NBXVZfofCQH0YywcWqyCSP+dynb/W3vwBXGDi7cXGOCLkfF8ak/RImCcA+meyBaWP
- epvJo17x6SJ9CA+eTjtQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 5:50 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -333,6 +333,7 @@ static const struct of_device_id of_platform_serial_table[] = {
->         { .compatible = "ti,da830-uart", .data = (void *)PORT_DA830, },
->         { .compatible = "nuvoton,wpcm450-uart", .data = (void *)PORT_NPCM, },
->         { .compatible = "nuvoton,npcm750-uart", .data = (void *)PORT_NPCM, },
-> +       { .compatible = "nuvoton,npcm845-uart", .data = (void *)PORT_NPCM, },
->         { /* end of list */ },
+The following changes since commit a7391ad3572431a354c927cf8896e86e50d7d0bf:
 
-If these are compatible devices, it's usually easier to claim
-compatibility with both the specific chip and the older model
-as a fallback, to avoid driver changes. This seems to apply to
-the timer and watchdog devices as well.
+  Merge tag 'iomm-fixes-v5.18-rc5' of git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu (2022-05-04 11:04:52 -0700)
 
-       Arnd
+are available in the Git repository at:
+
+  https://github.com/cminyard/linux-ipmi.git tags/for-linus-4.19-1
+
+for you to fetch changes up to a508e33956b538e034ed5df619a73ec7c15bda72:
+
+  ipmi:ipmb: Fix refcount leak in ipmi_ipmb_probe (2022-05-12 10:00:04 -0500)
+
+----------------------------------------------------------------
+Fixes for IPMI
+
+Add limits on the number of users and messages, plus sysfs interfaces
+to control those limits.
+
+Other than that, little cleanups, use dev_xxx() insted of pr_xxx(),
+create initializers for structures, fix a refcount leak, etc.
+
+----------------------------------------------------------------
+Corey Minyard (11):
+      ipmi: Add a limit on the number of users that may use IPMI
+      ipmi: Limit the number of message a user may have outstanding
+      ipmi: Add a sysfs interface to view the number of users
+      ipmi: Add a sysfs count of total outstanding messages for an interface
+      ipmi:ssif: Check for NULL msg when handling events and messages
+      ipmi: Add an intializer for ipmi_smi_msg struct
+      ipmi: Add an intializer for ipmi_recv_msg struct
+      ipmi: Fix pr_fmt to avoid compilation issues
+      ipmi: Convert pr_debug() to dev_dbg()
+      ipmi:si: Convert pr_debug() to dev_dbg()
+      ipmi: Make two logs unique
+
+Miaoqian Lin (1):
+      ipmi:ipmb: Fix refcount leak in ipmi_ipmb_probe
+
+Stephen Kitt (1):
+      ipmi: use simple i2c probe function
+
+Yu Zhe (1):
+      ipmi: remove unnecessary type castings
+
+ drivers/char/ipmi/ipmb_dev_int.c    |   5 +-
+ drivers/char/ipmi/ipmi_ipmb.c       |   6 +-
+ drivers/char/ipmi/ipmi_msghandler.c | 111 ++++++++++++++++++++++++++++++++----
+ drivers/char/ipmi/ipmi_poweroff.c   |   8 +--
+ drivers/char/ipmi/ipmi_si_intf.c    |  17 +++---
+ drivers/char/ipmi/ipmi_ssif.c       |  33 +++++++++--
+ drivers/char/ipmi/ipmi_watchdog.c   |  28 ++++-----
+ include/linux/ipmi.h                |   5 ++
+ include/linux/ipmi_smi.h            |   6 ++
+ 9 files changed, 165 insertions(+), 54 deletions(-)
+
