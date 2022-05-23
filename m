@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1479AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241676AbiEWRjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:39:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
+        id S241780AbiEWRkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242119AbiEWR10 (ORCPT
+        with ESMTP id S242174AbiEWR13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B347B9DE;
-        Mon, 23 May 2022 10:22:40 -0700 (PDT)
+        Mon, 23 May 2022 13:27:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DBC7B9F9;
+        Mon, 23 May 2022 10:22:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86435B811CE;
-        Mon, 23 May 2022 17:22:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9246C385A9;
-        Mon, 23 May 2022 17:22:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2248860B2C;
+        Mon, 23 May 2022 17:22:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD59C385A9;
+        Mon, 23 May 2022 17:22:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326552;
-        bh=iKQ0hZxnLPgEJ50DVj3I4D8Qng3oKsd31mCAqKdvhDo=;
+        s=korg; t=1653326545;
+        bh=NOcKAOcWqu9x5L2iNzWHO089IBLx44Kt1k0BYvn8aJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I+vk4A4V8cFFTtKP9jnuJShpTKTPomBP8YzK5ocxFaVON5qMg+h35lvFewwzQ2UqT
-         DehwQXXix0HBe7EupFLvr53K5lkFBWFHFiqfIL1VNwaYtP1y/Q8fJjBAs1BpX75D5L
-         tyKTw2ubuid4Qr8PxcpA/Td59KBp4fBiJj+k3UyU=
+        b=AwsENx+98HcOHZOzYr8Ie7t33DjQUnvb5rFHhhhivsys9PfI94mKxfwqcotGHO5lH
+         Ri2W6ifOjMHls7SMbme5aVgKi2Nru2EyjncriOCGfd4zwlFK+BMnYfxpCElVsX0lgo
+         tlsN2fgX+QddzzaBRajgmkhYGjOlhbx3adEdn1og=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
+        stable@vger.kernel.org,
+        Kieran Frewen <kieran.frewen@morsemicro.com>,
+        Bassem Dawood <bassem@morsemicro.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 117/132] Revert "fbdev: Make fb_release() return -ENODEV if fbdev was unregistered"
-Date:   Mon, 23 May 2022 19:05:26 +0200
-Message-Id: <20220523165842.957591725@linuxfoundation.org>
+Subject: [PATCH 5.15 115/132] nl80211: validate S1G channel width
+Date:   Mon, 23 May 2022 19:05:24 +0200
+Message-Id: <20220523165842.599097735@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,54 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Kieran Frewen <kieran.frewen@morsemicro.com>
 
-[ Upstream commit 135332f34ba2662bc1e32b5c612e06a8cc41a053 ]
+[ Upstream commit 5d087aa759eb82b8208411913f6c2158bd85abc0 ]
 
-This reverts commit aafa025c76dcc7d1a8c8f0bdefcbe4eb480b2f6a. That commit
-attempted to fix a NULL pointer dereference, caused by the struct fb_info
-associated with a framebuffer device to not longer be valid when the file
-descriptor was closed.
+Validate the S1G channel width input by user to ensure it matches
+that of the requested channel
 
-The issue was exposed by commit 27599aacbaef ("fbdev: Hot-unplug firmware
-fb devices on forced removal"), which added a new path that goes through
-the struct device removal instead of directly unregistering the fb.
-
-Most fbdev drivers have issues with the fb_info lifetime, because call to
-framebuffer_release() from their driver's .remove callback, rather than
-doing from fbops.fb_destroy callback. This meant that due to this switch,
-the fb_info was now destroyed too early, while references still existed,
-while before it was simply leaked.
-
-The patch we're reverting here reinstated that leak, hence "fixed" the
-regression. But the proper solution is to fix the drivers to not release
-the fb_info too soon.
-
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220504115917.758787-1-javierm@redhat.com
+Signed-off-by: Kieran Frewen <kieran.frewen@morsemicro.com>
+Signed-off-by: Bassem Dawood <bassem@morsemicro.com>
+Link: https://lore.kernel.org/r/20220420041321.3788789-2-kieran.frewen@morsemicro.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbmem.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ net/wireless/nl80211.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index 8e38a7a5cf2f..0371ad233fdf 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1436,10 +1436,7 @@ fb_release(struct inode *inode, struct file *file)
- __acquires(&info->lock)
- __releases(&info->lock)
- {
--	struct fb_info * const info = file_fb_info(file);
--
--	if (!info)
--		return -ENODEV;
-+	struct fb_info * const info = file->private_data;
- 
- 	lock_fb_info(info);
- 	if (info->fbops->fb_release)
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index fe9cade6b4fb..9fae09e860e1 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -3080,6 +3080,15 @@ int nl80211_parse_chandef(struct cfg80211_registered_device *rdev,
+ 	} else if (attrs[NL80211_ATTR_CHANNEL_WIDTH]) {
+ 		chandef->width =
+ 			nla_get_u32(attrs[NL80211_ATTR_CHANNEL_WIDTH]);
++		if (chandef->chan->band == NL80211_BAND_S1GHZ) {
++			/* User input error for channel width doesn't match channel  */
++			if (chandef->width != ieee80211_s1g_channel_width(chandef->chan)) {
++				NL_SET_ERR_MSG_ATTR(extack,
++						    attrs[NL80211_ATTR_CHANNEL_WIDTH],
++						    "bad channel width");
++				return -EINVAL;
++			}
++		}
+ 		if (attrs[NL80211_ATTR_CENTER_FREQ1]) {
+ 			chandef->center_freq1 =
+ 				nla_get_u32(attrs[NL80211_ATTR_CENTER_FREQ1]);
 -- 
 2.35.1
 
