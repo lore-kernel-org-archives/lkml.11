@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E946BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34ADBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237630AbiEWPHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:07:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
+        id S237647AbiEWPHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237603AbiEWPHA (ORCPT
+        with ESMTP id S237603AbiEWPHm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:07:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5F35C351
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:06:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE80161259
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 15:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88391C385A9;
-        Mon, 23 May 2022 15:06:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653318417;
-        bh=qiEZQ8DWEMoinQqoOyjtgxX3eAxznhmWe20hPy5hWDo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WX8r3XCacUsEACEbsEXvabZzEiI6ikeNhJdubv5QbwatsnStxS7Bwa0mKXtEDMP6l
-         sqS2ZDMZIZey4KB9n2ugYkJg8JoKBOgA0uqb2OnI7ozeZeKXCd7nVfaktwaviaSXet
-         zniWrTycVuR5sB54ZPi5QBiBWwqaRCKdFXXYekAggiRkTCXv3kAhzXRcPnMsQHCld7
-         4cjiL2Xd+m75YH4bo7l27rCDTJ6M37+giIs7INi6aLEshmUrTEemlal5jiyI3ofWNf
-         s7GLxGivwij3RgDDGh+PO2PUBxP/rqbjjtSnwXfLC804ckIJxt5tlNVdc2WOUu/HTE
-         I/uLpu0Rwii4g==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        patches@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        kernel test robot <lkp@intel.com>, Tom Rix <trix@redhat.com>,
-        Ricky WU <ricky_wu@realtek.com>
-Subject: [PATCH] misc: rtsx: Fix clang -Wsometimes-uninitialized in rts5261_init_from_hw()
-Date:   Mon, 23 May 2022 08:05:22 -0700
-Message-Id: <20220523150521.2947108-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        Mon, 23 May 2022 11:07:42 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007FA4D9E2
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:07:40 -0700 (PDT)
+Received: from kwepemi100023.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L6LJ252DPz1JC9y;
+        Mon, 23 May 2022 23:06:10 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100023.china.huawei.com (7.221.188.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 23:07:38 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 23:07:38 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <john.garry@huawei.com>, <will@kernel.org>, <mark.rutland@arm.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <f.fangjian@huawei.com>, <huangguangbin2@huawei.com>,
+        <lipeng321@huawei.com>, <shenjian15@huawei.com>
+Subject: [PATCH V7 0/2] drivers/perf: hisi: Add driver for HNS3 PMU
+Date:   Mon, 23 May 2022 23:01:38 +0800
+Message-ID: <20220523150140.15025-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang warns:
+This patch-set adds driver for HNS3(HiSilicon network system version 3)
+PMU and doc to descript it.
 
-  drivers/misc/cardreader/rts5261.c:406:13: error: variable 'setting_reg2' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
-          } else if (efuse_valid == 0) {
-                     ^~~~~~~~~~~~~~~~
-  drivers/misc/cardreader/rts5261.c:412:30: note: uninitialized use occurs here
-          pci_read_config_dword(pdev, setting_reg2, &lval2);
-                                      ^~~~~~~~~~~~
+Change logs:
+V6 -> V7:
+modify the comments of Will Deacon:
+ - Modify format of event number shown for user.
+ - Add a trailing space for func-intr when show filter mode.
+ - Format the bdf number as the way "b:d.f" when show bdf_min and bdf_max.
+ - Add subevent, event_type, ext_counter_used and real_event for
+   hns3_pmu_format_attr[].
+ - Link: https://lore.kernel.org/linux-arm-kernel/20220427121000.56026-1-huangguangbin2@huawei.com/
+V5 -> V6:
+ - Modify prefix hns3_get into hns3_pmu_get.
+ - Some switch cases return directly.
+ - Modify failed log when io remap failed.
+ - Link: https://lore.kernel.org/linux-arm-kernel/20220426132822.51735-1-huangguangbin2@huawei.com/
+V4 -> V5:
+ - Add COMPILE_TEST and include io-64-nonatomic-hi-lo.h as suggestion of
+   John Garry.
+V3 -> V4:
+ - Modify the comments of John Garry.
+ - Link: https://lore.kernel.org/linux-arm-kernel/20220329113930.37631-1-huangguangbin2@huawei.com/
+V2 -> V3:
+ - Modify the comments of John Garry.
+ - Link: https://lore.kernel.org/linux-arm-kernel/20220228123955.30284-1-huangguangbin2@huawei.com/
+V1 -> V2:
+ - Modify the comments of John Garry.
+ - Link: https://lore.kernel.org/linux-arm-kernel/20220117015222.9617-1-huangguangbin2@huawei.com/ 
 
-efuse_valid == 1 is not a valid value so just return early from the
-function to avoid using setting_reg2 uninitialized.
 
-Fixes: b1c5f3085149 ("misc: rtsx: add rts5261 efuse function")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Tom Rix <trix@redhat.com>
-Suggested-by: Ricky WU <ricky_wu@realtek.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
+Guangbin Huang (2):
+  drivers/perf: hisi: Add description for HNS3 PMU driver
+  drivers/perf: hisi: add driver for HNS3 PMU
 
-This is basically a v2 of https://lore.kernel.org/20220516130047.3887590-1-trix@redhat.com/.
+ Documentation/admin-guide/perf/hns3-pmu.rst |  136 ++
+ MAINTAINERS                                 |    6 +
+ drivers/perf/hisilicon/Kconfig              |   10 +
+ drivers/perf/hisilicon/Makefile             |    1 +
+ drivers/perf/hisilicon/hns3_pmu.c           | 1662 +++++++++++++++++++
+ include/linux/cpuhotplug.h                  |    1 +
+ 6 files changed, 1816 insertions(+)
+ create mode 100644 Documentation/admin-guide/perf/hns3-pmu.rst
+ create mode 100644 drivers/perf/hisilicon/hns3_pmu.c
 
- drivers/misc/cardreader/rts5261.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/misc/cardreader/rts5261.c b/drivers/misc/cardreader/rts5261.c
-index 749cc5a46d13..b1e76030cafd 100644
---- a/drivers/misc/cardreader/rts5261.c
-+++ b/drivers/misc/cardreader/rts5261.c
-@@ -407,6 +407,8 @@ static void rts5261_init_from_hw(struct rtsx_pcr *pcr)
- 		// default
- 		setting_reg1 = PCR_SETTING_REG1;
- 		setting_reg2 = PCR_SETTING_REG2;
-+	} else {
-+		return;
- 	}
- 
- 	pci_read_config_dword(pdev, setting_reg2, &lval2);
-
-base-commit: 90de6805267f8c79cd2b1a36805071e257c39b5c
 -- 
-2.36.1
+2.33.0
 
