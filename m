@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1385C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7133C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242034AbiEWR75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
+        id S242021AbiEWSAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240699AbiEWRcb (ORCPT
+        with ESMTP id S241007AbiEWRcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE94374DCA;
-        Mon, 23 May 2022 10:27:16 -0700 (PDT)
+        Mon, 23 May 2022 13:32:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E236D7890F;
+        Mon, 23 May 2022 10:27:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65437B81204;
-        Mon, 23 May 2022 17:27:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC62C385A9;
-        Mon, 23 May 2022 17:27:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F298608C0;
+        Mon, 23 May 2022 17:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5F3C385A9;
+        Mon, 23 May 2022 17:27:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326835;
-        bh=m4cwoyy/BQKWuB7tsuReyl/3ZsdpUuEU3bjsJk2tUpE=;
+        s=korg; t=1653326844;
+        bh=wP8oCIlK2oDbgwEMgq/WN9tjdtUuWnR4GBzeW+e+HSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KpQBwxMcO0y23GRZ8/HK8XVrsm2YZWzFA6z5aijAW4eun5Ykg9b3mMUEP529KI39t
-         5tckJORQUKHn/Adt2AzCXkv0krZkztxqCQ2XSq76y06nd4ZTZ2c7rWRVArSzh0Wm8p
-         8BA/JYb0DCsgnhjdizhI20417e5nPys3gT89oM4c=
+        b=Y0sFvTTGQ93AwdlsYIxuh6KuV9YQUMSQe/gNAV7JAyON3XHqOeLRFg01K39rsUxSf
+         WnhbcZno9zx7U6kMe3OJizOK1oUDrs7umAC23Ypf0VR/SvBiWO5fVekCd5i8hGPwh+
+         CLEbZ7xPmdQzrT27FupEQk09z6yE48S9TwpzyO6Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Youngmin Han <Youngmin.Han@geappliances.com>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 074/158] pinctrl: mediatek: mt8365: fix IES control pins
-Date:   Mon, 23 May 2022 19:03:51 +0200
-Message-Id: <20220523165843.223365224@linuxfoundation.org>
+Subject: [PATCH 5.17 077/158] net: ipa: record proper RX transaction count
+Date:   Mon, 23 May 2022 19:03:54 +0200
+Message-Id: <20220523165843.777492251@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,43 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit f680058f406863b55ac226d1c157701939c63db4 ]
+[ Upstream commit d8290cbe1111105f92f0c8ab455bec8bf98d0630 ]
 
-IES26 (BIT 16 of IES1_CFG_ADDR) controls the following pads:
+Each time we are notified that some number of transactions on an RX
+channel has completed, we record the number of bytes that have been
+transferred since the previous notification.  We also track the
+number of transactions completed, but that is not currently being
+calculated correctly; we're currently counting the number of such
+notifications, but each notification can represent many transaction
+completions.  Fix this.
 
-- PAD_I2S_DATA_IN (GPIO114)
-- PAD_I2S_LRCK (GPIO115)
-- PAD_I2S_BCK (GPIO116)
-
-The pinctrl table is wrong since it lists pins 114 to 112.
-
-Update the table with the correct values.
-
-Fixes: e94d8b6fb83a ("pinctrl: mediatek: add support for mt8365 SoC")
-Reported-by: Youngmin Han <Youngmin.Han@geappliances.com>
-Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Link: https://lore.kernel.org/r/20220426125714.298907-1-mkorpershoek@baylibre.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 650d1603825d8 ("soc: qcom: ipa: the generic software interface")
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-mt8365.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ipa/gsi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8365.c b/drivers/pinctrl/mediatek/pinctrl-mt8365.c
-index 79b1fee5a1eb..ddee0db72d26 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8365.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8365.c
-@@ -259,7 +259,7 @@ static const struct mtk_pin_ies_smt_set mt8365_ies_set[] = {
- 	MTK_PIN_IES_SMT_SPEC(104, 104, 0x420, 13),
- 	MTK_PIN_IES_SMT_SPEC(105, 109, 0x420, 14),
- 	MTK_PIN_IES_SMT_SPEC(110, 113, 0x420, 15),
--	MTK_PIN_IES_SMT_SPEC(114, 112, 0x420, 16),
-+	MTK_PIN_IES_SMT_SPEC(114, 116, 0x420, 16),
- 	MTK_PIN_IES_SMT_SPEC(117, 119, 0x420, 17),
- 	MTK_PIN_IES_SMT_SPEC(120, 122, 0x420, 18),
- 	MTK_PIN_IES_SMT_SPEC(123, 125, 0x420, 19),
+diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+index bc981043cc80..a701178a1d13 100644
+--- a/drivers/net/ipa/gsi.c
++++ b/drivers/net/ipa/gsi.c
+@@ -1367,9 +1367,10 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
+ 	struct gsi_event *event_done;
+ 	struct gsi_event *event;
+ 	struct gsi_trans *trans;
++	u32 trans_count = 0;
+ 	u32 byte_count = 0;
+-	u32 old_index;
+ 	u32 event_avail;
++	u32 old_index;
+ 
+ 	trans_info = &channel->trans_info;
+ 
+@@ -1390,6 +1391,7 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
+ 	do {
+ 		trans->len = __le16_to_cpu(event->len);
+ 		byte_count += trans->len;
++		trans_count++;
+ 
+ 		/* Move on to the next event and transaction */
+ 		if (--event_avail)
+@@ -1401,7 +1403,7 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
+ 
+ 	/* We record RX bytes when they are received */
+ 	channel->byte_count += byte_count;
+-	channel->trans_count++;
++	channel->trans_count += trans_count;
+ }
+ 
+ /* Initialize a ring, including allocating DMA memory for its entries */
 -- 
 2.35.1
 
