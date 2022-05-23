@@ -2,99 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:21:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E698DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbiEWHVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
+        id S229489AbiEWHVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbiEWHUb (ORCPT
+        with ESMTP id S230052AbiEWHUd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:20:31 -0400
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4183A0075
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:12:29 -0700 (PDT)
-Received: by mail-vk1-xa2b.google.com with SMTP id e7so6674001vkh.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:12:29 -0700 (PDT)
+        Mon, 23 May 2022 03:20:33 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A38838D85
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:12:30 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id h5so18788270wrb.11
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:12:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ivbtveK1b9xDXzTHiB1+vrFrI8F8zLJqf42Jq8NTt84=;
-        b=JrZU0mAtWhyHtnGWfcq4jisbYZkDYfFSSaRvW7hUCBHB5+ZPnkL8XNaBlBWSPG/xHI
-         mMEVGvxKf3niaQ4D8oZgj3wzKbz+5/rwz5eyALJmx7eG0kQCD/9RgoZ2mTWfN6QcdKdj
-         Do+KMx/FsUkhPKjbh58S9261HdHS7Mf3Zxa6I=
+        d=amarulasolutions.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fAuZ4KWtArpOp/u3Q10ahbTyWqMsYIHTeZ+AhWJCC4s=;
+        b=PBjGsAL7D/rHVMJ2GU9NO4tWWynQwJbPfMF50qZ0Db3cPVndJEEOoCr48lA6LecE36
+         ASwQHTeB++MaNemZdWuIgkNmpEG2QvIH8U62eocdoEqYvwChgqqr0KUYgX/s4XYMF+hD
+         WKP/0kyNYwENTH/gl8YbyV1jMcxJW4ie2V0FE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ivbtveK1b9xDXzTHiB1+vrFrI8F8zLJqf42Jq8NTt84=;
-        b=L2IT+R3g9me/r3952zpx4kuebOT4u0d+clNjtewsWISMMFYopX2LBapzDhqMD6ZTws
-         0/29q40200ruuHktS60g2YOsOxOQ5m+yX58CxDlX+F1PGVA5OqFiSUySOl7TBilyXJ0Q
-         3P1Eni3ilEJSLLe+Gzw/qOSHcJoml7OOzFC2ZePIFGtGwn6fJeeKnyy7+JZpBSXtlhdG
-         kcKImnFCIEWSI0Gohp9KtcxGdZYQX7OXIvNRG7XhlapL5PL5hERzv0vq7V2yaNrBI+BX
-         tMwQZqaHO1t6jzTMLp920ntDtB2HtMpFCQavmmKz2DrTTW0XqmbOpK88MKyGkhGi/KhQ
-         HxAw==
-X-Gm-Message-State: AOAM533JGTIVYihG2H9U5ceuy9ZgCewYAy0Vhq6Ba/nerQ6rRFjLXrif
-        4oz3bdROpnaVXFq7R6SXQCfsoNDVUwyWuw==
-X-Google-Smtp-Source: ABdhPJyT2PNg67dmHFmoI/Hj5YZVhAGhIMtKKzgeiGQjxfk1/InZ7XWSgzgldrF617vESUKPBhniDQ==
-X-Received: by 2002:a17:902:a50f:b0:162:28c6:bfac with SMTP id s15-20020a170902a50f00b0016228c6bfacmr2850974plq.99.1653289180789;
-        Sun, 22 May 2022 23:59:40 -0700 (PDT)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:76d5:494d:1690:d003])
-        by smtp.gmail.com with ESMTPSA id m2-20020a629402000000b005180f4733a8sm3099527pfe.106.2022.05.22.23.59.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fAuZ4KWtArpOp/u3Q10ahbTyWqMsYIHTeZ+AhWJCC4s=;
+        b=FzwrP4pTmSOjcoDI3a9DMZWnD+taLmrsbiKUbnmbnyTjDOZUDQBF0jJMp2g0RZa0p9
+         yQknqQiW922uifyABVRA0KwU9cnllrruxuZZbY/Etln/nBYV9PnZ1u/Tsudl5HlE1h72
+         VTN6dmaZqAZMmuIKyWnyFhmdLPtLCzkeA0Swk1z7ClOMcmBINEZMOs1cJDGbt2get8wE
+         lK69PIEfYbDUHMrg89yq0f+K9+ukHY391zpUMeP1K1RE+ywtcNLZAJtAptgLosJ7fo+u
+         m8iaBbotZwnaWqnQbRSsFsinhpOQwT35lRoA1SfuJ+YXDYzMHYS1kR2RvGpReIBYUSoI
+         j4cw==
+X-Gm-Message-State: AOAM531Hqm6XusEuuw8YHal5rizB1hyh+prarIdL1Uh5ul6sL2VHUMPt
+        v9x/+lONbZ+YhjXiTMBxJ5fIP5WAM8/7Yg==
+X-Google-Smtp-Source: ABdhPJzibI07tOlMfXLYH6ysXjFHXEiH4tfkSQDT7MMA4tQ1XaDhwxfksJeLIeSCM7aqNhJgSivFpg==
+X-Received: by 2002:adf:f102:0:b0:20d:8d:870e with SMTP id r2-20020adff102000000b0020d008d870emr18178986wro.292.1653289076862;
+        Sun, 22 May 2022 23:57:56 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-53-154.cust.vodafonedsl.it. [188.217.53.154])
+        by smtp.gmail.com with ESMTPSA id g24-20020adfa498000000b0020c5253d90csm9159068wrb.88.2022.05.22.23.57.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:59:39 -0700 (PDT)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>
-Cc:     Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
+        Sun, 22 May 2022 23:57:56 -0700 (PDT)
+Date:   Mon, 23 May 2022 08:57:54 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     michael@amarulasolutions.com, alberto.bianchi@amarulasolutions.com,
+        linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] Implement readahead for squashfs
-Date:   Mon, 23 May 2022 14:59:07 +0800
-Message-Id: <20220523065909.883444-1-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+Subject: Re: [PATCH v3] net: phy: DP83822: enable rgmii mode if
+ phy_interface_is_rgmii
+Message-ID: <20220523065754.GJ1589864@tom-ThinkPad-T14s-Gen-2i>
+References: <20220520235846.1919954-1-tommaso.merciai@amarulasolutions.com>
+ <YokxxlyFTJZ8c+5y@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YokxxlyFTJZ8c+5y@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit c1f6925e1091("mm: put readahead pages in cache earlier") requires
-fs to implement readahead callback. Otherwise there will be a
-performance regression.
+On Sat, May 21, 2022 at 08:39:02PM +0200, Andrew Lunn wrote:
+> On Sat, May 21, 2022 at 01:58:46AM +0200, Tommaso Merciai wrote:
+> > RGMII mode can be enable from dp83822 straps, and also writing bit 9
+> > of register 0x17 - RMII and Status Register (RCSR).
+> > When phy_interface_is_rgmii rgmii mode must be enabled, same for
+> > contrary, this prevents malconfigurations of hw straps
+> > 
+> > References:
+> >  - https://www.ti.com/lit/gpn/dp83822i p66
+> > 
+> > Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> > Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> > Suggested-by: Alberto Bianchi <alberto.bianchi@amarulasolutions.com>
+> > Tested-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> If you want to, you could go further. If bit 9 is clear, bit 5 defines
+> the mode, either RMII or MII. There are interface modes defined for
+> these, so you could get bit 5 as well.
 
-Commit 9eec1d897139("squashfs: provide backing_dev_info in order to
-disable read-ahead") mitigates the performance drop issue for squashfs
-by closing readahead for it.
+Hi Andrew,
+Thanks for the review and for your time.
+I'll try to go further, like you suggest :)
 
-This series implements readahead callback for squashfs. The previous
-discussion are in [1] and [2].
+Regards,
+Tommaso
 
-[1] https://lore.kernel.org/all/CAJMQK-g9G6KQmH-V=BRGX0swZji9Wxe_2c7ht-MMAapdFy2pXw@mail.gmail.com/T/
-[2] https://lore.kernel.org/linux-mm/Yn5Yij9pRPCzDozt@casper.infradead.org/t/#m4af4473b94f98a4996cb11756b633a07e5e059d1
-
-Hsin-Yi Wang (2):
-  Revert "squashfs: provide backing_dev_info in order to disable
-    read-ahead"
-  squashfs: implement readahead
-
-Phillip Lougher (1):
-  squashfs: always build "file direct" version of page actor
-
- fs/squashfs/Makefile     |  4 +-
- fs/squashfs/file.c       | 91 +++++++++++++++++++++++++++++++++++++++-
- fs/squashfs/page_actor.h | 41 ------------------
- fs/squashfs/super.c      | 33 ---------------
- 4 files changed, 92 insertions(+), 77 deletions(-)
+> 
+>     Andrew
 
 -- 
-2.36.1.124.g0e6072fb45-goog
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
