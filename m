@@ -2,99 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99642C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236162AbiEWNMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
+        id S236035AbiEWNMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:12:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236032AbiEWNMP (ORCPT
+        with ESMTP id S236055AbiEWNMS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:12:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAF62669
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:12:13 -0700 (PDT)
+        Mon, 23 May 2022 09:12:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBA52AE3E
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:12:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1C9AB810AD
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:12:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B828C385AA;
-        Mon, 23 May 2022 13:12:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E8E2B810AC
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF8FC385AA;
+        Mon, 23 May 2022 13:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653311531;
-        bh=sQH8pLW5zGb26Lk/aNAhQwXPoKxk9hGgY13tGh91Y8E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GJuQJe0W/QoCP7IgYE3761/xx8U8nHQ5ffbzxvwoEgEef4EqohCB+YfZdkI89zPIg
-         hEeUGxe1YejKbyn8wvPaRYvuwKmU15AGXZp38gHzJFxOwBXgMt2KcZ/KViB9NM32VB
-         Si/VZiT1y29luyB2gPdpP7ITK6Xngr5tHEtBbGNUuYDgQj0q/7rETy8Z8wpSKPMjuL
-         MzauARYGuHGMorIpqlXylJHwrOadIwT5yFRYoOHypj0fb3xYfjSS3XYOuaR32Fzogk
-         ZtEP5sNOy62vVQF9obCzDZeYVx6Odlj04uXuI7Q+Haa0HW/r8qZqMjP++JebohSPMr
-         8oQHgIwP49mYg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 5AD50400B1; Mon, 23 May 2022 10:12:09 -0300 (-03)
-Date:   Mon, 23 May 2022 10:12:09 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] perf inject: Minor improvements
-Message-ID: <YouIKVUs2S0KSjT8@kernel.org>
-References: <20220520132404.25853-1-adrian.hunter@intel.com>
- <YotC+NbrBENmqtAh@krava>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YotC+NbrBENmqtAh@krava>
-X-Url:  http://acmel.wordpress.com
+        s=k20201202; t=1653311533;
+        bh=V/9AvIndy2K3nYYZ4Y1SppzdBIvXUWiWnGwvGlEgoLs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oIPbDA9WDHIxFn9oVveegCQw9xHLcvP6DOo+WVujqjHwMMMa998mqDzlFKJ3fnIgI
+         ApSerdrBnhXXOSQtq9YI2ZLPUHy9sZb2KeDLo/Yr7c11q6KAUD3gzmTXuw79KbOs+c
+         LLySzm/JXZmIoWxlS02jWJ96pZp+4GeTPMuOAsclZ0egoyC8gimHh4f5TFPhkbF05Q
+         zk1jx8zSr2ofWiaDntApWEEu1uN83rF2ncNF1jfOr8Rl8iASMJ2jcFRc6tmrSdRoBZ
+         afqk8ZiyLN5YzwpggvcEvXaJ45eaeuKbg+IT5RFtuC8ZzUFzmgIW/QXBj0CFeYfvCN
+         0apixhl6A/EoA==
+From:   Mark Brown <broonie@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [GIT PULL] regmap updates for v5.19
+Date:   Mon, 23 May 2022 14:11:56 +0100
+Message-Id: <20220523131213.5DF8FC385AA@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, May 23, 2022 at 10:16:56AM +0200, Jiri Olsa escreveu:
-> On Fri, May 20, 2022 at 04:23:59PM +0300, Adrian Hunter wrote:
-> > Hi
-> > 
-> > Here are patches for 2 minor improvements for perf inject:
-> > 1. Keep some features sections from input file
-> > 2. Keep a copy of kcore_dir
-> > 
-> > 
-> > Adrian Hunter (5):
-> >       perf header: Add ability to keep feature sections
-> >       libperf: Add preadn()
-> >       perf inject: Keep some features sections from input file
-> >       perf data: Add has_kcore_dir()
-> >       perf inject: Keep a copy of kcore_dir
-> 
-> LGTM
-> 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
 
-Thanks, applied.
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
 
-- Arnaldo
+are available in the Git repository at:
 
- 
-> thanks,
-> jirka
-> 
-> > 
-> >  tools/lib/perf/include/internal/lib.h |   2 +
-> >  tools/lib/perf/lib.c                  |  20 +++++
-> >  tools/perf/builtin-inject.c           | 162 +++++++++++++++++++++++++++++++++-
-> >  tools/perf/util/data.c                |  14 +++
-> >  tools/perf/util/data.h                |   1 +
-> >  tools/perf/util/header.c              |  62 +++++++++++--
-> >  tools/perf/util/header.h              |  15 ++++
-> >  7 files changed, 264 insertions(+), 12 deletions(-)
-> > 
-> > 
-> > Regards
-> > Adrian
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/regmap-v5.19
 
--- 
+for you to fetch changes up to 5c422f0b970d287efa864b8390a02face404db5d:
 
-- Arnaldo
+  regmap: Add missing map->bus check (2022-05-09 12:48:45 +0100)
+
+----------------------------------------------------------------
+regmap: Updates for v5.19
+
+The main change here is Marek's addition of bulk read/write callbacks
+for individual regmaps, we've supported single register operations for a
+while but there's enough hardware out there which can use bulk equivalents
+to make it worthwhile.
+
+----------------------------------------------------------------
+Jeongtae Park (1):
+      regmap: cache: set max_register with reg_stride
+
+Marek Vasut (2):
+      regmap: Add bulk read/write callbacks into regmap_config
+      regmap: Add missing map->bus check
+
+Mark Brown (1):
+      regmap: Custom bulk operations for regmaps
+
+Rikard Falkeborn (1):
+      regmap: Constify static regmap_bus structs
+
+ drivers/base/regmap/internal.h       |  4 ++
+ drivers/base/regmap/regcache.c       |  4 +-
+ drivers/base/regmap/regmap-i3c.c     |  2 +-
+ drivers/base/regmap/regmap-sccb.c    |  2 +-
+ drivers/base/regmap/regmap-sdw-mbq.c |  2 +-
+ drivers/base/regmap/regmap-sdw.c     |  2 +-
+ drivers/base/regmap/regmap-slimbus.c |  2 +-
+ drivers/base/regmap/regmap-w1.c      |  6 +--
+ drivers/base/regmap/regmap.c         | 78 +++++++++++++++++++-----------------
+ include/linux/regmap.h               | 12 ++++++
+ 10 files changed, 67 insertions(+), 47 deletions(-)
