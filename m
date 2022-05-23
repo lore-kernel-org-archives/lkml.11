@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F8C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38AA5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242041AbiEWSDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35792 "EHLO
+        id S242455AbiEWSDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241775AbiEWRgD (ORCPT
+        with ESMTP id S241833AbiEWRgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:36:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEDB90CC0;
-        Mon, 23 May 2022 10:29:57 -0700 (PDT)
+        Mon, 23 May 2022 13:36:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE05635C;
+        Mon, 23 May 2022 10:30:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B112B81201;
-        Mon, 23 May 2022 17:28:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853D0C385AA;
-        Mon, 23 May 2022 17:28:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D405D60BD3;
+        Mon, 23 May 2022 17:28:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC34C385AA;
+        Mon, 23 May 2022 17:28:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326916;
-        bh=QQM2k9G4KGPPMRx/b75fnIz+rJxFZTX5YdrkkcEBeSg=;
+        s=korg; t=1653326922;
+        bh=XuJqssLHAYRSvGU8Ajeukhh8M9uJA/q0j2R7aBNCtUg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=URRdi5fi8PHqErj+dcHUPzsOtAX9aBTBHdngALHcdRWN33k5porxhoC+/ZuBZbwcs
-         MBfTfG3RiHzit5X1qKOGZzq6Az2c9AjAjDQMOQTIUsxG9xh7hagB8G5r7kZCPiFKYq
-         e3ah4Y9Sgqqam+DCsaSVJ/inSWWGtCAkSmsoR3G8=
+        b=thowyEjyLECiFPvPpC4ghd4FAWjZzIamHjE1ylrmCWNaCI5WQEDFDNGpmGNsOuYcc
+         TsjEi9Mp5OHJukrmOjdLdkdXVEGnwukPcbtN9a9idXwUgHHpoJvPJuFsupFu6XgmrJ
+         VZjonjdrDdn33aqkMLNxhCDaheoICxRDhnqIQFiE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Subject: [PATCH 5.17 066/158] dma-buf: fix use of DMA_BUF_SET_NAME_{A,B} in userspace
-Date:   Mon, 23 May 2022 19:03:43 +0200
-Message-Id: <20220523165841.823353651@linuxfoundation.org>
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 068/158] arm64: dts: qcom: sm8250: dont enable rx/tx macro by default
+Date:   Mon, 23 May 2022 19:03:45 +0200
+Message-Id: <20220523165842.172033471@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,51 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-commit 7c3e9fcad9c7d8bb5d69a576044fb16b1d2e8a01 upstream.
+[ Upstream commit 18019eb62efb68c9b365acca9c4fcb2e0d459487 ]
 
-The typedefs u32 and u64 are not available in userspace. Thus user get
-an error he try to use DMA_BUF_SET_NAME_A or DMA_BUF_SET_NAME_B:
+Enabling rxmacro and txmacro nodes by defaults makes Qualcomm RB5 to
+crash and reboot while probing audio devices. Disable these device tree
+nodes by default and enabled them only when necessary (for the
+SM8250-MTP board).
 
-    $ gcc -Wall   -c -MMD -c -o ioctls_list.o ioctls_list.c
-    In file included from /usr/include/x86_64-linux-gnu/asm/ioctl.h:1,
-                     from /usr/include/linux/ioctl.h:5,
-                     from /usr/include/asm-generic/ioctls.h:5,
-                     from ioctls_list.c:11:
-    ioctls_list.c:463:29: error: ‘u32’ undeclared here (not in a function)
-      463 |     { "DMA_BUF_SET_NAME_A", DMA_BUF_SET_NAME_A, -1, -1 }, // linux/dma-buf.h
-          |                             ^~~~~~~~~~~~~~~~~~
-    ioctls_list.c:464:29: error: ‘u64’ undeclared here (not in a function)
-      464 |     { "DMA_BUF_SET_NAME_B", DMA_BUF_SET_NAME_B, -1, -1 }, // linux/dma-buf.h
-          |                             ^~~~~~~~~~~~~~~~~~
-
-The issue was initially reported here[1].
-
-[1]: https://github.com/jerome-pouiller/ioctl/pull/14
-
-Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Fixes: a5bff92eaac4 ("dma-buf: Fix SET_NAME ioctl uapi")
-CC: stable@vger.kernel.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220517072708.245265-1-Jerome.Pouiller@silabs.com
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 24f52ef0c4bf ("arm64: dts: qcom: sm8250: Add nodes for tx and rx macros with soundwire masters")
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220401185814.519653-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/dma-buf.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8250-mtp.dts | 12 ++++++++++++
+ arch/arm64/boot/dts/qcom/sm8250.dtsi    |  4 ++++
+ 2 files changed, 16 insertions(+)
 
---- a/include/uapi/linux/dma-buf.h
-+++ b/include/uapi/linux/dma-buf.h
-@@ -92,7 +92,7 @@ struct dma_buf_sync {
-  * between them in actual uapi, they're just different numbers.
-  */
- #define DMA_BUF_SET_NAME	_IOW(DMA_BUF_BASE, 1, const char *)
--#define DMA_BUF_SET_NAME_A	_IOW(DMA_BUF_BASE, 1, u32)
--#define DMA_BUF_SET_NAME_B	_IOW(DMA_BUF_BASE, 1, u64)
-+#define DMA_BUF_SET_NAME_A	_IOW(DMA_BUF_BASE, 1, __u32)
-+#define DMA_BUF_SET_NAME_B	_IOW(DMA_BUF_BASE, 1, __u64)
+diff --git a/arch/arm64/boot/dts/qcom/sm8250-mtp.dts b/arch/arm64/boot/dts/qcom/sm8250-mtp.dts
+index fb99cc2827c7..7ab3627cc347 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250-mtp.dts
++++ b/arch/arm64/boot/dts/qcom/sm8250-mtp.dts
+@@ -622,6 +622,10 @@ &qupv3_id_2 {
+ 	status = "okay";
+ };
  
- #endif
++&rxmacro {
++	status = "okay";
++};
++
+ &slpi {
+ 	status = "okay";
+ 	firmware-name = "qcom/sm8250/slpi.mbn";
+@@ -773,6 +777,8 @@ right_spkr: wsa8810-left@0,4{
+ };
+ 
+ &swr1 {
++	status = "okay";
++
+ 	wcd_rx: wcd9380-rx@0,4 {
+ 		compatible = "sdw20217010d00";
+ 		reg = <0 4>;
+@@ -781,6 +787,8 @@ wcd_rx: wcd9380-rx@0,4 {
+ };
+ 
+ &swr2 {
++	status = "okay";
++
+ 	wcd_tx: wcd9380-tx@0,3 {
+ 		compatible = "sdw20217010d00";
+ 		reg = <0 3>;
+@@ -819,6 +827,10 @@ config {
+ 	};
+ };
+ 
++&txmacro {
++	status = "okay";
++};
++
+ &uart12 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+index a92230bec1dd..bd212f6c351f 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -2150,6 +2150,7 @@ rxmacro: rxmacro@3200000 {
+ 			pinctrl-0 = <&rx_swr_active>;
+ 			compatible = "qcom,sm8250-lpass-rx-macro";
+ 			reg = <0 0x3200000 0 0x1000>;
++			status = "disabled";
+ 
+ 			clocks = <&q6afecc LPASS_CLK_ID_TX_CORE_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+ 				<&q6afecc LPASS_CLK_ID_TX_CORE_NPL_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+@@ -2168,6 +2169,7 @@ rxmacro: rxmacro@3200000 {
+ 		swr1: soundwire-controller@3210000 {
+ 			reg = <0 0x3210000 0 0x2000>;
+ 			compatible = "qcom,soundwire-v1.5.1";
++			status = "disabled";
+ 			interrupts = <GIC_SPI 298 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&rxmacro>;
+ 			clock-names = "iface";
+@@ -2195,6 +2197,7 @@ txmacro: txmacro@3220000 {
+ 			pinctrl-0 = <&tx_swr_active>;
+ 			compatible = "qcom,sm8250-lpass-tx-macro";
+ 			reg = <0 0x3220000 0 0x1000>;
++			status = "disabled";
+ 
+ 			clocks = <&q6afecc LPASS_CLK_ID_TX_CORE_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+ 				 <&q6afecc LPASS_CLK_ID_TX_CORE_NPL_MCLK  LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+@@ -2218,6 +2221,7 @@ swr2: soundwire-controller@3230000 {
+ 			compatible = "qcom,soundwire-v1.5.1";
+ 			interrupts-extended = <&intc GIC_SPI 297 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "core";
++			status = "disabled";
+ 
+ 			clocks = <&txmacro>;
+ 			clock-names = "iface";
+-- 
+2.35.1
+
 
 
