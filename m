@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 667AFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B49C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243032AbiEWRvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43416 "EHLO
+        id S244484AbiEWRwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241564AbiEWR0v (ORCPT
+        with ESMTP id S241417AbiEWR0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:51 -0400
+        Mon, 23 May 2022 13:26:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DE77523A;
-        Mon, 23 May 2022 10:22:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E166A8A041;
+        Mon, 23 May 2022 10:21:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4256560AB8;
-        Mon, 23 May 2022 17:21:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE64C385A9;
-        Mon, 23 May 2022 17:21:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A8360C67;
+        Mon, 23 May 2022 17:20:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 835B6C34115;
+        Mon, 23 May 2022 17:20:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326465;
-        bh=op7TVYHn5m+9M4CRry2VcLoDvpH7NSBWAe8tL1+DddU=;
+        s=korg; t=1653326449;
+        bh=pTc+2DJ75HEO+3UqzwR/AJ2PrYoy59wZ24DZKWwURfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1DXcoOzGSvoYDRqc/UB2s4q1PAnsX7vF/2RZsaTYGC3yUM2yoy+XCcXpA5JG2t6xp
-         pmst/XALaSekZ7x3YLa0UrMt+xQkjf2Gi3WADIL50UO5jNuwU37Wtj4lfORclBKyiE
-         RrwQyr2PwfqTnEgvVybfxZzetSlbLSZ8mLAa2elU=
+        b=qiFn9YQxhzohcPLQAF7sp0gGApbZ2Z4flXPBcFxo1CIMDUGCuNT+RyZx3WsRUNzVH
+         61BxP8ClMiDqhZe/jiyHXr2Nur1S8XUJqdsz8okiAN6wPJ9qsT0GzXWqEQaOwbT4qP
+         lFep6AhkL4yK3co4r8k0g5xpr5NxZNIG24uNV+tI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 090/132] net/mlx5: DR, Fix missing flow_source when creating multi-destination FW table
-Date:   Mon, 23 May 2022 19:04:59 +0200
-Message-Id: <20220523165838.227792625@linuxfoundation.org>
+Subject: [PATCH 5.15 085/132] ice: move ice_container_type onto ice_ring_container
+Date:   Mon, 23 May 2022 19:04:54 +0200
+Message-Id: <20220523165837.198549364@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,124 +51,201 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit 2c5fc6cd269ad3476da99dad02521d2af4a8e906 ]
+[ Upstream commit dc23715cf30a9acb808f5b08962877c390d3e6ea ]
 
-In order to support multiple destination FTEs with SW steering
-FW table is created with single FTE with multiple actions and
-SW steering rule forward to it. When creating this table, flow
-source isn't set according to the original FTE.
+Currently ice_container_type is scoped only for ice_ethtool.c. Next
+commit that will split the ice_ring struct onto Rx/Tx specific ring
+structs is going to also modify the type of linked list of rings that is
+within ice_ring_container. Therefore, the functions that are taking the
+ice_ring_container as an input argument will need to be aware of a ring
+type that will be looked up.
 
-Fix this by passing the original FTE flow source to the created
-FW table.
+Embed ice_container_type within ice_ring_container and initialize it
+properly when allocating the q_vectors.
 
-Fixes: 34583beea4b7 ("net/mlx5: DR, Create multi-destination table for SW-steering use")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/steering/dr_action.c    | 6 ++++--
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c    | 4 +++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h | 3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c    | 4 +++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h   | 3 ++-
- 5 files changed, 14 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_base.c    |  2 ++
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 38 ++++++++------------
+ drivers/net/ethernet/intel/ice/ice_txrx.h    |  6 ++++
+ 3 files changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index a5b9f65db23c..897c7f852123 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -846,7 +846,8 @@ struct mlx5dr_action *
- mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
- 				   struct mlx5dr_action_dest *dests,
- 				   u32 num_of_dests,
--				   bool ignore_flow_level)
-+				   bool ignore_flow_level,
-+				   u32 flow_source)
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index f74610442bda..533a953f15ac 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -115,6 +115,8 @@ static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
+ 	q_vector->rx.itr_setting = ICE_DFLT_RX_ITR;
+ 	q_vector->tx.itr_mode = ITR_DYNAMIC;
+ 	q_vector->rx.itr_mode = ITR_DYNAMIC;
++	q_vector->tx.type = ICE_TX_CONTAINER;
++	q_vector->rx.type = ICE_RX_CONTAINER;
+ 
+ 	if (vsi->type == ICE_VSI_VF)
+ 		goto out;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 38c2d9a5574a..19f115402969 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -3466,15 +3466,9 @@ static int ice_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
+ 	return 0;
+ }
+ 
+-enum ice_container_type {
+-	ICE_RX_CONTAINER,
+-	ICE_TX_CONTAINER,
+-};
+-
+ /**
+  * ice_get_rc_coalesce - get ITR values for specific ring container
+  * @ec: ethtool structure to fill with driver's coalesce settings
+- * @c_type: container type, Rx or Tx
+  * @rc: ring container that the ITR values will come from
+  *
+  * Query the device for ice_ring_container specific ITR values. This is
+@@ -3484,13 +3478,12 @@ enum ice_container_type {
+  * Returns 0 on success, negative otherwise.
+  */
+ static int
+-ice_get_rc_coalesce(struct ethtool_coalesce *ec, enum ice_container_type c_type,
+-		    struct ice_ring_container *rc)
++ice_get_rc_coalesce(struct ethtool_coalesce *ec, struct ice_ring_container *rc)
  {
- 	struct mlx5dr_cmd_flow_destination_hw_info *hw_dests;
- 	struct mlx5dr_action **ref_actions;
-@@ -914,7 +915,8 @@ mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
- 				      reformat_req,
- 				      &action->dest_tbl->fw_tbl.id,
- 				      &action->dest_tbl->fw_tbl.group_id,
--				      ignore_flow_level);
-+				      ignore_flow_level,
-+				      flow_source);
- 	if (ret)
- 		goto free_action;
+ 	if (!rc->ring)
+ 		return -EINVAL;
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
-index 0d6f86eb248b..c74083de1801 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_fw.c
-@@ -104,7 +104,8 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
- 			    bool reformat_req,
- 			    u32 *tbl_id,
- 			    u32 *group_id,
--			    bool ignore_flow_level)
-+			    bool ignore_flow_level,
-+			    u32 flow_source)
+-	switch (c_type) {
++	switch (rc->type) {
+ 	case ICE_RX_CONTAINER:
+ 		ec->use_adaptive_rx_coalesce = ITR_IS_DYNAMIC(rc);
+ 		ec->rx_coalesce_usecs = rc->itr_setting;
+@@ -3501,7 +3494,7 @@ ice_get_rc_coalesce(struct ethtool_coalesce *ec, enum ice_container_type c_type,
+ 		ec->tx_coalesce_usecs = rc->itr_setting;
+ 		break;
+ 	default:
+-		dev_dbg(ice_pf_to_dev(rc->ring->vsi->back), "Invalid c_type %d\n", c_type);
++		dev_dbg(ice_pf_to_dev(rc->ring->vsi->back), "Invalid c_type %d\n", rc->type);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -3522,18 +3515,18 @@ static int
+ ice_get_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
  {
- 	struct mlx5dr_cmd_create_flow_table_attr ft_attr = {};
- 	struct mlx5dr_cmd_fte_info fte_info = {};
-@@ -139,6 +140,7 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
- 	fte_info.val = val;
- 	fte_info.dest_arr = dest;
- 	fte_info.ignore_flow_level = ignore_flow_level;
-+	fte_info.flow_context.flow_source = flow_source;
+ 	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
+-		if (ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
++		if (ice_get_rc_coalesce(ec,
+ 					&vsi->rx_rings[q_num]->q_vector->rx))
+ 			return -EINVAL;
+-		if (ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
++		if (ice_get_rc_coalesce(ec,
+ 					&vsi->tx_rings[q_num]->q_vector->tx))
+ 			return -EINVAL;
+ 	} else if (q_num < vsi->num_rxq) {
+-		if (ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
++		if (ice_get_rc_coalesce(ec,
+ 					&vsi->rx_rings[q_num]->q_vector->rx))
+ 			return -EINVAL;
+ 	} else if (q_num < vsi->num_txq) {
+-		if (ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
++		if (ice_get_rc_coalesce(ec,
+ 					&vsi->tx_rings[q_num]->q_vector->tx))
+ 			return -EINVAL;
+ 	} else {
+@@ -3585,7 +3578,6 @@ ice_get_per_q_coalesce(struct net_device *netdev, u32 q_num,
  
- 	ret = mlx5dr_cmd_set_fte(dmn->mdev, 0, 0, &ft_info, *group_id, &fte_info);
- 	if (ret) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 3d4e035698dd..bc206836af6a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1394,7 +1394,8 @@ int mlx5dr_fw_create_md_tbl(struct mlx5dr_domain *dmn,
- 			    bool reformat_req,
- 			    u32 *tbl_id,
- 			    u32 *group_id,
--			    bool ignore_flow_level);
-+			    bool ignore_flow_level,
-+			    u32 flow_source);
- void mlx5dr_fw_destroy_md_tbl(struct mlx5dr_domain *dmn, u32 tbl_id,
- 			      u32 group_id);
- #endif  /* _DR_TYPES_H_ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 7e58f4e594b7..ae4597118f8b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -492,11 +492,13 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 	} else if (num_term_actions > 1) {
- 		bool ignore_flow_level =
- 			!!(fte->action.flags & FLOW_ACT_IGNORE_FLOW_LEVEL);
-+		u32 flow_source = fte->flow_context.flow_source;
+ /**
+  * ice_set_rc_coalesce - set ITR values for specific ring container
+- * @c_type: container type, Rx or Tx
+  * @ec: ethtool structure from user to update ITR settings
+  * @rc: ring container that the ITR values will come from
+  * @vsi: VSI associated to the ring container
+@@ -3597,10 +3589,10 @@ ice_get_per_q_coalesce(struct net_device *netdev, u32 q_num,
+  * Returns 0 on success, negative otherwise.
+  */
+ static int
+-ice_set_rc_coalesce(enum ice_container_type c_type, struct ethtool_coalesce *ec,
++ice_set_rc_coalesce(struct ethtool_coalesce *ec,
+ 		    struct ice_ring_container *rc, struct ice_vsi *vsi)
+ {
+-	const char *c_type_str = (c_type == ICE_RX_CONTAINER) ? "rx" : "tx";
++	const char *c_type_str = (rc->type == ICE_RX_CONTAINER) ? "rx" : "tx";
+ 	u32 use_adaptive_coalesce, coalesce_usecs;
+ 	struct ice_pf *pf = vsi->back;
+ 	u16 itr_setting;
+@@ -3608,7 +3600,7 @@ ice_set_rc_coalesce(enum ice_container_type c_type, struct ethtool_coalesce *ec,
+ 	if (!rc->ring)
+ 		return -EINVAL;
  
- 		tmp_action = mlx5dr_action_create_mult_dest_tbl(domain,
- 								term_actions,
- 								num_term_actions,
--								ignore_flow_level);
-+								ignore_flow_level,
-+								flow_source);
- 		if (!tmp_action) {
- 			err = -EOPNOTSUPP;
- 			goto free_actions;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-index 5ef199543479..7806e5c05b67 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-@@ -96,7 +96,8 @@ struct mlx5dr_action *
- mlx5dr_action_create_mult_dest_tbl(struct mlx5dr_domain *dmn,
- 				   struct mlx5dr_action_dest *dests,
- 				   u32 num_of_dests,
--				   bool ignore_flow_level);
-+				   bool ignore_flow_level,
-+				   u32 flow_source);
+-	switch (c_type) {
++	switch (rc->type) {
+ 	case ICE_RX_CONTAINER:
+ 		if (ec->rx_coalesce_usecs_high > ICE_MAX_INTRL ||
+ 		    (ec->rx_coalesce_usecs_high &&
+@@ -3641,7 +3633,7 @@ ice_set_rc_coalesce(enum ice_container_type c_type, struct ethtool_coalesce *ec,
+ 		break;
+ 	default:
+ 		dev_dbg(ice_pf_to_dev(pf), "Invalid container type %d\n",
+-			c_type);
++			rc->type);
+ 		return -EINVAL;
+ 	}
  
- struct mlx5dr_action *mlx5dr_action_create_drop(void);
+@@ -3690,22 +3682,22 @@ static int
+ ice_set_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
+ {
+ 	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
+-		if (ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
++		if (ice_set_rc_coalesce(ec,
+ 					&vsi->rx_rings[q_num]->q_vector->rx,
+ 					vsi))
+ 			return -EINVAL;
  
+-		if (ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
++		if (ice_set_rc_coalesce(ec,
+ 					&vsi->tx_rings[q_num]->q_vector->tx,
+ 					vsi))
+ 			return -EINVAL;
+ 	} else if (q_num < vsi->num_rxq) {
+-		if (ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
++		if (ice_set_rc_coalesce(ec,
+ 					&vsi->rx_rings[q_num]->q_vector->rx,
+ 					vsi))
+ 			return -EINVAL;
+ 	} else if (q_num < vsi->num_txq) {
+-		if (ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
++		if (ice_set_rc_coalesce(ec,
+ 					&vsi->tx_rings[q_num]->q_vector->tx,
+ 					vsi))
+ 			return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+index 7c2328529ff8..69f78a1c234f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.h
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+@@ -332,6 +332,11 @@ static inline bool ice_ring_is_xdp(struct ice_ring *ring)
+ 	return !!(ring->flags & ICE_TX_FLAGS_RING_XDP);
+ }
+ 
++enum ice_container_type {
++	ICE_RX_CONTAINER,
++	ICE_TX_CONTAINER,
++};
++
+ struct ice_ring_container {
+ 	/* head of linked-list of rings */
+ 	struct ice_ring *ring;
+@@ -343,6 +348,7 @@ struct ice_ring_container {
+ 	u16 itr_setting:13;
+ 	u16 itr_reserved:2;
+ 	u16 itr_mode:1;
++	enum ice_container_type type;
+ };
+ 
+ struct ice_coalesce_stored {
 -- 
 2.35.1
 
