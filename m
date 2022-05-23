@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D66C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8528C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239528AbiEWRHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
+        id S239542AbiEWRHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239367AbiEWRFh (ORCPT
+        with ESMTP id S239326AbiEWRFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:05:37 -0400
+        Mon, 23 May 2022 13:05:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB316A000;
-        Mon, 23 May 2022 10:05:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367E569CCB;
+        Mon, 23 May 2022 10:05:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4ACC614BF;
-        Mon, 23 May 2022 17:05:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92325C385A9;
-        Mon, 23 May 2022 17:05:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4B1D614BB;
+        Mon, 23 May 2022 17:05:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A13DC385AA;
+        Mon, 23 May 2022 17:05:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325534;
-        bh=yxudxAP5vXJv5jR8c6g73YNgGDBzANxhBZMt3vtI50Q=;
+        s=korg; t=1653325537;
+        bh=1ndn2883QweAHkGFNSs/HoRl/jlgdu7LPZJ+VQsDQ/M=;
         h=From:To:Cc:Subject:Date:From;
-        b=yBCcZ4olayIzrREjQ0ladhRyAX7JcSLXWx303d1i4yHrySZjp8/ShptXvx4OfedpC
-         48GduI4AtDspkE+2mDexzuwUopPxh1E7dNE9LIXNgGCeiPEMT8V8yiVBkhozKUYP+1
-         0s6+SPcPKvJMlxEAz59gufMmpOqbERMTQ2j6ppPI=
+        b=c92kYmAzPocWpRNdRAc5cjEAHOfd6PbEJzWLU/jQz84K0rRuGxsDjr7LFHt1fe3V/
+         36PXEKneYYk0JEykoy/oV0iIX1zjpbLlR8TBywfs9Z9EcSkxfC3Ih13vaVwps1gHoD
+         yRW8A9+CMYcQk7FIOiudIHEK35FONIJgTAypZMrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,28 +37,28 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
         jonathanh@nvidia.com, f.fainelli@gmail.com,
         sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.14 00/33] 4.14.281-rc1 review
-Date:   Mon, 23 May 2022 19:04:49 +0200
-Message-Id: <20220523165746.957506211@linuxfoundation.org>
+Subject: [PATCH 4.19 00/44] 4.19.245-rc1 review
+Date:   Mon, 23 May 2022 19:04:44 +0200
+Message-Id: <20220523165752.797318097@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.281-rc1.gz
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.245-rc1.gz
 X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Branch: linux-4.19.y
 X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.14.281-rc1
-X-KernelTest-Deadline: 2022-05-25T16:59+00:00
+X-KernelTest-Version: 4.19.245-rc1
+X-KernelTest-Deadline: 2022-05-25T17:00+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.14.281 release.
-There are 33 patches in this series, all will be posted as a response
+This is the start of the stable review cycle for the 4.19.245 release.
+There are 44 patches in this series, all will be posted as a response
 to this one.  If anyone has any issues with these being applied, please
 let me know.
 
@@ -66,9 +66,9 @@ Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
 Anything received after that time might be too late.
 
 The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.281-rc1.gz
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.245-rc1.gz
 or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
 and the diffstat can be found below.
 
 thanks,
@@ -79,7 +79,10 @@ greg k-h
 Pseudo-Shortlog of commits:
 
 Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.14.281-rc1
+    Linux 4.19.245-rc1
+
+David Howells <dhowells@redhat.com>
+    afs: Fix afs_getattr() to refetch file status if callback break occurred
 
 Linus Torvalds <torvalds@linux-foundation.org>
     Reinstate some of "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
@@ -126,6 +129,9 @@ Ard Biesheuvel <ardb@kernel.org>
 Jiasheng Jiang <jiasheng@iscas.ac.cn>
     net: af_key: add check for pfkey_broadcast in function pfkey_process
 
+Maxim Mikityanskiy <maximmi@nvidia.com>
+    net/mlx5e: Properly block LRO when XDP is enabled
+
 Duoming Zhou <duoming@zju.edu.cn>
     NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
 
@@ -141,6 +147,12 @@ Zixuan Fu <r33s3n6@gmail.com>
 Zixuan Fu <r33s3n6@gmail.com>
     net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
 
+Paolo Abeni <pabeni@redhat.com>
+    net/sched: act_pedit: sanitize shift argument before usage
+
+Harini Katakam <harini.katakam@xilinx.com>
+    net: macb: Increment rx bd head after allocating skb and buffer
+
 Ulf Hansson <ulf.hansson@linaro.org>
     mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
 
@@ -150,14 +162,32 @@ Ulf Hansson <ulf.hansson@linaro.org>
 Ulf Hansson <ulf.hansson@linaro.org>
     mmc: core: Specify timeouts for BKOPS and CACHE_FLUSH for eMMC
 
+Ulf Hansson <ulf.hansson@linaro.org>
+    mmc: core: Cleanup BKOPS support
+
 Hangyu Hua <hbh25y@gmail.com>
     drm/dp/mst: fix a possible memory leak in fetch_monitor_name()
+
+Ondrej Mosnacek <omosnace@redhat.com>
+    crypto: qcom-rng - fix infinite loop on requests not multiple of WORD_SZ
+
+Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+    PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
+
+Al Viro <viro@zeniv.linux.org.uk>
+    Fix double fget() in vhost_net_set_backend()
 
 Peter Zijlstra <peterz@infradead.org>
     perf: Fix sys_perf_event_open() race against self
 
 Takashi Iwai <tiwai@suse.de>
     ALSA: wavefront: Proper check of get_user() error
+
+Ryusuke Konishi <konishi.ryusuke@gmail.com>
+    nilfs2: fix lockdep warnings during disk space reclamation
+
+Ryusuke Konishi <konishi.ryusuke@gmail.com>
+    nilfs2: fix lockdep warnings in page operations for btree nodes
 
 linyujun <linyujun809@huawei.com>
     ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
@@ -167,6 +197,9 @@ Jakob Koschel <jakobkoschel@gmail.com>
 
 Xiaoke Wang <xkernel.wang@foxmail.com>
     MIPS: lantiq: check the return value of kzalloc()
+
+Zheng Yongjun <zhengyongjun3@huawei.com>
+    crypto: stm32 - fix reference leak in stm32_crc_remove
 
 Zheng Yongjun <zhengyongjun3@huawei.com>
     Input: stmfts - fix reference leak in stmfts_input_open
@@ -185,40 +218,63 @@ Willy Tarreau <w@1wt.eu>
 
 Diffstat:
 
- Makefile                                           |  4 +-
- arch/arm/kernel/entry-armv.S                       |  2 +-
- arch/arm/kernel/stacktrace.c                       | 10 ++---
- arch/arm/mm/proc-v7-bugs.c                         |  1 +
- arch/mips/lantiq/falcon/sysctrl.c                  |  2 +
- arch/mips/lantiq/xway/gptu.c                       |  2 +
- arch/mips/lantiq/xway/sysctrl.c                    | 46 ++++++++++++++--------
- arch/x86/um/shared/sysdep/syscalls_64.h            |  5 +--
- drivers/block/drbd/drbd_main.c                     |  7 +++-
- drivers/block/floppy.c                             | 17 ++++----
- drivers/clk/at91/clk-generated.c                   |  4 ++
- drivers/gpio/gpio-mvebu.c                          |  3 ++
- drivers/gpio/gpio-vf610.c                          |  8 +++-
- drivers/gpu/drm/drm_dp_mst_topology.c              |  1 +
- drivers/input/input.c                              | 19 +++++++++
- drivers/input/touchscreen/stmfts.c                 |  8 ++--
- drivers/mmc/core/block.c                           |  6 +--
- drivers/mmc/core/mmc_ops.c                         | 27 +++++++------
- .../ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c  |  7 ++++
- drivers/net/ethernet/dec/tulip/tulip_core.c        |  5 ++-
- drivers/net/ethernet/intel/igb/igb_main.c          |  3 +-
- drivers/net/ethernet/qlogic/qla3xxx.c              |  3 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c   |  4 +-
- drivers/net/vmxnet3/vmxnet3_drv.c                  |  6 +++
- drivers/scsi/qla2xxx/qla_target.c                  |  3 ++
- kernel/events/core.c                               | 14 +++++++
- lib/swiotlb.c                                      | 12 ++++--
- net/bridge/br_input.c                              |  7 ++++
- net/key/af_key.c                                   |  6 ++-
- net/mac80211/rx.c                                  |  3 +-
- net/nfc/nci/data.c                                 |  2 +-
- net/nfc/nci/hci.c                                  |  4 +-
- sound/isa/wavefront/wavefront_synth.c              |  3 +-
- tools/perf/bench/numa.c                            |  2 +-
- 34 files changed, 177 insertions(+), 79 deletions(-)
+ Makefile                                           |   4 +-
+ arch/arm/kernel/entry-armv.S                       |   2 +-
+ arch/arm/kernel/stacktrace.c                       |  10 +-
+ arch/arm/mm/proc-v7-bugs.c                         |   1 +
+ arch/mips/lantiq/falcon/sysctrl.c                  |   2 +
+ arch/mips/lantiq/xway/gptu.c                       |   2 +
+ arch/mips/lantiq/xway/sysctrl.c                    |  46 +++---
+ arch/x86/um/shared/sysdep/syscalls_64.h            |   5 +-
+ drivers/block/drbd/drbd_main.c                     |   7 +-
+ drivers/block/floppy.c                             |  17 +--
+ drivers/clk/at91/clk-generated.c                   |   4 +
+ drivers/crypto/qcom-rng.c                          |   1 +
+ drivers/crypto/stm32/stm32_crc32.c                 |   4 +-
+ drivers/gpio/gpio-mvebu.c                          |   3 +
+ drivers/gpio/gpio-vf610.c                          |   8 +-
+ drivers/gpu/drm/drm_dp_mst_topology.c              |   1 +
+ drivers/input/input.c                              |  19 +++
+ drivers/input/touchscreen/stmfts.c                 |   8 +-
+ drivers/mmc/core/block.c                           |   8 +-
+ drivers/mmc/core/card.h                            |   6 +-
+ drivers/mmc/core/mmc.c                             |   6 -
+ drivers/mmc/core/mmc_ops.c                         | 110 ++++----------
+ drivers/mmc/core/mmc_ops.h                         |   3 +-
+ .../ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c  |   7 +
+ drivers/net/ethernet/cadence/macb_main.c           |   2 +-
+ drivers/net/ethernet/dec/tulip/tulip_core.c        |   5 +-
+ drivers/net/ethernet/intel/igb/igb_main.c          |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   7 +
+ drivers/net/ethernet/qlogic/qla3xxx.c              |   3 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c   |   4 +-
+ drivers/net/vmxnet3/vmxnet3_drv.c                  |   6 +
+ drivers/pci/pci.c                                  |  10 ++
+ drivers/scsi/qla2xxx/qla_target.c                  |   3 +
+ drivers/vhost/net.c                                |  15 +-
+ fs/afs/inode.c                                     |  14 +-
+ fs/nilfs2/btnode.c                                 |  23 ++-
+ fs/nilfs2/btnode.h                                 |   1 +
+ fs/nilfs2/btree.c                                  |  27 ++--
+ fs/nilfs2/dat.c                                    |   4 +-
+ fs/nilfs2/gcinode.c                                |   7 +-
+ fs/nilfs2/inode.c                                  | 159 +++++++++++++++++++--
+ fs/nilfs2/mdt.c                                    |  43 ++++--
+ fs/nilfs2/mdt.h                                    |   6 +-
+ fs/nilfs2/nilfs.h                                  |  16 +--
+ fs/nilfs2/page.c                                   |   7 +-
+ fs/nilfs2/segment.c                                |   9 +-
+ fs/nilfs2/super.c                                  |   5 +-
+ kernel/dma/swiotlb.c                               |  12 +-
+ kernel/events/core.c                               |  14 ++
+ net/bridge/br_input.c                              |   7 +
+ net/key/af_key.c                                   |   6 +-
+ net/mac80211/rx.c                                  |   3 +-
+ net/nfc/nci/data.c                                 |   2 +-
+ net/nfc/nci/hci.c                                  |   4 +-
+ net/sched/act_pedit.c                              |   4 +
+ sound/isa/wavefront/wavefront_synth.c              |   3 +-
+ tools/perf/bench/numa.c                            |   2 +-
+ 57 files changed, 483 insertions(+), 237 deletions(-)
 
 
