@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CABAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0699DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242122AbiEWRuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
+        id S241825AbiEWRuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237026AbiEWR2U (ORCPT
+        with ESMTP id S241766AbiEWR1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:28:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9575290CCF;
-        Mon, 23 May 2022 10:25:49 -0700 (PDT)
+        Mon, 23 May 2022 13:27:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA22D719FF;
+        Mon, 23 May 2022 10:22:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C6F25CE1705;
-        Mon, 23 May 2022 17:25:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7382C385A9;
-        Mon, 23 May 2022 17:25:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F2E0B811FF;
+        Mon, 23 May 2022 17:22:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A66E4C385A9;
+        Mon, 23 May 2022 17:22:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326728;
-        bh=xN+hHiYrTU8NbOtPoC9F/hXsW0gPomEqNWlhtXZXUVs=;
+        s=korg; t=1653326536;
+        bh=J+W5aT3WGDjIPtqn7XtpRBsj1Mc+Le+0Eohj62Ypi/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ekbCWA4j/FpkEBrRQI9KadjBj6x67GRYDPN+rxz2KaU9LsZ49Yi6OyQvHGu2FDkwQ
-         6Y99fAelVB1KLUhH88jTzjObujQxR9hJHPOTL/ckHq1WpiV8O1VeL82DRvskn2BZVr
-         Y/etbkX0xzo06UCxsgdrIw2Yq1C96EqXNVoxgLJA=
+        b=ZZ5N+5kzB4SERXu8Ily4CXtrU2F5MVlaCVchleChOHkbFXt6oJo2/08cqsHQtC7/a
+         zc+vEcsD4kyT3iYgO4BSo3L5MQ5jyGUKrCFGSUxzZ8RNP06v5FgUq0qD6RC6i0/Msj
+         z38smXrHnT6toG+xVGn5DL89/p2wIOQQsqA57I+I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 041/158] drbd: remove usage of list iterator variable after loop
-Date:   Mon, 23 May 2022 19:03:18 +0200
-Message-Id: <20220523165837.275680903@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 104/132] net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
+Date:   Mon, 23 May 2022 19:05:13 +0200
+Message-Id: <20220523165840.712352408@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,55 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Andrew Lunn <andrew@lunn.ch>
 
-[ Upstream commit 901aeda62efa21f2eae937bccb71b49ae531be06 ]
+[ Upstream commit fbb3abdf2223cd0dfc07de85fe5a43ba7f435bdf ]
 
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to iterate through the list [1].
+It is possible to stack bridges on top of each other. Consider the
+following which makes use of an Ethernet switch:
 
-Since that variable should not be used past the loop iteration, a
-separate variable is used to 'remember the current location within the
-loop'.
+       br1
+     /    \
+    /      \
+   /        \
+ br0.11    wlan0
+   |
+   br0
+ /  |  \
+p1  p2  p3
 
-To either continue iterating from that position or skip the iteration
-(if the previous iteration was complete) list_prepare_entry() is used.
+br0 is offloaded to the switch. Above br0 is a vlan interface, for
+vlan 11. This vlan interface is then a slave of br1. br1 also has a
+wireless interface as a slave. This setup trunks wireless lan traffic
+over the copper network inside a VLAN.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220331220349.885126-1-jakobkoschel@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+A frame received on p1 which is passed up to the bridge has the
+skb->offload_fwd_mark flag set to true, indicating that the switch has
+dealt with forwarding the frame out ports p2 and p3 as needed. This
+flag instructs the software bridge it does not need to pass the frame
+back down again. However, the flag is not getting reset when the frame
+is passed upwards. As a result br1 sees the flag, wrongly interprets
+it, and fails to forward the frame to wlan0.
+
+When passing a frame upwards, clear the flag. This is the Rx
+equivalent of br_switchdev_frame_unmark() in br_dev_xmit().
+
+Fixes: f1c2eddf4cb6 ("bridge: switchdev: Use an helper to clear forward mark")
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Link: https://lore.kernel.org/r/20220518005840.771575-1-andrew@lunn.ch
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ net/bridge/br_input.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 478ba959362c..416f4f48f69b 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -171,7 +171,7 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 		unsigned int set_size)
- {
- 	struct drbd_request *r;
--	struct drbd_request *req = NULL;
-+	struct drbd_request *req = NULL, *tmp = NULL;
- 	int expect_epoch = 0;
- 	int expect_size = 0;
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index b50382f957c1..6743c8a0fe8e 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -39,6 +39,13 @@ static int br_pass_frame_up(struct sk_buff *skb)
+ 	dev_sw_netstats_rx_add(brdev, skb->len);
  
-@@ -225,8 +225,11 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 	 * to catch requests being barrier-acked "unexpectedly".
- 	 * It usually should find the same req again, or some READ preceding it. */
- 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
--		if (req->epoch == expect_epoch)
-+		if (req->epoch == expect_epoch) {
-+			tmp = req;
- 			break;
-+		}
-+	req = list_prepare_entry(tmp, &connection->transfer_log, tl_requests);
- 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
- 		if (req->epoch != expect_epoch)
- 			break;
+ 	vg = br_vlan_group_rcu(br);
++
++	/* Reset the offload_fwd_mark because there could be a stacked
++	 * bridge above, and it should not think this bridge it doing
++	 * that bridge's work forwarding out its ports.
++	 */
++	br_switchdev_frame_unmark(skb);
++
+ 	/* Bridge is just like any other port.  Make sure the
+ 	 * packet is allowed except in promisc mode when someone
+ 	 * may be running packet capture.
 -- 
 2.35.1
 
