@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B49C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C817FC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244484AbiEWRwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
+        id S243181AbiEWRvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241417AbiEWR0q (ORCPT
+        with ESMTP id S240870AbiEWR3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E166A8A041;
-        Mon, 23 May 2022 10:21:48 -0700 (PDT)
+        Mon, 23 May 2022 13:29:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB83637010;
+        Mon, 23 May 2022 10:26:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A8360C67;
-        Mon, 23 May 2022 17:20:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 835B6C34115;
-        Mon, 23 May 2022 17:20:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB876090C;
+        Mon, 23 May 2022 17:24:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A4BC34115;
+        Mon, 23 May 2022 17:24:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326449;
-        bh=pTc+2DJ75HEO+3UqzwR/AJ2PrYoy59wZ24DZKWwURfw=;
+        s=korg; t=1653326685;
+        bh=adLbLelwA0eTEMAxwIejJevJ/N5XHRVQmd9kn8IfuU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qiFn9YQxhzohcPLQAF7sp0gGApbZ2Z4flXPBcFxo1CIMDUGCuNT+RyZx3WsRUNzVH
-         61BxP8ClMiDqhZe/jiyHXr2Nur1S8XUJqdsz8okiAN6wPJ9qsT0GzXWqEQaOwbT4qP
-         lFep6AhkL4yK3co4r8k0g5xpr5NxZNIG24uNV+tI=
+        b=1ujcakOxzjaVjPu+f7gWwKCJDeJ8h0DFuC8FRmEi8sfykTzJ0bbgnK8YofLwPlRcb
+         feQyK8hiWjjjVkWE8Jq4gQht7qum4/vmmmjJOrHhumfcl4hyvEuVbY+VwnV7KNdKEz
+         eDlbl226BgmQ5ykCQHMCBIaAjrbqWIN2ZXd4wBwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 085/132] ice: move ice_container_type onto ice_ring_container
-Date:   Mon, 23 May 2022 19:04:54 +0200
-Message-Id: <20220523165837.198549364@linuxfoundation.org>
+Subject: [PATCH 5.17 027/158] rtc: sun6i: Fix time overflow handling
+Date:   Mon, 23 May 2022 19:03:04 +0200
+Message-Id: <20220523165835.012042591@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,201 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit dc23715cf30a9acb808f5b08962877c390d3e6ea ]
+[ Upstream commit 9f6cd82eca7e91a0d0311242a87c6aa3c2737968 ]
 
-Currently ice_container_type is scoped only for ice_ethtool.c. Next
-commit that will split the ice_ring struct onto Rx/Tx specific ring
-structs is going to also modify the type of linked list of rings that is
-within ice_ring_container. Therefore, the functions that are taking the
-ice_ring_container as an input argument will need to be aware of a ring
-type that will be looked up.
+Using "unsigned long" for UNIX timestamps is never a good idea, and
+comparing the value of such a variable against U32_MAX does not do
+anything useful on 32-bit systems.
 
-Embed ice_container_type within ice_ring_container and initialize it
-properly when allocating the q_vectors.
+Use the proper time64_t type when dealing with timestamps, and avoid
+cutting down the time range unnecessarily. This also fixes the flawed
+check for the alarm time being too far into the future.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+The check for this condition is actually somewhat theoretical, as the
+RTC counts till 2033 only anyways, and 2^32 seconds from now is not
+before the year 2157 - at which point I hope nobody will be using this
+hardware anymore.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220211122643.1343315-4-andre.przywara@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_base.c    |  2 ++
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 38 ++++++++------------
- drivers/net/ethernet/intel/ice/ice_txrx.h    |  6 ++++
- 3 files changed, 23 insertions(+), 23 deletions(-)
+ drivers/rtc/rtc-sun6i.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-index f74610442bda..533a953f15ac 100644
---- a/drivers/net/ethernet/intel/ice/ice_base.c
-+++ b/drivers/net/ethernet/intel/ice/ice_base.c
-@@ -115,6 +115,8 @@ static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
- 	q_vector->rx.itr_setting = ICE_DFLT_RX_ITR;
- 	q_vector->tx.itr_mode = ITR_DYNAMIC;
- 	q_vector->rx.itr_mode = ITR_DYNAMIC;
-+	q_vector->tx.type = ICE_TX_CONTAINER;
-+	q_vector->rx.type = ICE_RX_CONTAINER;
+diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
+index 711832c758ae..bcc0c2ce4b4e 100644
+--- a/drivers/rtc/rtc-sun6i.c
++++ b/drivers/rtc/rtc-sun6i.c
+@@ -138,7 +138,7 @@ struct sun6i_rtc_dev {
+ 	const struct sun6i_rtc_clk_data *data;
+ 	void __iomem *base;
+ 	int irq;
+-	unsigned long alarm;
++	time64_t alarm;
  
- 	if (vsi->type == ICE_VSI_VF)
- 		goto out;
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 38c2d9a5574a..19f115402969 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -3466,15 +3466,9 @@ static int ice_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
- 	return 0;
- }
+ 	struct clk_hw hw;
+ 	struct clk_hw *int_osc;
+@@ -510,10 +510,8 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
+ 	struct sun6i_rtc_dev *chip = dev_get_drvdata(dev);
+ 	struct rtc_time *alrm_tm = &wkalrm->time;
+ 	struct rtc_time tm_now;
+-	unsigned long time_now = 0;
+-	unsigned long time_set = 0;
+-	unsigned long time_gap = 0;
+-	int ret = 0;
++	time64_t time_now, time_set;
++	int ret;
  
--enum ice_container_type {
--	ICE_RX_CONTAINER,
--	ICE_TX_CONTAINER,
--};
+ 	ret = sun6i_rtc_gettime(dev, &tm_now);
+ 	if (ret < 0) {
+@@ -528,9 +526,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
+ 		return -EINVAL;
+ 	}
+ 
+-	time_gap = time_set - time_now;
 -
- /**
-  * ice_get_rc_coalesce - get ITR values for specific ring container
-  * @ec: ethtool structure to fill with driver's coalesce settings
-- * @c_type: container type, Rx or Tx
-  * @rc: ring container that the ITR values will come from
-  *
-  * Query the device for ice_ring_container specific ITR values. This is
-@@ -3484,13 +3478,12 @@ enum ice_container_type {
-  * Returns 0 on success, negative otherwise.
-  */
- static int
--ice_get_rc_coalesce(struct ethtool_coalesce *ec, enum ice_container_type c_type,
--		    struct ice_ring_container *rc)
-+ice_get_rc_coalesce(struct ethtool_coalesce *ec, struct ice_ring_container *rc)
- {
- 	if (!rc->ring)
- 		return -EINVAL;
- 
--	switch (c_type) {
-+	switch (rc->type) {
- 	case ICE_RX_CONTAINER:
- 		ec->use_adaptive_rx_coalesce = ITR_IS_DYNAMIC(rc);
- 		ec->rx_coalesce_usecs = rc->itr_setting;
-@@ -3501,7 +3494,7 @@ ice_get_rc_coalesce(struct ethtool_coalesce *ec, enum ice_container_type c_type,
- 		ec->tx_coalesce_usecs = rc->itr_setting;
- 		break;
- 	default:
--		dev_dbg(ice_pf_to_dev(rc->ring->vsi->back), "Invalid c_type %d\n", c_type);
-+		dev_dbg(ice_pf_to_dev(rc->ring->vsi->back), "Invalid c_type %d\n", rc->type);
+-	if (time_gap > U32_MAX) {
++	if ((time_set - time_now) > U32_MAX) {
+ 		dev_err(dev, "Date too far in the future\n");
  		return -EINVAL;
  	}
+@@ -539,7 +535,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
+ 	writel(0, chip->base + SUN6I_ALRM_COUNTER);
+ 	usleep_range(100, 300);
  
-@@ -3522,18 +3515,18 @@ static int
- ice_get_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
- {
- 	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
--		if (ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
-+		if (ice_get_rc_coalesce(ec,
- 					&vsi->rx_rings[q_num]->q_vector->rx))
- 			return -EINVAL;
--		if (ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
-+		if (ice_get_rc_coalesce(ec,
- 					&vsi->tx_rings[q_num]->q_vector->tx))
- 			return -EINVAL;
- 	} else if (q_num < vsi->num_rxq) {
--		if (ice_get_rc_coalesce(ec, ICE_RX_CONTAINER,
-+		if (ice_get_rc_coalesce(ec,
- 					&vsi->rx_rings[q_num]->q_vector->rx))
- 			return -EINVAL;
- 	} else if (q_num < vsi->num_txq) {
--		if (ice_get_rc_coalesce(ec, ICE_TX_CONTAINER,
-+		if (ice_get_rc_coalesce(ec,
- 					&vsi->tx_rings[q_num]->q_vector->tx))
- 			return -EINVAL;
- 	} else {
-@@ -3585,7 +3578,6 @@ ice_get_per_q_coalesce(struct net_device *netdev, u32 q_num,
+-	writel(time_gap, chip->base + SUN6I_ALRM_COUNTER);
++	writel(time_set - time_now, chip->base + SUN6I_ALRM_COUNTER);
+ 	chip->alarm = time_set;
  
- /**
-  * ice_set_rc_coalesce - set ITR values for specific ring container
-- * @c_type: container type, Rx or Tx
-  * @ec: ethtool structure from user to update ITR settings
-  * @rc: ring container that the ITR values will come from
-  * @vsi: VSI associated to the ring container
-@@ -3597,10 +3589,10 @@ ice_get_per_q_coalesce(struct net_device *netdev, u32 q_num,
-  * Returns 0 on success, negative otherwise.
-  */
- static int
--ice_set_rc_coalesce(enum ice_container_type c_type, struct ethtool_coalesce *ec,
-+ice_set_rc_coalesce(struct ethtool_coalesce *ec,
- 		    struct ice_ring_container *rc, struct ice_vsi *vsi)
- {
--	const char *c_type_str = (c_type == ICE_RX_CONTAINER) ? "rx" : "tx";
-+	const char *c_type_str = (rc->type == ICE_RX_CONTAINER) ? "rx" : "tx";
- 	u32 use_adaptive_coalesce, coalesce_usecs;
- 	struct ice_pf *pf = vsi->back;
- 	u16 itr_setting;
-@@ -3608,7 +3600,7 @@ ice_set_rc_coalesce(enum ice_container_type c_type, struct ethtool_coalesce *ec,
- 	if (!rc->ring)
- 		return -EINVAL;
- 
--	switch (c_type) {
-+	switch (rc->type) {
- 	case ICE_RX_CONTAINER:
- 		if (ec->rx_coalesce_usecs_high > ICE_MAX_INTRL ||
- 		    (ec->rx_coalesce_usecs_high &&
-@@ -3641,7 +3633,7 @@ ice_set_rc_coalesce(enum ice_container_type c_type, struct ethtool_coalesce *ec,
- 		break;
- 	default:
- 		dev_dbg(ice_pf_to_dev(pf), "Invalid container type %d\n",
--			c_type);
-+			rc->type);
- 		return -EINVAL;
- 	}
- 
-@@ -3690,22 +3682,22 @@ static int
- ice_set_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
- {
- 	if (q_num < vsi->num_rxq && q_num < vsi->num_txq) {
--		if (ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
-+		if (ice_set_rc_coalesce(ec,
- 					&vsi->rx_rings[q_num]->q_vector->rx,
- 					vsi))
- 			return -EINVAL;
- 
--		if (ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
-+		if (ice_set_rc_coalesce(ec,
- 					&vsi->tx_rings[q_num]->q_vector->tx,
- 					vsi))
- 			return -EINVAL;
- 	} else if (q_num < vsi->num_rxq) {
--		if (ice_set_rc_coalesce(ICE_RX_CONTAINER, ec,
-+		if (ice_set_rc_coalesce(ec,
- 					&vsi->rx_rings[q_num]->q_vector->rx,
- 					vsi))
- 			return -EINVAL;
- 	} else if (q_num < vsi->num_txq) {
--		if (ice_set_rc_coalesce(ICE_TX_CONTAINER, ec,
-+		if (ice_set_rc_coalesce(ec,
- 					&vsi->tx_rings[q_num]->q_vector->tx,
- 					vsi))
- 			return -EINVAL;
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index 7c2328529ff8..69f78a1c234f 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -332,6 +332,11 @@ static inline bool ice_ring_is_xdp(struct ice_ring *ring)
- 	return !!(ring->flags & ICE_TX_FLAGS_RING_XDP);
- }
- 
-+enum ice_container_type {
-+	ICE_RX_CONTAINER,
-+	ICE_TX_CONTAINER,
-+};
-+
- struct ice_ring_container {
- 	/* head of linked-list of rings */
- 	struct ice_ring *ring;
-@@ -343,6 +348,7 @@ struct ice_ring_container {
- 	u16 itr_setting:13;
- 	u16 itr_reserved:2;
- 	u16 itr_mode:1;
-+	enum ice_container_type type;
- };
- 
- struct ice_coalesce_stored {
+ 	sun6i_rtc_setaie(wkalrm->enabled, chip);
 -- 
 2.35.1
 
