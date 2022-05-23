@@ -2,95 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AC9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F621C38A06
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242120AbiEWRsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        id S244396AbiEWRsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242081AbiEWR1Z (ORCPT
+        with ESMTP id S242232AbiEWR1c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A147A82D;
-        Mon, 23 May 2022 10:22:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECE27B80FF4;
-        Mon, 23 May 2022 17:22:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A4A7C385A9;
-        Mon, 23 May 2022 17:22:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326555;
-        bh=2G3O/BeuOB/LP+pXY8WjpNyQcb0iZ9J+DrQIeLIcGXY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J9vC7aQ0f02A5Hx26xNjH4gR+V9HRbJKu9Yu3oLqZ3rk6QJ3iapPzdJ/i6uIwLZ/8
-         imxu1IzhFCuqss70uUtUPaVMzbi3G1kJZv6905ApdqMsr3pLfbLZ6KAr1gg0etwAzs
-         FsmxJT8Cwt8lCSt+kG/pxNe545WkKdZxJm/z5NJE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 118/132] fbdev: Prevent possible use-after-free in fb_release()
-Date:   Mon, 23 May 2022 19:05:27 +0200
-Message-Id: <20220523165843.109124190@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 23 May 2022 13:27:32 -0400
+Received: from condef-05.nifty.com (condef-05.nifty.com [202.248.20.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8591D71DBD;
+        Mon, 23 May 2022 10:22:44 -0700 (PDT)
+Received: from conssluserg-02.nifty.com ([10.126.8.81])by condef-05.nifty.com with ESMTP id 24NHG9Sw006904;
+        Tue, 24 May 2022 02:16:09 +0900
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 24NHFlcu010153;
+        Tue, 24 May 2022 02:15:47 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 24NHFlcu010153
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1653326147;
+        bh=OGFOsJaaPXTp7udfTBYwnoLO5n8NJB9yqzeeBC2uWGM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=j+5jAm9nSHBtPB2Bm2fgLzp42GcQz0hP9lzKC9wM5o8LQ7y68AD787wckNJm9AzkP
+         Cjnaxd055ZHKvu9UlMi04sxx2SUb9m1leOExEauRGH4CTxMWE3ctLzeByDq+JPMKFr
+         7RijYQ5hKnswouCnMpu7JvIg66kWeUwk5jjz7/rAyJbZgHdQwHDvmb+uca1ZQ3wmAW
+         DgJC/ZKEbOBVOZZQb4RWhIfP5KuKbEW+RT+ufaMEnPdx805uO/xmHutcmsKYPIV6i2
+         KAPHok8toA+ylwrZn8o1UkoypxxSp1io4sGhLWtc1l8I1ZbisBS0tLmfr590iXHRtK
+         1lo3RURqiKULg==
+X-Nifty-SrcIP: [209.85.210.44]
+Received: by mail-ot1-f44.google.com with SMTP id h9-20020a056830400900b0060b03bfe792so4171879ots.12;
+        Mon, 23 May 2022 10:15:47 -0700 (PDT)
+X-Gm-Message-State: AOAM533j0uFvUbZHUvHD9/23I2Zm1uK2Ru7YBj/GUeEjGnyem5oDOEoc
+        r9WmMZiNQ8KuKPxAvrMIbDcPBTJv4mX13JKLRmk=
+X-Google-Smtp-Source: ABdhPJwC/BX9iJtS+me6WCgh4FiVSqSYSjIxoKwp6SUa5MgtH+0lF8YXyOeBRLO/3zxlti48fNjV9tfjg53LtYszjEM=
+X-Received: by 2002:a9d:34d:0:b0:60a:ebab:f100 with SMTP id
+ 71-20020a9d034d000000b0060aebabf100mr6988834otv.55.1653326146590; Mon, 23 May
+ 2022 10:15:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220516092423.14327-1-isak01@gmail.com>
+In-Reply-To: <20220516092423.14327-1-isak01@gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 24 May 2022 02:14:27 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATfGqzikgDLvK2tTK91ynDsS59G7K7OZobyd+=MOqF_4A@mail.gmail.com>
+Message-ID: <CAK7LNATfGqzikgDLvK2tTK91ynDsS59G7K7OZobyd+=MOqF_4A@mail.gmail.com>
+Subject: Re: [PATCH] scripts: kconfig: nconf: make nconfig accept jk keybindings
+To:     Isak Ellmer <isak01@gmail.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+On Mon, May 16, 2022 at 6:24 PM Isak Ellmer <isak01@gmail.com> wrote:
+>
+> Make nconfig accept jk keybindings for movement in addition to arrow keys.
+>
+> Signed-off-by: Isak Ellmer <isak01@gmail.com>
+> ---
 
-[ Upstream commit 89bfd4017e58faaf70411555e7f508495114e90b ]
 
-Most fbdev drivers have issues with the fb_info lifetime, because call to
-framebuffer_release() from their driver's .remove callback, rather than
-doing from fbops.fb_destroy callback.
+I am fine with this.
 
-Doing that will destroy the fb_info too early, while references to it may
-still exist, leading to a use-after-free error.
 
-To prevent this, check the fb_info reference counter when attempting to
-kfree the data structure in framebuffer_release(). That will leak it but
-at least will prevent the mentioned error.
+Can you update the help message?
 
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220505220413.365977-1-javierm@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/core/fbsysfs.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
-index 65dae05fff8e..ce699396d6ba 100644
---- a/drivers/video/fbdev/core/fbsysfs.c
-+++ b/drivers/video/fbdev/core/fbsysfs.c
-@@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
- {
- 	if (!info)
- 		return;
-+
-+	if (WARN_ON(refcount_read(&info->count)))
-+		return;
-+
- 	kfree(info->apertures);
- 	kfree(info);
- }
+Around line 55:
+
+"Linewise up                 <Up>\n"
+"Linewise down               <Down>\n"
+
+
+
+
+
+
+
+
+
+
+>  scripts/kconfig/nconf.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/scripts/kconfig/nconf.c b/scripts/kconfig/nconf.c
+> index 7b371bd7fb36..ded40e5aabf8 100644
+> --- a/scripts/kconfig/nconf.c
+> +++ b/scripts/kconfig/nconf.c
+> @@ -1105,9 +1105,11 @@ static void conf(struct menu *menu)
+>                                 break;
+>                         switch (res) {
+>                         case KEY_DOWN:
+> +                       case 'j':
+>                                 menu_driver(curses_menu, REQ_DOWN_ITEM);
+>                                 break;
+>                         case KEY_UP:
+> +                       case 'k':
+>                                 menu_driver(curses_menu, REQ_UP_ITEM);
+>                                 break;
+>                         case KEY_NPAGE:
+> @@ -1287,9 +1289,11 @@ static void conf_choice(struct menu *menu)
+>                                 break;
+>                         switch (res) {
+>                         case KEY_DOWN:
+> +                       case 'j':
+>                                 menu_driver(curses_menu, REQ_DOWN_ITEM);
+>                                 break;
+>                         case KEY_UP:
+> +                       case 'k':
+>                                 menu_driver(curses_menu, REQ_UP_ITEM);
+>                                 break;
+>                         case KEY_NPAGE:
+> --
+> 2.35.1
+>
+
+
 -- 
-2.35.1
-
-
-
+Best Regards
+Masahiro Yamada
