@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7380BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F94C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241192AbiEWR0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
+        id S241441AbiEWR0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240157AbiEWRRa (ORCPT
+        with ESMTP id S240222AbiEWRRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:17:30 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D18C7037A
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:17:18 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id q21so10034029ejm.1
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:17:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fedUXB9PCZprDJtOf0/YUNtATNS2b1cwPIEIQjz3C5U=;
-        b=qSGY95RPQbk/z3IZR2wbR9A+mIAY4Evz9P0y1QbCQZkw9mL3rtDPqjtqier7UAQbRt
-         cRXL97xjijcBb2skG6FctVkzFdhkgqSxrsm4wM7wgxjsQvOir4bI7uATxEvuRfIwc44a
-         EwpX/thbz01WEwPwaS+BR4fXjazKiGLx21UrszmsB4Jc2evogwNg6KTyok2wBTqDFVSd
-         BOqV/5UpARO8gm/18TeR3u86M2cuaIaZHIcg7QWRdC9V1i4j+HshVV1q0YQu1vaAiJb1
-         7VeYI4hYWMv/nIBKym0uuUsyDsGjmroQS67KhM474f3HzYsx2G4oK4iZtOuRfwJY/t7S
-         JGFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fedUXB9PCZprDJtOf0/YUNtATNS2b1cwPIEIQjz3C5U=;
-        b=kXahwLlFKew+IydCGxir4DAJx6IN0FzLQAkwcdMzfhjXnPp87FP7qUpAy8yCms9jLj
-         qSQe9oMhQZ7WrPQu5YwzYGq2q5Cz3VZTub2UHIsqwOe6LnzgjpS017KXdj5BSNVvBsDq
-         VZxuN4mcgGzf7kRxMZUkgyIeMTnptfl9gd+tDZl2KpO8IAJeQTYhzQVuilgx9xZLPy7D
-         S2w7KDKpW4B0FzszWpmucp3Fz06K/nI1c3MpWSyyPtLurJ1DW1q8c8O4qvsUvNQ4aAlo
-         MrLt+fL27+MlO+suqRDhdb/4y2hrP5e5WWNgGcvIoUy9Yj3pYDjBENNLkfWcQ/iSrd1o
-         4cdQ==
-X-Gm-Message-State: AOAM5316MOZ60TPFnqw4fUfhEj7RGKg17jyB2tK7n9++Y14w5vy3ht2U
-        JWvYqSqtxxLkd7izXbRLLVBtnTMgup7OcttV97j1/A==
-X-Google-Smtp-Source: ABdhPJxJp+UOrH5XwC1bW0gxjFCeL9tPbqF9Oys4KOYyLcxhtgzBSwhtxHRu1jsf4X3pcTQXwa5oIGirMCihhSJafo8=
-X-Received: by 2002:a17:907:3faa:b0:6fe:d013:b22a with SMTP id
- hr42-20020a1709073faa00b006fed013b22amr7070939ejc.425.1653326161514; Mon, 23
- May 2022 10:16:01 -0700 (PDT)
+        Mon, 23 May 2022 13:17:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D63971A10;
+        Mon, 23 May 2022 10:17:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E50560919;
+        Mon, 23 May 2022 17:17:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D28C385A9;
+        Mon, 23 May 2022 17:17:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326239;
+        bh=yC99/wYz6UhC2zfmoGGY9wbZug421pD2Jlmf8Cdzo/U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ToqgX9ttx3tVM3OxZ8tM4VYkkZPzDMcCR/P1P1DiF3iu1z6znvmXWl3yte5voSk0F
+         ss/JqHvw4JLk4sKJZWjGy25OtYKISMfeCY4CheMFBy5N9MTKnZdcugJKsU/Aqgg//y
+         gFJTu/IheA74ls+OGhMSaQ2d0IdunF1bK8wF0kSM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 020/132] rtc: pcf2127: fix bug when reading alarm registers
+Date:   Mon, 23 May 2022 19:03:49 +0200
+Message-Id: <20220523165826.874169570@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220523020209.11810-1-ojeda@kernel.org> <20220523020209.11810-5-ojeda@kernel.org>
-In-Reply-To: <20220523020209.11810-5-ojeda@kernel.org>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Mon, 23 May 2022 10:15:50 -0700
-Message-ID: <CAGS_qxrW+GpDpD7-jxyGaPtQUzBGTdR7N=_7FRR0KdoJCshAAA@mail.gmail.com>
-Subject: Re: [PATCH v7 04/25] kunit: take `kunit_assert` as `const`
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 7:03 PM Miguel Ojeda <ojeda@kernel.org> wrote:
->
-> The `kunit_do_failed_assertion` function passes its
-> `struct kunit_assert` argument to `kunit_fail`. This one,
-> in turn, calls its `format` field passing the assert again
-> as a `const` pointer.
->
-> Therefore, the whole chain may be made `const`.
->
-> Reviewed-by: Daniel Latypov <dlatypov@google.com>
-> Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
-> ---
-> This is a prerequisite patch, independently submitted at:
->
->     https://lore.kernel.org/lkml/20220502093625.GA23225@kernel.org/
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-FYI, we'd asked Shuah to pick this patch up in her "kunit" branch.
-It's applied here:
-https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git/commit/?h=kunit&id=7466886b400b1904ce30fa311904849e314a2cf4
+[ Upstream commit 73ce05302007eece23a6acb7dc124c92a2209087 ]
 
-It had previously seemed unclear if this series could make it for the
-5.19 merge window (but it now looks like there's interest in trying it
-out early on).
+The first bug is that reading the 5 alarm registers results in a read
+operation of 20 bytes. The reason is because the destination buffer is
+defined as an array of "unsigned int", and we use the sizeof()
+operator on this array to define the bulk read count.
 
-Daniel
+The second bug is that the read value is invalid, because we are
+indexing the destination buffer as integers (4 bytes), instead of
+indexing it as u8.
+
+Changing the destination buffer type to u8 fixes both problems.
+
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220208162908.3182581-1-hugo@hugovil.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/rtc/rtc-pcf2127.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
+index 56c58b055dff..43f801107095 100644
+--- a/drivers/rtc/rtc-pcf2127.c
++++ b/drivers/rtc/rtc-pcf2127.c
+@@ -374,7 +374,8 @@ static int pcf2127_watchdog_init(struct device *dev, struct pcf2127 *pcf2127)
+ static int pcf2127_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
+ {
+ 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
+-	unsigned int buf[5], ctrl2;
++	u8 buf[5];
++	unsigned int ctrl2;
+ 	int ret;
+ 
+ 	ret = regmap_read(pcf2127->regmap, PCF2127_REG_CTRL2, &ctrl2);
+-- 
+2.35.1
+
+
+
