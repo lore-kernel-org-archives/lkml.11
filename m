@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 619F1C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F8CC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240187AbiEWRLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        id S240275AbiEWRLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239647AbiEWRKT (ORCPT
+        with ESMTP id S239136AbiEWRK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:10:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350C26CA8A;
-        Mon, 23 May 2022 10:09:55 -0700 (PDT)
+        Mon, 23 May 2022 13:10:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6F76CF74;
+        Mon, 23 May 2022 10:09:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 824D4B811F6;
-        Mon, 23 May 2022 17:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A3EC385A9;
-        Mon, 23 May 2022 17:09:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A026614F4;
+        Mon, 23 May 2022 17:09:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60897C385AA;
+        Mon, 23 May 2022 17:09:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325779;
-        bh=UodYB9RZCKj8YDl/NrPyDzZlEGObUwSATbKP+WigtdM=;
+        s=korg; t=1653325789;
+        bh=KuFUgf9ktp4busrSOKUHZR6BbW7z2IoxN0dCsE+i6NY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L5RnQaCZNQ2gvFAj4+rLrej47IetSO/y65mwOMhuN4dPnGIQi+cEQ1kpn+Zlsl9al
-         n0GI+8rAjnty0JCdbDJSWTPacFHScP1hVSqryOhS1aTxjW4XBfQ2rrNdOaY+phRiGn
-         N5FcCXF8Jw+huJM+Z0B9o/oq1L3X7ZoriHLrPvvI=
+        b=ulLPzRnMQ4yQ/MXvuNHftBKxdnJMC+wzX0Slb49jQlIYrVRSciXZhxWtC+lgFqvGZ
+         +lf7rrhgdtfP667fScg5IlvL6HxB7V2TSEdpzZRUWbohGad+MSrJyi+H/14ChmVeoU
+         KOmQsMgEGOgIaDyWk7zv8rdBtaZR7uLCP6beV2ew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 20/33] ARM: 9196/1: spectre-bhb: enable for Cortex-A15
-Date:   Mon, 23 May 2022 19:05:09 +0200
-Message-Id: <20220523165751.433712311@linuxfoundation.org>
+Subject: [PATCH 4.19 04/44] Input: stmfts - fix reference leak in stmfts_input_open
+Date:   Mon, 23 May 2022 19:04:48 +0200
+Message-Id: <20220523165754.223999686@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
-References: <20220523165746.957506211@linuxfoundation.org>
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+References: <20220523165752.797318097@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 0dc14aa94ccd8ba35eb17a0f9b123d1566efd39e ]
+[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
 
-The Spectre-BHB mitigations were inadvertently left disabled for
-Cortex-A15, due to the fact that cpu_v7_bugs_init() is not called in
-that case. So fix that.
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stmfts_input_open, so we should fix it.
 
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mm/proc-v7-bugs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/input/touchscreen/stmfts.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
-index 1b6e770bc1cd..8b78694d56b8 100644
---- a/arch/arm/mm/proc-v7-bugs.c
-+++ b/arch/arm/mm/proc-v7-bugs.c
-@@ -297,6 +297,7 @@ void cpu_v7_ca15_ibe(void)
- {
- 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
- 		cpu_v7_spectre_v2_init();
-+	cpu_v7_spectre_bhb_init();
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
+index cd8805d71d97..be1dd504d5b1 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
+ 
+ 	err = pm_runtime_get_sync(&sdata->client->dev);
+ 	if (err < 0)
+-		return err;
++		goto out;
+ 
+ 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
+ 	if (err)
+-		return err;
++		goto out;
+ 
+ 	mutex_lock(&sdata->mutex);
+ 	sdata->running = true;
+@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
+ 				 "failed to enable touchkey\n");
+ 	}
+ 
+-	return 0;
++out:
++	pm_runtime_put_noidle(&sdata->client->dev);
++	return err;
  }
  
- void cpu_v7_bugs_init(void)
+ static void stmfts_input_close(struct input_dev *dev)
 -- 
 2.35.1
 
