@@ -2,113 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D31AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 855E2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238334AbiEWP7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
+        id S238337AbiEWQAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238287AbiEWP7j (ORCPT
+        with ESMTP id S238319AbiEWQAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:59:39 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874FD13F8C;
-        Mon, 23 May 2022 08:59:38 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id z25so1398780pfr.1;
-        Mon, 23 May 2022 08:59:38 -0700 (PDT)
+        Mon, 23 May 2022 12:00:08 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CF561613
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:00:06 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id t13so2859460wrg.9
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:00:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rWxANZwiWxjY7oEsXTVwMbfOrUKsgscWMIFvRo3MrvA=;
-        b=E1xNhK6Upsw0ZUh99teWH8au6Io9PBLwuE/c4tpF8a+zsv3UQl0KETRa1lqqnvbgWL
-         Pd8tObJLx1JRUwNdN5boLTBmTPncS+y50Iu8H+9vXxXFplb8MqP55/sloeSqW057UNvo
-         xnmUTMefwOGabbcJ9HvIaGkiy3kw8DyevTW/wyiT6z7i2pkOtJcFLZ8gEkTkD5dXA2W+
-         PYmv78BCvbbRY27BAv7oTEUo9axMgDwtt/wgIykOwA6nzNWFfJ36mwvUTYS+roGvd2SL
-         x81lNhlVTgn2hg+I9HeGatRU8Ck7xhXlS1//vzL+XjTVWJVb6BxI8eHvCIfTShMESZ5A
-         DczA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=hH6Sw2227bde22AtOz6RnEi8JLF2ESkvCuMIfkjdakw=;
+        b=knbEVZxZ2aF5sEZ6hHdZJry9hAnHBLawNAQqTVuACzx38StTZTp/evQJ8ZAuv5X4EX
+         p/wrOpEngV6Rqfmr87E7bcXTWww12AI7NaTcUX9l7HGUnAcDSylf4EE3SwZZJr2blmwi
+         VGrxgpDucsV8jcJ38aflo/jzHPM5puC4Ke/BVMzIf4U8Ho3NHsflXn2vaFj3owkoWi8G
+         nDwewEVYPovrzkN8YyRpWU7R1/GloUGapKxc+DSbulyu1uhzxM/vxbF1FstWurAyVNnV
+         CPqRt95dJdjnp3Fx9dxyZd/NLD+2vtLvWqBRshS71Y9+M/ABY92LZCJZ7W4E69YjaWGN
+         h+DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rWxANZwiWxjY7oEsXTVwMbfOrUKsgscWMIFvRo3MrvA=;
-        b=UYHipf2mdGPAsrKM1Uis26KQ6Jk0gwZTLMTzJJYXoBenIypHF/HQKlsQ0mG07RYz5i
-         F+MP+6jCQ5NbEBUX1/8J7tcP3MmTboUh7rvSD6t71Qtfob3fUIdBdzzmRXmQiD/JrGVS
-         XqI8MEHDsPTLdG5iVknluBZv0/aDYJ0eknR3f9QDggOvqSNkAua4oonx0OvQyMxT4Pmb
-         ebbftTEtg73QPYjG3BJqMXbleiVxCYMBvtadL/rm9nP+xUwGjaU+l4fAC8XzZuxyZCrG
-         8mT6f+X4gVvnkSrWeU1K5Qcr2XA+YIHo8dklvp65nYyHp45/HBIgT6zYFFBCePXQBpmh
-         bNWQ==
-X-Gm-Message-State: AOAM532l5N7mxXDBCCSn42N8hVQ4V8ZTmM+j1LZcYUu4DXa/ij4/TbnO
-        UDakiyeN/pJ+XbMdvwV3MI9AtIw6YOMhZ4wWAbk=
-X-Google-Smtp-Source: ABdhPJy0XNmt9jGyIiTXD/bSqHP+LfQiWrd20vM4ZnFCT++jqLNdDrSCT37JvnwMRMVRUlulBuY+OztPCu3Lwr8+Lhs=
-X-Received: by 2002:a05:6a00:1501:b0:510:7ab8:71c8 with SMTP id
- q1-20020a056a00150100b005107ab871c8mr24123220pfu.63.1653321578047; Mon, 23
- May 2022 08:59:38 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hH6Sw2227bde22AtOz6RnEi8JLF2ESkvCuMIfkjdakw=;
+        b=niz1xWmelrA7G73CmyiRHCQ4YeWETKOf2YBYNZrIBpMKGJIku9bfJZW+2NXrwtWV5K
+         0+Adw4BYPF7nDCP5bpl75fWRLqS/bxnM/53eRUQNW0nV3k7U0sqo7gOGaz6VB8rAq2Zj
+         8tb3+MC88la0vSVV7PKMcAtA23LMTtb4LO/i+yBGe8F4VtMB824A2p2yC87cRKQ177u7
+         ag7K6IpSS7MbSWsQNvfpDZqhGSJDRWsUo/WwCiRlN/RSh1k6o6b2Bva/7gw2eIti/+Db
+         ico0EbhlRq4Q7NZ6ZQ1CBXs7mHi0ljPwsEDpc4m82M5yYI8p3CUopb4DzoMopftt7Bxr
+         Pczw==
+X-Gm-Message-State: AOAM5325bPoBqFSuVv2gdKtl+quXTLseOMkoiVZJILf+dLJc7SML62MY
+        ZbLGX+cGlLUHbZHWlbyvbYG4JQ==
+X-Google-Smtp-Source: ABdhPJy88++sam8Rno3SlEnS7UBaPrZKfxINWFCXLRdNktVufOGwdP+w2hrC38lE1yPB3AmwVEiYug==
+X-Received: by 2002:a5d:6b87:0:b0:20d:2c2:b6e2 with SMTP id n7-20020a5d6b87000000b0020d02c2b6e2mr19201048wrx.72.1653321605073;
+        Mon, 23 May 2022 09:00:05 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id s1-20020adf8901000000b0020c547f75easm10169414wrs.101.2022.05.23.09.00.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 09:00:04 -0700 (PDT)
+Date:   Mon, 23 May 2022 17:00:02 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     frank zago <frank@zago.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
+        linux-usb@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] i2c: ch341: add I2C MFD cell driver for the CH341
+Message-ID: <YouvgpvrKbH1Holu@google.com>
+References: <20220401023306.79532-1-frank@zago.net>
+ <20220401023306.79532-4-frank@zago.net>
 MIME-Version: 1.0
-References: <20220516165740.6256af51.alex.williamson@redhat.com>
- <20220518115432.76183-1-windy.bi.enflame@gmail.com> <20220520064148.GA20418@wunner.de>
- <CAGdb+H2_pX4TzG=sJ8XE6KiyWW9niJQawCbcDN2byxDfybukiA@mail.gmail.com>
- <20220521124910.GA13556@wunner.de> <CAGdb+H19bfbXM1cPJvhh6gixJbF7Sk=v53d9VpvWY8HEs0mSKg@mail.gmail.com>
- <20220523142042.GA19286@wunner.de>
-In-Reply-To: <20220523142042.GA19286@wunner.de>
-From:   Sheng Bi <windy.bi.enflame@gmail.com>
-Date:   Mon, 23 May 2022 23:59:23 +0800
-Message-ID: <CAGdb+H0qnC4noBa_=N3oQW88+dgXYtA7gqJ5qiD2g7Ywd+2K=Q@mail.gmail.com>
-Subject: Re: [PATCH v2] PCI: Fix no-op wait after secondary bus reset
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220401023306.79532-4-frank@zago.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 10:20 PM Lukas Wunner <lukas@wunner.de> wrote:
->
-> On Sun, May 22, 2022 at 01:37:50AM +0800, Sheng Bi wrote:
-> > On Sat, May 21, 2022 at 8:49 PM Lukas Wunner <lukas@wunner.de> wrote:
-> > > On Sat, May 21, 2022 at 04:36:10PM +0800, Sheng Bi wrote:
-> > > > If so, I also want to align the polling things mentioned in the
-> > > > question from Alex, since pci_dev_wait() is also used for reset
-> > > > functions other than SBR. To Bjorn, Alex, Lucas, how do you think if
-> > > > we need to change the polling in pci_dev_wait() to 20ms intervals, or
-> > > > keep binary exponential back-off with probable unexpected extra
-> > > > timeout delay.
-> > >
-> > > The exponential backoff should probably be capped at some point
-> > > to avoid excessive wait delays.  I guess the rationale for
-> > > exponential backoff is to not poll too frequently.
-> > > Capping at 20 msec or 100 msec may be reasonable, i.e.:
-> > >
-> > > -               delay *= 2;
-> > > +               delay = min(delay * 2, 100);
-> >
-> > Capping at 20 or 100 msec seems reasonable to me. Btw, since 20 msec
-> > is not a long time in these scenarios, how about changing to a fixed
-> > 20 msec interval?
->
-> The callers of pci_dev_wait() seem to wait for the spec-defined
-> delay and only call pci_dev_wait() to allow for an additional period
-> that non-compliant devices may need.  That extra delay can be expected
-> to be low, which is why it makes sense to start with a short poll interval
-> and gradually extend it.  So the algorithm seems to be reasonable and
-> I wouldn't recommend changing it to a constant interval unless that
-> fixes something which is currently broken.
->
-> Thanks,
->
-> Lukas
+On Thu, 31 Mar 2022, frank zago wrote:
 
-Thanks Lukas!
+> The I2C interface can run at 4 different speeds. This driver currently
+> only offer 100MHz. Tested with a variety of I2C sensors, and the IIO
+> subsystem.
+> 
+> Signed-off-by: frank zago <frank@zago.net>
+> ---
+>  MAINTAINERS                    |   1 +
+>  drivers/i2c/busses/Kconfig     |  10 +
+>  drivers/i2c/busses/Makefile    |   1 +
+>  drivers/i2c/busses/i2c-ch341.c | 331 +++++++++++++++++++++++++++++++++
 
-From my perspective, there is nothing broken so far, but a theoretical
-unexpected extra delay while the timeout has passed. So I will keep
-pci_dev_wait() as previously with exponential backoff in this patch,
-and change the pci_bridge_secondary_bus_wait() with "jiffies" and
-pci_dev_wait().
+>  drivers/mfd/ch341-core.c       |   3 +
 
-Thanks,
+And this one in its own patch please.
 
-windy
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
