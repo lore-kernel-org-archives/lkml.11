@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C93F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiEWRZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34144 "EHLO
+        id S236088AbiEWRZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240818AbiEWRQn (ORCPT
+        with ESMTP id S240698AbiEWRQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2133062CF3;
-        Mon, 23 May 2022 10:16:33 -0700 (PDT)
+        Mon, 23 May 2022 13:16:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4856F3BFA8;
+        Mon, 23 May 2022 10:16:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 375ABB81201;
-        Mon, 23 May 2022 17:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD01C36AE7;
-        Mon, 23 May 2022 17:13:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36EF461337;
+        Mon, 23 May 2022 17:13:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F29C385AA;
+        Mon, 23 May 2022 17:13:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325986;
-        bh=4EXUEMeTAeXLlshx1uphD/BXa5br98ezO+Wp1Q0cG0E=;
+        s=korg; t=1653326011;
+        bh=rxs6VDxjlSlsa8eXEMlrj2IGeSz+cSzxHHDu/XTGxjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xq0sK5RVxnQ6WMyeBsg5GguITDQmcOCb7/WiK9tFjzOwU4izhpaxJdeZngMI6iqbx
-         NTi1gMCD2JvgGT4YHv64zdw082w+H0MhrONsqpjAlz4aquQQhZrV9A78T/e1LwuVHs
-         9lO5mYzkTD2u9Od56Tqkqy9GkQiBylUuwWWGunuQ=
+        b=UwkfwNlBI4FPmsmcbjBrnq88Cnnie0rjo7+eIungHwBf+Uf7Zu1qYKqdc0Hsp4hZP
+         oyj8OUC4iqfLkVJfoOCA/KGgXc2UJd6apQ3UMpqIAHCLrHl/G7GyJMJ2RnPXtt2Z7g
+         yhOggqWP8d4jfIcfjVYbAT/kpKaUujliBirzc58c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 33/44] net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
-Date:   Mon, 23 May 2022 19:05:17 +0200
-Message-Id: <20220523165759.209845783@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Greenwalt <paul.greenwalt@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.4 40/68] ice: fix possible under reporting of ethtool Tx and Rx statistics
+Date:   Mon, 23 May 2022 19:05:07 +0200
+Message-Id: <20220523165809.213413459@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
-References: <20220523165752.797318097@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,69 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+From: Paul Greenwalt <paul.greenwalt@intel.com>
 
-[ Upstream commit fbb3abdf2223cd0dfc07de85fe5a43ba7f435bdf ]
+[ Upstream commit 31b6298fd8e29effe9ed6b77351ac5969be56ce0 ]
 
-It is possible to stack bridges on top of each other. Consider the
-following which makes use of an Ethernet switch:
+The hardware statistics counters are not cleared during resets so the
+drivers first access is to initialize the baseline and then subsequent
+reads are for reporting the counters. The statistics counters are read
+during the watchdog subtask when the interface is up. If the baseline
+is not initialized before the interface is up, then there can be a brief
+window in which some traffic can be transmitted/received before the
+initial baseline reading takes place.
 
-       br1
-     /    \
-    /      \
-   /        \
- br0.11    wlan0
-   |
-   br0
- /  |  \
-p1  p2  p3
+Directly initialize ethtool statistics in driver open so the baseline will
+be initialized when the interface is up, and any dropped packets
+incremented before the interface is up won't be reported.
 
-br0 is offloaded to the switch. Above br0 is a vlan interface, for
-vlan 11. This vlan interface is then a slave of br1. br1 also has a
-wireless interface as a slave. This setup trunks wireless lan traffic
-over the copper network inside a VLAN.
-
-A frame received on p1 which is passed up to the bridge has the
-skb->offload_fwd_mark flag set to true, indicating that the switch has
-dealt with forwarding the frame out ports p2 and p3 as needed. This
-flag instructs the software bridge it does not need to pass the frame
-back down again. However, the flag is not getting reset when the frame
-is passed upwards. As a result br1 sees the flag, wrongly interprets
-it, and fails to forward the frame to wlan0.
-
-When passing a frame upwards, clear the flag. This is the Rx
-equivalent of br_switchdev_frame_unmark() in br_dev_xmit().
-
-Fixes: f1c2eddf4cb6 ("bridge: switchdev: Use an helper to clear forward mark")
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
-Link: https://lore.kernel.org/r/20220518005840.771575-1-andrew@lunn.ch
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 28dc1b86f8ea9 ("ice: ignore dropped packets during init")
+Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_input.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_main.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 2532c1a19645..14c2fdc268ea 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -47,6 +47,13 @@ static int br_pass_frame_up(struct sk_buff *skb)
- 	u64_stats_update_end(&brstats->syncp);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 3eea68f3a526..88750a96cb3f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3561,9 +3561,10 @@ static int ice_up_complete(struct ice_vsi *vsi)
+ 		netif_carrier_on(vsi->netdev);
+ 	}
  
- 	vg = br_vlan_group_rcu(br);
-+
-+	/* Reset the offload_fwd_mark because there could be a stacked
-+	 * bridge above, and it should not think this bridge it doing
-+	 * that bridge's work forwarding out its ports.
+-	/* clear this now, and the first stats read will be used as baseline */
+-	vsi->stat_offsets_loaded = false;
+-
++	/* Perform an initial read of the statistics registers now to
++	 * set the baseline so counters are ready when interface is up
 +	 */
-+	br_switchdev_frame_unmark(skb);
-+
- 	/* Bridge is just like any other port.  Make sure the
- 	 * packet is allowed except in promisc modue when someone
- 	 * may be running packet capture.
++	ice_update_eth_stats(vsi);
+ 	ice_service_task_schedule(pf);
+ 
+ 	return 0;
 -- 
 2.35.1
 
