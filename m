@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 396F1C35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:17:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6ABC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241153AbiEWRRI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:17:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
+        id S239449AbiEWRRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239633AbiEWRMq (ORCPT
+        with ESMTP id S240018AbiEWRNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:12:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BD795A4;
-        Mon, 23 May 2022 10:12:13 -0700 (PDT)
+        Mon, 23 May 2022 13:13:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1166B7C2;
+        Mon, 23 May 2022 10:12:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0853D614B8;
-        Mon, 23 May 2022 17:11:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED440C385AA;
-        Mon, 23 May 2022 17:11:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E575B81205;
+        Mon, 23 May 2022 17:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E28C385A9;
+        Mon, 23 May 2022 17:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325911;
-        bh=yWszmqLY47S5iaXcawYdL8HPP6PVa/621Zhmc4slavE=;
+        s=korg; t=1653325924;
+        bh=9+gK3EfVe4i70R1qceW78UceKAnxu03KRWGw5bq5nDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2BE15vY18GCOr2FK2EJ2HuL8pMnNuSlXSRjqSYiTA8mWflTsf9mo/xZRZkEQhHYRk
-         WmhSIQ5Ipbpk69/g7KiVZ1l+a1S/06IlM408nkcL/qm2yNPBq3Gz8/RZADlw/aLbmi
-         +ntb0Sjhd2lTve18DKfXLnmKgDDBwlzTIy2hp+fU=
+        b=mGbNQLdu25qtZQdfsK/q+yEwTzYCkpk+ZpFEkKjXTa31tukt+QPofz84jW+lnIbKo
+         qpgtWdRStA6Vbo99OmsJ2tGUDsdrRGDCaOoe4fBp4ZVzpouwkQoy6555ixfVHp4ka1
+         DDRtfgrq6Fmspee4SYibzgDuWzRqWJM4oJMmoJyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Martin Willi <martin@strongswan.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Jinke Fan <fanjinke@hygon.cn>,
+        Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 09/68] crypto: x86/chacha20 - Avoid spurious jumps to other functions
-Date:   Mon, 23 May 2022 19:04:36 +0200
-Message-Id: <20220523165804.100193933@linuxfoundation.org>
+Subject: [PATCH 5.4 12/68] rtc: mc146818-lib: Fix the AltCentury for AMD platforms
+Date:   Mon, 23 May 2022 19:04:39 +0200
+Message-Id: <20220523165804.579704970@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -51,49 +52,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 4327d168515fd8b5b92fa1efdf1d219fb6514460 ]
+[ Upstream commit 3ae8fd41573af4fb3a490c9ed947fc936ba87190 ]
 
-The chacha_Nblock_xor_avx512vl() functions all have their own,
-identical, .LdoneN label, however in one particular spot {2,4} jump to
-the 8 version instead of their own. Resulting in:
+Setting the century forward has been failing on AMD platforms.
+There was a previous attempt at fixing this for family 0x17 as part of
+commit 7ad295d5196a ("rtc: Fix the AltCentury value on AMD/Hygon
+platform") but this was later reverted due to some problems reported
+that appeared to stem from an FW bug on a family 0x17 desktop system.
 
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_2block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_4block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
+The same comments mentioned in the previous commit continue to apply
+to the newer platforms as well.
 
-Make each function consistently use its own done label.
+```
+MC146818 driver use function mc146818_set_time() to set register
+RTC_FREQ_SELECT(RTC_REG_A)'s bit4-bit6 field which means divider stage
+reset value on Intel platform to 0x7.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Martin Willi <martin@strongswan.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+While AMD/Hygon RTC_REG_A(0Ah)'s bit4 is defined as DV0 [Reference]:
+DV0 = 0 selects Bank 0, DV0 = 1 selects Bank 1. Bit5-bit6 is defined
+as reserved.
+
+DV0 is set to 1, it will select Bank 1, which will disable AltCentury
+register(0x32) access. As UEFI pass acpi_gbl_FADT.century 0x32
+(AltCentury), the CMOS write will be failed on code:
+CMOS_WRITE(century, acpi_gbl_FADT.century).
+
+Correct RTC_REG_A bank select bit(DV0) to 0 on AMD/Hygon CPUs, it will
+enable AltCentury(0x32) register writing and finally setup century as
+expected.
+```
+
+However in closer examination the change previously submitted was also
+modifying bits 5 & 6 which are declared reserved in the AMD documentation.
+So instead modify just the DV0 bank selection bit.
+
+Being cognizant that there was a failure reported before, split the code
+change out to a static function that can also be used for exclusions if
+any regressions such as Mikhail's pop up again.
+
+Cc: Jinke Fan <fanjinke@hygon.cn>
+Cc: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Link: https://lore.kernel.org/all/CABXGCsMLob0DC25JS8wwAYydnDoHBSoMh2_YLPfqm3TTvDE-Zw@mail.gmail.com/
+Link: https://www.amd.com/system/files/TechDocs/51192_Bolton_FCH_RRG.pdf
+Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220111225750.1699-1-mario.limonciello@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/crypto/chacha-avx512vl-x86_64.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/rtc/rtc-mc146818-lib.c | 16 +++++++++++++++-
+ include/linux/mc146818rtc.h    |  2 ++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/crypto/chacha-avx512vl-x86_64.S b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-index 848f9c75fd4f..596f91e3a774 100644
---- a/arch/x86/crypto/chacha-avx512vl-x86_64.S
-+++ b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-@@ -172,7 +172,7 @@ ENTRY(chacha_2block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone2
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
+diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
+index 5add637c9ad2..b036ff33fbe6 100644
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -99,6 +99,17 @@ unsigned int mc146818_get_time(struct rtc_time *time)
+ }
+ EXPORT_SYMBOL_GPL(mc146818_get_time);
  
-@@ -438,7 +438,7 @@ ENTRY(chacha_4block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone4
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
++/* AMD systems don't allow access to AltCentury with DV1 */
++static bool apply_amd_register_a_behavior(void)
++{
++#ifdef CONFIG_X86
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
++	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
++		return true;
++#endif
++	return false;
++}
++
+ /* Set the current date and time in the real time clock. */
+ int mc146818_set_time(struct rtc_time *time)
+ {
+@@ -172,7 +183,10 @@ int mc146818_set_time(struct rtc_time *time)
+ 	save_control = CMOS_READ(RTC_CONTROL);
+ 	CMOS_WRITE((save_control|RTC_SET), RTC_CONTROL);
+ 	save_freq_select = CMOS_READ(RTC_FREQ_SELECT);
+-	CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
++	if (apply_amd_register_a_behavior())
++		CMOS_WRITE((save_freq_select & ~RTC_AMD_BANK_SELECT), RTC_FREQ_SELECT);
++	else
++		CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
+ 
+ #ifdef CONFIG_MACH_DECSTATION
+ 	CMOS_WRITE(real_yrs, RTC_DEC_YEAR);
+diff --git a/include/linux/mc146818rtc.h b/include/linux/mc146818rtc.h
+index 0661af17a758..1e0205811394 100644
+--- a/include/linux/mc146818rtc.h
++++ b/include/linux/mc146818rtc.h
+@@ -86,6 +86,8 @@ struct cmos_rtc_board_info {
+    /* 2 values for divider stage reset, others for "testing purposes only" */
+ #  define RTC_DIV_RESET1	0x60
+ #  define RTC_DIV_RESET2	0x70
++   /* In AMD BKDG bit 5 and 6 are reserved, bit 4 is for select dv0 bank */
++#  define RTC_AMD_BANK_SELECT	0x10
+   /* Periodic intr. / Square wave rate select. 0=none, 1=32.8kHz,... 15=2Hz */
+ # define RTC_RATE_SELECT 	0x0F
  
 -- 
 2.35.1
