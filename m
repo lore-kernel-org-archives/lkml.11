@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F357EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AD1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241786AbiEWRgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        id S241864AbiEWRgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240876AbiEWR0I (ORCPT
+        with ESMTP id S240915AbiEWR0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:08 -0400
+        Mon, 23 May 2022 13:26:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88E9403CD;
-        Mon, 23 May 2022 10:21:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8292343ADD;
+        Mon, 23 May 2022 10:21:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73019B8121B;
-        Mon, 23 May 2022 17:21:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7383C385A9;
-        Mon, 23 May 2022 17:21:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 279E4B8121D;
+        Mon, 23 May 2022 17:21:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C1FC385A9;
+        Mon, 23 May 2022 17:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326462;
-        bh=FkQJY2YpFBPSa+N7BK6rVU62t3c0Wequ8vrIz/IzQYQ=;
+        s=korg; t=1653326468;
+        bh=JnNWw/t2HA0rSws4pPMJwzJIgFsdxCM4zHANsZhxPDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OeMBfrkjsIc3f4WRKSRUHObh+H8yAYiR67eQQ5Fsjub/47ogtS1lkoVVB0Qq6Vk+p
-         sxVoh8NLnmVhjSfRxH4eJNPFGBRbA2K7a+0aEq6aSUohQ5c3t+Ti5O1pf4c4FckiAM
-         +vvzcBSocxShSQGBXDRo45m/WCCCzcemIDNvJ2Aw=
+        b=HOymOp7Jmuc2PAu1SFiPP8a5F25xuaM6JdXsA29U161/fIZnFX5Pfu4s/vMgNTvuI
+         TUioVtPEoKFTHOH2tgkzSgzW66t+9DgYYK/tlhUGDaCAEfnSYIQFDsJe0gfMl/FutL
+         8uHzZRe9hW0Wzc7Dr1YlfYSYzxMxB1qfXtqYGrM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 089/132] NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
-Date:   Mon, 23 May 2022 19:04:58 +0200
-Message-Id: <20220523165837.905342926@linuxfoundation.org>
+Subject: [PATCH 5.15 091/132] net/mlx5e: Properly block LRO when XDP is enabled
+Date:   Mon, 23 May 2022 19:05:00 +0200
+Message-Id: <20220523165838.377088716@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,79 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 23dd4581350d4ffa23d58976ec46408f8f4c1e16 ]
+[ Upstream commit cf6e34c8c22fba66bd21244b95ea47e235f68974 ]
 
-There are sleep in atomic context bugs when the request to secure
-element of st-nci is timeout. The root cause is that nci_skb_alloc
-with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
-a timer handler. The call paths that could trigger bugs are shown below:
+LRO is incompatible and mutually exclusive with XDP. However, the needed
+checks are only made when enabling XDP. If LRO is enabled when XDP is
+already active, the command will succeed, and XDP will be skipped in the
+data path, although still enabled.
 
-    (interrupt context 1)
-st_nci_se_wt_timeout
-  nci_hci_send_event
-    nci_hci_send_data
-      nci_skb_alloc(..., GFP_KERNEL) //may sleep
+This commit fixes the bug by checking the XDP status in
+mlx5e_fix_features and disabling LRO if XDP is enabled.
 
-   (interrupt context 2)
-st_nci_se_wt_timeout
-  nci_hci_send_event
-    nci_hci_send_data
-      nci_send_data
-        nci_queue_tx_data_frags
-          nci_skb_alloc(..., GFP_KERNEL) //may sleep
-
-This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
-GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
-flag makes memory allocation operation could be used in atomic context.
-
-Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220517012530.75714-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 86994156c736 ("net/mlx5e: XDP fast RX drop bpf programs support")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/nfc/nci/data.c | 2 +-
- net/nfc/nci/hci.c  | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
-index 6055dc9a82aa..aa5e712adf07 100644
---- a/net/nfc/nci/data.c
-+++ b/net/nfc/nci/data.c
-@@ -118,7 +118,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 01301bee420c..7efb898e9f96 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3542,6 +3542,13 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
+ 		}
+ 	}
  
- 		skb_frag = nci_skb_alloc(ndev,
- 					 (NCI_DATA_HDR_SIZE + frag_len),
--					 GFP_KERNEL);
-+					 GFP_ATOMIC);
- 		if (skb_frag == NULL) {
- 			rc = -ENOMEM;
- 			goto free_exit;
-diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
-index e199912ee1e5..85b808fdcbc3 100644
---- a/net/nfc/nci/hci.c
-+++ b/net/nfc/nci/hci.c
-@@ -153,7 +153,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
- 
- 	i = 0;
- 	skb = nci_skb_alloc(ndev, conn_info->max_pkt_payload_len +
--			    NCI_DATA_HDR_SIZE, GFP_KERNEL);
-+			    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
- 	if (!skb)
- 		return -ENOMEM;
- 
-@@ -184,7 +184,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
- 		if (i < data_len) {
- 			skb = nci_skb_alloc(ndev,
- 					    conn_info->max_pkt_payload_len +
--					    NCI_DATA_HDR_SIZE, GFP_KERNEL);
-+					    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
- 			if (!skb)
- 				return -ENOMEM;
- 
++	if (params->xdp_prog) {
++		if (features & NETIF_F_LRO) {
++			netdev_warn(netdev, "LRO is incompatible with XDP\n");
++			features &= ~NETIF_F_LRO;
++		}
++	}
++
+ 	if (MLX5E_GET_PFLAG(params, MLX5E_PFLAG_RX_CQE_COMPRESS)) {
+ 		features &= ~NETIF_F_RXHASH;
+ 		if (netdev->features & NETIF_F_RXHASH)
 -- 
 2.35.1
 
