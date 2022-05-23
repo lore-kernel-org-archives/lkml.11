@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCC9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239331AbiEWRFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46744 "EHLO
+        id S239335AbiEWRFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239224AbiEWREg (ORCPT
+        with ESMTP id S239264AbiEWREl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75D1606C2;
-        Mon, 23 May 2022 10:04:35 -0700 (PDT)
+        Mon, 23 May 2022 13:04:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E2160B9B;
+        Mon, 23 May 2022 10:04:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03042614C1;
-        Mon, 23 May 2022 17:04:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D54C385A9;
-        Mon, 23 May 2022 17:04:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4EB3B811F6;
+        Mon, 23 May 2022 17:04:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40B0DC385AA;
+        Mon, 23 May 2022 17:04:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325474;
-        bh=J5AZ6YoBIpezjSlGXkcI10G3x5B8FyKLScmskPDYuuY=;
+        s=korg; t=1653325477;
+        bh=g38ZTHA6CA9KSQxW8tPZQqLR6HoOyH7cl3Ykf1X8weA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z3GBQW4ybRAI86qc4CFzd/aCI8Az3Jx45p1CRwoaQPWJ14xO+IWx6+O0Vmj2lPICX
-         Quq1oq03SuBPwbVWzu2RJdUmjJMWmT5JrPI/8I6BUF/qOKXMVgDVWOy9l0yMpyrGIT
-         IaPylWTB9YqUGXDaEkq40/1YQsACcVHSJ0LLdKRI=
+        b=srEAr0KBTRaT3hzoqdGx8w5DavZ6BoJ8Q8wJSTbwVjhV7nGA8xbeaIDziS1KEkSfK
+         LgpTZBf7CVJRAxmxiLG5cmQzWLc0+rTuh2BvsS/Jr0mCjAOH4pOGjss8von/PBGsfX
+         7Cl99larC34bFqp27cYBLduNYuo5F1dZbBcF6rSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes.berg@intel.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 23/25] mac80211: fix rx reordering with non explicit / psmp ack policy
-Date:   Mon, 23 May 2022 19:03:41 +0200
-Message-Id: <20220523165749.857405906@linuxfoundation.org>
+Subject: [PATCH 4.9 24/25] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+Date:   Mon, 23 May 2022 19:03:42 +0200
+Message-Id: <20220523165750.008597497@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
 References: <20220523165743.398280407@linuxfoundation.org>
@@ -49,36 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
+[ Upstream commit 51ca86b4c9c7c75f5630fa0dbe5f8f0bd98e3c3e ]
 
-When the QoS ack policy was set to non explicit / psmp ack, frames are treated
-as not being part of a BA session, which causes extra latency on reordering.
-Fix this by only bypassing reordering for packets with no-ack policy
+Fix the missing pci_disable_device() before return
+from tulip_init_one() in the error handling case.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220506094250.3630615-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 41af02a70742..02845bed07d7 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1179,8 +1179,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
- 		goto dont_reorder;
+diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
+index bbde90bc74fe..6224f9d22298 100644
+--- a/drivers/net/ethernet/dec/tulip/tulip_core.c
++++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
+@@ -1412,8 +1412,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	/* not part of a BA session */
--	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
--	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
-+	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
- 		goto dont_reorder;
+ 	/* alloc_etherdev ensures aligned and zeroed private structures */
+ 	dev = alloc_etherdev (sizeof (*tp));
+-	if (!dev)
++	if (!dev) {
++		pci_disable_device(pdev);
+ 		return -ENOMEM;
++	}
  
- 	/* new, potentially un-ordered, ampdu frame - process it */
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
+@@ -1792,6 +1794,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ err_out_free_netdev:
+ 	free_netdev (dev);
++	pci_disable_device(pdev);
+ 	return -ENODEV;
+ }
+ 
 -- 
 2.35.1
 
