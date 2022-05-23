@@ -2,86 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3153C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A515DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237038AbiEWOQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
+        id S236992AbiEWOQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236992AbiEWOQR (ORCPT
+        with ESMTP id S236939AbiEWOQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:16:17 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD7A853A60
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:16:16 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id g3so12599584qtb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:16:16 -0700 (PDT)
+        Mon, 23 May 2022 10:16:51 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423CD59B8F
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:16:50 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id 1so4032957ljh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:16:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=H767C2i0qpntP2Hc25tbjn02oMYnv32wuUYy29Xv2ng=;
-        b=VKeQ6xPhdr+J56IKqkCNNphoFA9/Dp/YQhSmkGwfWDKX1rbeX8HmFE31UJPFRkHOFx
-         uEhxIkgD8DHNx4OWFSVU1Nqh6ZQwz7m/4I5ANeTsgKMLiKJLRkc35PzktklEcXUTAWp1
-         MMPXycGF/aRmwO5QdDU2rJ1O32iAeffGYuTnGw2LAmGa4n1yzj5y+FLvaTbCp676rYBH
-         //o4NKTmMCRpfHL/yl5hNQvqG5opsemec2n3ZTxWXnYwr0ITu1IO6e/47ZJIXEIt22+u
-         jtmbKxyXVxT2hxvIl6MDdYWeJe5FeELdljLp9cAYp8viRD9ZX1IEroTJZ41CkKrDo+zN
-         qx1g==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=CrtzL5zhabiqk9hD9lwI7Uy9maiCHi/zq6y5oUpElJM=;
+        b=C2Mvl3XTTCqhkSjVzD0w2l9QO2Kn/IFOE5QeIR4irQJY0qRRtW1uDP9cK+fqbtMCee
+         NbsTU1+WzhV3s9eH/SeQkPpmX8yzNP8l3OnYwOFdcW2fIWvrw7IT9SBtSdW6eBdBCug6
+         HAONZInHaFsuPPXCFGxuP1/sWF9NswH+Pw1dnbHeoFRZzPmGsflzMWSxcPangWcHDSsO
+         rZm0pBvhu713hy49A2WG5mm76Vny7U3nMaKdq4bSUiV4bZ7RDUS8P6aVm7Swiy/0UUFV
+         DoeekOeV9OK804PmbLXnTkvg5kcRzpxtl7H50hc4UyuhrnRk6oNWnHWbJmgECt775Fo8
+         29+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=H767C2i0qpntP2Hc25tbjn02oMYnv32wuUYy29Xv2ng=;
-        b=fGAw08k5K9OIucjO17D3qyLwmHSyjupnr16eSgVAhCerlmq4KZ/ac2ukL5lVUQLxS8
-         UJFMUW9xmE8ZASsIN8zH2iWHGh8RKtAyiOb/K2aJxRhgiZrOwUK8Ie6s70NQNEtEyWjk
-         cQx/DzGnl+gWKWCuad5PIGbZvUW9vKWIwgGQmMqM7m5kxdp+uiR83Ei4FDs4PsU37x6N
-         4dg4rbxyncoExgESo6Y1R4OHvQkD03bubcmZgplF9YWzgaoUWw1bLKd25/1IdroZKzwX
-         09YEXy6y3Utf9On1AgYFmTPeUwqoPpBWUXu+ttI9DhcFP8dq3k9i5apZtVhi1QnIwFT5
-         EMJQ==
-X-Gm-Message-State: AOAM530qnru6gc6UKNAUI5OTk4l5nd8/5EHSBF8IJRJs3jIYh83eizUL
-        r859g61MKa1N7PJ8zHG3iz3MQ/eHxU0spA==
-X-Google-Smtp-Source: ABdhPJyWvmxgvwQh77GvbLiPrvty8oAChia/sMMFwbpgZEYfGVYSwOCRw3DbsadOlhmz2+uVGVAMsQ==
-X-Received: by 2002:ac8:5889:0:b0:2f3:bb3f:b0d2 with SMTP id t9-20020ac85889000000b002f3bb3fb0d2mr16130738qta.593.1653315376387;
-        Mon, 23 May 2022 07:16:16 -0700 (PDT)
-Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
-        by smtp.gmail.com with ESMTPSA id c19-20020a05620a165300b0069fc13ce1e5sm4348806qko.22.2022.05.23.07.16.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 07:16:15 -0700 (PDT)
-Date:   Mon, 23 May 2022 10:16:14 -0400
-From:   Josef Bacik <josef@toxicpanda.com>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     axboe@kernel.dk, ming.lei@redhat.com, linux-block@vger.kernel.org,
-        nbd@other.debian.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH -next v3 6/6] nbd: use pr_err to output error message
-Message-ID: <YouXLg33YEIuV2aO@localhost.localdomain>
-References: <20220521073749.3146892-1-yukuai3@huawei.com>
- <20220521073749.3146892-7-yukuai3@huawei.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CrtzL5zhabiqk9hD9lwI7Uy9maiCHi/zq6y5oUpElJM=;
+        b=MYiXwNhk844X7Q4YFW81zvFseyY+oobAcvuArU8pVZepCrkjdDS9BUEg960n2Ht+pf
+         ogaOi6VoMCx1O7/tSpemV6+jQhWy74YA4b+93opmo7400zmCY9s8UTyZh9Q0emGYKw9t
+         uV1XRgaVJASPAnHKsLnsyszrnXLYKeL6M8Y8o4m7kLcU3pL/IEllmoNckQvFuABpHA4e
+         wGMT5gUWbSgIkVz1KN0i9dklMXQ49hMHL4xFMsTlu1dKcKvIeLu1VWJKl7skjbPaWh7Y
+         UBgWWtb6cwxCJ6Zd81I2SJuipkYpeeR5Ci5GVZ4k54n/qJvpM6hvv19udLxM+YNOZF9b
+         zyKg==
+X-Gm-Message-State: AOAM531fy0ipoTwC/y/QS2FWNgfEbEz6xQk3CnjDYSZSbpsuyxZ4jTtI
+        JTePLP62Z/DPSOdUIXli6O5g5Q==
+X-Google-Smtp-Source: ABdhPJwX/mZu6eFiAZ1cvg/gMqvNE9X+QhTX6dyxNuJuDiE5oHk1QB7YKhqv9Em/pqf1jVGBl9AlTQ==
+X-Received: by 2002:a2e:a801:0:b0:24a:ff0b:ae7a with SMTP id l1-20020a2ea801000000b0024aff0bae7amr12728605ljq.287.1653315408587;
+        Mon, 23 May 2022 07:16:48 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id b9-20020a056512024900b0047255d21148sm1999270lfo.119.2022.05.23.07.16.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 07:16:48 -0700 (PDT)
+Message-ID: <03f0e3b5-8007-2731-62be-6e9fd18b949b@linaro.org>
+Date:   Mon, 23 May 2022 16:16:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220521073749.3146892-7-yukuai3@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v1 17/19] arm64: dts: nuvoton: Add initial NPCM8XX device
+ tree
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Tomer Maimon <tmaimon77@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        =?UTF-8?Q?Bj=c3=b6rn_Andersson?= <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod <vkoul@kernel.org>, Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>, arm-soc <soc@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <20220522155046.260146-1-tmaimon77@gmail.com>
+ <20220522155046.260146-18-tmaimon77@gmail.com>
+ <c1b86493-d82d-a639-07af-4c979d733786@linaro.org>
+ <CAMuHMdWSccO3J5OYrFUn+azKyzYBP1wmuHZoRU2t3PUbkZx1wA@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAMuHMdWSccO3J5OYrFUn+azKyzYBP1wmuHZoRU2t3PUbkZx1wA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 03:37:49PM +0800, Yu Kuai wrote:
-> Instead of using the long printk(KERN_ERR "nbd: ...") to
-> output error message, defining pr_fmt and using
-> the short pr_err("") to do that. The replacemen is done
-> by using the following command:
+On 23/05/2022 15:58, Geert Uytterhoeven wrote:
+> Hi Krzysztof,
 > 
->   sed -i 's/printk(KERN_ERR "nbd: /pr_err("/g' \
-> 		  drivers/block/nbd.c
+> On Mon, May 23, 2022 at 11:08 AM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>> On 22/05/2022 17:50, Tomer Maimon wrote:
+>>> This adds initial device tree support for the
+>>> Nuvoton NPCM845 Board Management controller (BMC) SoC family.
+>>
+>> Thank you for your patch. There is something to discuss/improve.
+>>
+>>> The NPCM845 based quad-core Cortex-A35 ARMv8 architecture and
+>>> have various peripheral IPs.
+>>>
+>>> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 > 
-> This patch also rewrap to 80 columns where possible.
+>>> +             l2: l2-cache {
+>>> +                     compatible = "cache";
+>>
+>> Is this a real compatible? What bindings are you using here?
 > 
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> The compatible value and related properties are defined in the
+> Devicetree Specification, v0.4-rc1, Section 3.9 ("Multi-level and
+> Shared Cache Nodes (/cpus/cpu*/l?-cache)").
 
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Indeed, thanks!
 
-Thanks,
+> 
+> The properties are handled by
+> dtschema/schemas/cache-controller.yaml, but the latter seems to lack
+> any checking on the compatible value?
 
-Josef
+
+Best regards,
+Krzysztof
