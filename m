@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FAAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1479AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241632AbiEWRji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33566 "EHLO
+        id S241676AbiEWRjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242120AbiEWR10 (ORCPT
+        with ESMTP id S242119AbiEWR10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8397B9E7;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B347B9DE;
         Mon, 23 May 2022 10:22:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 448E8608C0;
-        Mon, 23 May 2022 17:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45745C385A9;
-        Mon, 23 May 2022 17:22:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86435B811CE;
+        Mon, 23 May 2022 17:22:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9246C385A9;
+        Mon, 23 May 2022 17:22:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326558;
-        bh=59034JlVFmmJqNI8BkjyG9GauHmmps4h9zRtuWOswGM=;
+        s=korg; t=1653326552;
+        bh=iKQ0hZxnLPgEJ50DVj3I4D8Qng3oKsd31mCAqKdvhDo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RdGqb1jFhmmmQ3hsUV9Yl2oIfqJaAyg+nkfJOSnvsUmTX1NbIjd/1MGAedwBGTNw5
-         D4C5QPOmiHeLg1YmnNyfK3LLjJ63E4P8WpVC0ccF5hC/ljFMVlts+27gQdMsqGJ9G7
-         JyMS5GjOG4v5QE2Z4Q5UQWWt5cimsyzl2wHgwk7E=
+        b=I+vk4A4V8cFFTtKP9jnuJShpTKTPomBP8YzK5ocxFaVON5qMg+h35lvFewwzQ2UqT
+         DehwQXXix0HBe7EupFLvr53K5lkFBWFHFiqfIL1VNwaYtP1y/Q8fJjBAs1BpX75D5L
+         tyKTw2ubuid4Qr8PxcpA/Td59KBp4fBiJj+k3UyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lina Wang <lina.wang@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 119/132] net: fix wrong network header length
-Date:   Mon, 23 May 2022 19:05:28 +0200
-Message-Id: <20220523165843.283511092@linuxfoundation.org>
+Subject: [PATCH 5.15 117/132] Revert "fbdev: Make fb_release() return -ENODEV if fbdev was unregistered"
+Date:   Mon, 23 May 2022 19:05:26 +0200
+Message-Id: <20220523165842.957591725@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,69 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lina Wang <lina.wang@mediatek.com>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-[ Upstream commit cf3ab8d4a797960b4be20565abb3bcd227b18a68 ]
+[ Upstream commit 135332f34ba2662bc1e32b5c612e06a8cc41a053 ]
 
-When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-network_header\transport_header\mac_header have been updated as ipv4 acts,
-but other skbs in frag_list didnot update anything, just ipv6 packets.
+This reverts commit aafa025c76dcc7d1a8c8f0bdefcbe4eb480b2f6a. That commit
+attempted to fix a NULL pointer dereference, caused by the struct fb_info
+associated with a framebuffer device to not longer be valid when the file
+descriptor was closed.
 
-udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-frag_list and make sure right udp payload is delivered to user space.
-Unfortunately, other skbs in frag_list who are still ipv6 packets are
-updated like the first skb and will have wrong transport header length.
+The issue was exposed by commit 27599aacbaef ("fbdev: Hot-unplug firmware
+fb devices on forced removal"), which added a new path that goes through
+the struct device removal instead of directly unregistering the fb.
 
-e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-has the same network_header(24)& transport_header(64), after
-bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-skb's network_header is 44,transport_header is 64, other skbs in frag_list
-didnot change.After skb_segment_list, the other skbs in frag_list has
-different network_header(24) and transport_header(44), so there will be 20
-bytes different from original,that is difference between ipv6 header and
-ipv4 header. Just change transport_header to be the same with original.
+Most fbdev drivers have issues with the fb_info lifetime, because call to
+framebuffer_release() from their driver's .remove callback, rather than
+doing from fbops.fb_destroy callback. This meant that due to this switch,
+the fb_info was now destroyed too early, while references still existed,
+while before it was simply leaked.
 
-Actually, there are two solutions to fix it, one is traversing all skbs
-and changing every skb header in bpf_skb_proto_6_to_4, the other is
-modifying frag_list skb's header in skb_segment_list. Considering
-efficiency, adopt the second one--- when the first skb and other skbs in
-frag_list has different network_header length, restore them to make sure
-right udp payload is delivered to user space.
+The patch we're reverting here reinstated that leak, hence "fixed" the
+regression. But the proper solution is to fix the drivers to not release
+the fb_info too soon.
 
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220504115917.758787-1-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbmem.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e4badc189e37..7ef0f5a8ab03 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3873,7 +3873,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 	unsigned int delta_len = 0;
- 	struct sk_buff *tail = NULL;
- 	struct sk_buff *nskb, *tmp;
--	int err;
-+	int len_diff, err;
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index 8e38a7a5cf2f..0371ad233fdf 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1436,10 +1436,7 @@ fb_release(struct inode *inode, struct file *file)
+ __acquires(&info->lock)
+ __releases(&info->lock)
+ {
+-	struct fb_info * const info = file_fb_info(file);
+-
+-	if (!info)
+-		return -ENODEV;
++	struct fb_info * const info = file->private_data;
  
- 	skb_push(skb, -skb_network_offset(skb) + offset);
- 
-@@ -3913,9 +3913,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
- 		skb_release_head_state(nskb);
-+		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
- 		__copy_skb_header(nskb, skb);
- 
- 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		nskb->transport_header += len_diff;
- 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
- 						 nskb->data - tnl_hlen,
- 						 offset + tnl_hlen);
+ 	lock_fb_info(info);
+ 	if (info->fbops->fb_release)
 -- 
 2.35.1
 
