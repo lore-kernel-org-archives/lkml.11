@@ -2,99 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A66C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2468EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241355AbiEWRfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:35:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
+        id S241391AbiEWRf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240489AbiEWRZj (ORCPT
+        with ESMTP id S240624AbiEWRZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:25:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9144A11449;
-        Mon, 23 May 2022 10:21:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9F22B811FE;
-        Mon, 23 May 2022 17:20:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C61C34115;
-        Mon, 23 May 2022 17:20:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326445;
-        bh=+Amairj8U8GW1OyfSYV76KxnNpCLyPfmgJ3BR4dJjmo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DICNcjAuT4ACAxhg8E2JF0MGUcwmb4L9vFm/9lD/fboQ9iwbCt88EgP49IncDHZGQ
-         VutfaILcQkPOJ8E9mKv6VAM+WTZXoAcQOBy1ToswqUs3pIHLVtZBbQrJqypeehwXtU
-         aImsI6dqXElP5u4r/epTUiHILO/Dcor9Iw/rdSNc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Greenwalt <paul.greenwalt@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.15 084/132] ice: fix possible under reporting of ethtool Tx and Rx statistics
-Date:   Mon, 23 May 2022 19:04:53 +0200
-Message-Id: <20220523165837.042443737@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 23 May 2022 13:25:52 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6107413FBC
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:21:03 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id n18so13693675plg.5
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:21:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VcVFk3FcEgzfyMwYD0aU10qnYcHMUzYlGb8aE1VELAQ=;
+        b=sq3P/fw7RUx9aBXoSaVhkvBFulT5vCvnYlKSTPsTothpsy2pNOKALFyKKhn9W44OlL
+         +cZjRjNgRJKzURqhNHFr0bUheleEFwIHlJUOjHe6+8/H6czcQuaTKrXLrynQfLXa1OF7
+         yUB2nwoJ+3wh0pucpP+eqxwtGsKcnBiHhM/w+W1JdgmtzaTY+2NwOkQaG6/PtzHj0GWT
+         bVT25LrcpTLBknZo92GNsZz5UoQm3/XU+3fhcdLnlT4+qGXOXOpf5/bXgmbXK5zaHcwr
+         jCsXk2nSI0snXcDdnj6SEgHzF+u1KK7yHVrsA2Gf0yoGU3gPFccu7ykntQLChDo2pHOe
+         QTRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VcVFk3FcEgzfyMwYD0aU10qnYcHMUzYlGb8aE1VELAQ=;
+        b=dU/Ktf2cdsoIzv9eIwV+4gq7MFyumemMG+g2ErLXK0ODX0P0KC/Ab6slhGE2J7/N1J
+         N7lbzMesNJNIRSXQVJCWgDQIMCSKlr9Zqp6cemx5h6CbXfhL8C2pITBgW08LJD2v2JKp
+         uUScclGbDRg4KY8qCVfpEH+upAE3Hviv7iXVPwOxK1+DmzlnR5hp+xlgfui5mylI4vCW
+         PhhmUIi23sJuTAZlzP5ID+FPIosRlJKlp6L6dmoV/z//m6pobwwu3N9UOCV5CrayIgDZ
+         9vjs9vhn70undkUIUeT/DkKXA8WSxVRAHROMy2ohiZ3ME04F54jXdDzJ9PIKB3xYmJQb
+         8bew==
+X-Gm-Message-State: AOAM531J9R13KnMs3GrwMjmu6rm6dbKjb8linL9bZa7jzuNuFESgwLbs
+        jqMsYohRAZJvop6m1xlkm1dv2A==
+X-Google-Smtp-Source: ABdhPJz0WtrjOJCip7mt3F57oMADC6YJYPp4ap9cajQlDw45E7nedRqS2OqtCHvUvpJcdnhIjwCnKw==
+X-Received: by 2002:a17:902:8501:b0:15f:173:40e1 with SMTP id bj1-20020a170902850100b0015f017340e1mr23539994plb.74.1653326361089;
+        Mon, 23 May 2022 10:19:21 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id t2-20020a170902e84200b0015e8d4eb273sm5392051plg.189.2022.05.23.10.19.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 10:19:20 -0700 (PDT)
+Date:   Mon, 23 May 2022 17:19:16 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [RFC PATCH v3 03/19] KVM: x86: SVM: remove avic's broken code
+ that updated APIC ID
+Message-ID: <YovCFBn5cKcv3iwD@google.com>
+References: <20220427200314.276673-1-mlevitsk@redhat.com>
+ <20220427200314.276673-4-mlevitsk@redhat.com>
+ <YoZr9wC2KjTFHrQ7@google.com>
+ <d1df82a17e6e89ab58d5f6aa911ee2d532efee31.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d1df82a17e6e89ab58d5f6aa911ee2d532efee31.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Greenwalt <paul.greenwalt@intel.com>
+On Sun, May 22, 2022, Maxim Levitsky wrote:
+> On Thu, 2022-05-19 at 16:10 +0000, Sean Christopherson wrote:
+> > On Wed, Apr 27, 2022, Maxim Levitsky wrote:
+> > > AVIC is now inhibited if the guest changes apic id, thus remove
+> > > that broken code.
+> > 
+> > Can you explicitly call out what's broken?  Just something short on the code not
+> > handling the scenario where APIC ID is changed back to vcpu_id to help future
+> > archaeologists.  I forget if there are other bugs...
+> > 
+> 
+> 
+> Well, the avic_handle_apic_id_update is called each time the AVIC is uninhibited,
+> because while it is inhibited, the AVIC code doesn't track changes to APIC ID and such.
+> 
+> Also there are many ways it is broken for example
+> 
+> 1. a CPU can't move its APIC ID to a free slot due to (!new) check
+> 
+> 2. If APIC ID is moved to a used slot, then the CPU that used that overwritten
+> slot can't correctly move it, since its now not its slot, not to mention races.
 
-[ Upstream commit 31b6298fd8e29effe9ed6b77351ac5969be56ce0 ]
+The more the merrier :-)  Any/all of those examples are great, just so long as it's
+obvious to future readers that the code truly is busted.
 
-The hardware statistics counters are not cleared during resets so the
-drivers first access is to initialize the baseline and then subsequent
-reads are for reporting the counters. The statistics counters are read
-during the watchdog subtask when the interface is up. If the baseline
-is not initialized before the interface is up, then there can be a brief
-window in which some traffic can be transmitted/received before the
-initial baseline reading takes place.
+> BTW, if you see a value in it, I can fix this code instead - a lock + going over all the apic ids,
+> should be quite easy to implement. In case of two vCPUs using the same APIC ID,
+> I can write non present entry to the table, so none will be able to be addressed,
+> hoping that the situation is only temporary.
 
-Directly initialize ethtool statistics in driver open so the baseline will
-be initialized when the interface is up, and any dropped packets
-incremented before the interface is up won't be reported.
-
-Fixes: 28dc1b86f8ea9 ("ice: ignore dropped packets during init")
-Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 27b5c75ce386..188abf36a5b2 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5656,9 +5656,10 @@ static int ice_up_complete(struct ice_vsi *vsi)
- 		netif_carrier_on(vsi->netdev);
- 	}
- 
--	/* clear this now, and the first stats read will be used as baseline */
--	vsi->stat_offsets_loaded = false;
--
-+	/* Perform an initial read of the statistics registers now to
-+	 * set the baseline so counters are ready when interface is up
-+	 */
-+	ice_update_eth_stats(vsi);
- 	ice_service_task_schedule(pf);
- 
- 	return 0;
--- 
-2.35.1
-
-
-
+Very strong "no", let's keep this as simple as possible without outright killing
+the guest or breaking ABI.  Disabling APICv/AVIC is perfect.
