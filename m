@@ -2,57 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30084C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 10:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 10:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234077AbiEWKaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 06:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
+        id S234120AbiEWKbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 06:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234090AbiEWKah (ORCPT
+        with ESMTP id S234204AbiEWKbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 06:30:37 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C740E4B4E8;
-        Mon, 23 May 2022 03:30:35 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nt5K1-0001dy-00; Mon, 23 May 2022 12:29:57 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 304D0C02F4; Mon, 23 May 2022 11:39:40 +0200 (CEST)
-Date:   Mon, 23 May 2022 11:39:40 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     =?utf-8?B?6ZmI5a2m5YW1?= <chenxuebing@jari.cn>
-Cc:     catalin.marinas@arm.com, rdunlap@infradead.org, rppt@kernel.org,
-        rafael.j.wysocki@intel.com, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mips: setup: use strscpy to replace strlcpy
-Message-ID: <20220523093940.GA6296@alpha.franken.de>
-References: <533ed227.9dd.180eabb3189.Coremail.chenxuebing@jari.cn>
+        Mon, 23 May 2022 06:31:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BB9D2C1;
+        Mon, 23 May 2022 03:31:21 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ECA6511FB;
+        Mon, 23 May 2022 03:31:20 -0700 (PDT)
+Received: from e126130.arm.com (unknown [10.57.81.119])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 51E7B3F73D;
+        Mon, 23 May 2022 03:31:17 -0700 (PDT)
+From:   Douglas RAILLARD <douglas.raillard@arm.com>
+To:     bpf@vger.kernel.org
+Cc:     beata.michalska@arm.com,
+        Douglas Raillard <douglas.raillard@arm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH v2] libbpf: Fix determine_ptr_size() guessing
+Date:   Mon, 23 May 2022 11:29:55 +0100
+Message-Id: <20220523102955.43844-1-douglas.raillard@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <533ed227.9dd.180eabb3189.Coremail.chenxuebing@jari.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 22, 2022 at 03:46:18PM +0800, 陈学兵 wrote:
-> 
-> The strlcpy should not be used because it doesn't limit the source
-> length. Preferred is strscpy.
-> 
-> Signed-off-by: XueBing Chen <chenxuebing@jari.cn>
-> ---
->  arch/mips/kernel/setup.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+From: Douglas Raillard <douglas.raillard@arm.com>
 
-applied to mips-next.
+One strategy employed by libbpf to guess the pointer size is by finding
+the size of "unsigned long" type. This is achieved by looking for a type
+of with the expected name and checking its size.
 
-Thomas.
+Unfortunately, the C syntax is friendlier to humans than to computers
+as there is some variety in how such a type can be named. Specifically,
+gcc and clang do not use the same name in debug info.
 
+Lookup all the names for such a type so that libbpf can hope to find the
+information it wants.
+
+Signed-off-by: Douglas Raillard <douglas.raillard@arm.com>
+---
+ tools/lib/bpf/btf.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+ CHANGELOG
+	v2:
+		* Added missing case for "long"
+
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index 1383e26c5d1f..ab92b3bc2724 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -489,8 +489,19 @@ static int determine_ptr_size(const struct btf *btf)
+ 		if (!name)
+ 			continue;
+ 
+-		if (strcmp(name, "long int") == 0 ||
+-		    strcmp(name, "long unsigned int") == 0) {
++		if (
++			strcmp(name, "long") == 0 ||
++			strcmp(name, "long int") == 0 ||
++			strcmp(name, "int long") == 0 ||
++			strcmp(name, "unsigned long") == 0 ||
++			strcmp(name, "long unsigned") == 0 ||
++			strcmp(name, "unsigned long int") == 0 ||
++			strcmp(name, "unsigned int long") == 0 ||
++			strcmp(name, "long unsigned int") == 0 ||
++			strcmp(name, "long int unsigned") == 0 ||
++			strcmp(name, "int unsigned long") == 0 ||
++			strcmp(name, "int long unsigned") == 0
++		) {
+ 			if (t->size != 4 && t->size != 8)
+ 				continue;
+ 			return t->size;
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.25.1
+
