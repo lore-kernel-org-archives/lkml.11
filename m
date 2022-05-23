@@ -2,157 +2,275 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D00C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7947FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236648AbiEWNq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60726 "EHLO
+        id S236664AbiEWNqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236513AbiEWNpu (ORCPT
+        with ESMTP id S236659AbiEWNq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:45:50 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2041.outbound.protection.outlook.com [40.107.93.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04FE5521D;
-        Mon, 23 May 2022 06:45:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xfr+91tRYauocLA1LvNF9xTlVw9VLjuHyTZ+mgrbwPORhUJwADAgQH91j5gtZnTxx4GiDEP7odpkDySUw2kF5qdMy9HJpCvTiBjSLqOfIp7GjG/SzOKDUizy1TA5Ll5+sVnWrQadBIyLBxy4gsEoggqCM5RX0qnqjANN/sZlcAFqxb0ZC2o/iYvNVgtO2rAJG8glndV6kFNBI8898C0kxupqhM6tDfwh7cWOYB4o+Qmup1d52m7926Jyd4eXIugrEiWGwHr1wFEntNX2Vakuuz2FdptuHoeP1+0gTlcQ/EsEUJ5c6o4MKe6BUA5GIEejQpKhdstJbja0mquDq8GLXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rOqcwuEswQM+8f/f/L7NB61pc9L6si9Q1erZUi/w7W0=;
- b=m9Wz174MezA2oHWywF8x0kjv+QnXIrm5plsbicObd885bGEeGcY6QFWyQE31mxzHPw6Ak9fawqjy3WV3OZq08wWbckNy0ybCPcYzUuTMEE5tEw8SZTVQk5zNjr8CehcC8nbQC9voKhBvExxeceQtsjmRX/VwK7soyEMKKoW+TCL21GnScQRmbpwXiHjZ3G2OY6N7/A+sORdqHyc/9BYZDWFPl8kc0ns6phQ6UFo46GcbHY8jQ+Crz9ljWqvIrZo6sLI/VlfB0QX5k0Jy94i4o9veQJXvHe7SlR004dLO/QbgsamWIjuBOtGno6uiCY3vj+Gy8jiuLDN5r9wrnH95mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rOqcwuEswQM+8f/f/L7NB61pc9L6si9Q1erZUi/w7W0=;
- b=C3uc+IA5fKbd2e6r+R1eEM1Bg7I5xua00L851J52lUyH0PGe4gmV6oHgr8oq2rHjweHqhwWx8DoazGs52jSuTlXtWSPzcBgDtEcYFzMyM81lEurn4FGtmeXYmOjH/AdlqpAcMypuHQ9WVHtuneiCyWqQmPtvtS5TcO5wUABnYlI=
-Received: from SN6PR16CA0043.namprd16.prod.outlook.com (2603:10b6:805:ca::20)
- by CO6PR02MB7508.namprd02.prod.outlook.com (2603:10b6:303:a8::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Mon, 23 May
- 2022 13:45:44 +0000
-Received: from SN1NAM02FT0033.eop-nam02.prod.protection.outlook.com
- (2603:10b6:805:ca:cafe::74) by SN6PR16CA0043.outlook.office365.com
- (2603:10b6:805:ca::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.22 via Frontend
- Transport; Mon, 23 May 2022 13:45:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0033.mail.protection.outlook.com (10.97.5.40) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5273.14 via Frontend Transport; Mon, 23 May 2022 13:45:44 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Mon, 23 May 2022 06:45:40 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Mon, 23 May 2022 06:45:40 -0700
-Envelope-to: git@xilinx.com,
- mdf@kernel.org,
- hao.wu@intel.com,
- yilun.xu@intel.com,
- trix@redhat.com,
- robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org,
- linux-fpga@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- robh@kernel.org
-Received: from [10.140.6.60] (port=57798 helo=xhdnavam40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <nava.manne@xilinx.com>)
-        id 1nt8NQ-000GwK-4Q; Mon, 23 May 2022 06:45:40 -0700
-From:   Nava kishore Manne <nava.manne@xilinx.com>
-To:     <mdf@kernel.org>, <hao.wu@intel.com>, <yilun.xu@intel.com>,
-        <trix@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <michal.simek@xilinx.com>,
-        <nava.manne@xilinx.com>, <linux-fpga@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <git@xilinx.com>
-CC:     Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 2/3] fpga: region: Add fpga-region 'power-domains' property
-Date:   Mon, 23 May 2022 19:15:16 +0530
-Message-ID: <20220523134517.4056873-3-nava.manne@xilinx.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220523134517.4056873-1-nava.manne@xilinx.com>
-References: <20220523134517.4056873-1-nava.manne@xilinx.com>
+        Mon, 23 May 2022 09:46:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F59A33340;
+        Mon, 23 May 2022 06:46:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB2BCB81101;
+        Mon, 23 May 2022 13:46:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F383C385A9;
+        Mon, 23 May 2022 13:46:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653313584;
+        bh=kPFrkK7R8Z3FLQ/Ga3oHcZu2eJfPeGP9aA53WSZ2j7I=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=snIBaoyed1NB7+1ufuo7BHCHVXTRttSPlRulBa+VNAZlDbgDa3jLp4AGzQmq2eB49
+         tPzlkLxOIcgyYh6DM7hA/0suFDG68q5J5NdddCBUy5BJcm6V60XnxG1ucttUGzwg60
+         c6oNv6+GdGPAuzjMBOzxvAveV/9smx0mFzRmC1qBG+B2O2RN84xTwYfv09CtFgyXT6
+         Q9ZCSDFzpe4bDuW7SvIDqG+IXIeW6L7FLStlp0Ex5ytQlzoUB+dehhd2eThl4P6neJ
+         YamDEz3GpCaYbSCRFZyHsF8UjkrVobCwJ+RqnD1RSZ2B/OhuQe3H4cIEaHEwm0dUh0
+         er0tvRDwGLOKA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id F38AC5C032C; Mon, 23 May 2022 06:46:23 -0700 (PDT)
+Date:   Mon, 23 May 2022 06:46:23 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        linux-rpi-kernel@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        rcu <rcu@vger.kernel.org>, linux-mmc <linux-mmc@vger.kernel.org>
+Subject: Re: WARNING: CPU: 2 PID: 3331 at drivers/firmware/raspberrypi.c:63
+ rpi_firmware_property_list
+Message-ID: <20220523134623.GV1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <CA+G9fYt4+47GzfEYT1nV3dqbGa1YCwFm9XwC668D4PkK4BHFgQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b8a696ac-533b-47b4-3f80-08da3cc288eb
-X-MS-TrafficTypeDiagnostic: CO6PR02MB7508:EE_
-X-Microsoft-Antispam-PRVS: <CO6PR02MB750862EA046D4AF6FCA866BAC2D49@CO6PR02MB7508.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0Gg9bY6QPxRoJKhsWmwcDeEOjBXVuIUfs7Gac31f1nudr+/weIoi0HdfKxV7VtIRkbSlL3yXVx1qyNKRYPl29iDsbsH/2a9ooAwk83KD644ncgvXbTerUE0SKWZc4glhBEmMIPyV/XkXT3kBNwgIybqlof/QBlIt4gwo3ZcFkcUgPWyYbhEvArWHOeWV63uWTmY+/KxJJFL7oea+VtzrKmocH7nmfU1UPraKtlWGd634u++f/c2o0p4jPzxmWx2IKirv3zvkVWsm3JlvLPM234xdKGjYHbxTbrr/8A8dc8ETJ2x50a4qVTC4UMOAP+1rSX+3b52lvg+qcgXCGE7OMbaLaiAGfgjJ9q71QqnO74ocOYt/YyfxdXe1oPqp+zdtOIH630YcIWGAUYRiAQNqaPUwwpIpQ4InkXQZ59g8NOKG/sxTmwtd+Vw0N+mSTwP8Jz+hm6ysaDbMRrvAwt2K1MoapmrJz0IMjyUBY4VXjalXvnQe4GS9dJ5kdc2BvfrVfbhyoHA8lRcfeFdRQg5RzQRPwpkQM+wjDKB3hnVVdhnNUuBTovrE11OACyLAzb9Fjis8mzrVI4qc84IJNSVXoaeLzPYlELRF2LUFZviGSaTP0u7PbfZFhVirNCLd5e0Yns8o5d5AD2epCLD+6cHDuoC2FY/TViUQKpnRlz11KJhMjA2r0QevCBc5thlJwAxlGDrS2STCWf48wbQMofJNBMPEG7Hi5iZANLZU49B7I2j1fl4NrGpQ87w1Cy5VbnIBgslqRfum3BohISL6/MKjeQ==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(7636003)(921005)(356005)(7416002)(5660300002)(8936002)(83380400001)(7696005)(6666004)(9786002)(26005)(40460700003)(2616005)(508600001)(1076003)(2906002)(336012)(186003)(47076005)(316002)(426003)(70586007)(8676002)(4326008)(6636002)(36756003)(36860700001)(70206006)(110136005)(82310400005)(102446001)(2101003)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 13:45:44.4005
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8a696ac-533b-47b4-3f80-08da3cc288eb
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0033.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR02MB7508
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYt4+47GzfEYT1nV3dqbGa1YCwFm9XwC668D4PkK4BHFgQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add fpga-region 'power-domains' property to allow to handle
-the FPGA/PL power domains.
+On Mon, May 23, 2022 at 02:34:04PM +0530, Naresh Kamboju wrote:
+> The following kernel warning was noticed on raspberrypi4 device while
+> running LTP controllers with Linus mainline kernel tree.
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> metadata:
+>   git_ref: master
+>   git_repo: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>   git_sha: 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+>   git_describe: v5.18
+>   kernel_version: 5.18.0
+>   kernel-config: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/config
+>   artifact-location: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu
+>   toolchain: gcc-11
+>   System.map: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/System.map
+>   vmlinux.xz: https://builds.tuxbuild.com/29XDpgnCMxtWJ6lVJ9M0x3hTNWu/vmlinux.xz
+> 
+> Steps to reproduce:
+> # cd /opt/ltp
+> # ./runltp -p -q -f controllers
+> 
+> cgroup_fj_stress_blkio_1_200_one 1 TINFO: Attaching task 7221 to
+> /sys/fs/cgroup/blkio/ltp/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1
+> cgroup_fj_stress_blkio_1_200_one 1 TINFO: Attaching task 7221 to
+> /sys/fs/cgroup/blkio/ltp/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1
+> cgroup_fj_stress_blkio_1_200_one 1 TINFO: Attaching task 7221 to
+> /sys/fs/cgroup/blkio/ltp/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1
+> [ 2442.255887] ------------[ cut here ]------------
+> [ 2442.260615] Firmware transaction timeout
+> [ 2442.260704] WARNING: CPU: 2 PID: 3331 at
+> drivers/firmware/raspberrypi.c:63
+> rpi_firmware_property_list+0x1e8/0x270
+> [ 2442.275114] Modules linked in: btrfs blake2b_generic libcrc32c
+> raid6_pq zstd_compress brcmfmac xhci_pci brcmutil snd_soc_hdmi_codec
+> xhci_pci_renesas raspberrypi_cpufreq hci_uart btqca btbcm vc4 cfg80211
+> bluetooth cec drm_cma_helper rfkill drm_kms_helper reset_raspberrypi
+> clk_raspberrypi crct10dif_ce raspberrypi_hwmon drm pwm_bcm2835
+> iproc_rng200 pcie_brcmstb i2c_bcm2835 rng_core bcm2711_thermal fuse
+> [ 2442.311148] CPU: 2 PID: 3331 Comm: kworker/2:2 Not tainted 5.18.0 #1
+> [ 2442.317599] Hardware name: Raspberry Pi 4 Model B (DT)
+> [ 2442.322810] Workqueue: events get_values_poll [raspberrypi_hwmon]
+> [ 2442.329007] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [ 2442.336074] pc : rpi_firmware_property_list+0x1e8/0x270
+> [ 2442.341381] lr : rpi_firmware_property_list+0x1e8/0x270
+> [ 2442.346685] sp : ffff800010d63cc0
+> [ 2442.350043] x29: ffff800010d63cc0 x28: 0000000000000000 x27: ffff0000419d0540
+> [ 2442.357297] x26: 0000000000000011 x25: ffff80000afdd008 x24: 0000000000001000
+> [ 2442.364547] x23: ffff000061ce9300 x22: ffff80000ac330b0 x21: ffff0000419d0500
+> [ 2442.371797] x20: 0000000000000010 x19: ffff80000afdd000 x18: ffffffffffffffff
+> [ 2442.379046] x17: 0000000000000000 x16: 0000000000000000 x15: ffff800090d63937
+> [ 2442.386295] x14: ffff80000a912dd0 x13: 74756f656d697420 x12: 6e6f69746361736e
+> [ 2442.393544] x11: ffff80000a8b1ce8 x10: ffff80000a91c178 x9 : ffff80000811d524
+> [ 2442.400794] x8 : 00000000ffffefff x7 : ffff80000a909cf8 x6 : 0000000000000001
+> [ 2442.408044] x5 : ffff80000a88f000 x4 : ffff80000a88f2c0 x3 : 0000000000000000
+> [ 2442.415293] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff000062921040
+> [ 2442.422543] Call trace:
+> [ 2442.425020]  rpi_firmware_property_list+0x1e8/0x270
+> [ 2442.429973]  rpi_firmware_property+0x7c/0xc0
+> [ 2442.434308]  get_values_poll+0x54/0x120 [raspberrypi_hwmon]
+> [ 2442.439967]  process_one_work+0x1dc/0x450
+> [ 2442.444045]  worker_thread+0x154/0x450
+> [ 2442.447850]  kthread+0x100/0x110
+> [ 2442.451126]  ret_from_fork+0x10/0x20
+> [ 2442.454760] ---[ end trace 0000000000000000 ]---
+> [ 2442.471909] hwmon hwmon1: Failed to get throttled (-110)
+> [ 2443.499865] raspberrypi-clk soc:firmware:clocks: Failed to change
+> fw-clk-arm frequency: -110
+> [ 2446.575893] raspberrypi-clk soc:firmware:clocks: Failed to change
+> fw-clk-arm frequency: -110
+> [ 2450.915855] mmc1: Timeout waiting for hardware cmd interrupt.
+> [ 2450.921693] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
+> [ 2450.928227] mmc1: sdhci: Sys addr:  0x00000008 | Version:  0x00001002
+> [ 2450.934763] mmc1: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000000
+> [ 2450.941297] mmc1: sdhci: Argument:  0xaaaa0000 | Trn mode: 0x00000033
+> [ 2450.947830] mmc1: sdhci: Present:   0x1fff0000 | Host ctl: 0x00000017
+> [ 2450.954362] mmc1: sdhci: Power:     0x0000000f | Blk gap:  0x00000080
+> [ 2450.960896] mmc1: sdhci: Wake-up:   0x00000000 | Clock:    0x00000107
+> [ 2450.967429] mmc1: sdhci: Timeout:   0x00000000 | Int stat: 0x00000001
+> [ 2450.973960] mmc1: sdhci: Int enab:  0x03ff100b | Sig enab: 0x03ff100b
+> [ 2450.980493] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
+> [ 2450.987025] mmc1: sdhci: Caps:      0x45ee6432 | Caps_1:   0x0000a525
+> [ 2450.993558] mmc1: sdhci: Cmd:       0x00000d1a | Max curr: 0x00080008
+> [ 2451.000091] mmc1: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0x0076b27f
+> [ 2451.006624] mmc1: sdhci: Resp[2]:   0x325b5900 | Resp[3]:  0x00000900
+> [ 2451.013155] mmc1: sdhci: Host ctl2: 0x0000808c
+> [ 2451.017659] mmc1: sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0xc3400208
+> [ 2451.024191] mmc1: sdhci: ============================================
+> [ 2452.679889] raspberrypi-clk soc:firmware:clocks: Failed to change
+> fw-clk-arm frequency: -110
+> [ 2455.763879] raspberrypi-clk soc:firmware:clocks: Failed to change
+> fw-clk-arm frequency: -110
+> [ 2460.759844] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> [ 2460.766034] rcu: 1-...!: (1 GPs behind)
+> idle=add/1/0x4000000000000000 softirq=481373/481374 fqs=23
+> [ 2460.775311] (detected by 3, t=5253 jiffies, g=915057, q=822)
+> [ 2460.781141] Task dump for CPU 1:
+> [ 2460.784411] task:cgroup_fj_stres state:R  running task     stack:
+>  0 pid: 6806 ppid:   501 flags:0x00000200
+> [ 2460.794483] Call trace:
+> [ 2460.796958]  __switch_to+0x104/0x160
+> [ 2460.800595]  0xffff0000403cff00
+> [ 2460.803782] rcu: rcu_preempt kthread timer wakeup didn't happen for
+> 5216 jiffies! g915057 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
+> [ 2460.815430] rcu: Possible timer handling issue on cpu=0 timer-softirq=161506
 
-Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
-Changes for v2:
-              - Updated power-domains description.
+This looks to be a follow-on error due to the earlier firmware splat
+above.  What happened here is that RCU's grace-period kthread attempted
+to sleep for a few jiffies, but the timer's wakeup still hadn't happened
+more than 5,000 jiffies later.
 
- .../devicetree/bindings/fpga/fpga-region.txt       | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+And is the "Timeout waiting for hardware cmd interrupt" below
+additional evidence in favor of this diagnosis?
 
-diff --git a/Documentation/devicetree/bindings/fpga/fpga-region.txt b/Documentation/devicetree/bindings/fpga/fpga-region.txt
-index 7d3515264838..f299c3749505 100644
---- a/Documentation/devicetree/bindings/fpga/fpga-region.txt
-+++ b/Documentation/devicetree/bindings/fpga/fpga-region.txt
-@@ -196,6 +196,20 @@ Optional properties:
- - config-complete-timeout-us : The maximum time in microseconds time for the
- 	FPGA to go to operating mode after the region has been programmed.
- - child nodes : devices in the FPGA after programming.
-+- power-domains : A phandle and power domain specifier pair to the power domain
-+	which is responsible for turning on/off the power to the FPGA/PL region.
-+Example:
-+	fpga_full: fpga-full {
-+                compatible = "fpga-region";
-+                fpga-mgr = <&zynqmp_pcap>;
-+                #address-cells = <2>;
-+                #size-cells = <2>;
-+                ranges;
-+                power-domains = <&zynqmp_firmware PL_PD>;
-+        };
-+
-+	The PL_PD power domain will be turned on before loading the bitstream
-+and turned off while removing/unloading the bitstream using overlays.
- 
- In the example below, when an overlay is applied targeting fpga-region0,
- fpga_mgr is used to program the FPGA.  Two bridges are controlled during
--- 
-2.25.1
+							Thanx, Paul
 
+> [ 2460.822667] rcu: rcu_preempt kthread starved for 5222 jiffies!
+> g915057 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=0
+> [ 2460.833345] rcu: Unless rcu_preempt kthread gets sufficient CPU
+> time, OOM is now expected behavior.
+> [ 2460.842606] rcu: RCU grace-period kthread stack dump:
+> [ 2460.847726] task:rcu_preempt     state:I stack:    0 pid:   15
+> ppid:     2 flags:0x00000008
+> [ 2460.856203] Call trace:
+> [ 2460.858678]  __switch_to+0x104/0x160
+> [ 2460.862305]  __schedule+0x314/0x8ac
+> [ 2460.865843]  schedule+0x5c/0xd4
+> [ 2460.869028]  schedule_timeout+0xa4/0x1c4
+> [ 2460.873010]  rcu_gp_fqs_loop+0x140/0x520
+> [ 2460.876998]  rcu_gp_kthread+0x1a8/0x25c
+> [ 2460.880891]  kthread+0x100/0x110
+> [ 2460.884167]  ret_from_fork+0x10/0x20
+> [ 2460.887796] rcu: Stack dump where RCU GP kthread last ran:
+> [ 2460.893357] Task dump for CPU 0:
+> [ 2460.896624] task:swapper/0       state:R  running task     stack:
+>  0 pid:    0 ppid:     0 flags:0x0000000a
+> [ 2460.906690] Call trace:
+> [ 2460.909165]  __switch_to+0x104/0x160
+> [ 2460.912791]  0x0
+> [ 2461.159863] mmc1: Timeout waiting for hardware cmd interrupt.
+> [ 2461.165699] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
+> [ 2461.172231] mmc1: sdhci: Sys addr:  0x00000008 | Version:  0x00001002
+> [ 2461.178763] mmc1: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000000
+> [ 2461.185294] mmc1: sdhci: Argument:  0xaaaa0000 | Trn mode: 0x00000033
+> [ 2461.191826] mmc1: sdhci: Present:   0x1fff0000 | Host ctl: 0x00000017
+> [ 2461.198358] mmc1: sdhci: Power:     0x0000000f | Blk gap:  0x00000080
+> [ 2461.204887] mmc1: sdhci: Wake-up:   0x00000000 | Clock:    0x00000107
+> [ 2461.211419] mmc1: sdhci: Timeout:   0x00000000 | Int stat: 0x00000001
+> [ 2461.217951] mmc1: sdhci: Int enab:  0x03ff100b | Sig enab: 0x03ff100b
+> [ 2461.224483] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
+> [ 2461.231013] mmc1: sdhci: Caps:      0x45ee6432 | Caps_1:   0x0000a525
+> [ 2461.237543] mmc1: sdhci: Cmd:       0x00000d1a | Max curr: 0x00080008
+> [ 2461.244073] mmc1: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0x0076b27f
+> [ 2461.250604] mmc1: sdhci: Resp[2]:   0x325b5900 | Resp[3]:  0x00000900
+> [ 2461.257135] mmc1: sdhci: Host ctl2: 0x0000808c
+> [ 2461.261639] mmc1: sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0xc3400208
+> [ 2461.268169] mmc1: sdhci: ============================================
+> [ 2462.019897] raspberrypi-clk soc:firmware:clocks: Failed to change
+> fw-clk-arm frequency: -110
+> [ 2471.403852] mmc1: Timeout waiting for hardware cmd interrupt.
+> [ 2471.409689] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
+> [ 2471.416219] mmc1: sdhci: Sys addr:  0x00000008 | Version:  0x00001002
+> [ 2471.422751] mmc1: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000000
+> [ 2471.429282] mmc1: sdhci: Argument:  0xaaaa0000 | Trn mode: 0x00000033
+> [ 2471.435814] mmc1: sdhci: Present:   0x1fff0000 | Host ctl: 0x00000017
+> [ 2471.442345] mmc1: sdhci: Power:     0x0000000f | Blk gap:  0x00000080
+> [ 2471.448876] mmc1: sdhci: Wake-up:   0x00000000 | Clock:    0x00000107
+> [ 2471.455407] mmc1: sdhci: Timeout:   0x00000000 | Int stat: 0x00000001
+> [ 2471.461938] mmc1: sdhci: Int enab:  0x03ff100b | Sig enab: 0x03ff100b
+> [ 2471.468469] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
+> [ 2471.474998] mmc1: sdhci: Caps:      0x45ee6432 | Caps_1:   0x0000a525
+> [ 2471.481529] mmc1: sdhci: Cmd:       0x00000d1a | Max curr: 0x00080008
+> [ 2471.488061] mmc1: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0x0076b27f
+> [ 2471.494592] mmc1: sdhci: Resp[2]:   0x325b5900 | Resp[3]:  0x00000900
+> [ 2471.501122] mmc1: sdhci: Host ctl2: 0x0000808c
+> [ 2471.505624] mmc1: sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0xc3400208
+> [ 2471.512155] mmc1: sdhci: ============================================
+> [ 2481.647850] mmc1: Timeout waiting for hardware cmd interrupt.
+> [ 2481.653680] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
+> [ 2481.660211] mmc1: sdhci: Sys addr:  0x00000008 | Version:  0x00001002
+> [ 2481.666742] mmc1: sdhci: Blk size:  0x00007200 | Blk cnt:  0x00000000
+> [ 2481.673273] mmc1: sdhci: Argument:  0xaaaa0000 | Trn mode: 0x00000033
+> [ 2481.679804] mmc1: sdhci: Present:   0x1fff0000 | Host ctl: 0x00000017
+> [ 2481.686335] mmc1: sdhci: Power:     0x0000000f | Blk gap:  0x00000080
+> [ 2481.692866] mmc1: sdhci: Wake-up:   0x00000000 | Clock:    0x00000107
+> [ 2481.699397] mmc1: sdhci: Timeout:   0x00000000 | Int stat: 0x00000001
+> [ 2481.705928] mmc1: sdhci: Int enab:  0x03ff100b | Sig enab: 0x03ff100b
+> [ 2481.712459] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000001
+> [ 2481.718988] mmc1: sdhci: Caps:      0x45ee6432 | Caps_1:   0x0000a525
+> [ 2481.725519] mmc1: sdhci: Cmd:       0x00000d1a | Max curr: 0x00080008
+> [ 2481.732050] mmc1: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0x0076b27f
+> [ 2481.738581] mmc1: sdhci: Resp[2]:   0x325b5900 | Resp[3]:  0x00000900
+> [ 2481.745111] mmc1: sdhci: Host ctl2: 0x0000808c
+> [ 2481.749613] mmc1: sdhci: ADMA Err:  0x00000000 | ADMA Ptr: 0xc3400208
+> [ 2481.756143] mmc1: sdhci: ============================================
+> [ 2481.763349] mmc1: card aaaa removed
+> [ 2523.923843] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> [ 2523.930032] rcu: 1-...0: (1 GPs behind)
+> idle=add/1/0x4000000000000000 softirq=481373/481374 fqs=3169
+> [ 2523.939484] (detected by 3, t=21044 jiffies, g=915057, q=1474)
+> [ 2523.945491] Task dump for CPU 1:
+> [ 2523.948761] task:cgroup_fj_stres state:R  running task     stack:
+>  0 pid: 6806 ppid:   501 flags:0x00000202
+> [ 2523.958831] Call trace:
+> [ 2523.961307]  __switch_to+0x104/0x160
+> [ 2523.964942]  0xffff0000403cff00
+> 
+> Full test log,
+> https://lkft.validation.linaro.org/scheduler/job/5075973
+> 
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
