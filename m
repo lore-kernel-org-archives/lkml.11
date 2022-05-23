@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED78C38A2B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2054AC4707F
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244501AbiEWRsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
+        id S244280AbiEWRr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243047AbiEWR2R (ORCPT
+        with ESMTP id S242289AbiEWR1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:28:17 -0400
+        Mon, 23 May 2022 13:27:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9ABA8E18C;
-        Mon, 23 May 2022 10:25:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F4F7CB06;
+        Mon, 23 May 2022 10:22:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF347B811CE;
-        Mon, 23 May 2022 17:24:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BFF2C385AA;
-        Mon, 23 May 2022 17:24:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AECDB811FF;
+        Mon, 23 May 2022 17:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE1DEC385A9;
+        Mon, 23 May 2022 17:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326666;
-        bh=q7EG8RQlTf/vrDYWRZ9DE57aKLz4WapfiR01tD+MV5Q=;
+        s=korg; t=1653326571;
+        bh=IoJRm/i4IXJI9no6CdAXI1whNbfhbv4o8gGiDQE+UGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cfEiB0qjT90DcC2Dq33iNRE9buPtW8397AW3DeudItcor72bGVv3OY3jbSD4PQCmJ
-         JJXJpbxSGQEwydgg3uBEhFhX+WSz7FdASs/YWUbPGbhbWPtECvMHs2rDBDrnb0q79u
-         scXjsIzA4i6su5RLXD5Jy6gW667H2CJfIM89ebcU=
+        b=CqileH+NIjjQ61Y/7U6SpKKmRtCZ74T5WC84TjyTjWXmygepIGOZ6BQ8JAA8EHgUJ
+         KeS6/S8lW3yWHi+YrnfliIqcrrpQdrzAq0EHVLJ2hOm4MmghxY6lcYeQgwwx3TyeDh
+         rH8pPT5qa+tkQ0nGjWVpZA8EirEsWKa1Y/ERr9Mw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Gow <davidgow@google.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 022/158] um: Cleanup syscall_handler_t definition/cast, fix warning
-Date:   Mon, 23 May 2022 19:02:59 +0200
-Message-Id: <20220523165834.271033720@linuxfoundation.org>
+Subject: [PATCH 5.15 105/132] riscv: dts: sifive: fu540-c000: align dma node name with dtschema
+Date:   Mon, 23 May 2022 19:05:14 +0200
+Message-Id: <20220523165840.886090758@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,65 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
+[ Upstream commit b17410182b6f98191fbf7f42d3b4a78512769d29 ]
 
-The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
-but always cast to 'long (*)(long, long, long, long, long, long)' before
-use. This now triggers a warning (see below).
+Fixes dtbs_check warnings like:
 
-Define syscall_handler_t as the latter instead, and remove the cast.
-This simplifies the code, and fixes the warning.
+  dma@3000000: $nodename:0: 'dma@3000000' does not match '^dma-controller(@.*)?$'
 
-Warning:
-In file included from ../arch/um/include/asm/processor-generic.h:13
-                 from ../arch/x86/um/asm/processor.h:41
-                 from ../include/linux/rcupdate.h:30
-                 from ../include/linux/rculist.h:11
-                 from ../include/linux/pid.h:5
-                 from ../include/linux/sched.h:14
-                 from ../include/linux/ptrace.h:6
-                 from ../arch/um/kernel/skas/syscall.c:7:
-../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
-../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
--Wcast-function-type]
-   18 |         (((long (*)(long, long, long, long, long, long)) \
-      |           ^
-../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
-   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
-      |                                                              ^~~
-../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
-   46 |                                 EXECUTE_SYSCALL(syscall, regs));
-      |                                 ^~~~~~~~~~~~~~~
-
-Signed-off-by: David Gow <davidgow@google.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220407193856.18223-1-krzysztof.kozlowski@linaro.org
+Fixes: c5ab54e9945b ("riscv: dts: add support for PDMA device of HiFive Unleashed Rev A00")
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
-index 48d6cd12f8a5..b6b997225841 100644
---- a/arch/x86/um/shared/sysdep/syscalls_64.h
-+++ b/arch/x86/um/shared/sysdep/syscalls_64.h
-@@ -10,13 +10,12 @@
- #include <linux/msg.h>
- #include <linux/shm.h>
- 
--typedef long syscall_handler_t(void);
-+typedef long syscall_handler_t(long, long, long, long, long, long);
- 
- extern syscall_handler_t *sys_call_table[];
- 
- #define EXECUTE_SYSCALL(syscall, regs) \
--	(((long (*)(long, long, long, long, long, long)) \
--	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
-+	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
- 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
- 				      UPT_SYSCALL_ARG3(&regs->regs), \
- 				      UPT_SYSCALL_ARG4(&regs->regs), \
+diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+index 7db861053483..64c06c9b41dc 100644
+--- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
++++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+@@ -166,7 +166,7 @@ uart0: serial@10010000 {
+ 			clocks = <&prci PRCI_CLK_TLCLK>;
+ 			status = "disabled";
+ 		};
+-		dma: dma@3000000 {
++		dma: dma-controller@3000000 {
+ 			compatible = "sifive,fu540-c000-pdma";
+ 			reg = <0x0 0x3000000 0x0 0x8000>;
+ 			interrupt-parent = <&plic0>;
 -- 
 2.35.1
 
