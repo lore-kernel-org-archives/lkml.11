@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01EFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C60CC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343979AbiEWSIq (ORCPT
+        id S1344067AbiEWSIv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
+        Mon, 23 May 2022 14:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243578AbiEWRiS (ORCPT
+        with ESMTP id S243563AbiEWRiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:38:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B42A6B7C2;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF9F71A3C;
         Mon, 23 May 2022 10:32:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAA24B811FE;
-        Mon, 23 May 2022 17:31:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B56EC385AA;
-        Mon, 23 May 2022 17:31:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 793ADB80EB0;
+        Mon, 23 May 2022 17:31:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A38BBC385A9;
+        Mon, 23 May 2022 17:31:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327069;
-        bh=m80PVdEZX1lH4vWt6edcuHR6RqQ39qIO0Eig5ttw22Y=;
+        s=korg; t=1653327102;
+        bh=P7ifuMvgfCQC7c5AuL095K8fyYyVN8m4teyXLs5ZboM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hgMJj3SHumIOJ5vu2MdieIW4Nns6uIwxpPEncdk9VIRlIQe1LzEJiWfB6LGrO0yGD
-         Ir04TLEhMzqk/4jOl/99NozQNvnJWBKrtYdw7gR4NdOUisBdHy04GAW8Ye0gAe59B6
-         My8FqnADKJ6viZofD7FdhXob4EDYFnd4OhTKc+3U=
+        b=m3s1r76q4dkHaCBSyVdEwaT0ZMhdErNOUi1wvKTI6coogpcxJEo3hmIuEAKQnXRbj
+         4hq8A4t942K1lU4P/g7b+jzte3v5lsn6BtRU7kVlR8ND/5Hy6Hyc4Db/Ur9VrKWkH7
+         puF/TD0pX2kEMQHlTvQzcB7HiaQSBh5xzN5C9Dmo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 147/158] nl80211: fix locking in nl80211_set_tx_bitrate_mask()
-Date:   Mon, 23 May 2022 19:05:04 +0200
-Message-Id: <20220523165854.543117070@linuxfoundation.org>
+        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
+        Rob Herring <robh@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>, Joel Stanley <joel@jms.id.au>
+Subject: [PATCH 5.17 156/158] dt-bindings: pinctrl: aspeed-g6: remove FWQSPID group
+Date:   Mon, 23 May 2022 19:05:13 +0200
+Message-Id: <20220523165856.039264573@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,53 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
 
-[ Upstream commit f971e1887fdb3ab500c9bebf4b98f62d49a20655 ]
+commit a29c96a4053dc3c1d39353b61089882f81c6b23d upstream.
 
-This accesses the wdev's chandef etc., so cannot safely
-be used without holding the lock.
+FWQSPID is not a group of FWSPID so remove it.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220506102136.06b7205419e6.I2a87c05fbd8bc5e565e84d190d4cfd2e92695a90@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7488838f2315 ("dt-bindings: pinctrl: aspeed: Document AST2600 pinmux")
+Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Link: https://lore.kernel.org/r/20220329173932.2588289-4-quic_jaehyoo@quicinc.com
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/wireless/nl80211.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 06a35f1bec23..0c20df052db3 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -11573,18 +11573,23 @@ static int nl80211_set_tx_bitrate_mask(struct sk_buff *skb,
- 	struct cfg80211_bitrate_mask mask;
- 	struct cfg80211_registered_device *rdev = info->user_ptr[0];
- 	struct net_device *dev = info->user_ptr[1];
-+	struct wireless_dev *wdev = dev->ieee80211_ptr;
- 	int err;
- 
- 	if (!rdev->ops->set_bitrate_mask)
- 		return -EOPNOTSUPP;
- 
-+	wdev_lock(wdev);
- 	err = nl80211_parse_tx_bitrate_mask(info, info->attrs,
- 					    NL80211_ATTR_TX_RATES, &mask,
- 					    dev, true);
- 	if (err)
--		return err;
-+		goto out;
- 
--	return rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
-+	err = rdev_set_bitrate_mask(rdev, dev, NULL, &mask);
-+out:
-+	wdev_unlock(wdev);
-+	return err;
- }
- 
- static int nl80211_register_mgmt(struct sk_buff *skb, struct genl_info *info)
--- 
-2.35.1
-
+--- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
+@@ -58,7 +58,7 @@ patternProperties:
+           $ref: "/schemas/types.yaml#/definitions/string"
+           enum: [ ADC0, ADC1, ADC10, ADC11, ADC12, ADC13, ADC14, ADC15, ADC2,
+                   ADC3, ADC4, ADC5, ADC6, ADC7, ADC8, ADC9, BMCINT, EMMCG1, EMMCG4,
+-                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWQSPID, FWSPIWP,
++                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWSPIWP,
+                   GPIT0, GPIT1, GPIT2, GPIT3, GPIT4, GPIT5, GPIT6, GPIT7, GPIU0, GPIU1,
+                   GPIU2, GPIU3, GPIU4, GPIU5, GPIU6, GPIU7, HVI3C3, HVI3C4, I2C1, I2C10,
+                   I2C11, I2C12, I2C13, I2C14, I2C15, I2C16, I2C2, I2C3, I2C4, I2C5,
 
 
