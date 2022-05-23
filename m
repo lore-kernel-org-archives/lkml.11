@@ -2,153 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD67C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236933AbiEWONX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:13:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35850 "EHLO
+        id S236942AbiEWOOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236794AbiEWONU (ORCPT
+        with ESMTP id S236927AbiEWONy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:13:20 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBAD275E4
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:13:16 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id p189so8862293wmp.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:13:16 -0700 (PDT)
+        Mon, 23 May 2022 10:13:54 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD31483B0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:13:52 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id u35so12574270qtc.13
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:13:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=wMd3MAVGTEWvLDECRQj4k5EQPlSx82n3nZY69Crfbkk=;
-        b=p2KwDuenh3ZqtcMrAp2PcV50hZl16VaDpOUHQfDrGTKFZo+sBapEL/vCFhO0fUJI00
-         2Gl33276R5kI/N/lATZXOvvaFKLG5EtAPp1YqX0WIkTYmo8A2HpkBQNULEQeoCLHjyEi
-         CyGVdO+Spun3Fqzf3KcuqElqI5Phplf0f+nX2gRVrak35ZFX9pVhrhy+nvALMxN/0YcF
-         Qi9hzvZgeoBLkXtP4DBCJehmuMgNVbXVAG4ZF7fKuCg7fnllo/mb/WU9CQ7PMB9qxcUw
-         yVHLHPY8cuagGCiNtk+wjbDfpJN+zW6m0ykAPjS4no+aK+Ni8qQh8ZuHe4QNKBoAvSAr
-         xBlQ==
+        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yf9uUkztNFWKQdMQR+4lfqgGYIJguwpRJROMjgydeec=;
+        b=ejzZTp14I0eM1Xcu7f55+JlhI+5GSacYBedYUGQQ3LUYcO7XT4j/NyJA5eQ+FODvPg
+         iLrp2yq7P41YzKGBcPKkQ1yVtFLmR2JcZlImu5cKytZMyAsN4fVx1c/ZlcLGGne8Ucet
+         hKqmJKMrmOYq0kJl4akBKYxeZ9L5YIZTa/I6hRxNwCqXLuB5QBrOkMVqr4apq8bSveqr
+         eHK7+9Y6W7Kys7/dJb6WAobSnenSkLUU6bcjCqnPsz8QpQehRwv05SHSlqO6mbutH5+J
+         XyXPqTiUADmQ+MAT7eWyig78b+pXHwe3sqYs8hK+VrZTjPDgTc9nbesjcpN7b2j2deYD
+         fHFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=wMd3MAVGTEWvLDECRQj4k5EQPlSx82n3nZY69Crfbkk=;
-        b=di+Zrseu5yakAUvAhxX6B3BJmrNdHL6MJQED16AR1wLH3Im7e4Ki2X3Bj9Zv9y6/8v
-         w1XCT6Ugm2PlqZmYSrLbDkqC/5kxu08dplH4BEEbjPImPX4NJAJoX6A16mgF++NcJZSA
-         ZEUr2NHRO/FWiDtCRWllBwEWINaTDs5TjgVyS8u3Mt715GzviaAOKBFXdP7/0ugmkRkX
-         lVNUayIEuqb16OcyJB07JjYifvZpIH9nmO2VwWQoFPqxkuSNiJU6eykdeCADpje1G1vr
-         0Ec/O1bbxEPbXe7jgumI/LTijRKpyRevOOf7ibG5L7IAHU0XpJa17FMH+kuHnOl045QG
-         jCfg==
-X-Gm-Message-State: AOAM533d1/uOBDqCKXvToIZsprgtnMoQ2RxWYI/2roYC5WVsPReBt/fu
-        bBHQgpg5Xw4hbehh/joKsv94PXTqf8fYxBPfwB9N
-X-Google-Smtp-Source: ABdhPJwWjOXbK0Xh4wF+Je/K9mbXv1GGVKfDI7BUiK8RXyiuAS+iMDEoxi0ZDPvFouhLymQvkgFVCtXkHM0ao9xLxGw=
-X-Received: by 2002:a7b:ce8a:0:b0:397:37c9:254a with SMTP id
- q10-20020a7bce8a000000b0039737c9254amr15349128wmj.96.1653315194616; Mon, 23
- May 2022 07:13:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yf9uUkztNFWKQdMQR+4lfqgGYIJguwpRJROMjgydeec=;
+        b=xlEci8cxETP+YZPelkDHV5bnsEinUxJFjL1lm/EH+vfiOy8U9j26GoWfmXWeTtfZfN
+         CBQOz4APSsyrJeNDnPdWCt5enLi1DfNGIaAYtOlt0ldfFCqfi3DlZulkNW3qwUmGCOqr
+         Sdt2uiixvoIq55a8uM975X87VZ7HfsVt9k7bvwNrEitetLtdxvrYMt+rij7VoYyICdhM
+         /17qU7rGOwq301m9LkeUeu7cBeDzmFZvtLMKKwIeCnq3ApEG6mqDHdrP87XRAsZaLfqj
+         95AALuKBsoIKVBc2ZkW47gi5YXdKcMDmb6vqJXXpVslrMc5yUz0x9SIVEZ1M7egc9oKK
+         dB7g==
+X-Gm-Message-State: AOAM532lERvSfmaXXQg34xxe5F0U8u8OX6ql9a9FvH0GMr076i3qBHX8
+        eQET3zjQhf7Eydu+tn7F5wk9sw==
+X-Google-Smtp-Source: ABdhPJyiT1kMTbQR+T6y2KceS2oNAISZeyIeujBa8g4AUiYDvZeIcUWg78NR8+d9Gb9IEA18FV3eOQ==
+X-Received: by 2002:a05:622a:38d:b0:2f3:c9f7:bfa0 with SMTP id j13-20020a05622a038d00b002f3c9f7bfa0mr16634672qtx.404.1653315231961;
+        Mon, 23 May 2022 07:13:51 -0700 (PDT)
+Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
+        by smtp.gmail.com with ESMTPSA id c10-20020ac86e8a000000b002f3ef928fbbsm1132615qtv.72.2022.05.23.07.13.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 07:13:51 -0700 (PDT)
+Date:   Mon, 23 May 2022 10:13:50 -0400
+From:   Josef Bacik <josef@toxicpanda.com>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     axboe@kernel.dk, ming.lei@redhat.com, linux-block@vger.kernel.org,
+        nbd@other.debian.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next v3 1/6] nbd: call genl_unregister_family() first in
+ nbd_cleanup()
+Message-ID: <YouWnpZxnGBiXq6X@localhost.localdomain>
+References: <20220521073749.3146892-1-yukuai3@huawei.com>
+ <20220521073749.3146892-2-yukuai3@huawei.com>
 MIME-Version: 1.0
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 23 May 2022 10:13:04 -0400
-Message-ID: <CAHC9VhTFMrc3yRiQ=fnw0-qWCTuUcH3iD1txSvLUh71WFsLrFw@mail.gmail.com>
-Subject: [GIT PULL] SELinux patches for v5.19
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220521073749.3146892-2-yukuai3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+On Sat, May 21, 2022 at 03:37:44PM +0800, Yu Kuai wrote:
+> Otherwise there may be race between module removal and the handling of
+> netlink command, which can lead to the oops as shown below:
+> 
+>   BUG: kernel NULL pointer dereference, address: 0000000000000098
+>   Oops: 0002 [#1] SMP PTI
+>   CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+>   RIP: 0010:down_write+0x1a/0x50
+>   Call Trace:
+>    start_creating+0x89/0x130
+>    debugfs_create_dir+0x1b/0x130
+>    nbd_start_device+0x13d/0x390 [nbd]
+>    nbd_genl_connect+0x42f/0x748 [nbd]
+>    genl_family_rcv_msg_doit.isra.0+0xec/0x150
+>    genl_rcv_msg+0xe5/0x1e0
+>    netlink_rcv_skb+0x55/0x100
+>    genl_rcv+0x29/0x40
+>    netlink_unicast+0x1a8/0x250
+>    netlink_sendmsg+0x21b/0x430
+>    ____sys_sendmsg+0x2a4/0x2d0
+>    ___sys_sendmsg+0x81/0xc0
+>    __sys_sendmsg+0x62/0xb0
+>    __x64_sys_sendmsg+0x1f/0x30
+>    do_syscall_64+0x3b/0xc0
+>    entry_SYSCALL_64_after_hwframe+0x44/0xae
+>   Modules linked in: nbd(E-)
+> 
+> Signed-off-by: Hou Tao <houtao1@huawei.com>
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
-We've got twelve patches queued for v5.19, with most being fairly
-minor.  The highlights are below:
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
 
-- The checkreqprot and runtime disable knobs have been deprecated for
-some time with no active users that we can find.  In an effort to move
-things along we are adding a pause when the knobs are used to help
-make the deprecation more noticeable in case anyone is still using
-these hacks in the shadows.
+Thanks,
 
-- We've added the anonymous inode class name to the AVC audit records
-when anonymous inodes are involved.  This should make writing policy
-easier when anonymous inodes are involved.
-
-- More constification work.  This is fairly straightforward and the
-source of most of the diffstat.
-
-- The usual minor cleanups: remove unnecessary assignments, assorted
-style/checkpatch fixes, kdoc fixes, macro while-loop encapsulations,
-#include tweaks, etc.
-
-Please merge for v5.19.
--Paul
-
---
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17=
-:
-
- Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
-
-are available in the Git repository at:
-
- git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git
-   tags/selinux-pr-20220523
-
-for you to fetch changes up to 1af0e4a0233fea7e8226cb977d379dc20f9bbe11:
-
- security: declare member holding string literal const
-   (2022-05-13 14:51:06 -0400)
-
-----------------------------------------------------------------
-selinux/stable-5.19 PR 20220523
-
-----------------------------------------------------------------
-Christian G=C3=B6ttsche (8):
-     selinux: resolve checkpatch errors
-     selinux: update parameter documentation
-     selinux: avoid extra semicolon
-     selinux: include necessary headers in headers
-     selinux: fix indentation level of mls_ops block
-     selinux: declare data arrays const
-     selinux: log anon inode class name
-     security: declare member holding string literal const
-
-Michal Orzel (1):
-     selinux: Remove redundant assignments
-
-Paul Moore (3):
-     selinux: runtime disable is deprecated, add some ssleep() discomfort
-     selinux: checkreqprot is deprecated, add some ssleep() discomfort
-     selinux: don't sleep when
-              CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE is true
-
-include/linux/lsm_audit.h                        |  2 +
-include/linux/lsm_hooks.h                        |  4 +-
-scripts/selinux/genheaders/genheaders.c          | 75 ++++++++++++--------
-scripts/selinux/mdp/mdp.c                        |  4 +-
-security/lsm_audit.c                             |  3 +
-security/security.c                              |  2 +-
-security/selinux/avc.c                           |  6 +-
-security/selinux/hooks.c                         |  9 +--
-security/selinux/include/audit.h                 |  5 +-
-security/selinux/include/avc.h                   |  1 +
-security/selinux/include/avc_ss.h                |  4 +-
-security/selinux/include/classmap.h              |  2 +-
-security/selinux/include/ibpkey.h                |  2 +
-security/selinux/include/initial_sid_to_string.h |  3 +-
-security/selinux/include/netnode.h               |  2 +
-security/selinux/include/netport.h               |  2 +
-security/selinux/include/policycap.h             |  2 +-
-security/selinux/include/policycap_names.h       |  2 +-
-security/selinux/include/security.h              |  4 ++
-security/selinux/include/xfrm.h                  |  2 +
-security/selinux/nlmsgtab.c                      | 12 ++--
-security/selinux/selinuxfs.c                     |  8 ++-
-security/selinux/ss/avtab.c                      | 20 +++----
-security/selinux/ss/policydb.c                   | 36 +++++-------
-security/selinux/ss/services.c                   | 47 ++++++++-------
-25 files changed, 144 insertions(+), 115 deletions(-)
-
---=20
-paul-moore.com
+Josef
