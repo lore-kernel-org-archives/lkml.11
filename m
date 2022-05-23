@@ -2,87 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B907CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237225AbiEWOdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        id S237264AbiEWOdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237229AbiEWOdh (ORCPT
+        with ESMTP id S237239AbiEWOdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:33:37 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E2649CB6
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:33:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653316416; x=1684852416;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=IuGXxsgG3ZhE9KtfQ6orMoFZqsUCaaLiOomnMzr6usE=;
-  b=jM6ZUb/ctz5fmIimTtiz/uHxODuMkN+n7QMoJz/9eLRaLrP+CoeErh3V
-   8F/akKqcauP2X9hmhEh3NEqZQuA6HH5E3Q/VuFV1f0LWAvgfjs6mjopri
-   Nz1Ko5f+dPIV1MTbfzWeITk4CoWrXv6GzANZHQLB7JuosLxPf4o1Hi+GX
-   mB8wUEbJADyV+xg7vIohDhQWijQMOUXnuiuODNq/AnZon/OwWRajy0mAj
-   G6sgStaGlhUhbHubmzWf6/jVHK17JvXhOwWND6mWXIDYK8wjJxY3WmQhT
-   o7Nz4Wu1K8WD1rVjfHr6qhOrLvaeqRPWNqciKgkfQDMq19pRvuooDdyNx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="272055966"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="272055966"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 07:33:36 -0700
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="600679342"
-Received: from jiaqingz-mobl.ccr.corp.intel.com (HELO [10.249.171.16]) ([10.249.171.16])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 07:33:34 -0700
-Message-ID: <fde9bd5a-7161-9222-4719-4279b2416163@linux.intel.com>
-Date:   Mon, 23 May 2022 22:33:31 +0800
+        Mon, 23 May 2022 10:33:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA655932E;
+        Mon, 23 May 2022 07:33:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A264611B0;
+        Mon, 23 May 2022 14:33:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B24D9C385AA;
+        Mon, 23 May 2022 14:33:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653316421;
+        bh=6r/B2OiSPv2B6dH1KlUZS6QI0noV85NyqC24Oc19PEo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lOs2ImVwgVmmINHSludw0yNi1tbrS3ywDZ2SfgkBtafqAZswN4yzgTqV9IF//YBmk
+         8QS4lcNCnRkaHau7Vkk/6hCF8iB2ULjSDbWrIITHFz7BCHGVusWg9jkBBKLmnV0bUS
+         rIQKTCrxgBr0klOfwKBUgrazCgNgC7GoqRnVagX+urlz4Mhn/+yKv5moFKHn/Kaqsd
+         S4EuLecAlegL7wm+R2XrBidnYA/w1wcF27a8MQSZk1qeChz3T9zxc+UjB9ZfUAp33a
+         dFCIGc2ucp4JoMgBApju9s8Qkke1fvexvLh3o8hQuHSJNDRh6FjJCuphrFsf5FTUlT
+         EuvlRrb/SkOuw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1nt97p-0006Sw-T1; Mon, 23 May 2022 16:33:37 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH] ath11k: fix IRQ affinity warning on shutdown
+Date:   Mon, 23 May 2022 16:32:58 +0200
+Message-Id: <20220523143258.24818-1-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] mtd: spi-nor: macronix: Add support for mx66l2g45g
-Content-Language: en-US
-To:     linux-mtd@lists.infradead.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Michael Walle <michael@walle.cc>
-Cc:     linux-kernel@vger.kernel.org
-References: <20220523143002.1754922-1-jiaqing.zhao@linux.intel.com>
-From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-In-Reply-To: <20220523143002.1754922-1-jiaqing.zhao@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use PARSE_SFDP for now as the SNOR_ID3() patch is not merged yet, will
-switch to it after it is merged.
+Make sure to clear the IRQ affinity hint also on shutdown to avoid
+triggering a WARN_ON_ONCE() in __free_irq() when stopping MHI while
+using a single MSI vector.
 
-On 2022-05-23 22:30, Jiaqing Zhao wrote:
-> Macronix mx66l2g45g is a 3V, 2Gbit (256MB) NOR flash that supports
-> x1, x2, and x4 operation modes.
-> 
-> Tested read/write/erase with Aspeed AST2600 BMC SoC operating in x2
-> mode at 50MHz, using Aspeed spi-mem driver.
-> 
-> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-> ---
->  drivers/mtd/spi-nor/macronix.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/mtd/spi-nor/macronix.c b/drivers/mtd/spi-nor/macronix.c
-> index d81a4cb2812b..fd24ce9f02e2 100644
-> --- a/drivers/mtd/spi-nor/macronix.c
-> +++ b/drivers/mtd/spi-nor/macronix.c
-> @@ -95,6 +95,8 @@ static const struct flash_info macronix_nor_parts[] = {
->  	{ "mx66l1g45g",  INFO(0xc2201b, 0, 64 * 1024, 2048)
->  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
->  			      SPI_NOR_QUAD_READ) },
-> +	{ "mx66l2g45g",  INFO(0xc2201c, 0, 64 * 1024, 4096)
-> +		PARSE_SFDP },
->  	{ "mx66l1g55g",  INFO(0xc2261b, 0, 64 * 1024, 2048)
->  		NO_SFDP_FLAGS(SPI_NOR_QUAD_READ) },
->  	{ "mx66u2g45g",	 INFO(0xc2253c, 0, 64 * 1024, 4096)
+Fixes: e94b07493da3 ("ath11k: Set IRQ affinity to CPU0 in case of one MSI vector")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/net/wireless/ath/ath11k/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index dedf1b88ddf6..487a303b3077 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -920,7 +920,9 @@ static void ath11k_pci_remove(struct pci_dev *pdev)
+ static void ath11k_pci_shutdown(struct pci_dev *pdev)
+ {
+ 	struct ath11k_base *ab = pci_get_drvdata(pdev);
++	struct ath11k_pci *ab_pci = ath11k_pci_priv(ab);
+ 
++	ath11k_pci_set_irq_affinity_hint(ab_pci, NULL);
+ 	ath11k_pci_power_down(ab);
+ }
+ 
+-- 
+2.35.1
+
