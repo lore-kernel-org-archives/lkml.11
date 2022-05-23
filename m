@@ -2,148 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F183C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235918AbiEWSZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
+        id S243671AbiEWS1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242545AbiEWSZb (ORCPT
+        with ESMTP id S245494AbiEWS1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:25:31 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6EEA005F;
-        Mon, 23 May 2022 10:58:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653328693; x=1684864693;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=See9p7fez/HBRV0YvEYQHd38Yl91KOYmJwyLfKNrjK8=;
-  b=GjwYdJHgteANkGXGRxphMfPuhMSMrokVrdUeD6zifSr8xP/5tKVwe39E
-   1BeAvQUJ2O0cWG8MIXXJHavA/78YMLjyAu7e8+cZ6/mgSpnuEdsDcEPyv
-   8Nl+A2EElqXwgVu/BClfPrRs7ZqquOB3zUirTyKNEbM1qZ06E2bV+npMO
-   pabRbgTYAsUB0LSNY10mprj0d//VNPFvBZ86iTp9I75QiAf6h89550B7t
-   4Oj/2n8vG/QnFDyPBQEN5giEgfDqAp2X2Tkd3gnQmiizB/kU1RA9qI4Gr
-   nvTsU9WmgOIQFfFNtHdu9TM+gwBn4hsOMCcP9jqD9aX60thkaieLl0/X8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="273300244"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="273300244"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:58:06 -0700
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="744857037"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:58:05 -0700
-Date:   Mon, 23 May 2022 11:01:58 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 2/6] iommu: Add a helper to do PASID lookup from
- domain
-Message-ID: <20220523110158.3382b5fd@jacob-builder>
-In-Reply-To: <BN9PR11MB5276622272BCA2ED982EE3C18CD49@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
-        <20220518182120.1136715-3-jacob.jun.pan@linux.intel.com>
-        <BN9PR11MB5276622272BCA2ED982EE3C18CD49@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 23 May 2022 14:27:08 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ADCD4105;
+        Mon, 23 May 2022 11:02:38 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id gi33so21973406ejc.3;
+        Mon, 23 May 2022 11:02:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=X00UxJiG29OHM/sXI3MtHY1xp0KAlUMcsiInYqLUawo=;
+        b=n5V1x8nfknwiuZ01vBCWBJp2SDBg3zi23hvJdOeG1ukUA5q0CI/AGiNS1Aw76smWTR
+         i0m0FQVyyc4hFwDPIg5ElEbnyUp5Ei/cAjCU9hY1/V0ytPv8h4VZexApyqWhBUvX2SCc
+         qjC9pB3PR1dE5B952JAsq13Z5EUHKPBulwhFBbYP4M7Il7td63xkuXPTMHgXxxrDN9Vy
+         4SGaUQxOHHFeiFjA8KdbSMkFpjud0qeHvQEY/6MXBUinCtXkIT3QmWpV3u2Zc2kgo9/0
+         7TxD+0oacgozB26oHS53DHBnk8Y65gXwdJHJo0IaTnN5mBorkhprNt2OFIJrxzZtAL1o
+         Jhxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=X00UxJiG29OHM/sXI3MtHY1xp0KAlUMcsiInYqLUawo=;
+        b=veHGgUDPAexLTuWrrUkEkHx6KRKtPxPec8C7yjUhn+j2PRt+04TrgxEm60U3w/vApz
+         zHYleAeE9HCnnVQmS7bh+F9Cf6NWZwrfAF0FOfb9hUpros9BJ6BqIg39i5+UOiRyzMrK
+         oWYuMn/V7Qt44r4HvFAT4ZJWtuo8YzXlxjyhc/lylYS0axA3YYW/8r8hLvcOpwKRbxpS
+         ZNfMqkpg27sec1FTlcYJhYkcxNTM59Y/CjSePQN3ZOQu64z+uMkrAAXZ4VrhZZQchqjf
+         09QfiUTkg47AomKcSSoHabbZbyQ0ltW6U3Dv4NoMn++pa0Lg/OC50paas0WOjSJOTsZ7
+         nkwA==
+X-Gm-Message-State: AOAM533xe/pBEqkWtqEkulxdI66Y/tJPmRnH/00jlBFtdjctgOmQnR3C
+        4dS2xSyfjqysXKJGcbY9h40UcxitiLRxAA==
+X-Google-Smtp-Source: ABdhPJzGrq2mVI+VKEC0mJ7HKWpkQWD0eyzh6iKDuBcdWU+6lo4lBEBoetokGgCNwOO/7NdTKhgcOg==
+X-Received: by 2002:a2e:b88a:0:b0:253:e7f5:c0e9 with SMTP id r10-20020a2eb88a000000b00253e7f5c0e9mr5076231ljp.38.1653328478170;
+        Mon, 23 May 2022 10:54:38 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id x9-20020a056512078900b0047255d211f9sm2087743lfr.296.2022.05.23.10.54.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 10:54:37 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org, jic23@kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH 4/5] proximity: vl53l0x: Handle the reset GPIO
+Date:   Mon, 23 May 2022 20:53:43 +0300
+Message-Id: <20220523175344.5845-5-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523175344.5845-1-markuss.broks@gmail.com>
+References: <20220523175344.5845-1-markuss.broks@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kevin,
+Handle the GPIO connected to the XSHUT/RST_N pin of VL53L0X.
 
-On Mon, 23 May 2022 09:14:04 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+---
+ drivers/iio/proximity/vl53l0x-i2c.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-> > From: Tian, Kevin
-> > Sent: Monday, May 23, 2022 3:55 PM
-> >   
-> > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > +ioasid_t iommu_get_pasid_from_domain(struct device *dev, struct
-> > > iommu_domain *domain)
-> > > +{
-> > > +	struct iommu_domain *tdomain;
-> > > +	struct iommu_group *group;
-> > > +	unsigned long index;
-> > > +	ioasid_t pasid = INVALID_IOASID;
-> > > +
-> > > +	group = iommu_group_get(dev);
-> > > +	if (!group)
-> > > +		return pasid;
-> > > +
-> > > +	xa_for_each(&group->pasid_array, index, tdomain) {
-> > > +		if (domain == tdomain) {
-> > > +			pasid = index;
-> > > +			break;
-> > > +		}
-> > > +	}  
-> > 
-> > Don't we need to acquire the group lock here?
-> > 
-pasid_array is under RCU read lock so it is protected though may have stale
-data. It also used in atomic context for TLB flush, cannot take the
-group mutex. If the caller does detach_dev_pasid while doing TLB flush, it
-could result in extra flush but harmless.
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+index 8581a873919f..36c48a824725 100644
+--- a/drivers/iio/proximity/vl53l0x-i2c.c
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -15,6 +15,7 @@
+  */
+ 
+ #include <linux/delay.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
+ #include <linux/irq.h>
+ #include <linux/interrupt.h>
+@@ -44,6 +45,7 @@ struct vl53l0x_data {
+ 	struct i2c_client *client;
+ 	struct completion completion;
+ 	struct regulator *vdd_supply;
++	struct gpio_desc *reset_gpio;
+ };
+ 
+ static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
+@@ -197,6 +199,8 @@ static void vl53l0x_power_off(void *_data)
+ {
+ 	struct vl53l0x_data *data = _data;
+ 
++	gpiod_set_value_cansleep(data->reset_gpio, 1);
++
+ 	regulator_disable(data->vdd_supply);
+ }
+ 
+@@ -208,6 +212,8 @@ static int vl53l0x_power_on(struct vl53l0x_data *data)
+ 	if (ret)
+ 		return ret;
+ 
++	gpiod_set_value_cansleep(data->reset_gpio, 0);
++
+ 	usleep_range(3200, 5000);
+ 
+ 	return 0;
+@@ -237,6 +243,11 @@ static int vl53l0x_probe(struct i2c_client *client)
+ 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
+ 				     "Unable to get VDD regulator\n");
+ 
++	data->reset_gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(data->reset_gpio))
++		return dev_err_probe(&client->dev, PTR_ERR(data->reset_gpio),
++				     "Cannot get reset GPIO\n");
++
+ 	error = vl53l0x_power_on(data);
+ 	if (error)
+ 		return dev_err_probe(&client->dev, error,
+-- 
+2.36.1
 
-> > Btw the intention of this function is a bit confusing. Patch01 already
-> > stores the pasid under domain hence it's redundant to get it
-> > indirectly from xarray index. You could simply introduce a flag bit
-> > (e.g. dma_pasid_enabled) in device_domain_info and then directly
-> > use domain->dma_pasid once the flag is true.
-> >   
-> 
-> Just saw your discussion with Jason about v3. While it makes sense
-> to not specialize DMA domain in iommu driver, the use of this function
-> should only be that when the call chain doesn't pass down a pasid
-> value e.g. when doing cache invalidation for domain map/unmap. If
-> the upper interface already carries a pasid e.g. in detach_dev_pasid()
-> iommu driver can simply verify that the corresponding pasid xarray 
-> entry points to the specified domain instead of using this function to
-> loop xarray and then verify the returned pasid (as done in patch03/04).
-Excellent point, I could just use xa_load(pasid) to compare the domain
-instead of loop through xa.
-I will add another helper.
-
-bool iommu_is_pasid_domain_attached(struct device *dev, struct iommu_domain *domain, ioasid_t pasid)
-{
-	struct iommu_group *group;
-	bool ret = false;
-
-	group = iommu_group_get(dev);
-	if (WARN_ON(!group))
-		return false;
-
-	if (domain == xa_load(&group->pasid_array, pasid))
-		ret = true;
-
-	iommu_group_put(group);
-
-	return ret;
-}
-
-Thanks,
-
-Jacob
