@@ -2,62 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8594C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 11:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234719AbiEWLNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 07:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59986 "EHLO
+        id S234722AbiEWLNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 07:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234549AbiEWLM6 (ORCPT
+        with ESMTP id S234601AbiEWLN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 07:12:58 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7D841F94;
-        Mon, 23 May 2022 04:12:57 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id m1so12787155plx.3;
-        Mon, 23 May 2022 04:12:57 -0700 (PDT)
+        Mon, 23 May 2022 07:13:28 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D355D42A1D
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:13:27 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso13412468pjg.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 04:13:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/CO4r6dDcO84oJFTRxSFLeXsxnOUmtVlG/EiTQvijD4=;
-        b=C5g6EhCQs7Zk7Kg5xGiZcIWD51iADIJRb9NPnTh+6QZovpfJ3bu21lFDBUFe6mO2pD
-         iRYK/onK50f87tqpDsGUV9Gj5j6rGXBSgqMZ3JNqpPQMsLtQHDnOVa4yEzNCiY9Nd0V0
-         ZL58Y1gzagnZSK3raehGzwPwCwAp+xktB2qosYa9d84wF9BBTqmN9vy3DqGysyz8ue1Y
-         G2QjzEt0Me1hvJbaECv+RUm44UGjEQN9UcEPgcYFCnzcnajF/IGJoiHK016Vuz3ho2GY
-         HbTi3iaKjdIXfkl1cdHDW/Yq9Ne/0XxDihhWhHvpE2Rhj0lRCbUWULhJ4CYF6xaRRoSy
-         +2aw==
+        bh=6MU4ldY/KKQ7x6HdyLyTzK8+POLvoalMzKBDpRuqN3A=;
+        b=O6isjJisF8zfVoHMH/V6SL7/PB3Dpl6+Q2VFqxdLBL02mOK+Irmi3ZOPSuoWxm2oGu
+         k6vdLLillOLOj0i/rYSECI6W4B8RnqjxN3zyrEMnimOVsy3wHHqxZfEX6YmW/AyGNmCq
+         vhK+tKjAH5k6tC8KAyyXH82J0xOTlLT3fbt0cS6QzEr+Vlx0/NXSjh963sRw2M5t3hX5
+         7JmkzdIDYmLwgEs0SQBxMlQJ2abGbw+4L5Njo/1dm4sZm/vgIn2RLJhENbNvAOeGTjYr
+         C5/0ghQirO4ZMsO808l23MM2oZz3jx7+crb962eBYCaxycnPAY91/9LrbdBqPxC/182+
+         fPCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/CO4r6dDcO84oJFTRxSFLeXsxnOUmtVlG/EiTQvijD4=;
-        b=yWw5qV5EBiAMp/NvFdCC5daPCruYVNFVacaoQfmULNKe+E+FFeF8och0c148l+p88r
-         +kCh0oyUY5xJvH8fKdM9Bu1E5x65Fe+gkgYD9IF6pbsLZc/FsLGpl9dDi/DrGvrvNZe3
-         g8v/dVLsE4Qf4MUrbkugGh/NuPswT0e0oumYpXKxToFTGE5/PvbkCaNiEyupfmmU+/OM
-         kEgKnA8xmPyUQnLrThdGK9KWrrxCtNya9fUgykgK8bvQuyASDoEOaMCSdP9Ydo/JQq63
-         mC2P2WH27y/L9HhtNY2LX3xn2QvekK9XrM4TVAxPAv7hQ6ePPocUpwHkylEPiIEJDb5z
-         z+9g==
-X-Gm-Message-State: AOAM531eV+GJoCG3qL4WAniiDIMOw+1M9C9i7NhfX8DYtQ7YCGcBm1ko
-        4jGn/XbuKT3Jjz3rTywNwPLERl0YshI=
-X-Google-Smtp-Source: ABdhPJxZlkcsCc5sqmmbkynirnFlppBgdu1pXZVrmXMLy5DdhvZSHyLu2yZov1/DSBRmu4LIiMrgfA==
-X-Received: by 2002:a17:90a:4417:b0:1ca:a861:3fbf with SMTP id s23-20020a17090a441700b001caa8613fbfmr26286445pjg.80.1653304377269;
-        Mon, 23 May 2022 04:12:57 -0700 (PDT)
+        bh=6MU4ldY/KKQ7x6HdyLyTzK8+POLvoalMzKBDpRuqN3A=;
+        b=45vPFVV6Jg5U3fWL+/xVATQ57BfxOeNBJGXdGA/7J7n8JvW63h5+FhG5uCrUmN7lCE
+         P2NjGJqMzIqn0BirRmyhVlgxpXOMyWs/3C31xvCJWxpefbqKstqpinpZdBb72un9I3Rm
+         4nd5UphohOXZP6w8uzCAyLGwtjQKGgAO2xGrmw96Oi7XCIsoBtwsTybbWbGSkXIk7CR9
+         VE6qEgvXnwc/+lr43ZMsizLIVenSK2Mm549BFKQwFg4FnG+vO0Pl+3X0A9f0wI2Ar+/r
+         nmFs0AuiuEjQ9IoBZ24F+b0UijtKcHREHpwJ0IzoJqLkQEEz5pzzPrh3tjdmHcAg+3yZ
+         uC0w==
+X-Gm-Message-State: AOAM5329bSdjJgJ30N3hpZHeM3RFtbYGV0udxYEG2FCowPnYlP/c9tm4
+        OTHupnTC/Nzhe9HZTKKmQeX1MpI3wbE=
+X-Google-Smtp-Source: ABdhPJw8BU3yPCHMkeCKE3uBujzra32Cuop6EPOK1TrvuC1BucPXSiVwwRcIpj/Ir5lQAuWlvrHBrg==
+X-Received: by 2002:a17:902:eb86:b0:162:1654:4a08 with SMTP id q6-20020a170902eb8600b0016216544a08mr7475066plg.72.1653304407301;
+        Mon, 23 May 2022 04:13:27 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id n89-20020a17090a5ae200b001df6173700dsm6858310pji.49.2022.05.23.04.12.55
+        by smtp.gmail.com with ESMTPSA id i123-20020a628781000000b0050dc7628150sm6953126pfe.42.2022.05.23.04.13.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 04:12:56 -0700 (PDT)
+        Mon, 23 May 2022 04:13:26 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     dvhart@infradead.org
-Cc:     andy@infradead.org, tglx@linutronix.de,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
+To:     dinguyen@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] x86, olpc: Avoid leak OF node on error
-Date:   Mon, 23 May 2022 11:12:53 +0000
-Message-Id: <20220523111253.3114-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] firmware: Avoid leak OF node on error
+Date:   Mon, 23 May 2022 11:13:23 +0000
+Message-Id: <20220523111323.3183-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,30 +65,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Minghao Chi <chi.minghao@zte.com.cn>
 
-The OF node should be put before returning error in xo1_rtc_init(),
+The OF node should be put before returning error in stratix10_svc_init(),
 otherwise node's refcount will be leaked.
 
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- arch/x86/platform/olpc/olpc-xo1-rtc.c | 2 +-
+ drivers/firmware/stratix10-svc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/platform/olpc/olpc-xo1-rtc.c b/arch/x86/platform/olpc/olpc-xo1-rtc.c
-index 57f210cda761..dc5ac56cd9dd 100644
---- a/arch/x86/platform/olpc/olpc-xo1-rtc.c
-+++ b/arch/x86/platform/olpc/olpc-xo1-rtc.c
-@@ -59,9 +59,9 @@ static int __init xo1_rtc_init(void)
- 	struct device_node *node;
+diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
+index 14663f671323..3facd5dfb617 100644
+--- a/drivers/firmware/stratix10-svc.c
++++ b/drivers/firmware/stratix10-svc.c
+@@ -1109,10 +1109,10 @@ static int __init stratix10_svc_init(void)
+ 		return -ENODEV;
  
- 	node = of_find_compatible_node(NULL, NULL, "olpc,xo1-rtc");
-+	of_node_put(node);
- 	if (!node)
- 		return 0;
--	of_node_put(node);
+ 	np = of_find_matching_node(fw_np, stratix10_svc_drv_match);
++	of_node_put(np);
+ 	if (!np)
+ 		return -ENODEV;
  
- 	pr_info("olpc-xo1-rtc: Initializing OLPC XO-1 RTC\n");
- 	rdmsrl(MSR_RTC_DOMA_OFFSET, rtc_info.rtc_day_alarm);
+-	of_node_put(np);
+ 	ret = of_platform_populate(fw_np, stratix10_svc_drv_match, NULL, NULL);
+ 	if (ret)
+ 		return ret;
 -- 
 2.25.1
 
