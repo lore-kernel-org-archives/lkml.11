@@ -2,112 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63899C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239058AbiEWQnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
+        id S239052AbiEWQnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239044AbiEWQms (ORCPT
+        with ESMTP id S239073AbiEWQnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:42:48 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54DB4E3B2;
-        Mon, 23 May 2022 09:42:43 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 398925FD07;
-        Mon, 23 May 2022 19:42:42 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1653324162;
-        bh=RhiKWh0LFeh4Os0HGNlziOa6mxgE+mjMvOYWM1E4ANg=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=I5L8yM5huA3Qj0aTRL08jTqvuz8sJDYIHcT6HRwCduYxtH+95+h80yNJ89lz+nblj
-         qcIUhMQVTlpvTufP1faA2q5Dwl2uVomwPNrQFFH449a5pcGxDAHsj7uFDVwl7qb8kb
-         QOjUQCS1kVkVW5cuLArkd9X17+hb7go0HFwglzbiAJ6LmZEa0c1Fuds9j/jAA/qriv
-         6u7holUyVUoBcYbmsMVQmNvBfuDWpBMyIHe7ZBhSNjeIaiCcgghmSzM5WJBrET0zTP
-         3ib9YFwMj6sp40yVy/8ddqbJ9Q8LoFh4Zc5fuXRi422Ey6aBa6nYJT7HtvTM19PuHu
-         53G9v5fPXQgnA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 23 May 2022 19:42:42 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "hdegoede@redhat.com" <hdegoede@redhat.com>,
-        "antoniu.miclaus@analog.com" <antoniu.miclaus@analog.com>,
-        "sean@geanix.com" <sean@geanix.com>,
-        "linmq006@gmail.com" <linmq006@gmail.com>,
-        "gwendal@chromium.org" <gwendal@chromium.org>,
-        "yangyingliang@huawei.com" <yangyingliang@huawei.com>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v1 4/5] iio:chemical:ccs811: rearrange iio trigger get and
- register
-Thread-Topic: [PATCH v1 4/5] iio:chemical:ccs811: rearrange iio trigger get
- and register
-Thread-Index: AQHYbsP/79XON26KwUeOeS4tvxocjw==
-Date:   Mon, 23 May 2022 16:41:49 +0000
-Message-ID: <20220523164159.11579-5-ddrokosov@sberdevices.ru>
-References: <20220523164159.11579-1-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220523164159.11579-1-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 23 May 2022 12:43:19 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEAC69739
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:43:18 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id c14so14220131pfn.2
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 09:43:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6oTk/zM3kr5sT5hZHtfbrEZg5Wd/Dydos1apa+GKeoY=;
+        b=QdxOJcF3IWnNjLf1G8T+GpDa69DBUgRlOonCO9LKXCmpCDUGK12eSBoMWHmfPB1itJ
+         SO9BTnoJSux49GWZSK+aV0I4qTYd1S7U/pNm5CyBDxxmmE8yrQD2tRoM9KBCPJXFbflE
+         NZVsUtR6Fkn5DV69G9JvBi/zdjLwvJGQ9yglJbCfiiSANMzIX9HUuagkInt7uIPcjef8
+         8HAu6iE+lLaZV7b38ndzGINx68cke3Vl/e2k2UnmsV5vPELJFfCMwJRI4iCoIS/7Tm19
+         6QRQ0f4PnR1z0LHZJkZqomb4NnAZPi55FK86CpGOzn2mw9KYJMgnf1aqyn7b3wg8rBz5
+         X6qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6oTk/zM3kr5sT5hZHtfbrEZg5Wd/Dydos1apa+GKeoY=;
+        b=0fDmGBcyFdjy29rraLmRfJnnGU7AwuJWVt/XCY9P7cmN1s9zW/XVIpnYX+0IGDfDX0
+         k4wenMGLmqKegEu5ihxa+hujpzXc7aQodO6aTlrRS7EiTqRx5H5UeJ8GrvGpFPcwZx2Q
+         YEhsq5QMMsnU6qpQKGYGvxPL66+eHSbAtjqpjccZKgkQRmLOamQMx3r+Khh0QACI2tC/
+         XnUVuZR57gKjYN3mvxPFaauc5PEgeBCsQPYF/TEL3LPOuKLHKHec6N8S3HhFCmVfCjWJ
+         lCfU4IVnC27A7ysHuZiHg/1zDw5cEjPQ9+xYFNrUfKyET/fVT0jvP0CzQ3yHNKNdqOUq
+         rlHg==
+X-Gm-Message-State: AOAM533ctFnYSSGGas8/mDL1lAM/npdaqfrPQ9QcU1NSP3bqb/4xquEb
+        VG3667rnT3Lk9AJ3X++jbKNroQ==
+X-Google-Smtp-Source: ABdhPJwM1VqkA9PiDFWw+67HoD14fHH37p33rjlGv3CbNWhyEnQMAJ+UQkhvjCHmuamjH2aucWK5Eg==
+X-Received: by 2002:a05:6a00:a0e:b0:4fd:fa6e:95fc with SMTP id p14-20020a056a000a0e00b004fdfa6e95fcmr24601061pfh.17.1653324197174;
+        Mon, 23 May 2022 09:43:17 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id iw17-20020a170903045100b0015e8d4eb2dfsm5321204plb.297.2022.05.23.09.43.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 09:43:16 -0700 (PDT)
+Date:   Mon, 23 May 2022 16:43:13 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Yanfei Xu <yanfei.xu@intel.com>
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        wei.w.wang@intel.com, kan.liang@intel.com, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] KVM: x86: Fix the intel_pt PMI handling wrongly
+ considered from guest
+Message-ID: <You5oYO5flRRFv4n@google.com>
+References: <20220523140821.1345605-1-yanfei.xu@intel.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/23 07:03:00 #19535618
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523140821.1345605-1-yanfei.xu@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-IIO trigger interface function iio_trigger_get() should be called after
-iio_trigger_register() (or its devm analogue) strictly, because of
-iio_trigger_get() acquires module refcnt based on the trigger->owner
-pointer, which is initialized inside iio_trigger_register() to
-THIS_MODULE.
-If this call order is wrong, the next iio_trigger_put() (from sysfs
-callbacks or rmmod) will derefence "default" module refcnt, which is
-completely incorrect.
+On Mon, May 23, 2022, Yanfei Xu wrote:
+> When kernel handles the vm-exit caused by external interrupts and NMI,
+> it always set a type of kvm_intr_type to handling_intr_from_guest to
+> tell if it's dealing an IRQ or NMI. For the PMI scenario, it could be
+> IRQ or NMI.
+> However the intel_pt PMI certainly is a NMI PMI, hence using
 
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
----
- drivers/iio/chemical/ccs811.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+It'd be helpful for future readers to explain why it's guaranteed to an NMI.  E.g.
 
-diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
-index 847194fa1e46..80ef1aa9aae3 100644
---- a/drivers/iio/chemical/ccs811.c
-+++ b/drivers/iio/chemical/ccs811.c
-@@ -499,11 +499,11 @@ static int ccs811_probe(struct i2c_client *client,
-=20
- 		data->drdy_trig->ops =3D &ccs811_trigger_ops;
- 		iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
--		indio_dev->trig =3D data->drdy_trig;
--		iio_trigger_get(indio_dev->trig);
- 		ret =3D iio_trigger_register(data->drdy_trig);
- 		if (ret)
- 			goto err_poweroff;
-+
-+		indio_dev->trig =3D iio_trigger_get(data->drdy_trig);
- 	}
-=20
- 	ret =3D iio_triggered_buffer_setup(indio_dev, NULL,
---=20
-2.36.0
+However, intel_pt PMIs are only generated for HARDWARE perf events, and
+HARDWARE events are always configured to generate NMIs.  Use
+kvm_handling_nmi_from_guest() to precisely identify if the intel_pt PMI
+came from the guest to avoid false positives if an intel_pt PMI/NMI
+arrives while the host is handling an unrelated IRQ VM-Exit.
+
+> kvm_handling_nmi_from_guest() to distinguish if the intel_pt PMI comes
+> from guest is more appropriate. This modification can avoid the host
+> wrongly considered the intel_pt PMI comes from a guest once the host
+> intel_pt PMI breaks the handling of vm-exit of external interrupts.
+> 
+> Fixes: db215756ae59 ("KVM: x86: More precisely identify NMI from guest when handling PMI")
+> Signed-off-by: Yanfei Xu <yanfei.xu@intel.com>
+> ---
+> v1->v2:
+> 1.Fix vmx_handle_intel_pt_intr() directly instead of changing the generic function.
+> 2.Tune the commit message.
+> 
+> v2->v3:
+> Add the NULL pointer check of variable "vcpu".
+> 
+>  arch/x86/kvm/vmx/vmx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 610355b9ccce..982df9c000d3 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -7856,7 +7856,7 @@ static unsigned int vmx_handle_intel_pt_intr(void)
+>  	struct kvm_vcpu *vcpu = kvm_get_running_vcpu();
+>  
+>  	/* '0' on failure so that the !PT case can use a RET0 static call. */
+> -	if (!kvm_arch_pmi_in_guest(vcpu))
+> +	if (!vcpu || !kvm_handling_nmi_from_guest(vcpu))
+
+Alternatively,
+
+	if (!kvm_arch_pmi_in_guest(vcpu) || !kvm_handling_nmi_from_guest(vcpu))
+
+The generated code is the same since the compiler is smart enough to elide the
+handling_intr_from_guest check from kvm_arch_pmi_in_guest.
+
+I'm not actually sure that's better than the !vcpu check though, e.g. it hides the
+not-NULL aspect of the check.
+
+Either way, with a tweaked changelog,
+
+Reviewed-by: Sean Christopherson <seanjc@google.com>
