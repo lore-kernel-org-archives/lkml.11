@@ -2,91 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B08BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbiEWTCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47968 "EHLO
+        id S229844AbiEWTD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238316AbiEWTAP (ORCPT
+        with ESMTP id S236786AbiEWTAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:00:15 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995232AEE
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:43:07 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id gi33so22185701ejc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8rqd+dwf+o28j9cD1SOa4++fQoDxaCVHWSd5lq6Ofpw=;
-        b=NDrlZn2n1LAZsCQDcjGtRbSKEQfx4gC1f0GlNC/UNJfuFHlCVqjpfoArT81uoCTJs4
-         uD6/3GH9fzt4yFyc+/MrDu2na+cSJ4Lk8D1W2ruCxOgWuJWBdCr1f5O/C13iaxn7KbUH
-         whUAxZvwxOnGwZSnZrVD0mBDR2mOEnyMnLPks=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8rqd+dwf+o28j9cD1SOa4++fQoDxaCVHWSd5lq6Ofpw=;
-        b=iJAKlGCH9IK+IcrCjJkrrvDhV6iJvtkln0iADTmGRu7B5nDQrd3rYM8v54ENiNfVwA
-         QC/eni/5s8PQNk1NS4YQK2n3NVEnYzNRfJzwZ7hwrRZe7qHM/byQd5cziwm8W9g0WPS6
-         17aorfT4ffD6/OGL8W1Tqkw8jt8DqcdlQksNqOTJl5Qz1ZwzQvTaDnmrIR04h4pZ7GEg
-         X5P9bk97oLiWvX8KneCve/Sps7jDyAalsKhzOvS3ePjUrmiRQ4WieOUb2EeZZ+b/lk7L
-         zPhDM5Ya/vrNiHfeGdnTZp83QxD19tbUzyvfhp9yF9z9rubBcENS+9hYKQugwPSyl6ya
-         sZrw==
-X-Gm-Message-State: AOAM533tZ4m4GkAQt2heSulkJj6f4X7mzhpCAucfpDdecmjICJScZmPL
-        L381uae2NKAAsFu8YFLH+XzAAHKkAbPYRrT2A04=
-X-Google-Smtp-Source: ABdhPJytwUhcwxzFmXf5yU2L5hKJYQT7TRo+5vfNzIe8bCV7csnB3ccp8aK38brTR2U2d4gXOsOOOA==
-X-Received: by 2002:a17:907:9725:b0:6fe:fce4:e08d with SMTP id jg37-20020a170907972500b006fefce4e08dmr2126444ejc.657.1653331386052;
-        Mon, 23 May 2022 11:43:06 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id c21-20020aa7c995000000b0042aaacd4edasm8598619edt.26.2022.05.23.11.43.04
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 11:43:05 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id p10so3990266wrg.12
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:43:04 -0700 (PDT)
-X-Received: by 2002:a5d:5484:0:b0:20f:bf64:cae1 with SMTP id
- h4-20020a5d5484000000b0020fbf64cae1mr13120993wrv.281.1653331384569; Mon, 23
- May 2022 11:43:04 -0700 (PDT)
+        Mon, 23 May 2022 15:00:11 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7022AA5A9F
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:42:45 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NHj7fH011166;
+        Mon, 23 May 2022 17:56:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=P4XKBce5J3OnxLwUOJjJ3acpK2WPdu09+T/PIMImZc8=;
+ b=TRMtHkvxJqzs0AG4fzuT1APbI3vCz1csGrNuaSoh7/WVZgem4kCX9bqJ7xAeeleOdgCA
+ +mxH4TTV8f1OUnKXfkJ/5llsiH5O1jCEgp2re1uxrIuztcbyrOjgxYz48Z6iUJlVPeoe
+ jomzcSCXMFn4I0xzOvOL66YtkbgDudWMgOf+AgEuQKrFAFRF2KCxYf36KTOGHFZqSZtF
+ pC9zssMdtXt9EBqj8f4YPqPHmpNED0ZWIE25U3aBuXakTSfqQN3Apwl31VibaPlbQQHU
+ 3LcFEzCI48c565tR9tA5LwYfkLwT07qAu09wIndQhrZVrRiZUsSVaVbMvWa4r5nu6gpB 9Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8exn05fs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:06 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NHkAxW012730;
+        Mon, 23 May 2022 17:56:05 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8exn05f2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:05 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NHh58u011631;
+        Mon, 23 May 2022 17:56:03 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3g6qq93jq7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:03 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NHtDLK31195612
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 17:55:13 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DA0055204E;
+        Mon, 23 May 2022 17:56:00 +0000 (GMT)
+Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.16.198])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id D546F5204F;
+        Mon, 23 May 2022 17:55:57 +0000 (GMT)
+From:   Sathvika Vasireddy <sv@linux.ibm.com>
+To:     linuxppc-dev@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        peterz@infradead.org, mbenes@suse.cz, aik@ozlabs.ru,
+        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
+        rostedt@goodmis.org, naveen.n.rao@linux.vnet.ibm.com,
+        sv@linux.ibm.com
+Subject: [RFC PATCH 1/4] objtool: Add --mnop as an option to --mcount
+Date:   Mon, 23 May 2022 23:25:45 +0530
+Message-Id: <20220523175548.922671-2-sv@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220523175548.922671-1-sv@linux.ibm.com>
+References: <20220523175548.922671-1-sv@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220520182428.GA3791250@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220520182428.GA3791250@paulmck-ThinkPad-P17-Gen-1>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 23 May 2022 11:42:48 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgpAHhPVSqBWb4gYT=CRJzKAZ4inmrL_kcpeNWGkcg3pg@mail.gmail.com>
-Message-ID: <CAHk-=wgpAHhPVSqBWb4gYT=CRJzKAZ4inmrL_kcpeNWGkcg3pg@mail.gmail.com>
-Subject: Re: [GIT PULL] nolibc changes for v5.19
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>, Willy Tarreau <w@1wt.eu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: uChw7Y5RZjncb0nPFAS_b_ekcCoyPD56
+X-Proofpoint-GUID: D1WkZO3huPy2hLVgdyTwuzQeSJBk9k_3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-23_07,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ phishscore=0 adultscore=0 mlxlogscore=999 clxscore=1015 lowpriorityscore=0
+ malwarescore=0 bulkscore=0 suspectscore=0 priorityscore=1501 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205230099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 20, 2022 at 11:24 AM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> This pull request adds a number of library functions and splits this
-> library into multiple files.
+Architectures can select HAVE_NOP_MCOUNT if they choose
+to nop out mcount call sites. If that config option is
+selected, then --mnop is passed as an option to objtool,
+along with --mcount.
 
-Well, this is annoying.
+Also, make sure that --mnop can be passed as an option
+to objtool only when --mcount is passed.
 
-You add the rule to test and install this, and "make help" will list
-"nolibc" as a target, but that is not actually true at all.
+Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
+---
+ Makefile                                |  4 +++-
+ arch/x86/Kconfig                        |  1 +
+ scripts/Makefile.build                  |  1 +
+ tools/objtool/builtin-check.c           | 14 ++++++++++++++
+ tools/objtool/check.c                   | 19 ++++++++++---------
+ tools/objtool/include/objtool/builtin.h |  1 +
+ 6 files changed, 30 insertions(+), 10 deletions(-)
 
-So what's the appropriate way to actually test this pull somehow?
+diff --git a/Makefile b/Makefile
+index 250707647359..acaf88e3c694 100644
+--- a/Makefile
++++ b/Makefile
+@@ -851,7 +851,9 @@ ifdef CONFIG_FTRACE_MCOUNT_USE_CC
+   endif
+ endif
+ ifdef CONFIG_FTRACE_MCOUNT_USE_OBJTOOL
+-  CC_FLAGS_USING	+= -DCC_USING_NOP_MCOUNT
++  ifdef CONFIG_HAVE_NOP_MCOUNT
++    CC_FLAGS_USING	+= -DCC_USING_NOP_MCOUNT
++  endif
+ endif
+ ifdef CONFIG_FTRACE_MCOUNT_USE_RECORDMCOUNT
+   ifdef CONFIG_HAVE_C_RECORDMCOUNT
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 1847d6e974a1..4a41bfb644f0 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -189,6 +189,7 @@ config X86
+ 	select HAVE_CONTEXT_TRACKING_OFFSTACK	if HAVE_CONTEXT_TRACKING
+ 	select HAVE_C_RECORDMCOUNT
+ 	select HAVE_OBJTOOL_MCOUNT		if HAVE_OBJTOOL
++	select HAVE_NOP_MCOUNT			if HAVE_OBJTOOL_MCOUNT
+ 	select HAVE_BUILDTIME_MCOUNT_SORT
+ 	select HAVE_DEBUG_KMEMLEAK
+ 	select HAVE_DMA_CONTIGUOUS
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index ac8167227bc0..2e0c3f9c1459 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -231,6 +231,7 @@ objtool_args =								\
+ 	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
+ 	$(if $(CONFIG_X86_KERNEL_IBT), --ibt)				\
+ 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
++	$(if $(CONFIG_HAVE_NOP_MCOUNT), --mnop)				\
+ 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+ 	$(if $(CONFIG_SLS), --sls)					\
+diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
+index f4c3a5091737..b05e2108c0c3 100644
+--- a/tools/objtool/builtin-check.c
++++ b/tools/objtool/builtin-check.c
+@@ -80,6 +80,7 @@ const struct option check_options[] = {
+ 	OPT_BOOLEAN(0, "dry-run", &opts.dryrun, "don't write modifications"),
+ 	OPT_BOOLEAN(0, "link", &opts.link, "object is a linked object"),
+ 	OPT_BOOLEAN(0, "module", &opts.module, "object is part of a kernel module"),
++	OPT_BOOLEAN(0, "mnop", &opts.mnop, "nop out mcount call sites"),
+ 	OPT_BOOLEAN(0, "no-unreachable", &opts.no_unreachable, "skip 'unreachable instruction' warnings"),
+ 	OPT_BOOLEAN(0, "sec-address", &opts.sec_address, "print section addresses in warnings"),
+ 	OPT_BOOLEAN(0, "stats", &opts.stats, "print statistics"),
+@@ -142,6 +143,16 @@ static bool opts_valid(void)
+ 	return false;
+ }
+ 
++static bool mnop_opts_valid(void)
++{
++	if (opts.mnop && !opts.mcount) {
++		ERROR("--mnop requires --mcount");
++		return false;
++	}
++
++	return true;
++}
++
+ static bool link_opts_valid(struct objtool_file *file)
+ {
+ 	if (opts.link)
+@@ -185,6 +196,9 @@ int objtool_run(int argc, const char **argv)
+ 	if (!file)
+ 		return 1;
+ 
++	if (!mnop_opts_valid())
++		return 1;
++
+ 	if (!link_opts_valid(file))
+ 		return 1;
+ 
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 190b2f6e360a..056302d58e23 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1175,17 +1175,18 @@ static void annotate_call_site(struct objtool_file *file,
+ 	if (opts.mcount && sym->fentry) {
+ 		if (sibling)
+ 			WARN_FUNC("Tail call to __fentry__ !?!?", insn->sec, insn->offset);
++		if (opts.mnop) {
++			if (reloc) {
++				reloc->type = R_NONE;
++				elf_write_reloc(file->elf, reloc);
++			}
+ 
+-		if (reloc) {
+-			reloc->type = R_NONE;
+-			elf_write_reloc(file->elf, reloc);
+-		}
+-
+-		elf_write_insn(file->elf, insn->sec,
+-			       insn->offset, insn->len,
+-			       arch_nop_insn(insn->len));
++			elf_write_insn(file->elf, insn->sec,
++				       insn->offset, insn->len,
++				       arch_nop_insn(insn->len));
+ 
+-		insn->type = INSN_NOP;
++			insn->type = INSN_NOP;
++		}
+ 
+ 		list_add_tail(&insn->call_node, &file->mcount_loc_list);
+ 		return;
+diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
+index 280ea18b7f2b..71ed3152a18e 100644
+--- a/tools/objtool/include/objtool/builtin.h
++++ b/tools/objtool/include/objtool/builtin.h
+@@ -29,6 +29,7 @@ struct opts {
+ 	bool backup;
+ 	bool dryrun;
+ 	bool link;
++	bool mnop;
+ 	bool module;
+ 	bool no_unreachable;
+ 	bool sec_address;
+-- 
+2.25.1
 
-I'm guessing it's along the lines of
-
-    make ARCH=x86 nolibc_headers
-
-in the tools directory, but then I got bored and decided I need to
-just continue the merge window.
-
-I've pulled this, but it all makes me go "Hmm, I'd have liked to maybe
-even build test it".
-
-                Linus
