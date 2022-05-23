@@ -2,129 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC80CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238688AbiEWSdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
+        id S237738AbiEWSef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239388AbiEWSdT (ORCPT
+        with ESMTP id S240753AbiEWSeX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:33:19 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4D7F134A;
-        Mon, 23 May 2022 11:07:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653329261; x=1684865261;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xO9+Il1COuI9460Hv2AB+G62aauLLV09YgyaLPckxgE=;
-  b=Vp1hZYYg27RvoLTD3VYUiXcI55o0Qu1X/DQkWtH/TvjDMW/dMHVcoysw
-   jj5QJJpPFXgTAxkGDDsQV0oQFImYmjNFf4/fO0Ev0vZ1U5M9uwduEZdZH
-   Xw+E3fGDqwdh69fojk3mKd/2wTl0t6h3GD1qFkPldyO5u/YGphO62SH6b
-   nwwkyar8wN8rgjx2bzO3Qn5g8eGZAfHZlmN87mEbq1Q4ftob14UFvZv6k
-   uPin5boCUxmYIzxyOUFwafcwvWGuP14gP8KCxCzUQlb+2nwZu5Z0THyKk
-   tV183/VQLqu1rhj0StcOC2EnFax4iBNiv1z0oRxDFDZ/E9yq64v1Pf7yJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="253183301"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="253183301"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 11:00:30 -0700
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="572227817"
-Received: from ijgarcia-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.152.3])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 11:00:29 -0700
-Message-ID: <19189e1c806bf812e41a400e826c5e23892900e0.camel@linux.intel.com>
-Subject: Re: [PATCH] Documentation: admin-guide: pm: Add Out of Band mode
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Jonathan Corbet <corbet@lwn.net>, rafael@kernel.org,
-        hdegoede@redhat.com, markgross@kernel.org
-Cc:     lenb@kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-doc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, prarit@redhat.com
-Date:   Mon, 23 May 2022 11:00:29 -0700
-In-Reply-To: <871qwkb0rn.fsf@meer.lwn.net>
-References: <20220523172757.2351052-1-srinivas.pandruvada@linux.intel.com>
-         <871qwkb0rn.fsf@meer.lwn.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Mon, 23 May 2022 14:34:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0AF76164;
+        Mon, 23 May 2022 11:11:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91C44B8121F;
+        Mon, 23 May 2022 18:09:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D44C385AA;
+        Mon, 23 May 2022 18:09:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653329369;
+        bh=/MwJ0RsTlhSbXBrwd7tYkz8M733d9H6V2XdJlILNf8Q=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Phwmp1vEOPEiL7zk1WAEJ3x7VejVumPfRqtUUbrAdO4pELa3BqOFexcE8mqp4qPoC
+         GzjR+mZGTyWfWt1TBJ+WOX3zzFcmpDIHXO3I/t41gRd1f3+7D15wRtXYk7H+FRP7mJ
+         lDy7jKxHEWamaL2PCEvYXvQ4ieijNd0LGqjq8ajeNb+YfMARbqkqh/qk7/QjAexY9h
+         7onAWBv5igv78yM9WwWR9oywFH5Dkk1N4yqJ/fhdDrsaFKmkzipvz/b5Yb7Wm4mpE8
+         krRukRocSlP4OVuSHdk1XcMWUBXbqWcVj6owMyz7K2G+RZtdens3Qm3VMpMiBeHSMw
+         0xfeFNZWHFSxg==
+Message-ID: <cb6bcf221e28deb8dcaf5c02fba6c2257586363e.camel@kernel.org>
+Subject: Re: [PATCH v5 1/2] fs/dcache: add d_compare() helper support
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>, Xiubo Li <xiubli@redhat.com>
+Cc:     idryomov@gmail.com, viro@zeniv.linux.org.uk, willy@infradead.org,
+        vshankar@redhat.com, ceph-devel@vger.kernel.org, arnd@arndb.de,
+        akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 23 May 2022 14:09:26 -0400
+In-Reply-To: <YovK86vEmOUUoBn6@bombadil.infradead.org>
+References: <20220519101847.87907-1-xiubli@redhat.com>
+         <20220519101847.87907-2-xiubli@redhat.com>
+         <YovK86vEmOUUoBn6@bombadil.infradead.org>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-23 at 11:46 -0600, Jonathan Corbet wrote:
-> Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> writes:
-> 
-> > Update documentation for using the tool to support performance
-> > level
-> > change via OOB (Out of Band) interface.
-> > 
-> > Signed-off-by: Srinivas Pandruvada
-> > <srinivas.pandruvada@linux.intel.com>
+On Mon, 2022-05-23 at 10:57 -0700, Luis Chamberlain wrote:
+> On Thu, May 19, 2022 at 06:18:45PM +0800, Xiubo Li wrote:
+> > Reviewed-by: Jeff Layton <jlayton@kernel.org>
+> > Signed-off-by: Xiubo Li <xiubli@redhat.com>
 > > ---
-> >  .../admin-guide/pm/intel-speed-select.rst     | 19
-> > +++++++++++++++++++
-> >  1 file changed, 19 insertions(+)
-> > 
-> > diff --git a/Documentation/admin-guide/pm/intel-speed-select.rst
-> > b/Documentation/admin-guide/pm/intel-speed-select.rst
-> > index 0a1fbdb54bfe..4146a2da35ea 100644
-> > --- a/Documentation/admin-guide/pm/intel-speed-select.rst
-> > +++ b/Documentation/admin-guide/pm/intel-speed-select.rst
-> > @@ -262,6 +262,25 @@ Which shows that the base frequency now
-> > increased from 2600 MHz at performance
-> >  level 0 to 2800 MHz at performance level 4. As a result, any
-> > workload, which can
-> >  use fewer CPUs, can see a boost of 200 MHz compared to performance
-> > level 0.
-> >  
-> > +Changing performance level via BMC Interface
-> > +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > +
-> > +It is possible to change SST-PP level using out of band (OOB)
-> > agent (Via some
-> > +remote management console, through BMC "Baseboard Management
-> > Controller"
-> > +interface). This mode is supported from the Sapphire Rapids
-> > processor
-> > +generation. The kernel and tool change to support this mode is
-> > added to Linux
-> > +kernel version 5.18. To enable this feature, kernel config
-> > +"CONFIG_INTEL_HFI_THERMAL" is required. The minimum version of the
-> > tool
-> > +is "v1.12" to support this feature, which is part of Linux kernel
-> > version 5.18.
-> > +
-> > +To support such configuration, this tool can be used as a daemon.
-> > Add
-> > +a command line option --oob::
-> > +
-> > +# intel-speed-select --oob
-> > +
-> 
-> This suggests you haven't actually built the documentation with your
-> change and verified that you got the result you were after.
-You mean I should print the result with the command? Something like
-this:
-#intel-speed-select --oob
-Intel(R) Speed Select Technology
-OOB mode is enabled and will run as daemon
+> >  fs/dcache.c            | 15 +++++++++++++++
+> >  include/linux/dcache.h |  2 ++
+> >  2 files changed, 17 insertions(+)
+> >=20
+> > diff --git a/fs/dcache.c b/fs/dcache.c
+> > index 93f4f5ee07bf..95a72f92a94b 100644
+> > --- a/fs/dcache.c
+> > +++ b/fs/dcache.c
+> > @@ -2262,6 +2262,21 @@ static inline bool d_same_name(const struct dent=
+ry *dentry,
+> >  				       name) =3D=3D 0;
+> >  }
+> > =20
+> > +/**
+> > + * d_compare - compare dentry name with case-exact name
+> > + * @parent: parent dentry
+> > + * @dentry: the negative dentry that was passed to the parent's lookup=
+ func
+> > + * @name:   the case-exact name to be associated with the returned den=
+try
+> > + *
+> > + * Return: 0 if names are same, or 1
+> > + */
+> > +bool d_compare(const struct dentry *parent, const struct dentry *dentr=
+y,
+> > +	       const struct qstr *name)
+> > +{
+> > +	return !d_same_name(dentry, parent, name);
+>=20
+> What's wrong with d_same_name()? Why introduce a whole new operation
+> and export it when you the same prototype except first and second
+> argument moved with an even more confusing name?
+>=20
 
+Agreed. That would be better.
 
->   Literal
-> blocks need to be indented.
-I will submit v2.
+> > +}
+> > +EXPORT_SYMBOL(d_compare);
+>=20
+> New symbols should go with EXPORT_SYMBOL_GPL() instead.
+>=20
+>   Luis
 
-Thanks,
-Srinivas
+In the past, Al has pushed back against that since EXPORT_SYMBOL_GPL has
+no clear legal meaning. He may have changed his opinion since, but I
+haven't heard that that was the case.
 
-> 
-> Thanks,
-> 
-> jon
-
+--=20
+Jeff Layton <jlayton@kernel.org>
