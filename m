@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E08C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F357EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:38:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240980AbiEWRfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
+        id S241786AbiEWRgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240885AbiEWR0I (ORCPT
+        with ESMTP id S240876AbiEWR0I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:26:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AD9427FE;
-        Mon, 23 May 2022 10:21:13 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88E9403CD;
+        Mon, 23 May 2022 10:21:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDE1361148;
-        Mon, 23 May 2022 17:18:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB872C34115;
-        Mon, 23 May 2022 17:18:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73019B8121B;
+        Mon, 23 May 2022 17:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7383C385A9;
+        Mon, 23 May 2022 17:21:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326333;
-        bh=+ODeEw79ghkBkx3FKDswIIC8M9eF/4WFc0jru4dQ2fA=;
+        s=korg; t=1653326462;
+        bh=FkQJY2YpFBPSa+N7BK6rVU62t3c0Wequ8vrIz/IzQYQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XoukQIsyFlW+hfDJY+vKGzDEu8IG5SybmiTo53QCxdwVtKQ1VP0xitpyN29d/cRci
-         inLr4wx3c/sUFqmkydKxc+D4m0aLizlmPQ+XcSLIRUq14AXbg3ulO6CBbHWH00XSGx
-         hE6rY/pbc8BXqGeE+nebS2VGiN0oJ49NHUd1+ZAU=
+        b=OeMBfrkjsIc3f4WRKSRUHObh+H8yAYiR67eQQ5Fsjub/47ogtS1lkoVVB0Qq6Vk+p
+         sxVoh8NLnmVhjSfRxH4eJNPFGBRbA2K7a+0aEq6aSUohQ5c3t+Ti5O1pf4c4FckiAM
+         +vvzcBSocxShSQGBXDRo45m/WCCCzcemIDNvJ2Aw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 029/132] ALSA: hda/realtek: Enable headset mic on Lenovo P360
-Date:   Mon, 23 May 2022 19:03:58 +0200
-Message-Id: <20220523165828.351801700@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 089/132] NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
+Date:   Mon, 23 May 2022 19:04:58 +0200
+Message-Id: <20220523165837.905342926@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,33 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 5a8738571747c1e275a40b69a608657603867b7e ]
+[ Upstream commit 23dd4581350d4ffa23d58976ec46408f8f4c1e16 ]
 
-Lenovo P360 is another platform equipped with ALC897, and it needs
-ALC897_FIXUP_HEADSET_MIC_PIN quirk to make its headset mic work.
+There are sleep in atomic context bugs when the request to secure
+element of st-nci is timeout. The root cause is that nci_skb_alloc
+with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
+a timer handler. The call paths that could trigger bugs are shown below:
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20220325160501.705221-1-kai.heng.feng@canonical.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    (interrupt context 1)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_skb_alloc(..., GFP_KERNEL) //may sleep
+
+   (interrupt context 2)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_send_data
+        nci_queue_tx_data_frags
+          nci_skb_alloc(..., GFP_KERNEL) //may sleep
+
+This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
+GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
+flag makes memory allocation operation could be used in atomic context.
+
+Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220517012530.75714-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/nfc/nci/data.c | 2 +-
+ net/nfc/nci/hci.c  | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 30295283512c..b2e98f15a456 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -10946,6 +10946,7 @@ static const struct snd_pci_quirk alc662_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x144d, 0xc051, "Samsung R720", ALC662_FIXUP_IDEAPAD),
- 	SND_PCI_QUIRK(0x14cd, 0x5003, "USI", ALC662_FIXUP_USI_HEADSET_MODE),
- 	SND_PCI_QUIRK(0x17aa, 0x1036, "Lenovo P520", ALC662_FIXUP_LENOVO_MULTI_CODECS),
-+	SND_PCI_QUIRK(0x17aa, 0x1057, "Lenovo P360", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32ca, "Lenovo ThinkCentre M80", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32cb, "Lenovo ThinkCentre M70", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32cf, "Lenovo ThinkCentre M950", ALC897_FIXUP_HEADSET_MIC_PIN),
+diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
+index 6055dc9a82aa..aa5e712adf07 100644
+--- a/net/nfc/nci/data.c
++++ b/net/nfc/nci/data.c
+@@ -118,7 +118,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
+ 
+ 		skb_frag = nci_skb_alloc(ndev,
+ 					 (NCI_DATA_HDR_SIZE + frag_len),
+-					 GFP_KERNEL);
++					 GFP_ATOMIC);
+ 		if (skb_frag == NULL) {
+ 			rc = -ENOMEM;
+ 			goto free_exit;
+diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
+index e199912ee1e5..85b808fdcbc3 100644
+--- a/net/nfc/nci/hci.c
++++ b/net/nfc/nci/hci.c
+@@ -153,7 +153,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ 
+ 	i = 0;
+ 	skb = nci_skb_alloc(ndev, conn_info->max_pkt_payload_len +
+-			    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++			    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 
+@@ -184,7 +184,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ 		if (i < data_len) {
+ 			skb = nci_skb_alloc(ndev,
+ 					    conn_info->max_pkt_payload_len +
+-					    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++					    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 			if (!skb)
+ 				return -ENOMEM;
+ 
 -- 
 2.35.1
 
