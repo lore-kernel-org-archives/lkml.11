@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E21C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:17:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16389C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239756AbiEWROs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37706 "EHLO
+        id S240168AbiEWRQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240532AbiEWRMb (ORCPT
+        with ESMTP id S240362AbiEWRMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:12:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A00B62CE5;
-        Mon, 23 May 2022 10:11:42 -0700 (PDT)
+        Mon, 23 May 2022 13:12:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E37E544FF;
+        Mon, 23 May 2022 10:11:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A636149F;
-        Mon, 23 May 2022 17:11:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60CFEC385A9;
-        Mon, 23 May 2022 17:11:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CDE2B81204;
+        Mon, 23 May 2022 17:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA5FC34115;
+        Mon, 23 May 2022 17:10:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325863;
-        bh=us182Po8y/92L2m2KNkWy/1esHIVSixRF1EcaXFXeLU=;
+        s=korg; t=1653325851;
+        bh=3JB9XIL37OhorsMUQmzWIBBwBG8Ddrx5tXX9TSd4194=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GHHHkUPKtYKTgs9cG/wGqqaKHUBf9oCWrgoBe6mSoDv0YtnZe6IJ7ipQWBbPwFZLc
-         LXy8gEfTYV+ct+ICUT1cWAu9dv8Zm/IYjRCBM2sZM56i5iqKOl6tTkV9fjtFIseaVF
-         fYdX21JLcAnQvRrS7kVTBKAoJKmFAIqMs22wIQJE=
+        b=Lzl9OH3dXOWTcnU5jkjoDFlNt2ACq/8/58LHqZ48xf1lzBiigfoZs9XmLGhngEbOo
+         nHOkSFAK4DW8oqT3E/gkymyAU9wnE6JCpcDkrInUk807MDL2b7/LCNIVq7GISbh0/z
+         KAIC9zJmprp6RBp8yeHlM2SDM2IGQFaf9BLiXl6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Norbert Slusarek <nslusarek@gmx.net>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 12/44] perf: Fix sys_perf_event_open() race against self
-Date:   Mon, 23 May 2022 19:04:56 +0200
-Message-Id: <20220523165755.544731604@linuxfoundation.org>
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 30/44] ARM: 9196/1: spectre-bhb: enable for Cortex-A15
+Date:   Mon, 23 May 2022 19:05:14 +0200
+Message-Id: <20220523165758.659307891@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -49,71 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-commit 3ac6487e584a1eb54071dbe1212e05b884136704 upstream.
+[ Upstream commit 0dc14aa94ccd8ba35eb17a0f9b123d1566efd39e ]
 
-Norbert reported that it's possible to race sys_perf_event_open() such
-that the looser ends up in another context from the group leader,
-triggering many WARNs.
+The Spectre-BHB mitigations were inadvertently left disabled for
+Cortex-A15, due to the fact that cpu_v7_bugs_init() is not called in
+that case. So fix that.
 
-The move_group case checks for races against itself, but the
-!move_group case doesn't, seemingly relying on the previous
-group_leader->ctx == ctx check. However, that check is racy due to not
-holding any locks at that time.
-
-Therefore, re-check the result after acquiring locks and bailing
-if they no longer match.
-
-Additionally, clarify the not_move_group case from the
-move_group-vs-move_group race.
-
-Fixes: f63a8daa5812 ("perf: Fix event->ctx locking")
-Reported-by: Norbert Slusarek <nslusarek@gmx.net>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/events/core.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ arch/arm/mm/proc-v7-bugs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -10758,6 +10758,9 @@ SYSCALL_DEFINE5(perf_event_open,
- 		 * Do not allow to attach to a group in a different task
- 		 * or CPU context. If we're moving SW events, we'll fix
- 		 * this up later, so allow that.
-+		 *
-+		 * Racy, not holding group_leader->ctx->mutex, see comment with
-+		 * perf_event_ctx_lock().
- 		 */
- 		if (!move_group && group_leader->ctx != ctx)
- 			goto err_context;
-@@ -10807,6 +10810,7 @@ SYSCALL_DEFINE5(perf_event_open,
- 			} else {
- 				perf_event_ctx_unlock(group_leader, gctx);
- 				move_group = 0;
-+				goto not_move_group;
- 			}
- 		}
+diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
+index 8394307272d6..0381e1495486 100644
+--- a/arch/arm/mm/proc-v7-bugs.c
++++ b/arch/arm/mm/proc-v7-bugs.c
+@@ -302,6 +302,7 @@ void cpu_v7_ca15_ibe(void)
+ {
+ 	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(0)))
+ 		cpu_v7_spectre_v2_init();
++	cpu_v7_spectre_bhb_init();
+ }
  
-@@ -10823,7 +10827,17 @@ SYSCALL_DEFINE5(perf_event_open,
- 		}
- 	} else {
- 		mutex_lock(&ctx->mutex);
-+
-+		/*
-+		 * Now that we hold ctx->lock, (re)validate group_leader->ctx == ctx,
-+		 * see the group_leader && !move_group test earlier.
-+		 */
-+		if (group_leader && group_leader->ctx != ctx) {
-+			err = -EINVAL;
-+			goto err_locked;
-+		}
- 	}
-+not_move_group:
- 
- 	if (ctx->task == TASK_TOMBSTONE) {
- 		err = -ESRCH;
+ void cpu_v7_bugs_init(void)
+-- 
+2.35.1
+
 
 
