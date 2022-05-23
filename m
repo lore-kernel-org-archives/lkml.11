@@ -2,123 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70376C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F601C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352099AbiEWBvJ (ORCPT
+        id S1352106AbiEWBxH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 21:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
+        Sun, 22 May 2022 21:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352046AbiEWBuy (ORCPT
+        with ESMTP id S233570AbiEWBxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 21:50:54 -0400
+        Sun, 22 May 2022 21:53:03 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24BD1D338;
-        Sun, 22 May 2022 18:50:53 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L60dH6mdkzjWyJ;
-        Mon, 23 May 2022 09:49:55 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 09:50:24 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 09:50:24 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <elver@google.com>, <catalin.marinas@arm.com>, <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mark.rutland@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>
-CC:     <linux-doc@vger.kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v3 1/2] asm-generic: Add memory barrier dma_mb()
-Date:   Mon, 23 May 2022 10:00:50 +0800
-Message-ID: <20220523020051.141460-2-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220523020051.141460-1-wangkefeng.wang@huawei.com>
-References: <20220523020051.141460-1-wangkefeng.wang@huawei.com>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AD62F3A8
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:53:02 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L60dQ1VpczQk9Y;
+        Mon, 23 May 2022 09:50:02 +0800 (CST)
+Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
+ 2022 09:53:00 +0800
+From:   Liao Chang <liaochang1@huawei.com>
+To:     <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <mhiramat@kernel.org>,
+        <rostedt@goodmis.org>, <peterz@infradead.org>,
+        <jszhang@kernel.org>, <liaochang1@huawei.com>,
+        <naveen.n.rao@linux.vnet.ibm.com>
+CC:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] riscv/kprobe: reclaim insn_slot on kprobe unregistration
+Date:   Mon, 23 May 2022 09:51:24 +0800
+Message-ID: <20220523015124.98743-1-liaochang1@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.53]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The memory barrier dma_mb() is introduced by commit a76a37777f2c
-("iommu/arm-smmu-v3: Ensure queue is read after updating prod pointer"),
-which is used to ensure that prior (both reads and writes) accesses
-to memory by a CPU are ordered w.r.t. a subsequent MMIO write, this
-is only defined on arm64, but it is a generic memory barrier, let's
-add dma_mb() into documentation and include/asm-generic/barrier.h.
+On kprobe registration kernel allocate one insn_slot for new kprobe,
+but it forget to reclaim the insn_slot on unregistration, leading to a
+potential leakage.
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+This bug reported by Chen Guokai <chenguokai17@mails.ucas.ac.cn>.
+
+Signed-off-by: Liao Chang <liaochang1@huawei.com>
 ---
- Documentation/memory-barriers.txt | 11 ++++++-----
- include/asm-generic/barrier.h     |  8 ++++++++
- 2 files changed, 14 insertions(+), 5 deletions(-)
+ arch/riscv/kernel/probes/kprobes.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/memory-barriers.txt b/Documentation/memory-barriers.txt
-index b12df9137e1c..07a8b8e1b12a 100644
---- a/Documentation/memory-barriers.txt
-+++ b/Documentation/memory-barriers.txt
-@@ -1894,6 +1894,7 @@ There are some more advanced barrier functions:
+diff --git a/arch/riscv/kernel/probes/kprobes.c b/arch/riscv/kernel/probes/kprobes.c
+index e6e950b7cf32..f12eb1fbb52c 100644
+--- a/arch/riscv/kernel/probes/kprobes.c
++++ b/arch/riscv/kernel/probes/kprobes.c
+@@ -110,6 +110,10 @@ void __kprobes arch_disarm_kprobe(struct kprobe *p)
  
-  (*) dma_wmb();
-  (*) dma_rmb();
-+ (*) dma_mb();
+ void __kprobes arch_remove_kprobe(struct kprobe *p)
+ {
++	if (p->ainsn.api.insn) {
++		free_insn_slot(p->ainsn.api.insn, 0);
++		p->ainsn.api.insn = NULL;
++	}
+ }
  
-      These are for use with consistent memory to guarantee the ordering
-      of writes or reads of shared memory accessible to both the CPU and a
-@@ -1925,11 +1926,11 @@ There are some more advanced barrier functions:
-      The dma_rmb() allows us guarantee the device has released ownership
-      before we read the data from the descriptor, and the dma_wmb() allows
-      us to guarantee the data is written to the descriptor before the device
--     can see it now has ownership.  Note that, when using writel(), a prior
--     wmb() is not needed to guarantee that the cache coherent memory writes
--     have completed before writing to the MMIO region.  The cheaper
--     writel_relaxed() does not provide this guarantee and must not be used
--     here.
-+     can see it now has ownership. The dma_mb() implies both a dma_rmb() and
-+     a dma_wmb().  Note that, when using writel(), a prior wmb() is not needed
-+     to guarantee that the cache coherent memory writes have completed before
-+     writing to the MMIO region. The cheaper writel_relaxed() does not provide
-+     this guarantee and must not be used here.
- 
-      See the subsection "Kernel I/O barrier effects" for more information on
-      relaxed I/O accessors and the Documentation/core-api/dma-api.rst file for
-diff --git a/include/asm-generic/barrier.h b/include/asm-generic/barrier.h
-index fd7e8fbaeef1..961f4d88f9ef 100644
---- a/include/asm-generic/barrier.h
-+++ b/include/asm-generic/barrier.h
-@@ -38,6 +38,10 @@
- #define wmb()	do { kcsan_wmb(); __wmb(); } while (0)
- #endif
- 
-+#ifdef __dma_mb
-+#define dma_mb()	do { kcsan_mb(); __dma_mb(); } while (0)
-+#endif
-+
- #ifdef __dma_rmb
- #define dma_rmb()	do { kcsan_rmb(); __dma_rmb(); } while (0)
- #endif
-@@ -65,6 +69,10 @@
- #define wmb()	mb()
- #endif
- 
-+#ifndef dma_mb
-+#define dma_mb()	mb()
-+#endif
-+
- #ifndef dma_rmb
- #define dma_rmb()	rmb()
- #endif
+ static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
 -- 
-2.35.3
+2.17.1
 
