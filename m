@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9C9C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 312ECC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243776AbiEWSCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
+        id S243972AbiEWSCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:02:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240692AbiEWRdt (ORCPT
+        with ESMTP id S241636AbiEWRdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:33:49 -0400
+        Mon, 23 May 2022 13:33:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4139A7CB36;
-        Mon, 23 May 2022 10:27:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B668D7CB45;
+        Mon, 23 May 2022 10:27:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2F3860916;
-        Mon, 23 May 2022 17:27:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA127C34115;
-        Mon, 23 May 2022 17:27:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 230A960C42;
+        Mon, 23 May 2022 17:27:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C80C385A9;
+        Mon, 23 May 2022 17:27:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326873;
-        bh=Kb3EsYIGclp3SjLyiWotONiDJkvSpTjwoijaEjgWOrc=;
+        s=korg; t=1653326876;
+        bh=v4X3XFtOTn07sCrVecFkbC+2a2JcsoUia1LKm6l68E0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nGBXGB6pHFg0KSkFlZnqQCAcxHnMZmPTKGABd8JMJzlbVHGBWKq2im1X04S/dNgmj
-         3JIqT7AjREAF8HjAmC7NE3KsDhSQmEsuQyVKBIcU8lZVgH9qdtqE6zVI7elH5D9The
-         5p/eJqHY7GTfLccVRJOiXU4Th3623bZFEspD+9VE=
+        b=kM5Y1zO4oqQ5VOUPq1om5HQFa5atNNUMqod9hA2TKUO8FmZuTcLVmOiGlghcTi30g
+         HZqyju165TKDfA0dsrAk7qmYLGj0nKOlkotHSy/hL5VNaDouTa27G3sZrMTjeRAHnZ
+         lpJzeXRraMHCrpBaj2QmkVMhEuyNmheA7bidiDM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 085/158] netfilter: flowtable: fix excessive hw offload attempts after failure
-Date:   Mon, 23 May 2022 19:04:02 +0200
-Message-Id: <20220523165845.201616537@linuxfoundation.org>
+Subject: [PATCH 5.17 086/158] netfilter: nft_flow_offload: skip dst neigh lookup for ppp devices
+Date:   Mon, 23 May 2022 19:04:03 +0200
+Message-Id: <20220523165845.375227086@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,37 +51,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 396ef64113a8ba01c46315d67a99db8dde3eef51 ]
+[ Upstream commit 45ca3e61999e9a30ca2b7cfbf9da8a9f8d13be31 ]
 
-If a flow cannot be offloaded, the code currently repeatedly tries again as
-quickly as possible, which can significantly increase system load.
-Fix this by limiting flow timeout update and hardware offload retry to once
-per second.
+The dst entry does not contain a valid hardware address, so skip the lookup
+in order to avoid running into errors here.
+The proper hardware address is filled in from nft_dev_path_info
 
-Fixes: c07531c01d82 ("netfilter: flowtable: Remove redundant hw refresh bit")
+Fixes: 72efd585f714 ("netfilter: flowtable: add pppoe support")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_flow_table_core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/netfilter/nft_flow_offload.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index b90eca7a2f22..52e7f94d2450 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -329,8 +329,10 @@ void flow_offload_refresh(struct nf_flowtable *flow_table,
- 	u32 timeout;
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index 0af34ad41479..dd824193c920 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -36,6 +36,15 @@ static void nft_default_forward_path(struct nf_flow_route *route,
+ 	route->tuple[dir].xmit_type	= nft_xmit_type(dst_cache);
+ }
  
- 	timeout = nf_flowtable_time_stamp + flow_offload_get_timeout(flow);
--	if (READ_ONCE(flow->timeout) != timeout)
-+	if (timeout - READ_ONCE(flow->timeout) > HZ)
- 		WRITE_ONCE(flow->timeout, timeout);
-+	else
-+		return;
++static bool nft_is_valid_ether_device(const struct net_device *dev)
++{
++	if (!dev || (dev->flags & IFF_LOOPBACK) || dev->type != ARPHRD_ETHER ||
++	    dev->addr_len != ETH_ALEN || !is_valid_ether_addr(dev->dev_addr))
++		return false;
++
++	return true;
++}
++
+ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
+ 				     const struct dst_entry *dst_cache,
+ 				     const struct nf_conn *ct,
+@@ -47,6 +56,9 @@ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
+ 	struct neighbour *n;
+ 	u8 nud_state;
  
- 	if (likely(!nf_flowtable_hw_offload(flow_table)))
- 		return;
++	if (!nft_is_valid_ether_device(dev))
++		goto out;
++
+ 	n = dst_neigh_lookup(dst_cache, daddr);
+ 	if (!n)
+ 		return -1;
+@@ -60,6 +72,7 @@ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
+ 	if (!(nud_state & NUD_VALID))
+ 		return -1;
+ 
++out:
+ 	return dev_fill_forward_path(dev, ha, stack);
+ }
+ 
+@@ -78,15 +91,6 @@ struct nft_forward_info {
+ 	enum flow_offload_xmit_type xmit_type;
+ };
+ 
+-static bool nft_is_valid_ether_device(const struct net_device *dev)
+-{
+-	if (!dev || (dev->flags & IFF_LOOPBACK) || dev->type != ARPHRD_ETHER ||
+-	    dev->addr_len != ETH_ALEN || !is_valid_ether_addr(dev->dev_addr))
+-		return false;
+-
+-	return true;
+-}
+-
+ static void nft_dev_path_info(const struct net_device_path_stack *stack,
+ 			      struct nft_forward_info *info,
+ 			      unsigned char *ha, struct nf_flowtable *flowtable)
 -- 
 2.35.1
 
