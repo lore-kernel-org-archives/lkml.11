@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22AFFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240738AbiEWRZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
+        id S240826AbiEWR0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240573AbiEWRQa (ORCPT
+        with ESMTP id S240579AbiEWRQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:16:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C716E72E04;
-        Mon, 23 May 2022 10:15:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E14B719D5;
+        Mon, 23 May 2022 10:15:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10D88B81218;
-        Mon, 23 May 2022 17:15:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF8BC34115;
-        Mon, 23 May 2022 17:15:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70421B81219;
+        Mon, 23 May 2022 17:15:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8BE2C385AA;
+        Mon, 23 May 2022 17:15:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326114;
-        bh=rmjlrZ3jRBAG1u+k/uE6IQjsP8+3rNHHrRvB1TBMCIc=;
+        s=korg; t=1653326111;
+        bh=T4OxzCgaUBm2DqSHVnJ48Imayt8DaPfRZpxmkuNlJUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=si6/M4Cc2v4sWOlD404PIxGGnXIJGvj2bZKPxHBtZOtEYq2Ver8r8yULRDwXm+DAd
-         22GCuHtTTJPy0flfVCpGFmnrz6+wC36cociIH0BNb08uo2HefoLsG9ZzjhpDmgTkQB
-         2Vhmikn0oive4ilxBq1bGsjNru8gFAsIyUl63veQ=
+        b=2Ml9HN0xf59Xlob9KLBLjTkPVP6QXGphZ44KZ4SYU6exww4+Qr4gWP/3G7NbJwDZP
+         gkM0PTd7lnoCLGx/j92SJCdi2NbToKwIuiD3AB/qTQwpRMQ8q0KYpHxtU2gf+iAXlI
+         ufVt8qM1tSNpujuJx9UdiuyRTzytk7/Y1Q9s7WBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 15/97] rtc: sun6i: Fix time overflow handling
-Date:   Mon, 23 May 2022 19:05:19 +0200
-Message-Id: <20220523165814.759854261@linuxfoundation.org>
+Subject: [PATCH 5.4 56/68] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+Date:   Mon, 23 May 2022 19:05:23 +0200
+Message-Id: <20220523165811.740514836@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,78 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 9f6cd82eca7e91a0d0311242a87c6aa3c2737968 ]
+[ Upstream commit 51ca86b4c9c7c75f5630fa0dbe5f8f0bd98e3c3e ]
 
-Using "unsigned long" for UNIX timestamps is never a good idea, and
-comparing the value of such a variable against U32_MAX does not do
-anything useful on 32-bit systems.
+Fix the missing pci_disable_device() before return
+from tulip_init_one() in the error handling case.
 
-Use the proper time64_t type when dealing with timestamps, and avoid
-cutting down the time range unnecessarily. This also fixes the flawed
-check for the alarm time being too far into the future.
-
-The check for this condition is actually somewhat theoretical, as the
-RTC counts till 2033 only anyways, and 2^32 seconds from now is not
-before the year 2157 - at which point I hope nobody will be using this
-hardware anymore.
-
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220211122643.1343315-4-andre.przywara@arm.com
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220506094250.3630615-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-sun6i.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
-index f2818cdd11d8..52b36b7c6129 100644
---- a/drivers/rtc/rtc-sun6i.c
-+++ b/drivers/rtc/rtc-sun6i.c
-@@ -138,7 +138,7 @@ struct sun6i_rtc_dev {
- 	const struct sun6i_rtc_clk_data *data;
- 	void __iomem *base;
- 	int irq;
--	unsigned long alarm;
-+	time64_t alarm;
+diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
+index 3e3e08698876..fea4223ad6f1 100644
+--- a/drivers/net/ethernet/dec/tulip/tulip_core.c
++++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
+@@ -1410,8 +1410,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	struct clk_hw hw;
- 	struct clk_hw *int_osc;
-@@ -510,10 +510,8 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
- 	struct sun6i_rtc_dev *chip = dev_get_drvdata(dev);
- 	struct rtc_time *alrm_tm = &wkalrm->time;
- 	struct rtc_time tm_now;
--	unsigned long time_now = 0;
--	unsigned long time_set = 0;
--	unsigned long time_gap = 0;
--	int ret = 0;
-+	time64_t time_now, time_set;
-+	int ret;
+ 	/* alloc_etherdev ensures aligned and zeroed private structures */
+ 	dev = alloc_etherdev (sizeof (*tp));
+-	if (!dev)
++	if (!dev) {
++		pci_disable_device(pdev);
+ 		return -ENOMEM;
++	}
  
- 	ret = sun6i_rtc_gettime(dev, &tm_now);
- 	if (ret < 0) {
-@@ -528,9 +526,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
- 		return -EINVAL;
- 	}
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
+@@ -1788,6 +1790,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  
--	time_gap = time_set - time_now;
--
--	if (time_gap > U32_MAX) {
-+	if ((time_set - time_now) > U32_MAX) {
- 		dev_err(dev, "Date too far in the future\n");
- 		return -EINVAL;
- 	}
-@@ -539,7 +535,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
- 	writel(0, chip->base + SUN6I_ALRM_COUNTER);
- 	usleep_range(100, 300);
+ err_out_free_netdev:
+ 	free_netdev (dev);
++	pci_disable_device(pdev);
+ 	return -ENODEV;
+ }
  
--	writel(time_gap, chip->base + SUN6I_ALRM_COUNTER);
-+	writel(time_set - time_now, chip->base + SUN6I_ALRM_COUNTER);
- 	chip->alarm = time_set;
- 
- 	sun6i_rtc_setaie(wkalrm->enabled, chip);
 -- 
 2.35.1
 
