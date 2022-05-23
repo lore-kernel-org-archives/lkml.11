@@ -2,192 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30673C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239131AbiEWRD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
+        id S239188AbiEWREH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239168AbiEWRDw (ORCPT
+        with ESMTP id S239129AbiEWRD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:03:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEEA263E;
-        Mon, 23 May 2022 10:03:51 -0700 (PDT)
+        Mon, 23 May 2022 13:03:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC355253F;
+        Mon, 23 May 2022 10:03:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F980614B8;
-        Mon, 23 May 2022 17:03:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722FBC34115;
-        Mon, 23 May 2022 17:03:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A72FB811E9;
+        Mon, 23 May 2022 17:03:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555E5C385AA;
+        Mon, 23 May 2022 17:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325430;
-        bh=W9fV845Xuh0fV3wyeqNdVqfyEyLMzse9SP3BHb8CBt0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=xuJf77JiSLfcVLvv1qXVwO1xxkZeRiZusPjO2TT6/pRV1C7yHxRa/JwdrWUEcirqz
-         qAqez6WPp2n+3BXsKfCHnNViFhTdzqoUe29v0QvGPE3lf2HKI/cPasbzjIgRz0B+q9
-         mN0cr2nkhKvC8rnJQR3Sd56QPuItZ60wJeHZBcdU=
+        s=korg; t=1653325434;
+        bh=xhmdDEoKotcUO/7eHbPi3dL9BFugG1l1EDjl/avpqzE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lQshdhbMzS+bzOeKolBu1yo1ol0px+ResS9cwCQ6aV8+KIwUFIDyf79TqpQOhhSdv
+         /p9bJsQeP3+JB/UkA8RRgpq1vgIXPhHvtgaxeSMR/GZAOp5eRVsqLJGQMCY7s0jLm5
+         ufvdWsbax5/c5tjn9OY2qWVyLkZGIFxJiLdNHP24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 00/25] 4.9.316-rc1 review
-Date:   Mon, 23 May 2022 19:03:18 +0200
-Message-Id: <20220523165743.398280407@linuxfoundation.org>
+        stable@vger.kernel.org, David Gow <davidgow@google.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 02/25] um: Cleanup syscall_handler_t definition/cast, fix warning
+Date:   Mon, 23 May 2022 19:03:20 +0200
+Message-Id: <20220523165745.101254298@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
+References: <20220523165743.398280407@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.316-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.316-rc1
-X-KernelTest-Deadline: 2022-05-25T16:57+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.316 release.
-There are 25 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: David Gow <davidgow@google.com>
 
-Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
-Anything received after that time might be too late.
+[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.316-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
+but always cast to 'long (*)(long, long, long, long, long, long)' before
+use. This now triggers a warning (see below).
 
-thanks,
+Define syscall_handler_t as the latter instead, and remove the cast.
+This simplifies the code, and fixes the warning.
 
-greg k-h
+Warning:
+In file included from ../arch/um/include/asm/processor-generic.h:13
+                 from ../arch/x86/um/asm/processor.h:41
+                 from ../include/linux/rcupdate.h:30
+                 from ../include/linux/rculist.h:11
+                 from ../include/linux/pid.h:5
+                 from ../include/linux/sched.h:14
+                 from ../include/linux/ptrace.h:6
+                 from ../arch/um/kernel/skas/syscall.c:7:
+../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
+../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
+-Wcast-function-type]
+   18 |         (((long (*)(long, long, long, long, long, long)) \
+      |           ^
+../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
+   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
+      |                                                              ^~~
+../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
+   46 |                                 EXECUTE_SYSCALL(syscall, regs));
+      |                                 ^~~~~~~~~~~~~~~
 
--------------
-Pseudo-Shortlog of commits:
+Signed-off-by: David Gow <davidgow@google.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.316-rc1
+diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
+index 8a7d5e1da98e..1e6875b4ffd8 100644
+--- a/arch/x86/um/shared/sysdep/syscalls_64.h
++++ b/arch/x86/um/shared/sysdep/syscalls_64.h
+@@ -10,13 +10,12 @@
+ #include <linux/msg.h>
+ #include <linux/shm.h>
+ 
+-typedef long syscall_handler_t(void);
++typedef long syscall_handler_t(long, long, long, long, long, long);
+ 
+ extern syscall_handler_t *sys_call_table[];
+ 
+ #define EXECUTE_SYSCALL(syscall, regs) \
+-	(((long (*)(long, long, long, long, long, long)) \
+-	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
++	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
+ 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
+ 				      UPT_SYSCALL_ARG3(&regs->regs), \
+ 				      UPT_SYSCALL_ARG4(&regs->regs), \
+-- 
+2.35.1
 
-Yang Yingliang <yangyingliang@huawei.com>
-    net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
-
-Yang Yingliang <yangyingliang@huawei.com>
-    ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
-
-Felix Fietkau <nbd@nbd.name>
-    mac80211: fix rx reordering with non explicit / psmp ack policy
-
-Gleb Chesnokov <Chesnokov.G@raidix.com>
-    scsi: qla2xxx: Fix missed DMA unmap for aborted commands
-
-Thomas Richter <tmricht@linux.ibm.com>
-    perf bench numa: Address compiler error on s390
-
-Kevin Mitchell <kevmitch@arista.com>
-    igb: skip phy status check where unavailable
-
-Ard Biesheuvel <ardb@kernel.org>
-    ARM: 9197/1: spectre-bhb: fix loop8 sequence for Thumb2
-
-Ard Biesheuvel <ardb@kernel.org>
-    ARM: 9196/1: spectre-bhb: enable for Cortex-A15
-
-Jiasheng Jiang <jiasheng@iscas.ac.cn>
-    net: af_key: add check for pfkey_broadcast in function pfkey_process
-
-Duoming Zhou <duoming@zju.edu.cn>
-    NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
-
-Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-    net/qla3xxx: Fix a test in ql_reset_work()
-
-Zixuan Fu <r33s3n6@gmail.com>
-    net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-
-Zixuan Fu <r33s3n6@gmail.com>
-    net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
-
-Hangyu Hua <hbh25y@gmail.com>
-    drm/dp/mst: fix a possible memory leak in fetch_monitor_name()
-
-Peter Zijlstra <peterz@infradead.org>
-    perf: Fix sys_perf_event_open() race against self
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: wavefront: Proper check of get_user() error
-
-Ulf Hansson <ulf.hansson@linaro.org>
-    mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
-
-Ulf Hansson <ulf.hansson@linaro.org>
-    mmc: block: Use generic_cmd6_time when modifying INAND_CMD38_ARG_EXT_CSD
-
-Ulf Hansson <ulf.hansson@linaro.org>
-    mmc: core: Specify timeouts for BKOPS and CACHE_FLUSH for eMMC
-
-linyujun <linyujun809@huawei.com>
-    ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
-
-Jakob Koschel <jakobkoschel@gmail.com>
-    drbd: remove usage of list iterator variable after loop
-
-Xiaoke Wang <xkernel.wang@foxmail.com>
-    MIPS: lantiq: check the return value of kzalloc()
-
-Jeff LaBundy <jeff@labundy.com>
-    Input: add bounds checking to input_set_capability()
-
-David Gow <davidgow@google.com>
-    um: Cleanup syscall_handler_t definition/cast, fix warning
-
-Willy Tarreau <w@1wt.eu>
-    floppy: use a statically allocated error counter
-
-
--------------
-
-Diffstat:
-
- Makefile                                         |  4 +--
- arch/arm/kernel/entry-armv.S                     |  2 +-
- arch/arm/kernel/stacktrace.c                     | 10 +++---
- arch/arm/mm/proc-v7-bugs.c                       |  1 +
- arch/mips/lantiq/falcon/sysctrl.c                |  2 ++
- arch/mips/lantiq/xway/gptu.c                     |  2 ++
- arch/mips/lantiq/xway/sysctrl.c                  | 46 +++++++++++++++---------
- arch/x86/um/shared/sysdep/syscalls_64.h          |  5 ++-
- drivers/block/drbd/drbd_main.c                   |  7 ++--
- drivers/block/floppy.c                           | 19 +++++-----
- drivers/gpu/drm/drm_dp_mst_topology.c            |  1 +
- drivers/input/input.c                            | 19 ++++++++++
- drivers/mmc/card/block.c                         |  6 ++--
- drivers/mmc/core/core.c                          |  5 ++-
- drivers/mmc/core/mmc_ops.c                       |  9 ++---
- drivers/net/ethernet/dec/tulip/tulip_core.c      |  5 ++-
- drivers/net/ethernet/intel/igb/igb_main.c        |  3 +-
- drivers/net/ethernet/qlogic/qla3xxx.c            |  3 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  4 +--
- drivers/net/vmxnet3/vmxnet3_drv.c                |  6 ++++
- drivers/scsi/qla2xxx/qla_target.c                |  3 ++
- kernel/events/core.c                             | 14 ++++++++
- net/key/af_key.c                                 |  6 ++--
- net/mac80211/rx.c                                |  3 +-
- net/nfc/nci/data.c                               |  2 +-
- net/nfc/nci/hci.c                                |  4 +--
- sound/isa/wavefront/wavefront_synth.c            |  3 +-
- tools/perf/bench/numa.c                          |  2 +-
- 28 files changed, 134 insertions(+), 62 deletions(-)
 
 
