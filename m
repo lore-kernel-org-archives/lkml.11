@@ -2,106 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E292C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 09:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbiEWJm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 05:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
+        id S233575AbiEWJmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 05:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233429AbiEWJk5 (ORCPT
+        with ESMTP id S233823AbiEWJlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 05:40:57 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA84F2F01E;
-        Mon, 23 May 2022 02:40:47 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id A46991F42DD9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653298845;
-        bh=V0M8DYvWpS0+hFL3tgf2bcMHWIfVb8jn4R+BMUFe68g=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=O9ZVdiVM5v1oBXV+1BXIVW0M2VmQ+HfXjC+3XBYXhMWGwaziMJJ0rG9DRsseuYSV9
-         JzSbS7XMPnN3G/5WICA/JK/ENZgqOa62BTrOOrdanpuDbTSi+CvKIkPr8Wf5jPzmF+
-         J/UeZSQk8xU0UnqqOeJkM6uKTVrIY74HR1R0QL7ybH2mdi+l/VoX6myQ23BrhtwIRv
-         jU8cQmVLVfVaAXvL9aG1dZ+WBxMnAUL+sq+U/OdhgFpwSh9dFeElK4o63xCRpwsyzf
-         8lEtJdPgLftM0NesautwPWh+7McBB8olXPES6CyqmP2GL+qmwM/2KuD0gL9v2gvrae
-         iyiQoCHn9GjDA==
-Message-ID: <19f72a58-b80e-f6a8-842f-a924c4b94eeb@collabora.com>
-Date:   Mon, 23 May 2022 14:40:39 +0500
+        Mon, 23 May 2022 05:41:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D33B31;
+        Mon, 23 May 2022 02:41:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79AEF61174;
+        Mon, 23 May 2022 09:41:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13B20C385AA;
+        Mon, 23 May 2022 09:41:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653298863;
+        bh=DRFadpB4rY2X6hgovzUNnaVWTesFRLOkSX2ChXOH8ps=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fJa5f84qZw7O+CLPciRB/TVZrJfvfOUfeDeHNyZjvwUGIl0ldUEjexGtnyk02aZuu
+         j628ZcZTxUuDFlxIXORuS8RrAhK4mwTj2b+js3PwKB1LzIqsWLRSfY4ayjn3MIEKWb
+         Cw6GTfg1ifm2zGG4EggTLfPo5gm9BQRiuiyNITgIrhhoLNlQmsCYkdFrV+VhHOH+cd
+         IfB5COu/iSaN3K5vj4d/aZJDj+3UCLCtdNh6Yyc5AeLo0lAvJ87wyZOBqxhAkHaDZl
+         Hg0gkbv0VSSF8J3sqK58qoJeg59rOfV0YG2i/sCNLL4LCzO50i4SXB8Tz06f2jKTS+
+         Do+Tukx0he98A==
+Date:   Mon, 23 May 2022 11:40:58 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Matthew Wilcox <willy@infradead.org>, kernel@openvz.org,
+        linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@infradead.org>, Jan Kara <jack@suse.cz>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v4] fs/proc/base.c: fix incorrect fmode_t casts
+Message-ID: <20220523094058.nuj3xsgixzu2amac@wittgenstein>
+References: <YorBiz6QA0JBVta/@casper.infradead.org>
+ <7761c3fd-4fb5-1d65-c2e6-044d689de6b6@openvz.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Cc:     usama.anjum@collabora.com, Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        KERNEL SELFTEST FRAMEWORK <linux-kselftest@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "kernelci@groups.io" <kernelci@groups.io>,
-        Collabora Kernel ML <kernel@collabora.com>
-Subject: Re: [Bug Report] - kselftest build fails if output directory is first
- level sub-directory
-Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Shuah Khan <shuah@kernel.org>
-References: <c25d7ea7-4f72-4a2b-d8c3-d317e64fcbbb@collabora.com>
- <CAK7LNATL4nMmKgrjS8meavnpn=HisD30QxuPUKDqtWWgbGcSZw@mail.gmail.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <CAK7LNATL4nMmKgrjS8meavnpn=HisD30QxuPUKDqtWWgbGcSZw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <7761c3fd-4fb5-1d65-c2e6-044d689de6b6@openvz.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/22/22 10:15 PM, Masahiro Yamada wrote:
-> On Sat, May 21, 2022 at 3:44 PM Muhammad Usama Anjum
-> <usama.anjum@collabora.com> wrote:
->>
->> Hello,
->>
->> kselftest can be built using the kernel's top most Makefile without
->> using kselftest's Makefile directly. But there is bug in the top most
->> Makefile. The build fails if the specified output directory is first
->> level sub-directory. Here is a example to reproduce this bug:
->>
->> make kselftest-all O=build
->>
->> "The Make is working in a wrong directory, that is why the relative path
->> does not work." Masahiro Yamada. Feel free to fix it if someone pin the bug.
->>
->> It should be noted that the build works in some other combinations:
->> make kselftest-all (works)
->> make kselftest-all O=/tmp (works)
->> make kselftest-all O=build/build2 (works)
->>
->> My unsuccessful attempt to fix this bug can be found here:
->> https://lore.kernel.org/lkml/20220223191016.1658728-1-usama.anjum@collabora.com/
->>
->> Thanks,
->> Muhammad Usama Anjum
+On Mon, May 23, 2022 at 06:37:29AM +0300, Vasily Averin wrote:
+> Fixes sparce warnings:
+> fs/proc/base.c:2240:25: sparse: warning: cast to restricted fmode_t
+> fs/proc/base.c:2297:42: sparse: warning: cast from restricted fmode_t
+> fs/proc/base.c:2394:48: sparse: warning: cast from restricted fmode_t
 > 
+> fmode_t is birwie type and requires __force attribute for any cast
 > 
-> This problem starts from the bad design of the kselftest framework.
-> I did some research before. I think I can fix the root cause but
-> currently I do not have enough time to do it.
-> 
-> 
-> KBUILD_ABS_SRCTREE is a user-interface to request
-> Kbuild to use the absolute path.
-> If it is forced in the top Makefile, users have no way to
-> negate it.
-> It is true that using the absolute path is a quick work-around
-> because you do not need to care about the current working directory.
-> 
-> If you insist on it,  just go ahead.  It is just two line changes.
-> Once the issue is fixed in a better way, your patch can be reverted easily.
-Thank you for replying. Lets merge it Shuah?
+> Signed-off-by: Vasily Averin <vvs@openvz.org>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> ---
 
-> 
-> 
-> 
-
--- 
-Muhammad Usama Anjum
+Looks good to me,
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
