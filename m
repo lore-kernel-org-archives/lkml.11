@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC43C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240337AbiEWRcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49418 "EHLO
+        id S241049AbiEWRcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240576AbiEWRVG (ORCPT
+        with ESMTP id S240787AbiEWRVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:21:06 -0400
+        Mon, 23 May 2022 13:21:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA55063383;
-        Mon, 23 May 2022 10:17:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4595B737B4;
+        Mon, 23 May 2022 10:18:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E7EBB8121A;
-        Mon, 23 May 2022 17:17:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8CFC385AA;
-        Mon, 23 May 2022 17:17:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B850CB81229;
+        Mon, 23 May 2022 17:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2030FC385A9;
+        Mon, 23 May 2022 17:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326275;
-        bh=xkOMtRcSAF4tvoeHESppoblqzKn/AtmYDZuKUi5GB7I=;
+        s=korg; t=1653326284;
+        bh=o4q0gVs0gfviaTGGB5AnUBByDUtGawb79C5sVvmKWRI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z9xjDvLVsTgMjBSuItEvYfplFLqgm3FdVJPVnxA1utz1R3YTpxef6ATukD4xosbPw
-         u8hsFhWcBW/FMYf8PAWMam2sC3ttAAwcx41jqY+xiC2rHd4h0yXY8IEYOPAqGSPLmy
-         0y8o0ch27aF4btYKdGvg6Hlt3nyqIIOw/WNtjE1c=
+        b=isKkstYpAfdk/uXf64Qx1BLKNRhA1AX3lCm4UvE47jkoabd6MrRnZwkxT7/XjaFie
+         gJkcOcoT8Cz82POgHJWMID8Op1k6T8BXybImLeukWGlE41Pa8yTCfFloO3YVNrwxNz
+         pLUyhVrRwS/XLyAjwcg1SpkZXgBDx1D2SwSPDHbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 011/132] i2c: piix4: Add EFCH MMIO support for SMBus port select
-Date:   Mon, 23 May 2022 19:03:40 +0200
-Message-Id: <20220523165825.482033516@linuxfoundation.org>
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 026/132] rtc: sun6i: Fix time overflow handling
+Date:   Mon, 23 May 2022 19:03:55 +0200
+Message-Id: <20220523165827.845000426@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,63 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Terry Bowman <terry.bowman@amd.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-commit 381a3083c6747ae5cdbef9b176d57d1b966db49f upstream.
+[ Upstream commit 9f6cd82eca7e91a0d0311242a87c6aa3c2737968 ]
 
-AMD processors include registers capable of selecting between 2 SMBus
-ports. Port selection is made during each user access by writing to
-FCH::PM::DECODEEN[smbus0sel]. Change the driver to use MMIO during
-SMBus port selection because cd6h/cd7h port I/O is not available on
-later AMD processors.
+Using "unsigned long" for UNIX timestamps is never a good idea, and
+comparing the value of such a variable against U32_MAX does not do
+anything useful on 32-bit systems.
 
-Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Cc: Mario Limonciello <Mario.Limonciello@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Use the proper time64_t type when dealing with timestamps, and avoid
+cutting down the time range unnecessarily. This also fixes the flawed
+check for the alarm time being too far into the future.
+
+The check for this condition is actually somewhat theoretical, as the
+RTC counts till 2033 only anyways, and 2^32 seconds from now is not
+before the year 2157 - at which point I hope nobody will be using this
+hardware anymore.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220211122643.1343315-4-andre.przywara@arm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-piix4.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/rtc/rtc-sun6i.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
---- a/drivers/i2c/busses/i2c-piix4.c
-+++ b/drivers/i2c/busses/i2c-piix4.c
-@@ -753,10 +753,19 @@ static void piix4_imc_wakeup(void)
- 	release_region(KERNCZ_IMC_IDX, 2);
- }
+diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
+index adec1b14a8de..c551ebf0ac00 100644
+--- a/drivers/rtc/rtc-sun6i.c
++++ b/drivers/rtc/rtc-sun6i.c
+@@ -138,7 +138,7 @@ struct sun6i_rtc_dev {
+ 	const struct sun6i_rtc_clk_data *data;
+ 	void __iomem *base;
+ 	int irq;
+-	unsigned long alarm;
++	time64_t alarm;
  
--static int piix4_sb800_port_sel(u8 port)
-+static int piix4_sb800_port_sel(u8 port, struct sb800_mmio_cfg *mmio_cfg)
- {
- 	u8 smba_en_lo, val;
+ 	struct clk_hw hw;
+ 	struct clk_hw *int_osc;
+@@ -510,10 +510,8 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
+ 	struct sun6i_rtc_dev *chip = dev_get_drvdata(dev);
+ 	struct rtc_time *alrm_tm = &wkalrm->time;
+ 	struct rtc_time tm_now;
+-	unsigned long time_now = 0;
+-	unsigned long time_set = 0;
+-	unsigned long time_gap = 0;
+-	int ret = 0;
++	time64_t time_now, time_set;
++	int ret;
  
-+	if (mmio_cfg->use_mmio) {
-+		smba_en_lo = ioread8(mmio_cfg->addr + piix4_port_sel_sb800);
-+		val = (smba_en_lo & ~piix4_port_mask_sb800) | port;
-+		if (smba_en_lo != val)
-+			iowrite8(val, mmio_cfg->addr + piix4_port_sel_sb800);
-+
-+		return (smba_en_lo & piix4_port_mask_sb800);
-+	}
-+
- 	outb_p(piix4_port_sel_sb800, SB800_PIIX4_SMB_IDX);
- 	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
- 
-@@ -843,12 +852,12 @@ static s32 piix4_access_sb800(struct i2c
- 		}
+ 	ret = sun6i_rtc_gettime(dev, &tm_now);
+ 	if (ret < 0) {
+@@ -528,9 +526,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
+ 		return -EINVAL;
  	}
  
--	prev_port = piix4_sb800_port_sel(adapdata->port);
-+	prev_port = piix4_sb800_port_sel(adapdata->port, &adapdata->mmio_cfg);
+-	time_gap = time_set - time_now;
+-
+-	if (time_gap > U32_MAX) {
++	if ((time_set - time_now) > U32_MAX) {
+ 		dev_err(dev, "Date too far in the future\n");
+ 		return -EINVAL;
+ 	}
+@@ -539,7 +535,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
+ 	writel(0, chip->base + SUN6I_ALRM_COUNTER);
+ 	usleep_range(100, 300);
  
- 	retval = piix4_access(adap, addr, flags, read_write,
- 			      command, size, data);
+-	writel(time_gap, chip->base + SUN6I_ALRM_COUNTER);
++	writel(time_set - time_now, chip->base + SUN6I_ALRM_COUNTER);
+ 	chip->alarm = time_set;
  
--	piix4_sb800_port_sel(prev_port);
-+	piix4_sb800_port_sel(prev_port, &adapdata->mmio_cfg);
- 
- 	/* Release the semaphore */
- 	outb_p(smbslvcnt | 0x20, SMBSLVCNT);
+ 	sun6i_rtc_setaie(wkalrm->enabled, chip);
+-- 
+2.35.1
+
 
 
