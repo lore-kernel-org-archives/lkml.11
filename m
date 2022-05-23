@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7254AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A7BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:10:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239734AbiEWRJ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37778 "EHLO
+        id S239675AbiEWRKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239643AbiEWRJW (ORCPT
+        with ESMTP id S239446AbiEWRJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:09:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF4E6CF42;
-        Mon, 23 May 2022 10:08:57 -0700 (PDT)
+        Mon, 23 May 2022 13:09:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B65C6CA8D;
+        Mon, 23 May 2022 10:09:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A01B8B811FE;
-        Mon, 23 May 2022 17:08:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C60C385A9;
-        Mon, 23 May 2022 17:08:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66583614CB;
+        Mon, 23 May 2022 17:09:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 692D6C385AA;
+        Mon, 23 May 2022 17:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325734;
-        bh=Rs7XVx/DYICMBYAy2TqNBhcC7rSquXFFayQ1znVgDgk=;
+        s=korg; t=1653325740;
+        bh=m849EUhZg4nLuzALYZCbDweGsu4jGB9ehoNUTrqXP4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FAMlPRvLT0c/JfMl54tSw6PlKZXE8aaQiyp5GF5uNABpuJMKeoPS3z/vQGom2TpiF
-         HtAeOCxBTQymR1KSPRyylt/KmuVVsH/FzXwcu/Hne8WNTq6lsxvHXsnrI8SO9t091s
-         WG4QXd8hJvY9CRal3Cdi5Mdfpd3L9GGMqwU/XyVU=
+        b=t2rvd0JziAANrhi96VI1vgcX+uTRc0BulyxOUnRYuxgK97A+ey0I4LVTV0+Ho4wix
+         7mOejWX6yc/i6Pft2+ejA43nmv22oiwfw58vBnm8LGK88IrjDZQXF4F3ni4xEXNxj8
+         D0rZMND8sQVwNXx4wB9f/avDfXxTbREIAQqCWfa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namhyung Kim <namhyung@gmail.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 26/33] perf bench numa: Address compiler error on s390
-Date:   Mon, 23 May 2022 19:05:15 +0200
-Message-Id: <20220523165752.700602925@linuxfoundation.org>
+Subject: [PATCH 4.14 28/33] mac80211: fix rx reordering with non explicit / psmp ack policy
+Date:   Mon, 23 May 2022 19:05:17 +0200
+Message-Id: <20220523165752.970359604@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
 References: <20220523165746.957506211@linuxfoundation.org>
@@ -54,62 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Richter <tmricht@linux.ibm.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit f8ac1c478424a9a14669b8cef7389b1e14e5229d ]
+[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
 
-The compilation on s390 results in this error:
+When the QoS ack policy was set to non explicit / psmp ack, frames are treated
+as not being part of a BA session, which causes extra latency on reordering.
+Fix this by only bypassing reordering for packets with no-ack policy
 
-  # make DEBUG=y bench/numa.o
-  ...
-  bench/numa.c: In function ‘__bench_numa’:
-  bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
-              writing between 1 and 11 bytes into a region of size between
-              10 and 20 [-Werror=format-truncation=]
-  1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
-                                                               ^~
-  ...
-  bench/numa.c:1749:64: note: directive argument in the range
-                 [-2147483647, 2147483646]
-  ...
-  #
-
-The maximum length of the %d replacement is 11 characters because of the
-negative sign.  Therefore extend the array by two more characters.
-
-Output after:
-
-  # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
-  -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
-  #
-
-Fixes: 3aff8ba0a4c9c919 ("perf bench numa: Avoid possible truncation when using snprintf()")
-Suggested-by: Namhyung Kim <namhyung@gmail.com>
-Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220520081158.2990006-1-tmricht@linux.ibm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/bench/numa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/rx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
-index 275f1c3c73b6..4334f2af15fa 100644
---- a/tools/perf/bench/numa.c
-+++ b/tools/perf/bench/numa.c
-@@ -1631,7 +1631,7 @@ static int __bench_numa(const char *name)
- 		"GB/sec,", "total-speed",	"GB/sec total speed");
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 5a38be9145ff..e60a53c056c0 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1204,8 +1204,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
+ 		goto dont_reorder;
  
- 	if (g->p.show_details >= 2) {
--		char tname[14 + 2 * 10 + 1];
-+		char tname[14 + 2 * 11 + 1];
- 		struct thread_data *td;
- 		for (p = 0; p < g->p.nr_proc; p++) {
- 			for (t = 0; t < g->p.nr_threads; t++) {
+ 	/* not part of a BA session */
+-	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
+-	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
++	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
+ 		goto dont_reorder;
+ 
+ 	/* new, potentially un-ordered, ampdu frame - process it */
 -- 
 2.35.1
 
