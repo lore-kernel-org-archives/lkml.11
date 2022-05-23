@@ -2,96 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1897BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C6CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 20:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbiEWUbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 16:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
+        id S233086AbiEWUbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 16:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233041AbiEWUbA (ORCPT
+        with ESMTP id S233041AbiEWUbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 16:31:00 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C3A473AD
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:30:57 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id i40so20592060eda.7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:30:57 -0700 (PDT)
+        Mon, 23 May 2022 16:31:46 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5066220C
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:31:45 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id m11so7128947ljc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:31:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6nbUGzUOgeo3D78bqQ+maj5c5YVeZLaDtwoE3ePbgRg=;
-        b=UoRh6ARF5eMZ2C6FMreRbDTlJm162xJ1tuzyHrHmFT/3Q36IbQO9iSO2ULmDGIDVQH
-         b7CHe+V1XXW6hofsd5knxDERRWblVFbDlw294mOlszSHwfFAt+Ooh53PQLXip6K0VKv8
-         P9wJy/F05fNoQo2LWS9tCQ4RrwAvpIXtMAvY8=
+        bh=wBaaj+XJRciWuzeB12Uou/3sT9TB3e1izvK2J/BvnGE=;
+        b=dtDiRK5Zbt91iRXg8l3N/Bq0yx4h9NH0DItyIk9C5xS6kqHq8CLQx+mmxFi0hXgqAL
+         CUICgTrYsIWayHyaEMwt/8nKiRqvWGh6ElUuzikGk/nuJp63SJJGiBkjChNAtKA5gdLB
+         tA0mA8WqTpxsiHeCTA1vE0+VPWLunSHT74gIsw6GXKgqp426nxGAWMdb9TBCYXym4WxT
+         tXUurH+EwydB+SxWnXDVTXLWbZwhHkziQ4ji51+bWD2JgDPoE5XbTlqdy9BQtmz2YTNZ
+         Bj6tTJ3CymcZ6d6o07quXCIkFwBozaA22XGbl9jXu0TCtfY1ie0TdoVndMhFKEYPuWy0
+         O7MQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6nbUGzUOgeo3D78bqQ+maj5c5YVeZLaDtwoE3ePbgRg=;
-        b=REYqELFZBd4PGB8wXY0jLZiLdTtUTzR2VCXWPqZxLigfJy4VTPgeS6BNs3Kym6h+uR
-         ItU9126aTEEc5E/tQf9CH/s9ORJXgn/hyOB0K4woH7RRg0gRn6ZIrceqA9noBp0vIoTk
-         zaclwhC7U7FSfHGuk0ZKrJtBh0K9L3cfxt+3PeH/dClzTcW0ual5X3rkSxMx2sNTHyPW
-         JLXPIvTbkSdw1PczHaGA+ORduf6L/KDYZBatRd4apKTY3iuIglp9rnfjckNPqky05XJy
-         KMLoTP0lmKg8sJKkR1OjPNHT14RtvBI4GBF2F0Dv6HKAE8xhLRFRdebBbS5uDUIPfebF
-         RTfQ==
-X-Gm-Message-State: AOAM5335T9ThbYDcFdN0TNgssOfwWkIVMlVIA5c3rRECiNVTE42RVy+U
-        omH0h/fUhySav++0yRls1FUfC3Ncxzf5aeejMas=
-X-Google-Smtp-Source: ABdhPJxPHKH8vihPrZ/y3FXXHQtaX2w5uonzXwKn7sAsfMEhlFJv5Zrgv05+nIFskEaToZb58ow4/w==
-X-Received: by 2002:a05:6402:34c2:b0:42b:66d3:7b07 with SMTP id w2-20020a05640234c200b0042b66d37b07mr7649696edc.275.1653337855486;
-        Mon, 23 May 2022 13:30:55 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id ta16-20020a1709078c1000b006fec27575f1sm2721525ejc.123.2022.05.23.13.30.54
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 13:30:54 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id s28so22811622wrb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 13:30:54 -0700 (PDT)
-X-Received: by 2002:a5d:58cc:0:b0:20e:643d:e46a with SMTP id
- o12-20020a5d58cc000000b0020e643de46amr19712672wrf.97.1653337853963; Mon, 23
- May 2022 13:30:53 -0700 (PDT)
+        bh=wBaaj+XJRciWuzeB12Uou/3sT9TB3e1izvK2J/BvnGE=;
+        b=EfcCSrcl1+Z1APGUme7ywc4xWCzcluGIZ75WFsTquuILZp6+XPRdXnWev2gaYFPwdq
+         ZQb8ViL2RZ+D8UsnkVi9qHbNXte+9/9meGlc0vf8IE/P/0bag7q4BaqZ7ieWe2qfSubW
+         UtFaP6b0O/DeXnsM4UhCdbLjaxMQY6E1OfzfvB3PIiCpNVKHdjnTEZlQoGIFoL30Q2Ag
+         +FimEv/h4+dealKcJ5elr5m64VD79ERV0OhRCQsDCDY4AtEm+482TsLEMSdLki0fkOKw
+         sL9HYaPmL36bTQ4YNeoSw3FuSRE5z9P9jUEKLb7GvDykVR3k+wPViUvjNq41AIdDUCSr
+         Knbw==
+X-Gm-Message-State: AOAM53127c8sxOy2TYLwriOQyEdgp0K1LWyTfqvTDeaT1PoM00OYl/Z6
+        NauCvd6Jitsy7asM7up6xArrpFsmkp18vNdpd0hUuA==
+X-Google-Smtp-Source: ABdhPJzAEfRy1Ql25Px8odBfL4/7wsYQ6fbK1gT9iKKGTlkCS+cnyVcBWexyK6Mk7k89J7yDzcV723I9mipNjQQxmOM=
+X-Received: by 2002:a2e:98d0:0:b0:253:e3a3:ec6c with SMTP id
+ s16-20020a2e98d0000000b00253e3a3ec6cmr7088089ljj.493.1653337903584; Mon, 23
+ May 2022 13:31:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220520182428.GA3791250@paulmck-ThinkPad-P17-Gen-1>
- <CAHk-=wgpAHhPVSqBWb4gYT=CRJzKAZ4inmrL_kcpeNWGkcg3pg@mail.gmail.com>
- <20220523195605.GA13032@1wt.eu> <20220523202336.GB13032@1wt.eu>
-In-Reply-To: <20220523202336.GB13032@1wt.eu>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 23 May 2022 13:30:37 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiX8P8atcx9at_N=-8pjU-d5cG509E=oZHfsVb1R41RZQ@mail.gmail.com>
-Message-ID: <CAHk-=wiX8P8atcx9at_N=-8pjU-d5cG509E=oZHfsVb1R41RZQ@mail.gmail.com>
-Subject: Re: [GIT PULL] nolibc changes for v5.19
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
+References: <23e0ba7863d51ab629498762a97d477645aeafea.1653123744.git.christophe.jaillet@wanadoo.fr>
+ <CAKwvOdneqUvq+Nz_zPmJmuPFfAvWQgnzrw1AJt=WqQF2hThF-A@mail.gmail.com> <00061a71-4d7c-0605-80b5-3d909fc3dfaa@wanadoo.fr>
+In-Reply-To: <00061a71-4d7c-0605-80b5-3d909fc3dfaa@wanadoo.fr>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 23 May 2022 13:31:32 -0700
+Message-ID: <CAKwvOdnDvrYo_PtMa+JW0FhmkZVDp7eVpR_BV9L2Om-jXPbBog@mail.gmail.com>
+Subject: Re: [RFC PATCH] kbuild: Add an option to enable -O1 and speed-up
+ compilation time
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     dan.carpenter@oracle.com, Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 1:23 PM Willy Tarreau <w@1wt.eu> wrote:
+On Mon, May 23, 2022 at 1:16 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
 >
-> So I've figured it again. When you run:
->
->    make tools/help
->
-> you get the help of tools/ commands, [..]
+> Thanks for taking time for a full review, even on something you are not
+> fan on. This is really appreciated.
 
-You speak the words, but you don't actually look at what it does.
-
-Try it.
-
-Yes,  "make tools/help" works. Yes, it lists targets, and talks about
-how you can use the "<tool>_install" target.
-
-But none of that then matches the rest of what you write.
-
-You talk about nolibc_headers". That's not something that is actually
-listed in the help at all.
-
-So please, can you read your own email message as somebody who doesn't
-actually know the code, and try the commands you talk about, and see
-the disconnect here?
-
-                  Linus
+Of course! It's still a question worth asking, and having a lore link
+to refer back to should the question arise again in the future. Thanks
+for asking.
+-- 
+Thanks,
+~Nick Desaulniers
