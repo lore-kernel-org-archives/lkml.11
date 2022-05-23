@@ -2,106 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242419AbiEWRpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S241351AbiEWRpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242867AbiEWR2H (ORCPT
+        with ESMTP id S242821AbiEWR2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:28:07 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A38A8CCF6
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:24:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653326676; x=1684862676;
-  h=message-id:date:mime-version:from:subject:cc:to:
-   content-transfer-encoding;
-  bh=yYasMBXt5ymnR6k+hI8pCXBx+rUativPdyCsLhPKcWs=;
-  b=XrEUwLZyinpZ2MVn78OKo5Rw4t1qXYDJFr4xiT9k/uPyZGniXs74UmHj
-   ntI81Mk41vYD7PE7z0AcrUWRBggb0b6TLiM9Kmsj5wqLpwk5EP65zA6y0
-   xoss4R04gd1622IjxkVS2emSD2YIZgVNGyR0j0ARlEo0fKZZkrYDhVASy
-   q45E6gqM8CK6pPu9oTVQYebmKCmcgGz8TGmlC3FpzaucsM3K9fhnPkt9a
-   xePPkESCYH2ZeSK/cckA6/XqFiL1RoTzL6OP7jMBYi0FQRvngXw/K9WXX
-   rhzGW5A3oClxDSS0WjRae1+AmRrI70R41AVsOYb1rwFNceaGkJtrs//WE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="336353721"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="336353721"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:23:53 -0700
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="600766882"
-Received: from jvowlesx-mobl.amr.corp.intel.com (HELO [10.251.4.211]) ([10.251.4.211])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 10:23:52 -0700
-Message-ID: <e9abfba4-d178-7ee5-da13-4cd9e07ba331@intel.com>
-Date:   Mon, 23 May 2022 10:23:52 -0700
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254E98B0BD;
+        Mon, 23 May 2022 10:24:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFE6A60C21;
+        Mon, 23 May 2022 17:24:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC59C385A9;
+        Mon, 23 May 2022 17:24:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326676;
+        bh=3Edr0WGxsislP39bX1l22AF4oaC/dYzIMfeh7yF5tdU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OlgZ0RApY4dWmadQvohfPBHutENjLXNh81btwTcR5qpYdEZBR0XC8BfoTmpHN5xCM
+         1CrTe5nOH03ZNnZmU2ihrFxmHNdQ9e+RurrVxlmeKNCztf0kds5STG91L0sXsmXYv+
+         +uA0AVZmrXJIwspvwIWmBo9RpdbmAttwLdhScOlE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 025/158] nvme-pci: add quirks for Samsung X5 SSDs
+Date:   Mon, 23 May 2022 19:03:02 +0200
+Message-Id: <20220523165834.742572116@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: [GIT PULL] x86/sgx for v5.19
-Content-Language: en-US
-Cc:     the arch/x86 maintainers <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+From: Monish Kumar R <monish.kumar.r@intel.com>
 
-It's my first pull request, signing tags and all that jazz.  I hope I didn't
-botch anything too badly.  Here we go:
+[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
 
-Please pull a set of x86/sgx patches to fix crashes under SGX memory pressure.
+Add quirks to not fail the initialization and to have quick resume
+latency after cold/warm reboot.
 
+Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/nvme/host/pci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-The following changes since commit 42226c989789d8da4af1de0c31070c96726d990c:
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index e4b79bee6206..94a0b933b133 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3470,7 +3470,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
+-
++	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
++		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
++				NVME_QUIRK_NO_DEEPEST_PS |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
+-- 
+2.35.1
 
-  Linux 5.18-rc7 (2022-05-15 18:08:58 -0700)
 
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_sgx_for_v5.19_rc1
-
-for you to fetch changes up to e3a3bbe3e99de73043a1d32d36cf4d211dc58c7e:
-
-  x86/sgx: Ensure no data in PCMD page after truncate (2022-05-16 15:17:57 -0700)
-
-----------------------------------------------------------------
-A set of patches to prevent crashes in SGX enclaves under heavy memory
-pressure:
-
-SGX uses normal RAM allocated from special shmem files as backing storage
-when it runs out of SGX memory (EPC).  The code was overly aggressive when
-freeing shmem pages and was inadvertently freeing perfectly good data.
-This resulted in failures in the SGX instructions used to swap data back
-into SGX memory.
-
-This turned out to be really hard to trigger in mainline.  It was
-originally encountered testing the out-of-tree "SGX2" patches, but later
-reproduced on mainline.
-
-Fix the data loss by being more careful about truncating pages out of
-the backing storage and more judiciously setting pages dirty.
-
-----------------------------------------------------------------
-Reinette Chatre (5):
-      x86/sgx: Disconnect backing page references from dirty status
-      x86/sgx: Mark PCMD page as dirty when modifying contents
-      x86/sgx: Obtain backing storage page with enclave mutex held
-      x86/sgx: Fix race between reclaimer and page fault handler
-      x86/sgx: Ensure no data in PCMD page after truncate
-
- arch/x86/kernel/cpu/sgx/encl.c | 113 +++++++++++++++++++++++++++++++++++++----
- arch/x86/kernel/cpu/sgx/encl.h |   2 +-
- arch/x86/kernel/cpu/sgx/main.c |  13 +++--
- 3 files changed, 114 insertions(+), 14 deletions(-)
 
