@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C17C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:29:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240791AbiEWR3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
+        id S240578AbiEWR3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240459AbiEWRTS (ORCPT
+        with ESMTP id S240359AbiEWRUQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:19:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520F271A38;
-        Mon, 23 May 2022 10:17:46 -0700 (PDT)
+        Mon, 23 May 2022 13:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0418172E23;
+        Mon, 23 May 2022 10:17:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 882A1B81205;
-        Mon, 23 May 2022 17:17:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8275C385AA;
-        Mon, 23 May 2022 17:17:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B89F160BD6;
+        Mon, 23 May 2022 17:17:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99670C385A9;
+        Mon, 23 May 2022 17:17:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326227;
-        bh=lDRosrvUmXp/3DW9P/fjZ8zch1vT/C6ATZgXL63FIqc=;
+        s=korg; t=1653326269;
+        bh=LIXj9FZokEunEf4C4T6sv1gdibFULl/cAgkv3fPPJPo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lr8/9shvXpdFaRhrq/tCp+Dw4EiwTI0Tt5KnEfA7dEay6gMEUNwABr0t+tD8xSh1I
-         3jUPFcdtyKEilFWiVQ0xAJNUd8V18d3Bo1uFL0WP3U2B+/yfYOMozH+Q4I9WPUcJSP
-         wYPOnw6zB9V2XRQUxA184b29z4bJN7m9H6aC9QSA=
+        b=m7rgb9fpvgJYW4lBiazXMJSEE1DAzLRvF3+gbnmrIlBOtXdeQU8jaiE06tiaYhk3B
+         llxcqTLQAcZsqzpjgvxUFBcADwux10rbV8Gq8ZI4XK91J8R97vaehZ1Ss9V/P9sq/z
+         GRha2MsboX6uFVyVOGm+Jo+xe8U2I48Tk18bDQx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Richter <rrichter@amd.com>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Jean Delvare <jdelvare@suse.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
         Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 016/132] Watchdog: sp5100_tco: Enable Family 17h+ CPUs
-Date:   Mon, 23 May 2022 19:03:45 +0200
-Message-Id: <20220523165826.292405340@linuxfoundation.org>
+Subject: [PATCH 5.15 009/132] i2c: piix4: Add EFCH MMIO support to region request and release
+Date:   Mon, 23 May 2022 19:03:38 +0200
+Message-Id: <20220523165825.144023837@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -54,73 +52,180 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Terry Bowman <terry.bowman@amd.com>
 
-commit 826270373f17fd8ebd10753ca0a5fd2ceb1dc38e upstream.
+commit 7c148722d074c29fb998578eea5de3c14b9608c9 upstream.
 
-The driver currently uses a CPU family match of 17h to determine
-EFCH_PM_DECODEEN_WDT_TMREN register support. This family check will not
-support future AMD CPUs and instead will require driver updates to add
-support.
+EFCH cd6h/cd7h port I/O may no longer be available on later AMD
+processors and it is recommended to use MMIO instead. Update the
+request and release functions to support MMIO.
 
-Remove the family 17h family check and add a check for SMBus PCI
-revision ID 0x51 or greater. The MMIO access method has been available
-since at least SMBus controllers using PCI revision 0x51. This revision
-check will support family 17h and future AMD processors including EFCH
-functionality without requiring driver changes.
+MMIO request/release and mmapping require details during cleanup.
+Add a MMIO configuration structure containing resource and vaddress
+details for mapping the region, accessing the region, and releasing
+the region.
 
-Co-developed-by: Robert Richter <rrichter@amd.com>
-Signed-off-by: Robert Richter <rrichter@amd.com>
 Signed-off-by: Terry Bowman <terry.bowman@amd.com>
-Tested-by: Jean Delvare <jdelvare@suse.de>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220202153525.1693378-5-terry.bowman@amd.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+[wsa: rebased after fixup in previous patch]
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Cc: Mario Limonciello <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/watchdog/sp5100_tco.c |   16 ++++------------
- drivers/watchdog/sp5100_tco.h |    1 +
- 2 files changed, 5 insertions(+), 12 deletions(-)
+ drivers/i2c/busses/i2c-piix4.c |   66 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 58 insertions(+), 8 deletions(-)
 
---- a/drivers/watchdog/sp5100_tco.c
-+++ b/drivers/watchdog/sp5100_tco.c
-@@ -86,6 +86,10 @@ static enum tco_reg_layout tco_reg_layou
- 	    dev->revision < 0x40) {
- 		return sp5100;
- 	} else if (dev->vendor == PCI_VENDOR_ID_AMD &&
-+	    sp5100_tco_pci->device == PCI_DEVICE_ID_AMD_KERNCZ_SMBUS &&
-+	    sp5100_tco_pci->revision >= AMD_ZEN_SMBUS_PCI_REV) {
-+		return efch_mmio;
-+	} else if (dev->vendor == PCI_VENDOR_ID_AMD &&
- 	    ((dev->device == PCI_DEVICE_ID_AMD_HUDSON2_SMBUS &&
- 	     dev->revision >= 0x41) ||
- 	    (dev->device == PCI_DEVICE_ID_AMD_KERNCZ_SMBUS &&
-@@ -451,18 +455,6 @@ static int sp5100_tco_setupdevice(struct
- 		break;
- 	case efch:
- 		dev_name = SB800_DEVNAME;
--		/*
--		 * On Family 17h devices, the EFCH_PM_DECODEEN_WDT_TMREN bit of
--		 * EFCH_PM_DECODEEN not only enables the EFCH_PM_WDT_ADDR memory
--		 * region, it also enables the watchdog itself.
--		 */
--		if (boot_cpu_data.x86 == 0x17) {
--			val = sp5100_tco_read_pm_reg8(EFCH_PM_DECODEEN);
--			if (!(val & EFCH_PM_DECODEEN_WDT_TMREN)) {
--				sp5100_tco_update_pm_reg8(EFCH_PM_DECODEEN, 0xff,
--							  EFCH_PM_DECODEEN_WDT_TMREN);
--			}
--		}
- 		val = sp5100_tco_read_pm_reg8(EFCH_PM_DECODEEN);
- 		if (val & EFCH_PM_DECODEEN_WDT_TMREN)
- 			mmio_addr = EFCH_PM_WDT_ADDR;
---- a/drivers/watchdog/sp5100_tco.h
-+++ b/drivers/watchdog/sp5100_tco.h
-@@ -89,3 +89,4 @@
- #define EFCH_PM_ACPI_MMIO_PM_ADDR	(EFCH_PM_ACPI_MMIO_ADDR +	\
- 					 EFCH_PM_ACPI_MMIO_PM_OFFSET)
- #define EFCH_PM_ACPI_MMIO_PM_SIZE	8
-+#define AMD_ZEN_SMBUS_PCI_REV		0x51
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -98,6 +98,9 @@
+ #define SB800_PIIX4_PORT_IDX_MASK_KERNCZ	0x18
+ #define SB800_PIIX4_PORT_IDX_SHIFT_KERNCZ	3
+ 
++#define SB800_PIIX4_FCH_PM_ADDR			0xFED80300
++#define SB800_PIIX4_FCH_PM_SIZE			8
++
+ /* insmod parameters */
+ 
+ /* If force is set to anything different from 0, we forcibly enable the
+@@ -156,6 +159,12 @@ static const char *piix4_main_port_names
+ };
+ static const char *piix4_aux_port_name_sb800 = " port 1";
+ 
++struct sb800_mmio_cfg {
++	void __iomem *addr;
++	struct resource *res;
++	bool use_mmio;
++};
++
+ struct i2c_piix4_adapdata {
+ 	unsigned short smba;
+ 
+@@ -163,10 +172,40 @@ struct i2c_piix4_adapdata {
+ 	bool sb800_main;
+ 	bool notify_imc;
+ 	u8 port;		/* Port number, shifted */
++	struct sb800_mmio_cfg mmio_cfg;
+ };
+ 
+-static int piix4_sb800_region_request(struct device *dev)
++static int piix4_sb800_region_request(struct device *dev,
++				      struct sb800_mmio_cfg *mmio_cfg)
+ {
++	if (mmio_cfg->use_mmio) {
++		struct resource *res;
++		void __iomem *addr;
++
++		res = request_mem_region_muxed(SB800_PIIX4_FCH_PM_ADDR,
++					       SB800_PIIX4_FCH_PM_SIZE,
++					       "sb800_piix4_smb");
++		if (!res) {
++			dev_err(dev,
++				"SMBus base address memory region 0x%x already in use.\n",
++				SB800_PIIX4_FCH_PM_ADDR);
++			return -EBUSY;
++		}
++
++		addr = ioremap(SB800_PIIX4_FCH_PM_ADDR,
++			       SB800_PIIX4_FCH_PM_SIZE);
++		if (!addr) {
++			release_resource(res);
++			dev_err(dev, "SMBus base address mapping failed.\n");
++			return -ENOMEM;
++		}
++
++		mmio_cfg->res = res;
++		mmio_cfg->addr = addr;
++
++		return 0;
++	}
++
+ 	if (!request_muxed_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE,
+ 				  "sb800_piix4_smb")) {
+ 		dev_err(dev,
+@@ -178,8 +217,15 @@ static int piix4_sb800_region_request(st
+ 	return 0;
+ }
+ 
+-static void piix4_sb800_region_release(struct device *dev)
++static void piix4_sb800_region_release(struct device *dev,
++				       struct sb800_mmio_cfg *mmio_cfg)
+ {
++	if (mmio_cfg->use_mmio) {
++		iounmap(mmio_cfg->addr);
++		release_resource(mmio_cfg->res);
++		return;
++	}
++
+ 	release_region(SB800_PIIX4_SMB_IDX, SB800_PIIX4_SMB_MAP_SIZE);
+ }
+ 
+@@ -288,11 +334,13 @@ static int piix4_setup_sb800_smba(struct
+ 				  u8 *smb_en_status,
+ 				  unsigned short *piix4_smba)
+ {
++	struct sb800_mmio_cfg mmio_cfg;
+ 	u8 smba_en_lo;
+ 	u8 smba_en_hi;
+ 	int retval;
+ 
+-	retval = piix4_sb800_region_request(&PIIX4_dev->dev);
++	mmio_cfg.use_mmio = 0;
++	retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
+ 	if (retval)
+ 		return retval;
+ 
+@@ -301,7 +349,7 @@ static int piix4_setup_sb800_smba(struct
+ 	outb_p(smb_en + 1, SB800_PIIX4_SMB_IDX);
+ 	smba_en_hi = inb_p(SB800_PIIX4_SMB_IDX + 1);
+ 
+-	piix4_sb800_region_release(&PIIX4_dev->dev);
++	piix4_sb800_region_release(&PIIX4_dev->dev, &mmio_cfg);
+ 
+ 	if (!smb_en) {
+ 		*smb_en_status = smba_en_lo & 0x10;
+@@ -328,6 +376,7 @@ static int piix4_setup_sb800(struct pci_
+ 	unsigned short piix4_smba;
+ 	u8 smb_en, smb_en_status, port_sel;
+ 	u8 i2ccfg, i2ccfg_offset = 0x10;
++	struct sb800_mmio_cfg mmio_cfg;
+ 	int retval;
+ 
+ 	/* SB800 and later SMBus does not support forcing address */
+@@ -407,7 +456,8 @@ static int piix4_setup_sb800(struct pci_
+ 			piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+ 		}
+ 	} else {
+-		retval = piix4_sb800_region_request(&PIIX4_dev->dev);
++		mmio_cfg.use_mmio = 0;
++		retval = piix4_sb800_region_request(&PIIX4_dev->dev, &mmio_cfg);
+ 		if (retval) {
+ 			release_region(piix4_smba, SMBIOSIZE);
+ 			return retval;
+@@ -420,7 +470,7 @@ static int piix4_setup_sb800(struct pci_
+ 				       SB800_PIIX4_PORT_IDX;
+ 		piix4_port_mask_sb800 = SB800_PIIX4_PORT_IDX_MASK;
+ 		piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+-		piix4_sb800_region_release(&PIIX4_dev->dev);
++		piix4_sb800_region_release(&PIIX4_dev->dev, &mmio_cfg);
+ 	}
+ 
+ 	dev_info(&PIIX4_dev->dev,
+@@ -731,7 +781,7 @@ static s32 piix4_access_sb800(struct i2c
+ 	u8 prev_port;
+ 	int retval;
+ 
+-	retval = piix4_sb800_region_request(&adap->dev);
++	retval = piix4_sb800_region_request(&adap->dev, &adapdata->mmio_cfg);
+ 	if (retval)
+ 		return retval;
+ 
+@@ -802,7 +852,7 @@ static s32 piix4_access_sb800(struct i2c
+ 		piix4_imc_wakeup();
+ 
+ release:
+-	piix4_sb800_region_release(&adap->dev);
++	piix4_sb800_region_release(&adap->dev, &adapdata->mmio_cfg);
+ 	return retval;
+ }
+ 
 
 
