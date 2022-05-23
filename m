@@ -2,97 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E724C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242825AbiEWSPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
+        id S243545AbiEWSP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244834AbiEWRwj (ORCPT
+        with ESMTP id S244836AbiEWRwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:52:39 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600EC72226;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DA373552;
         Mon, 23 May 2022 10:41:51 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id p26so20065972eds.5;
-        Mon, 23 May 2022 10:41:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MxwV1CfEuXpa/Ro5Ob8LIp2Apb0tudNYCNQzjQS7PwI=;
-        b=bXWA05ojW5/cFfSc8rmYcBcQCXtWKXEQg+WJNjPooDUIPQeuyTxdbyxOuY+WE3wJcg
-         cvIhHWlqIEHV7JCMA9UK+MdkG2Nf2i6VKtw1BNWCVraUk0MPtPGp7T3zDr6+yIi6THiO
-         Xv+hKtoqFJpQD/5RGaYK/LHNsG2QImRsUsshVf3koVHvBtNtKJDZDxQ7X+vwY5t3FuE2
-         MpspJ75qaC+mlNsrwp4yZ9d34ifM+1vNdGCqAvM2x4lpjR5PW2HiZ+cjoOnC3M45gVGI
-         GHjp4n/eiQrYSbDIUXNu7iVYRtYR5v646COAb8tib3TkV0Jxx216UEElONxb8FQFaj7R
-         hqnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MxwV1CfEuXpa/Ro5Ob8LIp2Apb0tudNYCNQzjQS7PwI=;
-        b=E7LkLPEOVS7GyNOnHpDUUnf+AAuUcpHDPqjZMFqEF0hErKXXuSTk+7RmYKSAfpfOuw
-         Ax4tA4wXTTkpQ8BGQYUNOBRtHN3lJaYOsei3suMMY/9Noo/RmbHq5oxV9TsJwuBSE6oq
-         pu2C90xDjMURxPttoRWCSuR/ZqQy3eANSmtwRJPCFsCrxkvnTQLXQgonJfV0ue/5coCq
-         mhkxdER6OXj2e94aFZ41g7dS7TP/Zv1gkahIsk1W5H+yCqegaRie5ozF8TuSMlIo3ngI
-         voLlU6ZGImkVnR8wOt7N8qoiGCFq7iW5lQl+PAdSbbx/FMKmsi6eiAe49k4HPcpyKva0
-         tzoA==
-X-Gm-Message-State: AOAM533/0zdvEoZSx+js8glFnQ0lkLAsk+sCLA2fytC6h+w3CtfAGnXq
-        p+u/6FfjK8PepDoQixgP297jbl82Se0/Cfxc6RY=
-X-Google-Smtp-Source: ABdhPJxTo01eW9mCXhiUa+2BxqxlzHLrc4YxjtNwNVqgKRWw5WAJOT3XELCwDaw93jNRgdmr5xO785H1pzc5fjfPbvo=
-X-Received: by 2002:aa7:df86:0:b0:42a:ba05:3ee7 with SMTP id
- b6-20020aa7df86000000b0042aba053ee7mr24836246edy.141.1653327664065; Mon, 23
- May 2022 10:41:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC6AEB811A1;
+        Mon, 23 May 2022 17:29:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44AB5C385A9;
+        Mon, 23 May 2022 17:29:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326991;
+        bh=Kbw3Xnbq7oGP6QE0nQJ/oVo/wLpyBdbsLPrTHZNtse0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ffzRN2h4BW52jvgtSJf212PAk9s/9hP51zSwecS+jFWAgBUTK62Q7PnDpAPx388HJ
+         hNVB97l1OxOF9+KI5GcNXJqoBCyL9c67P4aJhZ/WPn0Wx6GgBVJQuUF/YisjkDqLzQ
+         G60mvOcQqiHiVkNsLG+kM+ScG3ClJLWmh2s2LsKY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 122/158] riscv: dts: sifive: fu540-c000: align dma node name with dtschema
+Date:   Mon, 23 May 2022 19:04:39 +0200
+Message-Id: <20220523165850.970191315@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220523164159.11579-1-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220523164159.11579-1-ddrokosov@sberdevices.ru>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 23 May 2022 19:40:27 +0200
-Message-ID: <CAHp75VeuAxMWknoG28v8k-gKCpUQFJbwpq+pTaTVPeY45vQo2w@mail.gmail.com>
-Subject: Re: [PATCH v1 0/5] iio: treewide: rearrange iio trig get/register
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "hdegoede@redhat.com" <hdegoede@redhat.com>,
-        "antoniu.miclaus@analog.com" <antoniu.miclaus@analog.com>,
-        "sean@geanix.com" <sean@geanix.com>,
-        "linmq006@gmail.com" <linmq006@gmail.com>,
-        "gwendal@chromium.org" <gwendal@chromium.org>,
-        "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 6:42 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
->
-> The following patchset resolves problems with iio_trigger_get() and
-> iio_trigger_register() call order in the different IIO drivers.
->
-> IIO trigger interface function iio_trigger_get() should be called after
-> iio_trigger_register() (or its devm analogue) strictly, because of
-> iio_trigger_get() acquires module refcnt based on the trigger->owner
-> pointer, which is initialized inside iio_trigger_register() to
-> THIS_MODULE.
-> If this call order is wrong, the next iio_trigger_put() (from sysfs
-> callbacks or rmmod) will derefence "default" module refcnt, which is
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-dereference
+[ Upstream commit b17410182b6f98191fbf7f42d3b4a78512769d29 ]
 
-> completely incorrect.
+Fixes dtbs_check warnings like:
 
-Cool set! But it sounds like a set of fixes, can you add a Fixes tag
-to each of the patches?
+  dma@3000000: $nodename:0: 'dma@3000000' does not match '^dma-controller(@.*)?$'
 
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220407193856.18223-1-krzysztof.kozlowski@linaro.org
+Fixes: c5ab54e9945b ("riscv: dts: add support for PDMA device of HiFive Unleashed Rev A00")
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+index 3eef52b1a59b..fd93fdadd28c 100644
+--- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
++++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
+@@ -167,7 +167,7 @@ uart0: serial@10010000 {
+ 			clocks = <&prci PRCI_CLK_TLCLK>;
+ 			status = "disabled";
+ 		};
+-		dma: dma@3000000 {
++		dma: dma-controller@3000000 {
+ 			compatible = "sifive,fu540-c000-pdma";
+ 			reg = <0x0 0x3000000 0x0 0x8000>;
+ 			interrupt-parent = <&plic0>;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
+
+
