@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8391BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1385C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242784AbiEWR7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
+        id S242034AbiEWR75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240326AbiEWRc3 (ORCPT
+        with ESMTP id S240699AbiEWRcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:32:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D937C737A2;
-        Mon, 23 May 2022 10:27:15 -0700 (PDT)
+        Mon, 23 May 2022 13:32:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE94374DCA;
+        Mon, 23 May 2022 10:27:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ED62B811FF;
-        Mon, 23 May 2022 17:27:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E91BC385A9;
-        Mon, 23 May 2022 17:27:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65437B81204;
+        Mon, 23 May 2022 17:27:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC62C385A9;
+        Mon, 23 May 2022 17:27:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326822;
-        bh=BxK7O4Gs2ObR0o2eB295lupu4Ic0VZFkTdV/DbE85ac=;
+        s=korg; t=1653326835;
+        bh=m4cwoyy/BQKWuB7tsuReyl/3ZsdpUuEU3bjsJk2tUpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0015C13/37/brDw6ajhmeZlBcwQlBph2xE1zeR7doJ8Qf64He0grtJ7/7lnOrvKmv
-         OPjXOjE42UgJuqDJTuvoZyCxfwNJdmcNcWTuighXCrOidyLcL8NirrMH79BapXv750
-         zjMc57xMxIB5tUW7Sa9JcErzkdMRpwntgL+K/qKk=
+        b=KpQBwxMcO0y23GRZ8/HK8XVrsm2YZWzFA6z5aijAW4eun5Ykg9b3mMUEP529KI39t
+         5tckJORQUKHn/Adt2AzCXkv0krZkztxqCQ2XSq76y06nd4ZTZ2c7rWRVArSzh0Wm8p
+         8BA/JYb0DCsgnhjdizhI20417e5nPys3gT89oM4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 070/158] pinctrl: pinctrl-aspeed-g6: remove FWQSPID group in pinctrl
-Date:   Mon, 23 May 2022 19:03:47 +0200
-Message-Id: <20220523165842.507458155@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Youngmin Han <Youngmin.Han@geappliances.com>,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 074/158] pinctrl: mediatek: mt8365: fix IES control pins
+Date:   Mon, 23 May 2022 19:03:51 +0200
+Message-Id: <20220523165843.223365224@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,69 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+From: Mattijs Korpershoek <mkorpershoek@baylibre.com>
 
-[ Upstream commit 3eef2f48ba0933ba995529f522554ad5c276c39b ]
+[ Upstream commit f680058f406863b55ac226d1c157701939c63db4 ]
 
-FWSPIDQ2 and FWSPIDQ3 are not part of FWSPI18 interface so remove
-FWQSPID group in pinctrl. These pins must be used with the FWSPI
-pins that are dedicated for boot SPI interface which provides
-same 3.3v logic level.
+IES26 (BIT 16 of IES1_CFG_ADDR) controls the following pads:
 
-Fixes: 2eda1cdec49f ("pinctrl: aspeed: Add AST2600 pinmux support")
-Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-Link: https://lore.kernel.org/r/20220329173932.2588289-3-quic_jaehyoo@quicinc.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+- PAD_I2S_DATA_IN (GPIO114)
+- PAD_I2S_LRCK (GPIO115)
+- PAD_I2S_BCK (GPIO116)
+
+The pinctrl table is wrong since it lists pins 114 to 112.
+
+Update the table with the correct values.
+
+Fixes: e94d8b6fb83a ("pinctrl: mediatek: add support for mt8365 SoC")
+Reported-by: Youngmin Han <Youngmin.Han@geappliances.com>
+Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Link: https://lore.kernel.org/r/20220426125714.298907-1-mkorpershoek@baylibre.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/pinctrl/mediatek/pinctrl-mt8365.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c b/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c
-index a3fa03bcd9a3..54064714d73f 100644
---- a/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c
-+++ b/drivers/pinctrl/aspeed/pinctrl-aspeed-g6.c
-@@ -1236,18 +1236,12 @@ FUNC_GROUP_DECL(SALT8, AA12);
- FUNC_GROUP_DECL(WDTRST4, AA12);
- 
- #define AE12 196
--SIG_EXPR_LIST_DECL_SEMG(AE12, FWSPIDQ2, FWQSPID, FWSPID,
--			SIG_DESC_SET(SCU438, 4));
- SIG_EXPR_LIST_DECL_SESG(AE12, GPIOY4, GPIOY4);
--PIN_DECL_(AE12, SIG_EXPR_LIST_PTR(AE12, FWSPIDQ2),
--	  SIG_EXPR_LIST_PTR(AE12, GPIOY4));
-+PIN_DECL_(AE12, SIG_EXPR_LIST_PTR(AE12, GPIOY4));
- 
- #define AF12 197
--SIG_EXPR_LIST_DECL_SEMG(AF12, FWSPIDQ3, FWQSPID, FWSPID,
--			SIG_DESC_SET(SCU438, 5));
- SIG_EXPR_LIST_DECL_SESG(AF12, GPIOY5, GPIOY5);
--PIN_DECL_(AF12, SIG_EXPR_LIST_PTR(AF12, FWSPIDQ3),
--	  SIG_EXPR_LIST_PTR(AF12, GPIOY5));
-+PIN_DECL_(AF12, SIG_EXPR_LIST_PTR(AF12, GPIOY5));
- 
- #define AC12 198
- SSSF_PIN_DECL(AC12, GPIOY6, FWSPIABR, SIG_DESC_SET(SCU438, 6));
-@@ -1520,9 +1514,8 @@ SIG_EXPR_LIST_DECL_SEMG(Y4, EMMCDAT7, EMMCG8, EMMC, SIG_DESC_SET(SCU404, 3));
- PIN_DECL_3(Y4, GPIO18E3, FWSPIDMISO, VBMISO, EMMCDAT7);
- 
- GROUP_DECL(FWSPID, Y1, Y2, Y3, Y4);
--GROUP_DECL(FWQSPID, Y1, Y2, Y3, Y4, AE12, AF12);
- GROUP_DECL(EMMCG8, AB4, AA4, AC4, AA5, Y5, AB5, AB6, AC5, Y1, Y2, Y3, Y4);
--FUNC_DECL_2(FWSPID, FWSPID, FWQSPID);
-+FUNC_DECL_1(FWSPID, FWSPID);
- FUNC_GROUP_DECL(VB, Y1, Y2, Y3, Y4);
- FUNC_DECL_3(EMMC, EMMCG1, EMMCG4, EMMCG8);
- /*
-@@ -1918,7 +1911,6 @@ static const struct aspeed_pin_group aspeed_g6_groups[] = {
- 	ASPEED_PINCTRL_GROUP(FSI2),
- 	ASPEED_PINCTRL_GROUP(FWSPIABR),
- 	ASPEED_PINCTRL_GROUP(FWSPID),
--	ASPEED_PINCTRL_GROUP(FWQSPID),
- 	ASPEED_PINCTRL_GROUP(FWSPIWP),
- 	ASPEED_PINCTRL_GROUP(GPIT0),
- 	ASPEED_PINCTRL_GROUP(GPIT1),
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8365.c b/drivers/pinctrl/mediatek/pinctrl-mt8365.c
+index 79b1fee5a1eb..ddee0db72d26 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mt8365.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mt8365.c
+@@ -259,7 +259,7 @@ static const struct mtk_pin_ies_smt_set mt8365_ies_set[] = {
+ 	MTK_PIN_IES_SMT_SPEC(104, 104, 0x420, 13),
+ 	MTK_PIN_IES_SMT_SPEC(105, 109, 0x420, 14),
+ 	MTK_PIN_IES_SMT_SPEC(110, 113, 0x420, 15),
+-	MTK_PIN_IES_SMT_SPEC(114, 112, 0x420, 16),
++	MTK_PIN_IES_SMT_SPEC(114, 116, 0x420, 16),
+ 	MTK_PIN_IES_SMT_SPEC(117, 119, 0x420, 17),
+ 	MTK_PIN_IES_SMT_SPEC(120, 122, 0x420, 18),
+ 	MTK_PIN_IES_SMT_SPEC(123, 125, 0x420, 19),
 -- 
 2.35.1
 
