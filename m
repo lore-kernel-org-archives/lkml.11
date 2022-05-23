@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E54C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241601AbiEWRfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
+        id S240980AbiEWRfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240865AbiEWR0H (ORCPT
+        with ESMTP id S240885AbiEWR0I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0D217A9E;
-        Mon, 23 May 2022 10:21:11 -0700 (PDT)
+        Mon, 23 May 2022 13:26:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AD9427FE;
+        Mon, 23 May 2022 10:21:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D5B0B8121C;
-        Mon, 23 May 2022 17:21:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81072C385A9;
-        Mon, 23 May 2022 17:20:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDE1361148;
+        Mon, 23 May 2022 17:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB872C34115;
+        Mon, 23 May 2022 17:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326459;
-        bh=IiG6DVAr/cCMbHcZiaclUM7731Pl9HADJE4+83bC76I=;
+        s=korg; t=1653326333;
+        bh=+ODeEw79ghkBkx3FKDswIIC8M9eF/4WFc0jru4dQ2fA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bW2ecwIzm2hysXfGCiqAwHdAxyIyXMZ5eX9A7izzBiipG5B61Q5ECuBzjQYVY3Atv
-         pjPYh5emy0sXH1UZw3V8Lmb7XPYn2YZIvD4cwF17uh3OEKaxzICbjxxDZaMSdi97Tv
-         VZsmyaBdsemVhONfvA0N0mdii9f2GbAIo1G1cnKo=
+        b=XoukQIsyFlW+hfDJY+vKGzDEu8IG5SybmiTo53QCxdwVtKQ1VP0xitpyN29d/cRci
+         inLr4wx3c/sUFqmkydKxc+D4m0aLizlmPQ+XcSLIRUq14AXbg3ulO6CBbHWH00XSGx
+         hE6rY/pbc8BXqGeE+nebS2VGiN0oJ49NHUd1+ZAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/132] net/qla3xxx: Fix a test in ql_reset_work()
-Date:   Mon, 23 May 2022 19:04:57 +0200
-Message-Id: <20220523165837.690435785@linuxfoundation.org>
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 029/132] ALSA: hda/realtek: Enable headset mic on Lenovo P360
+Date:   Mon, 23 May 2022 19:03:58 +0200
+Message-Id: <20220523165828.351801700@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,46 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 5361448e45fac6fb96738df748229432a62d78b6 ]
+[ Upstream commit 5a8738571747c1e275a40b69a608657603867b7e ]
 
-test_bit() tests if one bit is set or not.
-Here the logic seems to check of bit QL_RESET_PER_SCSI (i.e. 4) OR bit
-QL_RESET_START (i.e. 3) is set.
+Lenovo P360 is another platform equipped with ALC897, and it needs
+ALC897_FIXUP_HEADSET_MIC_PIN quirk to make its headset mic work.
 
-In fact, it checks if bit 7 (4 | 3 = 7) is set, that is to say
-QL_ADAPTER_UP.
-
-This looks harmless, because this bit is likely be set, and when the
-ql_reset_work() delayed work is scheduled in ql3xxx_isr() (the only place
-that schedule this work), QL_RESET_START or QL_RESET_PER_SCSI is set.
-
-This has been spotted by smatch.
-
-Fixes: 5a4faa873782 ("[PATCH] qla3xxx NIC driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/80e73e33f390001d9c0140ffa9baddf6466a41a2.1652637337.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220325160501.705221-1-kai.heng.feng@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qla3xxx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
-index 4eb9ea280474..40d14d80f6f1 100644
---- a/drivers/net/ethernet/qlogic/qla3xxx.c
-+++ b/drivers/net/ethernet/qlogic/qla3xxx.c
-@@ -3612,7 +3612,8 @@ static void ql_reset_work(struct work_struct *work)
- 		qdev->mem_map_registers;
- 	unsigned long hw_flags;
- 
--	if (test_bit((QL_RESET_PER_SCSI | QL_RESET_START), &qdev->flags)) {
-+	if (test_bit(QL_RESET_PER_SCSI, &qdev->flags) ||
-+	    test_bit(QL_RESET_START, &qdev->flags)) {
- 		clear_bit(QL_LINK_MASTER, &qdev->flags);
- 
- 		/*
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 30295283512c..b2e98f15a456 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -10946,6 +10946,7 @@ static const struct snd_pci_quirk alc662_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x144d, 0xc051, "Samsung R720", ALC662_FIXUP_IDEAPAD),
+ 	SND_PCI_QUIRK(0x14cd, 0x5003, "USI", ALC662_FIXUP_USI_HEADSET_MODE),
+ 	SND_PCI_QUIRK(0x17aa, 0x1036, "Lenovo P520", ALC662_FIXUP_LENOVO_MULTI_CODECS),
++	SND_PCI_QUIRK(0x17aa, 0x1057, "Lenovo P360", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32ca, "Lenovo ThinkCentre M80", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32cb, "Lenovo ThinkCentre M70", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32cf, "Lenovo ThinkCentre M950", ALC897_FIXUP_HEADSET_MIC_PIN),
 -- 
 2.35.1
 
