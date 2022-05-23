@@ -2,167 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC064C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232253AbiEWIuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
+        id S232310AbiEWIwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232209AbiEWIuN (ORCPT
+        with ESMTP id S232281AbiEWIwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:50:13 -0400
-Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FDF6472
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:50:10 -0700 (PDT)
-Received: from pro2.mail.ovh.net (unknown [10.109.143.120])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 8F21E10347F4B;
-        Mon, 23 May 2022 10:50:08 +0200 (CEST)
-Received: from localhost.localdomain (88.161.25.233) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Mon, 23 May
- 2022 10:50:08 +0200
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-CC:     <linux-leds@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/3] dt-bindings: leds: Add bindings for the TLC5925 controller
-Date:   Mon, 23 May 2022 10:49:55 +0200
-Message-ID: <20220523084958.2723943-2-jjhiblot@traphandler.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220523084958.2723943-1-jjhiblot@traphandler.com>
-References: <20220523084958.2723943-1-jjhiblot@traphandler.com>
+        Mon, 23 May 2022 04:52:04 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BAF20F4D;
+        Mon, 23 May 2022 01:52:02 -0700 (PDT)
+To:     darrick.wong@oracle.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1653295920;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=p6JOuyT3DSojfUixE8gaeIKjisvo2m+Tz2TF4gr0GZo=;
+        b=M9vZ4/4mZO4gAUxBz5VrBszq9zvFM+CnIkIkEVmhn9/Yl5JBhNm1vDsAR2xSjnNs+JVqm4
+        35ugDJtwDA7hM71OUSEveydyQ6UXgeEYzr0VdaMDuy2OypNeVlY+baRfyBVhDYCN3CHdOS
+        59f1WG9EIW70VTUVsqR5FxKM54h8O8U=
+Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Jackie Liu <liu.yun@linux.dev>
+Subject: [BUG report] security_inode_alloc return -ENOMEM let xfs shutdown
+Message-ID: <5a3a9cdc-33c3-4196-b8f7-bfec485eae5b@linux.dev>
+Date:   Mon, 23 May 2022 16:51:50 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [88.161.25.233]
-X-ClientProxiedBy: DAG8EX2.emp2.local (172.16.2.82) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 5386305156936645083
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrjedtgddutdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpedttdffveeljeetleeijefhffevtdffleejheejiefgjeeludefvdevjedutdejhfenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgnecukfhppedtrddtrddtrddtpdekkedrudeiuddrvdehrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehjjhhhihgslhhothesthhrrghphhgrnhgulhgvrhdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings documentation for the TLC5925 LED controller.
+Hello Maintainer and developer.
 
-Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
----
-devicetree@vger.kernel.org
- .../bindings/leds/leds-tlc5925.yaml           | 100 ++++++++++++++++++
- 1 file changed, 100 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
+    Syzkaller report an filesystem shutdown for me, It's very easy to
+trigger and also exists on the latest kernel version 5.18-rc7.
 
-diff --git a/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml b/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
-new file mode 100644
-index 000000000000..156db599d5a1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/leds/leds-tlc5925.yaml
-@@ -0,0 +1,100 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/leds/leds-tlc5925.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: LEDs connected to TI TLC5925 controller
-+
-+maintainers:
-+  - Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-+
-+description: |
-+  The TLC5925 is a low-power 16-channel constant-current LED sink driver.
-+  It is controlled through a SPI interface.
-+  It is built around a shift register and latches which convert serial
-+  input data into a parallel output. Several TLC5925 can be chained to
-+  control more than 16 LEDs with a single chip-select.
-+  The brightness level cannot be controlled, each LED is either on or off.
-+
-+  Each LED is represented as a sub-node of the ti,tlc5925 device.
-+
-+properties:
-+  compatible:
-+    const: ti,tlc5925
-+
-+  shift_register_length:
-+    maxItems: 1
-+    description: |
-+      The length of the shift register. If several TLC5925 are chained,
-+      shift_register_length should be set to 16 times the number of TLC5925.
-+      The value must be a multiple of 8.
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  output-enable-b-gpios:
-+    description: |
-+      GPIO pins to enable/disable the parallel output. They describe the GPIOs
-+      connected to the OE/ pin of the TLC5925s.
-+
-+patternProperties:
-+  "@[a-f0-9]+$":
-+    type: object
-+
-+    $ref: common.yaml#
-+
-+    properties:
-+      reg:
-+        items:
-+        description: |
-+          LED pin number (must be lower than shift_register_length).
-+          The furthest LED down the chain has the pin number 0.
-+
-+    required:
-+      - reg
-+
-+required:
-+  - reg
-+  - "#address-cells"
-+  - "#size-cells"
-+  - shift_register_length
-+
-+examples:
-+  - |
-+    &spi0 {
-+        leds@2 {
-+                compatible = "ti,tlc5925";
-+                reg = <0x02>;
-+                spi-max-frequency = <30000000>;
-+                shift_register_length = <32>;
-+                output-enable-b-gpios = <&gpio0b 9 GPIO_ACTIVE_HIGH>, <&gpio0b 7 GPIO_ACTIVE_HIGH>;
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                led-satus@0 {
-+                        reg = <0>;
-+                        function = LED_FUNCTION_STATUS;
-+                        color = <LED_COLOR_ID_GREEN>;
-+                };
-+
-+                led-satus@4 {
-+                        reg = <4>;
-+                        function = LED_FUNCTION_STATUS;
-+                        color = <LED_COLOR_ID_RED>;
-+                };
-+
-+                led-alive@24 {
-+                        reg = <24>;
-+                        label = "green:alive"
-+                };
-+
-+                led-panic@31 {
-+                        reg = <31>;
-+                        label = "red:panic"
-+                };
-+        };
-+    };
--- 
-2.25.1
+dmesg shows:
 
+[  285.725893] FAULT_INJECTION: forcing a failure.
+                name failslab, interval 1, probability 0, space 0, times 0
+[  285.729625] CPU: 7 PID: 18034 Comm: syz-executor Not tainted 
+4.19.90-43+ #7
+[  285.731420] Source Version: b62cabdd86181d386998660ebf34ca653addd6c9
+[  285.733051] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 
+02/06/2015
+[  285.734796] Call trace:
+[  285.735614]  dump_backtrace+0x0/0x3e0
+[  285.736609]  show_stack+0x2c/0x38
+[  285.737525]  dump_stack+0x164/0x1fc
+[  285.738489]  should_fail+0x5c0/0x688
+[  285.739555]  __should_failslab+0x118/0x180
+[  285.740725]  should_failslab+0x2c/0x78
+[  285.741808]  kmem_cache_alloc_trace+0x270/0x410
+[  285.743120]  security_inode_alloc+0x100/0x1a8
+[  285.744356]  inode_init_always+0x48c/0xa28
+[  285.745524]  xfs_iget_cache_hit+0x9c0/0x2f28
+[  285.746739]  xfs_iget+0x33c/0x9e0
+[  285.747708]  xfs_ialloc+0x218/0x11c0
+[  285.748752]  xfs_dir_ialloc+0xe8/0x480
+[  285.749832]  xfs_create+0x5bc/0x1220
+[  285.750871]  xfs_generic_create+0x42c/0x568
+[  285.752053]  xfs_vn_mknod+0x48/0x58
+[  285.753067]  xfs_vn_create+0x40/0x50
+[  285.754106]  lookup_open+0x960/0x1580
+[  285.755176]  do_last+0xd44/0x2180
+[  285.756149]  path_openat+0x1a0/0x6d0
+[  285.757187]  do_filp_open+0x14c/0x208
+[  285.758245]  do_sys_open+0x340/0x470
+[  285.759289]  __arm64_sys_openat+0x98/0xd8
+[  285.760438]  el0_svc_common+0x230/0x3f0
+[  285.761541]  el0_svc_handler+0x144/0x1a8
+[  285.762674]  el0_svc+0x8/0x1b0
+[  285.763737] security_inode_alloc:796
+[  285.764733] inode_init_always:202
+[  285.765669] xfs_create:1213
+[  285.766485] XFS (dm-0): Internal error xfs_trans_cancel at line 1046 
+of file fs/xfs/xfs_trans.c.  Caller xfs_create+0x700/0x1220
+[  285.769503] CPU: 7 PID: 18034 Comm: syz-executor Not tainted 
+4.19.90-43+ #7
+[  285.771275] Source Version: b62cabdd86181d386998660ebf34ca653addd6c9
+[  285.772892] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 
+02/06/2015
+[  285.774625] Call trace:
+[  285.775335]  dump_backtrace+0x0/0x3e0
+[  285.776324]  show_stack+0x2c/0x38
+[  285.777236]  dump_stack+0x164/0x1fc
+[  285.778188]  xfs_error_report+0xdc/0xe0
+[  285.779292]  xfs_trans_cancel+0x490/0x878
+[  285.780439]  xfs_create+0x700/0x1220
+[  285.781477]  xfs_generic_create+0x42c/0x568
+[  285.782673]  xfs_vn_mknod+0x48/0x58
+[  285.783687]  xfs_vn_create+0x40/0x50
+[  285.784724]  lookup_open+0x960/0x1580
+[  285.785782]  do_last+0xd44/0x2180
+[  285.786760]  path_openat+0x1a0/0x6d0
+[  285.787791]  do_filp_open+0x14c/0x208
+[  285.788844]  do_sys_open+0x340/0x470
+[  285.789880]  __arm64_sys_openat+0x98/0xd8
+[  285.791039]  el0_svc_common+0x230/0x3f0
+[  285.792139]  el0_svc_handler+0x144/0x1a8
+[  285.793260]  el0_svc+0x8/0x1b0
+[  285.794283] XFS (dm-0): xfs_do_force_shutdown(0x8) called from line 
+1047 of file fs/xfs/xfs_trans.c.  Return address = 00000000a4a366b9
+[  285.816187] XFS (dm-0): Corruption of in-memory data detected. 
+Shutting down filesystem
+[  285.818476] XFS (dm-0): Please umount the filesystem and rectify the 
+problem(s)
+
+I found that it is not allowed to fail when alloc xfs_inode in
+xfs_inode_alloc , but allow inode_init_always to report -ENOMEM?
+
+inode_init_always is not failed by security_inode_alloc.
+
+I have test the patch:
+
+diff --git a/fs/xfs/xfs_icache.c b/fs/xfs/xfs_icache.c
+index ceee27b70384..609ad96e29e9 100644
+--- a/fs/xfs/xfs_icache.c
++++ b/fs/xfs/xfs_icache.c
+@@ -43,12 +43,14 @@ xfs_inode_alloc(
+          * code up to do this anyway.
+          */
+         ip = kmem_zone_alloc(xfs_inode_zone, KM_SLEEP);
+-       if (!ip)
+-               return NULL;
+-       if (inode_init_always(mp->m_super, VFS_I(ip))) {
+-               kmem_zone_free(xfs_inode_zone, ip);
++       if (!ip) {
++               pr_err("%s:%d\n", __func__, __LINE__);
+                 return NULL;
+         }
++       while (inode_init_always(mp->m_super, VFS_I(ip)) != 0) {
++               pr_err("%s:%d\n", __func__, __LINE__);
++               pr_err("111\n");
++       }
+
+         /* VFS doesn't initialise i_mode! */
+         VFS_I(ip)->i_mode = 0;
+@@ -280,7 +282,7 @@ xfs_reinit_inode(
+         struct xfs_mount        *mp,
+         struct inode            *inode)
+  {
+-       int             error;
++       int             error = 0;
+         uint32_t        nlink = inode->i_nlink;
+         uint32_t        generation = inode->i_generation;
+         uint64_t        version = inode_peek_iversion(inode);
+@@ -289,7 +291,7 @@ xfs_reinit_inode(
+         kuid_t          uid = inode->i_uid;
+         kgid_t          gid = inode->i_gid;
+
+-       error = inode_init_always(mp->m_super, inode);
++       while (inode_init_always(mp->m_super, inode) != 0);
+
+         set_nlink(inode, nlink);
+         inode->i_generation = generation;
+
+syzkaller works fine.
+
+Does anyone help me, Any suggestion is welcome.
+
+--
+BR, Jackie Liu
