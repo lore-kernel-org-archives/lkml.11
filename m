@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAC4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243545AbiEWSP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
+        id S243736AbiEWSPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244836AbiEWRwj (ORCPT
+        with ESMTP id S244789AbiEWRwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:52:39 -0400
+        Mon, 23 May 2022 13:52:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DA373552;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EA373576;
         Mon, 23 May 2022 10:41:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC6AEB811A1;
-        Mon, 23 May 2022 17:29:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44AB5C385A9;
-        Mon, 23 May 2022 17:29:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8C4DB81219;
+        Mon, 23 May 2022 17:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A3ECC385AA;
+        Mon, 23 May 2022 17:29:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326991;
-        bh=Kbw3Xnbq7oGP6QE0nQJ/oVo/wLpyBdbsLPrTHZNtse0=;
+        s=korg; t=1653326988;
+        bh=J+W5aT3WGDjIPtqn7XtpRBsj1Mc+Le+0Eohj62Ypi/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffzRN2h4BW52jvgtSJf212PAk9s/9hP51zSwecS+jFWAgBUTK62Q7PnDpAPx388HJ
-         hNVB97l1OxOF9+KI5GcNXJqoBCyL9c67P4aJhZ/WPn0Wx6GgBVJQuUF/YisjkDqLzQ
-         G60mvOcQqiHiVkNsLG+kM+ScG3ClJLWmh2s2LsKY=
+        b=UfwqP0e/Bx3vScoFpRdVAkNS+ECWvmv5/RItXvSz/lgb5TD9UpCp7axmo1qyMfFNG
+         /AU6wJA93y8/P6LBpeqEfkcvK1eauQWayT5RA57OdyupRmxKJV8fxqtuRRXpH9iH35
+         8YCnCvnaki02og6XTV9K0bWZI+OBjaJrbhcYQlhw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        stable@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 122/158] riscv: dts: sifive: fu540-c000: align dma node name with dtschema
-Date:   Mon, 23 May 2022 19:04:39 +0200
-Message-Id: <20220523165850.970191315@linuxfoundation.org>
+Subject: [PATCH 5.17 121/158] net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
+Date:   Mon, 23 May 2022 19:04:38 +0200
+Message-Id: <20220523165850.824312357@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,36 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Andrew Lunn <andrew@lunn.ch>
 
-[ Upstream commit b17410182b6f98191fbf7f42d3b4a78512769d29 ]
+[ Upstream commit fbb3abdf2223cd0dfc07de85fe5a43ba7f435bdf ]
 
-Fixes dtbs_check warnings like:
+It is possible to stack bridges on top of each other. Consider the
+following which makes use of an Ethernet switch:
 
-  dma@3000000: $nodename:0: 'dma@3000000' does not match '^dma-controller(@.*)?$'
+       br1
+     /    \
+    /      \
+   /        \
+ br0.11    wlan0
+   |
+   br0
+ /  |  \
+p1  p2  p3
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20220407193856.18223-1-krzysztof.kozlowski@linaro.org
-Fixes: c5ab54e9945b ("riscv: dts: add support for PDMA device of HiFive Unleashed Rev A00")
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+br0 is offloaded to the switch. Above br0 is a vlan interface, for
+vlan 11. This vlan interface is then a slave of br1. br1 also has a
+wireless interface as a slave. This setup trunks wireless lan traffic
+over the copper network inside a VLAN.
+
+A frame received on p1 which is passed up to the bridge has the
+skb->offload_fwd_mark flag set to true, indicating that the switch has
+dealt with forwarding the frame out ports p2 and p3 as needed. This
+flag instructs the software bridge it does not need to pass the frame
+back down again. However, the flag is not getting reset when the frame
+is passed upwards. As a result br1 sees the flag, wrongly interprets
+it, and fails to forward the frame to wlan0.
+
+When passing a frame upwards, clear the flag. This is the Rx
+equivalent of br_switchdev_frame_unmark() in br_dev_xmit().
+
+Fixes: f1c2eddf4cb6 ("bridge: switchdev: Use an helper to clear forward mark")
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Link: https://lore.kernel.org/r/20220518005840.771575-1-andrew@lunn.ch
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/boot/dts/sifive/fu540-c000.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bridge/br_input.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-index 3eef52b1a59b..fd93fdadd28c 100644
---- a/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-+++ b/arch/riscv/boot/dts/sifive/fu540-c000.dtsi
-@@ -167,7 +167,7 @@ uart0: serial@10010000 {
- 			clocks = <&prci PRCI_CLK_TLCLK>;
- 			status = "disabled";
- 		};
--		dma: dma@3000000 {
-+		dma: dma-controller@3000000 {
- 			compatible = "sifive,fu540-c000-pdma";
- 			reg = <0x0 0x3000000 0x0 0x8000>;
- 			interrupt-parent = <&plic0>;
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index b50382f957c1..6743c8a0fe8e 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -39,6 +39,13 @@ static int br_pass_frame_up(struct sk_buff *skb)
+ 	dev_sw_netstats_rx_add(brdev, skb->len);
+ 
+ 	vg = br_vlan_group_rcu(br);
++
++	/* Reset the offload_fwd_mark because there could be a stacked
++	 * bridge above, and it should not think this bridge it doing
++	 * that bridge's work forwarding out its ports.
++	 */
++	br_switchdev_frame_unmark(skb);
++
+ 	/* Bridge is just like any other port.  Make sure the
+ 	 * packet is allowed except in promisc mode when someone
+ 	 * may be running packet capture.
 -- 
 2.35.1
 
