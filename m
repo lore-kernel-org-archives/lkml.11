@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5403CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44AB9C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242775AbiEWR2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        id S242686AbiEWR14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240078AbiEWRRh (ORCPT
+        with ESMTP id S240106AbiEWRRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:17:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29216B01D;
-        Mon, 23 May 2022 10:17:27 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2539A71D88;
+        Mon, 23 May 2022 10:17:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33B4BB8120F;
-        Mon, 23 May 2022 17:16:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92533C385A9;
-        Mon, 23 May 2022 17:16:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 994D0608C3;
+        Mon, 23 May 2022 17:16:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9810EC385A9;
+        Mon, 23 May 2022 17:16:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326195;
-        bh=swIo136IsHng1dT04gSTrXitKjan17dRn0tPzp22T3w=;
+        s=korg; t=1653326198;
+        bh=EH69Z5XiNYzDbxjM0ck1W39n8wl/6fzKXeS4geIBYDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OyvH9FkmnIMJKvhiLegNfrfU0WkICVkh9TgRntyJLRDn2A6pW85QDj9HjG81kXpld
-         0pEWV3DgUdust6nlA82P7P7yYPL3HLuOYg6pQroEgKJyQsfwaUcH62YyvPqzsF9Co8
-         Gg0TKLTEJjxvG2oBseaau6Hsya/7Z219S/GpPaHA=
+        b=H71RF3+ebAxMuIk+S2R4iDHFFdFzaVIoCZQVoszqUUh3iYIdXN51el85mlvobCvSe
+         lKNCXsxZ4pffyTLxtSSmIJMF6f2IB4E12diU+wBPCDHWCKEe2uUvlK+Aat88C9Xwfu
+         SAJZQEIl6gk6JeonFEpdGqVZUf2Xn6v/m0UKIRow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 18/97] ALSA: hda/realtek: Enable headset mic on Lenovo P360
-Date:   Mon, 23 May 2022 19:05:22 +0200
-Message-Id: <20220523165815.183213680@linuxfoundation.org>
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH 5.4 60/68] block: return ELEVATOR_DISCARD_MERGE if possible
+Date:   Mon, 23 May 2022 19:05:27 +0200
+Message-Id: <20220523165812.360622432@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +50,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit 5a8738571747c1e275a40b69a608657603867b7e ]
+commit 866663b7b52d2da267b28e12eed89ee781b8fed1 upstream.
 
-Lenovo P360 is another platform equipped with ALC897, and it needs
-ALC897_FIXUP_HEADSET_MIC_PIN quirk to make its headset mic work.
+When merging one bio to request, if they are discard IO and the queue
+supports multi-range discard, we need to return ELEVATOR_DISCARD_MERGE
+because both block core and related drivers(nvme, virtio-blk) doesn't
+handle mixed discard io merge(traditional IO merge together with
+discard merge) well.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20220325160501.705221-1-kai.heng.feng@canonical.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix the issue by returning ELEVATOR_DISCARD_MERGE in this situation,
+so both blk-mq and drivers just need to handle multi-range discard.
+
+Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Fixes: 2705dfb20947 ("block: fix discard request merge")
+Link: https://lore.kernel.org/r/20210729034226.1591070-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c | 1 +
- 1 file changed, 1 insertion(+)
+ block/bfq-iosched.c    |    3 +++
+ block/blk-merge.c      |   15 ---------------
+ block/elevator.c       |    3 +++
+ block/mq-deadline.c    |    2 ++
+ include/linux/blkdev.h |   16 ++++++++++++++++
+ 5 files changed, 24 insertions(+), 15 deletions(-)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index a5b1fd62a99c..3f880c4fd5e0 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -10876,6 +10876,7 @@ static const struct snd_pci_quirk alc662_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x144d, 0xc051, "Samsung R720", ALC662_FIXUP_IDEAPAD),
- 	SND_PCI_QUIRK(0x14cd, 0x5003, "USI", ALC662_FIXUP_USI_HEADSET_MODE),
- 	SND_PCI_QUIRK(0x17aa, 0x1036, "Lenovo P520", ALC662_FIXUP_LENOVO_MULTI_CODECS),
-+	SND_PCI_QUIRK(0x17aa, 0x1057, "Lenovo P360", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32ca, "Lenovo ThinkCentre M80", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32cb, "Lenovo ThinkCentre M70", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32cf, "Lenovo ThinkCentre M950", ALC897_FIXUP_HEADSET_MIC_PIN),
--- 
-2.35.1
-
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2251,6 +2251,9 @@ static int bfq_request_merge(struct requ
+ 	__rq = bfq_find_rq_fmerge(bfqd, bio, q);
+ 	if (__rq && elv_bio_merge_ok(__rq, bio)) {
+ 		*req = __rq;
++
++		if (blk_discard_mergable(__rq))
++			return ELEVATOR_DISCARD_MERGE;
+ 		return ELEVATOR_FRONT_MERGE;
+ 	}
+ 
+--- a/block/blk-merge.c
++++ b/block/blk-merge.c
+@@ -721,21 +721,6 @@ static void blk_account_io_merge(struct
+ 		part_stat_unlock();
+ 	}
+ }
+-/*
+- * Two cases of handling DISCARD merge:
+- * If max_discard_segments > 1, the driver takes every bio
+- * as a range and send them to controller together. The ranges
+- * needn't to be contiguous.
+- * Otherwise, the bios/requests will be handled as same as
+- * others which should be contiguous.
+- */
+-static inline bool blk_discard_mergable(struct request *req)
+-{
+-	if (req_op(req) == REQ_OP_DISCARD &&
+-	    queue_max_discard_segments(req->q) > 1)
+-		return true;
+-	return false;
+-}
+ 
+ static enum elv_merge blk_try_req_merge(struct request *req,
+ 					struct request *next)
+--- a/block/elevator.c
++++ b/block/elevator.c
+@@ -337,6 +337,9 @@ enum elv_merge elv_merge(struct request_
+ 	__rq = elv_rqhash_find(q, bio->bi_iter.bi_sector);
+ 	if (__rq && elv_bio_merge_ok(__rq, bio)) {
+ 		*req = __rq;
++
++		if (blk_discard_mergable(__rq))
++			return ELEVATOR_DISCARD_MERGE;
+ 		return ELEVATOR_BACK_MERGE;
+ 	}
+ 
+--- a/block/mq-deadline.c
++++ b/block/mq-deadline.c
+@@ -452,6 +452,8 @@ static int dd_request_merge(struct reque
+ 
+ 		if (elv_bio_merge_ok(__rq, bio)) {
+ 			*rq = __rq;
++			if (blk_discard_mergable(__rq))
++				return ELEVATOR_DISCARD_MERGE;
+ 			return ELEVATOR_FRONT_MERGE;
+ 		}
+ 	}
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1409,6 +1409,22 @@ static inline int queue_limit_discard_al
+ 	return offset << SECTOR_SHIFT;
+ }
+ 
++/*
++ * Two cases of handling DISCARD merge:
++ * If max_discard_segments > 1, the driver takes every bio
++ * as a range and send them to controller together. The ranges
++ * needn't to be contiguous.
++ * Otherwise, the bios/requests will be handled as same as
++ * others which should be contiguous.
++ */
++static inline bool blk_discard_mergable(struct request *req)
++{
++	if (req_op(req) == REQ_OP_DISCARD &&
++	    queue_max_discard_segments(req->q) > 1)
++		return true;
++	return false;
++}
++
+ static inline int bdev_discard_alignment(struct block_device *bdev)
+ {
+ 	struct request_queue *q = bdev_get_queue(bdev);
 
 
