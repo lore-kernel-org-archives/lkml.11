@@ -2,50 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCF3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 151B2C35296
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245219AbiEWSHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:07:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        id S245139AbiEWSHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244110AbiEWRiw (ORCPT
+        with ESMTP id S243793AbiEWRi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE32299680;
-        Mon, 23 May 2022 10:33:17 -0700 (PDT)
+        Mon, 23 May 2022 13:38:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F221939F4;
+        Mon, 23 May 2022 10:32:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4D01B811FF;
-        Mon, 23 May 2022 17:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 187A6C385A9;
-        Mon, 23 May 2022 17:30:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A83D61274;
+        Mon, 23 May 2022 17:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1401EC385A9;
+        Mon, 23 May 2022 17:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327017;
-        bh=lxYW3mkhaz99pmAtcNmmuE12bsbVyXiI8wvqBE9mi0U=;
+        s=korg; t=1653327111;
+        bh=1qHNBJuS77VJ2N1x92VkPHw4z8C7RONAALqWccL52UU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OxnMitZ6uuHXzztfzENz5EFFIhds1P1OPAsEjb+zICWMGbvBuXWVCMsH9oXQrFzIt
-         PXGQ+CqUPKMRR7LyhHPIvLhHl8m1UGTPm6IVNDVbJBetHEPr6xft32gW9NcEnSxi/k
-         FIPzwP0A0TcL/7L2zhN4QQxGy4ggSd9xz+09nH6Q=
+        b=N/B/o8AOkHbcjd79AnCJc+AF+hLEY3DIvOtk9+ZDYmhU2YweUadTBJVO4eKWTMj6G
+         GRa6aW4ddoo/3k63rc0YrcRIxUkt8BdPDvSR3PMShwBMwWiq8eXh3wqzkiFwsJCzzy
+         UocwZJr44x8aMs5ncCYZC38VCBwcczVeU1u6hsZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
-        Ian Rogers <irogers@google.com>,
-        Disha Goel <disgoel@linux.vnet.ibm.com>,
-        Jiri Olsa <jolsa@kernel.org>, Kajol Jain <kjain@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nageswara R Sastry <rnsastry@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 129/158] perf test: Fix "all PMU test" to skip hv_24x7/hv_gpci tests on powerpc
-Date:   Mon, 23 May 2022 19:04:46 +0200
-Message-Id: <20220523165851.912540965@linuxfoundation.org>
+Subject: [PATCH 5.17 135/158] mac80211: fix rx reordering with non explicit / psmp ack policy
+Date:   Mon, 23 May 2022 19:04:52 +0200
+Message-Id: <20220523165852.712438047@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -57,63 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 451ed8058c69a3fee29fa9e2967a4e22a221fe75 ]
+[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
 
-"perf all PMU test" picks the input events from "perf list --raw-dump
-pmu" list and runs "perf stat -e" for each of the event in the list. In
-case of powerpc, the PowerVM environment supports events from hv_24x7
-and hv_gpci PMU which is of example format like below:
+When the QoS ack policy was set to non explicit / psmp ack, frames are treated
+as not being part of a BA session, which causes extra latency on reordering.
+Fix this by only bypassing reordering for packets with no-ack policy
 
-- hv_24x7/CPM_ADJUNCT_INST,domain=?,core=?/
-- hv_gpci/event,partition_id=?/
-
-The value for "?" needs to be filled in depending on system and
-respective event. CPM_ADJUNCT_INST needs have core value and domain
-value. hv_gpci event needs partition_id.  Similarly, there are other
-events for hv_24x7 and hv_gpci having "?" in event format. Hence skip
-these events on powerpc platform since values like partition_id, domain
-is specific to system and event.
-
-Fixes: 3d5ac9effcc640d5 ("perf test: Workload test of all PMUs")
-Signed-off-by: Athira Jajeev <atrajeev@linux.vnet.ibm.com>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Disha Goel <disgoel@linux.vnet.ibm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Kajol Jain <kjain@linux.ibm.com>
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Nageswara R Sastry <rnsastry@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220520101236.17249-1-atrajeev@linux.vnet.ibm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/tests/shell/stat_all_pmu.sh | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/mac80211/rx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/tools/perf/tests/shell/stat_all_pmu.sh b/tools/perf/tests/shell/stat_all_pmu.sh
-index b30dba455f36..9c9ef33e0b3c 100755
---- a/tools/perf/tests/shell/stat_all_pmu.sh
-+++ b/tools/perf/tests/shell/stat_all_pmu.sh
-@@ -5,6 +5,16 @@
- set -e
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 48d9553dafe3..7e2404fd85b6 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1405,8 +1405,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
+ 		goto dont_reorder;
  
- for p in $(perf list --raw-dump pmu); do
-+  # In powerpc, skip the events for hv_24x7 and hv_gpci.
-+  # These events needs input values to be filled in for
-+  # core, chip, partition id based on system.
-+  # Example: hv_24x7/CPM_ADJUNCT_INST,domain=?,core=?/
-+  # hv_gpci/event,partition_id=?/
-+  # Hence skip these events for ppc.
-+  if echo "$p" |grep -Eq 'hv_24x7|hv_gpci' ; then
-+    echo "Skipping: Event '$p' in powerpc"
-+    continue
-+  fi
-   echo "Testing $p"
-   result=$(perf stat -e "$p" true 2>&1)
-   if ! echo "$result" | grep -q "$p" && ! echo "$result" | grep -q "<not supported>" ; then
+ 	/* not part of a BA session */
+-	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
+-	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
++	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
+ 		goto dont_reorder;
+ 
+ 	/* new, potentially un-ordered, ampdu frame - process it */
 -- 
 2.35.1
 
