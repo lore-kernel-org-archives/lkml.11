@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13CDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240484AbiEWRTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
+        id S240152AbiEWRTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240620AbiEWRQe (ORCPT
+        with ESMTP id S240597AbiEWRQc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:34 -0400
+        Mon, 23 May 2022 13:16:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5837160C6;
-        Mon, 23 May 2022 10:16:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386D719C09;
+        Mon, 23 May 2022 10:16:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2534A61535;
-        Mon, 23 May 2022 17:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF62C34115;
-        Mon, 23 May 2022 17:15:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 554896149F;
+        Mon, 23 May 2022 17:12:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A06FC385A9;
+        Mon, 23 May 2022 17:12:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326127;
-        bh=fVbpWz7mvtZzq2d/Vrx1QGCm7tLdV6mrBEKJVLAYw64=;
+        s=korg; t=1653325972;
+        bh=06V9Vus7Vl3yeRD0Rjb/alorKB/rQRDsxaTTsJpkre8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SW0ifRfFsUuHMUZCR1BN9hFgDrqw9AJglA/g2EnOjrVy4o/QONp1wvBEjQ8lJAsNb
-         hkJanaCpKHrFN/sNR/tH3N1PisqezYMZbp4Pj3QcZoPiqQJeqBmMVLdUPdn7Ki2RCq
-         iWvlgR5YgjJpaNlqmHNZhFejby7QL18bEafyVJrw=
+        b=fMNHpgEufz8NH4WepGaXEvu31fcREeEoiKnFwiM32zLG13wCm5gD9+xJQaX2PHzPv
+         JuxvYUIV+aV1LEFH52SPc0KI6znjclhXHVZcSKStAm05cyMh2dSjQa3qkCQTOnIxCG
+         P5+p2IcSulaCW7qxc+jna8xrQZ8EvlFZxP8cUoTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.4 32/68] drm/dp/mst: fix a possible memory leak in fetch_monitor_name()
-Date:   Mon, 23 May 2022 19:04:59 +0200
-Message-Id: <20220523165807.924092270@linuxfoundation.org>
+        stable@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>,
+        Juergen Gross <jgross@suse.com>,
+        Markus Boehme <markubo@amazon.com>
+Subject: [PATCH 5.4 02/68] x86/xen: Make the boot CPU idle task reliable
+Date:   Mon, 23 May 2022 19:04:29 +0200
+Message-Id: <20220523165802.934260353@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -48,32 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Miroslav Benes <mbenes@suse.cz>
 
-commit 6e03b13cc7d9427c2c77feed1549191015615202 upstream.
+commit 2f62f36e62daec43aa7b9633ef7f18e042a80bed upstream.
 
-drm_dp_mst_get_edid call kmemdup to create mst_edid. So mst_edid need to be
-freed after use.
+The unwinder reports the boot CPU idle task's stack on XEN PV as
+unreliable, which affects at least live patching. There are two reasons
+for this. First, the task does not follow the x86 convention that its
+stack starts at the offset right below saved pt_regs. It allows the
+unwinder to easily detect the end of the stack and verify it. Second,
+startup_xen() function does not store the return address before jumping
+to xen_start_kernel() which confuses the unwinder.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Cc: stable@vger.kernel.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220516032042.13166-1-hbh25y@gmail.com
+Amend both issues by moving the starting point of initial stack in
+startup_xen() and storing the return address before the jump, which is
+exactly what call instruction does.
+
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Markus Boehme <markubo@amazon.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_dp_mst_topology.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/xen/xen-head.S |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/drm_dp_mst_topology.c
-+++ b/drivers/gpu/drm/drm_dp_mst_topology.c
-@@ -3657,6 +3657,7 @@ static void fetch_monitor_name(struct dr
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -35,7 +35,11 @@ ENTRY(startup_xen)
+ 	rep __ASM_SIZE(stos)
  
- 	mst_edid = drm_dp_mst_get_edid(port->connector, mgr, port);
- 	drm_edid_get_monitor_name(mst_edid, name, namelen);
-+	kfree(mst_edid);
- }
+ 	mov %_ASM_SI, xen_start_info
+-	mov $init_thread_union+THREAD_SIZE, %_ASM_SP
++#ifdef CONFIG_X86_64
++	mov initial_stack(%rip), %rsp
++#else
++	mov pa(initial_stack), %esp
++#endif
  
- /**
+ #ifdef CONFIG_X86_64
+ 	/* Set up %gs.
+@@ -51,7 +55,7 @@ ENTRY(startup_xen)
+ 	wrmsr
+ #endif
+ 
+-	jmp xen_start_kernel
++	call xen_start_kernel
+ END(startup_xen)
+ 	__FINIT
+ #endif
 
 
