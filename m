@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B61C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38BDC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244270AbiEWSGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37710 "EHLO
+        id S244691AbiEWSHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243146AbiEWRhy (ORCPT
+        with ESMTP id S243626AbiEWRiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:54 -0400
+        Mon, 23 May 2022 13:38:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4311A7A47E;
-        Mon, 23 May 2022 10:32:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC2093996;
+        Mon, 23 May 2022 10:32:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3AFCB81201;
-        Mon, 23 May 2022 17:30:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 240C6C34115;
-        Mon, 23 May 2022 17:30:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C97D5B81227;
+        Mon, 23 May 2022 17:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C93A6C385A9;
+        Mon, 23 May 2022 17:31:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327001;
-        bh=EpJkC7kTnHmaFTqFlnkMeVZeMzfMC+I02j0S0pN1mms=;
+        s=korg; t=1653327105;
+        bh=qSmR5E7RYaAZaARo/MP2Fh7BsQDVD2MLFAr7or8Gw0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h61YY2SMxxabvj++fqHFAQD08YONpvAnYidq0LfHiHzVxv7Gbc1dk4CmEt6CPFzoN
-         N6yvswW0YxYEA7Sjjjb/R2pbweXrxVqyB9/ydTrvJCrUGNmWRTYB2M8tyEi8g/tDvo
-         z3myaVj88QkQrfGZd4W/bcaJwbJ/auWRUKmPBqoo=
+        b=RM3/KDte2kGxcg5Z7/TbM3wKSXB7amdjjhYKk5FECt8iJG8bfxUtZBgSfEYNHcVQU
+         4GD5Ej8M/5swHpbxNZPyutJGezALppaMAYJsAsPO9dENZ8CUaHWFvuk41cw7CAsKon
+         wFBFR7K6HH73dYHmcm5MTkyb5s6/e7nevzo2Znj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aaron Lewis <aaronlewis@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Stefan Roese <sr@denx.de>, Wolfram Sang <wsa@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 124/158] kvm: x86/pmu: Fix the compare function used by the pmu event filter
-Date:   Mon, 23 May 2022 19:04:41 +0200
-Message-Id: <20220523165851.232347554@linuxfoundation.org>
+Subject: [PATCH 5.17 157/158] i2c: mt7621: fix missing clk_disable_unprepare() on error in mtk_i2c_probe()
+Date:   Mon, 23 May 2022 19:05:14 +0200
+Message-Id: <20220523165856.200911142@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,47 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aaron Lewis <aaronlewis@google.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 4ac19ead0dfbabd8e0bfc731f507cfb0b95d6c99 ]
+[ Upstream commit a2537c98a8a3b57002e54a262d180b9490bc7190 ]
 
-When returning from the compare function the u64 is truncated to an
-int.  This results in a loss of the high nybble[1] in the event select
-and its sign if that nybble is in use.  Switch from using a result that
-can end up being truncated to a result that can only be: 1, 0, -1.
+Fix the missing clk_disable_unprepare() before return
+from mtk_i2c_probe() in the error handling case.
 
-[1] bits 35:32 in the event select register and bits 11:8 in the event
-    select.
-
-Fixes: 7ff775aca48ad ("KVM: x86/pmu: Use binary search to check filtered events")
-Signed-off-by: Aaron Lewis <aaronlewis@google.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220517051238.2566934-1-aaronlewis@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: d04913ec5f89 ("i2c: mt7621: Add MediaTek MT7621/7628/7688 I2C driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Stefan Roese <sr@denx.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/pmu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/i2c/busses/i2c-mt7621.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index eca39f56c231..0604bc29f0b8 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -171,9 +171,12 @@ static bool pmc_resume_counter(struct kvm_pmc *pmc)
- 	return true;
- }
+diff --git a/drivers/i2c/busses/i2c-mt7621.c b/drivers/i2c/busses/i2c-mt7621.c
+index 45fe4a7fe0c0..901f0fb04fee 100644
+--- a/drivers/i2c/busses/i2c-mt7621.c
++++ b/drivers/i2c/busses/i2c-mt7621.c
+@@ -304,7 +304,8 @@ static int mtk_i2c_probe(struct platform_device *pdev)
  
--static int cmp_u64(const void *a, const void *b)
-+static int cmp_u64(const void *pa, const void *pb)
- {
--	return *(__u64 *)a - *(__u64 *)b;
-+	u64 a = *(u64 *)pa;
-+	u64 b = *(u64 *)pb;
+ 	if (i2c->bus_freq == 0) {
+ 		dev_warn(i2c->dev, "clock-frequency 0 not supported\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_disable_clk;
+ 	}
+ 
+ 	adap = &i2c->adap;
+@@ -322,10 +323,15 @@ static int mtk_i2c_probe(struct platform_device *pdev)
+ 
+ 	ret = i2c_add_adapter(adap);
+ 	if (ret < 0)
+-		return ret;
++		goto err_disable_clk;
+ 
+ 	dev_info(&pdev->dev, "clock %u kHz\n", i2c->bus_freq / 1000);
+ 
++	return 0;
 +
-+	return (a > b) - (a < b);
++err_disable_clk:
++	clk_disable_unprepare(i2c->clk);
++
+ 	return ret;
  }
  
- void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
 -- 
 2.35.1
 
