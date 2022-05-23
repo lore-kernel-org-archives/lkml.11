@@ -2,65 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7196BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbiEWHWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:22:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        id S229637AbiEWHXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiEWHVu (ORCPT
+        with ESMTP id S229445AbiEWHWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:21:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561B1958F;
-        Mon, 23 May 2022 00:13:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 224F161142;
-        Mon, 23 May 2022 06:50:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332FBC385A9;
-        Mon, 23 May 2022 06:50:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653288604;
-        bh=411iL9x0GP85sg8ZbapYzqsOrkMY1Ge9NDYVFgFvP2w=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=fbczhh8GP2XBOF2IIVRZ3zKk4jCEzq1se/6+mxUx/yeeoeXQY/eMaHV0Sh6adB3ox
-         u3w81pNtSEcTo6cptdA2mtRHGYe4thUGxG2wt145EZPjS6ooT3Enm2Xg1EGxTWf+yA
-         Uk7y7CxcHPY6/HsNNod4eDzw2MqWWrqj5h3SiiqZeO4NacdaR7stSLy0HD/7nnam1z
-         fGmyLJ9OQC/Zp7I8SdRexheWAUXPPLchZ9FS6jRzKfFjxqwnvnBvh7s/34ch2OJFPW
-         i5lA+OD6vqhw70YK6aMGeRU1xm7aPOxbgK6uKu99NVbH3NSX+CAYwTsKkV3agP+2xC
-         oCVAUhjETV5Ew==
-Date:   Mon, 23 May 2022 08:50:00 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Pavel Machek <pavel@ucw.cz>
-cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pablo Ceballos <pceballos@google.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: Re: [PATCH] HID: Driver for Google Hangouts Meet Speakermic
-In-Reply-To: <20220522150546.GA8071@localhost>
-Message-ID: <nycvar.YFH.7.76.2205230848490.28985@cbobk.fhfr.pm>
-References: <20220405183953.2094007-1-pceballos@google.com> <nycvar.YFH.7.76.2204210947590.30217@cbobk.fhfr.pm> <CAKdAkRQ7yxFFGJg41UxptxapKiP4bmHsfw7dRNE+LPzs1PRk=A@mail.gmail.com> <nycvar.YFH.7.76.2205121252090.28985@cbobk.fhfr.pm>
- <CAO9JgFwA5ZhwOOY0cU3HpMOV69CTumQ50zEgU6SPNAF0zDbCGg@mail.gmail.com> <Yn2OlQAa9I++N80B@penguin> <CAO-hwJ+Rs=LYseLP7Vvr00vLvm+fTCRdh8pQ-rEduj4izSyiYA@mail.gmail.com> <20220522150546.GA8071@localhost>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Mon, 23 May 2022 03:22:08 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05FFABE30;
+        Mon, 23 May 2022 00:13:38 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id CEE0880C2;
+        Mon, 23 May 2022 07:09:39 +0000 (UTC)
+Date:   Mon, 23 May 2022 10:13:36 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Keerthy <j-keerthy@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH 2/3] clocksource/drivers/timer-ti-dm: Make timer
+ selectable for ARCH_K3
+Message-ID: <Yos0IOkCd4R9a9YZ@atomide.com>
+References: <20220408101715.43697-1-tony@atomide.com>
+ <20220408101715.43697-3-tony@atomide.com>
+ <156a53a2-c33b-7ec5-3584-41ef25cb9cdd@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <156a53a2-c33b-7ec5-3584-41ef25cb9cdd@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 22 May 2022, Pavel Machek wrote:
+Hi,
 
-> Is that good idea? eBPF is fairly dangerous thing, so I'd preffer
-> basic functionality not depend on it...
+* Daniel Lezcano <daniel.lezcano@linaro.org> [220520 15:24]:
+> On 08/04/2022 12:17, Tony Lindgren wrote:
+> > diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+> > --- a/drivers/clocksource/Kconfig
+> > +++ b/drivers/clocksource/Kconfig
+> > @@ -22,7 +22,7 @@ config CLKEVT_I8253
+> >   config I8253_LOCK
+> >   	bool
+> > -config OMAP_DM_TIMER
+> > +config OMAP_DM_SYSTIMER
+> >   	bool
+> >   	select TIMER_OF
+> > @@ -56,6 +56,12 @@ config DIGICOLOR_TIMER
+> >   	help
+> >   	  Enables the support for the digicolor timer driver.
+> > +config OMAP_DM_TIMER
+> > +	tristate "OMAP dual-mode timer driver" if ARCH_K3 || COMPILE_TEST
+> 
+> Actually, I missed this. Could you convert to a 'bool' there is no module in
+> the timer drivers ATM.
 
-Although I understand the concern, that ship has already sailed long time 
-ago.
+OK sure will do.
 
--- 
-Jiri Kosina
-SUSE Labs
+Did you notice some loadable module usage issues for timers that are not
+system timers? Just wondering if there are some issues that I did not
+notice.
 
+Regards,
+
+Tony
