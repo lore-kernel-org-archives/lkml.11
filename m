@@ -2,126 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D648C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04605C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbiEWGDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
+        id S230156AbiEWGMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiEWGBZ (ORCPT
+        with ESMTP id S236374AbiEWGMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:01:25 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690CB10F6;
-        Sun, 22 May 2022 23:01:12 -0700 (PDT)
-X-UUID: cf3ba143292d4cdba57ce749ff6c6ab2-20220523
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:9cee71ff-27ba-412f-81c4-c38ab91ab6d5,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:2a19b09,CLOUDID:df7b2ee3-edbf-4bd4-8a34-dfc5f7bb086d,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: cf3ba143292d4cdba57ce749ff6c6ab2-20220523
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 9970193; Mon, 23 May 2022 14:01:01 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 23 May 2022 14:01:00 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 23 May 2022 14:01:00 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 23 May 2022 14:01:00 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-CC:     <p.zabel@pengutronix.de>,
-        <angelogioacchino.delregno@collabora.com>,
-        <nfraprado@collabora.com>, <chun-jie.chen@mediatek.com>,
-        <wenst@chromium.org>, <runyang.chen@mediatek.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v8 19/19] clk: mediatek: reset: Add infra_ao reset support for MT8186
-Date:   Mon, 23 May 2022 14:00:56 +0800
-Message-ID: <20220523060056.24396-20-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220523060056.24396-1-rex-bc.chen@mediatek.com>
-References: <20220523060056.24396-1-rex-bc.chen@mediatek.com>
+        Mon, 23 May 2022 02:12:05 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7518AE3D;
+        Sun, 22 May 2022 23:12:04 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 968A71F383;
+        Mon, 23 May 2022 06:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653285913; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A48QX/vupAuDBBHOJLZZB2SN4uoXt1Za4zzMoiIYE6M=;
+        b=NUPGG7/Cyb8PISM5MQxuSK/EtfR77Nk33xy/KVu+F1Y55Kruti902KJPmGMnxMWEzCwe3Z
+        OojVdGzwPekil0h+LKdnJ2ZLrDrZ8bBpm4rbDCUvVCPQIWwlBM3MS4KkS6CA7NRd/Yse0I
+        ENeLjrrNb+U5ef1j9y7FD0KvuSX5tNo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653285913;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A48QX/vupAuDBBHOJLZZB2SN4uoXt1Za4zzMoiIYE6M=;
+        b=AZLHrLi9ozj4GGOxPypKkh9E2+zcGbXAWjfJzhE2IDXmfNR4y7bw0+qvaL5pEATHPz2oHS
+        QXXScIvxSgAQyFCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5C93D13AA5;
+        Mon, 23 May 2022 06:05:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 9YIHCBgki2IHdwAAMHmgww
+        (envelope-from <colyli@suse.de>); Mon, 23 May 2022 06:05:12 +0000
+Message-ID: <f1a9c46e-59a6-7b68-fd17-6f2563e24e98@suse.de>
+Date:   Mon, 23 May 2022 14:05:08 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: linux-next: build failure after merge of the block tree
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+References: <20220523124921.7d6bbf34@canb.auug.org.au>
+ <df3ffbac-2f4e-df03-8b29-8e2e4bb69fac@kernel.dk>
+From:   Coly Li <colyli@suse.de>
+In-Reply-To: <df3ffbac-2f4e-df03-8b29-8e2e4bb69fac@kernel.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The infra_ao reset is needed for MT8186.
-- Add mtk_clk_rst_desc for MT8186.
-- Add register reset controller function for MT8186 infra_ao.
-- Add infra_ao_idx_map for MT8186.
+On 5/23/22 10:52 AM, Jens Axboe wrote:
+> On 5/22/22 8:49 PM, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> After merging the block tree, today's linux-next build (x86_64
+>> allmodconfig) failed like this:
+>>
+>> drivers/md/bcache/btree.c: In function 'bch_btree_check':
+>> drivers/md/bcache/btree.c:2073:1: error: the frame size of 2184 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
+>>   2073 | }
+>>        | ^
+>>
+>> Caused by commit
+>>
+>>    c766acd3d78e ("bcache: improve multithreaded bch_btree_check()")
+>>
+>> struct btree_check_state is very large to put on the stack :-(
+>>
+>> I have reverted that commit for today.
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
----
- drivers/clk/mediatek/clk-mt8186-infra_ao.c | 23 ++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+Hi Jens,
 
-diff --git a/drivers/clk/mediatek/clk-mt8186-infra_ao.c b/drivers/clk/mediatek/clk-mt8186-infra_ao.c
-index 2a7adc25abaa..df2a6bd1aefa 100644
---- a/drivers/clk/mediatek/clk-mt8186-infra_ao.c
-+++ b/drivers/clk/mediatek/clk-mt8186-infra_ao.c
-@@ -6,6 +6,7 @@
- #include <linux/clk-provider.h>
- #include <linux/platform_device.h>
- #include <dt-bindings/clock/mt8186-clk.h>
-+#include <dt-bindings/reset/mt8186-resets.h>
- 
- #include "clk-gate.h"
- #include "clk-mtk.h"
-@@ -191,9 +192,31 @@ static const struct mtk_gate infra_ao_clks[] = {
- 	GATE_INFRA_AO3(CLK_INFRA_AO_FLASHIF_66M, "infra_ao_flashif_66m", "top_axi", 29),
- };
- 
-+static u16 infra_ao_rst_ofs[] = {
-+	INFRA_RST0_SET_OFFSET,
-+	INFRA_RST1_SET_OFFSET,
-+	INFRA_RST2_SET_OFFSET,
-+	INFRA_RST3_SET_OFFSET,
-+	INFRA_RST4_SET_OFFSET,
-+};
-+
-+static u16 infra_ao_idx_map[] = {
-+	[MT8186_INFRA_THERMAL_CTRL_RST] = 0 * RST_NR_PER_BANK + 0,
-+	[MT8186_INFRA_PTP_CTRL_RST] = 1 * RST_NR_PER_BANK + 0,
-+};
-+
-+static struct mtk_clk_rst_desc infra_ao_rst_desc = {
-+	.version = MTK_RST_SET_CLR,
-+	.rst_bank_ofs = infra_ao_rst_ofs,
-+	.rst_bank_nr = ARRAY_SIZE(infra_ao_rst_ofs),
-+	.rst_idx_map = infra_ao_idx_map,
-+	.rst_idx_map_nr = ARRAY_SIZE(infra_ao_idx_map),
-+};
-+
- static const struct mtk_clk_desc infra_ao_desc = {
- 	.clks = infra_ao_clks,
- 	.num_clks = ARRAY_SIZE(infra_ao_clks),
-+	.rst_desc = &infra_ao_rst_desc,
- };
- 
- static const struct of_device_id of_match_clk_mt8186_infra_ao[] = {
--- 
-2.18.0
+> Thanks, I'll drop it. It's not part of the initial request sent to
+> Linus, exactly because it arrived late.
+>
+> Coly, I'm dropping this series.
+
+Yes please. Should I re-submit the fixed series to you in later -RC 
+round, or wait for 5.20 merge window?
+
+
+Thanks.
+
+Coly Li
+
+
 
