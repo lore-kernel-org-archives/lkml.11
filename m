@@ -2,156 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A12EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB04C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 06:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233218AbiEWGBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 02:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
+        id S234101AbiEWGBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 02:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231643AbiEWGBG (ORCPT
+        with ESMTP id S231807AbiEWGBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 02:01:06 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B8526FA;
-        Sun, 22 May 2022 23:01:02 -0700 (PDT)
-Received: from [192.168.0.6] (ip5f5aedde.dynamic.kabel-deutschland.de [95.90.237.222])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 749C961EA1928;
-        Mon, 23 May 2022 08:01:00 +0200 (CEST)
-Message-ID: <834bb0a6-3085-7725-d176-f83ec7912903@molgen.mpg.de>
-Date:   Mon, 23 May 2022 08:01:00 +0200
+        Mon, 23 May 2022 02:01:08 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24295F80;
+        Sun, 22 May 2022 23:01:05 -0700 (PDT)
+X-UUID: 0fda77c4ec4b49c4968dbeb6106a8f28-20220523
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:7631cce4-d18b-4847-8152-c99457b8677b,OB:0,LO
+        B:20,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:90
+X-CID-INFO: VERSION:1.1.5,REQID:7631cce4-d18b-4847-8152-c99457b8677b,OB:0,LOB:
+        20,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:90
+X-CID-META: VersionHash:2a19b09,CLOUDID:01773e7a-5ef6-470b-96c9-bdb8ced32786,C
+        OID:4bfce04ef61e,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 0fda77c4ec4b49c4968dbeb6106a8f28-20220523
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 622315511; Mon, 23 May 2022 14:00:59 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 23 May 2022 14:00:58 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 23 May 2022 14:00:58 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 23 May 2022 14:00:57 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <mturquette@baylibre.com>, <sboyd@kernel.org>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <p.zabel@pengutronix.de>,
+        <angelogioacchino.delregno@collabora.com>,
+        <nfraprado@collabora.com>, <chun-jie.chen@mediatek.com>,
+        <wenst@chromium.org>, <runyang.chen@mediatek.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v8 04/19] clk: mediatek: reset: Extract common drivers to update function
+Date:   Mon, 23 May 2022 14:00:41 +0800
+Message-ID: <20220523060056.24396-5-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220523060056.24396-1-rex-bc.chen@mediatek.com>
+References: <20220523060056.24396-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [Intel-wired-lan] [PATCH] drivers/net/ethernet/intel: fix typos
- in comments
-Content-Language: en-US
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220521111145.81697-50-Julia.Lawall@inria.fr>
- <71292e14-fe6c-f475-009d-1ea8cde0ea46@molgen.mpg.de>
- <alpine.DEB.2.22.394.2205230736190.2777@hadrien>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <alpine.DEB.2.22.394.2205230736190.2777@hadrien>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Julia,
+To make drivers more clear and readable, we extract common code
+within assert and deassert to mtk_reset_update_set_clr() and
+mtk_reset_update().
 
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+---
+ drivers/clk/mediatek/reset.c | 38 +++++++++++++++++++++---------------
+ 1 file changed, 22 insertions(+), 16 deletions(-)
 
-Am 23.05.22 um 07:40 schrieb Julia Lawall:
+diff --git a/drivers/clk/mediatek/reset.c b/drivers/clk/mediatek/reset.c
+index 5cbbcc22a4fc..22fa9f09752c 100644
+--- a/drivers/clk/mediatek/reset.c
++++ b/drivers/clk/mediatek/reset.c
+@@ -12,24 +12,27 @@
+ 
+ #include "reset.h"
+ 
+-static int mtk_reset_assert(struct reset_controller_dev *rcdev,
+-			    unsigned long id)
++static int mtk_reset_update(struct reset_controller_dev *rcdev,
++			    unsigned long id, bool deassert)
+ {
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
++	unsigned int val = deassert ? 0 : ~0;
+ 
+ 	return regmap_update_bits(data->regmap,
+ 				  data->regofs + ((id / 32) << 2),
+-				  BIT(id % 32), ~0);
++				  BIT(id % 32), val);
++}
++
++static int mtk_reset_assert(struct reset_controller_dev *rcdev,
++			    unsigned long id)
++{
++	return mtk_reset_update(rcdev, id, false);
+ }
+ 
+ static int mtk_reset_deassert(struct reset_controller_dev *rcdev,
+ 			      unsigned long id)
+ {
+-	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+-
+-	return regmap_update_bits(data->regmap,
+-				  data->regofs + ((id / 32) << 2),
+-				  BIT(id % 32), 0);
++	return mtk_reset_update(rcdev, id, true);
+ }
+ 
+ static int mtk_reset(struct reset_controller_dev *rcdev, unsigned long id)
+@@ -43,24 +46,27 @@ static int mtk_reset(struct reset_controller_dev *rcdev, unsigned long id)
+ 	return mtk_reset_deassert(rcdev, id);
+ }
+ 
+-static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
+-				    unsigned long id)
++static int mtk_reset_update_set_clr(struct reset_controller_dev *rcdev,
++				    unsigned long id, bool deassert)
+ {
+ 	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
++	unsigned int deassert_ofs = deassert ? 0x4 : 0;
+ 
+ 	return regmap_write(data->regmap,
+-			    data->regofs + ((id / 32) << 4),
++			    data->regofs + ((id / 32) << 4) + deassert_ofs,
+ 			    BIT(id % 32));
+ }
+ 
++static int mtk_reset_assert_set_clr(struct reset_controller_dev *rcdev,
++				    unsigned long id)
++{
++	return mtk_reset_update_set_clr(rcdev, id, false);
++}
++
+ static int mtk_reset_deassert_set_clr(struct reset_controller_dev *rcdev,
+ 				      unsigned long id)
+ {
+-	struct mtk_reset *data = container_of(rcdev, struct mtk_reset, rcdev);
+-
+-	return regmap_write(data->regmap,
+-			    data->regofs + ((id / 32) << 4) + 0x4,
+-			    BIT(id % 32));
++	return mtk_reset_update_set_clr(rcdev, id, true);
+ }
+ 
+ static int mtk_reset_set_clr(struct reset_controller_dev *rcdev,
+-- 
+2.18.0
 
-> On Mon, 23 May 2022, Paul Menzel wrote:
-
->> Thank you for your patch.
->>
->> I noticed, that the maintainer Tony wasn’t in the Cc: list.
-> 
-> get_maintainer reports him as a "supporter", and I think that my script
-> only takes people listed as "maintainer".
-
-     INTEL ETHERNET DRIVERS
-     M:      Jesse Brandeburg <jesse.brandeburg@intel.com>
-     M:      Tony Nguyen <anthony.l.nguyen@intel.com>
-
-For the changed files, both are listed as supporter by 
-`get_maintainer.pl`, but only Jesse was taken. Not important, just 
-wanted to mention it.
-
-> 
->> Am 21.05.22 um 13:11 schrieb Julia Lawall:
->>> Spelling mistakes (triple letters) in comments.
->>> Detected with the help of Coccinelle.
->>
->> I’d be interested in the script you used.
-> 
-> Attached.  It should have a pretty low rate of false positives.  Mostly
-> things like Eeew and Wheee.
-
-Thank you.
-
-
-Kind regards,
-
-Paul
-
-
->>> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
->>>
->>
->> Nit: One unneeded blank line.
-> 
-> OK, thanks.
-> 
-> julia
-> 
->>> ---
->>>    drivers/net/ethernet/intel/fm10k/fm10k_mbx.c   |    2 +-
->>>    drivers/net/ethernet/intel/ice/ice_lib.c       |    2 +-
->>>    drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    2 +-
->>>    3 files changed, 3 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
->>> b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
->>> index 30ca9ee1900b..f2fba6e1d0f7 100644
->>> --- a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
->>> +++ b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
->>> @@ -1825,7 +1825,7 @@ static void fm10k_sm_mbx_process_error(struct
->>> fm10k_mbx_info *mbx)
->>>    		fm10k_sm_mbx_connect_reset(mbx);
->>>    		break;
->>>    	case FM10K_STATE_CONNECT:
->>> -		/* try connnecting at lower version */
->>> +		/* try connecting at lower version */
->>>    		if (mbx->remote) {
->>>    			while (mbx->local > 1)
->>>    				mbx->local--;
->>> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c
->>> b/drivers/net/ethernet/intel/ice/ice_lib.c
->>> index 454e01ae09b9..70961c0343e7 100644
->>> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
->>> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
->>> @@ -2403,7 +2403,7 @@ static void ice_set_agg_vsi(struct ice_vsi *vsi)
->>>    				agg_id);
->>>    			return;
->>>    		}
->>> -		/* aggregator node is created, store the neeeded info */
->>> +		/* aggregator node is created, store the needed info */
->>>    		agg_node->valid = true;
->>>    		agg_node->agg_id = agg_id;
->>>    	}
->>> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
->>> b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
->>> index 3e74ab82868b..3f5ef5269bb2 100644
->>> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
->>> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
->>> @@ -77,7 +77,7 @@ static int __ixgbe_enable_sriov(struct ixgbe_adapter
->>> *adapter,
->>>    	IXGBE_WRITE_REG(hw, IXGBE_PFDTXGSWC, IXGBE_PFDTXGSWC_VT_LBEN);
->>>    	adapter->bridge_mode = BRIDGE_MODE_VEB;
->>>    -	/* limit trafffic classes based on VFs enabled */
->>> +	/* limit traffic classes based on VFs enabled */
->>>    	if ((adapter->hw.mac.type == ixgbe_mac_82599EB) && (num_vfs < 16)) {
->>>    		adapter->dcb_cfg.num_tcs.pg_tcs = MAX_TRAFFIC_CLASS;
->>>    		adapter->dcb_cfg.num_tcs.pfc_tcs = MAX_TRAFFIC_CLASS;
->>
->> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
->>
->>
->> Kind regards,
->>
->> Paul
->>
