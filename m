@@ -2,208 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F2F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 23:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 23:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbiEWXvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 19:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41570 "EHLO
+        id S231303AbiEWXvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 19:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbiEWXv2 (ORCPT
+        with ESMTP id S230379AbiEWXva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 19:51:28 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F39DF35
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 16:51:26 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id n10so15344279pjh.5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 16:51:26 -0700 (PDT)
+        Mon, 23 May 2022 19:51:30 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306004EA00
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 16:51:29 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id i1so14434735plg.7
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 16:51:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iBerACEu3D8hwDgAD8a9aSNcUVMJ4eBb9MKktGy8X5M=;
-        b=JdYNKv5bcTK3UCko8lH+RyHpLlqF0q/0mKviUgMbM+fzH9Vw8fed9b0MFyVvmhRoui
-         OAOsCoIz52MvyHYTUnh0EMCzX913SrcIQzgPe135YD4HQpREppZXYcMDvpvINEDj49Rr
-         LzB3KiGgjmZHa9E8QJqvTBOhKGdVX/iwIPUj6wqEgtW4ghlPV+Xq/JZUGe0GYKmxPPhB
-         k7VYu412GblRSac6njK1+OZwRweEyLpJgcN/eIlOUVP3YXprvs5FW8h3JG9yFQX3axaF
-         5Yo0m5cUUvtkbrCyquFVjHTXEfvUZuseLvpvqpU8nAFIQss9qCyA/UUbHYMQnrSzLoff
-         qCwg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7AhCdNNL1uDdWvnH8n7UysRuRPz3w0BpqFn1GxNQ6wo=;
+        b=1Bbfnz2CEe3CP9LuZgH+Yi1fosFu5sP9Wokpgm4F8+Wl9npqToJoqlWYHB2GNrs2qx
+         rlppxfa2xd3Qd9AjvKs+mgZpfPqlNuXBfcrTuvxBRJHcZgOgCi7W88DYelz9vIsKQ8ly
+         FnRw1ZnbOobOuwdNsFSuy3GDQgEot5lnQqU81hduACOaAnFAR4bJ+iLBiyoaqUWX8PDd
+         tl2Npwks1KsQ3V/+E82XsiXfKk32h0LPfXIQ5d/fwTftR/XFPQHhbavNHKxnWeAco6OW
+         l6OQARpN/P0NJ3DBXgyUR6b40b30+NDHtST9M7jU2eloJxdPLbIebTHeen03ZC2PD9SJ
+         PzvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iBerACEu3D8hwDgAD8a9aSNcUVMJ4eBb9MKktGy8X5M=;
-        b=jMe4qGK1tRHRHG11LBc2I9mPygHPb2EF2WAS1SPzuHslwBjrLQMBWf/sFkwUYni53W
-         +aYEjJuBTudeUd5UgjLRZZV2jpUTS3Fjq3LKIerlO2UpS5hHyfqZEQjzsys8jim/mygD
-         Q/mmVhPmTLGHxpnIv9W4t5ZcMcdwmWOQaLJIkRScA8wLEcRNyxFthe/+GG6FKR1LSlTn
-         ZNC8nAOcTm9K9oGmTsx/tdc60KhWUzPYouXNXQ/M2jyx2I8jItXFg9FJps+L+2DdWw0O
-         E0uizMGBXWlkZoT1Xbp2h49mfIdGRVvcdqEnOOeczLgPIhWeBtuU49TYIXG2HkM4j43x
-         UkiQ==
-X-Gm-Message-State: AOAM532cZ8PUgq3G2agCv921bICOZWMOyx3jeZ190L5m8UVaREJA02kd
-        hAnMdsszj12yuwvVeqZFKhDR/ruimFd2PA==
-X-Google-Smtp-Source: ABdhPJxyXGCAx2N3VHMyu3UC4A1qliBS+x+Rs+sv7qgkjje3Wz8rSmWTdpsnNTAy270vOJoJTwiJog==
-X-Received: by 2002:a17:90a:ba11:b0:1df:2d09:1308 with SMTP id s17-20020a17090aba1100b001df2d091308mr1503032pjr.184.1653349885018;
-        Mon, 23 May 2022 16:51:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7AhCdNNL1uDdWvnH8n7UysRuRPz3w0BpqFn1GxNQ6wo=;
+        b=WtQklHRSiY5vRtzi+DcaHn90aRb12XkYXuzbWtuYSJ1WUr+QEnuMkFDfQEbH8ew/SO
+         0M87DWTSnqrqTD98sr/EqF8z85gjhOSapgsZsGu8OHOLvoVndQT+MrLrP5tRXSwMWWbY
+         BdssFP1F/poNI9dLPXLkaaI9F0UcTtzwYMlKnSgo1iOrdut0x4+PuTaspETTozNJwEUB
+         l7J99qdP8hsSApsIMYOYo5fwDc1AXMjkA93uUz25FeCGw0zQ1L7TL3eob61Wi2T2N6M3
+         HMKeFyon5NJf67wK5iBFQOgCvAprbThe6W6n1Jp0hFC3dDrGmKZx1pEoPhObAWtrcgkS
+         QF/A==
+X-Gm-Message-State: AOAM532um8LyPexUYhZbXrF0iJtiH0kmUkp9uLT3vn1ANbSDo7PRF/AJ
+        4icvNmJGPGIzQmqrStSjNDUo5jO+BmKy5A==
+X-Google-Smtp-Source: ABdhPJxJlgUqBGNmdxfujP8NZXoTi+2Q6koOMV5QKAyTVb2KSJ7aj12JxlVz6k5/PPpb8rvo4xhCeA==
+X-Received: by 2002:a17:90b:391:b0:1df:42e2:ae17 with SMTP id ga17-20020a17090b039100b001df42e2ae17mr1543973pjb.198.1653349888392;
+        Mon, 23 May 2022 16:51:28 -0700 (PDT)
 Received: from atishp.ba.rivosinc.com ([66.220.2.162])
-        by smtp.gmail.com with ESMTPSA id pl15-20020a17090b268f00b001df4b919937sm257084pjb.16.2022.05.23.16.51.23
+        by smtp.gmail.com with ESMTPSA id pl15-20020a17090b268f00b001df4b919937sm257084pjb.16.2022.05.23.16.51.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 16:51:24 -0700 (PDT)
+        Mon, 23 May 2022 16:51:27 -0700 (PDT)
 From:   Atish Patra <atishp@rivosinc.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Alistair Francis <alistair.francis@wdc.com>,
+        Bin Meng <bmeng.cn@gmail.com>,
+        Atish Patra <atishp@rivosinc.com>,
         Bin Meng <bin.meng@windriver.com>,
         Palmer Dabbelt <palmer@dabbelt.com>, qemu-devel@nongnu.org,
         qemu-riscv@nongnu.org
-Subject: [PATCH v9 00/12] Improve PMU support
-Date:   Mon, 23 May 2022 16:50:45 -0700
-Message-Id: <20220523235057.123882-1-atishp@rivosinc.com>
+Subject: [PATCH v9 02/12] target/riscv: Implement PMU CSR predicate function for S-mode
+Date:   Mon, 23 May 2022 16:50:47 -0700
+Message-Id: <20220523235057.123882-3-atishp@rivosinc.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220523235057.123882-1-atishp@rivosinc.com>
+References: <20220523235057.123882-1-atishp@rivosinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The latest version of the SBI specification includes a Performance Monitoring
-Unit(PMU) extension[1] which allows the supervisor to start/stop/configure
-various PMU events. The Sscofpmf ('Ss' for Privileged arch and Supervisor-level
-extensions, and 'cofpmf' for Count OverFlow and Privilege Mode Filtering)
-extension[2] allows the perf like tool to handle overflow interrupts and
-filtering support.
+From: Atish Patra <atish.patra@wdc.com>
 
-This series implements full PMU infrastructure to support
-PMU in virt machine. This will allow us to add any PMU events in future.
+Currently, the predicate function for PMU related CSRs only works if
+virtualization is enabled. It also does not check mcounteren bits before
+before cycle/minstret/hpmcounterx access.
 
-Currently, this series enables the following omu events.
-1. cycle count
-2. instruction count
-3. DTLB load/store miss
-4. ITLB prefetch miss
+Support supervisor mode access in the predicate function as well.
 
-The first two are computed using host ticks while last three are counted during
-cpu_tlb_fill. We can do both sampling and count from guest userspace.
-This series has been tested on both RV64 and RV32. Both Linux[3] and Opensbi[4]
-patches are required to get the perf working.
+Reviewed-by: Alistair Francis <alistair.francis@wdc.com>
+Reviewed-by: Bin Meng <bmeng.cn@gmail.com>
+Signed-off-by: Atish Patra <atish.patra@wdc.com>
+Signed-off-by: Atish Patra <atishp@rivosinc.com>
+---
+ target/riscv/csr.c | 51 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-Here is an output of perf stat/report while running hackbench with latest
-OpenSBI & Linux kernel.
-
-Perf stat:
-==========
-[root@fedora-riscv ~]# perf stat -e cycles -e instructions -e dTLB-load-misses -e dTLB-store-misses -e iTLB-load-misses \
-> perf bench sched messaging -g 1 -l 10
-# Running 'sched/messaging' benchmark:
-# 20 sender and receiver processes per group
-# 1 groups == 40 processes run
-
-     Total time: 0.265 [sec]
-
- Performance counter stats for 'perf bench sched messaging -g 1 -l 10':
-
-     4,167,825,362      cycles                                                      
-     4,166,609,256      instructions              #    1.00  insn per cycle         
-         3,092,026      dTLB-load-misses                                            
-           258,280      dTLB-store-misses                                           
-         2,068,966      iTLB-load-misses                                            
-
-       0.585791767 seconds time elapsed
-
-       0.373802000 seconds user
-       1.042359000 seconds sys
-
-Perf record:
-============
-[root@fedora-riscv ~]# perf record -e cycles -e instructions \
-> -e dTLB-load-misses -e dTLB-store-misses -e iTLB-load-misses -c 10000 \
-> perf bench sched messaging -g 1 -l 10
-# Running 'sched/messaging' benchmark:
-# 20 sender and receiver processes per group
-# 1 groups == 40 processes run
-
-     Total time: 1.397 [sec]
-[ perf record: Woken up 10 times to write data ]
-Check IO/CPU overload!
-[ perf record: Captured and wrote 8.211 MB perf.data (214486 samples) ]
-
-[root@fedora-riscv riscv]# perf report
-Available samples                                                               
-107K cycles                                                                    ◆
-107K instructions                                                              ▒
-250 dTLB-load-misses                                                           ▒
-13 dTLB-store-misses                                                           ▒
-172 iTLB-load-misses      
-..
-
-Changes from v8->v9:
-1. Added the write_done flags to the vmstate.
-2. Fixed the hpmcounter read access from M-mode.
-
-Changes from v7->v8:
-1. Removeding ordering constraints for mhpmcounter & mhpmevent.
-
-Changes from v6->v7:
-1. Fixed all the compilation errors for the usermode.
-
-Changes from v5->v6:
-1. Fixed compilation issue with PATCH 1.
-2. Addressed other comments.
-
-Changes from v4->v5:
-1. Rebased on top of the -next with following patches.
-   - isa extension
-   - priv 1.12 spec
-2. Addressed all the comments on v4
-3. Removed additional isa-ext DT node in favor of riscv,isa string update
-
-Changes from v3->v4:
-1. Removed the dummy events from pmu DT node.
-2. Fixed pmu_avail_counters mask generation.
-3. Added a patch to simplify the predicate function for counters. 
-
-Changes from v2->v3:
-1. Addressed all the comments on PATCH1-4.
-2. Split patch1 into two separate patches.
-3. Added explicit comments to explain the event types in DT node.
-4. Rebased on latest Qemu.
-
-Changes from v1->v2:
-1. Dropped the ACks from v1 as signficant changes happened after v1.
-2. sscofpmf support.
-3. A generic counter management framework.
-
-[1] https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc
-[2] https://drive.google.com/file/d/171j4jFjIkKdj5LWcExphq4xG_2sihbfd/edit
-[3] https://github.com/atishp04/qemu/tree/riscv_pmu_v9
-
-Atish Patra (12):
-target/riscv: Fix PMU CSR predicate function
-target/riscv: Implement PMU CSR predicate function for S-mode
-target/riscv: pmu: Rename the counters extension to pmu
-target/riscv: pmu: Make number of counters configurable
-target/riscv: Implement mcountinhibit CSR
-target/riscv: Add support for hpmcounters/hpmevents
-target/riscv: Support mcycle/minstret write operation
-target/riscv: Add sscofpmf extension support
-target/riscv: Simplify counter predicate function
-target/riscv: Add few cache related PMU events
-hw/riscv: virt: Add PMU DT node to the device tree
-target/riscv: Update the privilege field for sscofpmf CSRs
-
-hw/riscv/virt.c           |  28 ++
-target/riscv/cpu.c        |  14 +-
-target/riscv/cpu.h        |  56 ++-
-target/riscv/cpu_bits.h   |  59 +++
-target/riscv/cpu_helper.c |  25 ++
-target/riscv/csr.c        | 906 ++++++++++++++++++++++++++++----------
-target/riscv/machine.c    |  29 ++
-target/riscv/meson.build  |   3 +-
-target/riscv/pmu.c        | 432 ++++++++++++++++++
-target/riscv/pmu.h        |  36 ++
-10 files changed, 1353 insertions(+), 235 deletions(-)
-create mode 100644 target/riscv/pmu.c
-create mode 100644 target/riscv/pmu.h
-
---
+diff --git a/target/riscv/csr.c b/target/riscv/csr.c
+index ee3a35afa256..d175fe3f1af3 100644
+--- a/target/riscv/csr.c
++++ b/target/riscv/csr.c
+@@ -79,6 +79,57 @@ static RISCVException ctr(CPURISCVState *env, int csrno)
+         return RISCV_EXCP_ILLEGAL_INST;
+     }
+ 
++    if (env->priv == PRV_S) {
++        switch (csrno) {
++        case CSR_CYCLE:
++            if (!get_field(env->mcounteren, COUNTEREN_CY)) {
++                return RISCV_EXCP_ILLEGAL_INST;
++            }
++            break;
++        case CSR_TIME:
++            if (!get_field(env->mcounteren, COUNTEREN_TM)) {
++                return RISCV_EXCP_ILLEGAL_INST;
++            }
++            break;
++        case CSR_INSTRET:
++            if (!get_field(env->mcounteren, COUNTEREN_IR)) {
++                return RISCV_EXCP_ILLEGAL_INST;
++            }
++            break;
++        case CSR_HPMCOUNTER3...CSR_HPMCOUNTER31:
++            ctr_index = csrno - CSR_CYCLE;
++            if (!get_field(env->mcounteren, 1 << ctr_index)) {
++                return RISCV_EXCP_ILLEGAL_INST;
++            }
++            break;
++        }
++        if (riscv_cpu_mxl(env) == MXL_RV32) {
++            switch (csrno) {
++            case CSR_CYCLEH:
++                if (!get_field(env->mcounteren, COUNTEREN_CY)) {
++                    return RISCV_EXCP_ILLEGAL_INST;
++                }
++                break;
++            case CSR_TIMEH:
++                if (!get_field(env->mcounteren, COUNTEREN_TM)) {
++                    return RISCV_EXCP_ILLEGAL_INST;
++                }
++                break;
++            case CSR_INSTRETH:
++                if (!get_field(env->mcounteren, COUNTEREN_IR)) {
++                    return RISCV_EXCP_ILLEGAL_INST;
++                }
++                break;
++            case CSR_HPMCOUNTER3H...CSR_HPMCOUNTER31H:
++                ctr_index = csrno - CSR_CYCLEH;
++                if (!get_field(env->mcounteren, 1 << ctr_index)) {
++                    return RISCV_EXCP_ILLEGAL_INST;
++                }
++                break;
++            }
++        }
++    }
++
+     if (riscv_cpu_virt_enabled(env)) {
+         switch (csrno) {
+         case CSR_CYCLE:
+-- 
 2.25.1
 
