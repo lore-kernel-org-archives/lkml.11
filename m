@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 249E0C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE73C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240776AbiEWR1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49428 "EHLO
+        id S240435AbiEWR20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240429AbiEWRRj (ORCPT
+        with ESMTP id S240591AbiEWRSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:17:39 -0400
+        Mon, 23 May 2022 13:18:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1B4532CA;
-        Mon, 23 May 2022 10:17:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9638471DB8;
+        Mon, 23 May 2022 10:17:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA875614EB;
-        Mon, 23 May 2022 17:15:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E96C385A9;
-        Mon, 23 May 2022 17:15:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D52160BD4;
+        Mon, 23 May 2022 17:17:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55609C385AA;
+        Mon, 23 May 2022 17:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326124;
-        bh=VXtcAqn6/M6grVmBFWvrRlt1YfHPvmVTbARNuX4JhIs=;
+        s=korg; t=1653326220;
+        bh=4zzw5ftK65KSKh6fvaSqqfL/5pxYYT7ctXs0hzdMr6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBBIo5eXAdIoTob0jt8DTy/pFv4ATL0gSs/AUu14LG2ID3dxIyIbRc3Xhpv1GYLeJ
-         +S4Y2wBxzmZRxixb8psOCG+9gijiqzcrqaqGebhxcoVMTLHTh+kzxaggYJ6PiswntF
-         uGLOQ94oRYnZBRQdtWfyB8HSPoPx0lLE0GWu2jTY=
+        b=sdnHyo/ndnFLMdOliu6F/PgndMMxeALu/dwZ4Acaqu7wXHznVX49W+WQv5OIXxqsW
+         Xp0wKTOrAqWU91foHqfjXYteS+khkFgqhOIX8ooeLyeUdH/J8hyVBsfY9wcLbJ8e2x
+         swc4uKGXPLc7+Tqpk/Fx9G0FJYkBxYy88bFK8PFE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
-        Brian Masney <bmasney@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.4 31/68] crypto: qcom-rng - fix infinite loop on requests not multiple of WORD_SZ
-Date:   Mon, 23 May 2022 19:04:58 +0200
-Message-Id: <20220523165807.782143812@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Richter <rrichter@amd.com>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 014/132] Watchdog: sp5100_tco: Refactor MMIO base address initialization
+Date:   Mon, 23 May 2022 19:03:43 +0200
+Message-Id: <20220523165825.975628800@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
+References: <20220523165823.492309987@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +52,240 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Mosnacek <omosnace@redhat.com>
+From: Terry Bowman <terry.bowman@amd.com>
 
-commit 16287397ec5c08aa58db6acf7dbc55470d78087d upstream.
+commit 1f182aca230086d4a4469c0f9136a6ea762d6385 upstream.
 
-The commit referenced in the Fixes tag removed the 'break' from the else
-branch in qcom_rng_read(), causing an infinite loop whenever 'max' is
-not a multiple of WORD_SZ. This can be reproduced e.g. by running:
+Combine MMIO base address and alternate base address detection. Combine
+based on layout type. This will simplify the function by eliminating
+a switch case.
 
-    kcapi-rng -b 67 >/dev/null
+Move existing request/release code into functions. This currently only
+supports port I/O request/release. The move into a separate function
+will make it ready for adding MMIO region support.
 
-There are many ways to fix this without adding back the 'break', but
-they all seem more awkward than simply adding it back, so do just that.
-
-Tested on a machine with Qualcomm Amberwing processor.
-
-Fixes: a680b1832ced ("crypto: qcom-rng - ensure buffer for generate is completely filled")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-Reviewed-by: Brian Masney <bmasney@redhat.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Co-developed-by: Robert Richter <rrichter@amd.com>
+Signed-off-by: Robert Richter <rrichter@amd.com>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Tested-by: Jean Delvare <jdelvare@suse.de>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220202153525.1693378-3-terry.bowman@amd.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/qcom-rng.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/watchdog/sp5100_tco.c |  155 +++++++++++++++++++++---------------------
+ drivers/watchdog/sp5100_tco.h |    1 
+ 2 files changed, 82 insertions(+), 74 deletions(-)
 
---- a/drivers/crypto/qcom-rng.c
-+++ b/drivers/crypto/qcom-rng.c
-@@ -64,6 +64,7 @@ static int qcom_rng_read(struct qcom_rng
- 		} else {
- 			/* copy only remaining bytes */
- 			memcpy(data, &val, max - currsize);
-+			break;
- 		}
- 	} while (currsize < max);
+--- a/drivers/watchdog/sp5100_tco.c
++++ b/drivers/watchdog/sp5100_tco.c
+@@ -215,6 +215,55 @@ static u32 sp5100_tco_read_pm_reg32(u8 i
+ 	return val;
+ }
+ 
++static u32 sp5100_tco_request_region(struct device *dev,
++				     u32 mmio_addr,
++				     const char *dev_name)
++{
++	if (!devm_request_mem_region(dev, mmio_addr, SP5100_WDT_MEM_MAP_SIZE,
++				     dev_name)) {
++		dev_dbg(dev, "MMIO address 0x%08x already in use\n", mmio_addr);
++		return 0;
++	}
++
++	return mmio_addr;
++}
++
++static u32 sp5100_tco_prepare_base(struct sp5100_tco *tco,
++				   u32 mmio_addr,
++				   u32 alt_mmio_addr,
++				   const char *dev_name)
++{
++	struct device *dev = tco->wdd.parent;
++
++	dev_dbg(dev, "Got 0x%08x from SBResource_MMIO register\n", mmio_addr);
++
++	if (!mmio_addr && !alt_mmio_addr)
++		return -ENODEV;
++
++	/* Check for MMIO address and alternate MMIO address conflicts */
++	if (mmio_addr)
++		mmio_addr = sp5100_tco_request_region(dev, mmio_addr, dev_name);
++
++	if (!mmio_addr && alt_mmio_addr)
++		mmio_addr = sp5100_tco_request_region(dev, alt_mmio_addr, dev_name);
++
++	if (!mmio_addr) {
++		dev_err(dev, "Failed to reserve MMIO or alternate MMIO region\n");
++		return -EBUSY;
++	}
++
++	tco->tcobase = devm_ioremap(dev, mmio_addr, SP5100_WDT_MEM_MAP_SIZE);
++	if (!tco->tcobase) {
++		dev_err(dev, "MMIO address 0x%08x failed mapping\n", mmio_addr);
++		devm_release_mem_region(dev, mmio_addr, SP5100_WDT_MEM_MAP_SIZE);
++		return -ENOMEM;
++	}
++
++	dev_info(dev, "Using 0x%08x for watchdog MMIO address\n", mmio_addr);
++
++	return 0;
++}
++
+ static int sp5100_tco_timer_init(struct sp5100_tco *tco)
+ {
+ 	struct watchdog_device *wdd = &tco->wdd;
+@@ -256,6 +305,7 @@ static int sp5100_tco_setupdevice(struct
+ 	struct sp5100_tco *tco = watchdog_get_drvdata(wdd);
+ 	const char *dev_name;
+ 	u32 mmio_addr = 0, val;
++	u32 alt_mmio_addr = 0;
+ 	int ret;
+ 
+ 	/* Request the IO ports used by this driver */
+@@ -274,11 +324,32 @@ static int sp5100_tco_setupdevice(struct
+ 		dev_name = SP5100_DEVNAME;
+ 		mmio_addr = sp5100_tco_read_pm_reg32(SP5100_PM_WATCHDOG_BASE) &
+ 								0xfffffff8;
++
++		/*
++		 * Secondly, find the watchdog timer MMIO address
++		 * from SBResource_MMIO register.
++		 */
++
++		/* Read SBResource_MMIO from PCI config(PCI_Reg: 9Ch) */
++		pci_read_config_dword(sp5100_tco_pci,
++				      SP5100_SB_RESOURCE_MMIO_BASE,
++				      &val);
++
++		/* Verify MMIO is enabled and using bar0 */
++		if ((val & SB800_ACPI_MMIO_MASK) == SB800_ACPI_MMIO_DECODE_EN)
++			alt_mmio_addr = (val & ~0xfff) + SB800_PM_WDT_MMIO_OFFSET;
+ 		break;
+ 	case sb800:
+ 		dev_name = SB800_DEVNAME;
+ 		mmio_addr = sp5100_tco_read_pm_reg32(SB800_PM_WATCHDOG_BASE) &
+ 								0xfffffff8;
++
++		/* Read SBResource_MMIO from AcpiMmioEn(PM_Reg: 24h) */
++		val = sp5100_tco_read_pm_reg32(SB800_PM_ACPI_MMIO_EN);
++
++		/* Verify MMIO is enabled and using bar0 */
++		if ((val & SB800_ACPI_MMIO_MASK) == SB800_ACPI_MMIO_DECODE_EN)
++			alt_mmio_addr = (val & ~0xfff) + SB800_PM_WDT_MMIO_OFFSET;
+ 		break;
+ 	case efch:
+ 		dev_name = SB800_DEVNAME;
+@@ -297,87 +368,23 @@ static int sp5100_tco_setupdevice(struct
+ 		val = sp5100_tco_read_pm_reg8(EFCH_PM_DECODEEN);
+ 		if (val & EFCH_PM_DECODEEN_WDT_TMREN)
+ 			mmio_addr = EFCH_PM_WDT_ADDR;
++
++		val = sp5100_tco_read_pm_reg8(EFCH_PM_ISACONTROL);
++		if (val & EFCH_PM_ISACONTROL_MMIOEN)
++			alt_mmio_addr = EFCH_PM_ACPI_MMIO_ADDR +
++				EFCH_PM_ACPI_MMIO_WDT_OFFSET;
+ 		break;
+ 	default:
+ 		return -ENODEV;
+ 	}
+ 
+-	/* Check MMIO address conflict */
+-	if (!mmio_addr ||
+-	    !devm_request_mem_region(dev, mmio_addr, SP5100_WDT_MEM_MAP_SIZE,
+-				     dev_name)) {
+-		if (mmio_addr)
+-			dev_dbg(dev, "MMIO address 0x%08x already in use\n",
+-				mmio_addr);
+-		switch (tco->tco_reg_layout) {
+-		case sp5100:
+-			/*
+-			 * Secondly, Find the watchdog timer MMIO address
+-			 * from SBResource_MMIO register.
+-			 */
+-			/* Read SBResource_MMIO from PCI config(PCI_Reg: 9Ch) */
+-			pci_read_config_dword(sp5100_tco_pci,
+-					      SP5100_SB_RESOURCE_MMIO_BASE,
+-					      &mmio_addr);
+-			if ((mmio_addr & (SB800_ACPI_MMIO_DECODE_EN |
+-					  SB800_ACPI_MMIO_SEL)) !=
+-						  SB800_ACPI_MMIO_DECODE_EN) {
+-				ret = -ENODEV;
+-				goto unreg_region;
+-			}
+-			mmio_addr &= ~0xFFF;
+-			mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
+-			break;
+-		case sb800:
+-			/* Read SBResource_MMIO from AcpiMmioEn(PM_Reg: 24h) */
+-			mmio_addr =
+-				sp5100_tco_read_pm_reg32(SB800_PM_ACPI_MMIO_EN);
+-			if ((mmio_addr & (SB800_ACPI_MMIO_DECODE_EN |
+-					  SB800_ACPI_MMIO_SEL)) !=
+-						  SB800_ACPI_MMIO_DECODE_EN) {
+-				ret = -ENODEV;
+-				goto unreg_region;
+-			}
+-			mmio_addr &= ~0xFFF;
+-			mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
+-			break;
+-		case efch:
+-			val = sp5100_tco_read_pm_reg8(EFCH_PM_ISACONTROL);
+-			if (!(val & EFCH_PM_ISACONTROL_MMIOEN)) {
+-				ret = -ENODEV;
+-				goto unreg_region;
+-			}
+-			mmio_addr = EFCH_PM_ACPI_MMIO_ADDR +
+-				    EFCH_PM_ACPI_MMIO_WDT_OFFSET;
+-			break;
+-		}
+-		dev_dbg(dev, "Got 0x%08x from SBResource_MMIO register\n",
+-			mmio_addr);
+-		if (!devm_request_mem_region(dev, mmio_addr,
+-					     SP5100_WDT_MEM_MAP_SIZE,
+-					     dev_name)) {
+-			dev_dbg(dev, "MMIO address 0x%08x already in use\n",
+-				mmio_addr);
+-			ret = -EBUSY;
+-			goto unreg_region;
+-		}
++	ret = sp5100_tco_prepare_base(tco, mmio_addr, alt_mmio_addr, dev_name);
++	if (!ret) {
++		/* Setup the watchdog timer */
++		tco_timer_enable(tco);
++		ret = sp5100_tco_timer_init(tco);
+ 	}
+ 
+-	tco->tcobase = devm_ioremap(dev, mmio_addr, SP5100_WDT_MEM_MAP_SIZE);
+-	if (!tco->tcobase) {
+-		dev_err(dev, "failed to get tcobase address\n");
+-		ret = -ENOMEM;
+-		goto unreg_region;
+-	}
+-
+-	dev_info(dev, "Using 0x%08x for watchdog MMIO address\n", mmio_addr);
+-
+-	/* Setup the watchdog timer */
+-	tco_timer_enable(tco);
+-
+-	ret = sp5100_tco_timer_init(tco);
+-
+-unreg_region:
+ 	release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
+ 	return ret;
+ }
+--- a/drivers/watchdog/sp5100_tco.h
++++ b/drivers/watchdog/sp5100_tco.h
+@@ -58,6 +58,7 @@
+ #define SB800_PM_WATCHDOG_SECOND_RES	GENMASK(1, 0)
+ #define SB800_ACPI_MMIO_DECODE_EN	BIT(0)
+ #define SB800_ACPI_MMIO_SEL		BIT(1)
++#define SB800_ACPI_MMIO_MASK		GENMASK(1, 0)
+ 
+ #define SB800_PM_WDT_MMIO_OFFSET	0xB00
  
 
 
