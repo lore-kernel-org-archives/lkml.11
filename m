@@ -2,281 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5924EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E72DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 12:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235343AbiEWMFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 08:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        id S235162AbiEWMHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 08:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235284AbiEWMFJ (ORCPT
+        with ESMTP id S235157AbiEWMHE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 08:05:09 -0400
-X-Greylist: delayed 518 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 23 May 2022 05:05:05 PDT
-Received: from mail.alyce.ch (mail.alyce.ch [95.217.248.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE072D1EC;
-        Mon, 23 May 2022 05:05:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rincat.ch; s=dkim;
-        t=1653306979;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z0ReiEb0VyOX2aaKJA+ivHNXEZZkQgCfhkpZMJ+OtkI=;
-        b=Ac2+RwEOjsbE/K4yUMvhb84uAA+XS3qhrxSriYOXF6A8T4wPZ/1e98lZ4hHVsRk6s/XWhL
-        BQDXUnr0tWCUyTRn3z7OfRpXrvvBMgcOVcojkCZWWxl2dz4zz/u7blPWreiSdmZkHeu+eV
-        4b4EPfaDuUpTsZSc6RgfJqrJSr+g6515g5l3GNpKUHWemtTf9ST2jC0IwvmCX2O9j0S5b/
-        Ln2ckH5xgMT9+GJ9Tmn22m3RfH3NGGPuvOfwoFYaulN3V5La44Vr2GN+tUqMyzR9wDn+NQ
-        Fr71GtU/BGiVixCtgAOtnZUinnx0TwqL7aZvpLY1XGQc6pnzT7bVVCRQ2jdATA==
-Message-ID: <5646cf79-248e-e80c-d1af-47887dc5232a@rincat.ch>
-Date:   Mon, 23 May 2022 07:56:14 -0400
+        Mon, 23 May 2022 08:07:04 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E704722531
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 05:07:02 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 9C7921F8BE;
+        Mon, 23 May 2022 12:07:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653307621; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=AZg9fjSVjMevE6ORFPCYPfeKG/A6rkhSaBplPKn1BKM=;
+        b=Ykmc/1vl+NmimrTzr+kiTREuCMPZltfzdr844Wpat4PPalZYSpZuek35bqJ9ldWztCBOEw
+        J5STYqsmtg5Cz9bE8Sr6Pk3H5n8yjrbR6p24mJSki+mZ8Ku72Ii4Sbcuq9KNjfpB7dWc12
+        b51J50u20vgDhrLtvEV7QHx39nnBN4w=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653307621;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=AZg9fjSVjMevE6ORFPCYPfeKG/A6rkhSaBplPKn1BKM=;
+        b=xUaP5gidQs3MRKzoyRaHctiiKKMZcZTLZA8J+fKR9YEgjH56EvPAG6Cr+QR3m8GwmC8wkB
+        tuiz1C+NJX9+PRCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 90421139F5;
+        Mon, 23 May 2022 12:07:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id yMouI+V4i2JiMQAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 23 May 2022 12:07:01 +0000
+Date:   Mon, 23 May 2022 14:06:57 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/cpu for 5.19
+Message-ID: <Yot44Yl5/6VFQtHI@zn.tnic>
 MIME-Version: 1.0
-Content-Language: en-US
-To:     Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-wireless@vger.kernel.org
-Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
- <20220518082318.3898514-10-s.hauer@pengutronix.de>
-From:   =?UTF-8?B?UmluIENhdCAo6Yi054yrKQ==?= <dev@rincat.ch>
-Subject: Re: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
-In-Reply-To: <20220518082318.3898514-10-s.hauer@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------aO0Y8CEUjcLjAwJ0Zzta9L7d"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------aO0Y8CEUjcLjAwJ0Zzta9L7d
-Content-Type: multipart/mixed; boundary="------------kbOkN4fTM5ov0y37C3qUv0op";
- protected-headers="v1"
-From: =?UTF-8?B?UmluIENhdCAo6Yi054yrKQ==?= <dev@rincat.ch>
-To: Sascha Hauer <s.hauer@pengutronix.de>, linux-wireless@vger.kernel.org
-Cc: Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
- Ping-Ke Shih <pkshih@realtek.com>, Yan-Hsuan Chuang
- <tony0620emma@gmail.com>, Kalle Valo <kvalo@kernel.org>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
-Message-ID: <5646cf79-248e-e80c-d1af-47887dc5232a@rincat.ch>
-Subject: Re: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
- <20220518082318.3898514-10-s.hauer@pengutronix.de>
-In-Reply-To: <20220518082318.3898514-10-s.hauer@pengutronix.de>
+Hi Linus,
 
---------------kbOkN4fTM5ov0y37C3qUv0op
-Content-Type: multipart/mixed; boundary="------------e0OVuE7jeIuuK8p1FFRrLPaG"
+please pull what is more a janitorial set of changes to x86/cpu.
 
---------------e0OVuE7jeIuuK8p1FFRrLPaG
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Depending on the merge order, this one is causing some trivial merge
+conflicts too, see below.
 
-SGksIGhlcmUgYXJlIGFsbCBjdXJyZW50IGtub3duIHZlbmRlciBydHc4ODIyYnUgZGV2aWNl
-cyBJRHMgZnJvbSBteSBtYWludGFpbmVkIA0KUmVhbHRlayBkcml2ZXIuDQpodHRwczovL2dp
-dGh1Yi5jb20vUmluQ2F0L1JUTDg4eDJCVS1MaW51eC1Ecml2ZXIvYmxvYi9tYXN0ZXIvb3Nf
-ZGVwL2xpbnV4L3VzYl9pbnRmLmMjTDIzOT0NCg0KQVNVUyB2ZW5kZXIgSUQgMHgwQjA1Og0K
-MHgxODQxIEFTVVMgQUMxMzAwIFVTQi1BQzU1IEIxDQoweDE4NEMgQVNVUyBVMg0KMHgxOUFB
-IEFTVVMgVVNCLUFDNTgNCg0KRWRpbWF4IHZlbmRlciBJRCAweDczOTI6DQoweEI4MjIgRWRp
-bWF4IEVXLTc4MjJVTEMNCjB4QzgyMiBFZGltYXggRVctNzgyMlVUQw0KMHhGODIyIEVkaW1h
-eCBFVy03ODIyVUFEDQoNCkRsaW5rIHZlbmRlciBJRCAweDIwMDE6DQoweDMzMUUgRGxpbmsg
-LSBEV0EtMTgxDQoweDMzMUMgRGxpbmsgLSBEV0EtMTgyDQoweDMzMUYgRGxpbmsgLSBEV0Et
-MTgzIFZlci4gRA0KDQpOZXRHZWFyIHZlbmRlciBJRCAweDA4NDY6DQoweDkwNTUgTmV0R2Vh
-ciBBNjE1MA0KDQpUUC1MaW5rIHZlbmRlciBJRCAweDIzNTc6DQoweDAxMkQgVFAtTGluayBB
-cmNoZXIgVDNVDQoweDAxMzggVFAtTGluayBBcmNoZXIgVDNVIFBsdXMNCjB4MDExNSBUUC1M
-aW5rIEFyY2hlciBUNFUgVjMNCg0KVFJFTkRuZXQgdmVuZGVyIElEIDB4MjBGNDoNCjB4ODA4
-QSBUUkVORG5ldCBURVctODA4VUJNDQoNClRoYW5rcy4NCg0KU2lnbmVkLW9mZi1ieTogUmlu
-IENhdCAo6Yi054yrKSA8ZGV2QHJpbmNhdC5jaD4NCg0KT24gMjAyMi0wNS0xOCAwNDoyMywg
-U2FzY2hhIEhhdWVyIHdyb3RlOg0KPiBBZGQgc3VwcG9ydCBmb3IgdGhlIHJ0dzg4MjJidSBj
-aGlwc2V0IGJhc2VkIG9uDQo+IGh0dHBzOi8vZ2l0aHViLmNvbS91bGxpLWtyb2xsL3J0dzg4
-LXVzYi5naXQNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFNhc2NoYSBIYXVlciA8cy5oYXVlckBw
-ZW5ndXRyb25peC5kZT4NCj4gLS0tDQo+ICAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRl
-ay9ydHc4OC9LY29uZmlnICAgIHwgMTEgKysrKw0KPiAgIGRyaXZlcnMvbmV0L3dpcmVsZXNz
-L3JlYWx0ZWsvcnR3ODgvTWFrZWZpbGUgICB8ICAzICsNCj4gICBkcml2ZXJzL25ldC93aXJl
-bGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJiLmMgfCAxOSArKysrKysNCj4gICAuLi4vbmV0
-L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmJ1LmMgICAgfCA2MiArKysrKysrKysr
-KysrKysrKysrDQo+ICAgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJi
-dS5oICAgIHwgMTUgKysrKysNCj4gICA1IGZpbGVzIGNoYW5nZWQsIDExMCBpbnNlcnRpb25z
-KCspDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0
-ZWsvcnR3ODgvcnR3ODgyMmJ1LmMNCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9u
-ZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiANCj4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvS2NvbmZpZyBiL2RyaXZl
-cnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvS2NvbmZpZw0KPiBpbmRleCA1YjFiYWZj
-Y2QzZDRjLi5lNGM2MGYxNDQ5ZWM4IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC93aXJl
-bGVzcy9yZWFsdGVrL3J0dzg4L0tjb25maWcNCj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxl
-c3MvcmVhbHRlay9ydHc4OC9LY29uZmlnDQo+IEBAIC00Miw2ICs0MiwxNyBAQCBjb25maWcg
-UlRXODhfODgyMkJFDQo+ICAgDQo+ICAgCSAgODAyLjExYWMgUENJZSB3aXJlbGVzcyBuZXR3
-b3JrIGFkYXB0ZXINCj4gICANCj4gK2NvbmZpZyBSVFc4OF84ODIyQlUNCj4gKwl0cmlzdGF0
-ZSAiUmVhbHRlayA4ODIyQlUgVVNCIHdpcmVsZXNzIG5ldHdvcmsgYWRhcHRlciINCj4gKwlk
-ZXBlbmRzIG9uIFVTQg0KPiArCXNlbGVjdCBSVFc4OF9DT1JFDQo+ICsJc2VsZWN0IFJUVzg4
-X1VTQg0KPiArCXNlbGVjdCBSVFc4OF84ODIyQg0KPiArCWhlbHANCj4gKwkgIFNlbGVjdCB0
-aGlzIG9wdGlvbiB3aWxsIGVuYWJsZSBzdXBwb3J0IGZvciA4ODIyQlUgY2hpcHNldA0KPiAr
-DQo+ICsJICA4MDIuMTFhYyBVU0Igd2lyZWxlc3MgbmV0d29yayBhZGFwdGVyDQo+ICsNCj4g
-ICBjb25maWcgUlRXODhfODgyMkNFDQo+ICAgCXRyaXN0YXRlICJSZWFsdGVrIDg4MjJDRSBQ
-Q0kgd2lyZWxlc3MgbmV0d29yayBhZGFwdGVyIg0KPiAgIAlkZXBlbmRzIG9uIFBDSQ0KPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9NYWtlZmls
-ZSBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvTWFrZWZpbGUNCj4gaW5k
-ZXggNTQ5OGU4YmJjYmYxNy4uZTQxMjZkZGY3ZDY1OSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVy
-cy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9NYWtlZmlsZQ0KPiArKysgYi9kcml2ZXJz
-L25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L01ha2VmaWxlDQo+IEBAIC0yNiw2ICsyNiw5
-IEBAIHJ0dzg4Xzg4MjJiLW9ianMJCTo9IHJ0dzg4MjJiLm8gcnR3ODgyMmJfdGFibGUubw0K
-PiAgIG9iai0kKENPTkZJR19SVFc4OF84ODIyQkUpCSs9IHJ0dzg4Xzg4MjJiZS5vDQo+ICAg
-cnR3ODhfODgyMmJlLW9ianMJCTo9IHJ0dzg4MjJiZS5vDQo+ICAgDQo+ICtvYmotJChDT05G
-SUdfUlRXODhfODgyMkJVKQkrPSBydHc4OF84ODIyYnUubw0KPiArcnR3ODhfODgyMmJ1LW9i
-anMJCTo9IHJ0dzg4MjJidS5vDQo+ICsNCj4gICBvYmotJChDT05GSUdfUlRXODhfODgyMkMp
-CSs9IHJ0dzg4Xzg4MjJjLm8NCj4gICBydHc4OF84ODIyYy1vYmpzCQk6PSBydHc4ODIyYy5v
-IHJ0dzg4MjJjX3RhYmxlLm8NCj4gICANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dp
-cmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmIuYyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNz
-L3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmIuYw0KPiBpbmRleCBlZWU3YmYwMzU0MDMwLi4xMDQ5
-N2QzNTFmMjI5IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVr
-L3J0dzg4L3J0dzg4MjJiLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRl
-ay9ydHc4OC9ydHc4ODIyYi5jDQo+IEBAIC0yNiw2ICsyNiwxMiBAQCBzdGF0aWMgdm9pZCBy
-dHc4ODIyYmVfZWZ1c2VfcGFyc2luZyhzdHJ1Y3QgcnR3X2VmdXNlICplZnVzZSwNCj4gICAJ
-ZXRoZXJfYWRkcl9jb3B5KGVmdXNlLT5hZGRyLCBtYXAtPmUubWFjX2FkZHIpOw0KPiAgIH0N
-Cj4gICANCj4gK3N0YXRpYyB2b2lkIHJ0dzg4MjJidV9lZnVzZV9wYXJzaW5nKHN0cnVjdCBy
-dHdfZWZ1c2UgKmVmdXNlLA0KPiArCQkJCSAgICBzdHJ1Y3QgcnR3ODgyMmJfZWZ1c2UgKm1h
-cCkNCj4gK3sNCj4gKwlldGhlcl9hZGRyX2NvcHkoZWZ1c2UtPmFkZHIsIG1hcC0+dS5tYWNf
-YWRkcik7DQo+ICt9DQo+ICsNCj4gICBzdGF0aWMgaW50IHJ0dzg4MjJiX3JlYWRfZWZ1c2Uo
-c3RydWN0IHJ0d19kZXYgKnJ0d2RldiwgdTggKmxvZ19tYXApDQo+ICAgew0KPiAgIAlzdHJ1
-Y3QgcnR3X2VmdXNlICplZnVzZSA9ICZydHdkZXYtPmVmdXNlOw0KPiBAQCAtNTYsNiArNjIs
-OSBAQCBzdGF0aWMgaW50IHJ0dzg4MjJiX3JlYWRfZWZ1c2Uoc3RydWN0IHJ0d19kZXYgKnJ0
-d2RldiwgdTggKmxvZ19tYXApDQo+ICAgCWNhc2UgUlRXX0hDSV9UWVBFX1BDSUU6DQo+ICAg
-CQlydHc4ODIyYmVfZWZ1c2VfcGFyc2luZyhlZnVzZSwgbWFwKTsNCj4gICAJCWJyZWFrOw0K
-PiArCWNhc2UgUlRXX0hDSV9UWVBFX1VTQjoNCj4gKwkJcnR3ODgyMmJ1X2VmdXNlX3BhcnNp
-bmcoZWZ1c2UsIG1hcCk7DQo+ICsJCWJyZWFrOw0KPiAgIAlkZWZhdWx0Og0KPiAgIAkJLyog
-dW5zdXBwb3J0ZWQgbm93ICovDQo+ICAgCQlyZXR1cm4gLUVOT1RTVVBQOw0KPiBAQCAtMTU4
-OCw2ICsxNTk3LDE1IEBAIHN0YXRpYyB2b2lkIHJ0dzg4MjJiX2FkYXB0aXZpdHkoc3RydWN0
-IHJ0d19kZXYgKnJ0d2RldikNCj4gICAJcnR3X3BoeV9zZXRfZWRjY2FfdGgocnR3ZGV2LCBs
-MmgsIGgybCk7DQo+ICAgfQ0KPiAgIA0KPiArc3RhdGljIHZvaWQgcnR3ODgyMmJfZmlsbF90
-eGRlc2NfY2hlY2tzdW0oc3RydWN0IHJ0d19kZXYgKnJ0d2RldiwNCj4gKwkJCQkJICBzdHJ1
-Y3QgcnR3X3R4X3BrdF9pbmZvICpwa3RfaW5mbywNCj4gKwkJCQkJICB1OCAqdHhkZXNjKQ0K
-PiArew0KPiArCXNpemVfdCB3b3JkcyA9IDMyIC8gMjsgLyogY2FsY3VsYXRlIHRoZSBmaXJz
-dCAzMiBieXRlcyAoMTYgd29yZHMpICovDQo+ICsNCj4gKwlmaWxsX3R4ZGVzY19jaGVja3N1
-bV9jb21tb24odHhkZXNjLCB3b3Jkcyk7DQo+ICt9DQo+ICsNCj4gICBzdGF0aWMgY29uc3Qg
-c3RydWN0IHJ0d19wd3Jfc2VxX2NtZCB0cmFuc19jYXJkZGlzX3RvX2NhcmRlbXVfODgyMmJb
-XSA9IHsNCj4gICAJezB4MDA4NiwNCj4gICAJIFJUV19QV1JfQ1VUX0FMTF9NU0ssDQo+IEBA
-IC0yMTYzLDYgKzIxODEsNyBAQCBzdGF0aWMgc3RydWN0IHJ0d19jaGlwX29wcyBydHc4ODIy
-Yl9vcHMgPSB7DQo+ICAgCS5jZmdfY3NpX3JhdGUJCT0gcnR3X2JmX2NmZ19jc2lfcmF0ZSwN
-Cj4gICAJLmFkYXB0aXZpdHlfaW5pdAk9IHJ0dzg4MjJiX2FkYXB0aXZpdHlfaW5pdCwNCj4g
-ICAJLmFkYXB0aXZpdHkJCT0gcnR3ODgyMmJfYWRhcHRpdml0eSwNCj4gKwkuZmlsbF90eGRl
-c2NfY2hlY2tzdW0JPSBydHc4ODIyYl9maWxsX3R4ZGVzY19jaGVja3N1bSwNCj4gICANCj4g
-ICAJLmNvZXhfc2V0X2luaXQJCT0gcnR3ODgyMmJfY29leF9jZmdfaW5pdCwNCj4gICAJLmNv
-ZXhfc2V0X2FudF9zd2l0Y2gJPSBydHc4ODIyYl9jb2V4X2NmZ19hbnRfc3dpdGNoLA0KPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIy
-YnUuYyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmJ1LmMN
-Cj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAwMDAwMDAwMDAwMC4uNWJlY2Vi
-ZGMzMjQ3MQ0KPiAtLS0gL2Rldi9udWxsDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNz
-L3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmJ1LmMNCj4gQEAgLTAsMCArMSw2MiBAQA0KPiArLy8g
-U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAgT1IgQlNELTMtQ2xhdXNlDQo+ICsv
-KiBDb3B5cmlnaHQoYykgMjAxOC0yMDE5ICBSZWFsdGVrIENvcnBvcmF0aW9uDQo+ICsgKi8N
-Cj4gKw0KPiArI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4
-L3VzYi5oPg0KPiArI2luY2x1ZGUgIm1haW4uaCINCj4gKyNpbmNsdWRlICJydHc4ODIyYnUu
-aCINCj4gKyNpbmNsdWRlICJ1c2IuaCINCj4gKw0KPiArI2RlZmluZSBSVFdfVVNCX1ZFTkRF
-Ul9JRF9FRElNQVgJMHg3MzkyDQo+ICsNCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgdXNiX2Rl
-dmljZV9pZCBydHdfODgyMmJ1X2lkX3RhYmxlW10gPSB7DQo+ICsJeyBVU0JfREVWSUNFX0FO
-RF9JTlRFUkZBQ0VfSU5GTyhSVFdfVVNCX1ZFTkRPUl9JRF9SRUFMVEVLLA0KPiArCQkJCSAg
-ICAgICBSVFdfVVNCX1BST0RVQ1RfSURfUkVBTFRFS184ODEyQiwNCj4gKwkJCQkgICAgICAg
-MHhmZiwgMHhmZiwgMHhmZiksDQo+ICsJICAuZHJpdmVyX2luZm8gPSAoa2VybmVsX3Vsb25n
-X3QpJihydHc4ODIyYl9od19zcGVjKSB9LA0KPiArCXsgVVNCX0RFVklDRV9BTkRfSU5URVJG
-QUNFX0lORk8oUlRXX1VTQl9WRU5ET1JfSURfUkVBTFRFSywNCj4gKwkJCQkgICAgICAgUlRX
-X1VTQl9QUk9EVUNUX0lEX1JFQUxURUtfODgyMkIsDQo+ICsJCQkJICAgICAgIDB4ZmYsIDB4
-ZmYsIDB4ZmYpLA0KPiArCSAgLmRyaXZlcl9pbmZvID0gKGtlcm5lbF91bG9uZ190KSYocnR3
-ODgyMmJfaHdfc3BlYykgfSwNCj4gKwl7IFVTQl9ERVZJQ0VfQU5EX0lOVEVSRkFDRV9JTkZP
-KFJUV19VU0JfVkVOREVSX0lEX0VESU1BWCwNCj4gKwkJCQkJMHhCODIyLA0KPiArCQkJCQkw
-eGZmLCAweGZmLCAweGZmKSwNCj4gKwkgIC5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdf
-dCkmKHJ0dzg4MjJiX2h3X3NwZWMpIH0sDQo+ICsJeyBVU0JfREVWSUNFX0FORF9JTlRFUkZB
-Q0VfSU5GTyhSVFdfVVNCX1ZFTkRFUl9JRF9FRElNQVgsDQo+ICsJCQkJCTB4QzgyMiwNCj4g
-KwkJCQkJMHhmZiwgMHhmZiwgMHhmZiksDQo+ICsJICAuZHJpdmVyX2luZm8gPSAoa2VybmVs
-X3Vsb25nX3QpJihydHc4ODIyYl9od19zcGVjKSB9LA0KPiArCXsgVVNCX0RFVklDRSgweDBi
-MDUsIDB4MTg0YyksCS8qIEFTVVMgQUM1MyBOYW5vICovDQo+ICsJICAuZHJpdmVyX2luZm8g
-PSAoa2VybmVsX3Vsb25nX3QpJihydHc4ODIyYl9od19zcGVjKSB9LA0KPiArCXsgVVNCX0RF
-VklDRSgweDBiMDUsIDB4MTg0MSksCS8qIEFTVVMgQUM1NSBCMSAqLw0KPiArCSAgLmRyaXZl
-cl9pbmZvID0gKGtlcm5lbF91bG9uZ190KSYocnR3ODgyMmJfaHdfc3BlYykgfSwNCj4gKwl7
-IFVTQl9ERVZJQ0UoMHgyMDAxLCAweDMzMWMpLAkvKiBELUxpbmsgRFdBLTE4MiByZXYgRDEg
-Ki8NCj4gKwkgIC5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdfdCkmKHJ0dzg4MjJiX2h3
-X3NwZWMpIH0sDQo+ICsJeyBVU0JfREVWSUNFKDB4MTNiMSwgMHgwMDQzKSwJLyogTGlua3N5
-cyBXVVNCNjQwME0gKi8NCj4gKwkgIC5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdfdCkm
-KHJ0dzg4MjJiX2h3X3NwZWMpIH0sDQo+ICsJeyBVU0JfREVWSUNFKDB4MjM1NywgMHgwMTJE
-KSwJLyogVFAtTGluayBBQzEzMDAgVDNVICovDQo+ICsJICAuZHJpdmVyX2luZm8gPSAoa2Vy
-bmVsX3Vsb25nX3QpJihydHc4ODIyYl9od19zcGVjKSB9LA0KPiArCXsgVVNCX0RFVklDRSgw
-eDIzNTcsIDB4MDEzOCksCS8qIFRQLUxpbmsgQUMxMzAwIFQzVSAqLw0KPiArCSAgLmRyaXZl
-cl9pbmZvID0gKGtlcm5lbF91bG9uZ190KSYocnR3ODgyMmJfaHdfc3BlYykgfSwNCj4gKwl7
-fSwNCj4gK307DQo+ICtNT0RVTEVfREVWSUNFX1RBQkxFKHVzYiwgcnR3Xzg4MjJidV9pZF90
-YWJsZSk7DQo+ICsNCj4gK3N0YXRpYyBpbnQgcnR3ODgyMmJ1X3Byb2JlKHN0cnVjdCB1c2Jf
-aW50ZXJmYWNlICppbnRmLA0KPiArCQkJICAgIGNvbnN0IHN0cnVjdCB1c2JfZGV2aWNlX2lk
-ICppZCkNCj4gK3sNCj4gKwlyZXR1cm4gcnR3X3VzYl9wcm9iZShpbnRmLCBpZCk7DQo+ICt9
-DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3QgdXNiX2RyaXZlciBydHdfODgyMmJ1X2RyaXZlciA9
-IHsNCj4gKwkubmFtZSA9ICJydHdfODgyMmJ1IiwNCj4gKwkuaWRfdGFibGUgPSBydHdfODgy
-MmJ1X2lkX3RhYmxlLA0KPiArCS5wcm9iZSA9IHJ0dzg4MjJidV9wcm9iZSwNCj4gKwkuZGlz
-Y29ubmVjdCA9IHJ0d191c2JfZGlzY29ubmVjdCwNCj4gK307DQo+ICttb2R1bGVfdXNiX2Ry
-aXZlcihydHdfODgyMmJ1X2RyaXZlcik7DQo+ICsNCj4gK01PRFVMRV9BVVRIT1IoIlJlYWx0
-ZWsgQ29ycG9yYXRpb24iKTsNCj4gK01PRFVMRV9ERVNDUklQVElPTigiUmVhbHRlayA4MDIu
-MTFhYyB3aXJlbGVzcyA4ODIyYnUgZHJpdmVyIik7DQo+ICtNT0RVTEVfTElDRU5TRSgiRHVh
-bCBCU0QvR1BMIik7DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFs
-dGVrL3J0dzg4L3J0dzg4MjJidS5oIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9y
-dHc4OC9ydHc4ODIyYnUuaA0KPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiBpbmRleCAwMDAw
-MDAwMDAwMDAwLi4yMGYwMWVjZDc0NDE1DQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvZHJp
-dmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiBAQCAtMCww
-ICsxLDE1IEBADQo+ICsvKiBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMCBPUiBC
-U0QtMy1DbGF1c2UgKi8NCj4gKy8qIENvcHlyaWdodChjKSAyMDE4LTIwMTkgIFJlYWx0ZWsg
-Q29ycG9yYXRpb24NCj4gKyAqLw0KPiArDQo+ICsjaWZuZGVmIF9fUlRXXzg4MjJCVV9IXw0K
-PiArI2RlZmluZSBfX1JUV184ODIyQlVfSF8NCj4gKw0KPiArLyogVVNCIFZlbmRvci9Qcm9k
-dWN0IElEcyAqLw0KPiArI2RlZmluZSBSVFdfVVNCX1ZFTkRPUl9JRF9SRUFMVEVLCQkweDBC
-REENCj4gKyNkZWZpbmUgUlRXX1VTQl9QUk9EVUNUX0lEX1JFQUxURUtfODgxMkIJMHhCODEy
-DQo+ICsjZGVmaW5lIFJUV19VU0JfUFJPRFVDVF9JRF9SRUFMVEVLXzg4MjJCCTB4QjgyQw0K
-PiArDQo+ICtleHRlcm4gc3RydWN0IHJ0d19jaGlwX2luZm8gcnR3ODgyMmJfaHdfc3BlYzsN
-Cj4gKw0KPiArI2VuZGlmDQo=
---------------e0OVuE7jeIuuK8p1FFRrLPaG
-Content-Type: application/pgp-keys; name="OpenPGP_0xDAB75F2C42EA262D.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xDAB75F2C42EA262D.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+--
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
 
-xjMEYPXItRYJKwYBBAHaRw8BAQdASk85zgrUDXOUihKbVzlfpFqpPtfJiHHWrdDd
-9in1Vt7NJlJpbiBDYXQgKOmItOeMqykgKERldikgPGRldkByaW5jYXQuY2g+wpkE
-ExYKAEECGwEFCQZ/rAkFCwkIBwMFFQoJCAsFFgMCAQACHgECF4AWIQSDMpqtAMvY
-WsmP/Hbat18sQuomLQUCYPXI/gIZAQAKCRDat18sQuomLQQ8AQDYcmCYlG4OU8oz
-qyWS3ci5OrhbHmL6jMwa5NFoW2SSUAEA98uF1kgY2EUVqJO65k7j31UdF/v7Rvr6
-heFedAlLOQ/CdQQQFgoAHRYhBHZkfEeFCzOTjpLd5dWBIaAIDC3oBQJg9clcAAoJ
-ENWBIaAIDC3oJYAA/19R0wQSwTr1vYp3GPhk1kYGC15ld1gXPF9KriFmlB3fAQCF
-700RDZX/JntIM2yUWJv0OAsJDJNYmf5WTZzpEDdoDc4zBGD1yNAWCSsGAQQB2kcP
-AQEHQFXQPQfLiltWbaYb585pK/E7G/CgoD7g1o4YfDhtOtwSwsCWBBgWCgAmFiEE
-gzKarQDL2FrJj/x22rdfLELqJi0FAmD1yNACGwIFCQK78zkA4gkQ2rdfLELqJi3A
-FiAEGRYKAH0WIQSMe+CQzU+/D/DeMitA3PGOlxUHlQUCYPXI0F8UgAAAAAAuAChp
-c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0OEM3
-QkUwOTBDRDRGQkYwRkYwREUzMjJCNDBEQ0YxOEU5NzE1MDc5NQAKCRBA3PGOlxUH
-lQf8AQCSoNONEGv8ow1Hm8q1QQs4Ea62IU0Iu1YuuH5rYGUKQwD/RO9qMoNHicdJ
-nIPZwiJvzLIE5MYJm7wpucWvSOYkKwSwhgD/Sbzkk1cWhxso3bgfHRI5t3QEb1gK
-8V47jcTkZ4hcVF4BALhJfGzF1e2L1BUVupqBkNQ6xrKs1xlSqbwZBeTqBdsHzjgE
-YPXI5xIKKwYBBAGXVQEFAQEHQBFoCEOoBFDCCBJ47Hsk2BYaLjmIAjnM7O5BpglG
-THIvAwEIB8J+BBgWCgAmFiEEgzKarQDL2FrJj/x22rdfLELqJi0FAmD1yOcCGwwF
-CQK78yIACgkQ2rdfLELqJi3mMAEAgC2VuSijXP359yp8yN6Qlk2JtUzpP5g2ZLuv
-53A8/QsA/2Bwu/u24hNTSpMuJbEOM3zR9Enqz+v8tYSrPmS4QVAE
-=3D5wHZ
------END PGP PUBLIC KEY BLOCK-----
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
 
---------------e0OVuE7jeIuuK8p1FFRrLPaG--
+are available in the Git repository at:
 
---------------kbOkN4fTM5ov0y37C3qUv0op--
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_cpu_for_v5.19_rc1
 
---------------aO0Y8CEUjcLjAwJ0Zzta9L7d
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+for you to fetch changes up to 2147c438fde135d6c145a96e373d9348e7076f7f:
 
------BEGIN PGP SIGNATURE-----
+  x86/speculation: Add missing prototype for unpriv_ebpf_notify() (2022-04-28 11:12:17 +0200)
 
-wnsEABYIACMWIQSMe+CQzU+/D/DeMitA3PGOlxUHlQUCYot2XgUDAAAAAAAKCRBA3PGOlxUHlalk
-AP9xvB09zYYjeXp7Eg/pPhW1eQh3NhSckJQCQdRRQm4k3AD/QXLlm8DiK6YpyCabNfGbmB46C1J8
-x7YVKo+OZw8mzQs=
-=V/6s
------END PGP SIGNATURE-----
+----------------------------------------------------------------
+- Remove a bunch of chicken bit options to turn off CPU features which
+are not really needed anymore
 
---------------aO0Y8CEUjcLjAwJ0Zzta9L7d--
+- Misc fixes and cleanups
+
+----------------------------------------------------------------
+Borislav Petkov (6):
+      x86/cpu: Allow feature bit names from /proc/cpuinfo in clearcpuid=
+      x86/cpu: Remove "nosep"
+      x86/cpu: Remove CONFIG_X86_SMAP and "nosmap"
+      x86/cpu: Remove "nosmep"
+      x86/cpu: Remove "noexec"
+      x86/cpu: Remove "noclflush"
+
+Josh Poimboeuf (1):
+      x86/speculation: Add missing prototype for unpriv_ebpf_notify()
+
+Matthieu Baerts (1):
+      x86/pm: Fix false positive kmemleak report in msr_build_context()
+
+Ricardo Cañuelo (1):
+      x86/speculation/srbds: Do not try to turn mitigation off when not supported
+
+ Documentation/admin-guide/kernel-parameters.txt |  24 +++---
+ Documentation/x86/cpuinfo.rst                   |   5 +-
+ Documentation/x86/x86_64/boot-options.rst       |   9 ---
+ arch/x86/Kconfig                                |  11 ---
+ arch/x86/include/asm/cpufeature.h               |   7 +-
+ arch/x86/include/asm/disabled-features.h        |   8 +-
+ arch/x86/include/asm/proto.h                    |   1 -
+ arch/x86/include/asm/smap.h                     |  24 ------
+ arch/x86/include/asm/suspend_32.h               |   2 +-
+ arch/x86/include/asm/suspend_64.h               |  12 ++-
+ arch/x86/kernel/cpu/bugs.c                      |   7 ++
+ arch/x86/kernel/cpu/common.c                    | 101 +++++++++++++-----------
+ arch/x86/kernel/setup.c                         |  28 ++++++-
+ arch/x86/mm/Makefile                            |   3 +-
+ arch/x86/mm/init_64.c                           |   1 -
+ arch/x86/mm/setup_nx.c                          |  62 ---------------
+ include/linux/bpf.h                             |   2 +
+ scripts/Makefile.build                          |   2 +-
+ scripts/link-vmlinux.sh                         |   6 +-
+ tools/arch/x86/include/asm/disabled-features.h  |   8 +-
+ 20 files changed, 120 insertions(+), 203 deletions(-)
+ delete mode 100644 arch/x86/mm/setup_nx.c
+
+---
+
+Merge conflict resolution:
+
+diff --cc arch/x86/include/asm/disabled-features.h
+index b37de8268c9a,1ae0fab7d902..36369e76cc63
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@@ -85,8 -73,8 +79,8 @@@
+  #define DISABLED_MASK5	0
+  #define DISABLED_MASK6	0
+  #define DISABLED_MASK7	(DISABLE_PTI)
+ -#define DISABLED_MASK8	0
+ +#define DISABLED_MASK8	(DISABLE_TDX_GUEST)
+- #define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
++ #define DISABLED_MASK9	(DISABLE_SGX)
+  #define DISABLED_MASK10	0
+  #define DISABLED_MASK11	0
+  #define DISABLED_MASK12	0
+diff --cc arch/x86/kernel/cpu/common.c
+index f0baf1b7522e,7dd7604cf46a..2e9142797c99
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@@ -1856,18 -1868,8 +1869,10 @@@ void identify_secondary_cpu(struct cpui
+  	validate_apic_and_package_id(c);
+  	x86_spec_ctrl_setup_ap();
+  	update_srbds_msr();
+ +
+ +	tsx_ap_init();
+  }
+  
+- static __init int setup_noclflush(char *arg)
+- {
+- 	setup_clear_cpu_cap(X86_FEATURE_CLFLUSH);
+- 	setup_clear_cpu_cap(X86_FEATURE_CLFLUSHOPT);
+- 	return 1;
+- }
+- __setup("noclflush", setup_noclflush);
+- 
+  void print_cpu_info(struct cpuinfo_x86 *c)
+  {
+  	const char *vendor = NULL;
+diff --cc scripts/Makefile.build
+index 33c1ed581522,7e7aa1d030a6..3911bfc21702
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@@ -231,9 -231,9 +231,9 @@@ objtool_args =								
+  	$(if $(part-of-module), --module)				\
+  	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
+  	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+ -	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
+ +	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)			\
+  	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+- 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
++ 	--uaccess							\
+  	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+  	$(if $(CONFIG_SLS), --sls)
+  
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG Nürnberg)
