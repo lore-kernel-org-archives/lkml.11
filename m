@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D091C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A331C352AA
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242483AbiEWRhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
+        id S242974AbiEWRhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241499AbiEWR0u (ORCPT
+        with ESMTP id S241577AbiEWR0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16D087A1A;
-        Mon, 23 May 2022 10:21:57 -0700 (PDT)
+        Mon, 23 May 2022 13:26:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCAD075216;
+        Mon, 23 May 2022 10:22:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD77F60BD3;
-        Mon, 23 May 2022 17:20:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F03C385A9;
-        Mon, 23 May 2022 17:20:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA567B81227;
+        Mon, 23 May 2022 17:14:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE47C385A9;
+        Mon, 23 May 2022 17:14:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326436;
-        bh=jdK76Fn/2nNzyCK/vvVOQAVF0PxEDe4Z3BZqfFWJzDE=;
+        s=korg; t=1653326098;
+        bh=3GySsgKbj9YOlHOOORgomtwxeGx2+Fwp1qtu2bu+WUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AprjX2N3xLAH4x5RI+hhAHGB/Un2/+eBtw84cdWkbddEW9V6oA3bINbK3TDJLp+/x
-         9nB6TczrCuh9Cs4yP7TsOJV9HWumksADN0emJswwfguQx26G6GNwqzeivL0pn0vSD/
-         laG1u0iTgkgHarq5zEOK+4LqFRv7TFp8CY4m1gP8=
+        b=dldvmFkzSHH0OtoD7g4B2WatdwFCOHLKWVH1hDiAicToiq9Xrq1NbSAOvRKGap6Lw
+         e1Fs+wd7R7uaBQghFpIR81XASo+ULnoH4vR0U/TlK4LxTIfsxUqOmANS5SVWTQJpUt
+         +PjNn3vRgbhvuCqsc5yHW6GhCFythaQ+jChCbGsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Norbert Slusarek <nslusarek@gmx.net>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 047/132] perf: Fix sys_perf_event_open() race against self
-Date:   Mon, 23 May 2022 19:04:16 +0200
-Message-Id: <20220523165831.045423740@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 54/68] mac80211: fix rx reordering with non explicit / psmp ack policy
+Date:   Mon, 23 May 2022 19:05:21 +0200
+Message-Id: <20220523165811.420451667@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,71 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Felix Fietkau <nbd@nbd.name>
 
-commit 3ac6487e584a1eb54071dbe1212e05b884136704 upstream.
+[ Upstream commit 5e469ed9764d4722c59562da13120bd2dc6834c5 ]
 
-Norbert reported that it's possible to race sys_perf_event_open() such
-that the looser ends up in another context from the group leader,
-triggering many WARNs.
+When the QoS ack policy was set to non explicit / psmp ack, frames are treated
+as not being part of a BA session, which causes extra latency on reordering.
+Fix this by only bypassing reordering for packets with no-ack policy
 
-The move_group case checks for races against itself, but the
-!move_group case doesn't, seemingly relying on the previous
-group_leader->ctx == ctx check. However, that check is racy due to not
-holding any locks at that time.
-
-Therefore, re-check the result after acquiring locks and bailing
-if they no longer match.
-
-Additionally, clarify the not_move_group case from the
-move_group-vs-move_group race.
-
-Fixes: f63a8daa5812 ("perf: Fix event->ctx locking")
-Reported-by: Norbert Slusarek <nslusarek@gmx.net>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220420105038.36443-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/events/core.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ net/mac80211/rx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -12283,6 +12283,9 @@ SYSCALL_DEFINE5(perf_event_open,
- 		 * Do not allow to attach to a group in a different task
- 		 * or CPU context. If we're moving SW events, we'll fix
- 		 * this up later, so allow that.
-+		 *
-+		 * Racy, not holding group_leader->ctx->mutex, see comment with
-+		 * perf_event_ctx_lock().
- 		 */
- 		if (!move_group && group_leader->ctx != ctx)
- 			goto err_context;
-@@ -12348,6 +12351,7 @@ SYSCALL_DEFINE5(perf_event_open,
- 			} else {
- 				perf_event_ctx_unlock(group_leader, gctx);
- 				move_group = 0;
-+				goto not_move_group;
- 			}
- 		}
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index ab91683d9459..99d5f8b58e92 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1400,8 +1400,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
+ 		goto dont_reorder;
  
-@@ -12364,7 +12368,17 @@ SYSCALL_DEFINE5(perf_event_open,
- 		}
- 	} else {
- 		mutex_lock(&ctx->mutex);
-+
-+		/*
-+		 * Now that we hold ctx->lock, (re)validate group_leader->ctx == ctx,
-+		 * see the group_leader && !move_group test earlier.
-+		 */
-+		if (group_leader && group_leader->ctx != ctx) {
-+			err = -EINVAL;
-+			goto err_locked;
-+		}
- 	}
-+not_move_group:
+ 	/* not part of a BA session */
+-	if (ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
+-	    ack_policy != IEEE80211_QOS_CTL_ACK_POLICY_NORMAL)
++	if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
+ 		goto dont_reorder;
  
- 	if (ctx->task == TASK_TOMBSTONE) {
- 		err = -ESRCH;
+ 	/* new, potentially un-ordered, ampdu frame - process it */
+-- 
+2.35.1
+
 
 
