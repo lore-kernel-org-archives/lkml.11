@@ -2,91 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5406C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31200C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 07:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbiEWHdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 03:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
+        id S230126AbiEWHdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 03:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiEWHcl (ORCPT
+        with ESMTP id S230261AbiEWHcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 03:32:41 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8454E2632
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:32:26 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso16708056pjj.4
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:32:26 -0700 (PDT)
+        Mon, 23 May 2022 03:32:47 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149E4CDB
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:32:45 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id p4so22632342lfg.4
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 00:32:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=v6pOY5u9Xf6A3Kt1uWvJSEsHw5j9g/fdOSLGZ65o8Gk=;
-        b=Rh0hMGETtsu517ry/T9riUCh0WoTh7KBsWj+R6HNHfWgM9d1YOzQb+++l8QEkM8TkT
-         BR7RRIPcOHw1PcE7o9WR+Yj7CrOh7NjAxTWAQSWabAWYUn1hnF1lPteRbwofFzxGfP6c
-         dlYvi7Qiwls3ttBnxiA8ZpKx/DfrUI7CjcmElj+glPYFa+fhbYJ45NnzMNjTDCFUd4LJ
-         L3vMyg2n4PGfOm6U6GEdxu+TqCxiZSmobMtb6ptRieRejzKHGROLhmQPYZylubnU8psE
-         Tz6ZG0R7pIOxV0swCRUXxRYy+q+1GOAE/TCqZNt1wGkZF808JPokiQ6QhvnAzEew1rj+
-         Gn6g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WM2iSjOLNX4HMYT1KBJ2aGaH1i/fqUVeTTeRZ7BJWqI=;
+        b=xpgnLsJaW+uiXjqcvBRtw1Ox3btq1Zpc6LoTPGuU+r+GEYHXTeZv1y5BsKu6YnI+lV
+         rGii2wxRug/9TVgLd9KhL+MhCvqOKZZd81IFpx4Z1UnUNbLeVTtOKmVWMNWX80qopIpL
+         NbyDgx39jmkQQWv42A3xhY8EOEwFA/bmBAwMyuMUocborhxaNUlNwTtyUWnPh6u/ILa4
+         fFGtP295rUcnHZmb3yhcRw5jXHf/r6OkUeSCP75ebJ0Hdcflz9n7K3c6E04z8+HpYY8v
+         P9xh0fyukxvZ5anO/cG8Woy8w337KFzZbpg0O8xWBLtSuPRYANQ/5O8SIRY9s0ku0Ye6
+         W6Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=v6pOY5u9Xf6A3Kt1uWvJSEsHw5j9g/fdOSLGZ65o8Gk=;
-        b=Tpbul1Oq/mhnuF6ZY1WBdPxllbLGOwuajzs9vvptJGYtbyClgID3a7h/a3tFjUoXHp
-         4ay77KCyoKPgjLYAWVd7kVIJ7v6U3LrOy7iX03CTVjClJgH1UddPtpK1LLp377uVf3kX
-         /W3Cthwy6MhzHL6iXVBo86sRIvMGeBEtsAzaKHUm1VF20ZGIQACBd9OwRKfppcjGtnQz
-         bSVBQIiV0RF8SXGqpOyOxChldk5SJ6elvroRrBsoRnX3bdF/uO4Q62RTeqlMaWJV+c7j
-         vH0BRzDcq0H0E926wjZvkB1ySYmq7S4v5IJWJQN1SWN6CD4y5EORXJAoxEoIW/q5iCRg
-         GNXw==
-X-Gm-Message-State: AOAM531o7lRlyten1Dwl99qflRQpFcOGUfRpuOBiAdeR4TKKeiWgnSMQ
-        CtaD6pY53Rdvc2Pvy79AaJWNb74hRDghZA==
-X-Google-Smtp-Source: ABdhPJxu2th6oFts/Ww2O/QBBPj+6FmL42fAW6DCdsthlSEOt/394d44jyeFuGSdOmTAnOuJ94NTsA==
-X-Received: by 2002:a17:902:bf45:b0:15c:df47:3d6 with SMTP id u5-20020a170902bf4500b0015cdf4703d6mr21373791pls.58.1653289132554;
-        Sun, 22 May 2022 23:58:52 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id z14-20020aa79f8e000000b0050dc762818bsm6417466pfr.101.2022.05.22.23.58.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 23:58:52 -0700 (PDT)
-Date:   Mon, 23 May 2022 12:28:50 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Zheng Bin <zhengbin13@huawei.com>
-Cc:     rafael@kernel.org, Pierre.Gondois@arm.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gaochao49@huawei.com
-Subject: Re: [PATCH -next] cpufreq: CPPC: Fix build error without
- CONFIG_ACPI_CPPC_CPUFREQ_FIE
-Message-ID: <20220523065850.lhnpsc2u3dxzzwx7@vireshk-i7>
-References: <20220521032438.2504155-1-zhengbin13@huawei.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WM2iSjOLNX4HMYT1KBJ2aGaH1i/fqUVeTTeRZ7BJWqI=;
+        b=P1HZPGODHb8af0fhUcPoJPKs3Yc555/AAWhW5Yshfx36woEiNpoP0SUMUlTtaBM/y1
+         3jG7N4k85jXuNTxS3nBacdGx93qgLBzxHN9C+FkwItlhG7J8rscFCvSds3ED+Va3Pfgu
+         rOgYzHrEc7JESKVFYXHA8oYNETM3773X353WOw24TNmohltgRQZTtg96Ps5BMkZS8oIU
+         chl4FbuYQeYHTfRAB569jy3FdFoqAVsccAhBO84rjI+UYzJZbKN4q7tDMpwS3JCXp3VB
+         ExSm9KQXIHhk4jFIikhih+xbUrgph0J5r8hpjQAWkGZrqfOclsCtfiWfpmMBBp2FQdMM
+         kzhQ==
+X-Gm-Message-State: AOAM533B2pvd93jIgvkJqHYzd3o5WjcdcG10dU1i4IaAee2gP+eotZ86
+        dhVnIlja4tTJ1EMUWSjcpxNY9w==
+X-Google-Smtp-Source: ABdhPJxkJ1lbfwE/HFS0yyoqUL4vOqViZG1+sY1vIT/G+AZ35A4VLDbzopZna1vNMRo2bjalfVjU0w==
+X-Received: by 2002:a05:6512:3092:b0:478:786f:9fc0 with SMTP id z18-20020a056512309200b00478786f9fc0mr1502296lfd.562.1653291163402;
+        Mon, 23 May 2022 00:32:43 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id g2-20020a2e9e42000000b0024f3d1daea5sm1666653ljk.45.2022.05.23.00.32.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 00:32:42 -0700 (PDT)
+Message-ID: <828749d1-d0a6-7016-c36a-ace0bb72600d@linaro.org>
+Date:   Mon, 23 May 2022 09:32:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220521032438.2504155-1-zhengbin13@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v1 05/19] dt-bindings: watchdog: npcm: Add npcm845
+ compatible string
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
+        bjorn.andersson@linaro.org, geert+renesas@glider.be,
+        marcel.ziswiler@toradex.com, vkoul@kernel.org,
+        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
+Cc:     soc@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220522155046.260146-1-tmaimon77@gmail.com>
+ <20220522155046.260146-6-tmaimon77@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220522155046.260146-6-tmaimon77@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21-05-22, 11:24, Zheng Bin wrote:
-> If CONFIG_ACPI_CPPC_CPUFREQ_FIE is not set, building fails:
+On 22/05/2022 17:50, Tomer Maimon wrote:
+> Add a compatible string for Nuvoton BMC NPCM845 watchdog.
 > 
-> drivers/cpufreq/cppc_cpufreq.c: In function ‘populate_efficiency_class’:
-> drivers/cpufreq/cppc_cpufreq.c:584:2: error: ‘cppc_cpufreq_driver’ undeclared (first use in this function); did you mean ‘cpufreq_driver’?
->   cppc_cpufreq_driver.register_em = cppc_cpufreq_register_em;
->   ^~~~~~~~~~~~~~~~~~~
->   cpufreq_driver
-> 
-> Make declare of cppc_cpufreq_driver out of CONFIG_ACPI_CPPC_CPUFREQ_FIE
-> to fix this.
-> 
-> Fixes: 740fcdc2c20e ("cpufreq: CPPC: Register EM based on efficiency class information")
-> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-> ---
->  drivers/cpufreq/cppc_cpufreq.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
--- 
-viresh
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
