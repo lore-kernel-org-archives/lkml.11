@@ -2,126 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F15C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E65C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243314AbiEWSsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:48:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        id S237576AbiEWStR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243364AbiEWSrj (ORCPT
+        with ESMTP id S243919AbiEWStC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:47:39 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DF374DFB
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:31:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653330692; x=1684866692;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vsVMhnWUP6CRAWXVvPo3aXNptIH/Cik7O9y+9qYPjwA=;
-  b=bW58AFgABu58BXAwqKGiYd583rIFrS0DFZZd4HmDxCXvVNtQmcGvsLGG
-   fuhJMiSr5rZn0JwlcFgKWLUTEHytKcIkRe7QdEa5K9rmEwbdZJh9Vic82
-   qCP4Oc6tGXKikd0AumbvSly+9BvqaU+qsSEV8no4qjGWGKTSMt8ictuCv
-   6UfteoKPMutdX4WF8dyJi8CE1IvXzXok2GkiKObi0PETU6GFHIM59UyvR
-   Aj1GssXJqYd+eBr/bfDc3SCrlfir4AP6Q62qkLagAOycmKc8Ph4CD9dqI
-   ay4YzpcFvXuakYiXmDu2a1eSDYgiCbUIa6kQ/g1RL8cpjv0fsdNaG6n5G
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="260925090"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="260925090"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 11:31:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="558795960"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 23 May 2022 11:31:16 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntCpn-0001M2-Kh;
-        Mon, 23 May 2022 18:31:15 +0000
-Date:   Tue, 24 May 2022 02:31:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bhanuprakash Modem <bhanuprakash.modem@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jani Nikula <jani.nikula@intel.com>,
-        Arun R Murthy <arun.r.murthy@intel.com>,
-        Harry Wentland <harry.wentland@amd.com>
-Subject: [drm-misc:drm-misc-next 1106/1111]
- drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:6622:9: error:
- implicit declaration of function 'crtc_debugfs_init'; did you mean
- 'amdgpu_debugfs_init'?
-Message-ID: <202205240207.KmDLuSrC-lkp@intel.com>
+        Mon, 23 May 2022 14:49:02 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEB7FD373
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:33:57 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NH3MNK013513;
+        Mon, 23 May 2022 17:56:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=xA+n5KuvnS1mmwKufHJ2VRnPKjS5ifUNWGp8AErsg04=;
+ b=dfQhiHm7XbJMQjzeikIgXM0Jj3ArCA2IFbg5cuxjGgK7z5Xc4FikWOwQbs0sxdxg7lI1
+ /K8K/qlWMGUOgpj6TdZ64ADd78iHzPUZgoFQxjB1mCvc/a2SS2Wv2USzsvCvK2ji0OGf
+ wDjDUYeD7mgo4LPrgKxmKhB39DnsYfSh2LEY7Y5p+ipjSLB43dFOkTP5WKZZ9XKXVCXF
+ hzioc7iXGmOEIvCqOvRQvyVqqxaCv/JI/EENd2+/NcsVxqlEZ9zyNvQ+136oRoeZ5Z9I
+ XCWjXhM+nAe4+ZV1/TVIVCQ14IYhhuS/Sw+RdaESxqOvVL4Wfgqs473VLQZPLCGOrQDw yg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8eb3rxaj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:01 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NHh26X004994;
+        Mon, 23 May 2022 17:56:00 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8eb3rxa0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:56:00 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NHg8B6015068;
+        Mon, 23 May 2022 17:55:59 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3g6qbjb6rc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 17:55:58 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NHtu8S49873212
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 May 2022 17:55:56 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 726205204F;
+        Mon, 23 May 2022 17:55:56 +0000 (GMT)
+Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.16.198])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 723A45204E;
+        Mon, 23 May 2022 17:55:53 +0000 (GMT)
+From:   Sathvika Vasireddy <sv@linux.ibm.com>
+To:     linuxppc-dev@lists.ozlabs.org
+Cc:     linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        peterz@infradead.org, mbenes@suse.cz, aik@ozlabs.ru,
+        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
+        rostedt@goodmis.org, naveen.n.rao@linux.vnet.ibm.com,
+        sv@linux.ibm.com
+Subject: [RFC PATCH 0/4] objtool: Enable and implement --mcount option on powerpc
+Date:   Mon, 23 May 2022 23:25:44 +0530
+Message-Id: <20220523175548.922671-1-sv@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: dbzbUcjglD0wgs08Lkd6cMUdgT_QV4eW
+X-Proofpoint-ORIG-GUID: JMYLGJ1AjAqcPy-3KSDSAe5fWDkJrL2q
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-23_07,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=1 bulkscore=0 impostorscore=0
+ clxscore=1011 mlxscore=1 spamscore=1 malwarescore=0 lowpriorityscore=0
+ mlxlogscore=226 suspectscore=0 adultscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205230099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-head:   8e71a4a8156a9f3fa27088dc59e852693713d94f
-commit: 4cd79f614b501e496ee8e4181d528c0cc1cb4e18 [1106/1111] drm/amd/display: Move connector debugfs to drm
-config: alpha-randconfig-r033-20220522 (https://download.01.org/0day-ci/archive/20220524/202205240207.KmDLuSrC-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
-        git fetch --no-tags drm-misc drm-misc-next
-        git checkout 4cd79f614b501e496ee8e4181d528c0cc1cb4e18
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash drivers/gpu/drm/
+These patches are rebased on top of objtool/core
+branch of the tip tree, and work only on ppc64le
+for now. 
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Note: With this patch set, there are still some 
+warnings seen with ppc64le kernel build.
 
-All errors (new ones prefixed by >>):
+Sathvika Vasireddy (4):
+  objtool: Add --mnop as an option to --mcount
+  objtool: Enable objtool to run only on files with ftrace enabled
+  objtool/powerpc: Enable objtool to be built on ppc
+  objtool/powerpc: Add --mcount specific implementation
 
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c: In function 'amdgpu_dm_crtc_late_register':
->> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:6622:9: error: implicit declaration of function 'crtc_debugfs_init'; did you mean 'amdgpu_debugfs_init'? [-Werror=implicit-function-declaration]
-    6622 |         crtc_debugfs_init(crtc);
-         |         ^~~~~~~~~~~~~~~~~
-         |         amdgpu_debugfs_init
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c: In function 'amdgpu_dm_commit_planes':
-   drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:9165:27: warning: variable 'abo' set but not used [-Wunused-but-set-variable]
-    9165 |         struct amdgpu_bo *abo;
-         |                           ^~~
-   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/core_types.h:32,
-                    from drivers/gpu/drm/amd/amdgpu/../display/dc/inc/link_enc_cfg.h:33,
-                    from drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:32:
-   At top level:
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:129:22: warning: 'SYNAPTICS_DEVICE_ID' defined but not used [-Wunused-const-variable=]
-     129 | static const uint8_t SYNAPTICS_DEVICE_ID[] = "SYNA";
-         |                      ^~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:126:22: warning: 'DP_SINK_DEVICE_STR_ID_2' defined but not used [-Wunused-const-variable=]
-     126 | static const uint8_t DP_SINK_DEVICE_STR_ID_2[] = {7, 1, 8, 7, 5, 0};
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../display/include/ddc_service_types.h:125:22: warning: 'DP_SINK_DEVICE_STR_ID_1' defined but not used [-Wunused-const-variable=]
-     125 | static const uint8_t DP_SINK_DEVICE_STR_ID_1[] = {7, 1, 8, 7, 3, 0};
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +6622 drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c
-
-e7b07ceef2a650 Harry Wentland 2017-08-10  6619  
-e69231c4451ae0 Wayne Lin      2021-03-08  6620  static int amdgpu_dm_crtc_late_register(struct drm_crtc *crtc)
-86bc221918925a Wayne Lin      2021-03-02  6621  {
-86bc221918925a Wayne Lin      2021-03-02 @6622  	crtc_debugfs_init(crtc);
-86bc221918925a Wayne Lin      2021-03-02  6623  
-86bc221918925a Wayne Lin      2021-03-02  6624  	return 0;
-86bc221918925a Wayne Lin      2021-03-02  6625  }
-86bc221918925a Wayne Lin      2021-03-02  6626  
-
-:::::: The code at line 6622 was first introduced by commit
-:::::: 86bc221918925a0bbb49043e3936e898e009b43b drm/amd/display: Support crc on specific region
-
-:::::: TO: Wayne Lin <Wayne.Lin@amd.com>
-:::::: CC: Alex Deucher <alexander.deucher@amd.com>
+ Makefile                                      |  4 +-
+ arch/powerpc/Kconfig                          |  2 +
+ arch/x86/Kconfig                              |  1 +
+ scripts/Makefile.build                        |  5 +-
+ tools/objtool/arch/powerpc/Build              |  2 +
+ tools/objtool/arch/powerpc/decode.c           | 87 +++++++++++++++++++
+ .../arch/powerpc/include/arch/cfi_regs.h      | 11 +++
+ tools/objtool/arch/powerpc/include/arch/elf.h |  8 ++
+ .../arch/powerpc/include/arch/endianness.h    |  9 ++
+ .../arch/powerpc/include/arch/special.h       | 21 +++++
+ tools/objtool/arch/powerpc/special.c          | 19 ++++
+ tools/objtool/builtin-check.c                 | 14 +++
+ tools/objtool/check.c                         | 31 ++++---
+ tools/objtool/elf.c                           | 13 +++
+ tools/objtool/include/objtool/builtin.h       |  1 +
+ tools/objtool/include/objtool/elf.h           |  1 +
+ 16 files changed, 212 insertions(+), 17 deletions(-)
+ create mode 100644 tools/objtool/arch/powerpc/Build
+ create mode 100644 tools/objtool/arch/powerpc/decode.c
+ create mode 100644 tools/objtool/arch/powerpc/include/arch/cfi_regs.h
+ create mode 100644 tools/objtool/arch/powerpc/include/arch/elf.h
+ create mode 100644 tools/objtool/arch/powerpc/include/arch/endianness.h
+ create mode 100644 tools/objtool/arch/powerpc/include/arch/special.h
+ create mode 100644 tools/objtool/arch/powerpc/special.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
