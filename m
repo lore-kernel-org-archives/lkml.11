@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 483A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239921AbiEWRNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
+        id S240004AbiEWRNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239912AbiEWRL2 (ORCPT
+        with ESMTP id S239976AbiEWRLa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:11:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FE66CA8A;
-        Mon, 23 May 2022 10:10:42 -0700 (PDT)
+        Mon, 23 May 2022 13:11:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3464D6CF60;
+        Mon, 23 May 2022 10:10:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B49AA6149F;
-        Mon, 23 May 2022 17:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5FCFC385A9;
-        Mon, 23 May 2022 17:10:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71346B811FE;
+        Mon, 23 May 2022 17:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB92CC385A9;
+        Mon, 23 May 2022 17:10:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325816;
-        bh=PtTaFhuG/99yQe8PlTPphxsox6m92HMPQPi+TXuU2x4=;
+        s=korg; t=1653325819;
+        bh=fiL5xmpicU4Z0vpo7J3ojLYAW+ShfyLlGTLoQTbPdiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AlZhi7kyA5XB2d5KNZHTWTw20Ty3AR0PLVElgk5jtrKNFr7a+ujmvDP8p2wEYHdh4
-         hraav1bC3sX7SN3Gx/UmMASBjWsnmuNMFWGt6X0xgDGt/2XuNI+OJijbX4dCluUhCV
-         19uHDMxIly5iLNCnJakVpG8nJHfgYlzjiuIT3u/I=
+        b=PQLxisfMlDNRftlifSr1yj+6J7OwfqpvnfsR+HKDhJjtHWcMi4pPIKfLWbo7Mbyot
+         96ELnJwND1/4XH4vWvoXUyKLzP5sOokbnZzMi98fnnnIoCtUDY6WLWGjJm7btPB5te
+         G3//p/AlOT2tzd7ptOapRoZeyNpkr0QbvUgBfmfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 4.19 20/44] mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
-Date:   Mon, 23 May 2022 19:05:04 +0200
-Message-Id: <20220523165756.859950133@linuxfoundation.org>
+        stable@vger.kernel.org, Harini Katakam <harini.katakam@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 21/44] net: macb: Increment rx bd head after allocating skb and buffer
+Date:   Mon, 23 May 2022 19:05:05 +0200
+Message-Id: <20220523165757.014597115@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -48,71 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Harini Katakam <harini.katakam@xilinx.com>
 
-commit 533a6cfe08f96a7b5c65e06d20916d552c11b256 upstream
+[ Upstream commit 9500acc631dbb8b73166e25700e656b11f6007b6 ]
 
-All callers of __mmc_switch() should now be specifying a valid timeout for
-the CMD6 command. However, just to be sure, let's print a warning and
-default to use the generic_cmd6_time in case the provided timeout_ms
-argument is zero.
+In gem_rx_refill rx_prepared_head is incremented at the beginning of
+the while loop preparing the skb and data buffers. If the skb or data
+buffer allocation fails, this BD will be unusable BDs until the head
+loops back to the same BD (and obviously buffer allocation succeeds).
+In the unlikely event that there's a string of allocation failures,
+there will be an equal number of unusable BDs and an inconsistent RX
+BD chain. Hence increment the head at the end of the while loop to be
+clean.
 
-In this context, let's also simplify some of the corresponding code and
-clarify some related comments.
-
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-4-ulf.hansson@linaro.org
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4df95131ea80 ("net/macb: change RX path for GEM")
+Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220512171900.32593-1-harini.katakam@xilinx.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/mmc_ops.c |   16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -458,10 +458,6 @@ static int mmc_poll_for_busy(struct mmc_
- 	bool expired = false;
- 	bool busy = false;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d8e4842af055..50331b202f73 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -915,7 +915,6 @@ static void gem_rx_refill(struct macb_queue *queue)
+ 		/* Make hw descriptor updates visible to CPU */
+ 		rmb();
  
--	/* We have an unspecified cmd timeout, use the fallback value. */
--	if (!timeout_ms)
--		timeout_ms = MMC_OPS_TIMEOUT_MS;
--
- 	/*
- 	 * In cases when not allowed to poll by using CMD13 or because we aren't
- 	 * capable of polling by using ->card_busy(), then rely on waiting the
-@@ -534,6 +530,12 @@ int __mmc_switch(struct mmc_card *card,
+-		queue->rx_prepared_head++;
+ 		desc = macb_rx_desc(queue, entry);
  
- 	mmc_retune_hold(host);
+ 		if (!queue->rx_skbuff[entry]) {
+@@ -954,6 +953,7 @@ static void gem_rx_refill(struct macb_queue *queue)
+ 			dma_wmb();
+ 			desc->addr &= ~MACB_BIT(RX_USED);
+ 		}
++		queue->rx_prepared_head++;
+ 	}
  
-+	if (!timeout_ms) {
-+		pr_warn("%s: unspecified timeout for CMD6 - use generic\n",
-+			mmc_hostname(host));
-+		timeout_ms = card->ext_csd.generic_cmd6_time;
-+	}
-+
- 	/*
- 	 * If the cmd timeout and the max_busy_timeout of the host are both
- 	 * specified, let's validate them. A failure means we need to prevent
-@@ -542,7 +544,7 @@ int __mmc_switch(struct mmc_card *card,
- 	 * which also means they are on their own when it comes to deal with the
- 	 * busy timeout.
- 	 */
--	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) && timeout_ms &&
-+	if (!(host->caps & MMC_CAP_NEED_RSP_BUSY) &&
- 	    host->max_busy_timeout && (timeout_ms > host->max_busy_timeout))
- 		use_r1b_resp = false;
- 
-@@ -554,10 +556,6 @@ int __mmc_switch(struct mmc_card *card,
- 	cmd.flags = MMC_CMD_AC;
- 	if (use_r1b_resp) {
- 		cmd.flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
--		/*
--		 * A busy_timeout of zero means the host can decide to use
--		 * whatever value it finds suitable.
--		 */
- 		cmd.busy_timeout = timeout_ms;
- 	} else {
- 		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
+ 	/* Make descriptor updates visible to hardware */
+-- 
+2.35.1
+
 
 
