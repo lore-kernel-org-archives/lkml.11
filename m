@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F5BC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2254C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244074AbiEWSCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42382 "EHLO
+        id S244326AbiEWSCs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241646AbiEWRdu (ORCPT
+        with ESMTP id S241255AbiEWRe2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:33:50 -0400
+        Mon, 23 May 2022 13:34:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A497CB0C;
-        Mon, 23 May 2022 10:28:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767A47CDC6;
+        Mon, 23 May 2022 10:28:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A45F608C0;
-        Mon, 23 May 2022 17:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BAD3C385A9;
-        Mon, 23 May 2022 17:27:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46AA2608C0;
+        Mon, 23 May 2022 17:28:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46740C385A9;
+        Mon, 23 May 2022 17:28:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326879;
-        bh=FLGBvZEt3C6XRU8TTupFkhcQcgUGvRduW1/jt4Oz7N0=;
+        s=korg; t=1653326889;
+        bh=W89CsubPW/Em66wY0PHx9GzSKhev0KIhivQtzaBnt+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p0nRWpmnPMbLZ6kokjBrweV3r28Xhc5bAsnLVNC4E5yyvw5LNcR9U8sQPLqKfQlEy
-         K375Qofd0v8/Lud3vxa+fb76nqhhuJYkeEGKgRgPN+O8XqYgTR4eTcvfpUrIKDo0AQ
-         a5sRtKoGkHcJqqFf1VaiqH48SXvCxt0eLtV3+X+U=
+        b=c1EeB3GHF9ynaZs87rOC+Hd02/y6VqF9yVKrfWRBGQgMN6NBWrVdG5daldBwhz9xV
+         iqTn746obFPFDonjORKR1CU+VtVi+AD6NZ+Tvf+UxtcIVe/feBAzqeh/r5jLaZeDR9
+         S7txDlDg53rf5vAndDg9qpkWDbNnBiijEeffvS2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 087/158] net: fix dev_fill_forward_path with pppoe + bridge
-Date:   Mon, 23 May 2022 19:04:04 +0200
-Message-Id: <20220523165845.565547962@linuxfoundation.org>
+Subject: [PATCH 5.17 089/158] ptp: ocp: have adjtime handle negative delta_ns correctly
+Date:   Mon, 23 May 2022 19:04:06 +0200
+Message-Id: <20220523165845.891391295@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,67 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-[ Upstream commit cf2df74e202d81b09f09d84c2d8903e0e87e9274 ]
+[ Upstream commit da2172a9bfec858ceeb0271b9d444378490398c8 ]
 
-When calling dev_fill_forward_path on a pppoe device, the provided destination
-address is invalid. In order for the bridge fdb lookup to succeed, the pppoe
-code needs to update ctx->daddr to the correct value.
-Fix this by storing the address inside struct net_device_path_ctx
+delta_ns is a s64, but it was being passed ptp_ocp_adjtime_coarse
+as an u64.  Also, it turns out that timespec64_add_ns() only handles
+positive values, so perform the math with set_normalized_timespec().
 
-Fixes: f6efc675c9dd ("net: ppp: resolve forwarding path for bridge pppoe devices")
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 90f8f4c0e3ce ("ptp: ocp: Add ptp_ocp_adjtime_coarse for large adjustments")
+Suggested-by: Vadim Fedorenko <vfedorenko@novek.ru>
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: Vadim Fedorenko <vfedorenko@novek.ru>
+Link: https://lore.kernel.org/r/20220513225231.1412-1-jonathan.lemon@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ppp/pppoe.c   | 1 +
- include/linux/netdevice.h | 2 +-
- net/core/dev.c            | 2 +-
- 3 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/ptp/ptp_ocp.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
-index 3619520340b7..e172743948ed 100644
---- a/drivers/net/ppp/pppoe.c
-+++ b/drivers/net/ppp/pppoe.c
-@@ -988,6 +988,7 @@ static int pppoe_fill_forward_path(struct net_device_path_ctx *ctx,
- 	path->encap.proto = htons(ETH_P_PPP_SES);
- 	path->encap.id = be16_to_cpu(po->num);
- 	memcpy(path->encap.h_dest, po->pppoe_pa.remote, ETH_ALEN);
-+	memcpy(ctx->daddr, po->pppoe_pa.remote, ETH_ALEN);
- 	path->dev = ctx->dev;
- 	ctx->dev = dev;
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index 17ad5f0d13b2..6585789ed695 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -625,7 +625,7 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u32 adj_val)
+ }
  
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index f53ea7038441..dadd4d2f6d8a 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -891,7 +891,7 @@ struct net_device_path_stack {
- 
- struct net_device_path_ctx {
- 	const struct net_device *dev;
--	const u8		*daddr;
-+	u8			daddr[ETH_ALEN];
- 
- 	int			num_vlans;
- 	struct {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 91cf709c98b3..5f1ac4812277 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -663,11 +663,11 @@ int dev_fill_forward_path(const struct net_device *dev, const u8 *daddr,
- 	const struct net_device *last_dev;
- 	struct net_device_path_ctx ctx = {
- 		.dev	= dev,
--		.daddr	= daddr,
- 	};
- 	struct net_device_path *path;
- 	int ret = 0;
- 
-+	memcpy(ctx.daddr, daddr, sizeof(ctx.daddr));
- 	stack->num_paths = 0;
- 	while (ctx.dev && ctx.dev->netdev_ops->ndo_fill_forward_path) {
- 		last_dev = ctx.dev;
+ static void
+-ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, u64 delta_ns)
++ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, s64 delta_ns)
+ {
+ 	struct timespec64 ts;
+ 	unsigned long flags;
+@@ -634,7 +634,8 @@ ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, u64 delta_ns)
+ 	spin_lock_irqsave(&bp->lock, flags);
+ 	err = __ptp_ocp_gettime_locked(bp, &ts, NULL);
+ 	if (likely(!err)) {
+-		timespec64_add_ns(&ts, delta_ns);
++		set_normalized_timespec64(&ts, ts.tv_sec,
++					  ts.tv_nsec + delta_ns);
+ 		__ptp_ocp_settime_locked(bp, &ts);
+ 	}
+ 	spin_unlock_irqrestore(&bp->lock, flags);
 -- 
 2.35.1
 
