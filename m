@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20A4C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A73C2C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243654AbiEWRvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        id S243953AbiEWRvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241521AbiEWR0u (ORCPT
+        with ESMTP id S241473AbiEWR0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7994737B9;
-        Mon, 23 May 2022 10:21:57 -0700 (PDT)
+        Mon, 23 May 2022 13:26:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AD574DEC;
+        Mon, 23 May 2022 10:21:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93C9C60919;
-        Mon, 23 May 2022 17:21:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9193BC34116;
-        Mon, 23 May 2022 17:21:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 706DBB81215;
+        Mon, 23 May 2022 17:14:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2701C385A9;
+        Mon, 23 May 2022 17:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326517;
-        bh=DpiMKSUnLxhXsBTF7zVyd2dd1Go1TMiq4kSzb6WHBI8=;
+        s=korg; t=1653326057;
+        bh=+WFmj9pEOkElDu91VIYgVARgNcx+u9/+kVf7ayfMqQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l3b6OW5miXa29HW58b2lFh4XqO6kedkbC8iBRajsgLQY/AaphwiYxWoHf6o93JLtl
-         jQLfpY6EOmtQyOr/hYfB7v+X1B/UfW6sKX3ATnbnNhldKdg4v6Whq59Pu/cJwb8Yhh
-         nW7eQ2WB1h511B79DnNnBf/jhSQmmKT3LC2uC+Bo=
+        b=JkjkbBvrKlPy2GmrgzaIIiUUPibz/LTEkhgbqsqoZL+eqP3LFuKZiK23Javt5ESOJ
+         MF5AljDa4DUAzjbzJSe8zV9rqO2BfkcHQgKgGDnZa5ZwX1zUMywW+eDBXxunm7HgLG
+         /QgoiaCT1RM7rT/PMVvdsUwYK8Nr+S6Fx781DuBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 078/132] netfilter: nft_flow_offload: fix offload with pppoe + vlan
-Date:   Mon, 23 May 2022 19:04:47 +0200
-Message-Id: <20220523165836.030750487@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Subject: [PATCH 5.10 07/97] igc: Update I226_K device ID
+Date:   Mon, 23 May 2022 19:05:11 +0200
+Message-Id: <20220523165813.521480921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
+References: <20220523165812.244140613@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-[ Upstream commit 2456074935003b66c40f78df6adfc722435d43ea ]
+commit 79cc8322b6d82747cb63ea464146c0bf5b5a6bc1 upstream.
 
-When running a combination of PPPoE on top of a VLAN, we need to set
-info->outdev to the PPPoE device, otherwise PPPoE encap is skipped
-during software offload.
+The device ID for I226_K was incorrectly assigned, update the device
+ID to the correct one.
 
-Fixes: 72efd585f714 ("netfilter: flowtable: add pppoe support")
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: bfa5e98c9de4 ("igc: Add new device ID")
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_flow_offload.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igc/igc_hw.h |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index dd824193c920..12145a80ef03 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -123,7 +123,8 @@ static void nft_dev_path_info(const struct net_device_path_stack *stack,
- 				info->indev = NULL;
- 				break;
- 			}
--			info->outdev = path->dev;
-+			if (!info->outdev)
-+				info->outdev = path->dev;
- 			info->encap[info->num_encaps].id = path->encap.id;
- 			info->encap[info->num_encaps].proto = path->encap.proto;
- 			info->num_encaps++;
--- 
-2.35.1
-
+--- a/drivers/net/ethernet/intel/igc/igc_hw.h
++++ b/drivers/net/ethernet/intel/igc/igc_hw.h
+@@ -22,6 +22,7 @@
+ #define IGC_DEV_ID_I220_V			0x15F7
+ #define IGC_DEV_ID_I225_K			0x3100
+ #define IGC_DEV_ID_I225_K2			0x3101
++#define IGC_DEV_ID_I226_K			0x3102
+ #define IGC_DEV_ID_I225_LMVP			0x5502
+ #define IGC_DEV_ID_I225_IT			0x0D9F
+ #define IGC_DEV_ID_I226_LM			0x125B
 
 
