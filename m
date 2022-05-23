@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FCAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB403C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241565AbiEWRdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43246 "EHLO
+        id S240967AbiEWRdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242372AbiEWRXB (ORCPT
+        with ESMTP id S242178AbiEWRWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:23:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85868023E;
-        Mon, 23 May 2022 10:20:23 -0700 (PDT)
+        Mon, 23 May 2022 13:22:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868FF7C153;
+        Mon, 23 May 2022 10:20:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7591B608C0;
-        Mon, 23 May 2022 17:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B691C385A9;
-        Mon, 23 May 2022 17:20:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E35AB8122A;
+        Mon, 23 May 2022 17:18:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8472FC34116;
+        Mon, 23 May 2022 17:18:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326422;
-        bh=tcHeGnF2PoJIpurfi0R4moFcTJ05kj7019N3a7rLRAE=;
+        s=korg; t=1653326323;
+        bh=GBc26s17BmQw9HacxvTdrlw6HMMuVI1jH1R6N3f3C/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QdrYvIwM9MqQvP3TZTFVpEt4Ybci2m9ynrT7vW8KrA+w8+1i4j7FAOcNfGtt4y1/J
-         2aA9vmS52kJgehs6fWCghnkm7G/+v4Yu5H4jXsuaV9iPdAceQmpB1ODCtt9aTCGHtC
-         TnQy0MrsAjoaby7vdMARUG25wxwzaHF7mSslfKLc=
+        b=NKUZg98pFd3jXDFRbqXTOrVGKULAF7Do/D6U6oOpmbQvZuaGKlzRaHS5uTJ8C+KAq
+         VI2ldGSeGvCSiVSkMRa9vZ19U/Uy2mOsej9J1M4F1CNWS2dOTj4u9EnjFFaZjSmOBt
+         vj6+Ha1K1mkTr9dP96Juh86Ou5LjiZfKbRqldnAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
-Subject: [PATCH 5.15 053/132] arm64: paravirt: Use RCU read locks to guard stolen_time
-Date:   Mon, 23 May 2022 19:04:22 +0200
-Message-Id: <20220523165832.034077247@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 045/132] ALSA: wavefront: Proper check of get_user() error
+Date:   Mon, 23 May 2022 19:04:14 +0200
+Message-Id: <20220523165830.742137228@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,145 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 19bef63f951e47dd4ba54810e6f7c7ff9344a3ef upstream.
+commit a34ae6c0660d3b96b0055f68ef74dc9478852245 upstream.
 
-During hotplug, the stolen time data structure is unmapped and memset.
-There is a possibility of the timer IRQ being triggered before memset
-and stolen time is getting updated as part of this timer IRQ handler. This
-causes the below crash in timer handler -
+The antient ISA wavefront driver reads its sample patch data (uploaded
+over an ioctl) via __get_user() with no good reason; likely just for
+some performance optimizations in the past.  Let's change this to the
+standard get_user() and the error check for handling the fault case
+properly.
 
-  [ 3457.473139][    C5] Unable to handle kernel paging request at virtual address ffffffc03df05148
-  ...
-  [ 3458.154398][    C5] Call trace:
-  [ 3458.157648][    C5]  para_steal_clock+0x30/0x50
-  [ 3458.162319][    C5]  irqtime_account_process_tick+0x30/0x194
-  [ 3458.168148][    C5]  account_process_tick+0x3c/0x280
-  [ 3458.173274][    C5]  update_process_times+0x5c/0xf4
-  [ 3458.178311][    C5]  tick_sched_timer+0x180/0x384
-  [ 3458.183164][    C5]  __run_hrtimer+0x160/0x57c
-  [ 3458.187744][    C5]  hrtimer_interrupt+0x258/0x684
-  [ 3458.192698][    C5]  arch_timer_handler_virt+0x5c/0xa0
-  [ 3458.198002][    C5]  handle_percpu_devid_irq+0xdc/0x414
-  [ 3458.203385][    C5]  handle_domain_irq+0xa8/0x168
-  [ 3458.208241][    C5]  gic_handle_irq.34493+0x54/0x244
-  [ 3458.213359][    C5]  call_on_irq_stack+0x40/0x70
-  [ 3458.218125][    C5]  do_interrupt_handler+0x60/0x9c
-  [ 3458.223156][    C5]  el1_interrupt+0x34/0x64
-  [ 3458.227560][    C5]  el1h_64_irq_handler+0x1c/0x2c
-  [ 3458.232503][    C5]  el1h_64_irq+0x7c/0x80
-  [ 3458.236736][    C5]  free_vmap_area_noflush+0x108/0x39c
-  [ 3458.242126][    C5]  remove_vm_area+0xbc/0x118
-  [ 3458.246714][    C5]  vm_remove_mappings+0x48/0x2a4
-  [ 3458.251656][    C5]  __vunmap+0x154/0x278
-  [ 3458.255796][    C5]  stolen_time_cpu_down_prepare+0xc0/0xd8
-  [ 3458.261542][    C5]  cpuhp_invoke_callback+0x248/0xc34
-  [ 3458.266842][    C5]  cpuhp_thread_fun+0x1c4/0x248
-  [ 3458.271696][    C5]  smpboot_thread_fn+0x1b0/0x400
-  [ 3458.276638][    C5]  kthread+0x17c/0x1e0
-  [ 3458.280691][    C5]  ret_from_fork+0x10/0x20
-
-As a fix, introduce rcu lock to update stolen time structure.
-
-Fixes: 75df529bec91 ("arm64: paravirt: Initialize steal time when cpu is online")
-Cc: stable@vger.kernel.org
-Suggested-by: Will Deacon <will@kernel.org>
-Signed-off-by: Prakruthi Deepak Heragu <quic_pheragu@quicinc.com>
-Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
-Reviewed-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-Link: https://lore.kernel.org/r/20220513174654.362169-1-quic_eberman@quicinc.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220510103626.16635-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/paravirt.c |   29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ sound/isa/wavefront/wavefront_synth.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/paravirt.c
-+++ b/arch/arm64/kernel/paravirt.c
-@@ -35,7 +35,7 @@ static u64 native_steal_clock(int cpu)
- DEFINE_STATIC_CALL(pv_steal_clock, native_steal_clock);
+--- a/sound/isa/wavefront/wavefront_synth.c
++++ b/sound/isa/wavefront/wavefront_synth.c
+@@ -1094,7 +1094,8 @@ wavefront_send_sample (snd_wavefront_t *
  
- struct pv_time_stolen_time_region {
--	struct pvclock_vcpu_stolen_time *kaddr;
-+	struct pvclock_vcpu_stolen_time __rcu *kaddr;
- };
- 
- static DEFINE_PER_CPU(struct pv_time_stolen_time_region, stolen_time_region);
-@@ -52,7 +52,9 @@ early_param("no-steal-acc", parse_no_ste
- /* return stolen time in ns by asking the hypervisor */
- static u64 para_steal_clock(int cpu)
- {
-+	struct pvclock_vcpu_stolen_time *kaddr = NULL;
- 	struct pv_time_stolen_time_region *reg;
-+	u64 ret = 0;
- 
- 	reg = per_cpu_ptr(&stolen_time_region, cpu);
- 
-@@ -61,28 +63,37 @@ static u64 para_steal_clock(int cpu)
- 	 * online notification callback runs. Until the callback
- 	 * has run we just return zero.
- 	 */
--	if (!reg->kaddr)
-+	rcu_read_lock();
-+	kaddr = rcu_dereference(reg->kaddr);
-+	if (!kaddr) {
-+		rcu_read_unlock();
- 		return 0;
-+	}
- 
--	return le64_to_cpu(READ_ONCE(reg->kaddr->stolen_time));
-+	ret = le64_to_cpu(READ_ONCE(kaddr->stolen_time));
-+	rcu_read_unlock();
-+	return ret;
- }
- 
- static int stolen_time_cpu_down_prepare(unsigned int cpu)
- {
-+	struct pvclock_vcpu_stolen_time *kaddr = NULL;
- 	struct pv_time_stolen_time_region *reg;
- 
- 	reg = this_cpu_ptr(&stolen_time_region);
- 	if (!reg->kaddr)
- 		return 0;
- 
--	memunmap(reg->kaddr);
--	memset(reg, 0, sizeof(*reg));
-+	kaddr = rcu_replace_pointer(reg->kaddr, NULL, true);
-+	synchronize_rcu();
-+	memunmap(kaddr);
- 
- 	return 0;
- }
- 
- static int stolen_time_cpu_online(unsigned int cpu)
- {
-+	struct pvclock_vcpu_stolen_time *kaddr = NULL;
- 	struct pv_time_stolen_time_region *reg;
- 	struct arm_smccc_res res;
- 
-@@ -93,17 +104,19 @@ static int stolen_time_cpu_online(unsign
- 	if (res.a0 == SMCCC_RET_NOT_SUPPORTED)
- 		return -EINVAL;
- 
--	reg->kaddr = memremap(res.a0,
-+	kaddr = memremap(res.a0,
- 			      sizeof(struct pvclock_vcpu_stolen_time),
- 			      MEMREMAP_WB);
- 
-+	rcu_assign_pointer(reg->kaddr, kaddr);
-+
- 	if (!reg->kaddr) {
- 		pr_warn("Failed to map stolen time data structure\n");
- 		return -ENOMEM;
- 	}
- 
--	if (le32_to_cpu(reg->kaddr->revision) != 0 ||
--	    le32_to_cpu(reg->kaddr->attributes) != 0) {
-+	if (le32_to_cpu(kaddr->revision) != 0 ||
-+	    le32_to_cpu(kaddr->attributes) != 0) {
- 		pr_warn_once("Unexpected revision or attributes in stolen time data\n");
- 		return -ENXIO;
- 	}
+ 			if (dataptr < data_end) {
+ 		
+-				__get_user (sample_short, dataptr);
++				if (get_user(sample_short, dataptr))
++					return -EFAULT;
+ 				dataptr += skip;
+ 		
+ 				if (data_is_unsigned) { /* GUS ? */
 
 
