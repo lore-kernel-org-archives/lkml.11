@@ -2,67 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60311C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:05:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239363AbiEWRFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
+        id S239300AbiEWRFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239299AbiEWREx (ORCPT
+        with ESMTP id S239311AbiEWRE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:04:53 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372AA674DD
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:04:51 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        Mon, 23 May 2022 13:04:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD6168313;
+        Mon, 23 May 2022 10:04:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 65E722223A;
-        Mon, 23 May 2022 19:04:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1653325485;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jb6PERdk6i9UFuOnXNXUP3rrDZ8XeDfZdaGqhadGnCU=;
-        b=Ih5AmYm8o1wIkM6kcDHNAbqqH2sSuEv1mYQKGBnAgUS3MHS26G0HujQQ36/S8RVWPFcfSn
-        Vq2LBEL+oL6sqFXVRAU8YnD4c0yakjpr3QdQBeJsSswrm4md5PdEEhXdN9QSoBajQDiaDT
-        iRdpv9dd8Sv7E5C/cEz5vIjYFlY13jk=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31036614BB;
+        Mon, 23 May 2022 17:04:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F393C385A9;
+        Mon, 23 May 2022 17:04:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653325493;
+        bh=iBB4Xyk+CODao7GNk41ZGPTs4iuw6wqrIAr2W8C2D1Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QSTaQmZQAP21CqJCyXKWD1E4hxerRnMnldpme7/1oGbsSf6Q3XopFrFBRDqS3gMnT
+         uMppKoFLbk9QanvOIjN5QVW1uiqPKR399myHML+kCpvEMuGle9X4x1rHm11WaqOBFf
+         J0IH0FFBmZFN7EFcGN1XKqSZGr+unjzwJpFfVyoU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.9 10/25] ALSA: wavefront: Proper check of get_user() error
+Date:   Mon, 23 May 2022 19:03:28 +0200
+Message-Id: <20220523165746.470112101@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165743.398280407@linuxfoundation.org>
+References: <20220523165743.398280407@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 23 May 2022 19:04:44 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Cc:     linux-mtd@lists.infradead.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] mtd: spi-nor: macronix: Add support for mx66l2g45g
-In-Reply-To: <20220523150334.1758649-1-jiaqing.zhao@linux.intel.com>
-References: <20220523150334.1758649-1-jiaqing.zhao@linux.intel.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <e310ab2100f459346ae6cfa77c9ada19@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-05-23 17:03, schrieb Jiaqing Zhao:
-> Macronix mx66l2g45g is a 3V, 2Gbit (256MB) NOR flash that supports
-> x1, x2, and x4 operation modes.
-> 
-> Tested read/write/erase with Aspeed AST2600 BMC SoC operating in x2
-> mode at 50MHz, using Aspeed spi-mem driver.
-> 
-> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-Reviewed-by: Michael Walle <michael@walle.cc>
+commit a34ae6c0660d3b96b0055f68ef74dc9478852245 upstream.
 
-# is this picked up by b4? link goes to the sfdp dump
-Link: 
-https://lore.kernel.org/r/2b859cff-2403-0526-f3ae-749920b3fd8b@linux.intel.com
+The antient ISA wavefront driver reads its sample patch data (uploaded
+over an ioctl) via __get_user() with no good reason; likely just for
+some performance optimizations in the past.  Let's change this to the
+standard get_user() and the error check for handling the fault case
+properly.
 
--michael
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220510103626.16635-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/isa/wavefront/wavefront_synth.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/sound/isa/wavefront/wavefront_synth.c
++++ b/sound/isa/wavefront/wavefront_synth.c
+@@ -1091,7 +1091,8 @@ wavefront_send_sample (snd_wavefront_t *
+ 
+ 			if (dataptr < data_end) {
+ 		
+-				__get_user (sample_short, dataptr);
++				if (get_user(sample_short, dataptr))
++					return -EFAULT;
+ 				dataptr += skip;
+ 		
+ 				if (data_is_unsigned) { /* GUS ? */
+
+
