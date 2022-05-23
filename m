@@ -2,142 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 14:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237033AbiEWOY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 10:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
+        id S237036AbiEWOZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 10:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237000AbiEWOYz (ORCPT
+        with ESMTP id S237080AbiEWOZG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 10:24:55 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFC35932E
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:24:54 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id m25so18007849oih.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 07:24:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4OpdJcTXXlsXGiX1+XWS8FUX7vG0MIs+nKrykIWk69U=;
-        b=nFxf6AifF1xWCibSO89FnoHlSuZG9NFqIZqE/C1zN6DwHUzkkIw5bg6YsEfTG3nnFH
-         rzPVTb0QJF/8T9GvAHZ65lb9My3m9/P7fMHkWrPapvr4Z3VLSl3j8/gMUCQDI+IcrDN4
-         ITPkSPKtfENkGrub7kzYFjG8RmSjXn81BUnrKBCPpDzBD8C91PzqU2PATrUrmOkuU8bb
-         3CbcizVhKidnwQzmKdzeDgNKld1erhQQuz9TnoHVCHGMdApEHXF+pZEprxc+JQ110VvV
-         cXJWGCQlbHXWc+RoSErtCW7j3fIoWPWBC5kQFRKQ0N6Gcw+e8Y8pKUDEuSSS+thBKaZC
-         F6lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=4OpdJcTXXlsXGiX1+XWS8FUX7vG0MIs+nKrykIWk69U=;
-        b=cKYrwFysCGUUK+fTm6MRxl3kU4eHufg4YHiZi1WMXhw1vgnanRynlWNo6IKQ6zfYaf
-         +jWmQWU/J8DiOTs3k6hCLvSfxrl/f4Er60BJDDR3Ch+7wOHvMKs3HJbDZ94F3Es/myU4
-         sdmq6t6fYnCXkuHfAFANat6sL0ReBEIGh6cMCip6qBe6FLLrbL69Duo3ANw0YrVZNU6T
-         ay5bQu0G7oJq8JfV0DiQd8mkHuNUWn6Sfq64DRbpAg+dnfVE0oKGXPfEWniWBgBoAr6G
-         4UGgffkCDF72XajhqYyYXZjXM4X0Z3oe8Pl6TBM2hWrZKDkiYvR5rSaQqxB3Y84OxBvJ
-         i4AQ==
-X-Gm-Message-State: AOAM532T+X7x8Rp8+0oUpyhGK3onXW7qrd2sV/VBvhjp/KRNaj60xtkG
-        xoYUcKu+10b+tFjwK5OvOuQ=
-X-Google-Smtp-Source: ABdhPJyojZP5Ppcr09qGrQR2qP1Q7DsMch2dZxIrAqjJBHMyN3+6kkFVi9V7MSDJWHP4JGLwrXCa7w==
-X-Received: by 2002:a05:6808:1a01:b0:32b:1edc:9c4d with SMTP id bk1-20020a0568081a0100b0032b1edc9c4dmr4175160oib.279.1653315893783;
-        Mon, 23 May 2022 07:24:53 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id b124-20020acab282000000b0032ae369c25esm4149529oif.53.2022.05.23.07.24.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 07:24:53 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 23 May 2022 07:24:52 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Peter Collingbourne <pcc@google.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        vbabka@suse.cz, penberg@kernel.org, roman.gushchin@linux.dev,
-        iamjoonsoo.kim@lge.com, rientjes@google.com,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v5 1/2] printk: stop including cache.h from printk.h
-Message-ID: <20220523142452.GA3164183@roeck-us.net>
-References: <20220427195820.1716975-1-pcc@google.com>
+        Mon, 23 May 2022 10:25:06 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D927580C8;
+        Mon, 23 May 2022 07:25:02 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id 609E07DD; Mon, 23 May 2022 09:25:00 -0500 (CDT)
+Date:   Mon, 23 May 2022 09:25:00 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Stefan Berger <stefanb@linux.ibm.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        jpenumak@redhat.com
+Subject: Re: [PATCH v12 13/26] userns: Add pointer to ima_namespace to
+ user_namespace
+Message-ID: <20220523142500.GA1599@mail.hallyn.com>
+References: <20220420140633.753772-1-stefanb@linux.ibm.com>
+ <20220420140633.753772-14-stefanb@linux.ibm.com>
+ <20220522182426.GA24765@mail.hallyn.com>
+ <20220523095932.adr2r26o2obch4r5@wittgenstein>
+ <e1df20d5-a6c9-d30c-3671-46f7a8742bc0@linux.ibm.com>
+ <20220523124159.zsbp2gonh2dum4jm@wittgenstein>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427195820.1716975-1-pcc@google.com>
+In-Reply-To: <20220523124159.zsbp2gonh2dum4jm@wittgenstein>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 12:58:19PM -0700, Peter Collingbourne wrote:
-> An inclusion of cache.h in printk.h was added in 2014 in
-> commit c28aa1f0a847 ("printk/cache: mark printk_once test variable
-> __read_mostly") in order to bring in the definition of __read_mostly. The
-> usage of __read_mostly was later removed in commit 3ec25826ae33 ("printk:
-> Tie printk_once / printk_deferred_once into .data.once for reset")
-> which made the inclusion of cache.h unnecessary, so remove it.
+On Mon, May 23, 2022 at 02:41:59PM +0200, Christian Brauner wrote:
+> On Mon, May 23, 2022 at 07:31:29AM -0400, Stefan Berger wrote:
+> > 
+> > 
+> > On 5/23/22 05:59, Christian Brauner wrote:
+> > > On Sun, May 22, 2022 at 01:24:26PM -0500, Serge Hallyn wrote:
+> > > > On Wed, Apr 20, 2022 at 10:06:20AM -0400, Stefan Berger wrote:
+> > > > > Add a pointer to ima_namespace to the user_namespace and initialize
+> > > > > the init_user_ns with a pointer to init_ima_ns. We need a pointer from
+> > > > > the user namespace to its associated IMA namespace since IMA namespaces
+> > > > > are piggybacking on user namespaces.
+> > > > > 
+> > > > > Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> > > > > Acked-by: Christian Brauner <brauner@kernel.org>
+> > > > > Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+> > > > > 
+> > > > > ---
+> > > > > v11:
+> > > > >   - Added lost A-b from Christian back
+> > > > >   - Added sentence to patch description explaining why we need the pointer
+> > > > > 
+> > > > > v9:
+> > > > >   - Deferred implementation of ima_ns_from_user_ns() to later patch
+> > > > > ---
+> > > > >   include/linux/ima.h            | 2 ++
+> > > > >   include/linux/user_namespace.h | 4 ++++
+> > > > >   kernel/user.c                  | 4 ++++
+> > > > >   3 files changed, 10 insertions(+)
+> > > > > 
+> > > > > diff --git a/include/linux/ima.h b/include/linux/ima.h
+> > > > > index 426b1744215e..fcb60a44e05f 100644
+> > > > > --- a/include/linux/ima.h
+> > > > > +++ b/include/linux/ima.h
+> > > > > @@ -14,6 +14,8 @@
+> > > > >   #include <crypto/hash_info.h>
+> > > > >   struct linux_binprm;
+> > > > > +extern struct ima_namespace init_ima_ns;
+> > > > > +
+> > > > >   #ifdef CONFIG_IMA
+> > > > >   extern enum hash_algo ima_get_current_hash_algo(void);
+> > > > >   extern int ima_bprm_check(struct linux_binprm *bprm);
+> > > > > diff --git a/include/linux/user_namespace.h b/include/linux/user_namespace.h
+> > > > > index 33a4240e6a6f..019e8cf7b633 100644
+> > > > > --- a/include/linux/user_namespace.h
+> > > > > +++ b/include/linux/user_namespace.h
+> > > > > @@ -36,6 +36,7 @@ struct uid_gid_map { /* 64 bytes -- 1 cache line */
+> > > > >   #define USERNS_INIT_FLAGS USERNS_SETGROUPS_ALLOWED
+> > > > >   struct ucounts;
+> > > > > +struct ima_namespace;
+> > > > >   enum ucount_type {
+> > > > >   	UCOUNT_USER_NAMESPACES,
+> > > > > @@ -99,6 +100,9 @@ struct user_namespace {
+> > > > >   #endif
+> > > > >   	struct ucounts		*ucounts;
+> > > > >   	long ucount_max[UCOUNT_COUNTS];
+> > > > > +#ifdef CONFIG_IMA_NS
+> > > > 
+> > > > It's probably worth putting a comment here saying that user_ns does not
+> > > > pin ima_ns.
+> > > > 
+> > > > That the only time the ima_ns will be freed is when user_ns is freed,
+> > > > and only time it will be changed is when user_ns is freed, or during
+> > > > ima_fs_ns_init() (under smp_load_acquire) during a new mount.
+> > > > 
+> > > > > +	struct ima_namespace	*ima_ns;
+> > > > 
+> > > > So, if I create a new user_ns with a new ima_ns, and in there I
+> > > > create a new user_ns again, it looks like ima_ns will be NULL in
+> > > > the new user_ns?  Should it not be set to the parent->ima_ns?
+> > > > (which would cause trouble for the way it's currently being
+> > > > freed...)
+> > > 
+> > > Would also work and wouldn't be difficult to do imho.
+> > 
+> > We previously decide to create an ima_namespace when securityfs is mounted.
+> > This now also applies to nested containers where an IMA namespace is first
+> > configured with the hash and template to use in a particular container and
+> > then activated. If no configuration is done it will inherit the hash and
+> > template from the first ancestor that has been configure when it is
+> > activated. So the same steps and behavior applies to *all* containers, no
+> > difference at any depth of nesting. Besides that, we don't want nested
+> > containers to share policy and logs but keep them isolated from each other,
+> > or do we not?
+> > 
+> > Further, how should it work if we were to apply this even to the first
+> > container? Should it just inherit the &init_ima_namespace and we'd have no
+> > isolation at all? Why would we start treating containers at deeper nesting
+> > levels differently?
 > 
-> We have a small amount of code that depended on the inclusion of cache.h
-> from printk.h; fix that code to include the appropriate header.
+> Valid points. I understood Serge as suggesting an implementation detail
+> change not a design change but might misunderstand him here.
 > 
-> This fixes a circular inclusion on arm64 (linux/printk.h -> linux/cache.h
-> -> asm/cache.h -> linux/kasan-enabled.h -> linux/static_key.h ->
-> linux/jump_label.h -> linux/bug.h -> asm/bug.h -> linux/printk.h) that
-> would otherwise be introduced by the next patch.
+> # Currently
 > 
-> Build tested using {allyesconfig,defconfig} x {arm64,x86_64}.
+> 1. create new userns -> imans set to NULL
+> 2. mount securityfs and configure imans -> set imans to &new_ima_ns
+> 
+> When 2. hasn't been done then we find the relevant imans by walking
+> the userns hierarchy upwards finding the first parent userns that has a
+> non-NULL imans.
 
-But not powerpc:corenet64_smp_defconfig, where it results in lots of
-build errors such as
+Ah, right, thanks Christian.
 
-powerpc64-linux-ld: fs/freevxfs/vxfs_fshead.o:(.bss+0x0):
-	multiple definition of `____cacheline_aligned';
-	fs/freevxfs/vxfs_bmap.o:(.bss+0x0): first defined here
+But so the code - I think where the ima_ns is defined in the user_ns
+struct, needs to make this clear.  Just something like
 
-Reverting this patch fixes the problem.
+	// Pointer to ima_ns which this user_ns created.  Can be null.
+	// Access checks will walk the userns->parent chain and check
+	// against all active ima_ns's.  Note that when the user_ns is
+	// freed, the ima_ns is guaranteed to be free-able.
+	struct ima_namespace	*ima_ns;
 
-Guenter
-
----
-# bad: [18ecd30af1a8402c162cca1bd58771c0e5be7815] Add linux-next specific files for 20220520
-# good: [42226c989789d8da4af1de0c31070c96726d990c] Linux 5.18-rc7
-git bisect start 'HEAD' 'v5.18-rc7'
-# good: [f9b63740b666dd9887eb0282d21b5f65bb0cadd0] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git
-git bisect good f9b63740b666dd9887eb0282d21b5f65bb0cadd0
-# good: [1f5eb3e76303572f0318e8c50da51c516580aa03] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
-git bisect good 1f5eb3e76303572f0318e8c50da51c516580aa03
-# good: [4c1d9cc0363691893ef94fa0d798faca013e27d3] Merge branch 'staging-next' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git
-git bisect good 4c1d9cc0363691893ef94fa0d798faca013e27d3
-# good: [a3204ed0fc565fc76901c67dfc8e04c91a5c8ea4] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/rppt/memblock.git
-git bisect good a3204ed0fc565fc76901c67dfc8e04c91a5c8ea4
-# bad: [ca228447682904bc749c0702695681543b5dc709] Merge branch 'mm-nonmm-unstable' into mm-everything
-git bisect bad ca228447682904bc749c0702695681543b5dc709
-# bad: [c0eeeb02d9df878c71a457008900b650d94bd0d9] selftests/uffd: enable uffd-wp for shmem/hugetlbfs
-git bisect bad c0eeeb02d9df878c71a457008900b650d94bd0d9
-# good: [0a7a0f6f7f3679c906fc55e3805c1d5e2c566f55] hugetlb: fix wrong use of nr_online_nodes
-git bisect good 0a7a0f6f7f3679c906fc55e3805c1d5e2c566f55
-# good: [c9fe66560bf2dc7d109754414e309888cb8c9ba9] mm/mprotect: do not flush when not required architecturally
-git bisect good c9fe66560bf2dc7d109754414e309888cb8c9ba9
-# bad: [97d482f4592fde2322c319f07bc54f3a0d37861c] mm/damon/sysfs: reuse damon_set_regions() for regions setting
-git bisect bad 97d482f4592fde2322c319f07bc54f3a0d37861c
-# good: [54205e9c5425049aef1bc7a812f890f00b5f79c7] mm: rmap: move the cache flushing to the correct place for hugetlb PMD sharing
-git bisect good 54205e9c5425049aef1bc7a812f890f00b5f79c7
-# bad: [9994715333515e82865e533250e488496b9742f4] selftest/vm: test that mremap fails on non-existent vma
-git bisect bad 9994715333515e82865e533250e488496b9742f4
-# bad: [d949a8155d139aa890795b802004a196b7f00598] mm: make minimum slab alignment a runtime property
-git bisect bad d949a8155d139aa890795b802004a196b7f00598
-# bad: [534aa1dc975ac883ad89110534585a96630802a0] printk: stop including cache.h from printk.h
-git bisect bad 534aa1dc975ac883ad89110534585a96630802a0
-# good: [dfc7ab57560da385f705b28e2bf50e3b90444a6b] mm: rmap: use flush_cache_range() to flush cache for hugetlb pages
-git bisect good dfc7ab57560da385f705b28e2bf50e3b90444a6b
-# first bad commit: [534aa1dc975ac883ad89110534585a96630802a0] printk: stop including cache.h from printk.h
+> # Serge's suggestion
+> 
+> 1. create new userns -> imans is set to parent imans
+> 2. mount securityfs and configure imans -> replace parent with &new_ima_ns
+> 
+> So when 2. hasn't been done we don't need to walk the userns hierarchy
+> upwards. We always find the relevant imans directly. Some massaging
+> would be needed in process_measurement() probably but it wouldn't need
+> to change semantics per se.
+> 
+> But I think I misunderstood something in any case. So looking at an
+> example like ima_post_path_mknod(). You seem to not call into
+> ima_must_appraise() if the caller's userns doesn't have an imans
+> enabled. I somehow had thought that the same logic applied as in
+> process_measurement. But if it isn't then it might make sense to keep
+> the current implementation.
