@@ -2,192 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFDBC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 21:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9382C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 21:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231807AbiEWV2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 17:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
+        id S231222AbiEWVaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 17:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbiEWV2R (ORCPT
+        with ESMTP id S231465AbiEWVaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 17:28:17 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375B2A2053
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 14:28:16 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id v9so14679933oie.5
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 14:28:16 -0700 (PDT)
+        Mon, 23 May 2022 17:30:05 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595FAA3381;
+        Mon, 23 May 2022 14:30:04 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id p19so1092113wmg.2;
+        Mon, 23 May 2022 14:30:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LZD/Zppu+JV4corcLquFb+tJaC7Y9GLTkq/38/brrSc=;
-        b=iZgYT+c5BVBpgsBQojxO1uEkOvetRImr9YQwwlimnqF43B53R3q4SxlOZUXAtOV3Pn
-         BHwv3wW8FmtlD2Wndm0AGXrw5MMb+awWvf/PvsYx+56x/p3CZUfBABYJbiIc+cRO/LHE
-         MyiPApQQsEjLIUT7PUdeE8s8raT4FE+L4vw8AW+L0iXOUN5ot1U6K267KN8QXfyETDAx
-         Zt2q1sluLeChulHZHvJQzEwz0NDNBn4DjkuZtJceiryK3NG9iygpyvbbiKP/ijtbXitp
-         mH29eWYrA26O4uC2pbOl7KNCbYW1umKr+dI1m2y7b73AtYOZeKt9F6j3LAcZqDEG94Nt
-         jGhw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=szpHbyssy3pR92tHPw2c+r7gOFG688ltDB8dep/mxSw=;
+        b=O+1anRyYFBUQoaX7dUDxSVnoc5f4zDJd+/tIByNkeoinJxa5tIeVZZpelKrE0FqoNo
+         OZgOVS31HeCzlfDb7tpu0Be1eVBZxWJPzx7RfH2OCO73s9WyPFwuoXtDGVVoB8AMb2Yi
+         56M5xUiEf1zCzMnZcBzNT/4cAh1b1CeRF9ah6nVWB8X/UOoWIpJcAXgmi0Ha7udrcy1j
+         699DxcjWIUoATgdE/um3C9/U7wZz6TNAULxRaQoR+jxSfvrh4tyY1twMsgEek7fEEaHk
+         HQ8GOPxI6lv0JPF2hHhzzGpJBDsmH9exbxIWte78wVwxrA5y9b0RzzUaWBtwFS3VzxCJ
+         lCdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LZD/Zppu+JV4corcLquFb+tJaC7Y9GLTkq/38/brrSc=;
-        b=eLqbJ/1ocweZl4s3sfLzAv7PBPqBVFkf1Xosydw84yOsOALgDMNFm/V9suGIysOols
-         Xs9cX/b7tT3X2cAnHjulFoEO/AOEkAQvsCVqc7hYqPJkkOkRF7c2I+zLTDInMa9qQLJ9
-         6I+RTtvGWtFJfpr5XI7d9/VnRlGts1eROIEjqFAdLQv03oneWZJSAlXUZbIQTztdN11x
-         eW32rwHffwgIbCoJWjI/2BNVae9R7rVEN/rAJoyeOpGX++8JoT8oOchjl/V67qt9D3VH
-         A9eIDkh61Ki6pnYKKgp65gRRrSMtW96V4ol69um/tQwOUeLdy6fXdrnwemv12JRAv+yj
-         jpqQ==
-X-Gm-Message-State: AOAM531Qt7yDUiUv19zakwa2brU+Yu1zYD/i5DZ/P0gZHdY4Idhgkvhh
-        Ip2pHltAh/0A2pQbHcWFRgzQ/R4ytSEEcw==
-X-Google-Smtp-Source: ABdhPJxdbYpNotodQL2bHtqTswSrQDWZO8uC9pio8AkGMlFCNEsqfHD9V3mItvnwn4tVwaUPm6+5cQ==
-X-Received: by 2002:a17:90b:4b50:b0:1df:7b60:f0b3 with SMTP id mi16-20020a17090b4b5000b001df7b60f0b3mr956373pjb.237.1653341285148;
-        Mon, 23 May 2022 14:28:05 -0700 (PDT)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id q7-20020a170902edc700b0016168e90f37sm5587413plk.152.2022.05.23.14.28.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 14:28:04 -0700 (PDT)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, cgroups@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Subject: [PATCH v2] cgroups: separate destroy_work into two separate wq
-Date:   Mon, 23 May 2022 14:27:24 -0700
-Message-Id: <20220523212724.233314-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220412192459.227740-1-tadeusz.struk@linaro.org>
-References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=szpHbyssy3pR92tHPw2c+r7gOFG688ltDB8dep/mxSw=;
+        b=cqcrjN9hT293kJKNVS0KxOZFoxK6DVxpXCAWMIPwnPjxefaDddMYSNZC15CKM5NGZX
+         amlqvKnSxHH5vCyToXyR7Pez6LC/AZLsM99g+LJ6Hduqfz6d7xYiLuMbxiunsD/dIvv7
+         oTUGN/efGLdIVTETd/tbkvJRmEPvNPBd64f+CkRrDjfRD1UG1jfu5mw4DgCyLWRh9Q48
+         huN4Ry4auEnJseWJlkRrBlKHRc/IK9P0OKDYcvKRBLhYDt8PHOkbYEj430FtWa6Dbhgs
+         XP4O/J/fsLjX8drwJcL/pJIHtxJxCU2BvO8i7R18epoAmGQzobeLsws+GiX4GcnaBbsL
+         wGqg==
+X-Gm-Message-State: AOAM533dI2z9TsvVL8R7JetZNFOBaeDB7M8CcAFyVwj7YslBwoTxnIE1
+        NIRsXPfH/YmQ7HEYc+KZI6chbMT5G8/xIqaZkbDQmno0
+X-Google-Smtp-Source: ABdhPJxeVgPf7mVaaoeUZX7Sv2I4aDpFJhfiYqkaHPVJOp3ofkBKRrCA81w/4FTYvTcWJlq3mZoJGSG6A79jb7vL0zU=
+X-Received: by 2002:a05:600c:3843:b0:397:476f:ceb8 with SMTP id
+ s3-20020a05600c384300b00397476fceb8mr860129wmr.200.1653341402568; Mon, 23 May
+ 2022 14:30:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org>
+ <20220522195138.35943-1-konrad.dybcio@somainline.org> <53d5999b-88ee-24db-fd08-ff9406e2b7b7@linaro.org>
+In-Reply-To: <53d5999b-88ee-24db-fd08-ff9406e2b7b7@linaro.org>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Mon, 23 May 2022 14:29:50 -0700
+Message-ID: <CAF6AEGuX9eL8DmBqRj79F3Z9QCAczZDA+Xz-t9CjKQ5+6Phtrw@mail.gmail.com>
+Subject: Re: Removal of qcom,board-id and qcom,msm-id
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Olof Johansson <olof@lixom.net>, Rob Herring <robh@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found a corrupted list bug scenario that can be triggered from
-cgroup css_create(). The reproduces writes to cgroup.subtree_control
-file, which invokes cgroup_apply_control_enable(), css_create(), and
-css_populate_dir(), which then randomly fails with a fault injected -ENOMEM.
-In such scenario the css_create() error path rcu enqueues css_free_rwork_fn
-work for an css->refcnt initialized with css_release() destructor,
-and there is a chance that the css_release() function will be invoked
-for a cgroup_subsys_state, for which a destroy_work has already been
-queued via css_create() error path. This causes a list_add corruption
-as can be seen in the syzkaller report [1].
-This can be fixed by separating the css_release and ref_kill paths
-to work with two separate work_structs.
+On Mon, May 23, 2022 at 1:21 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 22/05/2022 21:51, Konrad Dybcio wrote:
+> > Hi,
+> >
+> > removing these properties will not bring almost any benefit (other than making
+> > some checks happy any saving some <200 LoC) and will make the lives of almost
+> > all people doing independent development for linux-on-msm harder. There are
+> > almost unironically like 3 people outside Linaro and QUIC who have
+> > non-vendor-fused development boards AND the sources to rebuild the
+> > bootloader on their own. Making it harder to boot is only going to
+> > discourage people from developing on these devices, which is already not
+> > that pleasant, especially with newer platforms where you have to fight with
+> > the oh-so-bright ideas of Android boot chain..
+> >
+> > This only concerns devices released before sm8350, as the new ones will not
+> > even boot with these properties present (or at least SONY Sagami, but I
+> > doubt it's an isolated case), so other than completing support for older
+> > devices, it won't be an issue going forward, anyway. But there are give
+> > or take 50 locked down devices in mainline right now, and many more waiting
+> > to be upstreamed in various downstream close-to-mainline trees that should
+> > not be disregarded just because Qualcomm is far from the best at making
+> > their BSP software stack clean.
+>
+> I actually wonder why do you need these properties for community work on
+> such boards? You ship kernel with one concatenated DTB and the
+> bootloader does not need the board-id/msm-id fields, doesn't it?
+>
+> Not mentioning that in the past bootloader was actually not using these
+> properties at all, because it was the dtbTool who was parsing them. So
+> in any case either your device works fine without these properties or
+> you have to use dtbTool, right?
+>
+> >
+> > One solution is to chainload another, (n+1)-stage bootloader, but this is
+> > not ideal, as:
+> >
+> > 1) the stock bootloader can boot Linux just fine on most devices (except
+> > for single exceptions, where beloved OEMs didn't implement arm64 booting or
+> > something)
+> >
+> > 2) the boot chain on MSM is already 3- or 4- stage and adding to that will
+> > only create an unnecessary mess
+> >
+> > 3) the job of kernel people is not to break userspace. If the
+> > device can not even exit bootloader after a kernel upgrade, it's a big
+> > failure.
+>
+> The job of kernel people is to follow bindings and since they were
+> introduced 7 years ago, I would say there was plenty of time for that.
 
-[1] https://syzkaller.appspot.com/bug?id=e26e54d6eac9d9fb50b221ec3e4627b327465dbd
+Then we should document these fields to reflect reality, rather than
+remove them.  The kernel isn't the only consumer of dtb ;-)
 
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Zefan Li <lizefan.x@bytedance.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: <cgroups@vger.kernel.org>
-Cc: <netdev@vger.kernel.org>
-Cc: <bpf@vger.kernel.org>
-Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+> If the dtbTool support for the bindings is there, then there is no
+> breakage, because you had to use dtbTool before so you have to use now.
 
-Reported-and-tested-by: syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Fixes: 8f36aaec9c92 ("cgroup: Use rcu_work instead of explicit rcu and work item")
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
-v2: Add a separate work_struct for the css_ref_kill path instead of
-    checking if a work has already been enqueued.
----
- include/linux/cgroup-defs.h |  5 +++--
- kernel/cgroup/cgroup.c      | 14 +++++++-------
- 2 files changed, 10 insertions(+), 9 deletions(-)
+I don't believe this was the case?  At any rate, why are we trying so
+hard to make our lives harder?  Let's just acknowledge reality
+(bootloader uses these fields), document it, and move on with life
 
-diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-index 1bfcfb1af352..92b0c5e8c472 100644
---- a/include/linux/cgroup-defs.h
-+++ b/include/linux/cgroup-defs.h
-@@ -178,8 +178,9 @@ struct cgroup_subsys_state {
- 	 */
- 	atomic_t online_cnt;
- 
--	/* percpu_ref killing and RCU release */
--	struct work_struct destroy_work;
-+	/* percpu_ref killing, css release, and RCU release work structs */
-+	struct work_struct release_work;
-+	struct work_struct killed_ref_work;
- 	struct rcu_work destroy_rwork;
- 
- 	/*
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index adb820e98f24..3e00a793e15d 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -5099,7 +5099,7 @@ static struct cftype cgroup_base_files[] = {
-  *    css_free_work_fn().
-  *
-  * It is actually hairier because both step 2 and 4 require process context
-- * and thus involve punting to css->destroy_work adding two additional
-+ * and thus involve punting to css->release_work adding two additional
-  * steps to the already complex sequence.
-  */
- static void css_free_rwork_fn(struct work_struct *work)
-@@ -5154,7 +5154,7 @@ static void css_free_rwork_fn(struct work_struct *work)
- static void css_release_work_fn(struct work_struct *work)
- {
- 	struct cgroup_subsys_state *css =
--		container_of(work, struct cgroup_subsys_state, destroy_work);
-+		container_of(work, struct cgroup_subsys_state, release_work);
- 	struct cgroup_subsys *ss = css->ss;
- 	struct cgroup *cgrp = css->cgroup;
- 
-@@ -5210,8 +5210,8 @@ static void css_release(struct percpu_ref *ref)
- 	struct cgroup_subsys_state *css =
- 		container_of(ref, struct cgroup_subsys_state, refcnt);
- 
--	INIT_WORK(&css->destroy_work, css_release_work_fn);
--	queue_work(cgroup_destroy_wq, &css->destroy_work);
-+	INIT_WORK(&css->release_work, css_release_work_fn);
-+	queue_work(cgroup_destroy_wq, &css->release_work);
- }
- 
- static void init_and_link_css(struct cgroup_subsys_state *css,
-@@ -5546,7 +5546,7 @@ int cgroup_mkdir(struct kernfs_node *parent_kn, const char *name, umode_t mode)
- static void css_killed_work_fn(struct work_struct *work)
- {
- 	struct cgroup_subsys_state *css =
--		container_of(work, struct cgroup_subsys_state, destroy_work);
-+		container_of(work, struct cgroup_subsys_state, killed_ref_work);
- 
- 	mutex_lock(&cgroup_mutex);
- 
-@@ -5567,8 +5567,8 @@ static void css_killed_ref_fn(struct percpu_ref *ref)
- 		container_of(ref, struct cgroup_subsys_state, refcnt);
- 
- 	if (atomic_dec_and_test(&css->online_cnt)) {
--		INIT_WORK(&css->destroy_work, css_killed_work_fn);
--		queue_work(cgroup_destroy_wq, &css->destroy_work);
-+		INIT_WORK(&css->killed_ref_work, css_killed_work_fn);
-+		queue_work(cgroup_destroy_wq, &css->killed_ref_work);
- 	}
- }
- 
--- 
-2.36.1
+BR,
+-R
+
+> >
+> > If you *really really really* want these either gone or documented, we can
+> > for example use them in the SOCID driver, read the values from DTB and
+> > compare against what SMEM has to say and for example print a warning when
+> > there are inconsistencies or use it as a fallback when it fails for any
+> > reason, such as using a newer SoC on an older kernel, without updates
+> > for SOCID read (which are sometimes necessary, which was the case for 8450
+> > recently, iirc).
+> >
+> > My stance is to just leave them as is, as moving them anywhere, or removing
+> > them at all will cause unnecessary mess and waste time that could have been
+> > spent on more glaring issues..
+> >
+> > Konrad
+>
+>
+> Best regards,
+> Krzysztof
