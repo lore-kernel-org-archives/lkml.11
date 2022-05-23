@@ -2,59 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 03:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45498C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 03:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244929AbiEWDsl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 23:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
+        id S1355597AbiEWD6O (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 23:58:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiEWDsi (ORCPT
+        with ESMTP id S1353324AbiEWD6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 23:48:38 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B10B19C0A;
-        Sun, 22 May 2022 20:48:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=AW3o8JWyoT5r8/PPhDVW+OSjKZg11kX8S58HsM9Sbls=; b=ui6gRYFqTT/Fj0eCLLFo4lkNRT
-        yzWjEUS8i+kwCSW8rbJu6t86c8k0y/y0Br+rWIbAbtZrXouDS6O+hz1rWgJP1pC8fm2WKpzj40Wjk
-        xTyD2JeVIlzA8yDRmHFRKm4bbfNvlapmYdPWyRSsXWvPWBIQvhb1npwA52gQOBGSIHNbt34qyWv1q
-        rAqiDUfp8bnBUuBKMYM23LfgbCpAM10DY9P73cX8ZUPnkRWJNys4MOUPVLh0hbs+S0PLTdIerPmIr
-        ZuWAktiV+VvH2NGvol0J96GVlItQxAfxw2tyaKizJxqpH+CQCWTsKAKslY6n/fUgkDpNrNSD5xfmI
-        IM+xYadQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nsz3Y-00FpXW-PY; Mon, 23 May 2022 03:48:32 +0000
-Date:   Mon, 23 May 2022 04:48:32 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Jan Kara <jack@suse.cz>, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v4] fs/proc/base.c: fix incorrect fmode_t casts
-Message-ID: <YosEENLQybfcfZZR@casper.infradead.org>
-References: <YorBiz6QA0JBVta/@casper.infradead.org>
- <7761c3fd-4fb5-1d65-c2e6-044d689de6b6@openvz.org>
+        Sun, 22 May 2022 23:58:02 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1DC624F3E
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 20:58:00 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94B0C113E;
+        Sun, 22 May 2022 20:58:00 -0700 (PDT)
+Received: from [10.163.36.114] (unknown [10.163.36.114])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7A5223F66F;
+        Sun, 22 May 2022 20:57:56 -0700 (PDT)
+Message-ID: <feae94cd-8474-73e2-2d64-520cec51eb3e@arm.com>
+Date:   Mon, 23 May 2022 09:27:57 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7761c3fd-4fb5-1d65-c2e6-044d689de6b6@openvz.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, hch@infradead.org, arnd@arndb.de
+References: <20220519082552.117736-1-wangkefeng.wang@huawei.com>
+ <20220519082552.117736-5-wangkefeng.wang@huawei.com>
+ <20220519115210.a6e41d5a997921354400557e@linux-foundation.org>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <20220519115210.a6e41d5a997921354400557e@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 23, 2022 at 06:37:29AM +0300, Vasily Averin wrote:
-> Fixes sparce warnings:
-> fs/proc/base.c:2240:25: sparse: warning: cast to restricted fmode_t
-> fs/proc/base.c:2297:42: sparse: warning: cast from restricted fmode_t
-> fs/proc/base.c:2394:48: sparse: warning: cast from restricted fmode_t
-> 
-> fmode_t is birwie type and requires __force attribute for any cast
-> 
-> Signed-off-by: Vasily Averin <vvs@openvz.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
 
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+
+On 5/20/22 00:22, Andrew Morton wrote:
+> On Thu, 19 May 2022 16:25:50 +0800 Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+> 
+>> Add special hook for architecture to verify or setup addr, size
+>> or prot when ioremap() or iounmap(), which will make the generic
+>> ioremap more useful.
+>>
+>>   arch_ioremap() return a pointer,
+>>     - IS_ERR means return an error
+>>     - NULL means continue to remap
+>>     - a non-NULL, non-IS_ERR pointer is directly returned
+>>   arch_iounmap() return a int value,
+>>     - 0 means continue to vunmap
+>>     - error code means skip vunmap and return directly
+>>
+>> ...
+>>
+>> --- a/include/asm-generic/io.h
+>> +++ b/include/asm-generic/io.h
+>> @@ -964,6 +964,30 @@ static inline void iounmap(volatile void __iomem *addr)
+>>  #elif defined(CONFIG_GENERIC_IOREMAP)
+>>  #include <linux/pgtable.h>
+>>  
+>> +/*
+>> + * Arch code can implement the following two special hooks when using GENERIC_IOREMAP
+>> + * arch_ioremap() return a pointer,
+>> + *   - IS_ERR means return an error
+>> + *   - NULL means continue to remap
+>> + *   - a non-NULL, non-IS_ERR pointer is returned directly
+>> + * arch_iounmap() return a int,
+>> + *   - 0 means continue to vunmap
+>> + *   - error code means skip vunmap and return directly
+>> + */
+>> +#ifndef arch_ioremap
+>> +static inline void __iomem *arch_ioremap(phys_addr_t phys_addr, size_t size, unsigned long prot)
+>> +{
+>> +	return NULL;
+>> +}
+> 
+> Maybe should do
+> 
+> 	#define arch_ioremap arch_ioremap
+> 
+> here
+> 
+>> +#endif
+>> +
+>> +#ifndef arch_iounmap
+>> +static inline int arch_iounmap(void __iomem *addr)
+>> +{
+>> +	return 0;
+>> +}
+> 
+> and here.
+> 
+> It shouldn't matter a lot because this file has inclusion guards. 
+> However it seems tidier and perhaps other code will want to know
+> whether this was defined.  Dunno.
+
++1, agreed.
