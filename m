@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C234C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D34C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239790AbiEWRM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
+        id S239813AbiEWRNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239624AbiEWRKh (ORCPT
+        with ESMTP id S239797AbiEWRKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:10:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBE16D1B6;
-        Mon, 23 May 2022 10:10:17 -0700 (PDT)
+        Mon, 23 May 2022 13:10:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9646C0C2;
+        Mon, 23 May 2022 10:10:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7BA1614F5;
-        Mon, 23 May 2022 17:10:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC5D3C385A9;
-        Mon, 23 May 2022 17:10:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D267FB811FF;
+        Mon, 23 May 2022 17:10:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2863EC385A9;
+        Mon, 23 May 2022 17:10:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325803;
-        bh=xhmdDEoKotcUO/7eHbPi3dL9BFugG1l1EDjl/avpqzE=;
+        s=korg; t=1653325828;
+        bh=dyxp/OnlY0m1FU8iZJRv1ipNM6H0VBNRarR2JtfRlCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h6GVaBdNz1kA574X1LLnePWB53r6P8K2UjmJMbvsFsKhyoTG7Gry9zmgsxYiLhy5M
-         mLvvuxQxLAbgiPWysYTNNWMrYUCTqUt2POFfNUeOv0BAGpZyOiyHPZO5cU8MiwNm+V
-         RPVBy5piLCib9VcsFyFGrBiS9+uS8SShT9yVBCfo=
+        b=GOn1DBM9irUNQ9kB/mySd8xMSEKXHpcjWt9NZYB+S/j4y6AubRpbqfFTCfElKV/hl
+         rzfkyRti2QKgoDHs5ckW+io/0XkT3rGjFssWaqpAWgxZosTOtEPDGN6n53AZQHlD45
+         RqCb8RKZWaxIblpMrugVzpgR4uacZb+KS+M9dcd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Gow <davidgow@google.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 02/44] um: Cleanup syscall_handler_t definition/cast, fix warning
-Date:   Mon, 23 May 2022 19:04:46 +0200
-Message-Id: <20220523165753.908913811@linuxfoundation.org>
+Subject: [PATCH 4.19 24/44] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
+Date:   Mon, 23 May 2022 19:05:08 +0200
+Message-Id: <20220523165757.555117477@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -49,65 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Zixuan Fu <r33s3n6@gmail.com>
 
-[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
+[ Upstream commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd ]
 
-The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
-but always cast to 'long (*)(long, long, long, long, long, long)' before
-use. This now triggers a warning (see below).
+In vmxnet3_rq_create(), when dma_alloc_coherent() fails,
+vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
+vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
+-> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls
+vmxnet3_force_close() -> dev_close() in error handling code. And the driver
+calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
+-> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(),
+rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
+a NULL pointer dereference.
 
-Define syscall_handler_t as the latter instead, and remove the cast.
-This simplifies the code, and fixes the warning.
+To fix this possible bug, an if statement is added to check whether
+rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
 
-Warning:
-In file included from ../arch/um/include/asm/processor-generic.h:13
-                 from ../arch/x86/um/asm/processor.h:41
-                 from ../include/linux/rcupdate.h:30
-                 from ../include/linux/rculist.h:11
-                 from ../include/linux/pid.h:5
-                 from ../include/linux/sched.h:14
-                 from ../include/linux/ptrace.h:6
-                 from ../arch/um/kernel/skas/syscall.c:7:
-../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
-../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
--Wcast-function-type]
-   18 |         (((long (*)(long, long, long, long, long, long)) \
-      |           ^
-../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
-   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
-      |                                                              ^~~
-../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
-   46 |                                 EXECUTE_SYSCALL(syscall, regs));
-      |                                 ^~~~~~~~~~~~~~~
+The error log in our fault-injection testing is shown as follows:
 
-Signed-off-by: David Gow <davidgow@google.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
+...
+[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
+...
+[   65.227977] Call Trace:
+...
+[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
+[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
+[   65.228866]  __dev_close_many+0x288/0x350
+[   65.229607]  dev_close_many+0xa4/0x480
+[   65.231124]  dev_close+0x138/0x230
+[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
+[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
+...
+
+Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Link: https://lore.kernel.org/r/20220514050711.2636709-1-r33s3n6@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
-index 8a7d5e1da98e..1e6875b4ffd8 100644
---- a/arch/x86/um/shared/sysdep/syscalls_64.h
-+++ b/arch/x86/um/shared/sysdep/syscalls_64.h
-@@ -10,13 +10,12 @@
- #include <linux/msg.h>
- #include <linux/shm.h>
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 1df67c899d4f..a57ea3914968 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1586,6 +1586,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
+ 	u32 i, ring_idx;
+ 	struct Vmxnet3_RxDesc *rxd;
  
--typedef long syscall_handler_t(void);
-+typedef long syscall_handler_t(long, long, long, long, long, long);
- 
- extern syscall_handler_t *sys_call_table[];
- 
- #define EXECUTE_SYSCALL(syscall, regs) \
--	(((long (*)(long, long, long, long, long, long)) \
--	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
-+	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
- 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
- 				      UPT_SYSCALL_ARG3(&regs->regs), \
- 				      UPT_SYSCALL_ARG4(&regs->regs), \
++	/* ring has already been cleaned up */
++	if (!rq->rx_ring[0].base)
++		return;
++
+ 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
+ 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
+ #ifdef __BIG_ENDIAN_BITFIELD
 -- 
 2.35.1
 
