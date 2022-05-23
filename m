@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC313C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2416EC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343877AbiEWSIn (ORCPT
+        id S1343762AbiEWSIi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42376 "EHLO
+        Mon, 23 May 2022 14:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243585AbiEWRiS (ORCPT
+        with ESMTP id S243632AbiEWRiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:18 -0400
+        Mon, 23 May 2022 13:38:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528196EC49;
-        Mon, 23 May 2022 10:32:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19619939A5;
+        Mon, 23 May 2022 10:32:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FC9AB811F8;
-        Mon, 23 May 2022 17:31:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FA2C385AA;
-        Mon, 23 May 2022 17:31:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39CF1B8122F;
+        Mon, 23 May 2022 17:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90E48C385A9;
+        Mon, 23 May 2022 17:32:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327088;
-        bh=Eh20xBib3bRTCPbaAVbjeIBlp5HWjm1Ir/G+4BMbClg=;
+        s=korg; t=1653327128;
+        bh=doQRzfdvKQcqj96z7UMVJeMF3Ya4m94Bf6rITo95dKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0tsayt+nyaLPV3jp5rnClqTUQspXnFPIrUGaV8FpgkHC8MztAI/QAFzb1c4hbJmEC
-         J1WIqth+8+qMBKimxY7nGOl34K8/60KXpFesbLWPZUnqCV3EeZNUR5kMYoLjiLlPux
-         Qw+ifNhoM+rH46TEMAJe9DiXUGSBAdpctnbjYFaE=
+        b=0qc5iKlDyuX9xqE3zSbkyqer/mvYiZWTRzvwO92fPAHeGuDPwSGBEQge6nuXiFHeV
+         hzirlOZL5NmEgv5PDAhEPxGqjLEZxEb6rNYHEDEDlMur6aicopHiutmD4MupyjmHC1
+         yDIWgbcitzL30HzgOlfjWpaX7f0EmG+6mIsS8T+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>,
-        Grant Grundler <grundler@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 152/158] net: atlantic: add check for MAX_SKB_FRAGS
-Date:   Mon, 23 May 2022 19:05:09 +0200
-Message-Id: <20220523165855.376317577@linuxfoundation.org>
+Subject: [PATCH 5.17 140/158] fbdev: Prevent possible use-after-free in fb_release()
+Date:   Mon, 23 May 2022 19:04:57 +0200
+Message-Id: <20220523165853.511238020@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -53,53 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grant Grundler <grundler@chromium.org>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit 6aecbba12b5c90b26dc062af3b9de8c4b3a2f19f ]
+[ Upstream commit 89bfd4017e58faaf70411555e7f508495114e90b ]
 
-Enforce that the CPU can not get stuck in an infinite loop.
+Most fbdev drivers have issues with the fb_info lifetime, because call to
+framebuffer_release() from their driver's .remove callback, rather than
+doing from fbops.fb_destroy callback.
 
-Reported-by: Aashay Shringarpure <aashay@google.com>
-Reported-by: Yi Chou <yich@google.com>
-Reported-by: Shervin Oloumi <enlightened@google.com>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Doing that will destroy the fb_info too early, while references to it may
+still exist, leading to a use-after-free error.
+
+To prevent this, check the fb_info reference counter when attempting to
+kfree the data structure in framebuffer_release(). That will leak it but
+at least will prevent the mentioned error.
+
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220505220413.365977-1-javierm@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbsysfs.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index bc1952131799..8201ce7adb77 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -363,6 +363,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 			continue;
- 
- 		if (!buff->is_eop) {
-+			unsigned int frag_cnt = 0U;
- 			buff_ = buff;
- 			do {
- 				bool is_rsc_completed = true;
-@@ -371,6 +372,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 					err = -EIO;
- 					goto err_exit;
- 				}
+diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+index 26892940c213..82e31a2d845e 100644
+--- a/drivers/video/fbdev/core/fbsysfs.c
++++ b/drivers/video/fbdev/core/fbsysfs.c
+@@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
+ {
+ 	if (!info)
+ 		return;
 +
-+				frag_cnt++;
- 				next_ = buff_->next,
- 				buff_ = &self->buff_ring[next_];
- 				is_rsc_completed =
-@@ -378,7 +381,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 							    next_,
- 							    self->hw_head);
- 
--				if (unlikely(!is_rsc_completed)) {
-+				if (unlikely(!is_rsc_completed) ||
-+						frag_cnt > MAX_SKB_FRAGS) {
- 					err = 0;
- 					goto err_exit;
- 				}
++	if (WARN_ON(refcount_read(&info->count)))
++		return;
++
+ 	kfree(info->apertures);
+ 	kfree(info);
+ }
 -- 
 2.35.1
 
