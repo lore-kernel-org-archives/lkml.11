@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4BCC38A05
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC43C352AA
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242048AbiEWRbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        id S240337AbiEWRcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241911AbiEWRWn (ORCPT
+        with ESMTP id S240576AbiEWRVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:22:43 -0400
+        Mon, 23 May 2022 13:21:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F9D7CDEE;
-        Mon, 23 May 2022 10:19:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA55063383;
+        Mon, 23 May 2022 10:17:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16E44B81205;
-        Mon, 23 May 2022 17:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE57C385A9;
-        Mon, 23 May 2022 17:18:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E7EBB8121A;
+        Mon, 23 May 2022 17:17:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8CFC385AA;
+        Mon, 23 May 2022 17:17:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326306;
-        bh=z+Jn+M7wh7vmsuLFk1mgAF1yMw1bwX154BNorZBOq6A=;
+        s=korg; t=1653326275;
+        bh=xkOMtRcSAF4tvoeHESppoblqzKn/AtmYDZuKUi5GB7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fw2QqYsOKoIOE1UkTpQW/gRaEGZC/BwKuwXwEtHPxwh8Aglaot1rhk7Bimr9tLa9M
-         xGJ33wFpIzjHLgAy6U3fKW2ejcWwGxDGHEVU6M44QL3gtFX/IfWhWnMmWpW4cMdEyf
-         Xcnk5ihnHTolWXNPBkxeADKmnzfnvcVdPF0lIgnc=
+        b=Z9xjDvLVsTgMjBSuItEvYfplFLqgm3FdVJPVnxA1utz1R3YTpxef6ATukD4xosbPw
+         u8hsFhWcBW/FMYf8PAWMam2sC3ttAAwcx41jqY+xiC2rHd4h0yXY8IEYOPAqGSPLmy
+         0y8o0ch27aF4btYKdGvg6Hlt3nyqIIOw/WNtjE1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Yujun <linyujun809@huawei.com>,
-        He Ying <heying24@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 041/132] ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
-Date:   Mon, 23 May 2022 19:04:10 +0200
-Message-Id: <20220523165830.190374934@linuxfoundation.org>
+        stable@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 011/132] i2c: piix4: Add EFCH MMIO support for SMBus port select
+Date:   Mon, 23 May 2022 19:03:40 +0200
+Message-Id: <20220523165825.482033516@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,104 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: linyujun <linyujun809@huawei.com>
+From: Terry Bowman <terry.bowman@amd.com>
 
-[ Upstream commit 9be4c88bb7924f68f88cfd47d925c2d046f51a73 ]
+commit 381a3083c6747ae5cdbef9b176d57d1b966db49f upstream.
 
-The following KASAN warning is detected by QEMU.
+AMD processors include registers capable of selecting between 2 SMBus
+ports. Port selection is made during each user access by writing to
+FCH::PM::DECODEEN[smbus0sel]. Change the driver to use MMIO during
+SMBus port selection because cd6h/cd7h port I/O is not available on
+later AMD processors.
 
-==================================================================
-BUG: KASAN: stack-out-of-bounds in unwind_frame+0x508/0x870
-Read of size 4 at addr c36bba90 by task cat/163
-
-CPU: 1 PID: 163 Comm: cat Not tainted 5.10.0-rc1 #40
-Hardware name: ARM-Versatile Express
-[<c0113fac>] (unwind_backtrace) from [<c010e71c>] (show_stack+0x10/0x14)
-[<c010e71c>] (show_stack) from [<c0b805b4>] (dump_stack+0x98/0xb0)
-[<c0b805b4>] (dump_stack) from [<c0b7d658>] (print_address_description.constprop.0+0x58/0x4bc)
-[<c0b7d658>] (print_address_description.constprop.0) from [<c031435c>] (kasan_report+0x154/0x170)
-[<c031435c>] (kasan_report) from [<c0113c44>] (unwind_frame+0x508/0x870)
-[<c0113c44>] (unwind_frame) from [<c010e298>] (__save_stack_trace+0x110/0x134)
-[<c010e298>] (__save_stack_trace) from [<c01ce0d8>] (stack_trace_save+0x8c/0xb4)
-[<c01ce0d8>] (stack_trace_save) from [<c0313520>] (kasan_set_track+0x38/0x60)
-[<c0313520>] (kasan_set_track) from [<c0314cb8>] (kasan_set_free_info+0x20/0x2c)
-[<c0314cb8>] (kasan_set_free_info) from [<c0313474>] (__kasan_slab_free+0xec/0x120)
-[<c0313474>] (__kasan_slab_free) from [<c0311e20>] (kmem_cache_free+0x7c/0x334)
-[<c0311e20>] (kmem_cache_free) from [<c01c35dc>] (rcu_core+0x390/0xccc)
-[<c01c35dc>] (rcu_core) from [<c01013a8>] (__do_softirq+0x180/0x518)
-[<c01013a8>] (__do_softirq) from [<c0135214>] (irq_exit+0x9c/0xe0)
-[<c0135214>] (irq_exit) from [<c01a40e4>] (__handle_domain_irq+0xb0/0x110)
-[<c01a40e4>] (__handle_domain_irq) from [<c0691248>] (gic_handle_irq+0xa0/0xb8)
-[<c0691248>] (gic_handle_irq) from [<c0100b0c>] (__irq_svc+0x6c/0x94)
-Exception stack(0xc36bb928 to 0xc36bb970)
-b920:                   c36bb9c0 00000000 c0126919 c0101228 c36bb9c0 b76d7730
-b940: c36b8000 c36bb9a0 c3335b00 c01ce0d8 00000003 c36bba3c c36bb940 c36bb978
-b960: c010e298 c011373c 60000013 ffffffff
-[<c0100b0c>] (__irq_svc) from [<c011373c>] (unwind_frame+0x0/0x870)
-[<c011373c>] (unwind_frame) from [<00000000>] (0x0)
-
-The buggy address belongs to the page:
-page:(ptrval) refcount:0 mapcount:0 mapping:00000000 index:0x0 pfn:0x636bb
-flags: 0x0()
-raw: 00000000 00000000 ef867764 00000000 00000000 00000000 ffffffff 00000000
-page dumped because: kasan: bad access detected
-
-addr c36bba90 is located in stack of task cat/163 at offset 48 in frame:
- stack_trace_save+0x0/0xb4
-
-this frame has 1 object:
- [32, 48) 'trace'
-
-Memory state around the buggy address:
- c36bb980: f1 f1 f1 f1 00 04 f2 f2 00 00 f3 f3 00 00 00 00
- c36bba00: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
->c36bba80: 00 00 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
-                 ^
- c36bbb00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- c36bbb80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-There is a same issue on x86 and has been resolved by the commit f7d27c35ddff
-("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
-The solution could be applied to arm architecture too.
-
-Signed-off-by: Lin Yujun <linyujun809@huawei.com>
-Reported-by: He Ying <heying24@huawei.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/kernel/stacktrace.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/i2c/busses/i2c-piix4.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
-index db798eac7431..824774999825 100644
---- a/arch/arm/kernel/stacktrace.c
-+++ b/arch/arm/kernel/stacktrace.c
-@@ -53,17 +53,17 @@ int notrace unwind_frame(struct stackframe *frame)
- 		return -EINVAL;
+--- a/drivers/i2c/busses/i2c-piix4.c
++++ b/drivers/i2c/busses/i2c-piix4.c
+@@ -753,10 +753,19 @@ static void piix4_imc_wakeup(void)
+ 	release_region(KERNCZ_IMC_IDX, 2);
+ }
  
- 	frame->sp = frame->fp;
--	frame->fp = *(unsigned long *)(fp);
--	frame->pc = *(unsigned long *)(fp + 4);
-+	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
-+	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 4));
- #else
- 	/* check current frame pointer is within bounds */
- 	if (fp < low + 12 || fp > high - 4)
- 		return -EINVAL;
+-static int piix4_sb800_port_sel(u8 port)
++static int piix4_sb800_port_sel(u8 port, struct sb800_mmio_cfg *mmio_cfg)
+ {
+ 	u8 smba_en_lo, val;
  
- 	/* restore the registers from the stack frame */
--	frame->fp = *(unsigned long *)(fp - 12);
--	frame->sp = *(unsigned long *)(fp - 8);
--	frame->pc = *(unsigned long *)(fp - 4);
-+	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 12));
-+	frame->sp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 8));
-+	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 4));
- #endif
++	if (mmio_cfg->use_mmio) {
++		smba_en_lo = ioread8(mmio_cfg->addr + piix4_port_sel_sb800);
++		val = (smba_en_lo & ~piix4_port_mask_sb800) | port;
++		if (smba_en_lo != val)
++			iowrite8(val, mmio_cfg->addr + piix4_port_sel_sb800);
++
++		return (smba_en_lo & piix4_port_mask_sb800);
++	}
++
+ 	outb_p(piix4_port_sel_sb800, SB800_PIIX4_SMB_IDX);
+ 	smba_en_lo = inb_p(SB800_PIIX4_SMB_IDX + 1);
  
- 	return 0;
--- 
-2.35.1
-
+@@ -843,12 +852,12 @@ static s32 piix4_access_sb800(struct i2c
+ 		}
+ 	}
+ 
+-	prev_port = piix4_sb800_port_sel(adapdata->port);
++	prev_port = piix4_sb800_port_sel(adapdata->port, &adapdata->mmio_cfg);
+ 
+ 	retval = piix4_access(adap, addr, flags, read_write,
+ 			      command, size, data);
+ 
+-	piix4_sb800_port_sel(prev_port);
++	piix4_sb800_port_sel(prev_port, &adapdata->mmio_cfg);
+ 
+ 	/* Release the semaphore */
+ 	outb_p(smbslvcnt | 0x20, SMBSLVCNT);
 
 
