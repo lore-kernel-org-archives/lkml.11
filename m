@@ -2,207 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCB4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F217C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244604AbiEWSRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
+        id S244714AbiEWSRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244027AbiEWR5a (ORCPT
+        with ESMTP id S243232AbiEWSBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:57:30 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F47CC5D8D;
-        Mon, 23 May 2022 10:43:09 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.91,246,1647270000"; 
-   d="scan'208";a="121975207"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 24 May 2022 02:42:55 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 15594400F2AD;
-        Tue, 24 May 2022 02:42:48 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Marc Zyngier <maz@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v5 1/5] dt-bindings: interrupt-controller: Add Renesas RZ/G2L Interrupt Controller
-Date:   Mon, 23 May 2022 18:42:34 +0100
-Message-Id: <20220523174238.28942-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220523174238.28942-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220523174238.28942-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 23 May 2022 14:01:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32FB6DFF74;
+        Mon, 23 May 2022 10:46:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 101B9B81202;
+        Mon, 23 May 2022 17:29:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CCF8C34115;
+        Mon, 23 May 2022 17:29:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1653326969;
+        bh=4lto3opJQdBcvB9mshv3B7x9QIIiku/yZIV+JmzGeQA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xQzOtvM9JC0V7HwfC58bMUbkkTAuEsHm9mALqlQWRf7QXU0Q3EqHT5zjE30AVxSMt
+         7+iSAdVAQZDR5mfEhbT+KjvR3OyneIjUrGh7DhkZ1no4g+Raj+8hG/Khu9eo6LCANa
+         nFTQLGvsOW2FPBuGDh9oejvjeDKIgfblX46mZp9M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 115/158] mptcp: Do TCP fallback on early DSS checksum failure
+Date:   Mon, 23 May 2022 19:04:32 +0200
+Message-Id: <20220523165850.007093415@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
+References: <20220523165830.581652127@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT bindings for the Renesas RZ/G2L Interrupt Controller.
+From: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+[ Upstream commit ae66fb2ba6c3dcaf8b9612b65aa949a1a4bed150 ]
+
+RFC 8684 section 3.7 describes several opportunities for a MPTCP
+connection to "fall back" to regular TCP early in the connection
+process, before it has been confirmed that MPTCP options can be
+successfully propagated on all SYN, SYN/ACK, and data packets. If a peer
+acknowledges the first received data packet with a regular TCP header
+(no MPTCP options), fallback is allowed.
+
+If the recipient of that first data packet finds a MPTCP DSS checksum
+error, this provides an opportunity to fail gracefully with a TCP
+fallback rather than resetting the connection (as might happen if a
+checksum failure were detected later).
+
+This commit modifies the checksum failure code to attempt fallback on
+the initial subflow of a MPTCP connection, only if it's a failure in the
+first data mapping. In cases where the peer initiates the connection,
+requests checksums, is the first to send data, and the peer is sending
+incorrect checksums (see
+https://github.com/multipath-tcp/mptcp_net-next/issues/275), this allows
+the connection to proceed as TCP rather than reset.
+
+Fixes: dd8bcd1768ff ("mptcp: validate the data checksum")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../renesas,rzg2l-irqc.yaml                   | 133 ++++++++++++++++++
- 1 file changed, 133 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
+ net/mptcp/protocol.h |  3 ++-
+ net/mptcp/subflow.c  | 21 ++++++++++++++++++---
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-new file mode 100644
-index 000000000000..ffbb4ab4d9a7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-@@ -0,0 +1,133 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interrupt-controller/renesas,rzg2l-irqc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index e4413b3e50c2..8015389859d9 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -443,7 +443,8 @@ struct mptcp_subflow_context {
+ 		can_ack : 1,        /* only after processing the remote a key */
+ 		disposable : 1,	    /* ctx can be free at ulp release time */
+ 		stale : 1,	    /* unable to snd/rcv data, do not use for xmit */
+-		local_id_valid : 1; /* local_id is correctly initialized */
++		local_id_valid : 1, /* local_id is correctly initialized */
++		valid_csum_seen : 1;        /* at least one csum validated */
+ 	enum mptcp_data_avail data_avail;
+ 	u32	remote_nonce;
+ 	u64	thmac;
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index e27574e9f969..7a3a70067c80 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -958,11 +958,14 @@ static enum mapping_status validate_data_csum(struct sock *ssk, struct sk_buff *
+ 				 subflow->map_data_csum);
+ 	if (unlikely(csum)) {
+ 		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_DATACSUMERR);
+-		subflow->send_mp_fail = 1;
+-		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_MPFAILTX);
++		if (subflow->mp_join || subflow->valid_csum_seen) {
++			subflow->send_mp_fail = 1;
++			MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_MPFAILTX);
++		}
+ 		return subflow->mp_join ? MAPPING_INVALID : MAPPING_DUMMY;
+ 	}
+ 
++	subflow->valid_csum_seen = 1;
+ 	return MAPPING_OK;
+ }
+ 
+@@ -1144,6 +1147,18 @@ static void subflow_sched_work_if_closed(struct mptcp_sock *msk, struct sock *ss
+ 	}
+ }
+ 
++static bool subflow_can_fallback(struct mptcp_subflow_context *subflow)
++{
++	struct mptcp_sock *msk = mptcp_sk(subflow->conn);
 +
-+title: Renesas RZ/G2L (and alike SoC's) Interrupt Controller (IA55)
++	if (subflow->mp_join)
++		return false;
++	else if (READ_ONCE(msk->csum_enabled))
++		return !subflow->valid_csum_seen;
++	else
++		return !subflow->fully_established;
++}
 +
-+maintainers:
-+  - Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-+  - Geert Uytterhoeven <geert+renesas@glider.be>
-+
-+description: |
-+  IA55 performs various interrupt controls including synchronization for the external
-+  interrupts of NMI, IRQ, and GPIOINT and the interrupts of the built-in peripheral
-+  interrupts output by each IP. And it notifies the interrupt to the GIC
-+    - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI interrupts
-+    - GPIO pins used as external interrupt input pins, mapped to 32 GIC SPI interrupts
-+    - NMI edge select (NMI is not treated as NMI exception and supports fall edge and
-+      stand-up edge detection interrupts)
-+
-+allOf:
-+  - $ref: /schemas/interrupt-controller.yaml#
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - renesas,r9a07g044-irqc    # RZ/G2L
-+      - const: renesas,rzg2l-irqc
-+
-+  '#interrupt-cells':
-+    description: The first cell should contain external interrupt number (IRQ0-7) and the
-+                 second cell is used to specify the flag.
-+    const: 2
-+
-+  '#address-cells':
-+    const: 0
-+
-+  interrupt-controller: true
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 41
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: clk
-+      - const: pclk
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - '#interrupt-cells'
-+  - '#address-cells'
-+  - interrupt-controller
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - power-domains
-+  - resets
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/r9a07g044-cpg.h>
-+
-+    irqc: interrupt-controller@110a0000 {
-+            compatible = "renesas,r9a07g044-irqc", "renesas,rzg2l-irqc";
-+            reg = <0x110a0000 0x10000>;
-+            #interrupt-cells = <2>;
-+            #address-cells = <0>;
-+            interrupt-controller;
-+            interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 444 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 445 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 448 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 450 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 451 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 453 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 454 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 455 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 459 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 460 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 461 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 464 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 465 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 466 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 467 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 468 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 469 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 470 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 471 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 472 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 473 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 475 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&cpg CPG_MOD R9A07G044_IA55_CLK>,
-+                     <&cpg CPG_MOD R9A07G044_IA55_PCLK>;
-+            clock-names = "clk", "pclk";
-+            power-domains = <&cpg>;
-+            resets = <&cpg R9A07G044_IA55_RESETN>;
-+    };
+ static bool subflow_check_data_avail(struct sock *ssk)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
+@@ -1221,7 +1236,7 @@ static bool subflow_check_data_avail(struct sock *ssk)
+ 		return true;
+ 	}
+ 
+-	if (subflow->mp_join || subflow->fully_established) {
++	if (!subflow_can_fallback(subflow)) {
+ 		/* fatal protocol error, close the socket.
+ 		 * subflow_error_report() will introduce the appropriate barriers
+ 		 */
 -- 
-2.25.1
+2.35.1
+
+
 
