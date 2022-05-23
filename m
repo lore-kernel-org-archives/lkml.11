@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68DE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32090C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240289AbiEWRTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
+        id S240445AbiEWRTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240211AbiEWRQK (ORCPT
+        with ESMTP id S240298AbiEWRQN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:16:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EA769B4E;
-        Mon, 23 May 2022 10:12:47 -0700 (PDT)
+        Mon, 23 May 2022 13:16:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0128B6D4E4;
+        Mon, 23 May 2022 10:12:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3621DB81202;
-        Mon, 23 May 2022 17:12:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F43FC385A9;
-        Mon, 23 May 2022 17:12:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90B86614DA;
+        Mon, 23 May 2022 17:12:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92A32C385AA;
+        Mon, 23 May 2022 17:12:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325950;
-        bh=dJC52LsQXQSZFqjHlNkBmh1vXiFgwOEY/KbXbxy7Beg=;
+        s=korg; t=1653325976;
+        bh=T4OxzCgaUBm2DqSHVnJ48Imayt8DaPfRZpxmkuNlJUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jRodq6HwD+YMa3j3M3OCB6PH0/9WY47RkQ0YdZybOtp10iAlhExEJpeZ/6IpABX/R
-         hD1yETTCuKcp8KaYzDfiGPrfTIuLLfRKUVJI1kEY1gsRea71PY/WGXpsXJmjI96Tnr
-         BRXb6PeNzvEyQbgNsylfs9+Mv4Hz6Z4HTjWWjcb0=
+        b=Ljcv/ahWVI7Q43sT8mcPSXqO/snc7g2uQpSeFCS1zEOsJbheH0IXwuoqQ992Daslm
+         SodIr969UqMFqkC0CYhBYI36YmMaN77UK/H3ZRY6FGb2M1DdN7GnuAy/ZhsQ3msKbM
+         OztOm5OS/eBtJrTYGLlJPbrzgx1bhgQ1wKREC9R8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH 5.4 20/68] mmc: block: Use generic_cmd6_time when modifying INAND_CMD38_ARG_EXT_CSD
-Date:   Mon, 23 May 2022 19:04:47 +0200
-Message-Id: <20220523165805.976597021@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 39/44] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+Date:   Mon, 23 May 2022 19:05:23 +0200
+Message-Id: <20220523165800.496326853@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-References: <20220523165802.500642349@linuxfoundation.org>
+In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
+References: <20220523165752.797318097@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,54 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit ad91619aa9d78ab1c6d4a969c3db68bc331ae76c upstream
+[ Upstream commit 51ca86b4c9c7c75f5630fa0dbe5f8f0bd98e3c3e ]
 
-The INAND_CMD38_ARG_EXT_CSD is a vendor specific EXT_CSD register, which is
-used to prepare an erase/trim operation. However, it doesn't make sense to
-use a timeout of 10 minutes while updating the register, which becomes the
-case when the timeout_ms argument for mmc_switch() is set to zero.
+Fix the missing pci_disable_device() before return
+from tulip_init_one() in the error handling case.
 
-Instead, let's use the generic_cmd6_time, as that seems like a reasonable
-timeout to use for these cases.
-
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20200122142747.5690-3-ulf.hansson@linaro.org
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220506094250.3630615-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/block.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/dec/tulip/tulip_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1126,7 +1126,7 @@ static void mmc_blk_issue_discard_rq(str
- 					 card->erase_arg == MMC_TRIM_ARG ?
- 					 INAND_CMD38_ARG_TRIM :
- 					 INAND_CMD38_ARG_ERASE,
--					 0);
-+					 card->ext_csd.generic_cmd6_time);
- 		}
- 		if (!err)
- 			err = mmc_erase(card, from, nr, card->erase_arg);
-@@ -1168,7 +1168,7 @@ retry:
- 				 arg == MMC_SECURE_TRIM1_ARG ?
- 				 INAND_CMD38_ARG_SECTRIM1 :
- 				 INAND_CMD38_ARG_SECERASE,
--				 0);
-+				 card->ext_csd.generic_cmd6_time);
- 		if (err)
- 			goto out_retry;
- 	}
-@@ -1186,7 +1186,7 @@ retry:
- 			err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
- 					 INAND_CMD38_ARG_EXT_CSD,
- 					 INAND_CMD38_ARG_SECTRIM2,
--					 0);
-+					 card->ext_csd.generic_cmd6_time);
- 			if (err)
- 				goto out_retry;
- 		}
+diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
+index 3e3e08698876..fea4223ad6f1 100644
+--- a/drivers/net/ethernet/dec/tulip/tulip_core.c
++++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
+@@ -1410,8 +1410,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	/* alloc_etherdev ensures aligned and zeroed private structures */
+ 	dev = alloc_etherdev (sizeof (*tp));
+-	if (!dev)
++	if (!dev) {
++		pci_disable_device(pdev);
+ 		return -ENOMEM;
++	}
+ 
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
+@@ -1788,6 +1790,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ err_out_free_netdev:
+ 	free_netdev (dev);
++	pci_disable_device(pdev);
+ 	return -ENODEV;
+ }
+ 
+-- 
+2.35.1
+
 
 
