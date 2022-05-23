@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51419C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F30ECC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241925AbiEWRg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        id S242133AbiEWRhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240984AbiEWR0O (ORCPT
+        with ESMTP id S241265AbiEWR0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:26:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4954963E4;
-        Mon, 23 May 2022 10:21:17 -0700 (PDT)
+        Mon, 23 May 2022 13:26:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4FA6EB3C;
+        Mon, 23 May 2022 10:21:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5FEBB811FE;
-        Mon, 23 May 2022 17:21:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9F22C385A9;
-        Mon, 23 May 2022 17:21:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05CFA60919;
+        Mon, 23 May 2022 17:19:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3F53C385A9;
+        Mon, 23 May 2022 17:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326475;
-        bh=Kb3EsYIGclp3SjLyiWotONiDJkvSpTjwoijaEjgWOrc=;
+        s=korg; t=1653326387;
+        bh=bmaIBOnLPV+9ts2gzWUwpvTbWoeX6xYEorQENEVPD0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NYj8mXnoYZeq5qaazy+HwvyMT71+iFeEm7koeT3+WS/XS8GcGgAx5QiWrrLODSglt
-         YKSS7bSBuJPC7wVpc9wlM533pCNc4dhB/aXZ7dJYHyyBt5vGYvtZv96qskbjAk/FhF
-         VwsV7RU6vHqV4T3Uirtxfhsag0Gc19CjOJxclGws=
+        b=L4IhpH1peFXa1M12K4DYUIR9uylt4UoBImDK8C1FtIZVaCft9MJEJUNQ4yGYIXybw
+         ktrDAcdm94dMV+t0jJp6WeN21UnMPP3VAqGpzW7jiigIu/61eIAOARcCpEw8vmukKQ
+         y2BH0zbaLbX0rw9f4HlGjTteT2QcFeUnyC9sELnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Ryan Chen <ryan_chen@aspeedtech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/132] netfilter: flowtable: fix excessive hw offload attempts after failure
-Date:   Mon, 23 May 2022 19:04:44 +0200
-Message-Id: <20220523165835.568193404@linuxfoundation.org>
+Subject: [PATCH 5.15 066/132] ARM: dts: aspeed: Add secure boot controller node
+Date:   Mon, 23 May 2022 19:04:35 +0200
+Message-Id: <20220523165834.167796816@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -49,39 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Joel Stanley <joel@jms.id.au>
 
-[ Upstream commit 396ef64113a8ba01c46315d67a99db8dde3eef51 ]
+[ Upstream commit fea289467608ffddb2f8d3a740912047974bb183 ]
 
-If a flow cannot be offloaded, the code currently repeatedly tries again as
-quickly as possible, which can significantly increase system load.
-Fix this by limiting flow timeout update and hardware offload retry to once
-per second.
+The ast2600 has a secure boot controller.
 
-Fixes: c07531c01d82 ("netfilter: flowtable: Remove redundant hw refresh bit")
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Ryan Chen <ryan_chen@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211117035106.321454-3-joel@jms.id.au
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_flow_table_core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/aspeed-g6.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index b90eca7a2f22..52e7f94d2450 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -329,8 +329,10 @@ void flow_offload_refresh(struct nf_flowtable *flow_table,
- 	u32 timeout;
+diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+index ee171b3364fa..8f947ed47fc5 100644
+--- a/arch/arm/boot/dts/aspeed-g6.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+@@ -384,6 +384,11 @@ adc1: adc@1e6e9100 {
+ 				status = "disabled";
+ 			};
  
- 	timeout = nf_flowtable_time_stamp + flow_offload_get_timeout(flow);
--	if (READ_ONCE(flow->timeout) != timeout)
-+	if (timeout - READ_ONCE(flow->timeout) > HZ)
- 		WRITE_ONCE(flow->timeout, timeout);
-+	else
-+		return;
- 
- 	if (likely(!nf_flowtable_hw_offload(flow_table)))
- 		return;
++			sbc: secure-boot-controller@1e6f2000 {
++				compatible = "aspeed,ast2600-sbc";
++				reg = <0x1e6f2000 0x1000>;
++			};
++
+ 			gpio0: gpio@1e780000 {
+ 				#gpio-cells = <2>;
+ 				gpio-controller;
 -- 
 2.35.1
 
