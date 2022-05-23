@@ -2,114 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1A8C38A06
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2426C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245716AbiEWSIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
+        id S1343604AbiEWSI0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244233AbiEWRi7 (ORCPT
+        with ESMTP id S243645AbiEWRiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:38:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33B79AE63;
-        Mon, 23 May 2022 10:33:33 -0700 (PDT)
+        Mon, 23 May 2022 13:38:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910BF939B9
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 10:32:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D95D4B8120C;
-        Mon, 23 May 2022 17:30:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39D91C34115;
-        Mon, 23 May 2022 17:30:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC3F3B8121A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 17:32:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C17AC385A9;
+        Mon, 23 May 2022 17:32:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327046;
-        bh=zxsQAHXdmuoDKua+gg1TS6/rAecG9TTZfkoQ7w4L2sQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EDT8/poGN0Z1fDiHyhRig91ecRwgfJLRIjlnJqh0FZr6FPnhTPAkVcfl2xNU4aS38
-         Wz5Z/tBACFGquK9dxoq52/m5nvbDbE2xHmSxzGK8bd7VDsx7Zs92k7fnOXY1fTTUZq
-         OjjXlS1j9Mm+y/0JrDivW38ABU+cI8E1SK/hQBAo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 094/158] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-Date:   Mon, 23 May 2022 19:04:11 +0200
-Message-Id: <20220523165846.847254158@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
-References: <20220523165830.581652127@linuxfoundation.org>
-User-Agent: quilt/0.66
+        s=korg; t=1653327137;
+        bh=sjJ34GcqhXoKGZ5Q8UWMhx1olSPo7NFZtw3Y5PKxEh4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dlJAw0+fvw7YYSd+9g7GsfEddRb3tWM3fIU7cl7Z0lStSu+8/iF8BamcptK+vO6jX
+         eq75ZsX91MLz9G/uDOUndCCxQyU1EAQ1ib3pQMSNXuI89tfXSm5zvUmc6/vSfKk08L
+         VMOkb9EbsuG4WAT8RRh3+WGdU7DkjAKumAcSjWJI=
+Date:   Mon, 23 May 2022 19:15:39 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Eli Billauer <eli.billauer@gmail.com>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, arnd@arndb.de,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] char: xillybus: Check endpoint type before allocing
+Message-ID: <YovBOwJs/A/5Ua7I@kroah.com>
+References: <Yn9XwHxWsLIJXlHu@kroah.com>
+ <20220514114819.2773691-1-zheyuma97@gmail.com>
+ <Yn+va5fTsuaFTxVR@kroah.com>
+ <CAMhUBj=RMJwn2K+rQC9rQ=QEe5QkiJ29rMd8KzEC8B7vtXo+ug@mail.gmail.com>
+ <Yocp+WZ0On9/wObu@kroah.com>
+ <CAMhUBj=J5-V_D_kucpiWz6ZdOSSR1N9nRXQxOKgmwRA+LxW17Q@mail.gmail.com>
+ <YouxHY48daZt7J/O@kroah.com>
+ <628BBEEB.9010306@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <628BBEEB.9010306@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+On Mon, May 23, 2022 at 08:05:47PM +0300, Eli Billauer wrote:
+> On 23/05/22 19:06, Greg KH wrote:
+> > If the device does not have the EXACT USB endpoints that you are
+> > expecting (size, address, direction, type, etc.) at probe time reject
+> > the device.
+> This is probably a good time to add some information about XillyUSB.
+> 
+> All XillyUSB devices have EP 1 IN and EP 1 OUT as bulk endpoints.
+> 
+> On top of that, they *may* have up to 14 additional bulk OUT endpoints,
+> having the addresses EP 2 OUT to EP 15 OUT. The population of endpoint
+> addresses is not necessarily continuous. Any set of OUT endpoint addresses
+> is allowed. The driver doesn't know which of these endpoints are available
+> initially.
+> 
+> Rather, it works like this: The driver uses the EP 1 IN and OUT endpoints to
+> query the device for a data structure, which contains information on the
+> device's communication channels. The driver sets up device files
+> accordingly, and it also gets informed on which bulk OUT endpoints are
+> present.
+> 
+> For what it's worth, I think it's fairly safe to assume that if a device
+> returns a legal data structure (which passes a CRC test), it's a XillyUSB
+> device.
 
-[ Upstream commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd ]
+Why?  You still need to verify that the requested endpoints match up
+with what the device really has.
 
-In vmxnet3_rq_create(), when dma_alloc_coherent() fails,
-vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
--> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls
-vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
--> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(),
-rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-a NULL pointer dereference.
+Again, we are talking about "fake" devices that are being used to find
+problems in the kernel drivers, this is not a "real" device, yet can
+look a lot like one.  Look at the fuzzing tools that are running for
+examples of this.
 
-To fix this possible bug, an if statement is added to check whether
-rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
+> Either way, it's impossible to verify that all of the device's bulk
+> OUT endpoints are correct before obtaining the data structure from the
+> device. The fact that each device has a different set of communication
+> channels, and that the driver learns about them in run-time is the whole
+> trick with Xillybus and XillyUSB.
 
-The error log in our fault-injection testing is shown as follows:
+That's fine, but that can still be done a probe() time, not open() time,
+like the current patch was attempting.  That's much too late.
 
-[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-...
-[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-...
-[   65.227977] Call Trace:
-...
-[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-[   65.228866]  __dev_close_many+0x288/0x350
-[   65.229607]  dev_close_many+0xa4/0x480
-[   65.231124]  dev_close+0x138/0x230
-[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-...
+thanks,
 
-Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050711.2636709-1-r33s3n6@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 1154f1884212..93e8d119d45f 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1668,6 +1668,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 	u32 i, ring_idx;
- 	struct Vmxnet3_RxDesc *rxd;
- 
-+	/* ring has already been cleaned up */
-+	if (!rq->rx_ring[0].base)
-+		return;
-+
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
- 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
- #ifdef __BIG_ENDIAN_BITFIELD
--- 
-2.35.1
-
-
-
+greg k-h
