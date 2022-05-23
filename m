@@ -2,95 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF2EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E672BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349093AbiEWBZB (ORCPT
+        id S1351841AbiEWBfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 21:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58670 "EHLO
+        Sun, 22 May 2022 21:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349555AbiEWBYz (ORCPT
+        with ESMTP id S233232AbiEWBfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 21:24:55 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13389387BB
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:24:49 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id x12so12380947pgj.7
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:24:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=L4SbZUHV57IOdhtxt7xLH6bNMt6ZWWMzVkJzxIHiEH0=;
-        b=mKhLX5Tl0/hJE/WYln3le1t/gPQuRKOiDHXpUCFFlMUfiqaQJhiCx5ESuSoqzPiwxY
-         FXa/cYM1iJaf72An99no6KGCCFyWV/Y2vRmv9AyIf1bZRVEt0Io5RGmKrwslo9UMVfbn
-         V3ZRIolNVAS+vrRVoHgUVKsfwMQfVoH8KJlOmRHHVgYUnelmfQuTSvoSoYfQgPYexLSb
-         47m/RqFJLuZB/TU+1yL9seNjlqVFWx72k1DMQFHQm/IGAOMlqlsM6TwMN6E4Wcxdc2LN
-         MZVGrcLrcF06ZuDyy5Ed6nFp/U+N3coelcUamn32psMV6ZgaQg6mqhYx6vEjvMjCWMeE
-         E8LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=L4SbZUHV57IOdhtxt7xLH6bNMt6ZWWMzVkJzxIHiEH0=;
-        b=HSi+X+hq5VHBUP6Y36zjzSHxntPQgHTBpHLzU8t/74I0PWpsm+sZkshTd05qw291iw
-         FocJizdGmxl5zi/HnHtqGJivmCWAZhQ+8YChf3fWAR1tKtWYBobLNJf+r86ZqBdNWss6
-         yCePLDybLAUA9Ynkxwzj0ej5kqldCLCL3kMJ+iKYqlr1llecyong9aD/JKvZXp6bTQqn
-         uiw6e0WR/cgCX1eb8kL+XQSFTG9WqRiHf1aVwmR54wz1OmTqwYtxLtyb4JW9+ZU6w7Gz
-         XRFrsxKW5QYwzfZn8TwX/Y82Q0wH1ttAUyJNhq0Cj0jSxFrvLi0TWUUYnrGkSV9J96k2
-         vzlw==
-X-Gm-Message-State: AOAM533lkliOOLtRfyAySgU1d/hzRy4bVEDds8ZEbZzfqConK3VcHbRP
-        AOM0rAgDjAD8F2OADMEmTLmWiw==
-X-Google-Smtp-Source: ABdhPJx0C/kAHO9Og4a8sFT18y/We0Q5yc2XHHJxoU1ByVr+bvY/kxzcZ7clBGdH5p/Z1lU+2tLtsg==
-X-Received: by 2002:a05:6a00:24c6:b0:518:7e6e:ee3c with SMTP id d6-20020a056a0024c600b005187e6eee3cmr10143984pfv.15.1653269088360;
-        Sun, 22 May 2022 18:24:48 -0700 (PDT)
-Received: from [2620:15c:29:204:fa22:6f61:557f:9cd2] ([2620:15c:29:204:fa22:6f61:557f:9cd2])
-        by smtp.gmail.com with ESMTPSA id q6-20020a17090a1b0600b001df7612950dsm5900242pjq.7.2022.05.22.18.24.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 18:24:47 -0700 (PDT)
-Date:   Sun, 22 May 2022 18:24:47 -0700 (PDT)
-From:   David Rientjes <rientjes@google.com>
-To:     John Allen <john.allen@amd.com>
-cc:     herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        seanjc@google.com, Thomas.Lendacky@amd.com, Ashish.Kalra@amd.com,
-        linux-kernel@vger.kernel.org, theflow@google.com,
-        pgonda@google.com, stable@vger.kernel.org
-Subject: Re: [PATCH v4] crypto: ccp - Use kzalloc for sev ioctl interfaces
- to prevent kernel memory leak
-In-Reply-To: <20220518153126.265074-1-john.allen@amd.com>
-Message-ID: <81d016a4-891c-47e6-8a85-7cd9e5661729@google.com>
-References: <20220518153126.265074-1-john.allen@amd.com>
+        Sun, 22 May 2022 21:35:11 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A493238BF6;
+        Sun, 22 May 2022 18:35:10 -0700 (PDT)
+Received: from kwepemi500025.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L60H85zpdzjWvg;
+        Mon, 23 May 2022 09:34:12 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ kwepemi500025.china.huawei.com (7.221.188.170) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 09:35:08 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
+ (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
+ 2022 09:35:08 +0800
+From:   ChenXiaoSong <chenxiaosong2@huawei.com>
+To:     <miklos@szeredi.hu>
+CC:     <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
+        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
+Subject: [PATCH -next,v2] fuse: return the more nuanced writeback error on close()
+Date:   Mon, 23 May 2022 09:48:38 +0800
+Message-ID: <20220523014838.1647498-1-chenxiaosong2@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 18 May 2022, John Allen wrote:
+As filemap_check_errors() only report -EIO or -ENOSPC, we return more nuanced
+writeback error -(file->f_mapping->wb_err & MAX_ERRNO).
 
-> For some sev ioctl interfaces, input may be passed that is less than or
-> equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data that PSP
-> firmware returns. In this case, kmalloc will allocate memory that is the
-> size of the input rather than the size of the data. Since PSP firmware
-> doesn't fully overwrite the buffer, the sev ioctl interfaces with the
-> issue may return uninitialized slab memory.
-> 
-> Currently, all of the ioctl interfaces in the ccp driver are safe, but
-> to prevent future problems, change all ioctl interfaces that allocate
-> memory with kmalloc to use kzalloc and memset the data buffer to zero
-> in sev_ioctl_do_platform_status.
-> 
-> Fixes: 38103671aad3 ("crypto: ccp: Use the stack and common buffer for status commands")
-> Fixes: e799035609e15 ("crypto: ccp: Implement SEV_PEK_CSR ioctl command")
-> Fixes: 76a2b524a4b1d ("crypto: ccp: Implement SEV_PDH_CERT_EXPORT ioctl command")
-> Fixes: d6112ea0cb344 ("crypto: ccp - introduce SEV_GET_ID2 command")
-> Cc: stable@vger.kernel.org
-> Reported-by: Andy Nguyen <theflow@google.com>
-> Suggested-by: David Rientjes <rientjes@google.com>
-> Suggested-by: Peter Gonda <pgonda@google.com>
-> Signed-off-by: John Allen <john.allen@amd.com>
+  filemap_write_and_wait
+    filemap_write_and_wait_range
+      filemap_check_errors
+        -ENOSPC or -EIO
+  filemap_check_wb_err
+    errseq_check
+      return -(file->f_mapping->wb_err & MAX_ERRNO)
 
-Acked-by: David Rientjes <rientjes@google.com>
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+---
+ fs/fuse/file.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks John!
+diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+index f18d14d5fea1..9917bc2795e6 100644
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -488,10 +488,10 @@ static int fuse_flush(struct file *file, fl_owner_t id)
+ 	inode_unlock(inode);
+ 
+ 	err = filemap_check_errors(file->f_mapping);
++	/* return more nuanced writeback errors */
+ 	if (err)
+-		return err;
++		return filemap_check_wb_err(file->f_mapping, 0);
+ 
+-	err = 0;
+ 	if (fm->fc->no_flush)
+ 		goto inval_attr_out;
+ 
+-- 
+v2: remove redundant code: err = 0
+
+2.31.1
+
