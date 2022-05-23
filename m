@@ -2,86 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A140DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B07C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237972AbiEWP26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40724 "EHLO
+        id S238016AbiEWP3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237968AbiEWP2z (ORCPT
+        with ESMTP id S237988AbiEWP27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:28:55 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EDF5EDF7
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:28:49 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id y13so28862580eje.2
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:28:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=malat-biz.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XPtsde4gyVo6IJJ2lowRrIJoC9Wl+ngKLvBmCGRosYU=;
-        b=he+tcNDA7ndcB7CTw1/DbteaPV0BHHiyChBmUWVYsesTwE4FheIylI/Ktcls1XAOlf
-         c3S5t0KEqwBQX9JX4xwIfmleuXXuktbt4EvMIBFVITv7lFRQo4UOVcfh4sYWfMSwx9Pi
-         U2Dez6pyB/M7lY0SPdYD6E202dPvVrynR4EtREr2cRXWjYjShDZHRqFQwkQ451aIjm1g
-         Yj5vbsF95Iiz1OewX+nUFxpPzlIUW6/66w8OnTPgzJ5PEuG+8FETwydWbBNjSzQ3FzWM
-         QBmel4mAnWj99UCYFVXz3muSbptC2IMAtsA0FLB+90gYv5Oqsq65HubkW3/YlLk27+Tn
-         Wvog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XPtsde4gyVo6IJJ2lowRrIJoC9Wl+ngKLvBmCGRosYU=;
-        b=EJpQOshhBFCUp9Ul2DQtazGD9avWOk05SQOu3dmq7RPVdmsmj683GFmUtAK3Sul+CW
-         uxyfbGUWg5oObIXPLxdghphQYe9vLwjLwCkaXB+32tiNPO+qfLQ2J1Z8HfehKUMwXsyb
-         K5xEY+t0qsvFHXY7vuPk7rOeVbWA8P6Ry8utymgTXsY1pwBhLxtkUr9AEJovqFvBRfEt
-         bf3n/xNFrTKfDETH1LFdTkM3EqQkx+1adVRKkrX8hzb1CFstGdSfcf9wa1tFPWklEDSE
-         c7gwmG34/cTvSCXqjXqABCUQJ5LjicVLCt4A2GosIYObjDdJgFW7fk1FPMn5NwYpWB68
-         oNtQ==
-X-Gm-Message-State: AOAM5322HwqAZtyzQgNPHWF5HJ4TvyBN9WDI4Nt/BZ0CwRpkSbFu9gfw
-        66hzG7V4KAKrMbew0zPGShFP6Q==
-X-Google-Smtp-Source: ABdhPJwrxiEWnwMCc46nqTyw8Rb4U7FGGn9Q/ughz/Boi6eJRPID9+ui33r690dogZXwncyyksQf1g==
-X-Received: by 2002:a17:907:6d97:b0:6fe:f9e0:c03f with SMTP id sb23-20020a1709076d9700b006fef9e0c03fmr1908505ejc.219.1653319728245;
-        Mon, 23 May 2022 08:28:48 -0700 (PDT)
-Received: from ntb.petris.klfree.czf ([2a02:8070:d483:ed00:4bcc:154f:5c11:5870])
-        by smtp.gmail.com with ESMTPSA id b18-20020a056402139200b0042ab87ea713sm8285753edv.22.2022.05.23.08.28.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 08:28:47 -0700 (PDT)
-Date:   Mon, 23 May 2022 17:27:48 +0200
-From:   Petr Malat <oss@malat.biz>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        Joern Engel <joern@lazybastard.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] mtd: phram: Map RAM using memremap instead of ioremap
-Message-ID: <Youn9AmqY6/EExDw@ntb.petris.klfree.czf>
-References: <20220523142825.3144904-1-oss@malat.biz>
- <3cab9a7f4ed34ca0b742a62c2bdc3bce@AcuMS.aculab.com>
+        Mon, 23 May 2022 11:28:59 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE115EDE4
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:28:55 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 0C23821B51;
+        Mon, 23 May 2022 15:28:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653319734; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=x+/1oXehIhqc8cKRJ9ERRgv2SHTK6AyPOx5K6vAtt8g=;
+        b=tmnRGdyREpebEZPDsD7YbvQ+wESmrCgriPVJGCvgU+0EHke1YjUCYdbgzC6IFtnBKVV3zv
+        Xmn9TEGDxHgoGP4+aawqSYYQZ59kGX3mn1nppL9boxOFppzVSoGNDPKtchmIs884LYxrck
+        trldFTraZnTDHJge2IdZmKZMVYZCsXE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653319734;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=x+/1oXehIhqc8cKRJ9ERRgv2SHTK6AyPOx5K6vAtt8g=;
+        b=jPP7N9WALt7GqRLsttOYdzV2ovTFKmxZ/FN2x7RUoLRLnAiA/NgIft8qhgoeLA83Nujabe
+        Jjm5sgmb2DHC4LCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0119413AA5;
+        Mon, 23 May 2022 15:28:54 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +kk9ADaoi2J9FwAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 23 May 2022 15:28:54 +0000
+Date:   Mon, 23 May 2022 17:28:49 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/core for 5.19
+Message-ID: <YouoMW6jtD3BRavh@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3cab9a7f4ed34ca0b742a62c2bdc3bce@AcuMS.aculab.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+Hi Linus,
 
-On Mon, May 23, 2022 at 02:51:41PM +0000, David Laight wrote:
-> From: Petr Malat
-> > Sent: 23 May 2022 15:28
-> > 
-> > One can't use memcpy on memory obtained by ioremap, because IO memory
-> > may have different alignment and size access restriction than the system
-> > memory. Use memremap as phram driver operates on RAM.
-> 
-> Does that actually help?
-> The memcpy() is still likely to issue unaligned accesses
-> that the hardware can't handle.
+please pull a set of x86/core fixes for 5.19.
 
-Yes, it solves the issue. Memcpy can cause unaligned access only on
-platforms, which can handle it. And on ARM64 it's handled only for
-RAM and not for a device memory (__pgprot(PROT_DEVICE_*)).
-  Petr
+Thx.
+
+---
+
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_core_for_v5.19_rc1
+
+for you to fetch changes up to 69505e3d9a39a988aaed9b58aa6b3482238f6516:
+
+  bug: Use normal relative pointers in 'struct bug_entry' (2022-05-19 23:46:10 +0200)
+
+----------------------------------------------------------------
+- Remove all the code around GS switching on 32-bit now that it is not
+needed anymore
+
+- Other misc improvements
+
+----------------------------------------------------------------
+Brian Gerst (4):
+      x86/32: Simplify ELF_CORE_COPY_REGS
+      ELF: Remove elf_core_copy_kernel_regs()
+      x86/32: Remove lazy GS macros
+      x86/asm: Merge load_gs_index()
+
+Josh Poimboeuf (1):
+      bug: Use normal relative pointers in 'struct bug_entry'
+
+Thomas Gleixner (1):
+      x86/nmi: Make register_nmi_handler() more robust
+
+ arch/arm64/include/asm/asm-bug.h           |  4 ++--
+ arch/powerpc/include/asm/bug.h             | 14 ++++++++------
+ arch/powerpc/kernel/fadump.c               |  2 +-
+ arch/powerpc/platforms/powernv/opal-core.c |  2 +-
+ arch/riscv/include/asm/bug.h               |  4 ++--
+ arch/s390/include/asm/bug.h                |  5 +++--
+ arch/x86/include/asm/bug.h                 |  2 +-
+ arch/x86/include/asm/elf.h                 | 15 ++-------------
+ arch/x86/include/asm/mmu_context.h         |  2 +-
+ arch/x86/include/asm/nmi.h                 |  1 +
+ arch/x86/include/asm/segment.h             | 12 ------------
+ arch/x86/include/asm/special_insns.h       |  7 ++++---
+ arch/x86/kernel/nmi.c                      | 12 ++++++++----
+ arch/x86/kernel/process.c                  |  5 +----
+ arch/x86/kernel/process_32.c               | 11 ++++-------
+ arch/x86/kernel/ptrace.c                   |  6 +++---
+ arch/x86/kernel/signal.c                   |  8 +++++---
+ arch/x86/kernel/vm86_32.c                  |  4 ++--
+ arch/x86/lib/insn-eval.c                   |  5 +++--
+ arch/x86/math-emu/get_address.c            |  2 +-
+ include/linux/elfcore.h                    |  9 ---------
+ kernel/kexec_core.c                        |  2 +-
+ lib/bug.c                                  | 15 +++++++--------
+ 23 files changed, 61 insertions(+), 88 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG Nürnberg)
