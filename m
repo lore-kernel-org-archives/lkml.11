@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7133C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 008C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242021AbiEWSAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
+        id S242559AbiEWSAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241007AbiEWRcl (ORCPT
+        with ESMTP id S241037AbiEWRcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:32:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E236D7890F;
-        Mon, 23 May 2022 10:27:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF8077F05;
+        Mon, 23 May 2022 10:27:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F298608C0;
-        Mon, 23 May 2022 17:27:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5F3C385A9;
-        Mon, 23 May 2022 17:27:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF3A6B81202;
+        Mon, 23 May 2022 17:27:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33E3BC385A9;
+        Mon, 23 May 2022 17:27:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326844;
-        bh=wP8oCIlK2oDbgwEMgq/WN9tjdtUuWnR4GBzeW+e+HSw=;
+        s=korg; t=1653326841;
+        bh=/Vp/mTzC2zQzuZMpQFRBDEVKDe4ulklZbwulRP4GhAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y0sFvTTGQ93AwdlsYIxuh6KuV9YQUMSQe/gNAV7JAyON3XHqOeLRFg01K39rsUxSf
-         WnhbcZno9zx7U6kMe3OJizOK1oUDrs7umAC23Ypf0VR/SvBiWO5fVekCd5i8hGPwh+
-         CLEbZ7xPmdQzrT27FupEQk09z6yE48S9TwpzyO6Y=
+        b=bboBFDnCpCarytOdCTzLF9/gbSHRQsdVFDEI2xXaqd7ehBNs6ALUuuI4b1DsQiN4b
+         nP7qzTn+LEtlHsWio9FwyNp0REQGeoPdIkRYF/ZWcUWkc5kGXNbj0J2qoBKBtKKAPo
+         Urwnhx1CJ4zGs4o40gSLZZwld+TL+Kv0niZmkjPY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 077/158] net: ipa: record proper RX transaction count
-Date:   Mon, 23 May 2022 19:03:54 +0200
-Message-Id: <20220523165843.777492251@linuxfoundation.org>
+Subject: [PATCH 5.17 076/158] net: ipa: certain dropped packets arent accounted for
+Date:   Mon, 23 May 2022 19:03:53 +0200
+Message-Id: <20220523165843.595929416@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,57 +51,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit d8290cbe1111105f92f0c8ab455bec8bf98d0630 ]
+[ Upstream commit 30b338ff7998b6ed7a90815870cd5db725f87168 ]
 
-Each time we are notified that some number of transactions on an RX
-channel has completed, we record the number of bytes that have been
-transferred since the previous notification.  We also track the
-number of transactions completed, but that is not currently being
-calculated correctly; we're currently counting the number of such
-notifications, but each notification can represent many transaction
-completions.  Fix this.
+If an RX endpoint receives packets containing status headers, and a
+packet in the buffer is not dropped, ipa_endpoint_skb_copy() is
+responsible for wrapping the packet data in an SKB and forwarding it
+to ipa_modem_skb_rx() for further processing.
 
-Fixes: 650d1603825d8 ("soc: qcom: ipa: the generic software interface")
+If ipa_endpoint_skb_copy() gets a null pointer from build_skb(), it
+just returns early.  But in the process it doesn't record that as a
+dropped packet in the network device statistics.
+
+Instead, call ipa_modem_skb_rx() whether or not the SKB pointer is
+NULL; that function ensures the statistics are properly updated.
+
+Fixes: 1b65bbcc9a710 ("net: ipa: skip SKB copy if no netdev")
 Signed-off-by: Alex Elder <elder@linaro.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/gsi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index bc981043cc80..a701178a1d13 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -1367,9 +1367,10 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
- 	struct gsi_event *event_done;
- 	struct gsi_event *event;
- 	struct gsi_trans *trans;
-+	u32 trans_count = 0;
- 	u32 byte_count = 0;
--	u32 old_index;
- 	u32 event_avail;
-+	u32 old_index;
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 68291a3efd04..2ecfc17544a6 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1169,13 +1169,12 @@ static void ipa_endpoint_skb_copy(struct ipa_endpoint *endpoint,
+ 		return;
  
- 	trans_info = &channel->trans_info;
+ 	skb = __dev_alloc_skb(len, GFP_ATOMIC);
+-	if (!skb)
+-		return;
+-
+-	/* Copy the data into the socket buffer and receive it */
+-	skb_put(skb, len);
+-	memcpy(skb->data, data, len);
+-	skb->truesize += extra;
++	if (skb) {
++		/* Copy the data into the socket buffer and receive it */
++		skb_put(skb, len);
++		memcpy(skb->data, data, len);
++		skb->truesize += extra;
++	}
  
-@@ -1390,6 +1391,7 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
- 	do {
- 		trans->len = __le16_to_cpu(event->len);
- 		byte_count += trans->len;
-+		trans_count++;
- 
- 		/* Move on to the next event and transaction */
- 		if (--event_avail)
-@@ -1401,7 +1403,7 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
- 
- 	/* We record RX bytes when they are received */
- 	channel->byte_count += byte_count;
--	channel->trans_count++;
-+	channel->trans_count += trans_count;
+ 	ipa_modem_skb_rx(endpoint->netdev, skb);
  }
- 
- /* Initialize a ring, including allocating DMA memory for its entries */
 -- 
 2.35.1
 
