@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C60CC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC313C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344067AbiEWSIv (ORCPT
+        id S1343877AbiEWSIn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
+        Mon, 23 May 2022 14:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243563AbiEWRiS (ORCPT
+        with ESMTP id S243585AbiEWRiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:38:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF9F71A3C;
-        Mon, 23 May 2022 10:32:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528196EC49;
+        Mon, 23 May 2022 10:32:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 793ADB80EB0;
-        Mon, 23 May 2022 17:31:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A38BBC385A9;
-        Mon, 23 May 2022 17:31:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FC9AB811F8;
+        Mon, 23 May 2022 17:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55FA2C385AA;
+        Mon, 23 May 2022 17:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653327102;
-        bh=P7ifuMvgfCQC7c5AuL095K8fyYyVN8m4teyXLs5ZboM=;
+        s=korg; t=1653327088;
+        bh=Eh20xBib3bRTCPbaAVbjeIBlp5HWjm1Ir/G+4BMbClg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m3s1r76q4dkHaCBSyVdEwaT0ZMhdErNOUi1wvKTI6coogpcxJEo3hmIuEAKQnXRbj
-         4hq8A4t942K1lU4P/g7b+jzte3v5lsn6BtRU7kVlR8ND/5Hy6Hyc4Db/Ur9VrKWkH7
-         puF/TD0pX2kEMQHlTvQzcB7HiaQSBh5xzN5C9Dmo=
+        b=0tsayt+nyaLPV3jp5rnClqTUQspXnFPIrUGaV8FpgkHC8MztAI/QAFzb1c4hbJmEC
+         J1WIqth+8+qMBKimxY7nGOl34K8/60KXpFesbLWPZUnqCV3EeZNUR5kMYoLjiLlPux
+         Qw+ifNhoM+rH46TEMAJe9DiXUGSBAdpctnbjYFaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Rob Herring <robh@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>, Joel Stanley <joel@jms.id.au>
-Subject: [PATCH 5.17 156/158] dt-bindings: pinctrl: aspeed-g6: remove FWQSPID group
-Date:   Mon, 23 May 2022 19:05:13 +0200
-Message-Id: <20220523165856.039264573@linuxfoundation.org>
+        stable@vger.kernel.org, Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        Grant Grundler <grundler@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 152/158] net: atlantic: add check for MAX_SKB_FRAGS
+Date:   Mon, 23 May 2022 19:05:09 +0200
+Message-Id: <20220523165855.376317577@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,33 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+From: Grant Grundler <grundler@chromium.org>
 
-commit a29c96a4053dc3c1d39353b61089882f81c6b23d upstream.
+[ Upstream commit 6aecbba12b5c90b26dc062af3b9de8c4b3a2f19f ]
 
-FWQSPID is not a group of FWSPID so remove it.
+Enforce that the CPU can not get stuck in an infinite loop.
 
-Fixes: 7488838f2315 ("dt-bindings: pinctrl: aspeed: Document AST2600 pinmux")
-Signed-off-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
-Link: https://lore.kernel.org/r/20220329173932.2588289-4-quic_jaehyoo@quicinc.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Aashay Shringarpure <aashay@google.com>
+Reported-by: Yi Chou <yich@google.com>
+Reported-by: Shervin Oloumi <enlightened@google.com>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-+++ b/Documentation/devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml
-@@ -58,7 +58,7 @@ patternProperties:
-           $ref: "/schemas/types.yaml#/definitions/string"
-           enum: [ ADC0, ADC1, ADC10, ADC11, ADC12, ADC13, ADC14, ADC15, ADC2,
-                   ADC3, ADC4, ADC5, ADC6, ADC7, ADC8, ADC9, BMCINT, EMMCG1, EMMCG4,
--                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWQSPID, FWSPIWP,
-+                  EMMCG8, ESPI, ESPIALT, FSI1, FSI2, FWSPIABR, FWSPID, FWSPIWP,
-                   GPIT0, GPIT1, GPIT2, GPIT3, GPIT4, GPIT5, GPIT6, GPIT7, GPIU0, GPIU1,
-                   GPIU2, GPIU3, GPIU4, GPIU5, GPIU6, GPIU7, HVI3C3, HVI3C4, I2C1, I2C10,
-                   I2C11, I2C12, I2C13, I2C14, I2C15, I2C16, I2C2, I2C3, I2C4, I2C5,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index bc1952131799..8201ce7adb77 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -363,6 +363,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 			continue;
+ 
+ 		if (!buff->is_eop) {
++			unsigned int frag_cnt = 0U;
+ 			buff_ = buff;
+ 			do {
+ 				bool is_rsc_completed = true;
+@@ -371,6 +372,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 					err = -EIO;
+ 					goto err_exit;
+ 				}
++
++				frag_cnt++;
+ 				next_ = buff_->next,
+ 				buff_ = &self->buff_ring[next_];
+ 				is_rsc_completed =
+@@ -378,7 +381,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 							    next_,
+ 							    self->hw_head);
+ 
+-				if (unlikely(!is_rsc_completed)) {
++				if (unlikely(!is_rsc_completed) ||
++						frag_cnt > MAX_SKB_FRAGS) {
+ 					err = 0;
+ 					goto err_exit;
+ 				}
+-- 
+2.35.1
+
 
 
