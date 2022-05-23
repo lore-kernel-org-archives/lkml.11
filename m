@@ -2,101 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48781C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B46C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 02:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233976AbiEWB7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 21:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
+        id S229496AbiEWCDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 22 May 2022 22:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiEWB7G (ORCPT
+        with ESMTP id S233779AbiEWCC4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 21:59:06 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A33935877;
-        Sun, 22 May 2022 18:59:06 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id f21so46321pfa.3;
-        Sun, 22 May 2022 18:59:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vD+DGie99zMkr0nJSBJghK7m9B4fcVep+NfF0Px5NeI=;
-        b=UlU4j2O6HkuShPLRu/4u5GJiJ2CR1lrNCFQWQ3sarMDfjW3K35g5qugZRYr/bBsWMu
-         sE5exKzQmF/F3MYbkC8G7PpD8LVneNqDvmVGPDRq8ZzwJ4s4FYk6ysLjd+0AKr89AI11
-         WMX6f9PCKQ1MH9bSM+5o6Y8TImhjXLFM9jXTF2B7msyggWdCI4jEd9rR9whV5ZgcL5bm
-         C3hu7HJCcQKC5SKKMU5vqy74ZftwJBS4P1Zwzx85K9+p0YF5ET0APiECuHeedzBqq1OH
-         rgKZAhIqFADAwLBKp+duuuKcDz+a/q/vS/Z7YVtFI1kXc+pW/bGmZ64e/FaUUqB1yvak
-         +yZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vD+DGie99zMkr0nJSBJghK7m9B4fcVep+NfF0Px5NeI=;
-        b=0wtTKV0iN0bxN4kAXnA8rZXXP6DPHO7Vo8WEPcaodO+JaO9H1qJRVH50axHaqdUmdZ
-         RII8XDijkTj1RuiQPi5rVVU1dfT2mYkikoyBDVY4jH9JSCECy9c9zkCeCOm70YK+VAQ1
-         BeA3ackl5Dkd2SUuqsxwf0LC/qn+rek1iTva8cdRY9PJj4EMDnGFd75x+W3uD3J/H6SR
-         ps05ePpcDuCDUB+1+0bxw1JzR7esuac1kThU9BCXeKU+w0dcMPrIWRyuHtIhhdwd+pL4
-         7C25aYlC0bpCj892KYMGZgWcjtNpfSlaJTvqjVUaBzwsYSYPYTCwqQhhFfeYm57bdnZY
-         2r+w==
-X-Gm-Message-State: AOAM531NrNUbWauccJjUbtEwmmh29uisMUdoPKE7IWKpfpOh01dJcvv7
-        9hFYgyCrqzZhinF6Bo8Zhs0=
-X-Google-Smtp-Source: ABdhPJy2p/jFV7g6ZgpcDogCvhXmrWLXQEZijPyaAoNQV+V83ON3F3qw4ZovWJ4SBd+qU6FmZPMsOw==
-X-Received: by 2002:a63:8bc1:0:b0:3f9:f00b:f877 with SMTP id j184-20020a638bc1000000b003f9f00bf877mr7866091pge.378.1653271145241;
-        Sun, 22 May 2022 18:59:05 -0700 (PDT)
-Received: from [192.168.50.247] ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id l13-20020a6542cd000000b003c619f3d086sm3607429pgp.2.2022.05.22.18.59.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 May 2022 18:59:04 -0700 (PDT)
-Message-ID: <61149e02-ad4c-6e3d-e33b-b21025aa3b65@gmail.com>
-Date:   Mon, 23 May 2022 09:58:59 +0800
+        Sun, 22 May 2022 22:02:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC97B35DF0;
+        Sun, 22 May 2022 19:02:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4673660F90;
+        Mon, 23 May 2022 02:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8402C34115;
+        Mon, 23 May 2022 02:02:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653271374;
+        bh=ljo3CJ7UJGB1eNiSRVmZJhPgLEIaC6mIBDlmJk9w41Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Pw6Yyefe4wCgRMySMsogSybDbjy/piNY8jj2HYEc4/lQefEpB1yTdNLNi3ytrNMFp
+         4LqBa1sLh7GUNBYEfh3MO3vTHtdMVl6VVB9wbC/5Pl9whWNY75lNi4nMbOZbg559wx
+         zE5D0pqq+MZ2RNAbAFRGxCWoR+xuGcH9DhXibvdh5gBGdH6zOF4Xn9DNYONw+NedUj
+         ORoNb+t6re6AIyMjOHUHUiVSIBz3Kslgtf48X245KQ3b3X5211UhOGiqwHHRT+Shg1
+         7Fkq00pqF4dhuOqiogs3tDPi3edB5uOrE+ewClRxykRU+DwwEd4n4PuiDIpZI8D/ME
+         eJMPiutpaWkVw==
+From:   Miguel Ojeda <ojeda@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH v7 01/25] kallsyms: avoid hardcoding the buffer size
+Date:   Mon, 23 May 2022 04:01:14 +0200
+Message-Id: <20220523020209.11810-2-ojeda@kernel.org>
+In-Reply-To: <20220523020209.11810-1-ojeda@kernel.org>
+References: <20220523020209.11810-1-ojeda@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] drm: msm: fix possible memory leak in
- mdp5_crtc_cursor_set()
-Content-Language: en-US
-To:     robdclark@gmail.com, sean@poorly.run, quic_abhinavk@quicinc.com,
-        airlied@linux.ie, daniel@ffwll.ch, dmitry.baryshkov@linaro.org,
-        gbeeresh@codeaurora.org, sviau@codeaurora.org,
-        wentaox@codeaurora.org
-Cc:     linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20220509061125.18585-1-hbh25y@gmail.com>
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <20220509061125.18585-1-hbh25y@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/9 14:11, Hangyu Hua wrote:
-> drm_gem_object_lookup will call drm_gem_object_get inside. So cursor_bo
-> needs to be put when msm_gem_get_and_pin_iova fails.
-> 
-> Fixes: e172d10a9c4a ("drm/msm/mdp5: Add hardware cursor support")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->   drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-> index b966cd69f99d..6a5f73f6a23b 100644
-> --- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-> +++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-> @@ -991,8 +991,10 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
->   
->   	ret = msm_gem_get_and_pin_iova(cursor_bo, kms->aspace,
->   			&mdp5_crtc->cursor.iova);
-> -	if (ret)
-> +	if (ret) {
-> +		drm_gem_object_put(cursor_bo);
->   		return -EINVAL;
-> +	}
->   
->   	pm_runtime_get_sync(&pdev->dev);
->   
+From: Boqun Feng <boqun.feng@gmail.com>
 
-Gentel ping.
+This makes it easier to update the size later on.
+
+Furthermore, a static assert is added to ensure both are updated
+when that happens. The relationship used is one that keeps the new
+size (512+1) close to the original buffer size (500).
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+---
+This is a prerequisite patch, independently submitted at:
+
+    https://lore.kernel.org/lkml/20220506203443.24721-2-ojeda@kernel.org/
+
+ scripts/kallsyms.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+index 8caabddf817c..82d6508bdf29 100644
+--- a/scripts/kallsyms.c
++++ b/scripts/kallsyms.c
+@@ -27,8 +27,18 @@
+ 
+ #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+ 
++#define _stringify_1(x)	#x
++#define _stringify(x)	_stringify_1(x)
++
+ #define KSYM_NAME_LEN		128
+ 
++/* A substantially bigger size than the current maximum. */
++#define KSYM_NAME_LEN_BUFFER	512
++_Static_assert(
++	KSYM_NAME_LEN_BUFFER == KSYM_NAME_LEN * 4,
++	"Please keep KSYM_NAME_LEN_BUFFER in sync with KSYM_NAME_LEN"
++);
++
+ struct sym_entry {
+ 	unsigned long long addr;
+ 	unsigned int len;
+@@ -197,15 +207,15 @@ static void check_symbol_range(const char *sym, unsigned long long addr,
+ 
+ static struct sym_entry *read_symbol(FILE *in)
+ {
+-	char name[500], type;
++	char name[KSYM_NAME_LEN_BUFFER+1], type;
+ 	unsigned long long addr;
+ 	unsigned int len;
+ 	struct sym_entry *sym;
+ 	int rc;
+ 
+-	rc = fscanf(in, "%llx %c %499s\n", &addr, &type, name);
++	rc = fscanf(in, "%llx %c %" _stringify(KSYM_NAME_LEN_BUFFER) "s\n", &addr, &type, name);
+ 	if (rc != 3) {
+-		if (rc != EOF && fgets(name, 500, in) == NULL)
++		if (rc != EOF && fgets(name, sizeof(name), in) == NULL)
+ 			fprintf(stderr, "Read error or end of file.\n");
+ 		return NULL;
+ 	}
+-- 
+2.36.1
+
