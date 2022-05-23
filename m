@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C250DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B26C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239803AbiEWRNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35464 "EHLO
+        id S239710AbiEWRNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240068AbiEWRLh (ORCPT
+        with ESMTP id S240193AbiEWRLq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:11:37 -0400
+        Mon, 23 May 2022 13:11:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E0DE0FD;
-        Mon, 23 May 2022 10:11:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532E310A4;
+        Mon, 23 May 2022 10:11:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68B60614FE;
-        Mon, 23 May 2022 17:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6043CC385A9;
-        Mon, 23 May 2022 17:11:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1F8B61507;
+        Mon, 23 May 2022 17:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7AB8C385A9;
+        Mon, 23 May 2022 17:11:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325860;
-        bh=UnaGk7lT++MCESMYYRcly019jpbFLcXmscxoXEMCt6Q=;
+        s=korg; t=1653325873;
+        bh=VXtcAqn6/M6grVmBFWvrRlt1YfHPvmVTbARNuX4JhIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mPsQLgqyVPw3tcE44GTP+szSXGe7hmCAiY4KyUsIwcvN3ynANHfAb36YEgK08WQ/j
-         8/E9R+NitrL/J+vt2gqosZw3dILGnIH/1VxClOHYMaupQGUm27F18kvda9N15XzCrg
-         MonTEV0++PYoBN3oqty+en22xLp9rMJ2zx4y434E=
+        b=piDoXEo54M1KxdfCC6Z4V6qNj+FfE4HrpG0CfvpZyqsIv4z1knTOexyqmArHbYQRq
+         b2jh1XQIqGdPusiDj/jPPm1CLBxuLp3gaqlBhdtjOR0WgqBjQvF4Z0ak7s0iIVkQYk
+         /Nl4oEyRdeRx06kPM2RF6xPV3eDchSZnbABf8Tjc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 11/44] ALSA: wavefront: Proper check of get_user() error
-Date:   Mon, 23 May 2022 19:04:55 +0200
-Message-Id: <20220523165755.384333184@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Brian Masney <bmasney@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 4.19 15/44] crypto: qcom-rng - fix infinite loop on requests not multiple of WORD_SZ
+Date:   Mon, 23 May 2022 19:04:59 +0200
+Message-Id: <20220523165756.026136368@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -49,36 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-commit a34ae6c0660d3b96b0055f68ef74dc9478852245 upstream.
+commit 16287397ec5c08aa58db6acf7dbc55470d78087d upstream.
 
-The antient ISA wavefront driver reads its sample patch data (uploaded
-over an ioctl) via __get_user() with no good reason; likely just for
-some performance optimizations in the past.  Let's change this to the
-standard get_user() and the error check for handling the fault case
-properly.
+The commit referenced in the Fixes tag removed the 'break' from the else
+branch in qcom_rng_read(), causing an infinite loop whenever 'max' is
+not a multiple of WORD_SZ. This can be reproduced e.g. by running:
 
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220510103626.16635-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    kcapi-rng -b 67 >/dev/null
+
+There are many ways to fix this without adding back the 'break', but
+they all seem more awkward than simply adding it back, so do just that.
+
+Tested on a machine with Qualcomm Amberwing processor.
+
+Fixes: a680b1832ced ("crypto: qcom-rng - ensure buffer for generate is completely filled")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Reviewed-by: Brian Masney <bmasney@redhat.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/isa/wavefront/wavefront_synth.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/crypto/qcom-rng.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/isa/wavefront/wavefront_synth.c
-+++ b/sound/isa/wavefront/wavefront_synth.c
-@@ -1092,7 +1092,8 @@ wavefront_send_sample (snd_wavefront_t *
+--- a/drivers/crypto/qcom-rng.c
++++ b/drivers/crypto/qcom-rng.c
+@@ -64,6 +64,7 @@ static int qcom_rng_read(struct qcom_rng
+ 		} else {
+ 			/* copy only remaining bytes */
+ 			memcpy(data, &val, max - currsize);
++			break;
+ 		}
+ 	} while (currsize < max);
  
- 			if (dataptr < data_end) {
- 		
--				__get_user (sample_short, dataptr);
-+				if (get_user(sample_short, dataptr))
-+					return -EFAULT;
- 				dataptr += skip;
- 		
- 				if (data_is_unsigned) { /* GUS ? */
 
 
