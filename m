@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A0CC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74379C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241300AbiEWSDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
+        id S244232AbiEWSCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241319AbiEWRfJ (ORCPT
+        with ESMTP id S241600AbiEWRe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:35:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB858199D;
-        Mon, 23 May 2022 10:28:30 -0700 (PDT)
+        Mon, 23 May 2022 13:34:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3745E7CB4A;
+        Mon, 23 May 2022 10:28:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C46D060BD3;
-        Mon, 23 May 2022 17:28:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91A8FC385A9;
-        Mon, 23 May 2022 17:28:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A51A0B81201;
+        Mon, 23 May 2022 17:28:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C28C385A9;
+        Mon, 23 May 2022 17:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326903;
-        bh=0AHpmUS+psaj+teuBfn1XDZbhVkD+k3E0lH3K9SmT30=;
+        s=korg; t=1653326886;
+        bh=6k26SjaFnCznDwmheCoJw42qml7VXumn1egxh8v7ITI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DIW28Gw87lXL6Y8672A/3UkY6Gy70C0L/GdamAT83kmtWi8UUZ+rwYIHxmxcd7fvF
-         3+NfJBlz4XSXfRdszmimCqyXKbNbGsCfQN0939BlSGiNASAh2dZKAy6HgO1XwwS3+C
-         KD0Z7QakKEb3AFU5wqwftiZnS4pbxaBlNOQaXnuM=
+        b=q4v8qhwGrTDvpb6p6fJ+Y6vWbXXw4vuAX7jInZ9OFE1Ug77RMPhvjgN5ljzW7zYNF
+         2/gCA5qrm/htUU/rqfKEcv4nW8qw32yrNIVa3X+2DB8VjnSCsY/ERA7hd2KxUynBig
+         F7z6x6EdaAdbEy41AXJqVgGI6/fys0KXsMavBsao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 093/158] net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
-Date:   Mon, 23 May 2022 19:04:10 +0200
-Message-Id: <20220523165846.673407548@linuxfoundation.org>
+        stable@vger.kernel.org, Ilya Dryomov <idryomov@gmail.com>,
+        Xiubo Li <xiubli@redhat.com>, Jeff Layton <jlayton@kernel.org>
+Subject: [PATCH 5.17 062/158] libceph: fix potential use-after-free on linger ping and resends
+Date:   Mon, 23 May 2022 19:03:39 +0200
+Message-Id: <20220523165841.123651841@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -49,93 +48,566 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+From: Ilya Dryomov <idryomov@gmail.com>
 
-[ Upstream commit 9e7fef9521e73ca8afd7da9e58c14654b02dfad8 ]
+commit 75dbb685f4e8786c33ddef8279bab0eadfb0731f upstream.
 
-In vmxnet3_rq_alloc_rx_buf(), when dma_map_single() fails, rbi->skb is
-freed immediately. Similarly, in another branch, when dma_map_page() fails,
-rbi->page is also freed. In the two cases, vmxnet3_rq_alloc_rx_buf()
-returns an error to its callers vmxnet3_rq_init() -> vmxnet3_rq_init_all()
--> vmxnet3_activate_dev(). Then vmxnet3_activate_dev() calls
-vmxnet3_rq_cleanup_all() in error handling code, and rbi->skb or rbi->page
-are freed again in vmxnet3_rq_cleanup_all(), causing use-after-free bugs.
+request_reinit() is not only ugly as the comment rightfully suggests,
+but also unsafe.  Even though it is called with osdc->lock held for
+write in all cases, resetting the OSD request refcount can still race
+with handle_reply() and result in use-after-free.  Taking linger ping
+as an example:
 
-To fix these possible bugs, rbi->skb and rbi->page should be cleared after
-they are freed.
+    handle_timeout thread                     handle_reply thread
 
-The error log in our fault-injection testing is shown as follows:
+                                              down_read(&osdc->lock)
+                                              req = lookup_request(...)
+                                              ...
+                                              finish_request(req)  # unregisters
+                                              up_read(&osdc->lock)
+                                              __complete_request(req)
+                                                linger_ping_cb(req)
 
-[   14.319016] BUG: KASAN: use-after-free in consume_skb+0x2f/0x150
-...
-[   14.321586] Call Trace:
-...
-[   14.325357]  consume_skb+0x2f/0x150
-[   14.325671]  vmxnet3_rq_cleanup_all+0x33a/0x4e0 [vmxnet3]
-[   14.326150]  vmxnet3_activate_dev+0xb9d/0x2ca0 [vmxnet3]
-[   14.326616]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.361675] Allocated by task 351:
-...
-[   14.362688]  __netdev_alloc_skb+0x1b3/0x6f0
-[   14.362960]  vmxnet3_rq_alloc_rx_buf+0x1b0/0x8d0 [vmxnet3]
-[   14.363317]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.363661]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.367309]
-[   14.367412] Freed by task 351:
-...
-[   14.368932]  __dev_kfree_skb_any+0xd2/0xe0
-[   14.369193]  vmxnet3_rq_alloc_rx_buf+0x71e/0x8d0 [vmxnet3]
-[   14.369544]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.369883]  vmxnet3_open+0x387/0x470 [vmxnet3]
-[   14.370174]  __dev_open+0x28a/0x420
-[   14.370399]  __dev_change_flags+0x192/0x590
-[   14.370667]  dev_change_flags+0x7a/0x180
-[   14.370919]  do_setlink+0xb28/0x3570
-[   14.371150]  rtnl_newlink+0x1160/0x1740
-[   14.371399]  rtnetlink_rcv_msg+0x5bf/0xa50
-[   14.371661]  netlink_rcv_skb+0x1cd/0x3e0
-[   14.371913]  netlink_unicast+0x5dc/0x840
-[   14.372169]  netlink_sendmsg+0x856/0xc40
-[   14.372420]  ____sys_sendmsg+0x8a7/0x8d0
-[   14.372673]  __sys_sendmsg+0x1c2/0x270
-[   14.372914]  do_syscall_64+0x41/0x90
-[   14.373145]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-...
+      # req->r_kref == 2 because handle_reply still holds its ref
 
-Fixes: 5738a09d58d5a ("vmxnet3: fix checks for dma mapping errors")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Link: https://lore.kernel.org/r/20220514050656.2636588-1-r33s3n6@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    down_write(&osdc->lock)
+    send_linger_ping(lreq)
+      req = lreq->ping_req  # same req
+      # cancel_linger_request is NOT
+      # called - handle_reply already
+      # unregistered
+      request_reinit(req)
+        WARN_ON(req->r_kref != 1)  # fires
+        request_init(req)
+          kref_init(req->r_kref)
+
+                   # req->r_kref == 1 after kref_init
+
+                                              ceph_osdc_put_request(req)
+                                                kref_put(req->r_kref)
+
+            # req->r_kref == 0 after kref_put, req is freed
+
+        <further req initialization/use> !!!
+
+This happens because send_linger_ping() always (re)uses the same OSD
+request for watch ping requests, relying on cancel_linger_request() to
+unregister it from the OSD client and rip its messages out from the
+messenger.  send_linger() does the same for watch/notify registration
+and watch reconnect requests.  Unfortunately cancel_request() doesn't
+guarantee that after it returns the OSD client would be completely done
+with the OSD request -- a ref could still be held and the callback (if
+specified) could still be invoked too.
+
+The original motivation for request_reinit() was inability to deal with
+allocation failures in send_linger() and send_linger_ping().  Switching
+to using osdc->req_mempool (currently only used by CephFS) respects that
+and allows us to get rid of request_reinit().
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Acked-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/ceph/osd_client.h |    3 
+ net/ceph/osd_client.c           |  302 +++++++++++++++-------------------------
+ 2 files changed, 122 insertions(+), 183 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index d9d90baac72a..1154f1884212 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -589,6 +589,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					dev_kfree_skb_any(rbi->skb);
-+					rbi->skb = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
-@@ -613,6 +614,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					put_page(rbi->page);
-+					rbi->page = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
--- 
-2.35.1
-
+--- a/include/linux/ceph/osd_client.h
++++ b/include/linux/ceph/osd_client.h
+@@ -287,6 +287,9 @@ struct ceph_osd_linger_request {
+ 	rados_watcherrcb_t errcb;
+ 	void *data;
+ 
++	struct ceph_pagelist *request_pl;
++	struct page **notify_id_pages;
++
+ 	struct page ***preply_pages;
+ 	size_t *preply_len;
+ };
+--- a/net/ceph/osd_client.c
++++ b/net/ceph/osd_client.c
+@@ -537,43 +537,6 @@ static void request_init(struct ceph_osd
+ 	target_init(&req->r_t);
+ }
+ 
+-/*
+- * This is ugly, but it allows us to reuse linger registration and ping
+- * requests, keeping the structure of the code around send_linger{_ping}()
+- * reasonable.  Setting up a min_nr=2 mempool for each linger request
+- * and dealing with copying ops (this blasts req only, watch op remains
+- * intact) isn't any better.
+- */
+-static void request_reinit(struct ceph_osd_request *req)
+-{
+-	struct ceph_osd_client *osdc = req->r_osdc;
+-	bool mempool = req->r_mempool;
+-	unsigned int num_ops = req->r_num_ops;
+-	u64 snapid = req->r_snapid;
+-	struct ceph_snap_context *snapc = req->r_snapc;
+-	bool linger = req->r_linger;
+-	struct ceph_msg *request_msg = req->r_request;
+-	struct ceph_msg *reply_msg = req->r_reply;
+-
+-	dout("%s req %p\n", __func__, req);
+-	WARN_ON(kref_read(&req->r_kref) != 1);
+-	request_release_checks(req);
+-
+-	WARN_ON(kref_read(&request_msg->kref) != 1);
+-	WARN_ON(kref_read(&reply_msg->kref) != 1);
+-	target_destroy(&req->r_t);
+-
+-	request_init(req);
+-	req->r_osdc = osdc;
+-	req->r_mempool = mempool;
+-	req->r_num_ops = num_ops;
+-	req->r_snapid = snapid;
+-	req->r_snapc = snapc;
+-	req->r_linger = linger;
+-	req->r_request = request_msg;
+-	req->r_reply = reply_msg;
+-}
+-
+ struct ceph_osd_request *ceph_osdc_alloc_request(struct ceph_osd_client *osdc,
+ 					       struct ceph_snap_context *snapc,
+ 					       unsigned int num_ops,
+@@ -918,14 +881,30 @@ EXPORT_SYMBOL(osd_req_op_xattr_init);
+  * @watch_opcode: CEPH_OSD_WATCH_OP_*
+  */
+ static void osd_req_op_watch_init(struct ceph_osd_request *req, int which,
+-				  u64 cookie, u8 watch_opcode)
++				  u8 watch_opcode, u64 cookie, u32 gen)
+ {
+ 	struct ceph_osd_req_op *op;
+ 
+ 	op = osd_req_op_init(req, which, CEPH_OSD_OP_WATCH, 0);
+ 	op->watch.cookie = cookie;
+ 	op->watch.op = watch_opcode;
+-	op->watch.gen = 0;
++	op->watch.gen = gen;
++}
++
++/*
++ * prot_ver, timeout and notify payload (may be empty) should already be
++ * encoded in @request_pl
++ */
++static void osd_req_op_notify_init(struct ceph_osd_request *req, int which,
++				   u64 cookie, struct ceph_pagelist *request_pl)
++{
++	struct ceph_osd_req_op *op;
++
++	op = osd_req_op_init(req, which, CEPH_OSD_OP_NOTIFY, 0);
++	op->notify.cookie = cookie;
++
++	ceph_osd_data_pagelist_init(&op->notify.request_data, request_pl);
++	op->indata_len = request_pl->length;
+ }
+ 
+ /*
+@@ -2727,10 +2706,13 @@ static void linger_release(struct kref *
+ 	WARN_ON(!list_empty(&lreq->pending_lworks));
+ 	WARN_ON(lreq->osd);
+ 
+-	if (lreq->reg_req)
+-		ceph_osdc_put_request(lreq->reg_req);
+-	if (lreq->ping_req)
+-		ceph_osdc_put_request(lreq->ping_req);
++	if (lreq->request_pl)
++		ceph_pagelist_release(lreq->request_pl);
++	if (lreq->notify_id_pages)
++		ceph_release_page_vector(lreq->notify_id_pages, 1);
++
++	ceph_osdc_put_request(lreq->reg_req);
++	ceph_osdc_put_request(lreq->ping_req);
+ 	target_destroy(&lreq->t);
+ 	kfree(lreq);
+ }
+@@ -2999,6 +2981,12 @@ static void linger_commit_cb(struct ceph
+ 	struct ceph_osd_linger_request *lreq = req->r_priv;
+ 
+ 	mutex_lock(&lreq->lock);
++	if (req != lreq->reg_req) {
++		dout("%s lreq %p linger_id %llu unknown req (%p != %p)\n",
++		     __func__, lreq, lreq->linger_id, req, lreq->reg_req);
++		goto out;
++	}
++
+ 	dout("%s lreq %p linger_id %llu result %d\n", __func__, lreq,
+ 	     lreq->linger_id, req->r_result);
+ 	linger_reg_commit_complete(lreq, req->r_result);
+@@ -3022,6 +3010,7 @@ static void linger_commit_cb(struct ceph
+ 		}
+ 	}
+ 
++out:
+ 	mutex_unlock(&lreq->lock);
+ 	linger_put(lreq);
+ }
+@@ -3044,6 +3033,12 @@ static void linger_reconnect_cb(struct c
+ 	struct ceph_osd_linger_request *lreq = req->r_priv;
+ 
+ 	mutex_lock(&lreq->lock);
++	if (req != lreq->reg_req) {
++		dout("%s lreq %p linger_id %llu unknown req (%p != %p)\n",
++		     __func__, lreq, lreq->linger_id, req, lreq->reg_req);
++		goto out;
++	}
++
+ 	dout("%s lreq %p linger_id %llu result %d last_error %d\n", __func__,
+ 	     lreq, lreq->linger_id, req->r_result, lreq->last_error);
+ 	if (req->r_result < 0) {
+@@ -3053,46 +3048,64 @@ static void linger_reconnect_cb(struct c
+ 		}
+ 	}
+ 
++out:
+ 	mutex_unlock(&lreq->lock);
+ 	linger_put(lreq);
+ }
+ 
+ static void send_linger(struct ceph_osd_linger_request *lreq)
+ {
+-	struct ceph_osd_request *req = lreq->reg_req;
+-	struct ceph_osd_req_op *op = &req->r_ops[0];
++	struct ceph_osd_client *osdc = lreq->osdc;
++	struct ceph_osd_request *req;
++	int ret;
+ 
+-	verify_osdc_wrlocked(req->r_osdc);
++	verify_osdc_wrlocked(osdc);
++	mutex_lock(&lreq->lock);
+ 	dout("%s lreq %p linger_id %llu\n", __func__, lreq, lreq->linger_id);
+ 
+-	if (req->r_osd)
+-		cancel_linger_request(req);
++	if (lreq->reg_req) {
++		if (lreq->reg_req->r_osd)
++			cancel_linger_request(lreq->reg_req);
++		ceph_osdc_put_request(lreq->reg_req);
++	}
++
++	req = ceph_osdc_alloc_request(osdc, NULL, 1, true, GFP_NOIO);
++	BUG_ON(!req);
+ 
+-	request_reinit(req);
+ 	target_copy(&req->r_t, &lreq->t);
+ 	req->r_mtime = lreq->mtime;
+ 
+-	mutex_lock(&lreq->lock);
+ 	if (lreq->is_watch && lreq->committed) {
+-		WARN_ON(op->op != CEPH_OSD_OP_WATCH ||
+-			op->watch.cookie != lreq->linger_id);
+-		op->watch.op = CEPH_OSD_WATCH_OP_RECONNECT;
+-		op->watch.gen = ++lreq->register_gen;
++		osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_RECONNECT,
++				      lreq->linger_id, ++lreq->register_gen);
+ 		dout("lreq %p reconnect register_gen %u\n", lreq,
+-		     op->watch.gen);
++		     req->r_ops[0].watch.gen);
+ 		req->r_callback = linger_reconnect_cb;
+ 	} else {
+-		if (!lreq->is_watch)
++		if (lreq->is_watch) {
++			osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_WATCH,
++					      lreq->linger_id, 0);
++		} else {
+ 			lreq->notify_id = 0;
+-		else
+-			WARN_ON(op->watch.op != CEPH_OSD_WATCH_OP_WATCH);
++
++			refcount_inc(&lreq->request_pl->refcnt);
++			osd_req_op_notify_init(req, 0, lreq->linger_id,
++					       lreq->request_pl);
++			ceph_osd_data_pages_init(
++			    osd_req_op_data(req, 0, notify, response_data),
++			    lreq->notify_id_pages, PAGE_SIZE, 0, false, false);
++		}
+ 		dout("lreq %p register\n", lreq);
+ 		req->r_callback = linger_commit_cb;
+ 	}
+-	mutex_unlock(&lreq->lock);
++
++	ret = ceph_osdc_alloc_messages(req, GFP_NOIO);
++	BUG_ON(ret);
+ 
+ 	req->r_priv = linger_get(lreq);
+ 	req->r_linger = true;
++	lreq->reg_req = req;
++	mutex_unlock(&lreq->lock);
+ 
+ 	submit_request(req, true);
+ }
+@@ -3102,6 +3115,12 @@ static void linger_ping_cb(struct ceph_o
+ 	struct ceph_osd_linger_request *lreq = req->r_priv;
+ 
+ 	mutex_lock(&lreq->lock);
++	if (req != lreq->ping_req) {
++		dout("%s lreq %p linger_id %llu unknown req (%p != %p)\n",
++		     __func__, lreq, lreq->linger_id, req, lreq->ping_req);
++		goto out;
++	}
++
+ 	dout("%s lreq %p linger_id %llu result %d ping_sent %lu last_error %d\n",
+ 	     __func__, lreq, lreq->linger_id, req->r_result, lreq->ping_sent,
+ 	     lreq->last_error);
+@@ -3117,6 +3136,7 @@ static void linger_ping_cb(struct ceph_o
+ 		     lreq->register_gen, req->r_ops[0].watch.gen);
+ 	}
+ 
++out:
+ 	mutex_unlock(&lreq->lock);
+ 	linger_put(lreq);
+ }
+@@ -3124,8 +3144,8 @@ static void linger_ping_cb(struct ceph_o
+ static void send_linger_ping(struct ceph_osd_linger_request *lreq)
+ {
+ 	struct ceph_osd_client *osdc = lreq->osdc;
+-	struct ceph_osd_request *req = lreq->ping_req;
+-	struct ceph_osd_req_op *op = &req->r_ops[0];
++	struct ceph_osd_request *req;
++	int ret;
+ 
+ 	if (ceph_osdmap_flag(osdc, CEPH_OSDMAP_PAUSERD)) {
+ 		dout("%s PAUSERD\n", __func__);
+@@ -3137,19 +3157,26 @@ static void send_linger_ping(struct ceph
+ 	     __func__, lreq, lreq->linger_id, lreq->ping_sent,
+ 	     lreq->register_gen);
+ 
+-	if (req->r_osd)
+-		cancel_linger_request(req);
++	if (lreq->ping_req) {
++		if (lreq->ping_req->r_osd)
++			cancel_linger_request(lreq->ping_req);
++		ceph_osdc_put_request(lreq->ping_req);
++	}
+ 
+-	request_reinit(req);
+-	target_copy(&req->r_t, &lreq->t);
++	req = ceph_osdc_alloc_request(osdc, NULL, 1, true, GFP_NOIO);
++	BUG_ON(!req);
+ 
+-	WARN_ON(op->op != CEPH_OSD_OP_WATCH ||
+-		op->watch.cookie != lreq->linger_id ||
+-		op->watch.op != CEPH_OSD_WATCH_OP_PING);
+-	op->watch.gen = lreq->register_gen;
++	target_copy(&req->r_t, &lreq->t);
++	osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_PING, lreq->linger_id,
++			      lreq->register_gen);
+ 	req->r_callback = linger_ping_cb;
++
++	ret = ceph_osdc_alloc_messages(req, GFP_NOIO);
++	BUG_ON(ret);
++
+ 	req->r_priv = linger_get(lreq);
+ 	req->r_linger = true;
++	lreq->ping_req = req;
+ 
+ 	ceph_osdc_get_request(req);
+ 	account_request(req);
+@@ -3165,12 +3192,6 @@ static void linger_submit(struct ceph_os
+ 
+ 	down_write(&osdc->lock);
+ 	linger_register(lreq);
+-	if (lreq->is_watch) {
+-		lreq->reg_req->r_ops[0].watch.cookie = lreq->linger_id;
+-		lreq->ping_req->r_ops[0].watch.cookie = lreq->linger_id;
+-	} else {
+-		lreq->reg_req->r_ops[0].notify.cookie = lreq->linger_id;
+-	}
+ 
+ 	calc_target(osdc, &lreq->t, false);
+ 	osd = lookup_create_osd(osdc, lreq->t.osd, true);
+@@ -3202,9 +3223,9 @@ static void cancel_linger_map_check(stru
+  */
+ static void __linger_cancel(struct ceph_osd_linger_request *lreq)
+ {
+-	if (lreq->is_watch && lreq->ping_req->r_osd)
++	if (lreq->ping_req && lreq->ping_req->r_osd)
+ 		cancel_linger_request(lreq->ping_req);
+-	if (lreq->reg_req->r_osd)
++	if (lreq->reg_req && lreq->reg_req->r_osd)
+ 		cancel_linger_request(lreq->reg_req);
+ 	cancel_linger_map_check(lreq);
+ 	unlink_linger(lreq->osd, lreq);
+@@ -4653,43 +4674,6 @@ again:
+ }
+ EXPORT_SYMBOL(ceph_osdc_sync);
+ 
+-static struct ceph_osd_request *
+-alloc_linger_request(struct ceph_osd_linger_request *lreq)
+-{
+-	struct ceph_osd_request *req;
+-
+-	req = ceph_osdc_alloc_request(lreq->osdc, NULL, 1, false, GFP_NOIO);
+-	if (!req)
+-		return NULL;
+-
+-	ceph_oid_copy(&req->r_base_oid, &lreq->t.base_oid);
+-	ceph_oloc_copy(&req->r_base_oloc, &lreq->t.base_oloc);
+-	return req;
+-}
+-
+-static struct ceph_osd_request *
+-alloc_watch_request(struct ceph_osd_linger_request *lreq, u8 watch_opcode)
+-{
+-	struct ceph_osd_request *req;
+-
+-	req = alloc_linger_request(lreq);
+-	if (!req)
+-		return NULL;
+-
+-	/*
+-	 * Pass 0 for cookie because we don't know it yet, it will be
+-	 * filled in by linger_submit().
+-	 */
+-	osd_req_op_watch_init(req, 0, 0, watch_opcode);
+-
+-	if (ceph_osdc_alloc_messages(req, GFP_NOIO)) {
+-		ceph_osdc_put_request(req);
+-		return NULL;
+-	}
+-
+-	return req;
+-}
+-
+ /*
+  * Returns a handle, caller owns a ref.
+  */
+@@ -4719,18 +4703,6 @@ ceph_osdc_watch(struct ceph_osd_client *
+ 	lreq->t.flags = CEPH_OSD_FLAG_WRITE;
+ 	ktime_get_real_ts64(&lreq->mtime);
+ 
+-	lreq->reg_req = alloc_watch_request(lreq, CEPH_OSD_WATCH_OP_WATCH);
+-	if (!lreq->reg_req) {
+-		ret = -ENOMEM;
+-		goto err_put_lreq;
+-	}
+-
+-	lreq->ping_req = alloc_watch_request(lreq, CEPH_OSD_WATCH_OP_PING);
+-	if (!lreq->ping_req) {
+-		ret = -ENOMEM;
+-		goto err_put_lreq;
+-	}
+-
+ 	linger_submit(lreq);
+ 	ret = linger_reg_commit_wait(lreq);
+ 	if (ret) {
+@@ -4768,8 +4740,8 @@ int ceph_osdc_unwatch(struct ceph_osd_cl
+ 	ceph_oloc_copy(&req->r_base_oloc, &lreq->t.base_oloc);
+ 	req->r_flags = CEPH_OSD_FLAG_WRITE;
+ 	ktime_get_real_ts64(&req->r_mtime);
+-	osd_req_op_watch_init(req, 0, lreq->linger_id,
+-			      CEPH_OSD_WATCH_OP_UNWATCH);
++	osd_req_op_watch_init(req, 0, CEPH_OSD_WATCH_OP_UNWATCH,
++			      lreq->linger_id, 0);
+ 
+ 	ret = ceph_osdc_alloc_messages(req, GFP_NOIO);
+ 	if (ret)
+@@ -4855,35 +4827,6 @@ out_put_req:
+ }
+ EXPORT_SYMBOL(ceph_osdc_notify_ack);
+ 
+-static int osd_req_op_notify_init(struct ceph_osd_request *req, int which,
+-				  u64 cookie, u32 prot_ver, u32 timeout,
+-				  void *payload, u32 payload_len)
+-{
+-	struct ceph_osd_req_op *op;
+-	struct ceph_pagelist *pl;
+-	int ret;
+-
+-	op = osd_req_op_init(req, which, CEPH_OSD_OP_NOTIFY, 0);
+-	op->notify.cookie = cookie;
+-
+-	pl = ceph_pagelist_alloc(GFP_NOIO);
+-	if (!pl)
+-		return -ENOMEM;
+-
+-	ret = ceph_pagelist_encode_32(pl, 1); /* prot_ver */
+-	ret |= ceph_pagelist_encode_32(pl, timeout);
+-	ret |= ceph_pagelist_encode_32(pl, payload_len);
+-	ret |= ceph_pagelist_append(pl, payload, payload_len);
+-	if (ret) {
+-		ceph_pagelist_release(pl);
+-		return -ENOMEM;
+-	}
+-
+-	ceph_osd_data_pagelist_init(&op->notify.request_data, pl);
+-	op->indata_len = pl->length;
+-	return 0;
+-}
+-
+ /*
+  * @timeout: in seconds
+  *
+@@ -4902,7 +4845,6 @@ int ceph_osdc_notify(struct ceph_osd_cli
+ 		     size_t *preply_len)
+ {
+ 	struct ceph_osd_linger_request *lreq;
+-	struct page **pages;
+ 	int ret;
+ 
+ 	WARN_ON(!timeout);
+@@ -4915,41 +4857,35 @@ int ceph_osdc_notify(struct ceph_osd_cli
+ 	if (!lreq)
+ 		return -ENOMEM;
+ 
+-	lreq->preply_pages = preply_pages;
+-	lreq->preply_len = preply_len;
+-
+-	ceph_oid_copy(&lreq->t.base_oid, oid);
+-	ceph_oloc_copy(&lreq->t.base_oloc, oloc);
+-	lreq->t.flags = CEPH_OSD_FLAG_READ;
+-
+-	lreq->reg_req = alloc_linger_request(lreq);
+-	if (!lreq->reg_req) {
++	lreq->request_pl = ceph_pagelist_alloc(GFP_NOIO);
++	if (!lreq->request_pl) {
+ 		ret = -ENOMEM;
+ 		goto out_put_lreq;
+ 	}
+ 
+-	/*
+-	 * Pass 0 for cookie because we don't know it yet, it will be
+-	 * filled in by linger_submit().
+-	 */
+-	ret = osd_req_op_notify_init(lreq->reg_req, 0, 0, 1, timeout,
+-				     payload, payload_len);
+-	if (ret)
++	ret = ceph_pagelist_encode_32(lreq->request_pl, 1); /* prot_ver */
++	ret |= ceph_pagelist_encode_32(lreq->request_pl, timeout);
++	ret |= ceph_pagelist_encode_32(lreq->request_pl, payload_len);
++	ret |= ceph_pagelist_append(lreq->request_pl, payload, payload_len);
++	if (ret) {
++		ret = -ENOMEM;
+ 		goto out_put_lreq;
++	}
+ 
+ 	/* for notify_id */
+-	pages = ceph_alloc_page_vector(1, GFP_NOIO);
+-	if (IS_ERR(pages)) {
+-		ret = PTR_ERR(pages);
++	lreq->notify_id_pages = ceph_alloc_page_vector(1, GFP_NOIO);
++	if (IS_ERR(lreq->notify_id_pages)) {
++		ret = PTR_ERR(lreq->notify_id_pages);
++		lreq->notify_id_pages = NULL;
+ 		goto out_put_lreq;
+ 	}
+-	ceph_osd_data_pages_init(osd_req_op_data(lreq->reg_req, 0, notify,
+-						 response_data),
+-				 pages, PAGE_SIZE, 0, false, true);
+ 
+-	ret = ceph_osdc_alloc_messages(lreq->reg_req, GFP_NOIO);
+-	if (ret)
+-		goto out_put_lreq;
++	lreq->preply_pages = preply_pages;
++	lreq->preply_len = preply_len;
++
++	ceph_oid_copy(&lreq->t.base_oid, oid);
++	ceph_oloc_copy(&lreq->t.base_oloc, oloc);
++	lreq->t.flags = CEPH_OSD_FLAG_READ;
+ 
+ 	linger_submit(lreq);
+ 	ret = linger_reg_commit_wait(lreq);
 
 
