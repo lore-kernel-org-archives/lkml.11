@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDB2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09537C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244911AbiEWSMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        id S244872AbiEWSL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242219AbiEWRhZ (ORCPT
+        with ESMTP id S242302AbiEWRhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:37:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93E040A16;
-        Mon, 23 May 2022 10:31:15 -0700 (PDT)
+        Mon, 23 May 2022 13:37:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0806344C1;
+        Mon, 23 May 2022 10:31:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5BD2B81205;
-        Mon, 23 May 2022 17:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04721C385AA;
-        Mon, 23 May 2022 17:28:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E364261148;
+        Mon, 23 May 2022 17:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA945C36AE3;
+        Mon, 23 May 2022 17:28:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326925;
-        bh=DSR1P9eMEbqr022sQ4Ij9ftumFVsISbPwh2VF5Wpa1A=;
+        s=korg; t=1653326906;
+        bh=uve6lQG0Rs3spEl1DAnzTI4/k9kptoBOUPHVS5a98SY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TO9V08fjKWr/xwUGCk75DkAkjA1uykf1WguxQ1KJkPYPJrcZzkugajDHG52bTM3fn
-         40C8aA5RcFv5yVlUB7qdGQVRJY0UPhFSv0+ExxT83nToXK/dnwqh8tOx17ykDaQXDR
-         K5yVue073/5+5rGZRtvHMp8qmNO3lWT3BBkqrbWU=
+        b=LR6xZwlRFcOEYFCS9+sHfqD7tl6TGV6QRYcCKEIvzOsY1tY4l7TLMl2BEu9JroU1W
+         7BHs1QuVlvGeXxx/YHbz8LvFc7cIFlGRt4XUd8rLIJpVR88QD3C+sE6nzoWdNwHDCk
+         cwRat+uEoHC9RTxzLhQpjc4N7DVJESmQp4lzQ0K0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Vladimir Murzin <vladimir.murzin@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Price <steven.price@arm.com>
-Subject: [PATCH 5.17 059/158] arm64: mte: Ensure the cleared tags are visible before setting the PTE
-Date:   Mon, 23 May 2022 19:03:36 +0200
-Message-Id: <20220523165840.601102547@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 5.17 063/158] drm/amd: Dont reset dGPUs if the system is going to s2idle
+Date:   Mon, 23 May 2022 19:03:40 +0200
+Message-Id: <20220523165841.302682275@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,41 +48,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Catalin Marinas <catalin.marinas@arm.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 1d0cb4c8864addc362bae98e8ffa5500c87e1227 upstream.
+commit 7123d39dc24dcd21ff23d75f46f926b15269b9da upstream.
 
-As an optimisation, only pages mapped with PROT_MTE in user space have
-the MTE tags zeroed. This is done lazily at the set_pte_at() time via
-mte_sync_tags(). However, this function is missing a barrier and another
-CPU may see the PTE updated before the zeroed tags are visible. Add an
-smp_wmb() barrier if the mapping is Normal Tagged.
+An A+A configuration on ASUS ROG Strix G513QY proves that the ASIC
+reset for handling aborted suspend can't work with s2idle.
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Fixes: 34bfeea4a9e9 ("arm64: mte: Clear the tags when a page is mapped in user-space with PROT_MTE")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Reported-by: Vladimir Murzin <vladimir.murzin@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Tested-by: Vladimir Murzin <vladimir.murzin@arm.com>
-Link: https://lore.kernel.org/r/20220517093532.127095-1-catalin.marinas@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+This functionality was introduced in commit daf8de0874ab5b ("drm/amdgpu:
+always reset the asic in suspend (v2)").  A few other commits have
+gone on top of the ASIC reset, but this still doesn't work on the A+A
+configuration in s2idle.
+
+Avoid doing the reset on dGPUs specifically when using s2idle.
+
+Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2008
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/mte.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h      |    2 ++
+ drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c |   14 ++++++++++++++
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c  |    2 +-
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/mte.c
-+++ b/arch/arm64/kernel/mte.c
-@@ -76,6 +76,9 @@ void mte_sync_tags(pte_t old_pte, pte_t
- 			mte_sync_page_tags(page, old_pte, check_swap,
- 					   pte_is_tagged);
- 	}
-+
-+	/* ensure the tags are visible before the PTE is set */
-+	smp_wmb();
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+@@ -1422,9 +1422,11 @@ static inline int amdgpu_acpi_smart_shif
+ 
+ #if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
+ bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev);
++bool amdgpu_acpi_should_gpu_reset(struct amdgpu_device *adev);
+ bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
+ #else
+ static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
++static inline bool amdgpu_acpi_should_gpu_reset(struct amdgpu_device *adev) { return false; }
+ static inline bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev) { return false; }
+ #endif
+ 
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+@@ -1046,6 +1046,20 @@ bool amdgpu_acpi_is_s3_active(struct amd
  }
  
- int memcmp_pages(struct page *page1, struct page *page2)
+ /**
++ * amdgpu_acpi_should_gpu_reset
++ *
++ * @adev: amdgpu_device_pointer
++ *
++ * returns true if should reset GPU, false if not
++ */
++bool amdgpu_acpi_should_gpu_reset(struct amdgpu_device *adev)
++{
++	if (adev->flags & AMD_IS_APU)
++		return false;
++	return pm_suspend_target_state != PM_SUSPEND_TO_IDLE;
++}
++
++/**
+  * amdgpu_acpi_is_s0ix_active
+  *
+  * @adev: amdgpu_device_pointer
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2289,7 +2289,7 @@ static int amdgpu_pmops_suspend_noirq(st
+ 	struct drm_device *drm_dev = dev_get_drvdata(dev);
+ 	struct amdgpu_device *adev = drm_to_adev(drm_dev);
+ 
+-	if (!adev->in_s0ix)
++	if (amdgpu_acpi_should_gpu_reset(adev))
+ 		return amdgpu_asic_reset(adev);
+ 
+ 	return 0;
 
 
