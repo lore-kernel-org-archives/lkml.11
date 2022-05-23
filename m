@@ -2,132 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C37BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB36C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 13:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236524AbiEWNpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 09:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
+        id S236544AbiEWNpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 09:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236464AbiEWNpg (ORCPT
+        with ESMTP id S236493AbiEWNpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 09:45:36 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2049.outbound.protection.outlook.com [40.107.223.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB4955363;
-        Mon, 23 May 2022 06:45:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NEe+cxWulmnFxC8vYId8KKQFfEJ9HYG8i0LAJEZbc3HCmlwogw0XBC5IHs2p9LmO7bdTxGgpGIUFutqeLykxnl/afdakMApG2jEPSJymKoeRZSuwfy0TaMQkQiasCn1GVDbJCByPHi/0IxTX/OLq2M2HcdNkNd7EyBBaz/kUi/8yNIJdS8eiQLQ8gZZXN7W3ZWiPuAx7vzDDGeH4oMzlWYKChpqgRP88kGL10QQvGbUpK6PPo5ckml3UXavc+hs36QtKLOgyU43+alh9hMV3nDeO/q4h1lGMjYaC2crB5wqqMk977hIicUbVkMB53hvD4Q4pR7A44t5yJGSdDljNFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m0SuB7HGd7fqPsSH+bLG7zb4karOvuz+JyBZtFtk/xE=;
- b=WMwkrVNNZIqf87/Q7mYNt16uEmXvKcLV8T+DYTKbZAH5/fau9z/Bx0yQTnEQ74tAeAZWrx5OHDsVLFBrT6UM3iXk5ABR8hE+JozI6YL2z1TAm45f9fPhyGbZ9ei/mQqyvk9NWRxsLbl6A1a+6FZVtcwpLyPfrfqiqXvXjIKn8eRr48RT9E3kZ4GsNWYbgB5V6u6Sl7JAIYMvpZv4ICz2WJDyPuzFSnkGkvYrvJQoytw0AoJiUxrwh330n5k/rzGfE4yeqimpmYJ0BQAksx7x9gixDNJVoXmdFSseZFi4EWor1MZVOKs4H0tGVBBfMGLqWbS8fCSWdofKvnp7vQ8Xxg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Mon, 23 May 2022 09:45:38 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0B45537B
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:45:36 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id l13so19004127lfp.11
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 06:45:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m0SuB7HGd7fqPsSH+bLG7zb4karOvuz+JyBZtFtk/xE=;
- b=DbPRr/7Pi2lQjMTjKcE1y2mZXhp7KHhZkugb2QHxZpC6dP6sP2p/AavXUqja37/EGTEyHLEv9Cp4iyOJk4arEBi2Y8oG3ccfMsjU9bDYsmORhSl6V9lfSja0zGZ5Rj93LqdeGaRWl0Ujq8rnVooozZB5OrqcVwvGHCSnwF1ApV4=
-Received: from SN7PR04CA0163.namprd04.prod.outlook.com (2603:10b6:806:125::18)
- by MN2PR02MB5773.namprd02.prod.outlook.com (2603:10b6:208:11a::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Mon, 23 May
- 2022 13:45:33 +0000
-Received: from SN1NAM02FT0046.eop-nam02.prod.protection.outlook.com
- (2603:10b6:806:125:cafe::10) by SN7PR04CA0163.outlook.office365.com
- (2603:10b6:806:125::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14 via Frontend
- Transport; Mon, 23 May 2022 13:45:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0046.mail.protection.outlook.com (10.97.5.4) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5273.14 via Frontend Transport; Mon, 23 May 2022 13:45:33 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Mon, 23 May 2022 06:45:27 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Mon, 23 May 2022 06:45:27 -0700
-Envelope-to: git@xilinx.com,
- mdf@kernel.org,
- hao.wu@intel.com,
- yilun.xu@intel.com,
- trix@redhat.com,
- robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org,
- linux-fpga@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-Received: from [10.140.6.60] (port=57798 helo=xhdnavam40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <nava.manne@xilinx.com>)
-        id 1nt8NC-000GwK-OF; Mon, 23 May 2022 06:45:27 -0700
-From:   Nava kishore Manne <nava.manne@xilinx.com>
-To:     <mdf@kernel.org>, <hao.wu@intel.com>, <yilun.xu@intel.com>,
-        <trix@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <michal.simek@xilinx.com>,
-        <nava.manne@xilinx.com>, <linux-fpga@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <git@xilinx.com>
-Subject: [PATCH v2 0/3]Enable PM generic domain support
-Date:   Mon, 23 May 2022 19:15:14 +0530
-Message-ID: <20220523134517.4056873-1-nava.manne@xilinx.com>
-X-Mailer: git-send-email 2.25.1
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zc+H13M7Untcjwr72zICcQjR3S3/6AC2C3IvRsS1YwE=;
+        b=z8izSdPl0Mu0tqiQDCU131vyaSxZTaquXhrE1uVwkbEE8mczLsr8wjL8/+YYtgKxIy
+         QNYcFlVBCUPUH7rRRGQUGcdiQss40NqB1QxOCvv/+3RZkr0xBNt5zafpeBpj4/UGIaa9
+         Bx+MN+htpLYPg4i8ASbECiSSSiokzLbPte2Cclf/rMOjuuYsH/TJIMNL4iOCUueEowQr
+         qNsiZhJBxTBysmCTSxJw1jp8R051VVOf6ppv+wESpZqyMpF6FkZe304dAvZNJWXfMVSm
+         QtZapxr3CD9mw8T8vWcJS5PTt9Dvj9BHU2idrV8uSN3DzfMsrgpmdrwoOjEbmP2t9DWF
+         PUdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zc+H13M7Untcjwr72zICcQjR3S3/6AC2C3IvRsS1YwE=;
+        b=0QN6l2CWJI1ir+tOA09xU4MYJl70z37i+sG53D6UPkp1Gus697IsMBwBKN5Ys1q48b
+         twn+Yymi0HTA1kb3LbELmEDMJ6Vx0SETeCw4CRj5iRrfPa0udqRIHr4/FTKY4azbebHm
+         aXUm6+/gempiFabJtPigR47Rc3jx2BG4Bk4YiRwk4SzwFmdQAi9E1FPCRJdoziqAya2h
+         O2pKbr6fI6GTaN86l2WGth44jX2D8wXcqAZ5srUkw7ceROxcEf5EWOpzVfEwECubk9nd
+         s7oUHMBOQiQO2d05CGIcCy6WUYOfZsNo3cXyoQfJ0jlFX0ic/8gtpCArI6C3ShBR+vbV
+         UWww==
+X-Gm-Message-State: AOAM532J34rjXGFV4iHgohqAhcO6Xz6annQqxj+dF/1BGOPtfFoV7O4o
+        ANAuz1g6P3xh0oyECSPcRv7/jg==
+X-Google-Smtp-Source: ABdhPJxvtrvCzlWyYIRa7RH0L8nWT5DlujuzYkpsoahxhweS6xiwwYRH8VmTez+Udy3bnTWkvO6fUQ==
+X-Received: by 2002:ac2:41cf:0:b0:478:69ce:f6ed with SMTP id d15-20020ac241cf000000b0047869cef6edmr5795048lfi.186.1653313535162;
+        Mon, 23 May 2022 06:45:35 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id a4-20020ac25204000000b00477a1b603basm1987170lfl.98.2022.05.23.06.45.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 06:45:34 -0700 (PDT)
+Message-ID: <661ebb3d-f1c1-1a6a-8723-4d3dff2b92b4@linaro.org>
+Date:   Mon, 23 May 2022 15:45:32 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3954124e-7a71-40c4-5ede-08da3cc2823a
-X-MS-TrafficTypeDiagnostic: MN2PR02MB5773:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR02MB57739CB46E054C16DA49F79DC2D49@MN2PR02MB5773.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sizSRSGWn8WbWEDh8rxmFLW4/+SS5sSBmPWlZwQ/REVN7fUK/Y/MQUtQrtSPMPcfCgMZ1Ic+iM3L/az0SZ7j3EjmAC4n0nT5P0s62GXeZWuirOD/1yq8jgHWmdOinNERnlbrovY//kYhEjRw6MjfRkZ9gaV85fpdCBauEAjQe/DJ6rKkE7TilWHxyvFpmsEgf2SZp3K8djEKe7u1dcocurik0vsnOuOtB3E38A20BDaTYfxBjICs9XWRIaQqX+RdNcEXn48XFhVuo11FvkNqcsV55GJj9F6P6eH/vZKImx1jz9O79YFyNpVh7bW960W1F4e5Y8GgJNgR3JkqHQglKk5L8PAs0UHaAkKv2K8YxBqjBYTJbm1i+pXBM3KUdyFeFvNRnatkUQc9Uf0PtzKLS6PQZDZWBqOy64ktH3Rab9O5Flohy6cPmv1CsEesc1EP6yOXsVbm98QQiQFbqbUDjMTo20DX9asttybGGZU59vvKy6mNu2f85BwCHpL9Q7alwDcuuYdk8OADjCKrUJT7ZZh1/DWykADz544C62py3+mgmMwdSO29p2b1B4jk1F4k4qX4dPdyIWD0PJL5J8LDIfUmV1o3/UQotSVdJRPq1wNm4zVhO7K16S2YBgRpcF3yDh6XTcMerdXTY+DQ4WsziX2GEsy5Y/GRj2DIuhrt5xElhaqJsjmm0TvBg7e18Hgn/H9/j3SAyIbdxiovt56LArRNqXGwE+FcUNaRZr86bO4WuCCd1X7KM+DU4LUTb9ywr574UfRz96DKFjvV/quX6BHdHuu6jBP9UJDQ2j5vJxM=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(9786002)(8676002)(26005)(8936002)(316002)(82310400005)(70586007)(70206006)(7636003)(186003)(336012)(36756003)(47076005)(426003)(40460700003)(7696005)(36860700001)(2906002)(6666004)(508600001)(356005)(921005)(1076003)(110136005)(7416002)(4744005)(2616005)(6636002)(5660300002)(102446001)(41533002)(2101003)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 May 2022 13:45:33.1750
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3954124e-7a71-40c4-5ede-08da3cc2823a
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0046.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB5773
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v1 09/19] dt-bindings: reset: add syscon property
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>, catalin.marinas@arm.com,
+        will@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>, jirislaby@kernel.org,
+        shawnguo@kernel.org, bjorn.andersson@linaro.org,
+        geert+renesas@glider.be, marcel.ziswiler@toradex.com,
+        Vinod Koul <vkoul@kernel.org>, biju.das.jz@bp.renesas.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, robert.hancock@calian.com,
+        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        lkundrak@v3.sk, soc@kernel.org,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <20220522155046.260146-1-tmaimon77@gmail.com>
+ <20220522155046.260146-10-tmaimon77@gmail.com>
+ <d02b042c-7f6e-8d2b-a5eb-c7ac4a0eea7d@linaro.org>
+ <CAP6Zq1gGZguC9h4A6KL8x1QLf3MAZvvBiA2nmcK_4PS7AdNa+Q@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAP6Zq1gGZguC9h4A6KL8x1QLf3MAZvvBiA2nmcK_4PS7AdNa+Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds support to handle FPGA/PL power Domain to optimize the PL power
-consumption.
+On 23/05/2022 15:44, Tomer Maimon wrote:
+> On Mon, 23 May 2022 at 10:39, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org <mailto:krzysztof.kozlowski@linaro.org>>
+> wrote:
+> 
+>     On 22/05/2022 17:50, Tomer Maimon wrote:
+>     > Describe syscon property that handles GCR registers
+>     > in Nuvoton BMC NPCM reset driver.
+> 
+>     Please wrap according to Linux standards:
+>     https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/process/submitting-patches.rst#L586
+>     <https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/process/submitting-patches.rst#L586>
+> 
+> Which problem do you see with the commit explanation body?
 
-Changes for v2:
-              -Rebased the patch series on 5.18v
+It is wrapped not according to Linux standards.
 
-Nava kishore Manne (3):
-  dt-bindings: zynqmp: Add new PD_PL macro
-  fpga: region: Add fpga-region 'power-domains' property
-  fpga: region: Add runtime PM support
 
- .../devicetree/bindings/fpga/fpga-region.txt       | 14 ++++++++++++++
- drivers/fpga/of-fpga-region.c                      | 14 ++++++++++++++
- include/dt-bindings/power/xlnx-zynqmp-power.h      |  1 +
- 3 files changed, 29 insertions(+)
 
--- 
-2.25.1
-
+Best regards,
+Krzysztof
