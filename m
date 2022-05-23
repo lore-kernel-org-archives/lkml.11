@@ -2,91 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B15A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B51F6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiEWITL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
+        id S230168AbiEWIWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231758AbiEWITJ (ORCPT
+        with ESMTP id S229851AbiEWIWu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:19:09 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9FD513FB3
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:19:02 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-35-yelfvzMZOpeqA2HWpRXpXQ-1; Mon, 23 May 2022 09:18:59 +0100
-X-MC-Unique: yelfvzMZOpeqA2HWpRXpXQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Mon, 23 May 2022 09:18:59 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Mon, 23 May 2022 09:18:59 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jens Axboe' <axboe@kernel.dk>,
-        "'Jason A. Donenfeld'" <Jason@zx2c4.com>
-CC:     "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] fs: prefer read_iter over read and write_iter over write
-Thread-Topic: [PATCH] fs: prefer read_iter over read and write_iter over write
-Thread-Index: AQHYbFCwvu9LSlrdFk+NviNR2+4IRK0nyjDggABuI4CAABnZcP//82QAgAPZ0QA=
-Date:   Mon, 23 May 2022 08:18:59 +0000
-Message-ID: <ec2a3eb465d244338b922f50ff5f7fd4@AcuMS.aculab.com>
-References: <20220520135103.166972-1-Jason@zx2c4.com>
- <39ed6917f2e64a07bad8dad63f8dceb4@AcuMS.aculab.com>
- <YogIg9FG7C/f98bf@zx2c4.com>
- <0da16e16caed4282ae97a86f1ba6f6db@AcuMS.aculab.com>
- <471e5654-49d7-9023-62b4-fc98483b1d89@kernel.dk>
-In-Reply-To: <471e5654-49d7-9023-62b4-fc98483b1d89@kernel.dk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 23 May 2022 04:22:50 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3AD2314A
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:22:50 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id a13so1912431plh.6
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:22:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W+44BSSlN1XE65CChHOFpA2+bmaSayBXAi8yg7sU14k=;
+        b=Q2TUZwWb3O8USHfgIO9tS+qDCKQ4aHCFf5zVdpZ4kZL/ae6pcScOhVImdn+XIsDcvj
+         kF8PDjhYBd9Ql4uU/PgJb0rtPsN5CZTjI/FBvXaDrgt1BSctQlerLchZPIZ0UIVfPvWW
+         gEK/YC/JXT+hRjEiaupO7Dk9pghVmeLndrcGo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W+44BSSlN1XE65CChHOFpA2+bmaSayBXAi8yg7sU14k=;
+        b=T2aGcTjrZ56dnLRhYr1aUZaVlAtuEf1sb2q1PpCecARS97leJKG59TzSR448oaWwmO
+         ao1vPScnvuXqWxUZRh+hYVfxveGLBYuIxRxIZLnux2DAYjugQ5rnUvhA/PHbsJJsPuxf
+         w2Pr8MpGPOhhxmBBbAOME0mDeUhr4kENEa+I8qTOGJcpXm5jSp5nzMGvduqa9eCpmDL5
+         nGuPFqHIzpRtTbqpI1VdUY2MscWzLjFYF1mE2+nbuo8VaZR0kvUP7Q2E9mNCcJf1i21O
+         HG7KgZHVyZuaX37lTxpucBEuQ20uGwWR01BGtTOoleC/QUt4UEmT5mzXWAVloylcNhb/
+         ewFQ==
+X-Gm-Message-State: AOAM533rJl3EM6MCAK1uHBfmsfEs8ipP9Mxy8+soYA7ccAixLpzeK69Y
+        Mxkf7AkGB5LXSxHc/kdqNs2MMA==
+X-Google-Smtp-Source: ABdhPJzHXp4n75/dUnjS1z28pKIVVr4s/o0CZ70SogSxK0Bf83YapNMXVetV8ByWrj7BP/CYF/FRBQ==
+X-Received: by 2002:a17:90b:1808:b0:1e0:4dbc:8781 with SMTP id lw8-20020a17090b180800b001e04dbc8781mr4230775pjb.58.1653294169493;
+        Mon, 23 May 2022 01:22:49 -0700 (PDT)
+Received: from treapking.tpe.corp.google.com ([2401:fa00:1:10:1547:329:6bd:3965])
+        by smtp.gmail.com with ESMTPSA id t13-20020a63b24d000000b003fa321e9463sm2277982pgo.58.2022.05.23.01.22.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 01:22:48 -0700 (PDT)
+From:   Pin-Yen Lin <treapking@chromium.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Pin-Yen Lin <treapking@chromium.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v2] arm64: dts: mt8173: Fix elm panel DT node
+Date:   Mon, 23 May 2022 16:22:39 +0800
+Message-Id: <20220523162235.v2.1.I8f6449d46305a0e89845cf191e10c042736a1688@changeid>
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogSmVucyBBeGJvZQ0KPiBTZW50OiAyMCBNYXkgMjAyMiAyMzoxOA0KPiANCj4gT24gNS8y
-MC8yMiA0OjA4IFBNLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4+ICAgIGh0dHBzOi8vbG9yZS5r
-ZXJuZWwub3JnL2xrbWwvWW9leStGT1lPNjlsUzVxUEB6eDJjNC5jb20vDQo+ID4+DQo+ID4+IFRo
-ZSBob3BlIGlzIHRoYXQgaXQgZXZlbnR1YWxseSBiZWNvbWVzIGZhc3Rlci4uLiA6LVwNCj4gPg0K
-PiA+IEkgc3VzcGVjdCBhbGwgdGhlIHh4eF9pdGVyIGZ1bmN0aW9ucyBuZWVkIG9wdGltaXNpbmcg
-Zm9yDQo+ID4gdGhlIGNvbW1vbiBjYXNlIG9mIGEgc2luZ2xlIGJ1ZmZlciBpbiB1c2Vyc3BhY2Uu
-DQo+ID4NCj4gPiBUaGF0IGFsc28gaW5jbHVkZXMgdGhlIGNvZGUgdG8gcmVhZCB0aGUgaW92W10g
-ZnJvbSB1c2VzcGFjZS4NCj4gPiBBdCB0aGUgbW9tZW50IEkgdGhpbmsgdGhlIDMyYml0IGNvbXBh
-dCBjb2RlIGlzIGFjdHVhbGx5DQo+ID4gZmFzdGVyIHRoYW4gdGhlIG5hdGl2ZSBhbWQ2NCB2ZXJz
-aW9uIQ0KPiA+IEkndmUgd3JpdHRlbiBzb21lIHBhdGNoZXMgdG8gc3BlZWQgdGhhdCB1cC4NCj4g
-PiBCdXQgdGhlIGJpZ2dlciBpbXByb3ZlbWVudHMgYWxsIGhpdCBtYXNzaXZlIGNoYW5nZXMNCj4g
-PiB0byB0aGUgaW9yaW5nIGNvZGUuDQo+IA0KPiBEbyB5b3UgaGF2ZSBhIGxpbmsgdG8gdGhvc2Ug
-cGF0Y2hlcz8gSSBjYW4gY2VydGFpbmx5IGhlbHAgd2l0aCB0aGUNCj4gaW9fdXJpbmcgc2lkZSBv
-ZiB0aGluZ3MsIGFuZCBJIGhhdmUgYSBnZW51aW5lIGludGVyZXN0IGluIGltcHJvdmluZyB0aGUN
-Cj4gY29yZSBhbmQgZ2V0dGluZyB0aGUgaXRlciBzaWRlIHVwIHRvIHNudWZmLg0KDQpJJ2xsIHNl
-ZSBpZiBJIGNhbiBmaW5kIHRoZW0uDQpTb21lIGJpdHMgb2YgdGhlIGxhc3QgcGF0Y2ggc2V0IGRp
-ZCBnZXQgYXBwbGllZC4NCg0KT25lIGFpbSB3YXMgdG8gY2hhbmdlIGFsbCB0aGUgY2FsbGVycyBv
-ZiBpbXBvcnRfaW92ZWMoKQ0KdG8gdXNlIGEgc3RydWN0dXJlIHRoYW4gY29udGFpbmVkIGJvdGgg
-dGhlICdpb3ZfaXRlcicgYW5kDQp0aGUgJ2lvdnN0YWNrW10nLg0KVGhlIGxpZmV0aW1lcyBvZiB0
-aGUgdHdvIHN0cnVjdHVyZXMgYXJlIGVmZmVjdGl2ZWx5IGlkZW50aWNhbC4NCnVzdWFsbHkgdGhl
-eSBhcmUgYm90aCBhbGxvY2F0ZWQgb24gc3RhY2sgdG9nZXRoZXIuDQoNCk1lcmdpbmcgdGhlbSB3
-b3VsZCBzaWduaWZpY2FudGx5IHNpbXBsaWZ5IHRoZSBjYWxsZXJzDQphbmQgcmVkdWNlIHRoZSBu
-dW1iZXIgb2YgcGFyYW1ldGVycyBwYXNzZWQgdGhyb3VnaA0KbXVsdGlwbGUgbGF5ZXJzIG9mIGZ1
-bmN0aW9ucyAtIGVzcGVjaWFsbHkgcG9pbnRlcnMNCnBhc3NlZCBieSB2YWx1ZS4NCg0KVGhhdCBj
-aGFuZ2UgbmVlZHMgd29yayBkb25lIHRvIHRoZSBpb191cmluZyBjb2RlIHRvIHNhbml0aXNlDQp0
-aGUgd2F5IGl0IHVzZXMgdGhlIGlvdnN0YWNrW10gY2FjaGUgYW5kIGFueSBleHRlbmRlZCBrbWFs
-bG9jKCllZA0KY29weS4NCg0KSSBuZWVkIHRvIGxvb2sgZWxzZXdoZXJlIGZvciB0aGUgb3B0aW1p
-c2F0aW9uIHRvIGltcG9ydF9pb3ZlYygpDQppdHNlbGYuDQoNCglEYXZpZA0KDQotDQpSZWdpc3Rl
-cmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtl
-eW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+Move the panel DT node under `aux-bus` node so it won't use the buggy
+`ps8640_bridge_get_edid` to get display modes. Also change the
+compatible string to "edp-panel" because the predefined
+`lg_lp129qe_mode` is not working.
+
+Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
+---
+
+Changes in v2:
+- Remove the Fixes tag because this change is not compatible with the
+  old kernel versions.
+
+ arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi | 26 +++++++++++---------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+index 9c75fbb31f98..1e0802a6f6d2 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+@@ -90,18 +90,6 @@ volume_up {
+ 		};
+ 	};
+ 
+-	panel: panel {
+-		compatible = "lg,lp120up1";
+-		power-supply = <&panel_fixed_3v3>;
+-		backlight = <&backlight>;
+-
+-		port {
+-			panel_in: endpoint {
+-				remote-endpoint = <&ps8640_out>;
+-			};
+-		};
+-	};
+-
+ 	panel_fixed_3v3: regulator1 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "PANEL_3V3";
+@@ -282,6 +270,20 @@ ps8640_out: endpoint {
+ 				};
+ 			};
+ 		};
++
++		aux-bus {
++			panel {
++				compatible = "edp-panel";
++				power-supply = <&panel_fixed_3v3>;
++				backlight = <&backlight>;
++
++				port {
++					panel_in: endpoint {
++						remote-endpoint = <&ps8640_out>;
++					};
++				};
++			};
++		};
+ 	};
+ };
+ 
+-- 
+2.36.1.124.g0e6072fb45-goog
 
