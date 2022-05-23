@@ -2,160 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A54DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D66C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239515AbiEWRHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
+        id S239528AbiEWRHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239362AbiEWRFe (ORCPT
+        with ESMTP id S239367AbiEWRFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:05:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA1A6A00B;
-        Mon, 23 May 2022 10:05:33 -0700 (PDT)
+        Mon, 23 May 2022 13:05:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB316A000;
+        Mon, 23 May 2022 10:05:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55F7EB811FF;
-        Mon, 23 May 2022 17:05:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A937C385A9;
-        Mon, 23 May 2022 17:05:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4ACC614BF;
+        Mon, 23 May 2022 17:05:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92325C385A9;
+        Mon, 23 May 2022 17:05:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325531;
-        bh=zYoEAuG7T1IJT9ORyXFzI/OzkrxrXXS7zJLLwA1ClJ0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MfRyEhY+b/EwofplcqdcoIo4mU9a4VC4tVG2BXACgR6TYqDeeYUaBcPPxvSM2Vm/1
-         pWk4pg5eShZjdMWIJD25bqQZ3fctWTakpzTGc0RTTrX50ILzXAkzs41Xddm/vqCM+J
-         cBQlpTsLlceeFmYIUZzb3tsnLlJGePo98IUQpOXc=
+        s=korg; t=1653325534;
+        bh=yxudxAP5vXJv5jR8c6g73YNgGDBzANxhBZMt3vtI50Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=yBCcZ4olayIzrREjQ0ladhRyAX7JcSLXWx303d1i4yHrySZjp8/ShptXvx4OfedpC
+         48GduI4AtDspkE+2mDexzuwUopPxh1E7dNE9LIXNgGCeiPEMT8V8yiVBkhozKUYP+1
+         0s6+SPcPKvJMlxEAz59gufMmpOqbERMTQ2j6ppPI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Minh Yuan <yuanmingbuaa@gmail.com>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        Denis Efremov <efremov@linux.com>, Willy Tarreau <w@1wt.eu>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 01/33] floppy: use a statically allocated error counter
-Date:   Mon, 23 May 2022 19:04:50 +0200
-Message-Id: <20220523165747.263416790@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.14 00/33] 4.14.281-rc1 review
+Date:   Mon, 23 May 2022 19:04:49 +0200
+Message-Id: <20220523165746.957506211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165746.957506211@linuxfoundation.org>
-References: <20220523165746.957506211@linuxfoundation.org>
+MIME-Version: 1.0
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-MIME-Version: 1.0
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.281-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.14.281-rc1
+X-KernelTest-Deadline: 2022-05-25T16:59+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+This is the start of the stable review cycle for the 4.14.281 release.
+There are 33 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit f71f01394f742fc4558b3f9f4c7ef4c4cf3b07c8 upstream.
+Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
+Anything received after that time might be too late.
 
-Interrupt handler bad_flp_intr() may cause a UAF on the recently freed
-request just to increment the error count.  There's no point keeping
-that one in the request anyway, and since the interrupt handler uses a
-static pointer to the error which cannot be kept in sync with the
-pending request, better make it use a static error counter that's reset
-for each new request.  This reset now happens when entering
-redo_fd_request() for a new request via set_next_request().
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.281-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+and the diffstat can be found below.
 
-One initial concern about a single error counter was that errors on one
-floppy drive could be reported on another one, but this problem is not
-real given that the driver uses a single drive at a time, as that
-PC-compatible controllers also have this limitation by using shared
-signals.  As such the error count is always for the "current" drive.
+thanks,
 
-Reported-by: Minh Yuan <yuanmingbuaa@gmail.com>
-Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
-Tested-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/block/floppy.c |   17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+greg k-h
 
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -516,8 +516,8 @@ static unsigned long fdc_busy;
- static DECLARE_WAIT_QUEUE_HEAD(fdc_wait);
- static DECLARE_WAIT_QUEUE_HEAD(command_done);
- 
--/* Errors during formatting are counted here. */
--static int format_errors;
-+/* errors encountered on the current (or last) request */
-+static int floppy_errors;
- 
- /* Format request descriptor. */
- static struct format_descr format_req;
-@@ -537,7 +537,6 @@ static struct format_descr format_req;
- static char *floppy_track_buffer;
- static int max_buffer_sectors;
- 
--static int *errors;
- typedef void (*done_f)(int);
- static const struct cont_t {
- 	void (*interrupt)(void);
-@@ -1426,7 +1425,7 @@ static int interpret_errors(void)
- 			if (DP->flags & FTD_MSG)
- 				DPRINT("Over/Underrun - retrying\n");
- 			bad = 0;
--		} else if (*errors >= DP->max_errors.reporting) {
-+		} else if (floppy_errors >= DP->max_errors.reporting) {
- 			print_errors();
- 		}
- 		if (ST2 & ST2_WC || ST2 & ST2_BC)
-@@ -2049,7 +2048,7 @@ static void bad_flp_intr(void)
- 		if (!next_valid_format())
- 			return;
- 	}
--	err_count = ++(*errors);
-+	err_count = ++floppy_errors;
- 	INFBOUND(DRWE->badness, err_count);
- 	if (err_count > DP->max_errors.abort)
- 		cont->done(0);
-@@ -2194,9 +2193,8 @@ static int do_format(int drive, struct f
- 		return -EINVAL;
- 	}
- 	format_req = *tmp_format_req;
--	format_errors = 0;
- 	cont = &format_cont;
--	errors = &format_errors;
-+	floppy_errors = 0;
- 	ret = wait_til_done(redo_format, true);
- 	if (ret == -EINTR)
- 		return -EINTR;
-@@ -2679,7 +2677,7 @@ static int make_raw_rw_request(void)
- 		 */
- 		if (!direct ||
- 		    (indirect * 2 > direct * 3 &&
--		     *errors < DP->max_errors.read_track &&
-+		     floppy_errors < DP->max_errors.read_track &&
- 		     ((!probing ||
- 		       (DP->read_track & (1 << DRS->probed_format)))))) {
- 			max_size = blk_rq_sectors(current_req);
-@@ -2813,7 +2811,7 @@ static int set_next_request(void)
- 		if (q) {
- 			current_req = blk_fetch_request(q);
- 			if (current_req) {
--				current_req->error_count = 0;
-+				floppy_errors = 0;
- 				break;
- 			}
- 		}
-@@ -2875,7 +2873,6 @@ do_request:
- 		_floppy = floppy_type + DP->autodetect[DRS->probed_format];
- 	} else
- 		probing = 0;
--	errors = &(current_req->error_count);
- 	tmp = make_raw_rw_request();
- 	if (tmp < 2) {
- 		request_done(tmp);
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.14.281-rc1
+
+Linus Torvalds <torvalds@linux-foundation.org>
+    Reinstate some of "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
+
+Halil Pasic <pasic@linux.ibm.com>
+    swiotlb: fix info leak with DMA_FROM_DEVICE
+
+Grant Grundler <grundler@chromium.org>
+    net: atlantic: verify hw_head_ lies within TX buffer ring
+
+Yang Yingliang <yangyingliang@huawei.com>
+    net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
+
+Yang Yingliang <yangyingliang@huawei.com>
+    ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+
+Felix Fietkau <nbd@nbd.name>
+    mac80211: fix rx reordering with non explicit / psmp ack policy
+
+Gleb Chesnokov <Chesnokov.G@raidix.com>
+    scsi: qla2xxx: Fix missed DMA unmap for aborted commands
+
+Thomas Richter <tmricht@linux.ibm.com>
+    perf bench numa: Address compiler error on s390
+
+Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+    gpio: mvebu/pwm: Refuse requests with inverted polarity
+
+Haibo Chen <haibo.chen@nxp.com>
+    gpio: gpio-vf610: do not touch other bits when set the target bit
+
+Andrew Lunn <andrew@lunn.ch>
+    net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
+
+Kevin Mitchell <kevmitch@arista.com>
+    igb: skip phy status check where unavailable
+
+Ard Biesheuvel <ardb@kernel.org>
+    ARM: 9197/1: spectre-bhb: fix loop8 sequence for Thumb2
+
+Ard Biesheuvel <ardb@kernel.org>
+    ARM: 9196/1: spectre-bhb: enable for Cortex-A15
+
+Jiasheng Jiang <jiasheng@iscas.ac.cn>
+    net: af_key: add check for pfkey_broadcast in function pfkey_process
+
+Duoming Zhou <duoming@zju.edu.cn>
+    NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
+
+Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+    net/qla3xxx: Fix a test in ql_reset_work()
+
+Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+    clk: at91: generated: consider range when calculating best rate
+
+Zixuan Fu <r33s3n6@gmail.com>
+    net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
+
+Zixuan Fu <r33s3n6@gmail.com>
+    net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
+
+Ulf Hansson <ulf.hansson@linaro.org>
+    mmc: core: Default to generic_cmd6_time as timeout in __mmc_switch()
+
+Ulf Hansson <ulf.hansson@linaro.org>
+    mmc: block: Use generic_cmd6_time when modifying INAND_CMD38_ARG_EXT_CSD
+
+Ulf Hansson <ulf.hansson@linaro.org>
+    mmc: core: Specify timeouts for BKOPS and CACHE_FLUSH for eMMC
+
+Hangyu Hua <hbh25y@gmail.com>
+    drm/dp/mst: fix a possible memory leak in fetch_monitor_name()
+
+Peter Zijlstra <peterz@infradead.org>
+    perf: Fix sys_perf_event_open() race against self
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: wavefront: Proper check of get_user() error
+
+linyujun <linyujun809@huawei.com>
+    ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
+
+Jakob Koschel <jakobkoschel@gmail.com>
+    drbd: remove usage of list iterator variable after loop
+
+Xiaoke Wang <xkernel.wang@foxmail.com>
+    MIPS: lantiq: check the return value of kzalloc()
+
+Zheng Yongjun <zhengyongjun3@huawei.com>
+    Input: stmfts - fix reference leak in stmfts_input_open
+
+Jeff LaBundy <jeff@labundy.com>
+    Input: add bounds checking to input_set_capability()
+
+David Gow <davidgow@google.com>
+    um: Cleanup syscall_handler_t definition/cast, fix warning
+
+Willy Tarreau <w@1wt.eu>
+    floppy: use a statically allocated error counter
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |  4 +-
+ arch/arm/kernel/entry-armv.S                       |  2 +-
+ arch/arm/kernel/stacktrace.c                       | 10 ++---
+ arch/arm/mm/proc-v7-bugs.c                         |  1 +
+ arch/mips/lantiq/falcon/sysctrl.c                  |  2 +
+ arch/mips/lantiq/xway/gptu.c                       |  2 +
+ arch/mips/lantiq/xway/sysctrl.c                    | 46 ++++++++++++++--------
+ arch/x86/um/shared/sysdep/syscalls_64.h            |  5 +--
+ drivers/block/drbd/drbd_main.c                     |  7 +++-
+ drivers/block/floppy.c                             | 17 ++++----
+ drivers/clk/at91/clk-generated.c                   |  4 ++
+ drivers/gpio/gpio-mvebu.c                          |  3 ++
+ drivers/gpio/gpio-vf610.c                          |  8 +++-
+ drivers/gpu/drm/drm_dp_mst_topology.c              |  1 +
+ drivers/input/input.c                              | 19 +++++++++
+ drivers/input/touchscreen/stmfts.c                 |  8 ++--
+ drivers/mmc/core/block.c                           |  6 +--
+ drivers/mmc/core/mmc_ops.c                         | 27 +++++++------
+ .../ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c  |  7 ++++
+ drivers/net/ethernet/dec/tulip/tulip_core.c        |  5 ++-
+ drivers/net/ethernet/intel/igb/igb_main.c          |  3 +-
+ drivers/net/ethernet/qlogic/qla3xxx.c              |  3 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c   |  4 +-
+ drivers/net/vmxnet3/vmxnet3_drv.c                  |  6 +++
+ drivers/scsi/qla2xxx/qla_target.c                  |  3 ++
+ kernel/events/core.c                               | 14 +++++++
+ lib/swiotlb.c                                      | 12 ++++--
+ net/bridge/br_input.c                              |  7 ++++
+ net/key/af_key.c                                   |  6 ++-
+ net/mac80211/rx.c                                  |  3 +-
+ net/nfc/nci/data.c                                 |  2 +-
+ net/nfc/nci/hci.c                                  |  4 +-
+ sound/isa/wavefront/wavefront_synth.c              |  3 +-
+ tools/perf/bench/numa.c                            |  2 +-
+ 34 files changed, 177 insertions(+), 79 deletions(-)
 
 
