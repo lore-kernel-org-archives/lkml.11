@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED63FC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7116C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244105AbiEWRnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
+        id S244069AbiEWRnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242551AbiEWR1r (ORCPT
+        with ESMTP id S242619AbiEWR1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:27:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A5281995;
-        Mon, 23 May 2022 10:23:42 -0700 (PDT)
+        Mon, 23 May 2022 13:27:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEA1814A8;
+        Mon, 23 May 2022 10:23:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69F886090C;
-        Mon, 23 May 2022 17:23:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72258C385A9;
-        Mon, 23 May 2022 17:23:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F24C861523;
+        Mon, 23 May 2022 17:13:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0989C385A9;
+        Mon, 23 May 2022 17:13:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326621;
-        bh=qSmR5E7RYaAZaARo/MP2Fh7BsQDVD2MLFAr7or8Gw0E=;
+        s=korg; t=1653326008;
+        bh=EzwhwizX+Oc7mpCro2d+6Hzgld2XnK+PrPAtrQpl7UI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1xI6Z77lgoqKjmycHGrRf9Wh4ukFTnvyRI3tPFRrOnxYBg+9KeLsEkmzLfkc6I4uu
-         yxLzCHNhjCN22AC1UvMd8JIskpnwW61SWaoJOqruy6nkIJlb3Jhh866wGVHPeia9r9
-         Gdk4NS8HKcwnvaW/9c5ZDQ2clgd8XZEC2K+Vvhm8=
+        b=HsuZBP40IhysrV0wMcmitjvUQBzN8v0Sth7bKJToMTJWodCtn7hVeIuMBBWkxbuGp
+         zfCYWNcrhTj0l+Qs04ioakKWXBmnqbKJNk6m/J+8oDEnaDWELxJAX7fCUnHx5FlPLW
+         dIUal5wYggovoNJvEfyHcJUJWT48TY4JotAmpGDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Stefan Roese <sr@denx.de>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Zixuan Fu <r33s3n6@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 131/132] i2c: mt7621: fix missing clk_disable_unprepare() on error in mtk_i2c_probe()
-Date:   Mon, 23 May 2022 19:05:40 +0200
-Message-Id: <20220523165845.453260433@linuxfoundation.org>
+Subject: [PATCH 5.4 39/68] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
+Date:   Mon, 23 May 2022 19:05:06 +0200
+Message-Id: <20220523165809.048498932@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
-References: <20220523165823.492309987@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,53 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Zixuan Fu <r33s3n6@gmail.com>
 
-[ Upstream commit a2537c98a8a3b57002e54a262d180b9490bc7190 ]
+[ Upstream commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd ]
 
-Fix the missing clk_disable_unprepare() before return
-from mtk_i2c_probe() in the error handling case.
+In vmxnet3_rq_create(), when dma_alloc_coherent() fails,
+vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
+vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
+-> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls
+vmxnet3_force_close() -> dev_close() in error handling code. And the driver
+calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
+-> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(),
+rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
+a NULL pointer dereference.
 
-Fixes: d04913ec5f89 ("i2c: mt7621: Add MediaTek MT7621/7628/7688 I2C driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Stefan Roese <sr@denx.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+To fix this possible bug, an if statement is added to check whether
+rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
+
+The error log in our fault-injection testing is shown as follows:
+
+[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
+...
+[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
+...
+[   65.227977] Call Trace:
+...
+[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
+[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
+[   65.228866]  __dev_close_many+0x288/0x350
+[   65.229607]  dev_close_many+0xa4/0x480
+[   65.231124]  dev_close+0x138/0x230
+[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
+[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
+...
+
+Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Link: https://lore.kernel.org/r/20220514050711.2636709-1-r33s3n6@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mt7621.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-mt7621.c b/drivers/i2c/busses/i2c-mt7621.c
-index 45fe4a7fe0c0..901f0fb04fee 100644
---- a/drivers/i2c/busses/i2c-mt7621.c
-+++ b/drivers/i2c/busses/i2c-mt7621.c
-@@ -304,7 +304,8 @@ static int mtk_i2c_probe(struct platform_device *pdev)
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index b71a019e9867..609f65530b9b 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1586,6 +1586,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
+ 	u32 i, ring_idx;
+ 	struct Vmxnet3_RxDesc *rxd;
  
- 	if (i2c->bus_freq == 0) {
- 		dev_warn(i2c->dev, "clock-frequency 0 not supported\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_disable_clk;
- 	}
- 
- 	adap = &i2c->adap;
-@@ -322,10 +323,15 @@ static int mtk_i2c_probe(struct platform_device *pdev)
- 
- 	ret = i2c_add_adapter(adap);
- 	if (ret < 0)
--		return ret;
-+		goto err_disable_clk;
- 
- 	dev_info(&pdev->dev, "clock %u kHz\n", i2c->bus_freq / 1000);
- 
-+	return 0;
++	/* ring has already been cleaned up */
++	if (!rq->rx_ring[0].base)
++		return;
 +
-+err_disable_clk:
-+	clk_disable_unprepare(i2c->clk);
-+
- 	return ret;
- }
- 
+ 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
+ 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
+ #ifdef __BIG_ENDIAN_BITFIELD
 -- 
 2.35.1
 
