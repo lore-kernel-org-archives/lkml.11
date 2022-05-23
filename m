@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE8FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5140C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243689AbiEWRmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
+        id S243605AbiEWRmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242589AbiEWR1r (ORCPT
+        with ESMTP id S242572AbiEWR1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90C482151;
-        Mon, 23 May 2022 10:23:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADF47E1DF;
+        Mon, 23 May 2022 10:23:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54D2861524;
-        Mon, 23 May 2022 17:14:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F83C385AA;
-        Mon, 23 May 2022 17:14:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D573F6153D;
+        Mon, 23 May 2022 17:15:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE6EC34116;
+        Mon, 23 May 2022 17:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326085;
-        bh=RHTqA4UjpxePZjnuT4BtMnZfxrgsfURyE/cXMH/P16M=;
+        s=korg; t=1653326121;
+        bh=fakn5Rm/GpuLorMbdsgU93zZ0IMk8qoD2rIuHMzIoGw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yF0ILcXsMeIhWBQSwyQvZ1ZbAEQ+FzyvyMw2lGSdNcveYXqn6hGq0PoD7Tm4nLZLq
-         RvEf8y1+GkFIBZzUVPkhVBz/g5wfntSmZoZ+4AWArvByu3MEhsd9wIZhamBGerATsI
-         KxwG3gZ76w7dkjK/eXIbwFMcNWNUsXNggL1agcBk=
+        b=Jf3bEr1a+TfbsPJHWtcPy8Nsv9qFASFQ/6ZCIBXpw9s/L0BETQ97pZImDE971g3/V
+         lisVfPBk9ZhB2dmo92NcaQO+7HhZHArHreI8uSXNw/0s0D3Tmf0jll08nVaLDmEdfL
+         mlWZ4LJt/1bgDOGApI4h8niNApDc3dAfxZMVnirE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Jeff LaBundy <jeff@labundy.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 11/97] Input: add bounds checking to input_set_capability()
-Date:   Mon, 23 May 2022 19:05:15 +0200
-Message-Id: <20220523165814.161382050@linuxfoundation.org>
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.4 30/68] KVM: x86/mmu: Update number of zapped pages even if page list is stable
+Date:   Mon, 23 May 2022 19:04:57 +0200
+Message-Id: <20220523165807.581079944@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
-References: <20220523165812.244140613@linuxfoundation.org>
+In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
+References: <20220523165802.500642349@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,62 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff LaBundy <jeff@labundy.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
+commit b28cb0cd2c5e80a8c0feb408a0e4b0dbb6d132c5 upstream.
 
-Update input_set_capability() to prevent kernel panic in case the
-event code exceeds the bitmap for the given event type.
+When zapping obsolete pages, update the running count of zapped pages
+regardless of whether or not the list has become unstable due to zapping
+a shadow page with its own child shadow pages.  If the VM is backed by
+mostly 4kb pages, KVM can zap an absurd number of SPTEs without bumping
+the batch count and thus without yielding.  In the worst case scenario,
+this can cause a soft lokcup.
 
-Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ watchdog: BUG: soft lockup - CPU#12 stuck for 22s! [dirty_log_perf_:13020]
+   RIP: 0010:workingset_activation+0x19/0x130
+   mark_page_accessed+0x266/0x2e0
+   kvm_set_pfn_accessed+0x31/0x40
+   mmu_spte_clear_track_bits+0x136/0x1c0
+   drop_spte+0x1a/0xc0
+   mmu_page_zap_pte+0xef/0x120
+   __kvm_mmu_prepare_zap_page+0x205/0x5e0
+   kvm_mmu_zap_all_fast+0xd7/0x190
+   kvm_mmu_invalidate_zap_pages_in_memslot+0xe/0x10
+   kvm_page_track_flush_slot+0x5c/0x80
+   kvm_arch_flush_shadow_memslot+0xe/0x10
+   kvm_set_memslot+0x1a8/0x5d0
+   __kvm_set_memory_region+0x337/0x590
+   kvm_vm_ioctl+0xb08/0x1040
+
+Fixes: fbb158cb88b6 ("KVM: x86/mmu: Revert "Revert "KVM: MMU: zap pages in batch""")
+Reported-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Ben Gardon <bgardon@google.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220511145122.3133334-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/input.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ arch/x86/kvm/mmu.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index 3cfd2c18eebd..49504dcd5dc6 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
- 
- static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
- 
-+static const unsigned int input_max_code[EV_CNT] = {
-+	[EV_KEY] = KEY_MAX,
-+	[EV_REL] = REL_MAX,
-+	[EV_ABS] = ABS_MAX,
-+	[EV_MSC] = MSC_MAX,
-+	[EV_SW] = SW_MAX,
-+	[EV_LED] = LED_MAX,
-+	[EV_SND] = SND_MAX,
-+	[EV_FF] = FF_MAX,
-+};
-+
- static inline int is_event_supported(unsigned int code,
- 				     unsigned long *bm, unsigned int max)
+--- a/arch/x86/kvm/mmu.c
++++ b/arch/x86/kvm/mmu.c
+@@ -5821,6 +5821,7 @@ static void kvm_zap_obsolete_pages(struc
  {
-@@ -1976,6 +1987,14 @@ EXPORT_SYMBOL(input_get_timestamp);
-  */
- void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
- {
-+	if (type < EV_CNT && input_max_code[type] &&
-+	    code > input_max_code[type]) {
-+		pr_err("%s: invalid code %u for type %u\n", __func__, code,
-+		       type);
-+		dump_stack();
-+		return;
-+	}
+ 	struct kvm_mmu_page *sp, *node;
+ 	int nr_zapped, batch = 0;
++	bool unstable;
+ 
+ restart:
+ 	list_for_each_entry_safe_reverse(sp, node,
+@@ -5853,11 +5854,12 @@ restart:
+ 			goto restart;
+ 		}
+ 
+-		if (__kvm_mmu_prepare_zap_page(kvm, sp,
+-				&kvm->arch.zapped_obsolete_pages, &nr_zapped)) {
+-			batch += nr_zapped;
++		unstable = __kvm_mmu_prepare_zap_page(kvm, sp,
++				&kvm->arch.zapped_obsolete_pages, &nr_zapped);
++		batch += nr_zapped;
 +
- 	switch (type) {
- 	case EV_KEY:
- 		__set_bit(code, dev->keybit);
--- 
-2.35.1
-
++		if (unstable)
+ 			goto restart;
+-		}
+ 	}
+ 
+ 	/*
 
 
