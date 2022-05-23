@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A333EC352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FECC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243521AbiEWRmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
+        id S243570AbiEWRmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242537AbiEWR1r (ORCPT
+        with ESMTP id S242535AbiEWR1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A587CDF5;
-        Mon, 23 May 2022 10:23:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF18C7DE24;
+        Mon, 23 May 2022 10:23:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4881D61537;
-        Mon, 23 May 2022 17:14:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21BCFC34115;
-        Mon, 23 May 2022 17:14:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1AEA61528;
+        Mon, 23 May 2022 17:14:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56A6C385A9;
+        Mon, 23 May 2022 17:14:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326069;
-        bh=hkWZec3xGuxcobIe4ln5URJVnQJ+IW02w5+IMYVFol4=;
+        s=korg; t=1653326063;
+        bh=jaBttUhe7e1U2JTkC+nmJw+Yb1tL2Jbpq5RqVccsWhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGkFSxYNDgBOOsv4q1UyKOf4LkFrtvWy66OlJu1wixO57li2wbo10bgx5mV7TX8iV
-         N1S3nma0Yo3t1VL1YG4ikZc30Fyx0rTViNub5ArjBT5snJQXRzNlrWpSbJpFWdb1Ht
-         SaN8G03F2WQzJKAICu6zK5gLacLDz2GY7lYMnT7U=
+        b=v8h7DVmrS1od2xGP6DjxwyiwJqwSaEeIdcjYTQGGVsshvtkC8skVoyU2Vy03kd2vG
+         q0pM7s/3aqcmm4HcI38clEHGemhrmnYtJuJpg8UO7oHJfzlZOGSRnBU+gQCE1LwAEC
+         cLHRqMbmVhAXJRC0kRjUpP1fNNDg5+UD5I2in8vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 50/68] gpio: gpio-vf610: do not touch other bits when set the target bit
-Date:   Mon, 23 May 2022 19:05:17 +0200
-Message-Id: <20220523165810.820691111@linuxfoundation.org>
+Subject: [PATCH 5.4 49/68] net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
+Date:   Mon, 23 May 2022 19:05:16 +0200
+Message-Id: <20220523165810.648913035@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
 References: <20220523165802.500642349@linuxfoundation.org>
@@ -50,43 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Andrew Lunn <andrew@lunn.ch>
 
-[ Upstream commit 9bf3ac466faa83d51a8fe9212131701e58fdef74 ]
+[ Upstream commit fbb3abdf2223cd0dfc07de85fe5a43ba7f435bdf ]
 
-For gpio controller contain register PDDR, when set one target bit,
-current logic will clear all other bits, this is wrong. Use operator
-'|=' to fix it.
+It is possible to stack bridges on top of each other. Consider the
+following which makes use of an Ethernet switch:
 
-Fixes: 659d8a62311f ("gpio: vf610: add imx7ulp support")
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+       br1
+     /    \
+    /      \
+   /        \
+ br0.11    wlan0
+   |
+   br0
+ /  |  \
+p1  p2  p3
+
+br0 is offloaded to the switch. Above br0 is a vlan interface, for
+vlan 11. This vlan interface is then a slave of br1. br1 also has a
+wireless interface as a slave. This setup trunks wireless lan traffic
+over the copper network inside a VLAN.
+
+A frame received on p1 which is passed up to the bridge has the
+skb->offload_fwd_mark flag set to true, indicating that the switch has
+dealt with forwarding the frame out ports p2 and p3 as needed. This
+flag instructs the software bridge it does not need to pass the frame
+back down again. However, the flag is not getting reset when the frame
+is passed upwards. As a result br1 sees the flag, wrongly interprets
+it, and fails to forward the frame to wlan0.
+
+When passing a frame upwards, clear the flag. This is the Rx
+equivalent of br_switchdev_frame_unmark() in br_dev_xmit().
+
+Fixes: f1c2eddf4cb6 ("bridge: switchdev: Use an helper to clear forward mark")
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+Link: https://lore.kernel.org/r/20220518005840.771575-1-andrew@lunn.ch
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-vf610.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/bridge/br_input.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/gpio/gpio-vf610.c b/drivers/gpio/gpio-vf610.c
-index 58776f2d69ff..1ae612c796ee 100644
---- a/drivers/gpio/gpio-vf610.c
-+++ b/drivers/gpio/gpio-vf610.c
-@@ -125,9 +125,13 @@ static int vf610_gpio_direction_output(struct gpio_chip *chip, unsigned gpio,
- {
- 	struct vf610_gpio_port *port = gpiochip_get_data(chip);
- 	unsigned long mask = BIT(gpio);
-+	u32 val;
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 09b1dd8cd853..464f6a619444 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -42,6 +42,13 @@ static int br_pass_frame_up(struct sk_buff *skb)
+ 	u64_stats_update_end(&brstats->syncp);
  
--	if (port->sdata && port->sdata->have_paddr)
--		vf610_gpio_writel(mask, port->gpio_base + GPIO_PDDR);
-+	if (port->sdata && port->sdata->have_paddr) {
-+		val = vf610_gpio_readl(port->gpio_base + GPIO_PDDR);
-+		val |= mask;
-+		vf610_gpio_writel(val, port->gpio_base + GPIO_PDDR);
-+	}
- 
- 	vf610_gpio_set(chip, gpio, value);
- 
+ 	vg = br_vlan_group_rcu(br);
++
++	/* Reset the offload_fwd_mark because there could be a stacked
++	 * bridge above, and it should not think this bridge it doing
++	 * that bridge's work forwarding out its ports.
++	 */
++	br_switchdev_frame_unmark(skb);
++
+ 	/* Bridge is just like any other port.  Make sure the
+ 	 * packet is allowed except in promisc modue when someone
+ 	 * may be running packet capture.
 -- 
 2.35.1
 
