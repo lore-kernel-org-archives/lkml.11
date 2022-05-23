@@ -2,109 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99646C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08794C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 16:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238973AbiEWQ1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 12:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
+        id S238796AbiEWQ3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 12:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238871AbiEWQ1J (ORCPT
+        with ESMTP id S238699AbiEWQ3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 12:27:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AC661606;
-        Mon, 23 May 2022 09:27:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C01366141C;
-        Mon, 23 May 2022 16:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8A0FC385A9;
-        Mon, 23 May 2022 16:27:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653323227;
-        bh=AceUDYcGZJujlBPQTsaPOLIBVpDb2ttCqdo8Gc2wbpg=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=OczRcIlhRq9MmST6+7Ld/zRiClrljK/6d7LVqUyi7elESniY7wnINSDQxxJDUqv+8
-         0GEXPQrLif397SY1Q7O4DqeHpb5WNxF7iZrDDVUch6WJplTp68xAUqFcMVnFRCaaRg
-         MgiX4ilOq7Zgl0+eveavVHwD7hcpPgO0U1tmv3o/SvcvDFFGsW3cGR/VIZAK77CFlb
-         msy9drIlWm9gBmIdxOqnk2HOJHQnv9xY9yhLotFStB7wxUUrcW87TOtFxf+CxKq3mJ
-         xfc99CQPy3PsUA1RPxAs2IZK+5XB9FOGBd3nSDQ8AZGm6rn9JKtK7i2H/4XvKwDdyF
-         xTH7+Bi8Hg2+Q==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     duoming@zju.edu.cn, linux-wireless@vger.kernel.org,
-        amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rafael@kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
-References: <20220523052810.24767-1-duoming@zju.edu.cn>
-        <YosqUjCYioGh3kBW@kroah.com>
-        <41a266af.2abb6.180efa8594d.Coremail.duoming@zju.edu.cn>
-        <87r14kzdqz.fsf@kernel.org> <YouPEdlNbU2ea1Cx@kroah.com>
-Date:   Mon, 23 May 2022 19:27:00 +0300
-In-Reply-To: <YouPEdlNbU2ea1Cx@kroah.com> (Greg KH's message of "Mon, 23 May
-        2022 15:41:37 +0200")
-Message-ID: <87ilpwz02z.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Mon, 23 May 2022 12:29:00 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E0095DA08;
+        Mon, 23 May 2022 09:28:59 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1ntAvS-0003hj-00; Mon, 23 May 2022 18:28:58 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 20388C0312; Mon, 23 May 2022 18:28:45 +0200 (CEST)
+Date:   Mon, 23 May 2022 18:28:45 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Jim Quinlan <jim2101024@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com, james.quinlan@broadcom.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "open list:BROADCOM BMIPS MIPS ARCHITECTURE" 
+        <linux-mips@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] MIPS: bmips: Fix compiler warning observed on W=1
+ build
+Message-ID: <20220523162845.GA10839@alpha.franken.de>
+References: <20220523121639.16521-1-jim2101024@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523121639.16521-1-jim2101024@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org> writes:
+On Mon, May 23, 2022 at 08:16:39AM -0400, Jim Quinlan wrote:
+> The function arch_sync_dma_for_cpu_all() was used but was
+> missing a prototype declaration.
+> 
+> Signed-off-by: Jim Quinlan <jim2101024@gmail.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> ---
+>  arch/mips/bmips/dma.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/mips/bmips/dma.c b/arch/mips/bmips/dma.c
+> index c535f9cb75ec..33788668cbdb 100644
+> --- a/arch/mips/bmips/dma.c
+> +++ b/arch/mips/bmips/dma.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0+
+>  
+>  #include <linux/types.h>
+> +#include <linux/dma-map-ops.h>
+>  #include <asm/bmips.h>
+>  #include <asm/io.h>
+>  
+> 
+> base-commit: 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+> -- 
+> 2.17.1
 
-> On Mon, May 23, 2022 at 02:31:48PM +0300, Kalle Valo wrote:
->> (adding Johannes)
->> 
->> duoming@zju.edu.cn writes:
->> 
->> >> > --- a/lib/kobject.c
->> >> > +++ b/lib/kobject.c
->> >> > @@ -254,7 +254,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
->> >> >  	if (kobj->name && !fmt)
->> >> >  		return 0;
->> >> >  
->> >> > -	s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
->> >> > +	s = kvasprintf_const(GFP_ATOMIC, fmt, vargs);
->> >> >  	if (!s)
->> >> >  		return -ENOMEM;
->> >> >  
->> >> > @@ -267,7 +267,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
->> >> >  	if (strchr(s, '/')) {
->> >> >  		char *t;
->> >> >  
->> >> > -		t = kstrdup(s, GFP_KERNEL);
->> >> > +		t = kstrdup(s, GFP_ATOMIC);
->> >> >  		kfree_const(s);
->> >> >  		if (!t)
->> >> >  			return -ENOMEM;
->> >> 
->> >> Please no, you are hurting the whole kernel because of one odd user.
->> >> Please do not make these calls under atomic context.
->> >
->> > Thanks for your time and suggestions. I will remove the gfp_t
->> > parameter of dev_coredumpv in order to show it could not be used in
->> > atomic context.
->> 
->> In a way it would be nice to be able to call dev_coredump from atomic
->> contexts, though I don't know how practical it actually is.
->
-> Dumping core information from atomic context feels very very wrong to
-> me.
->
-> Why not just not do that?
+applied to mips-next.
 
-I was wondering why dev_coredumpm() has the gfp parameter in the first
-place. But yeah, removing gfp from devcoredump API altogether sounds
-like the best thing to do.
+Thomas.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
