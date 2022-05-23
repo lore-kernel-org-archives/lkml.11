@@ -2,217 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5DB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BB9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbiEWTSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
+        id S230029AbiEWTUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiEWTS2 (ORCPT
+        with ESMTP id S229898AbiEWTUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:18:28 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD26ABC6ED
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:53:17 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NFUmeI027671;
-        Mon, 23 May 2022 17:56:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=i5RmRP/UH1mWrSQFsa6HrM9CKsDExZYIFAOg2rjZ7yo=;
- b=EK1j1RLuml3Fm86jB+cnCLFNo7Xz3XTRo0Y5jso730/cSdVkP0sEvbpAFV943vGow36F
- nxXc9JX5I2T4TzEqPzcn/shT7lyGFBzhVM+POWoBfc+BBmhzfv12hBYMetwsOUa9uteG
- S1vh//+sqgUXR0V25PwS2Aq31kU2jOLIm6mCfAIvaWQJCDHefTX+ITTxXL5MxIWA4SjV
- Wu+1hsvLRYLxT8pv45CrDamUnrO4+TKQqWLzh5MKrGceIubVoRDyVP9um9DZEPYSZTnE
- BIq9gIBwsWSxNYiSRhF64lUEuH3FE8XAEeCB/tclQScsQJYbNjdXtK+2BLoAeKmtiWNW cQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g88yvs48s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 17:56:19 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NHXA12018113;
-        Mon, 23 May 2022 17:56:18 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g88yvs480-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 17:56:18 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NHgoWG011584;
-        Mon, 23 May 2022 17:56:16 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3g6qq93jqd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 17:56:16 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NHtRwC31916520
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 17:55:27 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 631B952050;
-        Mon, 23 May 2022 17:56:14 +0000 (GMT)
-Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.16.198])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 2D30B5204F;
-        Mon, 23 May 2022 17:56:10 +0000 (GMT)
-From:   Sathvika Vasireddy <sv@linux.ibm.com>
-To:     linuxppc-dev@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
-        peterz@infradead.org, mbenes@suse.cz, aik@ozlabs.ru,
-        mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
-        rostedt@goodmis.org, naveen.n.rao@linux.vnet.ibm.com,
-        sv@linux.ibm.com
-Subject: [RFC PATCH 4/4] objtool/powerpc: Add --mcount specific implementation
-Date:   Mon, 23 May 2022 23:25:48 +0530
-Message-Id: <20220523175548.922671-5-sv@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220523175548.922671-1-sv@linux.ibm.com>
-References: <20220523175548.922671-1-sv@linux.ibm.com>
+        Mon, 23 May 2022 15:20:22 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D9E14B2D9
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 11:55:13 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 2DBB521A9F;
+        Mon, 23 May 2022 18:55:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1653332112; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=L9I5H3awiOqVXcOOt7CeWyZc5oWhRQGJioYprnf5VZY=;
+        b=tIdO8j4ZCXiqk+JXD1cVg5fnpzTvORn6aDp2pXRGmw3zwi/diBdIFSgl/2bOvsDAESv/mc
+        jmq1V2N+nZKy+qbOEbQv/hK9CaE7AxcOXS6VpoOIpjFbd+fVVk0iw1+pzXXuR49Y6aeSZ7
+        I9CBIjnKwidLEHu0m82SZwjD1zAoHGw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1653332112;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=L9I5H3awiOqVXcOOt7CeWyZc5oWhRQGJioYprnf5VZY=;
+        b=kClP+8gt+bxbCrZYimlkS5FSSPEBbr11LM+T66hvMuEwES/2RnH0vW3hV6E4x+uNjK8BEH
+        pZSo3IZVBAUVUuDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 20CC4139F5;
+        Mon, 23 May 2022 18:55:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id iqj5B5DYi2JiaQAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 23 May 2022 18:55:12 +0000
+Date:   Mon, 23 May 2022 20:55:07 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/platform for 5.19
+Message-ID: <YovYi8NM7s7xRvpy@zn.tnic>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: buX_qKCr5AM5AFX50afFueyUjRwiaumN
-X-Proofpoint-GUID: 9x78_XVgk9THSzak1_eAXXWTob5GjxeY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_07,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 mlxlogscore=731 impostorscore=0 malwarescore=0
- spamscore=0 phishscore=0 bulkscore=0 lowpriorityscore=0 mlxscore=0
- adultscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205230099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch enables objtool --mcount on powerpc, and
-adds implementation specific to powerpc.
+Hi Linus,
 
-Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
+please pull the x86/platform lineup for 5.19.
+
+Thx.
+
 ---
- arch/powerpc/Kconfig                |  1 +
- tools/objtool/arch/powerpc/decode.c | 14 ++++++++++++++
- tools/objtool/check.c               | 12 +++++++-----
- tools/objtool/elf.c                 | 13 +++++++++++++
- tools/objtool/include/objtool/elf.h |  1 +
- 5 files changed, 36 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 732a3f91ee5e..3373d44a1298 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -233,6 +233,7 @@ config PPC
- 	select HAVE_NMI				if PERF_EVENTS || (PPC64 && PPC_BOOK3S)
- 	select HAVE_OPTPROBES
- 	select HAVE_OBJTOOL			if PPC64
-+	select HAVE_OBJTOOL_MCOUNT		if HAVE_OBJTOOL
- 	select HAVE_PERF_EVENTS
- 	select HAVE_PERF_EVENTS_NMI		if PPC64
- 	select HAVE_PERF_REGS
-diff --git a/tools/objtool/arch/powerpc/decode.c b/tools/objtool/arch/powerpc/decode.c
-index e3b77a6ce357..ad3d79fffac2 100644
---- a/tools/objtool/arch/powerpc/decode.c
-+++ b/tools/objtool/arch/powerpc/decode.c
-@@ -40,12 +40,26 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 			    struct list_head *ops_list)
- {
- 	u32 insn;
-+	unsigned int opcode;
- 
- 	*immediate = 0;
- 	memcpy(&insn, sec->data->d_buf+offset, 4);
- 	*len = 4;
- 	*type = INSN_OTHER;
- 
-+	opcode = (insn >> 26);
-+
-+	switch (opcode) {
-+	case 18: /* bl */
-+		if ((insn & 3) == 1) {
-+			*type = INSN_CALL;
-+			*immediate = insn & 0x3fffffc;
-+			if (*immediate & 0x2000000)
-+				*immediate -= 0x4000000;
-+		}
-+		break;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 056302d58e23..fd8bad092f89 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -832,7 +832,7 @@ static int create_mcount_loc_sections(struct objtool_file *file)
- 
- 		if (elf_add_reloc_to_insn(file->elf, sec,
- 					  idx * sizeof(unsigned long),
--					  R_X86_64_64,
-+					  elf_reloc_type_long(file->elf),
- 					  insn->sec, insn->offset))
- 			return -1;
- 
-@@ -2183,7 +2183,7 @@ static int classify_symbols(struct objtool_file *file)
- 			if (arch_is_retpoline(func))
- 				func->retpoline_thunk = true;
- 
--			if (!strcmp(func->name, "__fentry__"))
-+			if ((!strcmp(func->name, "__fentry__")) || (!strcmp(func->name, "_mcount")))
- 				func->fentry = true;
- 
- 			if (is_profiling_func(func->name))
-@@ -2259,9 +2259,11 @@ static int decode_sections(struct objtool_file *file)
- 	 * Must be before add_jump_destinations(), which depends on 'func'
- 	 * being set for alternatives, to enable proper sibling call detection.
- 	 */
--	ret = add_special_section_alts(file);
--	if (ret)
--		return ret;
-+	if (opts.stackval || opts.orc || opts.uaccess || opts.noinstr) {
-+		ret = add_special_section_alts(file);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	ret = add_jump_destinations(file);
- 	if (ret)
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index c25e957c1e52..95763060d551 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -793,6 +793,19 @@ elf_create_section_symbol(struct elf *elf, struct section *sec)
- 	return sym;
- }
- 
-+int elf_reloc_type_long(struct elf *elf)
-+{
-+	switch (elf->ehdr.e_machine) {
-+	case EM_X86_64:
-+		return R_X86_64_64;
-+	case EM_PPC64:
-+		return R_PPC64_ADDR64;
-+	default:
-+		WARN("unknown machine...");
-+		exit(-1);
-+	}
-+}
-+
- int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
- 			  unsigned long offset, unsigned int type,
- 			  struct section *insn_sec, unsigned long insn_off)
-diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index adebfbc2b518..c43e23c0b3c8 100644
---- a/tools/objtool/include/objtool/elf.h
-+++ b/tools/objtool/include/objtool/elf.h
-@@ -144,6 +144,7 @@ static inline bool has_multiple_files(struct elf *elf)
- struct elf *elf_open_read(const char *name, int flags);
- struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
- 
-+int elf_reloc_type_long(struct elf *elf);
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
- 		  unsigned int type, struct symbol *sym, s64 addend);
- int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_platform_for_v5.19_rc1
+
+for you to fetch changes up to 327c348988c6f0bacd7abd29c151f37bdf1e2a02:
+
+  x86/platform/uv: Log gap hole end size (2022-04-07 17:25:15 +0200)
+
+----------------------------------------------------------------
+- A couple of changes enabling SGI UV5 support
+
+----------------------------------------------------------------
+Mike Travis (3):
+      x86/platform/uv: Update NMI Handler for UV5
+      x86/platform/uv: Update TSC sync state for UV5
+      x86/platform/uv: Log gap hole end size
+
+ arch/x86/kernel/apic/x2apic_uv_x.c | 16 +++++++++++++---
+ arch/x86/platform/uv/uv_nmi.c      | 21 +++++++++++----------
+ 2 files changed, 24 insertions(+), 13 deletions(-)
+
 -- 
-2.25.1
+Regards/Gruss,
+    Boris.
 
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG Nürnberg)
