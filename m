@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BB2C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F69C38A04
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244535AbiEWR6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
+        id S244175AbiEWR5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241144AbiEWRag (ORCPT
+        with ESMTP id S240447AbiEWRah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:30:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77C03914B;
+        Mon, 23 May 2022 13:30:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4EEE56228;
         Mon, 23 May 2022 10:26:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5E35B811FF;
-        Mon, 23 May 2022 17:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B18AC385A9;
-        Mon, 23 May 2022 17:26:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68C4F61157;
+        Mon, 23 May 2022 17:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D35C385A9;
+        Mon, 23 May 2022 17:25:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326780;
-        bh=8k4BmRqodGC6Eg03FKMGlql20WFT7F+hBzlg1XRNmHc=;
+        s=korg; t=1653326751;
+        bh=/JH+6tl8mOO2Ghltg6FIthcAiTbBr/VI69AtNQzSJlI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XAmTz50siq65j2lVcsFWDUnCMr40lCbNM0R9P7zauAu33Pikbx4b4EBIH6GwLkW9X
-         OIrDkrXHttyz+/lx1AX3Yrd6VdYZHtn2+WbxJ3J+RuusginBb3gNBUOJqEcxKkGf/Y
-         YTqKnHhYI2X9F1pvcWzjtRN5056NGKVS17ptTvsA=
+        b=JXLqRn008vGXImazNlylJJIV+J1zVW1B3o2WiABJ28iZt0YmrSHMKPPzJv9aRcQAr
+         ITLMOmPzPv/XQ/cbyBjZdfEmxdqGZ6kxp9+d0NOfYHdIX41VVxy1WurnP4/9JJjTtM
+         FPN8k1LRez+q9q7XKB+FtO6lWRldoOfMsZRANnd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.17 056/158] KVM: x86/mmu: Update number of zapped pages even if page list is stable
-Date:   Mon, 23 May 2022 19:03:33 +0200
-Message-Id: <20220523165840.062589262@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 048/158] ALSA: hda/realtek: Add quirk for TongFang devices with pop noise
+Date:   Mon, 23 May 2022 19:03:25 +0200
+Message-Id: <20220523165838.590763921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -50,71 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-commit b28cb0cd2c5e80a8c0feb408a0e4b0dbb6d132c5 upstream.
+commit 8b3b2392ed68bcd17c7eb84ca615ce1e5f115b99 upstream.
 
-When zapping obsolete pages, update the running count of zapped pages
-regardless of whether or not the list has become unstable due to zapping
-a shadow page with its own child shadow pages.  If the VM is backed by
-mostly 4kb pages, KVM can zap an absurd number of SPTEs without bumping
-the batch count and thus without yielding.  In the worst case scenario,
-this can cause a soft lokcup.
+When audio stops playing there is an audible "pop"-noise when using
+headphones on the TongFang GMxMRxx, GKxNRxx, GMxZGxx, GMxTGxx and GMxAGxx.
 
- watchdog: BUG: soft lockup - CPU#12 stuck for 22s! [dirty_log_perf_:13020]
-   RIP: 0010:workingset_activation+0x19/0x130
-   mark_page_accessed+0x266/0x2e0
-   kvm_set_pfn_accessed+0x31/0x40
-   mmu_spte_clear_track_bits+0x136/0x1c0
-   drop_spte+0x1a/0xc0
-   mmu_page_zap_pte+0xef/0x120
-   __kvm_mmu_prepare_zap_page+0x205/0x5e0
-   kvm_mmu_zap_all_fast+0xd7/0x190
-   kvm_mmu_invalidate_zap_pages_in_memslot+0xe/0x10
-   kvm_page_track_flush_slot+0x5c/0x80
-   kvm_arch_flush_shadow_memslot+0xe/0x10
-   kvm_set_memslot+0x1a8/0x5d0
-   __kvm_set_memory_region+0x337/0x590
-   kvm_vm_ioctl+0xb08/0x1040
+This quirk fixes this mostly.
 
-Fixes: fbb158cb88b6 ("KVM: x86/mmu: Revert "Revert "KVM: MMU: zap pages in batch""")
-Reported-by: David Matlack <dmatlack@google.com>
-Reviewed-by: Ben Gardon <bgardon@google.com>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220511145122.3133334-1-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lore.kernel.org/r/20220512180956.281804-1-wse@tuxedocomputers.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/mmu.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ sound/pci/hda/patch_realtek.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -5611,6 +5611,7 @@ static void kvm_zap_obsolete_pages(struc
- {
- 	struct kvm_mmu_page *sp, *node;
- 	int nr_zapped, batch = 0;
-+	bool unstable;
- 
- restart:
- 	list_for_each_entry_safe_reverse(sp, node,
-@@ -5642,11 +5643,12 @@ restart:
- 			goto restart;
- 		}
- 
--		if (__kvm_mmu_prepare_zap_page(kvm, sp,
--				&kvm->arch.zapped_obsolete_pages, &nr_zapped)) {
--			batch += nr_zapped;
-+		unstable = __kvm_mmu_prepare_zap_page(kvm, sp,
-+				&kvm->arch.zapped_obsolete_pages, &nr_zapped);
-+		batch += nr_zapped;
-+
-+		if (unstable)
- 			goto restart;
--		}
- 	}
- 
- 	/*
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9236,6 +9236,14 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1c06, 0x2013, "Lemote A1802", ALC269_FIXUP_LEMOTE_A1802),
+ 	SND_PCI_QUIRK(0x1c06, 0x2015, "Lemote A190X", ALC269_FIXUP_LEMOTE_A190X),
+ 	SND_PCI_QUIRK(0x1d05, 0x1132, "TongFang PHxTxX1", ALC256_FIXUP_SET_COEF_DEFAULTS),
++	SND_PCI_QUIRK(0x1d05, 0x1096, "TongFang GMxMRxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1100, "TongFang GKxNRxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1111, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1119, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1129, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x1147, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x115c, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
++	SND_PCI_QUIRK(0x1d05, 0x121b, "TongFang GMxAGxx", ALC269_FIXUP_NO_SHUTUP),
+ 	SND_PCI_QUIRK(0x1d72, 0x1602, "RedmiBook", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1d72, 0x1701, "XiaomiNotebook Pro", ALC298_FIXUP_DELL1_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1d72, 0x1901, "RedmiBook 14", ALC256_FIXUP_ASUS_HEADSET_MIC),
 
 
