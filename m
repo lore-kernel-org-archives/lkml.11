@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A38C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E41CEC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243088AbiEWRlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S243021AbiEWRlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242449AbiEWR1n (ORCPT
+        with ESMTP id S242419AbiEWR1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:27:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93867CB02;
-        Mon, 23 May 2022 10:23:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4285A7CB63;
+        Mon, 23 May 2022 10:23:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 25608CE16D6;
-        Mon, 23 May 2022 17:23:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 383BDC34115;
-        Mon, 23 May 2022 17:23:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1883B811FF;
+        Mon, 23 May 2022 17:23:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C62C385A9;
+        Mon, 23 May 2022 17:23:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326596;
-        bh=lDk+F4HKPxn0d05h+U9p97RFT3X3tNvjgiBwT/4IaW8=;
+        s=korg; t=1653326590;
+        bh=Pq5/8Kq/7EMNq8IsfVTN43pOObgrPxSMbuD5x98pawk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAEgAOUZDFKPsp1ZzvqtfDEaVGtl+3Kh4loHoEnSJBw6dg+ULbttphj6w/8uj53L9
-         fC4rowAnkgmnK66bqFIKsjhvW6mGELHmDT0IQ9ov3ISX7BKEwADqay3wnoTT5KDrdz
-         pFXeZnudll9KCgWT8dC+mpg9zU7jrm3UTZTwD1C8=
+        b=pbxKrC3FJa38f8KxI7Z286psM3GuHCRGG26mUtYCVFjZsDms+oLsXH+bU1Bs0NCeS
+         ijYyyVnGCT7Rp8yYhwG2XnHVRcaIJqIqLS+3daNDds4cP+jeeUea3dHrHobC0oopfT
+         viws+sKuOqiWfTkrBlndmY5zWU9AHDOhkwUjBmuU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
+        Daejun Park <daejun7.park@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 108/132] gpio: gpio-vf610: do not touch other bits when set the target bit
-Date:   Mon, 23 May 2022 19:05:17 +0200
-Message-Id: <20220523165841.393038445@linuxfoundation.org>
+Subject: [PATCH 5.15 106/132] scsi: ufs: core: Fix referencing invalid rsp field
+Date:   Mon, 23 May 2022 19:05:15 +0200
+Message-Id: <20220523165841.056634318@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -50,43 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Daejun Park <daejun7.park@samsung.com>
 
-[ Upstream commit 9bf3ac466faa83d51a8fe9212131701e58fdef74 ]
+[ Upstream commit d5d92b64408443e113b9742f8f1c35278910dd4d ]
 
-For gpio controller contain register PDDR, when set one target bit,
-current logic will clear all other bits, this is wrong. Use operator
-'|=' to fix it.
+Fix referencing sense data when it is invalid. When the length of the data
+segment is 0, there is no valid information in the rsp field, so
+ufshpb_rsp_upiu() is returned without additional operation.
 
-Fixes: 659d8a62311f ("gpio: vf610: add imx7ulp support")
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Link: https://lore.kernel.org/r/252651381.41652940482659.JavaMail.epsvc@epcpadp4
+Fixes: 4b5f49079c52 ("scsi: ufs: ufshpb: L2P map management for HPB read")
+Acked-by: Avri Altman <avri.altman@wdc.com>
+Signed-off-by: Daejun Park <daejun7.park@samsung.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-vf610.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/scsi/ufs/ufshpb.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpio/gpio-vf610.c b/drivers/gpio/gpio-vf610.c
-index e0f2b67558e7..47e191e11c69 100644
---- a/drivers/gpio/gpio-vf610.c
-+++ b/drivers/gpio/gpio-vf610.c
-@@ -125,9 +125,13 @@ static int vf610_gpio_direction_output(struct gpio_chip *chip, unsigned gpio,
- {
- 	struct vf610_gpio_port *port = gpiochip_get_data(chip);
- 	unsigned long mask = BIT(gpio);
-+	u32 val;
+diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
+index f7eaf64293a4..14300896c57f 100644
+--- a/drivers/scsi/ufs/ufshpb.c
++++ b/drivers/scsi/ufs/ufshpb.c
+@@ -1257,6 +1257,13 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
+ 	struct utp_hpb_rsp *rsp_field = &lrbp->ucd_rsp_ptr->hr;
+ 	int data_seg_len;
  
--	if (port->sdata && port->sdata->have_paddr)
--		vf610_gpio_writel(mask, port->gpio_base + GPIO_PDDR);
-+	if (port->sdata && port->sdata->have_paddr) {
-+		val = vf610_gpio_readl(port->gpio_base + GPIO_PDDR);
-+		val |= mask;
-+		vf610_gpio_writel(val, port->gpio_base + GPIO_PDDR);
-+	}
++	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
++		& MASK_RSP_UPIU_DATA_SEG_LEN;
++
++	/* If data segment length is zero, rsp_field is not valid */
++	if (!data_seg_len)
++		return;
++
+ 	if (unlikely(lrbp->lun != rsp_field->lun)) {
+ 		struct scsi_device *sdev;
+ 		bool found = false;
+@@ -1291,18 +1298,6 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
+ 		return;
+ 	}
  
- 	vf610_gpio_set(chip, gpio, value);
+-	data_seg_len = be32_to_cpu(lrbp->ucd_rsp_ptr->header.dword_2)
+-		& MASK_RSP_UPIU_DATA_SEG_LEN;
+-
+-	/* To flush remained rsp_list, we queue the map_work task */
+-	if (!data_seg_len) {
+-		if (!ufshpb_is_general_lun(hpb->lun))
+-			return;
+-
+-		ufshpb_kick_map_work(hpb);
+-		return;
+-	}
+-
+ 	BUILD_BUG_ON(sizeof(struct utp_hpb_rsp) != UTP_HPB_RSP_SIZE);
  
+ 	if (!ufshpb_is_hpb_rsp_valid(hba, lrbp, rsp_field))
 -- 
 2.35.1
 
