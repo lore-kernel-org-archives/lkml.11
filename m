@@ -2,167 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB8AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 08:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231434AbiEWIMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 04:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
+        id S231469AbiEWINE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 04:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231582AbiEWIMR (ORCPT
+        with ESMTP id S231402AbiEWINB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 04:12:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 438DE644A
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:12:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653293532;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=53MnhvYtL+/cYihHLxo4GLsLARejRnqIvuUsOxI+lBY=;
-        b=F9ROI/1BV3OInshkRy94lTF6N5gUYgm1JvFsW7LMiJdS3Mz170XYIFWdEXdlOAGoIvQ6N0
-        E76zYiPxXHnlHukAQ/4Z4XhcW5OJDVHpwkOJ5LaZ8kRaoes7l/ajyANQHULX/lJAEOFA+j
-        t/EodEZQMRqbDJnona0/lE3M86Vt6ik=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-491-OglF5zPQMYmYAHYXxHjwSA-1; Mon, 23 May 2022 04:12:10 -0400
-X-MC-Unique: OglF5zPQMYmYAHYXxHjwSA-1
-Received: by mail-qt1-f197.google.com with SMTP id q13-20020a05622a04cd00b002f3c0e197afso11065916qtx.0
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 01:12:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=53MnhvYtL+/cYihHLxo4GLsLARejRnqIvuUsOxI+lBY=;
-        b=qOZtCFRR2BBdKJEM6ozxLVgCfftuGK/b6JSqytwnmW1eu5MCJHynYbXimWZLXNQ7cQ
-         DrIw86evfnPmhkDAR57p7V9vR8SdVlUHlNEgtRoHiPGbXbkLLKUWINA7bDZslZmwRK3z
-         5HigXuu/b615YuhcBve3sC/2BBY1n7VRlzPBcc9u2ZLPNpZF5r0fPHORNb8cdGxw1u3B
-         1PKlX5TjiP0g+PjmG+fs8qij/H4svaI72ooUq0rUF9gJXHdTYyr0rbNXEbGNHvzazn9v
-         ZvWL3JivOmWIMa3puZu//3/ncfM9ulNY5hTgBqVi1pwPcVMNdfSTtOA2JZc5y8Fj1eFg
-         t75w==
-X-Gm-Message-State: AOAM532sh4zjEk46pgtA+FpcrE4x7i4I8bLG2nyJt5n2FTt759y4ARUk
-        GTVbF5NKHJeWGul1qsIUEd8pzRkQ6XRyrZfMCzft0HkRZ7RpIia857LxwmbnyS52avtRMThU5D/
-        E2H4ZTLxPMVNn1yEfhBUce0XXCis5IbB9BXbMqMuN
-X-Received: by 2002:a05:6214:1cc3:b0:456:56d:f2c5 with SMTP id g3-20020a0562141cc300b00456056df2c5mr16071591qvd.119.1653293530258;
-        Mon, 23 May 2022 01:12:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxndmh3Z/5Upq6a5oy0R43tgYXfcGAKp5IHcGn2lvZMLVj0I5W3ABKYUsCufqilG4+hIlR2T+HHxzM4JZ4Bw6E=
-X-Received: by 2002:a05:6214:1cc3:b0:456:56d:f2c5 with SMTP id
- g3-20020a0562141cc300b00456056df2c5mr16071553qvd.119.1653293530053; Mon, 23
- May 2022 01:12:10 -0700 (PDT)
+        Mon, 23 May 2022 04:13:01 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C422A9FCA;
+        Mon, 23 May 2022 01:12:59 -0700 (PDT)
+Received: from kwepemi100007.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L693q1kVFzQkDD;
+        Mon, 23 May 2022 16:09:59 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100007.china.huawei.com (7.221.188.115) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 16:12:57 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
+ 2022 16:12:57 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <tj@kernel.org>, <mkoutny@suse.com>, <axboe@kernel.dk>,
+        <ming.lei@redhat.com>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next v4 1/4] blk-throttle: fix that io throttle can only work for single bio
+Date:   Mon, 23 May 2022 16:26:30 +0800
+Message-ID: <20220523082633.2324980-2-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220523082633.2324980-1-yukuai3@huawei.com>
+References: <20220523082633.2324980-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-References: <20220520172325.980884-1-eperezma@redhat.com> <20220520172325.980884-4-eperezma@redhat.com>
- <20220521083630.GA5298@gmail.com>
-In-Reply-To: <20220521083630.GA5298@gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Mon, 23 May 2022 10:11:33 +0200
-Message-ID: <CAJaqyWfKXbeT5nUbBvHj4A3Ntz_YwA3OvgDeyq=D6J2cy8dRJw@mail.gmail.com>
-Subject: Re: [PATCH 3/4] vhost-vdpa: uAPI to stop the device
-To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>, dinang@xilinx.com,
-        Eli Cohen <elic@nvidia.com>,
-        Laurent Vivier <lvivier@redhat.com>, pabloc@xilinx.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        tanuj.kamde@amd.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        martinpo@xilinx.com, Cindy Lu <lulu@redhat.com>,
-        ecree.xilinx@gmail.com, Parav Pandit <parav@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 10:36 AM Martin Habets <habetsm.xilinx@gmail.com> w=
-rote:
->
-> On Fri, May 20, 2022 at 07:23:24PM +0200, Eugenio P=C3=A9rez wrote:
-> > The ioctl adds support for stop the device from userspace.
-> >
-> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > ---
-> >  drivers/vhost/vdpa.c       | 18 ++++++++++++++++++
-> >  include/uapi/linux/vhost.h |  3 +++
-> >  2 files changed, 21 insertions(+)
-> >
-> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> > index a325bc259afb..da4a8c709bc1 100644
-> > --- a/drivers/vhost/vdpa.c
-> > +++ b/drivers/vhost/vdpa.c
-> > @@ -478,6 +478,21 @@ static long vhost_vdpa_get_vqs_count(struct vhost_=
-vdpa *v, u32 __user *argp)
-> >       return 0;
-> >  }
-> >
-> > +static long vhost_vdpa_stop(struct vhost_vdpa *v, u32 __user *argp)
-> > +{
-> > +     struct vdpa_device *vdpa =3D v->vdpa;
-> > +     const struct vdpa_config_ops *ops =3D vdpa->config;
-> > +     int stop;
-> > +
-> > +     if (!ops->stop)
-> > +             return -EOPNOTSUPP;
-> > +
-> > +     if (copy_to_user(argp, &stop, sizeof(stop)))
->
-> You want to use copy_from_user() here.
->
+commit 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
+introduce a new problem, for example:
 
-Hi Martin,
+[root@localhost ~]# echo "8:0 1024" > /sys/fs/cgroup/blkio/blkio.throttle.write_bps_device
+[root@localhost ~]# echo $$ > /sys/fs/cgroup/blkio/cgroup.procs
+[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
+[1] 620
+[root@localhost ~]# dd if=/dev/zero of=/dev/sda bs=10k count=1 oflag=direct &
+[2] 626
+[root@localhost ~]# 1+0 records in
+1+0 records out
+10240 bytes (10 kB, 10 KiB) copied, 10.0038 s, 1.0 kB/s1+0 records in
+1+0 records out
 
-You're right, I'll resend a new version with this fixed. Thanks!
+10240 bytes (10 kB, 10 KiB) copied, 9.23076 s, 1.1 kB/s
+-> the second bio is finished after 10s instead of 20s.
 
-> Martin
->
-> > +             return -EFAULT;
-> > +
-> > +     return ops->stop(vdpa, stop);
-> > +}
-> > +
-> >  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int =
-cmd,
-> >                                  void __user *argp)
-> >  {
-> > @@ -649,6 +664,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
-filep,
-> >       case VHOST_VDPA_GET_VQS_COUNT:
-> >               r =3D vhost_vdpa_get_vqs_count(v, argp);
-> >               break;
-> > +     case VHOST_STOP:
-> > +             r =3D vhost_vdpa_stop(v, argp);
-> > +             break;
-> >       default:
-> >               r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
-> >               if (r =3D=3D -ENOIOCTLCMD)
-> > diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> > index cab645d4a645..e7526968ab0c 100644
-> > --- a/include/uapi/linux/vhost.h
-> > +++ b/include/uapi/linux/vhost.h
-> > @@ -171,4 +171,7 @@
-> >  #define VHOST_VDPA_SET_GROUP_ASID    _IOW(VHOST_VIRTIO, 0x7C, \
-> >                                            struct vhost_vring_state)
-> >
-> > +/* Stop or resume a device so it does not process virtqueue requests a=
-nymore */
-> > +#define VHOST_STOP                   _IOW(VHOST_VIRTIO, 0x7D, int)
-> > +
-> >  #endif
-> > --
-> > 2.27.0
->
+This is because if some bios are already queued, current bio is queued
+directly and the flag 'BIO_THROTTLED' is set. And later, when former
+bios are dispatched, this bio will be dispatched without waiting at all,
+this is due to tg_with_in_bps_limit() return 0 for this bio.
+
+In order to fix the problem, don't skip flaged bio in
+tg_with_in_bps_limit(), and for the problem that split bio can be
+double accounted, compensate the over-accounting in __blk_throtl_bio().
+
+Fixes: 9f5ede3c01f9 ("block: throttle split bio in case of iops limit")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+---
+ block/blk-throttle.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 447e1b8722f7..0c37be08ff28 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -811,7 +811,7 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+ 	/* no need to throttle if this bio's bytes have been accounted */
+-	if (bps_limit == U64_MAX || bio_flagged(bio, BIO_THROTTLED)) {
++	if (bps_limit == U64_MAX) {
+ 		if (wait)
+ 			*wait = 0;
+ 		return true;
+@@ -921,11 +921,8 @@ static void throtl_charge_bio(struct throtl_grp *tg, struct bio *bio)
+ 	unsigned int bio_size = throtl_bio_data_size(bio);
+ 
+ 	/* Charge the bio to the group */
+-	if (!bio_flagged(bio, BIO_THROTTLED)) {
+-		tg->bytes_disp[rw] += bio_size;
+-		tg->last_bytes_disp[rw] += bio_size;
+-	}
+-
++	tg->bytes_disp[rw] += bio_size;
++	tg->last_bytes_disp[rw] += bio_size;
+ 	tg->io_disp[rw]++;
+ 	tg->last_io_disp[rw]++;
+ 
+@@ -2121,6 +2118,21 @@ bool __blk_throtl_bio(struct bio *bio)
+ 			tg->last_low_overflow_time[rw] = jiffies;
+ 		throtl_downgrade_check(tg);
+ 		throtl_upgrade_check(tg);
++
++		/*
++		 * re-entered bio has accounted bytes already, so try to
++		 * compensate previous over-accounting. However, if new
++		 * slice is started, just forget it.
++		 */
++		if (bio_flagged(bio, BIO_THROTTLED)) {
++			unsigned int bio_size = throtl_bio_data_size(bio);
++
++			if (tg->bytes_disp[rw] >= bio_size)
++				tg->bytes_disp[rw] -= bio_size;
++			if (tg->last_bytes_disp[rw] >= bio_size)
++				tg->last_bytes_disp[rw] -= bio_size;
++		}
++
+ 		/* throtl is FIFO - if bios are already queued, should queue */
+ 		if (sq->nr_queued[rw])
+ 			break;
+-- 
+2.31.1
 
