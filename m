@@ -2,73 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF69AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:33:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 19:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbiEWTdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 15:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46556 "EHLO
+        id S230181AbiEWTdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 15:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiEWTck (ORCPT
+        with ESMTP id S231172AbiEWTdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 15:32:40 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406DABF78
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:16:26 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id DAA3E1F747;
-        Mon, 23 May 2022 19:16:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1653333384; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Go5nZzNXHmKF4R7s+PkX6pCw7htskuScNkZKhciSpNE=;
-        b=muz1sonuVvEvBeiI6PSi0friQ6+E/JQ3JFanxLzulgRViz5ALQPMsTo9YjqnYe+JvAj/HX
-        hHYnnZmWYeckIhuAdbMtFwcYcBwmiCXsYhReN8WgdY3WT5m1rJrSoi3GoTyRED5kj//mNQ
-        DlV9I8E03se32nv7iYg7IUWvVXAXAxM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1653333384;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Go5nZzNXHmKF4R7s+PkX6pCw7htskuScNkZKhciSpNE=;
-        b=WfHJFgcZbytEA0XJC2onqEM+faiRWTacY9l0I+8loq+YUXEOJkU7yhFaGLS6JUy71STckl
-        vlzAUJ+6v5vyX5Aw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CDE2513AA5;
-        Mon, 23 May 2022 19:16:24 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id JpE6Mojdi2KocAAAMHmgww
-        (envelope-from <bp@suse.de>); Mon, 23 May 2022 19:16:24 +0000
-Date:   Mon, 23 May 2022 21:16:20 +0200
-From:   Borislav Petkov <bp@suse.de>
+        Mon, 23 May 2022 15:33:40 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8810BA774C
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:18:58 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id r71so14523673pgr.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 12:18:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=geAnGwGZeOVDnERCKEkbiFQECD+yZAWuAA2groNZJl4=;
+        b=KhR20UPiAVSdoaWSNSeOYGq4UvU8JUyD/aYozDK7s58U2fWGxBlVsIsLzQ6/xSOL8d
+         pnMv+S7pCdcm04CdJ8I+oYzN5Luf8P9xmYlF9e7PINjgxiEXBQWbMjML5YRf7TD2SlGg
+         hlhMaouKIgFMowDdl/129+EuIdjtZxNySzZr4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=geAnGwGZeOVDnERCKEkbiFQECD+yZAWuAA2groNZJl4=;
+        b=Z1hQVnO7rZfffsM+lXMXm82igm3oBSRnK38/HnulK1aUCcm18zlLl3N0kSN4TNKu4B
+         4nX3Fo7cRMrP4Z1r/TM+kE/ziXA4Fp2vLuTLr8Y6LzNdjzwthwRRCLzS2Uj5WKZiibwG
+         sjZkFVBt5h0ujs+PjVvggv26J4Zfo835zQdE8VjkofzCTUxBGzH4CHMqmsxosLPszs9/
+         ZbgX4tVu4sTTip1pcMEiLA2BfXgsOpm91dzB2XqbChrjgeT79S1/WvWezoSjao60h9Dn
+         u7Bn1XE8l8mV9xw7Nwyf+3M8IfhIOsyPKlYgKTZlFQt/RDiHJf37XzDczpCuHyMYL4vF
+         2Alg==
+X-Gm-Message-State: AOAM5318oOjSrDzEmNjcvnNXm4xY1cPN+O9yYOwIf9TEWtZBLf4HfSyR
+        sLFspItK7uCN+BbkUoZypbnWPA==
+X-Google-Smtp-Source: ABdhPJwJWxhPVilsqx4KRoB24cp2AgZEG8o6Ap7EI9eoXBA1GihVesKobZIwkUY719IvJqC+IKA8qA==
+X-Received: by 2002:a63:4666:0:b0:3fa:287f:b714 with SMTP id v38-20020a634666000000b003fa287fb714mr7747712pgk.398.1653333538118;
+        Mon, 23 May 2022 12:18:58 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id o4-20020a170903210400b0015e8d4eb1f1sm5445793ple.59.2022.05.23.12.18.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 12:18:57 -0700 (PDT)
+Date:   Mon, 23 May 2022 12:18:55 -0700
+From:   Kees Cook <keescook@chromium.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] x86/apic for 5.19
-Message-ID: <YovdhH0QBN7csz/b@zn.tnic>
+Cc:     linux-kernel@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>,
+        kernel test robot <lkp@intel.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [GIT PULL] execve updates for v5.19-rc1
+Message-ID: <202205231218.4D24FEDCF@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi Linus,
 
-two fixes in x86/apic for 5.19, this time around.
+Please pull these execve updates for v5.19-rc1.
 
-Please pull,
-thx.
+Thanks!
 
----
+-Kees
 
 The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
@@ -76,33 +79,37 @@ The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
 are available in the Git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_apic_for_v5.19_rc1
+  https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/execve-v5.19-rc1
 
-for you to fetch changes up to 7a116a2dd32d96869f0f93bac00b900859ba0434:
+for you to fetch changes up to 70578ff3367dd4ad8f212a9b5c05cffadabf39a8:
 
-  x86/apic: Do apic driver probe for "nosmp" use case (2022-05-01 22:40:29 +0200)
-
-----------------------------------------------------------------
-- Always do default APIC routing setup so that cpumasks are properly
-allocated and are present when later accessed ("nosmp" and x2APIC)
-
-- Clarify the bit overlap between an old APIC and a modern, integrated one
+  binfmt_flat: Remove shared library support (2022-04-22 10:57:18 -0700)
 
 ----------------------------------------------------------------
-Kuppuswamy Sathyanarayanan (1):
-      x86/apic: Do apic driver probe for "nosmp" use case
+execve updates for v5.19-rc1
 
-Thomas Gleixner (1):
-      x86/apic: Clarify i82489DX bit overlap in APIC_LVT0
+- Fix binfmt_flat GOT handling for riscv (Niklas Cassel)
 
- arch/x86/include/asm/apicdef.h |  6 ------
- arch/x86/kernel/apic/apic.c    | 16 ++++++++++++----
- 2 files changed, 12 insertions(+), 10 deletions(-)
+- Remove unused/broken shared library and coredump code (Eric W. Biederman)
+
+----------------------------------------------------------------
+Eric W. Biederman (2):
+      binfmt_flat: Drop vestiges of coredump support
+      binfmt_flat: Remove shared library support
+
+Niklas Cassel (1):
+      binfmt_flat: do not stop relocating GOT entries prematurely on riscv
+
+ arch/arm/configs/lpc18xx_defconfig |   1 -
+ arch/arm/configs/mps2_defconfig    |   1 -
+ arch/arm/configs/stm32_defconfig   |   1 -
+ arch/arm/configs/vf610m4_defconfig |   1 -
+ arch/sh/configs/rsk7201_defconfig  |   1 -
+ arch/sh/configs/rsk7203_defconfig  |   1 -
+ arch/sh/configs/se7206_defconfig   |   1 -
+ fs/Kconfig.binfmt                  |   6 -
+ fs/binfmt_flat.c                   | 239 ++++++++++---------------------------
+ 9 files changed, 66 insertions(+), 186 deletions(-)
 
 -- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
-(HRB 36809, AG Nürnberg)
+Kees Cook
