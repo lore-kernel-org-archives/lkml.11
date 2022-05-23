@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A62C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240233AbiEWRXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        id S231143AbiEWRXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239986AbiEWRRU (ORCPT
+        with ESMTP id S239967AbiEWRRU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 23 May 2022 13:17:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1346B653;
-        Mon, 23 May 2022 10:17:06 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9322AEF;
+        Mon, 23 May 2022 10:17:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2872BB81210;
-        Mon, 23 May 2022 17:16:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F54C385AA;
-        Mon, 23 May 2022 17:16:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85FC160919;
+        Mon, 23 May 2022 17:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88388C385A9;
+        Mon, 23 May 2022 17:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326182;
-        bh=qNsw8UK5s/gGHb4MLQDTHi7UXjBbR34W4sjFr7+B9qs=;
+        s=korg; t=1653326159;
+        bh=TGsK3aQ5NEMfZJcdqIApNUCgUyO9h4QFqmtyBlucvSM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2UFbfb3dYSUY+BUpaAltX4NFS937S+Q3GiW4gXZ5IgbyqsYG5cnaSYt8cnTP3Ry5C
-         0W8P+Mk/Mr497H4We+NqWrVtGDqSN0RiPgS8zcuAejzd+a1qAlPVFEaGjYQ9R2lmtd
-         ugn8uXWWKGJkQIBmtQPwHjKY2bOj6eP6QRyrjE4A=
+        b=vKCBQVqXQUla5ngG8p/Br4aB68Ou8NIcMpEvAGLsrWPLhDsxqrUxG3BrHSaZPqclH
+         P6MLgzEYKvCUot8TBKzdaNt3FB1773IrlNcqjtVdZUy4qNiJUvsaLd4KYwk7NyfN6r
+         HNipUh7Ni7BODw1W2OrVHnQgp5ND4QPqenA6g+wU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 31/97] Revert "swiotlb: fix info leak with DMA_FROM_DEVICE"
-Date:   Mon, 23 May 2022 19:05:35 +0200
-Message-Id: <20220523165817.160571252@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 25/97] MIPS: lantiq: check the return value of kzalloc()
+Date:   Mon, 23 May 2022 19:05:29 +0200
+Message-Id: <20220523165816.223105432@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165812.244140613@linuxfoundation.org>
 References: <20220523165812.244140613@linuxfoundation.org>
@@ -47,68 +49,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit d4d975e7921079f877f828099bb8260af335508f.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Upstream had a follow-up fix, revert, and a semi-reverted-revert.
-Instead of going through this chain which is more painful to backport,
-I'm just going to revert this original commit and pick the final one.
+[ Upstream commit 34123208bbcc8c884a0489f543a23fe9eebb5514 ]
 
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check the
+return value of it to prevent potential wrong memory access or
+memory leak.
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/core-api/dma-attributes.rst | 8 --------
- include/linux/dma-mapping.h               | 8 --------
- kernel/dma/swiotlb.c                      | 3 +--
- 3 files changed, 1 insertion(+), 18 deletions(-)
+ arch/mips/lantiq/falcon/sysctrl.c |  2 ++
+ arch/mips/lantiq/xway/gptu.c      |  2 ++
+ arch/mips/lantiq/xway/sysctrl.c   | 46 ++++++++++++++++++++-----------
+ 3 files changed, 34 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
-index 17706dc91ec9..1887d92e8e92 100644
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,11 +130,3 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
--
--DMA_ATTR_OVERWRITE
--------------------
--
--This is a hint to the DMA-mapping subsystem that the device is expected to
--overwrite the entire mapped size, thus the caller does not require any of the
--previous buffer contents to be preserved. This allows bounce-buffering
--implementations to optimise DMA_FROM_DEVICE transfers.
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index a9361178c5db..a7d70cdee25e 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -61,14 +61,6 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
+index 42222f849bd2..446a2536999b 100644
+--- a/arch/mips/lantiq/falcon/sysctrl.c
++++ b/arch/mips/lantiq/falcon/sysctrl.c
+@@ -167,6 +167,8 @@ static inline void clkdev_add_sys(const char *dev, unsigned int module,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
--/*
-- * This is a hint to the DMA-mapping subsystem that the device is expected
-- * to overwrite the entire mapped size, thus the caller does not require any
-- * of the previous buffer contents to be preserved. This allows
-- * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-- */
--#define DMA_ATTR_OVERWRITE		(1UL << 10)
--
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 62b1e5fa8673..0ed0e1f215c7 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -598,8 +598,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = NULL;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/gptu.c b/arch/mips/lantiq/xway/gptu.c
+index 3d5683e75cf1..200fe9ff641d 100644
+--- a/arch/mips/lantiq/xway/gptu.c
++++ b/arch/mips/lantiq/xway/gptu.c
+@@ -122,6 +122,8 @@ static inline void clkdev_add_gptu(struct device *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
- 	tlb_addr = slot_addr(io_tlb_start, index) + offset;
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
--	    dir == DMA_BIDIRECTIONAL))
-+	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
- 		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev_name(dev);
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+index 917fac1636b7..084f6caba5f2 100644
+--- a/arch/mips/lantiq/xway/sysctrl.c
++++ b/arch/mips/lantiq/xway/sysctrl.c
+@@ -315,6 +315,8 @@ static void clkdev_add_pmu(const char *dev, const char *con, bool deactivate,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -338,6 +340,8 @@ static void clkdev_add_cgu(const char *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -356,24 +360,28 @@ static void clkdev_add_pci(void)
+ 	struct clk *clk_ext = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
+ 	/* main pci clock */
+-	clk->cl.dev_id = "17000000.pci";
+-	clk->cl.con_id = NULL;
+-	clk->cl.clk = clk;
+-	clk->rate = CLOCK_33M;
+-	clk->rates = valid_pci_rates;
+-	clk->enable = pci_enable;
+-	clk->disable = pmu_disable;
+-	clk->module = 0;
+-	clk->bits = PMU_PCI;
+-	clkdev_add(&clk->cl);
++	if (clk) {
++		clk->cl.dev_id = "17000000.pci";
++		clk->cl.con_id = NULL;
++		clk->cl.clk = clk;
++		clk->rate = CLOCK_33M;
++		clk->rates = valid_pci_rates;
++		clk->enable = pci_enable;
++		clk->disable = pmu_disable;
++		clk->module = 0;
++		clk->bits = PMU_PCI;
++		clkdev_add(&clk->cl);
++	}
+ 
+ 	/* use internal/external bus clock */
+-	clk_ext->cl.dev_id = "17000000.pci";
+-	clk_ext->cl.con_id = "external";
+-	clk_ext->cl.clk = clk_ext;
+-	clk_ext->enable = pci_ext_enable;
+-	clk_ext->disable = pci_ext_disable;
+-	clkdev_add(&clk_ext->cl);
++	if (clk_ext) {
++		clk_ext->cl.dev_id = "17000000.pci";
++		clk_ext->cl.con_id = "external";
++		clk_ext->cl.clk = clk_ext;
++		clk_ext->enable = pci_ext_enable;
++		clk_ext->disable = pci_ext_disable;
++		clkdev_add(&clk_ext->cl);
++	}
  }
+ 
+ /* xway socs can generate clocks on gpio pins */
+@@ -393,9 +401,15 @@ static void clkdev_add_clkout(void)
+ 		char *name;
+ 
+ 		name = kzalloc(sizeof("clkout0"), GFP_KERNEL);
++		if (!name)
++			continue;
+ 		sprintf(name, "clkout%d", i);
+ 
+ 		clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
++		if (!clk) {
++			kfree(name);
++			continue;
++		}
+ 		clk->cl.dev_id = "1f103000.cgu";
+ 		clk->cl.con_id = name;
+ 		clk->cl.clk = clk;
 -- 
 2.35.1
 
