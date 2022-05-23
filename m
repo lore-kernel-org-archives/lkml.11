@@ -2,123 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D50C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 05:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230442AbiEWF4D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 01:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
+        id S231948AbiEWF4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 01:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiEWFz4 (ORCPT
+        with ESMTP id S233218AbiEWF4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 01:55:56 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F7F1EC4B
-        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 22:55:54 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2D4E65C00CB;
-        Mon, 23 May 2022 01:55:52 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 23 May 2022 01:55:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        tom-fitzhenry.me.uk; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1653285352; x=1653371752; bh=tl
-        oN7t7Um1VK0HgY5UzOFHkfXExj5u5VBpRfGhOZ348=; b=hHhgo+IONCuziFq5ob
-        vPxaIkjTOuBIWILEBP2ecx5SqxZC7tjPA/HsrTA9TbH7TlouR9KKLH0yoQ0vcHoT
-        IvSLXqTIwVuZY6ldqdlB8VpHc3Hign96h0JZUdYyCv/7PTttFDYanmJv7uWnfr+R
-        tfEoTWyr9MzQGPcmmZwQsBHPcmLB6BkaRmcWrcZZVs20/uEUrw0aB4mqg6k/tg0t
-        rRM+tDcgYqNWAX4lTV7g/z8TxDjjdWLq6/I+FFg7zArT61+we6p1m1vmQABhPuXZ
-        hb/bMcK348MysFP8aGpeCFP1DHTqiOGNPvEx8fPPwssfb23DwMt+j+Bs9FWd9t0d
-        tyNQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1653285352; x=1653371752; bh=tloN7t7Um1VK0HgY5UzOFHkfXExj5u5VBpR
-        fGhOZ348=; b=DAs9ltRVIiyqAlrIMpLVyfm7p950SNcoShklX8mrKyOAZsY7HgQ
-        ih9uTUt/fh5pdT1MxDA/ZcSQO0peYH0/AHZwxGROYslLuehdohZyb+MBCAH9l1SG
-        ZOcJJHQAL6oFAi/ORqtXWrtDW0e6h1ydc075KBaSitNk60yvTWcj2C8AOntYxJS3
-        SCn1pftbfGvfInBOegNKfrQ9IoGB1DLFRVtkyltVBLJToDGluRFNPkkuP7ozLXD3
-        8q5jCCGkioAWdSAQMJRof7p4mQlCGZvFjY82h0OtWnbu7z5AEUcHmdCW1I/9pnxM
-        OGECEHIXaCpiTLxTbSL35RxB6PVAP9JvndQ==
-X-ME-Sender: <xms:5yGLYvFYabU4aR4D94t52DS_TBypD7yQfUMV6BLEf90QodWemmJExg>
-    <xme:5yGLYsWA5Sc5Wu8P6QKRIxtWL-g54zMMbJAe8hOMlR-JqJdCgqTTX7t03a49xJvYa
-    T5B-7YeMA3CPSvtkA>
-X-ME-Received: <xmr:5yGLYhIqZbF4K2i9oZQjvMfIQZgfgAMEQ3g187AgItWwLCC1z3oWjBsU9Zwg7tViaQHm83seJq-o8C2v2YrGF1stUNPDtx2LCbs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrieelgddutdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepvfhomhcuhfhi
-    thiihhgvnhhrhicuoehtohhmsehtohhmqdhfihhtiihhvghnrhihrdhmvgdruhhkqeenuc
-    ggtffrrghtthgvrhhnpeetieffveegleeiffegleeiffejueeuudejtddvvdehudffueeh
-    ueffueelffeuffenucffohhmrghinhepghhighgruggvvhhitggvrdgtohhmpdhpihhnvg
-    eigedrohhrghdpghhithhlrggsrdgtohhmpdhgihhthhhusgdrtghomhenucevlhhushht
-    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehtohhmsehtohhmqdhfih
-    htiihhvghnrhihrdhmvgdruhhk
-X-ME-Proxy: <xmx:5yGLYtGBWhVc2HemBFKKZeorRXEd1iVfZEfWi0818XyZJYaDZHvlTw>
-    <xmx:5yGLYlXQGo-8G6DJoD_JNLYYjqB6CfuPK4tEqoOJGEvZULO9NOKISA>
-    <xmx:5yGLYoOu2Upd8pOpz7zMI64qeDTZE9nsSaY1O6OLBuf9BXu1SEeOHw>
-    <xmx:6CGLYut-MSj4Kipw9j9GxGwLKiMAIA-mv7dTWfjKfCrX4K5crBHFaA>
-Feedback-ID: iefc945ae:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 23 May 2022 01:55:48 -0400 (EDT)
-From:   Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Martijn Braam <martijn@brixit.nl>,
-        Tom Fitzhenry <tom@tom-fitzhenry.me.uk>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mtd: spi-nor: gigadevice: add support for gd25lq128e
-Date:   Mon, 23 May 2022 15:55:40 +1000
-Message-Id: <20220523055541.724422-1-tom@tom-fitzhenry.me.uk>
-X-Mailer: git-send-email 2.36.0
+        Mon, 23 May 2022 01:56:16 -0400
+X-Greylist: delayed 577 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 22 May 2022 22:56:13 PDT
+Received: from gimli.rothwell.id.au (unknown [IPv6:2404:9400:2:0:216:3eff:fee1:997a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD716477;
+        Sun, 22 May 2022 22:56:12 -0700 (PDT)
+Received: from authenticated.rothwell.id.au (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.rothwell.id.au (Postfix) with ESMTPSA id 4L65t34C7Hzyt1;
+        Mon, 23 May 2022 15:46:19 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rothwell.id.au;
+        s=201702; t=1653284785;
+        bh=Di2ytdI20hGLvdYTu+D5TDiSjO5bL6Fmj+Y5Mr1n9UI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=p61dwhfIqraUBvusDZjXVmhi1S7L//Wylp+fxffPmqR/t8rAr7feaNgrNRD2uhxSY
+         ISAtl1pbw0tkHh3v38L2pHOPFyqcSWLFbZmXuWmOJV9RJVpgMDlak62ilVdmr/IG/j
+         f3sgtyRTnWrJ9fuL5dl/ZwmKuR+RVZBpOusaefBEROuPlOuSCKPk0fywELzPtiIpl8
+         +ngkx8zKgTDghwL76Esj3UGwvUv7nOJLLW0tehUSTvpHVGboDXwq4G7j8US7ednldH
+         +STNua4Fmh9ChrJBEOYyFk/ZhaBw0QbOn3TGm7k1sJqeSi12c5ecU/Sr9a+1ZlXHWN
+         +ATLXj79MAoUA==
+Date:   Mon, 23 May 2022 15:46:18 +1000
+From:   Stephen Rothwell <sfr@rothwell.id.au>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the tip tree with the kbuild tree
+Message-ID: <20220523154618.69c5f126@elm.ozlabs.ibm.com>
+In-Reply-To: <CAK7LNAQcRsuKrepsMiV20D+SSQQYWRqeoWqpo4UoQMtdW2A8SQ@mail.gmail.com>
+References: <20220523142431.10ff2f77@canb.auug.org.au>
+        <CAK7LNAQcRsuKrepsMiV20D+SSQQYWRqeoWqpo4UoQMtdW2A8SQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/zluxm=Jzz5yePm7bHq5Ggbc";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The GD25LQ128EWIGR[0] reports an JEDEC id with a different vendor,
-otherwise it seems to fit neatly in the gigadevice list.
+--Sig_/zluxm=Jzz5yePm7bHq5Ggbc
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Tested to work on the Pine64 PinePhone Pro[1].
+Hi Masahiro,
 
-Attribution: initial version was written by
-Martijn Braam <martijn@brixit.nl> for the Pine64 vendor kernel[2].
+On Mon, 23 May 2022 14:37:28 +0900 Masahiro Yamada <masahiroy@kernel.org> w=
+rote:
+>
+> On Mon, May 23, 2022 at 1:24 PM Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
+> >
+> > I am not sure if I fixed this up correctly, please check the final resu=
+lt
+> > when linux-next is released.
+>=20
+> I think you can fix up around line 420
+> of scripts/Makefile.build
+>=20
+>=20
+> $(multi-obj-m): objtool-enabled :=3D $(delay-objtool)
+> $(multi-obj-m): part-of-module :=3D y
+> $(multi-obj-m): linked-object :=3D y                        <--- Add this
+> $(multi-obj-m): %.o: %.mod FORCE
+>         $(call if_changed_rule,ld_multi_m)
 
-Also in use in vendor u-boot builds[3].
+Yeah, I tried that, but it needed more - see my upcoming reply to
+myself ... (which is probably overkill, but gets rid of lots of
+warnings).
+--=20
+Cheers,
+Stephen Rothwell
 
-0. https://www.gigadevice.com/flash-memory/gd25lq128e/
-1. https://wiki.pine64.org/wiki/PinePhone_Pro
-2. https://gitlab.com/pine64-org/linux/-/merge_requests/29
-3. https://github.com/Tow-Boot/Tow-Boot/blob/b94838dfb8971cdeb841d3922051aaa8e108b085/boards/pine64-pinephonePro/0001-mtd-spi-nor-ids-Add-GigaDevice-GD25LQ128E-entry.patch
+--Sig_/zluxm=Jzz5yePm7bHq5Ggbc
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-Signed-off-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
----
- drivers/mtd/spi-nor/gigadevice.c | 4 ++++
- 1 file changed, 4 insertions(+)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/mtd/spi-nor/gigadevice.c b/drivers/mtd/spi-nor/gigadevice.c
-index 33895002eeea..871c9dee11dc 100644
---- a/drivers/mtd/spi-nor/gigadevice.c
-+++ b/drivers/mtd/spi-nor/gigadevice.c
-@@ -56,6 +56,10 @@ static const struct flash_info gigadevice_nor_parts[] = {
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
- 			      SPI_NOR_QUAD_READ) },
-+	{ "gd25lq128e", INFO(0x257018, 0, 64 * 1024, 256)
-+		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-+		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
-+			      SPI_NOR_QUAD_READ) },
- 	{ "gd25q128", INFO(0xc84018, 0, 64 * 1024, 256)
- 		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
--- 
-2.36.0
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKLH6oACgkQAVBC80lX
+0Gx3Wwf9El+4lthpJcxPmPWOWxiTDTEIFti7XxteURAqXoTgatfFXY6pPEn6yxQq
+Gp4U/n4bsdfsquPlHF43ZzUwz96BgBbpRjztMu6daNNPvEjHYJcorFHylyfSBk2t
+inwIwTg0zdGIEe5phEIWGr+3VShRd8WE4jwafajze7bJb4G96wd/XHRTkXW/87Hv
+wpmQsD0OUzlnVX7c3Z9cn1BayjqkAYMzWeNRJ5R7lUIl5ozxrqbN9Wb5t2Gnmfsr
+K1xGFuueLCVYZoG1nUiza6WjOsceZvG5wG0pLrCW4uLXTTZKOBSO/na3iY/Ff/0+
+/T9NcoxvxyIII2SHqkIlzGSUYKdFWw==
+=8MpL
+-----END PGP SIGNATURE-----
 
+--Sig_/zluxm=Jzz5yePm7bHq5Ggbc--
