@@ -2,97 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 18:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240880AbiEWScr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 14:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
+        id S238688AbiEWSdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 14:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240063AbiEWSbr (ORCPT
+        with ESMTP id S239388AbiEWSdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 14:31:47 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F24A50E16;
-        Mon, 23 May 2022 11:06:45 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id a9so12314078pgv.12;
-        Mon, 23 May 2022 11:06:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6QK5Ggf9n0CfVz8Lb2SQFoXn/joTzIV25cpMh2WCObA=;
-        b=EMdDEmOHwBk4hGi1iUd53cNOtOldCNgi4eZ/EWt+gIBM0jj4RqCTViNMh6Ho0rgyV0
-         bQQHXcFQ3ZaZ3z9sGDzOU5ygznrjSsYkOeHqbfHU10kQl67vBdnH1LB7zyVr0+3Sfdpj
-         XZguw7DkPwv5Ah0RkOOxB1LqE7mFweEKq7SooLrWsjVJ0LlgtdXr3K2hb2dfpgAo/HB2
-         6A95AjQNZnLmxkdQT+Gpj7z3t1P57/1qcxj6GVFJQllcJwJTxMMe9W82RHa9BJbpO4/U
-         MGnRYXXeEChAOhPzqJ8aUejFQeAaaRsgoYBFNMdxwymMY6Zacdp9vvqZcxPsT7q3Cf8V
-         KswA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6QK5Ggf9n0CfVz8Lb2SQFoXn/joTzIV25cpMh2WCObA=;
-        b=c+g5Bx2h6xKCFGPE5t1cbsI1gFri/8B5rsE3H/toTTNzwwhb3RHcgztLF+L6lckZc2
-         B12x7GdCWNrzqRBm0okEBxzp0VlKH2aMNKe36s6BP2oXcAAzaFLf3Yo/mmqdRFDHwoe3
-         TfMA6sRMB8a7lUaYuVYzJIGa+J3zjNCjrJCrSfnfkL5ghyKs6zepe4pdCIgDs9yWR5G4
-         X1IeQlv58zARNb9b8P2bdcleFUMcrre/Fs17/rQhzH2WVyVw0FpLIOE+3wKd1Jdl5cQZ
-         JnNtYVndQfeiWQHeO9a2soaL8QVMv+rzZmLNrZXIidFiY78a8PDCNPrrlGhIzp6TTwJy
-         0aiw==
-X-Gm-Message-State: AOAM5313x4GNzPCnCvgKTLf856nM/JuooFQcS7aKnB1czWavLzgjKBwg
-        DGumu11QLarVJrimvMORfWk=
-X-Google-Smtp-Source: ABdhPJzjf7GeOpqZD7J23t3F6aXzgBH3AoZ4PRkAOwzR1Tug2RPfUnzLzXCKGIC7toX/2WHqOB1biQ==
-X-Received: by 2002:a63:2a94:0:b0:3f9:d9fa:6218 with SMTP id q142-20020a632a94000000b003f9d9fa6218mr12482914pgq.58.1653329204111;
-        Mon, 23 May 2022 11:06:44 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l30-20020a637c5e000000b003c5e836eddasm4922059pgn.94.2022.05.23.11.06.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 11:06:43 -0700 (PDT)
-Message-ID: <bb5e6267-9f50-7a00-e406-04f7dc85ed17@gmail.com>
-Date:   Mon, 23 May 2022 11:06:40 -0700
+        Mon, 23 May 2022 14:33:19 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4D7F134A;
+        Mon, 23 May 2022 11:07:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653329261; x=1684865261;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xO9+Il1COuI9460Hv2AB+G62aauLLV09YgyaLPckxgE=;
+  b=Vp1hZYYg27RvoLTD3VYUiXcI55o0Qu1X/DQkWtH/TvjDMW/dMHVcoysw
+   jj5QJJpPFXgTAxkGDDsQV0oQFImYmjNFf4/fO0Ev0vZ1U5M9uwduEZdZH
+   Xw+E3fGDqwdh69fojk3mKd/2wTl0t6h3GD1qFkPldyO5u/YGphO62SH6b
+   nwwkyar8wN8rgjx2bzO3Qn5g8eGZAfHZlmN87mEbq1Q4ftob14UFvZv6k
+   uPin5boCUxmYIzxyOUFwafcwvWGuP14gP8KCxCzUQlb+2nwZu5Z0THyKk
+   tV183/VQLqu1rhj0StcOC2EnFax4iBNiv1z0oRxDFDZ/E9yq64v1Pf7yJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="253183301"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="253183301"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 11:00:30 -0700
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="572227817"
+Received: from ijgarcia-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.152.3])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 11:00:29 -0700
+Message-ID: <19189e1c806bf812e41a400e826c5e23892900e0.camel@linux.intel.com>
+Subject: Re: [PATCH] Documentation: admin-guide: pm: Add Out of Band mode
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Jonathan Corbet <corbet@lwn.net>, rafael@kernel.org,
+        hdegoede@redhat.com, markgross@kernel.org
+Cc:     lenb@kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-doc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, prarit@redhat.com
+Date:   Mon, 23 May 2022 11:00:29 -0700
+In-Reply-To: <871qwkb0rn.fsf@meer.lwn.net>
+References: <20220523172757.2351052-1-srinivas.pandruvada@linux.intel.com>
+         <871qwkb0rn.fsf@meer.lwn.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 5.4 00/68] 5.4.196-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220523165802.500642349@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220523165802.500642349@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/23/22 10:04, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.196 release.
-> There are 68 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Mon, 2022-05-23 at 11:46 -0600, Jonathan Corbet wrote:
+> Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> writes:
 > 
-> Responses should be made by Wed, 25 May 2022 16:56:55 +0000.
-> Anything received after that time might be too late.
+> > Update documentation for using the tool to support performance
+> > level
+> > change via OOB (Out of Band) interface.
+> > 
+> > Signed-off-by: Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com>
+> > ---
+> >  .../admin-guide/pm/intel-speed-select.rst     | 19
+> > +++++++++++++++++++
+> >  1 file changed, 19 insertions(+)
+> > 
+> > diff --git a/Documentation/admin-guide/pm/intel-speed-select.rst
+> > b/Documentation/admin-guide/pm/intel-speed-select.rst
+> > index 0a1fbdb54bfe..4146a2da35ea 100644
+> > --- a/Documentation/admin-guide/pm/intel-speed-select.rst
+> > +++ b/Documentation/admin-guide/pm/intel-speed-select.rst
+> > @@ -262,6 +262,25 @@ Which shows that the base frequency now
+> > increased from 2600 MHz at performance
+> >  level 0 to 2800 MHz at performance level 4. As a result, any
+> > workload, which can
+> >  use fewer CPUs, can see a boost of 200 MHz compared to performance
+> > level 0.
+> >  
+> > +Changing performance level via BMC Interface
+> > +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > +
+> > +It is possible to change SST-PP level using out of band (OOB)
+> > agent (Via some
+> > +remote management console, through BMC "Baseboard Management
+> > Controller"
+> > +interface). This mode is supported from the Sapphire Rapids
+> > processor
+> > +generation. The kernel and tool change to support this mode is
+> > added to Linux
+> > +kernel version 5.18. To enable this feature, kernel config
+> > +"CONFIG_INTEL_HFI_THERMAL" is required. The minimum version of the
+> > tool
+> > +is "v1.12" to support this feature, which is part of Linux kernel
+> > version 5.18.
+> > +
+> > +To support such configuration, this tool can be used as a daemon.
+> > Add
+> > +a command line option --oob::
+> > +
+> > +# intel-speed-select --oob
+> > +
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.196-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> This suggests you haven't actually built the documentation with your
+> change and verified that you got the result you were after.
+You mean I should print the result with the command? Something like
+this:
+#intel-speed-select --oob
+Intel(R) Speed Select Technology
+OOB mode is enabled and will run as daemon
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+>   Literal
+> blocks need to be indented.
+I will submit v2.
+
+Thanks,
+Srinivas
+
+> 
+> Thanks,
+> 
+> jon
+
