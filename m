@@ -2,104 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E51C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C7CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 01:50:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352020AbiEWBud (ORCPT
+        id S1351982AbiEWBul (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 22 May 2022 21:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47814 "EHLO
+        Sun, 22 May 2022 21:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232658AbiEWBu1 (ORCPT
+        with ESMTP id S1352046AbiEWBui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 22 May 2022 21:50:27 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B341D338;
-        Sun, 22 May 2022 18:50:26 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L60c92ywLzgYCD;
-        Mon, 23 May 2022 09:48:57 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+        Sun, 22 May 2022 21:50:38 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBAB1400B
+        for <linux-kernel@vger.kernel.org>; Sun, 22 May 2022 18:50:37 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L60Zc6YgyzQk8W;
+        Mon, 23 May 2022 09:47:36 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 09:50:25 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 23 May 2022 09:50:24 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <elver@google.com>, <catalin.marinas@arm.com>, <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mark.rutland@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>
-CC:     <linux-doc@vger.kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v3 2/2] arm64: kcsan: Support detecting more missing memory barriers
-Date:   Mon, 23 May 2022 10:00:51 +0800
-Message-ID: <20220523020051.141460-3-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220523020051.141460-1-wangkefeng.wang@huawei.com>
-References: <20220523020051.141460-1-wangkefeng.wang@huawei.com>
+ 15.1.2375.24; Mon, 23 May 2022 09:50:35 +0800
+Subject: Re: [PATCH next] mm/shmem: fix shmem folio swapoff hang
+To:     Hugh Dickins <hughd@google.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Matthew Wilcox <willy@infradead.org>
+References: <c32bee8a-f0aa-245-f94e-24dd271924fa@google.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <2e4d5ba4-3525-322d-2aa6-3387d9822f5e@huawei.com>
+Date:   Mon, 23 May 2022 09:50:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
+In-Reply-To: <c32bee8a-f0aa-245-f94e-24dd271924fa@google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As "kcsan: Support detecting a subset of missing memory barriers"[1]
-introduced KCSAN_STRICT/KCSAN_WEAK_MEMORY which make kcsan detects
-more missing memory barrier, but arm64 don't have KCSAN instrumentation
-for barriers, so the new selftest test_barrier() and test cases for
-memory barrier instrumentation in kcsan_test module will fail, even
-panic on selftest.
+On 2022/5/22 10:53, Hugh Dickins wrote:
+> Shmem swapoff makes no progress: the index to indices is not incremented.
 
-Let's prefix all barriers with __ on arm64, as asm-generic/barriers.h
-defined the final instrumented version of these barriers, which will
-fix the above issues.
+Yes, there would be a infinite loop in the while loop in shmem_unuse_inode().
 
-Note, barrier instrumentation can be disabled via __no_kcsan with
-appropriate compiler-support (and not just with objtool help), see
-commit bd3d5bd1a0ad ("kcsan: Support WEAK_MEMORY with Clang where
-no objtool support exists"), it adds disable_sanitizer_instrumentation
-to __no_kcsan attribute for Clang which will remove all sanitizer
-instrumentation fully (with Clang 14.0). Meanwhile, GCC does the
-same thing with no_sanitize.
+> But "ret" is no longer a return value, so use folio_batch_count() instead.
+> 
+> Fixes: da08e9b79323 ("mm/shmem: convert shmem_swapin_page() to shmem_swapin_folio()")
+> Signed-off-by: Hugh Dickins <hughd@google.com>
 
-[1] https://lore.kernel.org/linux-mm/20211130114433.2580590-1-elver@google.com/
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- arch/arm64/include/asm/barrier.h | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+This patch looks good to me! Thanks!
 
-diff --git a/arch/arm64/include/asm/barrier.h b/arch/arm64/include/asm/barrier.h
-index 9f3e2c3d2ca0..2cfc4245d2e2 100644
---- a/arch/arm64/include/asm/barrier.h
-+++ b/arch/arm64/include/asm/barrier.h
-@@ -50,13 +50,13 @@
- #define pmr_sync()	do {} while (0)
- #endif
- 
--#define mb()		dsb(sy)
--#define rmb()		dsb(ld)
--#define wmb()		dsb(st)
-+#define __mb()		dsb(sy)
-+#define __rmb()		dsb(ld)
-+#define __wmb()		dsb(st)
- 
--#define dma_mb()	dmb(osh)
--#define dma_rmb()	dmb(oshld)
--#define dma_wmb()	dmb(oshst)
-+#define __dma_mb()	dmb(osh)
-+#define __dma_rmb()	dmb(oshld)
-+#define __dma_wmb()	dmb(oshst)
- 
- #define io_stop_wc()	dgh()
- 
--- 
-2.35.3
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Tested-by: Miaohe Lin <linmiaohe@huawei.com>
+
+BTW: When I try to fix infinite loop when swap in shmem error at swapoff time, I also found this
+issue last Saturday [1]. ;)
+
+[1] https://lore.kernel.org/linux-mm/0f6dc98b-88f4-c0c9-eb7b-5356ad0e08b1@huawei.com/
+
+> ---
+> 
+>  mm/shmem.c |    3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -1171,7 +1171,6 @@ static int shmem_find_swap_entries(struc
+>  	XA_STATE(xas, &mapping->i_pages, start);
+>  	struct folio *folio;
+>  	swp_entry_t entry;
+> -	unsigned int ret = 0;
+>  
+>  	rcu_read_lock();
+>  	xas_for_each(&xas, folio, ULONG_MAX) {
+> @@ -1189,7 +1188,7 @@ static int shmem_find_swap_entries(struc
+>  		if (swp_type(entry) != type)
+>  			continue;
+>  
+> -		indices[ret] = xas.xa_index;
+> +		indices[folio_batch_count(fbatch)] = xas.xa_index;
+>  		if (!folio_batch_add(fbatch, folio))
+>  			break;
+>  
+> 
+> .
+> 
 
