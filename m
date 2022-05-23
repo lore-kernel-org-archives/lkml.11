@@ -2,110 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36923C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B659CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 15:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238170AbiEWPx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 11:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
+        id S238205AbiEWPzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 11:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238353AbiEWPxc (ORCPT
+        with ESMTP id S234924AbiEWPzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 11:53:32 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6101060DBD
-        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:53:30 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id E6C261F43999
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1653321209;
-        bh=NzwdUWK14vQgJs3bT2nJXsIJw7vgrnGZ5jOEJKZH3V4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=cSl8zy7n2eDm5whb81GyXjTw7qC/3a3Br6GIQSyiBLYqyJvRF7d9eOKpwJFYeviUw
-         ADqBnvYJfBhejzlUu6LRy35efOpT6TOvV//6Kzju3OJ76GfFmya5ddyCUWO18LwbZE
-         i26QQtWLmg5xFPnYdIE0o6WQegUvow1wpB/6cZo5Z06PRvC6StAfEycFD4EslPE2gF
-         OU65WIwuNEzCmm6XtePpiKgTQMD2nbhj9956j/DwvREc69MSdNqmH7zf5l/XKYXlXM
-         m3xvxnJ2wLtlnchWBF2OUHCpOTOeT+rpwbR29wp6BKOqnpOj/Ip2U9vU96iMBTT8of
-         4ow03fBArPfKg==
-Message-ID: <f42a3dc9-2a6f-2467-b2ff-b6487669ae48@collabora.com>
-Date:   Mon, 23 May 2022 16:53:26 +0100
+        Mon, 23 May 2022 11:55:05 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08843FD93
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:55:03 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id fw21-20020a17090b129500b001df9f62edd6so252395pjb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 23 May 2022 08:55:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vxzgIssUBLkjl5Ck7pCy7EqfLmYDBm9in1HjcPwdZOA=;
+        b=D6jjtJOOEYbh1eBozNMRHFHPq1jp4FMBrOna9AsjLJ55+bi17v1TcqR2ccLt4NxFRZ
+         yrOZ61fBfNlX4/iF5bUSvLGECwAhFuwxlLoC1+R75iGme2074rJrJaq1Puv0DEzxT8/j
+         aWXyy1SnREtD1cJrGVPpM4rSH6RgCvGE5XqxA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vxzgIssUBLkjl5Ck7pCy7EqfLmYDBm9in1HjcPwdZOA=;
+        b=HffIHSC1xO27slQjICguWeDtf/BLnUlY9ozkb7V3fFeuDnTIJm7n+oU0DZdCLPaoj0
+         Alw9jwquGvBnevRIMfH2ntlqNH+D9aLs3jCWuIGFtkquAuSU5M4JKKRqgi0AUNJTVzAj
+         dyi0s9zB+8S2tWVkXtxLPfdqyVAE87hBUIOdCzd05KcBHx3aKt2Xzx7CMXRC9nO3OA+n
+         128ktbrLy0Fo45eAwdOhRCJ+o96iixwYusfroNTiBI4erw5NatDSSsT/ZzhAK+wI+j4x
+         XBClbGruQ0+rqvDRQ4dZOYZO+a2EEzRhcrlCIsfzzUq9UHMibNQn0eVJzVnceu3Fp87F
+         r8/w==
+X-Gm-Message-State: AOAM530AOpoYCrBzT8LsWVPB/bjA4/W1SIBCGNIHPpdQyQeXbN3xBJh8
+        s2zkHDnm41XC0jwNIScysWwszVKAfoJS96dp
+X-Google-Smtp-Source: ABdhPJwH9alKTbdgwyVljLTN+YAQ/hwbuIz1fY7y+CeixPhmhAKFFbAcxbGMbGsQCsNeXhA7J3Q5GQ==
+X-Received: by 2002:a17:903:248:b0:155:e660:b774 with SMTP id j8-20020a170903024800b00155e660b774mr23853809plh.174.1653321303451;
+        Mon, 23 May 2022 08:55:03 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:ca72:45c6:baeb:e902])
+        by smtp.gmail.com with ESMTPSA id n5-20020a056a000d4500b0051887e34143sm4830214pfv.129.2022.05.23.08.55.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 08:55:02 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     Stephen Boyd <swboyd@chromium.org>, matvore@chromium.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] soc: qcom: socinfo: Add an ID for sc7180P
+Date:   Mon, 23 May 2022 08:54:57 -0700
+Message-Id: <20220523085437.v3.1.I26eca1856f99e6160d30de6d50ecab60e6226354@changeid>
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 3/4] drm/i915: allow volatile buffers to use ttm pool
- allocator
-Content-Language: en-US
-To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
-References: <20220503191316.1145124-1-bob.beckett@collabora.com>
- <20220503191316.1145124-4-bob.beckett@collabora.com>
- <3ce81c514959e43f5afd7e74489dd5b89b1cd633.camel@linux.intel.com>
-From:   Robert Beckett <bob.beckett@collabora.com>
-In-Reply-To: <3ce81c514959e43f5afd7e74489dd5b89b1cd633.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Some sc7180 Chromebooks actually have sc7180P (known by many names,
+apparently, including possibly sc7180 Pro and sc7185). This is a
+sc7180 part that has slightly higher clock speeds.
 
+The official ID number allocated to these devices by Qualcomm is 495
+so we'll add an entry to the table for them. Note that currently
+shipping BIOS for these devices will actually end up reporting an ID
+of 407 due to a bug but eventually a new BIOS will be released which
+corrects it to 495.
 
-On 11/05/2022 13:42, Thomas Hellström wrote:
-> Hi, Bob,
-> 
-> On Tue, 2022-05-03 at 19:13 +0000, Robert Beckett wrote:
->> internal buffers should be shmem backed.
->> if a volatile buffer is requested, allow ttm to use the pool
->> allocator
->> to provide volatile pages as backing
->>
->> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
->> ---
->>   drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> index 4c25d9b2f138..fdb3a1c18cb6 100644
->> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> @@ -309,7 +309,8 @@ static struct ttm_tt *i915_ttm_tt_create(struct
->> ttm_buffer_object *bo,
->>                  page_flags |= TTM_TT_FLAG_ZERO_ALLOC;
->>   
->>          caching = i915_ttm_select_tt_caching(obj);
->> -       if (i915_gem_object_is_shrinkable(obj) && caching ==
->> ttm_cached) {
->> +       if (i915_gem_object_is_shrinkable(obj) && caching ==
->> ttm_cached &&
->> +           !i915_gem_object_is_volatile(obj)) {
->>                  page_flags |= TTM_TT_FLAG_EXTERNAL |
->>                                TTM_TT_FLAG_EXTERNAL_MAPPABLE;
->>                  i915_tt->is_shmem = true;
-> 
-> While this is ok, I think it also needs adjustment in the i915_ttm
-> shrink callback. If someone creates a volatile smem object which then
-> hits the shrinker, I think we might hit asserts that it's a is_shem
-> ttm?
-> 
-> In this case, the shrink callback should just i915_ttm_purge().
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
 
-agreed. nice catch.
-I'll fix for v2
+Changes in v3:
+- s/numbrer/number/
 
-looks like we could maybe do with some extra shrinker testing too? looks 
-like nothing caught this during CI testing
+Changes in v2:
+- Switch from 407 to 495.
 
-> 
-> /Thomas
-> 
-> 
+ drivers/soc/qcom/socinfo.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
+index cee579a267a6..c2c879ccc6c0 100644
+--- a/drivers/soc/qcom/socinfo.c
++++ b/drivers/soc/qcom/socinfo.c
+@@ -332,6 +332,7 @@ static const struct soc_id soc_id[] = {
+ 	{ 480, "SM8450" },
+ 	{ 482, "SM8450" },
+ 	{ 487, "SC7280" },
++	{ 495, "SC7180P" },
+ };
+ 
+ static const char *socinfo_machine(struct device *dev, unsigned int id)
+-- 
+2.36.1.124.g0e6072fb45-goog
+
