@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A74AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D101C35296
 	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243574AbiEWR5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
+        id S243865AbiEWR5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241648AbiEWRbB (ORCPT
+        with ESMTP id S241854AbiEWRb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:31:01 -0400
+        Mon, 23 May 2022 13:31:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC50966219;
-        Mon, 23 May 2022 10:26:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8240644D8;
+        Mon, 23 May 2022 10:26:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE2FE608C0;
-        Mon, 23 May 2022 17:26:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5A0FC385A9;
-        Mon, 23 May 2022 17:26:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 028E660916;
+        Mon, 23 May 2022 17:26:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0564EC385A9;
+        Mon, 23 May 2022 17:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326812;
-        bh=MhlatHOKjDvAenLsvRoSmy3peqsebSGy0OT2bhO+oQs=;
+        s=korg; t=1653326815;
+        bh=bJzOwjF3X17Jgfd2o6J6v0+niskXRCoLjBovkKW+Lx8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rh2x/WgjDXmlFUgwHHQktp/CVcnz+Tu8EOTHl2FytW5NdFSnBnxZaY+Aj42YlT+eJ
-         JKhBqrO4ReBDMyz6L0Zs4XRh2FVviR/Sv7tvAcrf0cgFLE/MHK0NI6UtBHzutckIzn
-         OVVtIPGSNOF9/QKAZNSzUoa8x0H3sGGdSWlaAcxE=
+        b=ZOtMTRDK6Pbp0GT1ttvQZ4el8UJYAFQGTW5tx2DL4lvqnccXnPK0SVLZ4KiDqM4Ij
+         aztPVB7wO3pEs8r30ThTHDjyhSu/ao0GaKaQo9kZqRxvf22dTjF52w6GO8T4EZeN65
+         cWzi1WiBAkzo4tZ9EGf0nx33cwhABb2oauFqjxwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Martin Willi <martin@strongswan.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 029/158] crypto: x86/chacha20 - Avoid spurious jumps to other functions
-Date:   Mon, 23 May 2022 19:03:06 +0200
-Message-Id: <20220523165835.308023116@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Brian Masney <bmasney@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.17 060/158] crypto: qcom-rng - fix infinite loop on requests not multiple of WORD_SZ
+Date:   Mon, 23 May 2022 19:03:37 +0200
+Message-Id: <20220523165840.778467821@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165830.581652127@linuxfoundation.org>
 References: <20220523165830.581652127@linuxfoundation.org>
@@ -51,52 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-[ Upstream commit 4327d168515fd8b5b92fa1efdf1d219fb6514460 ]
+commit 16287397ec5c08aa58db6acf7dbc55470d78087d upstream.
 
-The chacha_Nblock_xor_avx512vl() functions all have their own,
-identical, .LdoneN label, however in one particular spot {2,4} jump to
-the 8 version instead of their own. Resulting in:
+The commit referenced in the Fixes tag removed the 'break' from the else
+branch in qcom_rng_read(), causing an infinite loop whenever 'max' is
+not a multiple of WORD_SZ. This can be reproduced e.g. by running:
 
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_2block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_4block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
+    kcapi-rng -b 67 >/dev/null
 
-Make each function consistently use its own done label.
+There are many ways to fix this without adding back the 'break', but
+they all seem more awkward than simply adding it back, so do just that.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Martin Willi <martin@strongswan.org>
+Tested on a machine with Qualcomm Amberwing processor.
+
+Fixes: a680b1832ced ("crypto: qcom-rng - ensure buffer for generate is completely filled")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Reviewed-by: Brian Masney <bmasney@redhat.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/crypto/chacha-avx512vl-x86_64.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/crypto/qcom-rng.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/crypto/chacha-avx512vl-x86_64.S b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-index 946f74dd6fba..259383e1ad44 100644
---- a/arch/x86/crypto/chacha-avx512vl-x86_64.S
-+++ b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-@@ -172,7 +172,7 @@ SYM_FUNC_START(chacha_2block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone2
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
+--- a/drivers/crypto/qcom-rng.c
++++ b/drivers/crypto/qcom-rng.c
+@@ -65,6 +65,7 @@ static int qcom_rng_read(struct qcom_rng
+ 		} else {
+ 			/* copy only remaining bytes */
+ 			memcpy(data, &val, max - currsize);
++			break;
+ 		}
+ 	} while (currsize < max);
  
-@@ -438,7 +438,7 @@ SYM_FUNC_START(chacha_4block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone4
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
- 
--- 
-2.35.1
-
 
 
