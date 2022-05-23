@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EABC38A2E
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 431EDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244213AbiEWRi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
+        id S240885AbiEWRjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239937AbiEWRZS (ORCPT
+        with ESMTP id S240617AbiEWRZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:25:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AD787A0C;
-        Mon, 23 May 2022 10:20:56 -0700 (PDT)
+        Mon, 23 May 2022 13:25:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB3522BD7;
+        Mon, 23 May 2022 10:21:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D477B60AB8;
-        Mon, 23 May 2022 17:18:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC807C385AA;
-        Mon, 23 May 2022 17:18:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B09A0B8121A;
+        Mon, 23 May 2022 17:19:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED80BC385A9;
+        Mon, 23 May 2022 17:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653326326;
-        bh=YpVawoi7xCkGSEtVaEEqrpuhvW6Am6CjBJvohnMHpGY=;
+        s=korg; t=1653326352;
+        bh=7ORnn3JFvU6w8aQU8L+UaweZmp4SFBZtU6G2YBLCw2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=svx/qtRHKfKBUwelJ7TyWdu5fCrUYksj53mUXAllR9Qiwj05uEDhIG9v682AJWo1t
-         KU652p4YgDZdqG7Oul0oyTCg3pKe5th/mvSf8oh57qGLDNFLOQB+si7NcBxbjMaOvR
-         slt5/NCUiL1ut8AtR6Gl+hWVLpofXa1SB7bdl5W4=
+        b=nbTKDHBzxp0MYZSKJP4LJyzCEvvyrvOIQWmufEilzsT+uJosf4pf1/S01vUJiZ4Gq
+         QoXGxz9YK59Sb9Al9c1hOR9KLyKQqbGL0ZJ6gpSwL4NG2k+YUszsZYbkbL+bsaH0ay
+         fY0ikSQogY+uKXFfs7r6sQQ2JRh5Ikb4rq02scJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 046/132] ALSA: hda/realtek: Add quirk for TongFang devices with pop noise
-Date:   Mon, 23 May 2022 19:04:15 +0200
-Message-Id: <20220523165830.886991583@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 025/132] gfs2: Disable page faults during lockless buffered reads
+Date:   Mon, 23 May 2022 19:03:54 +0200
+Message-Id: <20220523165827.674753669@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165823.492309987@linuxfoundation.org>
 References: <20220523165823.492309987@linuxfoundation.org>
@@ -48,40 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 8b3b2392ed68bcd17c7eb84ca615ce1e5f115b99 upstream.
+[ Upstream commit 52f3f033a5dbd023307520af1ff551cadfd7f037 ]
 
-When audio stops playing there is an audible "pop"-noise when using
-headphones on the TongFang GMxMRxx, GKxNRxx, GMxZGxx, GMxTGxx and GMxAGxx.
+During lockless buffered reads, filemap_read() holds page cache page
+references while trying to copy data to the user-space buffer.  The
+calling process isn't holding the inode glock, but the page references
+it holds prevent those pages from being removed from the page cache, and
+that prevents the underlying inode glock from being moved to another
+node.  Thus, we can end up in the same kinds of distributed deadlock
+situations as with normal (non-lockless) buffered reads.
 
-This quirk fixes this mostly.
+Fix that by disabling page faults during lockless reads as well.
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220512180956.281804-1-wse@tuxedocomputers.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/gfs2/file.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9076,6 +9076,14 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1c06, 0x2013, "Lemote A1802", ALC269_FIXUP_LEMOTE_A1802),
- 	SND_PCI_QUIRK(0x1c06, 0x2015, "Lemote A190X", ALC269_FIXUP_LEMOTE_A190X),
- 	SND_PCI_QUIRK(0x1d05, 0x1132, "TongFang PHxTxX1", ALC256_FIXUP_SET_COEF_DEFAULTS),
-+	SND_PCI_QUIRK(0x1d05, 0x1096, "TongFang GMxMRxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1100, "TongFang GKxNRxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1111, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1119, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1129, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1147, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x115c, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x121b, "TongFang GMxAGxx", ALC269_FIXUP_NO_SHUTUP),
- 	SND_PCI_QUIRK(0x1d72, 0x1602, "RedmiBook", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1d72, 0x1701, "XiaomiNotebook Pro", ALC298_FIXUP_DELL1_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1d72, 0x1901, "RedmiBook 14", ALC256_FIXUP_ASUS_HEADSET_MIC),
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index eb5ea0262f3c..60390f9dc31f 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -963,14 +963,16 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 			return ret;
+ 		iocb->ki_flags &= ~IOCB_DIRECT;
+ 	}
++	pagefault_disable();
+ 	iocb->ki_flags |= IOCB_NOIO;
+ 	ret = generic_file_read_iter(iocb, to);
+ 	iocb->ki_flags &= ~IOCB_NOIO;
++	pagefault_enable();
+ 	if (ret >= 0) {
+ 		if (!iov_iter_count(to))
+ 			return ret;
+ 		written = ret;
+-	} else {
++	} else if (ret != -EFAULT) {
+ 		if (ret != -EAGAIN)
+ 			return ret;
+ 		if (iocb->ki_flags & IOCB_NOWAIT)
+-- 
+2.35.1
+
 
 
