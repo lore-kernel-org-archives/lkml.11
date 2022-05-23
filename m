@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35394C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 23 May 2022 17:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241148AbiEWRet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 23 May 2022 13:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
+        id S241101AbiEWRe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 23 May 2022 13:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240630AbiEWRZD (ORCPT
+        with ESMTP id S240660AbiEWRZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 23 May 2022 13:25:03 -0400
+        Mon, 23 May 2022 13:25:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E071CB26;
-        Mon, 23 May 2022 10:12:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D716D4DA;
+        Mon, 23 May 2022 10:12:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C381F614CC;
-        Mon, 23 May 2022 17:12:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6B1FC385A9;
-        Mon, 23 May 2022 17:12:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B30561506;
+        Mon, 23 May 2022 17:11:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923D2C385A9;
+        Mon, 23 May 2022 17:11:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1653325956;
-        bh=db0bn8cymktHvmduNfZ39OYCAVGbmotRIWLE2wPYw7c=;
+        s=korg; t=1653325870;
+        bh=DOzl2i/fZq1TM8XTi6mtuKhgW3PJ9qE7juRr+ueh0u4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L9ICoUOfdbfXfb8xZZZUey/IBYuQlzvueITsRRz7UaR+p6A5kFj/l7ibZmanX6t28
-         gXg4N4NtJHPFmRqRt4pKsv2QcDrU2huR+Gg3obocLfdU98fXsDc3FH3ZWQ9wGtYFHl
-         24iwhqH3pHx2lmUT8vLuUiArfA0HHapLIiAOEJUc=
+        b=WX2MW8V02jOSr+rD3onEb2xBSIkX4JLb6bE2cwKsl6q7VdKIxjS2EjAgmb8VH003X
+         Ly9Cdh65WJ4OqhTXkxHJtmC46eA4G3mNeTKkj6n4LgKf05sbC/SVRPqM42suOcLVds
+         okbaCM9n8LriqWsuM19f2kZryrEaMqEBCmaY1e/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namhyung Kim <namhyung@gmail.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 36/44] perf bench numa: Address compiler error on s390
-Date:   Mon, 23 May 2022 19:05:20 +0200
-Message-Id: <20220523165759.773361408@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Gottwald <gottwald@igel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 4.19 14/44] PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold
+Date:   Mon, 23 May 2022 19:04:58 +0200
+Message-Id: <20220523165755.854177532@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220523165752.797318097@linuxfoundation.org>
 References: <20220523165752.797318097@linuxfoundation.org>
@@ -54,64 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Richter <tmricht@linux.ibm.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit f8ac1c478424a9a14669b8cef7389b1e14e5229d ]
+commit 92597f97a40bf661bebceb92e26ff87c76d562d4 upstream.
 
-The compilation on s390 results in this error:
+If a Root Port on Elo i2 is put into D3cold and then back into D0, the
+downstream device becomes permanently inaccessible, so add a bridge D3 DMI
+quirk for that system.
 
-  # make DEBUG=y bench/numa.o
-  ...
-  bench/numa.c: In function ‘__bench_numa’:
-  bench/numa.c:1749:81: error: ‘%d’ directive output may be truncated
-              writing between 1 and 11 bytes into a region of size between
-              10 and 20 [-Werror=format-truncation=]
-  1749 |        snprintf(tname, sizeof(tname), "process%d:thread%d", p, t);
-                                                               ^~
-  ...
-  bench/numa.c:1749:64: note: directive argument in the range
-                 [-2147483647, 2147483646]
-  ...
-  #
+This was exposed by 14858dcc3b35 ("PCI: Use pci_update_current_state() in
+pci_enable_device_flags()"), but before that commit the Root Port in
+question had never been put into D3cold for real due to a mismatch between
+its power state retrieved from the PCI_PM_CTRL register (which was
+accessible even though the platform firmware indicated that the port was in
+D3cold) and the state of an ACPI power resource involved in its power
+management.
 
-The maximum length of the %d replacement is 11 characters because of the
-negative sign.  Therefore extend the array by two more characters.
-
-Output after:
-
-  # make  DEBUG=y bench/numa.o > /dev/null 2>&1; ll bench/numa.o
-  -rw-r--r-- 1 root root 418320 May 19 09:11 bench/numa.o
-  #
-
-Fixes: 3aff8ba0a4c9c919 ("perf bench numa: Avoid possible truncation when using snprintf()")
-Suggested-by: Namhyung Kim <namhyung@gmail.com>
-Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Sumanth Korikkar <sumanthk@linux.ibm.com>
-Cc: Sven Schnelle <svens@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220520081158.2990006-1-tmricht@linux.ibm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
+Link: https://lore.kernel.org/r/11980172.O9o76ZdvQC@kreacher
+Reported-by: Stefan Gottwald <gottwald@igel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org	# v5.15+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/bench/numa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/pci.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/tools/perf/bench/numa.c b/tools/perf/bench/numa.c
-index 91c0a4434da2..e7fde88a0845 100644
---- a/tools/perf/bench/numa.c
-+++ b/tools/perf/bench/numa.c
-@@ -1631,7 +1631,7 @@ static int __bench_numa(const char *name)
- 		"GB/sec,", "total-speed",	"GB/sec total speed");
- 
- 	if (g->p.show_details >= 2) {
--		char tname[14 + 2 * 10 + 1];
-+		char tname[14 + 2 * 11 + 1];
- 		struct thread_data *td;
- 		for (p = 0; p < g->p.nr_proc; p++) {
- 			for (t = 0; t < g->p.nr_threads; t++) {
--- 
-2.35.1
-
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2517,6 +2517,16 @@ static const struct dmi_system_id bridge
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+ 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+ 		},
++		/*
++		 * Downstream device is not accessible after putting a root port
++		 * into D3cold and back into D0 on Elo i2.
++		 */
++		.ident = "Elo i2",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
++		},
+ 	},
+ #endif
+ 	{ }
 
 
